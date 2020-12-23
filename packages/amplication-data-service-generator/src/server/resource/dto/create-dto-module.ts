@@ -7,6 +7,7 @@ import {
   addImports,
   importContainedIdentifiers,
   NamedClassDeclaration,
+  exportNames,
 } from "../../../util/ast";
 import {
   CLASS_VALIDATOR_MODULE,
@@ -25,6 +26,13 @@ import {
   TYPE_ID,
 } from "./class-transformer.util";
 import { NESTJS_SWAGGER_MODULE, API_PROPERTY_ID } from "./nestjs-swagger.util";
+import {
+  NESTJS_GRAPHQL_MODULE,
+  OBJECT_TYPE_ID,
+  INPUT_TYPE_ID,
+  ARGS_TYPE_ID,
+  FIELD_ID,
+} from "./nestjs-graphql.util";
 import { SRC_DIRECTORY } from "../../constants";
 
 export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
@@ -40,6 +48,12 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
   ],
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
   [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
+  [NESTJS_GRAPHQL_MODULE]: [
+    OBJECT_TYPE_ID,
+    INPUT_TYPE_ID,
+    ARGS_TYPE_ID,
+    FIELD_ID,
+  ],
 };
 
 export function createDTOModule(
@@ -58,9 +72,12 @@ export function createDTOFile(
   modulePath: string,
   dtoNameToPath: Record<string, string>
 ): namedTypes.File {
-  const file = builders.file(
-    builders.program([builders.exportNamedDeclaration(dto)])
-  );
+  const statements =
+    namedTypes.ClassDeclaration.check(dto) &&
+    namedTypes.Identifier.check(dto.id)
+      ? [dto, exportNames([dto.id])]
+      : [builders.exportNamedDeclaration(dto)];
+  const file = builders.file(builders.program(statements));
   const moduleToIds = {
     ...IMPORTABLE_NAMES,
     ...getImportableDTOs(modulePath, dtoNameToPath),

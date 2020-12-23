@@ -2,7 +2,7 @@
 FROM node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090 AS node
 
 FROM node as base
-RUN npm i -g npm@7
+RUN npm i -g npm@7.3.0
 
 FROM base as package-sources
 RUN mkdir /app

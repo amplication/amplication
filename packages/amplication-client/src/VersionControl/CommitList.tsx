@@ -114,6 +114,7 @@ export const CommitList = ({ match }: Props) => {
         <FloatingToolbar />
 
         <DataGrid
+          showSearch
           fields={fields}
           title="Commits"
           titleType={EnumTitleType.PageTitle}

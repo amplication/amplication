@@ -1,5 +1,4 @@
 import {
-  HOME_PAGE_URL,
   LOGIN_URL,
   A_SIGN_UP,
   LOGIN_CONTINUE_BUTTON_CONTENT,
@@ -10,10 +9,8 @@ const CREATE_BUTTON_CONTENT = "Create App";
 const I_ENTITY = "entity";
 const BUTTON_CREATE_NEW = "Create New";
 const BUTTON_CREATE_ENTITY = "Create Entity";
-const BUTTON_PENDING = "Pending";
 const BUTTON_COMMIT_CHANGES = "Commit Changes";
-const BUTTON_COMMIT = "Commit";
-const DIV_SUCCESS = "You rock! keep working and come back later";
+const DIV_SUCCESS = "No pending changes! keep working and come back later";
 const TIMEOUT = 60000;
 describe("commit change test", () => {
   beforeAll(async () => {
@@ -24,7 +21,6 @@ describe("commit change test", () => {
     async () => {
       page.setDefaultTimeout(TIMEOUT);
       await signUp(A_SIGN_UP, LOGIN_CONTINUE_BUTTON_CONTENT);
-      await expect(page.url()).toMatch(HOME_PAGE_URL);
       await page.click("a.applications__new-app");
       const appName = createRandomName();
       await (await page.waitForXPath("//input[@name='name']")).type(appName);
@@ -53,28 +49,17 @@ describe("commit change test", () => {
         )
       ).click();
       await page.waitForNavigation();
-      await (
-        await page.waitForXPath(
-          `//button[contains(text(),'${BUTTON_PENDING}')]`
-        )
-      ).click();
-      await page.waitForNavigation();
-      await (
-        await page.waitForXPath(
-          `//button[contains(text(),'${BUTTON_COMMIT_CHANGES}')]`
-        )
-      ).click();
       const message = createRandomName();
       await (await page.waitForXPath('//textarea[@name="message"]')).type(
         message
       );
       await (
         await page.waitForXPath(
-          `//button[@type="submit" and contains(text(),'${BUTTON_COMMIT}')]`
+          `//button[@type="submit" and contains(text(),'${BUTTON_COMMIT_CHANGES}')]`
         )
       ).click();
       const successDiv = await page.waitForXPath(
-        `//div[contains(.,"${DIV_SUCCESS}")]`
+        `//div[contains(text(),"${DIV_SUCCESS}")]`
       );
       expect(successDiv).toBeTruthy();
     },

@@ -4,7 +4,16 @@ import base64 from "base-64";
 import * as compose from "docker-compose";
 import getPort from "get-port";
 import sleep from "sleep-promise";
-import fetch from "node-fetch";
+import fetch from "cross-fetch";
+import {
+  ApolloClient,
+  InMemoryCache,
+  gql,
+  createHttpLink,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
+import omit from "lodash.omit";
 import generateTestDataService from "../scripts/generate-test-data-service";
 
 // Use when running the E2E multiple times to shorten build time
@@ -41,6 +50,7 @@ describe("Data Service Generator", () => {
   let port: number;
   let host: string;
   let customer: { id: string };
+  let apolloClient: ApolloClient<any>;
   beforeAll(async () => {
     const directory = path.join(os.tmpdir(), "test-data-service");
     // Generate the test data service
@@ -49,6 +59,34 @@ describe("Data Service Generator", () => {
     port = await getPort();
     const dbPort = await getPort();
     host = `http://0.0.0.0:${port}`;
+
+    const authLink = setContext((_, { headers }) => ({
+      headers: {
+        ...headers,
+        authorization: APP_BASIC_AUTHORIZATION,
+      },
+    }));
+
+    const errorLink = onError(({ graphQLErrors, networkError }) => {
+      if (graphQLErrors)
+        graphQLErrors.map(({ message, locations, path }) =>
+          console.log(
+            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+          )
+        );
+
+      if (networkError) console.log(`[Network error]: ${networkError}`);
+    });
+
+    const httpLink = createHttpLink({
+      uri: `${host}/graphql`,
+      fetch,
+    });
+
+    apolloClient = new ApolloClient({
+      link: authLink.concat(errorLink).concat(httpLink),
+      cache: new InMemoryCache(),
+    });
 
     dockerComposeOptions = {
       cwd: directory,
@@ -65,13 +103,8 @@ describe("Data Service Generator", () => {
     };
 
     // Cleanup Docker Compose before run
-    console.info("Cleaning up Docker Compose...");
     await down(dockerComposeOptions);
 
-    // Run with Docker Compose
-    console.info("Getting Docker Compose up...");
-
-    // Always uses the -d flag due to non interactive mode
     await compose.upAll({
       ...dockerComposeOptions,
       commandOptions: ["--build", "--force-recreate"],
@@ -87,8 +120,8 @@ describe("Data Service Generator", () => {
     await down(dockerComposeOptions);
   });
 
-  test("creates POST /login endpoint", async () => {
-    const res = await fetch(`${host}/login`, {
+  test("creates POST /api/login endpoint", async () => {
+    const res = await fetch(`${host}/api/login`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -107,8 +140,8 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates POST /customers endpoint", async () => {
-    const res = await fetch(`${host}/customers`, {
+  test("creates POST /api/customers endpoint", async () => {
+    const res = await fetch(`${host}/api/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -128,9 +161,9 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates PATCH /customers/:id endpoint", async () => {
+  test("creates PATCH /api/customers/:id endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -139,7 +172,7 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_CUSTOMER),
       })
     ).json();
-    const res = await fetch(`${host}/customers/${customer.id}`, {
+    const res = await fetch(`${host}/api/customers/${customer.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": JSON_MIME,
@@ -150,9 +183,9 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_OK);
   });
 
-  test("handles PATCH /customers/:id for a non-existing id", async () => {
+  test("handles PATCH /api/customers/:id for a non-existing id", async () => {
     const id = "nonExistingId";
-    const res = await fetch(`${host}/customers/${id}`, {
+    const res = await fetch(`${host}/api/customers/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": JSON_MIME,
@@ -163,9 +196,9 @@ describe("Data Service Generator", () => {
     expect(res.status === NOT_FOUND);
   });
 
-  test("creates DELETE /customers/:id endpoint", async () => {
+  test("creates DELETE /api/customers/:id endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -174,7 +207,7 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_CUSTOMER),
       })
     ).json();
-    const res = await fetch(`${host}/customers/${customer.id}`, {
+    const res = await fetch(`${host}/api/customers/${customer.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": JSON_MIME,
@@ -184,9 +217,9 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_OK);
   });
 
-  test("handles DELETE /customers/:id for a non-existing id", async () => {
+  test("handles DELETE /api/customers/:id for a non-existing id", async () => {
     const id = "nonExistingId";
-    const res = await fetch(`${host}/customers/${id}`, {
+    const res = await fetch(`${host}/api/customers/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": JSON_MIME,
@@ -196,8 +229,8 @@ describe("Data Service Generator", () => {
     expect(res.status === NOT_FOUND);
   });
 
-  test("creates GET /customers endpoint", async () => {
-    const res = await fetch(`${host}/customers`, {
+  test("creates GET /api/customers endpoint", async () => {
+    const res = await fetch(`${host}/api/customers`, {
       headers: {
         Authorization: APP_BASIC_AUTHORIZATION,
       },
@@ -216,8 +249,8 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates GET /customers/:id endpoint", async () => {
-    const res = await fetch(`${host}/customers/${customer.id}`, {
+  test("creates GET /api/customers/:id endpoint", async () => {
+    const res = await fetch(`${host}/api/customers/${customer.id}`, {
       headers: {
         Authorization: APP_BASIC_AUTHORIZATION,
       },
@@ -234,9 +267,9 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates POST /organizations/:id/customers endpoint", async () => {
+  test("creates POST /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -247,7 +280,7 @@ describe("Data Service Generator", () => {
     ).json();
 
     const organization = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/api/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -258,7 +291,7 @@ describe("Data Service Generator", () => {
     ).json();
 
     const res = await fetch(
-      `${host}/organizations/${organization.id}/customers`,
+      `${host}/api/organizations/${organization.id}/customers`,
       {
         method: "POST",
         headers: {
@@ -277,9 +310,9 @@ describe("Data Service Generator", () => {
     expect(data).toBe("");
   });
 
-  test("creates DELETE /organizations/:id/customers endpoint", async () => {
+  test("creates DELETE /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -289,7 +322,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
     const organization = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/api/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -299,7 +332,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
 
-    await fetch(`${host}/organizations/${organization.id}/customers`, {
+    await fetch(`${host}/api/organizations/${organization.id}/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -313,7 +346,7 @@ describe("Data Service Generator", () => {
     });
 
     const res = await fetch(
-      `${host}/organizations/${organization.id}/customers`,
+      `${host}/api/organizations/${organization.id}/customers`,
       {
         method: "DELETE",
         headers: {
@@ -332,9 +365,9 @@ describe("Data Service Generator", () => {
     expect(data).toBe("");
   });
 
-  test("creates GET /organizations/:id/customers endpoint", async () => {
+  test("creates GET /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -344,7 +377,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
     const organization = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/api/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -354,7 +387,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
 
-    await fetch(`${host}/organizations/${organization.id}/customers`, {
+    await fetch(`${host}/api/organizations/${organization.id}/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -368,7 +401,7 @@ describe("Data Service Generator", () => {
     });
 
     const res = await fetch(
-      `${host}/organizations/${organization.id}/customers`,
+      `${host}/api/organizations/${organization.id}/customers`,
       {
         method: "GET",
         headers: {
@@ -391,6 +424,38 @@ describe("Data Service Generator", () => {
           },
         }),
       ])
+    );
+  });
+
+  test("adds customers to root query", async () => {
+    expect(
+      await apolloClient.query({
+        query: gql`
+          {
+            customers(where: {}) {
+              id
+              createdAt
+              updatedAt
+              email
+              firstName
+              lastName
+            }
+          }
+        `,
+      })
+    ).toEqual(
+      expect.objectContaining({
+        data: {
+          customers: expect.arrayContaining([
+            expect.objectContaining({
+              ...omit(EXAMPLE_CUSTOMER, ["organization"]),
+              id: customer.id,
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+            }),
+          ]),
+        },
+      })
     );
   });
 });
