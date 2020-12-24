@@ -21,7 +21,7 @@ import { isOneToOneRelationField, isRelationField } from "../../../util/field";
 import { createServiceId } from "../service/create-service";
 import { createControllerId } from "../controller/create-controller";
 
-const testTemplatePath = require.resolve("./test.template.ts");
+const testTemplatePath = require.resolve("./controller.spec.template.ts");
 const TO_ISO_STRING_ID = builders.identifier("toISOString");
 const CREATE_RESULT_ID = builders.identifier("CREATE_RESULT");
 const FIND_ONE_RESULT_ID = builders.identifier("FIND_ONE_RESULT");
@@ -75,7 +75,7 @@ export async function createControllerSpecModule(
       ),
     ]),
     FIND_ONE_PATHNAME: builders.stringLiteral(`/${resource}/:${param}`),
-    RESOURCE: builders.stringLiteral(resource),
+    RESOURCE: builders.stringLiteral(`/${resource}`),
     FIND_ONE_PARAM: paramType,
     FIND_ONE_PARAM_NAME: builders.stringLiteral(param),
     FIND_ONE_RESULT_VALUE: createTestData(entity.fields, entityIdToName),

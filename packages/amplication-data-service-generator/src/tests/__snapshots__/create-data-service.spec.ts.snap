@@ -68566,7 +68566,7 @@ describe(\\"Customer\\", () => {
 
   test(\\"GET /customers/:id non existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\`/\${\\"customers\\"}/\${nonExistingId}\`)
+      .get(\`\${\\"/customers\\"}/\${nonExistingId}\`)
       .expect(404)
       .expect({
         statusCode: 404,
@@ -68577,7 +68577,7 @@ describe(\\"Customer\\", () => {
 
   test(\\"GET /customers/:id existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\\"/customers/existingId\\")
+      .get(\`\${\\"/customers\\"}/\${existingId}\`)
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
@@ -69617,7 +69617,7 @@ describe(\\"Empty\\", () => {
 
   test(\\"GET /empties/:id non existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\`/\${\\"empties\\"}/\${nonExistingId}\`)
+      .get(\`\${\\"/empties\\"}/\${nonExistingId}\`)
       .expect(404)
       .expect({
         statusCode: 404,
@@ -69628,7 +69628,7 @@ describe(\\"Empty\\", () => {
 
   test(\\"GET /empties/:id existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\\"/empties/existingId\\")
+      .get(\`\${\\"/empties\\"}/\${existingId}\`)
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
@@ -70954,7 +70954,7 @@ describe(\\"Order\\", () => {
 
   test(\\"GET /orders/:id non existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\`/\${\\"orders\\"}/\${nonExistingId}\`)
+      .get(\`\${\\"/orders\\"}/\${nonExistingId}\`)
       .expect(404)
       .expect({
         statusCode: 404,
@@ -70965,7 +70965,7 @@ describe(\\"Order\\", () => {
 
   test(\\"GET /orders/:id existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\\"/orders/existingId\\")
+      .get(\`\${\\"/orders\\"}/\${existingId}\`)
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
@@ -71838,7 +71838,7 @@ describe(\\"Organization\\", () => {
 
   test(\\"GET /organizations/:id non existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\`/\${\\"organizations\\"}/\${nonExistingId}\`)
+      .get(\`\${\\"/organizations\\"}/\${nonExistingId}\`)
       .expect(404)
       .expect({
         statusCode: 404,
@@ -71849,7 +71849,7 @@ describe(\\"Organization\\", () => {
 
   test(\\"GET /organizations/:id existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\\"/organizations/existingId\\")
+      .get(\`\${\\"/organizations\\"}/\${existingId}\`)
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
@@ -73821,7 +73821,7 @@ describe(\\"User\\", () => {
 
   test(\\"GET /users/:id non existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\`/\${\\"users\\"}/\${nonExistingId}\`)
+      .get(\`\${\\"/users\\"}/\${nonExistingId}\`)
       .expect(404)
       .expect({
         statusCode: 404,
@@ -73832,7 +73832,7 @@ describe(\\"User\\", () => {
 
   test(\\"GET /users/:id existing\\", async () => {
     await request(app.getHttpServer())
-      .get(\\"/users/existingId\\")
+      .get(\`\${\\"/users\\"}/\${existingId}\`)
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
