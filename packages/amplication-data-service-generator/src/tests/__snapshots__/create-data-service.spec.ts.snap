@@ -67328,7 +67328,7 @@ import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { ConfigModule } from \\"@nestjs/config\\";
+import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import { ServeStaticOptionsService } from \\"./serveStaticOptions.service\\";
 import { GraphQLModule } from \\"@nestjs/graphql\\";
@@ -67348,7 +67348,14 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
-    GraphQLModule.forRoot({ autoSchemaFile: true }),
+    GraphQLModule.forRootAsync({
+      useFactory: (configService) => ({
+        autoSchemaFile: true,
+        playground: configService.get(\\"GRAPHQL_PLAYGROUND\\"),
+      }),
+      inject: [ConfigService],
+      imports: [ConfigModule],
+    }),
   ],
   providers: [],
 })
