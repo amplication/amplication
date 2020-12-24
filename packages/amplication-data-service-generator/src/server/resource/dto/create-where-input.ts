@@ -1,28 +1,26 @@
 import { builders, namedTypes } from "ast-types";
 import { Entity, EntityField } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
-import { createFieldClassProperty } from "./create-field-class-property";
 import {
   isRelationField,
   isOneToOneRelationField,
   isScalarListField,
   isPasswordField,
 } from "../../../util/field";
+import { createInput } from "./create-input";
 
 export function createWhereInput(
   entity: Entity,
   entityIdToName: Record<string, string>
 ): NamedClassDeclaration {
-  const properties = entity.fields
-    .filter((field) => isQueryableField(field))
-    /** @todo support filters */
-    .map((field) =>
-      createFieldClassProperty(field, true, true, true, entityIdToName)
-    );
-  return builders.classDeclaration(
+  const fields = entity.fields.filter((field) => isQueryableField(field));
+  return createInput(
     createWhereInputID(entity.name),
-    builders.classBody(properties)
-  ) as NamedClassDeclaration;
+    fields,
+    true,
+    true,
+    entityIdToName
+  );
 }
 
 export function createWhereInputID(entityName: string): namedTypes.Identifier {

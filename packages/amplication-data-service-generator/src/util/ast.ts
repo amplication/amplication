@@ -9,7 +9,11 @@ import uniqBy from "lodash.uniqby";
 import * as parser from "./parser";
 import * as partialParser from "./partial-parser";
 
-export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
+export type ClassDeclaration = namedTypes.ClassDeclaration & {
+  decorators: namedTypes.Decorator[];
+};
+
+export type NamedClassDeclaration = ClassDeclaration & {
   id: namedTypes.Identifier;
 };
 
@@ -182,7 +186,7 @@ export function getExportedNames(
  */
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode }
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   return recast.visit(ast, {
     visitIdentifier(path) {
@@ -258,7 +262,7 @@ export function interpolate(
 
 export function evaluateJSX(
   path: NodePath,
-  mapping: { [key: string]: ASTNode }
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   const childrenPath = path.get("children");
   childrenPath.each(
@@ -321,6 +325,20 @@ export function removeTSIgnoreComments(ast: ASTNode): void {
       this.traverse(path);
     },
   });
+}
+
+/**
+ * Like removeTSIgnoreComments but removes TypeScript ignore comments from
+ * imports only
+ * @param file file to remove comments from
+ */
+export function removeImportsTSIgnoreComments(file: namedTypes.File): void {
+  for (const statement of file.program.body) {
+    if (!namedTypes.ImportDeclaration.check(statement)) {
+      break;
+    }
+    removeTSIgnoreComments(statement);
+  }
 }
 
 /**
@@ -406,6 +424,40 @@ export function addImports(
   file.program.body.unshift(...consolidatedImports);
 }
 
+export function exportNames(
+  names: namedTypes.Identifier[]
+): namedTypes.ExportNamedDeclaration {
+  return builders.exportNamedDeclaration(
+    null,
+    names.map((name) =>
+      builders.exportSpecifier.from({
+        exported: name,
+        id: name,
+        name,
+      })
+    )
+  );
+}
+
+export function classDeclaration(
+  id: K.IdentifierKind | null,
+  body: K.ClassBodyKind,
+  superClass: K.ExpressionKind | null = null,
+  decorators: namedTypes.Decorator[] = []
+): namedTypes.ClassDeclaration {
+  const declaration = builders.classDeclaration(id, body, superClass);
+  if (!decorators.length) {
+    return declaration;
+  }
+  const code = [
+    ...decorators.map((decorator) => recast.print(decorator).code),
+    recast.print(declaration).code,
+  ].join("\n");
+  const ast = parse(code);
+  const [classDeclaration] = ast.program.body as [namedTypes.ClassDeclaration];
+  return classDeclaration;
+}
+
 export function classProperty(
   key: namedTypes.Identifier,
   typeAnnotation: namedTypes.TSTypeAnnotation,
@@ -468,10 +520,16 @@ export function findContainedIdentifiers(
   return contained;
 }
 
-export function findClassDeclarationById(
+/**
+ * Finds class declaration in provided AST node, if no class is found throws an exception
+ * @param node AST node which includes the desired class declaration
+ * @param id the identifier of the desired class
+ * @returns a class declaration with a matching identifier to the one given in the given AST node
+ */
+export function getClassDeclarationById(
   node: ASTNode,
   id: namedTypes.Identifier
-): namedTypes.ClassDeclaration | null {
+): namedTypes.ClassDeclaration {
   let classDeclaration: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
     visitClassDeclaration(path) {
@@ -482,7 +540,31 @@ export function findClassDeclarationById(
       return this.traverse(path);
     },
   });
+
+  if (!classDeclaration) {
+    throw new Error(
+      `Could not find class declaration with the identifier ${id.name} in provided AST node`
+    );
+  }
+
   return classDeclaration;
+}
+
+export function deleteClassMemberByKey(
+  declaration: namedTypes.ClassDeclaration,
+  id: namedTypes.Identifier
+): void {
+  for (const [index, member] of declaration.body.body.entries()) {
+    if (
+      member &&
+      "key" in member &&
+      namedTypes.Identifier.check(member.key) &&
+      member.key.name === id.name
+    ) {
+      delete declaration.body.body[index];
+      break;
+    }
+  }
 }
 
 export function importContainedIdentifiers(
@@ -523,6 +605,16 @@ export function findConstructor(
       namedTypes.ClassMethod.check(member) && isConstructor(member)
   );
 }
+
+export function getMethods(
+  classDeclaration: namedTypes.ClassDeclaration
+): namedTypes.ClassMethod[] {
+  return classDeclaration.body.body.filter(
+    (member): member is namedTypes.ClassMethod =>
+      namedTypes.ClassMethod.check(member) && !isConstructor(member)
+  );
+}
+
 export function getNamedProperties(
   declaration: namedTypes.ClassDeclaration
 ): NamedClassProperty[] {
@@ -538,6 +630,9 @@ export const callExpression = typedExpression(namedTypes.CallExpression);
 export const memberExpression = typedExpression(namedTypes.MemberExpression);
 export const awaitExpression = typedExpression(namedTypes.AwaitExpression);
 export const logicalExpression = typedExpression(namedTypes.LogicalExpression);
+export const expressionStatement = typedStatement(
+  namedTypes.ExpressionStatement
+);
 
 export function typedExpression<T>(type: { check(v: any): v is T }) {
   return (

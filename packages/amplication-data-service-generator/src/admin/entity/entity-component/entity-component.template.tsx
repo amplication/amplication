@@ -19,6 +19,7 @@ import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
+declare const PATH: string;
 declare const INPUTS: React.ReactElement[];
 declare interface UPDATE_INPUT {}
 declare const EDITABLE_PROPERTIES: string[];
@@ -27,7 +28,7 @@ declare interface ENTITY {
 }
 
 export const COMPONENT_NAME = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
+  const match = useRouteMatch<{ id: string }>(`${PATH}/:id/`);
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -36,7 +37,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     AxiosError,
     [string, string]
   >([`get-${RESOURCE}`, id], async (key: string, id: string) => {
-    const response = await api.get(`/${RESOURCE}/${id}`);
+    const response = await api.get(`${RESOURCE}/${id}`);
     return response.data;
   });
 
@@ -45,12 +46,12 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     { error: deleteError, isError: deleteIsError },
   ] = useMutation<ENTITY, AxiosError>(
     async (data) => {
-      const response = await api.delete(`/${RESOURCE}/${id}`, data);
+      const response = await api.delete(`${RESOURCE}/${id}`, data);
       return response.data;
     },
     {
       onSuccess: (data, variables) => {
-        history.push(`/${RESOURCE}`);
+        history.push(`/${PATH}`);
       },
     }
   );
@@ -59,7 +60,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     update,
     { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<ENTITY, AxiosError, UPDATE_INPUT>(async (data) => {
-    const response = await api.patch(`/${RESOURCE}/${id}`, data);
+    const response = await api.patch(`${RESOURCE}/${id}`, data);
     return response.data;
   });
 

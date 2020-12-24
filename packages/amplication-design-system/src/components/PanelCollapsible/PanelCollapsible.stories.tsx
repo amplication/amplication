@@ -10,7 +10,10 @@ export default {
 
 export const Default = (props: any) => {
   return (
-    <PanelCollapsible headerContent="Header">
+    <PanelCollapsible
+      headerContent="Header"
+      onCollapseChange={props.onCollapseChange}
+    >
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -26,7 +29,11 @@ export const Default = (props: any) => {
 
 export const InitiallyOpen = (props: any) => {
   return (
-    <PanelCollapsible initiallyOpen headerContent="Header">
+    <PanelCollapsible
+      initiallyOpen
+      headerContent="Header"
+      onCollapseChange={props.onCollapseChange}
+    >
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -43,7 +50,11 @@ export const InitiallyOpen = (props: any) => {
 export const manualCollapseDisabled = (props: any) => {
   return (
     <>
-      <PanelCollapsible manualCollapseDisabled headerContent="Header">
+      <PanelCollapsible
+        manualCollapseDisabled
+        headerContent="Header"
+        onCollapseChange={props.onCollapseChange}
+      >
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad

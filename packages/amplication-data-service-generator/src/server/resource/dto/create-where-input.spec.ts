@@ -1,7 +1,8 @@
 import { builders } from "ast-types";
+import { print } from "recast";
 import { EntityField, Entity, EnumDataType } from "../../../types";
-import { createFieldClassProperty } from "./create-field-class-property";
 import { createWhereInput, createWhereInputID } from "./create-where-input";
+import { createInput } from "./create-input";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -29,19 +30,18 @@ const EXAMPLE_ENTITY: Entity = {
 
 describe("createWhereInput", () => {
   test("creates input", () => {
-    expect(createWhereInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)).toEqual(
-      builders.classDeclaration(
-        createWhereInputID(EXAMPLE_ENTITY_NAME),
-        builders.classBody([
-          createFieldClassProperty(
-            EXAMPLE_ENTITY_FIELD,
-            true,
-            true,
-            true,
-            EXAMPLE_ENTITY_ID_TO_NAME
-          ),
-        ])
-      )
+    expect(
+      print(createWhereInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)).code
+    ).toEqual(
+      print(
+        createInput(
+          createWhereInputID(EXAMPLE_ENTITY_NAME),
+          [EXAMPLE_ENTITY_FIELD],
+          true,
+          true,
+          EXAMPLE_ENTITY_ID_TO_NAME
+        )
+      ).code
     );
   });
 });

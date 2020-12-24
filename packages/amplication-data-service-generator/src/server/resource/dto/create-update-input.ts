@@ -1,23 +1,21 @@
 import { builders, namedTypes } from "ast-types";
 import { Entity } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
-import { createFieldClassProperty } from "./create-field-class-property";
 import { isEditableField } from "../../../util/field";
+import { createInput } from "./create-input";
 
 export function createUpdateInput(
   entity: Entity,
   entityIdToName: Record<string, string>
 ): NamedClassDeclaration {
-  const properties = entity.fields
-    .filter(isEditableField)
-    /** @todo support create inputs */
-    .map((field) =>
-      createFieldClassProperty(field, true, true, false, entityIdToName)
-    );
-  return builders.classDeclaration(
+  const fields = entity.fields.filter(isEditableField);
+  return createInput(
     createUpdateInputID(entity.name),
-    builders.classBody(properties)
-  ) as NamedClassDeclaration;
+    fields,
+    true,
+    false,
+    entityIdToName
+  );
 }
 
 export function createUpdateInputID(entityName: string): namedTypes.Identifier {

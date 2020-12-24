@@ -5,21 +5,22 @@ import { TextField } from "./TextField";
 
 export default {
   title: "TextField",
+  argTypes: { onChange: { action: "Changed" } },
   component: TextField,
 } as Meta;
 
-export const Default = () => {
+export const Default = (props: any) => {
   return (
     <Formik initialValues={{}} onSubmit={() => {}}>
-      <TextField name="name" />
+      <TextField name="name" onChange={props.onChange} />
     </Formik>
   );
 };
 
-export const Textarea = () => {
+export const Textarea = (props: any) => {
   return (
     <Formik initialValues={{}} onSubmit={() => {}}>
-      <TextField name="name" textarea />
+      <TextField name="name" textarea onChange={props.onChange} />
     </Formik>
   );
 };

@@ -5,6 +5,7 @@ import { plural } from "pluralize";
 import { Entity, Role, AppInfo, Module } from "../types";
 import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
+import { updatePackageJSONs } from "../update-package-jsons";
 import { DTOs } from "../server/resource/create-dtos";
 import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
@@ -25,6 +26,7 @@ import { createEnumRolesModule } from "./create-enum-roles";
 import { createRolesModule } from "./create-roles-module";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
+const API_PATHNAME = "/api";
 
 export async function createAdminModules(
   entities: Entity[],
@@ -36,20 +38,25 @@ export async function createAdminModules(
 ): Promise<Module[]> {
   logger.info("Creating admin...");
   logger.info("Copying static modules...");
-  const staticModules = await readStaticModules(
+  const rawStaticModules = await readStaticModules(
     STATIC_MODULES_PATH,
     BASE_DIRECTORY
   );
-  /** @todo use everywhere route is needed */
+  const staticModules = updatePackageJSONs(rawStaticModules, BASE_DIRECTORY, {
+    name: `${paramCase(appInfo.name)}-admin`,
+    version: appInfo.version,
+  });
   const entityToPath = Object.fromEntries(
     entities.map((entity) => [
       entity.name,
       `/${paramCase(plural(entity.name))}`,
     ])
   );
-  /** @todo use in all components */
   const entityToResource = Object.fromEntries(
-    entities.map((entity) => [entity.name, paramCase(plural(entity.name))])
+    entities.map((entity) => [
+      entity.name,
+      `${API_PATHNAME}/${paramCase(plural(entity.name))}`,
+    ])
   );
   const publicFilesModules = await createPublicFiles(appInfo);
   const navigationModule = await createNavigationModule(entities, entityToPath);
