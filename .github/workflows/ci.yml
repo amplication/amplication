@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: CI
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
       - name: Fetch master
@@ -44,5 +44,30 @@ jobs:
       - run: npm run lint -- --since $SINCE
       - run: npm run check-graphql-schema -- --since $SINCE
       - run: npm test -- --since $SINCE --ignore @amplication/e2e-tester
-
-    timeout-minutes: 30
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-buildx-action@v1
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - uses: docker/build-push-action@v2
+        with:
+          pull: true
+          push: true
+          cache-from: type=registry,ref=amplication/amplication:latest
+          cache-to: type=inline
+          tags: amplication/amplication:latest
+      - uses: docker/build-push-action@v2
+        with:
+          context: ./packages/amplication-scheduler
+          file: ./packages/amplication-scheduler/Dockerfile
+          pull: true
+          push: true
+          cache-from: type=registry,ref=amplication/scheduler:latest
+          cache-to: type=inline
+          tags: amplication/scheduler:latest
