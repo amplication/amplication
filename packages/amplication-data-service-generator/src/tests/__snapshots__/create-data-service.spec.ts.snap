@@ -40820,10 +40820,7 @@ export const Customer = (): React.ReactElement => {
     return response.data;
   });
 
-  const [
-    deleteEntity,
-    { error: deleteError, isError: deleteIsError },
-  ] = useMutation<TCustomer, AxiosError>(
+  const [deleteEntity] = useMutation<TCustomer, AxiosError>(
     async (data) => {
       const response = await api.delete(\`\${\\"/api/customers\\"}/\${id}\`, data);
       return response.data;
@@ -41368,10 +41365,7 @@ export const Empty = (): React.ReactElement => {
     return response.data;
   });
 
-  const [
-    deleteEntity,
-    { error: deleteError, isError: deleteIsError },
-  ] = useMutation<TEmpty, AxiosError>(
+  const [deleteEntity] = useMutation<TEmpty, AxiosError>(
     async (data) => {
       const response = await api.delete(\`\${\\"/api/empties\\"}/\${id}\`, data);
       return response.data;
@@ -41838,10 +41832,7 @@ export const Order = (): React.ReactElement => {
     return response.data;
   });
 
-  const [
-    deleteEntity,
-    { error: deleteError, isError: deleteIsError },
-  ] = useMutation<TOrder, AxiosError>(
+  const [deleteEntity] = useMutation<TOrder, AxiosError>(
     async (data) => {
       const response = await api.delete(\`\${\\"/api/orders\\"}/\${id}\`, data);
       return response.data;
@@ -42249,10 +42240,7 @@ export const Organization = (): React.ReactElement => {
     return response.data;
   });
 
-  const [
-    deleteEntity,
-    { error: deleteError, isError: deleteIsError },
-  ] = useMutation<TOrganization, AxiosError>(
+  const [deleteEntity] = useMutation<TOrganization, AxiosError>(
     async (data) => {
       const response = await api.delete(\`\${\\"/api/organizations\\"}/\${id}\`, data);
       return response.data;
@@ -42765,10 +42753,7 @@ export const User = (): React.ReactElement => {
     return response.data;
   });
 
-  const [
-    deleteEntity,
-    { error: deleteError, isError: deleteIsError },
-  ] = useMutation<TUser, AxiosError>(
+  const [deleteEntity] = useMutation<TUser, AxiosError>(
     async (data) => {
       const response = await api.delete(\`\${\\"/api/users\\"}/\${id}\`, data);
       return response.data;
