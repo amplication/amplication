@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
 import { useMutation } from "react-query";
 import { Formik, Form } from "formik";
@@ -55,7 +56,7 @@ const Login = ({ onLogin }: Props) => {
         {error && error.response?.data?.message}
 
         <div className="docs">
-          <a href="/api">View API Docs</a>
+          <Link to="/apis-page">View API Docs</Link>
         </div>
       </Panel>
     </div>
