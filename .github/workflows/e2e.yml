@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
 
     steps:
       - uses: actions/checkout@v2
@@ -51,5 +52,3 @@ jobs:
           }
           trap before_exit EXIT;
           npm test -- --scope @amplication/e2e-tester;
-
-    timeout-minutes: 20
