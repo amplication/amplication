@@ -5,19 +5,21 @@ FROM node as base
 RUN npm i -g npm@7.3.0
 
 FROM base as package-sources
+ARG NPM_LOG_LEVEL=silent
 RUN mkdir /app
 COPY lerna.json /app/
 COPY package*.json /app/
 COPY packages packages
 RUN cp --parents packages/*/package*.json /app/
 WORKDIR /app
-RUN npm ci --silent --production
+RUN npm ci --loglevel=${NPM_LOG_LEVEL} --production
 
 FROM package-sources AS build
+ARG NPM_LOG_LEVEL=silent
 
 ENV OPENCOLLECTIVE_HIDE=1
 
-RUN npm run bootstrap -- --loglevel=silent --scope @amplication/server --scope @amplication/client --include-dependencies
+RUN npm run bootstrap -- --loglevel=${NPM_LOG_LEVEL} --scope @amplication/server --scope @amplication/client --include-dependencies
 
 COPY packages packages
 

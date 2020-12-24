@@ -40,8 +40,8 @@ describe("createFindManyArgs", () => {
       print(await createFindManyArgs(EXAMPLE_ENTITY, EXAMPLE_WHERE_INPUT)).code
     ).toEqual(`@ArgsType()
 class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
-  @Field(() => ${EXAMPLE_WHERE_INPUT.id.name}, { nullable: false })
-  where!: ${EXAMPLE_WHERE_INPUT.id.name};
+  @Field(() => ${EXAMPLE_WHERE_INPUT.id.name}, { nullable: true })
+  where?: ${EXAMPLE_WHERE_INPUT.id.name} | null;
 }`);
   });
 });

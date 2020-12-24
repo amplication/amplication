@@ -12,6 +12,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NPM_LOG_LEVEL: notice
     ports:
       - "3000:3000"
     environment:
@@ -31,8 +33,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NPM_LOG_LEVEL: notice
     environment:
       POSTGRESQL_URL: postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432
     command: npm run migrate:up
+  scheduler:
+    image: amplication/scheduler
+    command: --request.url http://app:3000/system/update-statuses --request.method POST --schedule '* * * * *'
+    network_mode: host
 volumes:
   postgres: ~
