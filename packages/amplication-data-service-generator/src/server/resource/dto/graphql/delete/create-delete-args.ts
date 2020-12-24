@@ -15,7 +15,7 @@ export async function createDeleteArgs(
   whereUniqueInput: NamedClassDeclaration
 ): Promise<NamedClassDeclaration> {
   const file = await readFile(templatePath);
-  const id = createId(entity.name);
+  const id = createDeleteArgsId(entity.name);
 
   interpolate(file, {
     ID: id,
@@ -27,6 +27,6 @@ export async function createDeleteArgs(
   return getClassDeclarationById(file, id) as NamedClassDeclaration;
 }
 
-export function createId(entityType: string): namedTypes.Identifier {
+export function createDeleteArgsId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`Delete${entityType}Args`);
 }

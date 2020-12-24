@@ -20,6 +20,10 @@ resource "google_cloud_run_service" "default" {
           value = "production"
         }
         env {
+          name  = "GRAPHQL_PLAYGROUND"
+          value = "true"
+        }
+        env {
           name  = "POSTGRESQL_URL"
           value = "postgresql://${var.database_user}:${var.database_password}@127.0.0.1/${var.database_name}?host=/cloudsql/${var.project}:${var.region}:${var.database_instance}"
         }
