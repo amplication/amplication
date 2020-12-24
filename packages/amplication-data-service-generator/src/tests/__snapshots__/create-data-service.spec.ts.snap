@@ -19,7 +19,7 @@ POSTGRESQL_PASSWORD=admin
 POSTGRESQL_PORT=5432
 SERVER_PORT=3000
 BCRYPT_SALT=10",
-  "Dockerfile": "# By default, use node 14.15.1 as the base image
+  "Dockerfile": "# By default, use node 14.15.3 as the base image
 ARG IMAGE=node@sha256:bef791f512bb4c3051a1210d7fbd58206538f41eea9b966031abc8a7453308fe
 
 FROM $IMAGE
@@ -40266,7 +40266,7 @@ export type DeleteCustomerArgs = {
   "admin/src/api/customer/FindManyCustomerArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 
 export type FindManyCustomerArgs = {
-  where?: CustomerWhereInput | null;
+  where?: CustomerWhereInput;
 };
 ",
   "admin/src/api/customer/FindOneCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -40312,7 +40312,7 @@ export type DeleteEmptyArgs = {
   "admin/src/api/empty/FindManyEmptyArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 
 export type FindManyEmptyArgs = {
-  where?: EmptyWhereInput | null;
+  where?: EmptyWhereInput;
 };
 ",
   "admin/src/api/empty/FindOneEmptyArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
@@ -40355,7 +40355,7 @@ export type DeleteOrderArgs = {
   "admin/src/api/order/FindManyOrderArgs.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
 
 export type FindManyOrderArgs = {
-  where?: OrderWhereInput | null;
+  where?: OrderWhereInput;
 };
 ",
   "admin/src/api/order/FindOneOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
@@ -40429,7 +40429,7 @@ export type DeleteOrganizationArgs = {
   "admin/src/api/organization/FindManyOrganizationArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 
 export type FindManyOrganizationArgs = {
-  where?: OrganizationWhereInput | null;
+  where?: OrganizationWhereInput;
 };
 ",
   "admin/src/api/organization/FindOneOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
@@ -40498,7 +40498,7 @@ export type DeleteUserArgs = {
   "admin/src/api/user/FindManyUserArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
 
 export type FindManyUserArgs = {
-  where?: UserWhereInput | null;
+  where?: UserWhereInput;
 };
 ",
   "admin/src/api/user/FindOneUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -43391,7 +43391,8 @@ BCRYPT_SALT=10",
   "server/.pretttierignore": "node_modules/
 dist/
 prisma/migrations/
-package-lock.json",
+package-lock.json
+coverage/",
   "server/README.md": "# Getting started with your app
 
 ## Available Scripts
@@ -68142,6 +68143,9 @@ class CustomerCreateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerCreateInput };
@@ -68286,6 +68290,9 @@ class CustomerUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerUpdateInput };
@@ -68509,7 +68516,7 @@ import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 @ArgsType()
 class FindManyCustomerArgs {
   @Field(() => CustomerWhereInput, { nullable: true })
-  where?: CustomerWhereInput | null;
+  where?: CustomerWhereInput;
 }
 
 export { FindManyCustomerArgs };
@@ -69350,7 +69357,18 @@ export class CustomerResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create(args);
+    return await this.service.create({
+      ...args,
+      data: {
+        ...args.data,
+
+        organization: args.data.organization
+          ? {
+              connect: args.data.organization,
+            }
+          : undefined,
+      },
+    });
   }
 
   @graphql.Mutation(() => Customer)
@@ -69386,7 +69404,18 @@ export class CustomerResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update(args);
+      return await this.service.update({
+        ...args,
+        data: {
+          ...args.data,
+
+          organization: args.data.organization
+            ? {
+                connect: args.data.organization,
+              }
+            : undefined,
+        },
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new apollo.ApolloError(
@@ -69612,7 +69641,7 @@ import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 @ArgsType()
 class FindManyEmptyArgs {
   @Field(() => EmptyWhereInput, { nullable: true })
-  where?: EmptyWhereInput | null;
+  where?: EmptyWhereInput;
 }
 
 export { FindManyEmptyArgs };
@@ -70704,7 +70733,7 @@ import { OrderWhereInput } from \\"./OrderWhereInput\\";
 @ArgsType()
 class FindManyOrderArgs {
   @Field(() => OrderWhereInput, { nullable: true })
-  where?: OrderWhereInput | null;
+  where?: OrderWhereInput;
 }
 
 export { FindManyOrderArgs };
@@ -70798,6 +70827,7 @@ class OrderCreateInput {
   })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
+  @Field(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
   @ApiProperty({
     required: true,
@@ -70835,6 +70865,9 @@ class OrderUpdateInput {
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
+  @Field(() => CustomerWhereUniqueInput, {
+    nullable: true,
+  })
   customer?: CustomerWhereUniqueInput;
   @ApiProperty({
     required: false,
@@ -71524,7 +71557,16 @@ export class OrderResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create(args);
+    return await this.service.create({
+      ...args,
+      data: {
+        ...args.data,
+
+        customer: {
+          connect: args.data.customer,
+        },
+      },
+    });
   }
 
   @graphql.Mutation(() => Order)
@@ -71560,7 +71602,16 @@ export class OrderResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update(args);
+      return await this.service.update({
+        ...args,
+        data: {
+          ...args.data,
+
+          customer: {
+            connect: args.data.customer,
+          },
+        },
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new apollo.ApolloError(
@@ -71681,7 +71732,7 @@ import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 @ArgsType()
 class FindManyOrganizationArgs {
   @Field(() => OrganizationWhereInput, { nullable: true })
-  where?: OrganizationWhereInput | null;
+  where?: OrganizationWhereInput;
 }
 
 export { FindManyOrganizationArgs };
@@ -72531,7 +72582,10 @@ export class OrganizationResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create(args);
+    return await this.service.create({
+      ...args,
+      data: args.data,
+    });
   }
 
   @graphql.Mutation(() => Organization)
@@ -72567,7 +72621,10 @@ export class OrganizationResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update(args);
+      return await this.service.update({
+        ...args,
+        data: args.data,
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new apollo.ApolloError(
@@ -73186,7 +73243,7 @@ import { UserWhereInput } from \\"./UserWhereInput\\";
 @ArgsType()
 class FindManyUserArgs {
   @Field(() => UserWhereInput, { nullable: true })
-  where?: UserWhereInput | null;
+  where?: UserWhereInput;
 }
 
 export { FindManyUserArgs };
@@ -73438,6 +73495,9 @@ class UserCreateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: true,
@@ -73595,6 +73655,9 @@ class UserUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
@@ -74434,7 +74497,18 @@ export class UserResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create(args);
+    return await this.service.create({
+      ...args,
+      data: {
+        ...args.data,
+
+        organization: args.data.organization
+          ? {
+              connect: args.data.organization,
+            }
+          : undefined,
+      },
+    });
   }
 
   @graphql.Mutation(() => User)
@@ -74470,7 +74544,18 @@ export class UserResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update(args);
+      return await this.service.update({
+        ...args,
+        data: {
+          ...args.data,
+
+          organization: args.data.organization
+            ? {
+                connect: args.data.organization,
+              }
+            : undefined,
+        },
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new apollo.ApolloError(
