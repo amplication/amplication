@@ -1,4 +1,4 @@
-import { ElementHandle, Response } from "puppeteer";
+import { ElementHandle } from "puppeteer";
 
 export function createRandomName(): string {
   const randomString = Math.random().toString(32);
@@ -7,7 +7,7 @@ export function createRandomName(): string {
 export async function signUp(
   signUpBtn: string,
   continueBtn: string
-): Promise<Response> {
+): Promise<void> {
   await (
     await page.waitForXPath(`//a[contains(text(),'${signUpBtn}')]`)
   ).click();
@@ -34,7 +34,8 @@ export async function signUp(
   await (
     await page.waitForXPath(`//button[contains(text(),'${continueBtn}')]`)
   ).click();
-  return page.waitForNavigation();
+  await page.waitForNavigation();
+  return page.waitFor(500);
 }
 export async function createNewEntityField(
   fieldType: string,
@@ -50,6 +51,7 @@ export async function createNewEntityField(
   await (
     await page.waitForXPath(`//button[contains(text(),'${addFieldBtn}')]`)
   ).click();
+  await page.waitFor(500);
   await (
     await page.waitForXPath(`//button[contains(.,'${addDescriptionBtn}')]`)
   ).click();
