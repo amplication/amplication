@@ -41,6 +41,5 @@ services:
   scheduler:
     image: amplication/scheduler
     command: --request.url http://app:3000/system/update-statuses --request.method POST --schedule '* * * * *'
-    network_mode: host
 volumes:
   postgres: ~
