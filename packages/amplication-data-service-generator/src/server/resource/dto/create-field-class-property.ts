@@ -28,7 +28,6 @@ import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { FIELD_ID } from "./nestjs-graphql.util";
-import { getEntityIdToName } from "util/entity";
 
 const DATE_ID = builders.identifier("Date");
 
