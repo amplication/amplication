@@ -42,8 +42,8 @@ COPY server/package.json server/package-lock.json ./server/
 COPY admin/package.json admin/package-lock.json ./admin/
 
 # Install dependencies
-RUN cd server; npm install --silent;
-RUN cd admin; npm install --silent;
+RUN cd server; npm ci --silent;
+RUN cd admin; npm ci --silent;
 
 # Copy Prisma schema
 COPY server/prisma/schema.prisma ./server/prisma/
