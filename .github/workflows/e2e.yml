@@ -4,10 +4,7 @@ name: E2E CI
 
 on:
   push:
-    branches: [master]
-    paths:
-      - ".github/workflows/e2e.yml"
-      - "packages/amplication-data-service-generator/**"
+    branches: [master, "e2e/**"]
 
 jobs:
   build:
@@ -44,13 +41,15 @@ jobs:
         working-directory: packages/amplication-data-service-generator/generated/server
       - name: "Data Service Generator: E2E test"
         run: npm run test:e2e -- --scope @amplication/data-service-generator
-      # - run: docker-compose up -d
-      # - run: |
-      #     set -e;
-      #     function before_exit {
-      #       docker-compose logs;
-      #     }
-      #     trap before_exit EXIT;
-      #     npm test -- --scope @amplication/e2e-tester;
+      - name: "Run a full environment"
+        run: docker-compose up -d
+      - name: "Run e2e tests"
+        run: |
+          set -e;
+          function before_exit {
+            docker-compose logs;
+          }
+          trap before_exit EXIT;
+          npm test -- --scope @amplication/e2e-tester;
 
     timeout-minutes: 20
