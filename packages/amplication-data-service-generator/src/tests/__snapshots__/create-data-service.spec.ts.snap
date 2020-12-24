@@ -69227,7 +69227,18 @@ export class CustomerResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create(args);
+    return await this.service.create({
+      ...args,
+      data: {
+        ...args.data,
+
+        organization: args.data.organization
+          ? {
+              connect: args.data.organization,
+            }
+          : undefined,
+      },
+    });
   }
 
   @graphql.Mutation(() => Customer)
@@ -69263,7 +69274,18 @@ export class CustomerResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update(args);
+      return await this.service.update({
+        ...args,
+        data: {
+          ...args.data,
+
+          organization: args.data.organization
+            ? {
+                connect: args.data.organization,
+              }
+            : undefined,
+        },
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new apollo.ApolloError(
@@ -71405,7 +71427,16 @@ export class OrderResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create(args);
+    return await this.service.create({
+      ...args,
+      data: {
+        ...args.data,
+
+        customer: {
+          connect: args.data.customer,
+        },
+      },
+    });
   }
 
   @graphql.Mutation(() => Order)
@@ -71441,7 +71472,16 @@ export class OrderResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update(args);
+      return await this.service.update({
+        ...args,
+        data: {
+          ...args.data,
+
+          customer: {
+            connect: args.data.customer,
+          },
+        },
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new apollo.ApolloError(
@@ -72412,7 +72452,10 @@ export class OrganizationResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create(args);
+    return await this.service.create({
+      ...args,
+      data: args.data,
+    });
   }
 
   @graphql.Mutation(() => Organization)
@@ -72448,7 +72491,10 @@ export class OrganizationResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update(args);
+      return await this.service.update({
+        ...args,
+        data: args.data,
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new apollo.ApolloError(
@@ -74321,7 +74367,18 @@ export class UserResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create(args);
+    return await this.service.create({
+      ...args,
+      data: {
+        ...args.data,
+
+        organization: args.data.organization
+          ? {
+              connect: args.data.organization,
+            }
+          : undefined,
+      },
+    });
   }
 
   @graphql.Mutation(() => User)
@@ -74357,7 +74414,18 @@ export class UserResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update(args);
+      return await this.service.update({
+        ...args,
+        data: {
+          ...args.data,
+
+          organization: args.data.organization
+            ? {
+                connect: args.data.organization,
+              }
+            : undefined,
+        },
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new apollo.ApolloError(
