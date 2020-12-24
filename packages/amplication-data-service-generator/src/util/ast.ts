@@ -597,6 +597,10 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
   );
 }
 
+/**
+ * Returns the constructor of the given classDeclaration
+ * @param classDeclaration
+ */
 export function findConstructor(
   classDeclaration: namedTypes.ClassDeclaration
 ): namedTypes.ClassMethod | undefined {
