@@ -14,6 +14,7 @@ services:
       dockerfile: Dockerfile
       args:
         NPM_LOG_LEVEL: notice
+    image: amplication/amplication
     ports:
       - "3000:3000"
     environment:
@@ -35,6 +36,7 @@ services:
       dockerfile: Dockerfile
       args:
         NPM_LOG_LEVEL: notice
+    image: amplication/amplication
     environment:
       POSTGRESQL_URL: postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432
     command: npm run migrate:up
