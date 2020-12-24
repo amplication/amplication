@@ -7,7 +7,7 @@ export function createRandomName(): string {
 export async function signUp(
   signUpBtn: string,
   continueBtn: string
-): Promise<Response> {
+): Promise<void> {
   await (
     await page.waitForXPath(`//a[contains(text(),'${signUpBtn}')]`)
   ).click();
@@ -34,7 +34,8 @@ export async function signUp(
   await (
     await page.waitForXPath(`//button[contains(text(),'${continueBtn}')]`)
   ).click();
-  return page.waitForNavigation();
+  await page.waitForNavigation();
+  return page.waitFor(3000);
 }
 export async function createNewEntityField(
   fieldType: string,
