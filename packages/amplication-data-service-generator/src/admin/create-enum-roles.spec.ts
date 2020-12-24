@@ -19,7 +19,7 @@ const OTHER_EXAMPLE_ROLE = {
   description: "Other Example Role Description",
 };
 const EXAMPLE_ROLES: Role[] = [EXAMPLE_ROLE, OTHER_EXAMPLE_ROLE];
-const EXPECTED_CODE = `enum ${ENUM_ROLES_ID.name} {
+const EXPECTED_DECLARATION_CODE = `enum ${ENUM_ROLES_ID.name} {
     ${pascalCase(EXAMPLE_ROLE.displayName)} = "${EXAMPLE_ROLE.name}",
     ${pascalCase(OTHER_EXAMPLE_ROLE.displayName)} = "${OTHER_EXAMPLE_ROLE.name}"
 }`;
@@ -27,14 +27,14 @@ const EXPECTED_CODE = `enum ${ENUM_ROLES_ID.name} {
 describe("createEnumRolesModule", () => {
   expect(createEnumRolesModule(EXAMPLE_ROLES)).toEqual({
     path: MODULE_PATH,
-    code: EXPECTED_CODE,
+    code: `export ${EXPECTED_DECLARATION_CODE}`,
   });
 });
 
 describe("createRolesEnumDeclaration", () => {
   test("creates roles enum declaration", () => {
     expect(print(createRolesEnumDeclaration(EXAMPLE_ROLES)).code).toEqual(
-      EXPECTED_CODE
+      EXPECTED_DECLARATION_CODE
     );
   });
 });
