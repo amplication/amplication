@@ -39793,13 +39793,134 @@ vï¿½ï¿½Rt(hï¿½ï¿½ï¿½v'9ï¿½BXï¿½,~ï¿½ï¿½tï¿½ï¿½Øƒ/%Yï¿½bXï¿½ï¿½ï¿½oï
 User-agent: *
 Disallow:
 ",
+  "admin/src/ApisPage.scss": ".api-page {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  &__header {
+    font-size: 32px;
+    margin-bottom: var(--triple-spacing);
+  }
+
+  &__body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: row;
+    .amp-panel {
+      flex: 1;
+      padding: var(--triple-spacing);
+
+      &__header {
+        justify-content: center;
+        margin-bottom: var(--double-spacing);
+      }
+
+      .message {
+        color: var(--black60);
+        max-width: 300px;
+        margin-bottom: var(--double-spacing);
+        margin-top: var(--double-spacing);
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      .code-sample {
+        width: 100%;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        resize: none;
+        font-family: monospace;
+        background-color: var(--black100);
+        color: var(--white);
+        padding: var(--double-spacing);
+        box-sizing: border-box;
+        overflow: auto;
+      }
+    }
+  }
+}
+",
+  "admin/src/ApisPage.tsx": "import React from \\"react\\";
+import { Panel, PanelHeader, EnumPanelStyle } from \\"@amplication/design-system\\";
+import \\"./ApisPage.scss\\";
+
+const ApisPage = () => {
+  return (
+    <div className=\\"api-page\\">
+      <div className=\\"api-page__header\\">
+        Congratulations. Your application is available with REST API and GraphQL
+        API.
+      </div>
+      <div className=\\"api-page__body\\">
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <PanelHeader>REST API</PanelHeader>
+          <div className=\\"message\\">
+            <p>
+              Use the following link to open the swagger documentation of the
+              REST API.
+            </p>
+            <p>
+              <a href=\\"/api\\">REST API Docs (swagger)</a>
+            </p>
+            <h3>Authentication</h3>
+            <p>
+              Click the \\"Authorize\\" button in the swagger docs page to
+              authenticate.
+            </p>
+          </div>
+        </Panel>
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <PanelHeader>GraphQL API</PanelHeader>
+          <div className=\\"message\\">
+            <p>Use the following link to open the GraphQL Playground.</p>
+            <p>
+              <a href=\\"/graphql\\">GraphQL Playground</a>
+            </p>
+            <h3>Authentication</h3>
+            <p>
+              For authentication you need to add the Basic authentication
+              header.
+            </p>
+            <p>
+              The following example adds the Basic authentication header for the
+              default user with username \\"admin\\" and password \\"admin\\".
+            </p>
+            <p>
+              Copy the header with the curley braces and paste it to the \\"HTTP
+              HEADERS\\" panel in the graphQL Playground.
+            </p>
+
+            <pre className=\\"code-sample\\">
+              {\`{
+  \\"Authorization\\": \\"Basic YWRtaW46YWRtaW4=\\"
+}\`}
+            </pre>
+          </div>
+        </Panel>
+      </div>
+    </div>
+  );
+};
+
+export default ApisPage;
+",
   "admin/src/App.tsx": "import React, { useCallback, useContext } from \\"react\\";
 import { Route, Switch, useHistory, Link, NavLink } from \\"react-router-dom\\";
 import Navigation from \\"./Navigation\\";
 import Login from \\"./Login\\";
+import ApisPage from \\"./ApisPage\\";
 import { Credentials, setCredentials, removeCredentials } from \\"./auth\\";
 import {
   Menu,
+  MenuItem,
   MainLayout,
   Page,
   CircleBadge,
@@ -39830,6 +39951,7 @@ const App = (): React.ReactElement => {
       <MainLayout>
         <Switch>
           <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
+          <Route path=\\"/apis-page\\" component={ApisPage} />
           <PrivateRoute path=\\"/\\" component={AppLayout} />
         </Switch>
       </MainLayout>
@@ -39864,6 +39986,11 @@ const AppLayout = (): React.ReactElement => {
             <CircleBadge name={\\"Sample Application\\"} />
           </Link>
         }
+        bottomContent={
+          <Link to=\\"/pages/api\\">
+            <MenuItem icon=\\"code\\" title=\\"APIs\\"></MenuItem>
+          </Link>
+        }
       ></Menu>
       <MainLayout.Content>
         <Breadcrumbs>
@@ -39882,6 +40009,7 @@ const AppLayout = (): React.ReactElement => {
         <Page>
           <Switch>
             <PrivateRoute exact path=\\"/\\" component={Navigation} />
+            <Route path=\\"/pages/api\\" component={ApisPage} />
             <PrivateRoute path=\\"/users\\" component={UserIndex} />
             <PrivateRoute path=\\"/orders\\" component={OrderIndex} />
             <PrivateRoute path=\\"/organizations\\" component={OrganizationIndex} />
@@ -39895,6 +40023,7 @@ const AppLayout = (): React.ReactElement => {
 };
 ",
   "admin/src/Login.tsx": "import React, { useCallback } from \\"react\\";
+import { Link } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useMutation } from \\"react-query\\";
 import { Formik, Form } from \\"formik\\";
@@ -39951,7 +40080,7 @@ const Login = ({ onLogin }: Props) => {
         {error && error.response?.data?.message}
 
         <div className=\\"docs\\">
-          <a href=\\"/api\\">View API Docs</a>
+          <Link to=\\"/apis-page\\">View API Docs</Link>
         </div>
       </Panel>
     </div>
@@ -72775,7 +72904,7 @@ body {
   display: block;
   width: 206px;
   height: 35px;
-  background-image: url(\\"swagger/logo-amplication-white.svg\\");
+  background-image: url(\\"logo-amplication-white.svg\\");
   background-repeat: no-repeat;
   background-size: contain;
 }
