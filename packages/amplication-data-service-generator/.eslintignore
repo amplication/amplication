@@ -5,4 +5,5 @@ dist/
 src/models.ts
 scripts/
 test/
+coverage/
 .eslintrc.js
