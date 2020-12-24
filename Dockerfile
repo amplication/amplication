@@ -1,5 +1,6 @@
-# node:12
-FROM node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090 AS node
+# Use node 14.15.1 as the base image
+FROM node@sha256:bef791f512bb4c3051a1210d7fbd58206538f41eea9b966031abc8a7453308fe AS node
+FROM node
 
 FROM node as base
 RUN npm i -g npm@7.3.0
