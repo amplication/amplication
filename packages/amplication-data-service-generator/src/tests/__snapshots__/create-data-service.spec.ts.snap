@@ -40137,7 +40137,7 @@ export type DeleteCustomerArgs = {
   "admin/src/api/customer/FindManyCustomerArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 
 export type FindManyCustomerArgs = {
-  where: CustomerWhereInput;
+  where?: CustomerWhereInput | null;
 };
 ",
   "admin/src/api/customer/FindOneCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -40183,7 +40183,7 @@ export type DeleteEmptyArgs = {
   "admin/src/api/empty/FindManyEmptyArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 
 export type FindManyEmptyArgs = {
-  where: EmptyWhereInput;
+  where?: EmptyWhereInput | null;
 };
 ",
   "admin/src/api/empty/FindOneEmptyArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
@@ -40226,7 +40226,7 @@ export type DeleteOrderArgs = {
   "admin/src/api/order/FindManyOrderArgs.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
 
 export type FindManyOrderArgs = {
-  where: OrderWhereInput;
+  where?: OrderWhereInput | null;
 };
 ",
   "admin/src/api/order/FindOneOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
@@ -40300,7 +40300,7 @@ export type DeleteOrganizationArgs = {
   "admin/src/api/organization/FindManyOrganizationArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 
 export type FindManyOrganizationArgs = {
-  where: OrganizationWhereInput;
+  where?: OrganizationWhereInput | null;
 };
 ",
   "admin/src/api/organization/FindOneOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
@@ -40369,7 +40369,7 @@ export type DeleteUserArgs = {
   "admin/src/api/user/FindManyUserArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
 
 export type FindManyUserArgs = {
-  where: UserWhereInput;
+  where?: UserWhereInput | null;
 };
 ",
   "admin/src/api/user/FindOneUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -68379,8 +68379,8 @@ import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 
 @ArgsType()
 class FindManyCustomerArgs {
-  @Field(() => CustomerWhereInput, { nullable: false })
-  where!: CustomerWhereInput;
+  @Field(() => CustomerWhereInput, { nullable: true })
+  where?: CustomerWhereInput | null;
 }
 
 export { FindManyCustomerArgs };
@@ -69482,8 +69482,8 @@ import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 
 @ArgsType()
 class FindManyEmptyArgs {
-  @Field(() => EmptyWhereInput, { nullable: false })
-  where!: EmptyWhereInput;
+  @Field(() => EmptyWhereInput, { nullable: true })
+  where?: EmptyWhereInput | null;
 }
 
 export { FindManyEmptyArgs };
@@ -70574,8 +70574,8 @@ import { OrderWhereInput } from \\"./OrderWhereInput\\";
 
 @ArgsType()
 class FindManyOrderArgs {
-  @Field(() => OrderWhereInput, { nullable: false })
-  where!: OrderWhereInput;
+  @Field(() => OrderWhereInput, { nullable: true })
+  where?: OrderWhereInput | null;
 }
 
 export { FindManyOrderArgs };
@@ -71551,8 +71551,8 @@ import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 
 @ArgsType()
 class FindManyOrganizationArgs {
-  @Field(() => OrganizationWhereInput, { nullable: false })
-  where!: OrganizationWhereInput;
+  @Field(() => OrganizationWhereInput, { nullable: true })
+  where?: OrganizationWhereInput | null;
 }
 
 export { FindManyOrganizationArgs };
@@ -73056,8 +73056,8 @@ import { UserWhereInput } from \\"./UserWhereInput\\";
 
 @ArgsType()
 class FindManyUserArgs {
-  @Field(() => UserWhereInput, { nullable: false })
-  where!: UserWhereInput;
+  @Field(() => UserWhereInput, { nullable: true })
+  where?: UserWhereInput | null;
 }
 
 export { FindManyUserArgs };
