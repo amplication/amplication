@@ -62,10 +62,15 @@ export async function createAppModule(
       useClass: ${SERVE_STATIC_OPTIONS_SERVICE_ID}
     })`,
     callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
-      useFactory: (configService) => ({
-        autoSchemaFile: true,
-        playground: configService.get("GRAPHQL_PLAYGROUND")
-      }),
+      useFactory: (configService) => {
+        const playground = configService.get("GRAPHQL_PLAYGROUND");
+        const introspection = configService.get("GRAPHQL_INTROSPECTION");
+        return {
+          autoSchemaFile: true,
+          playground,
+          introspection: playground || introspection
+        }
+      },
       inject: [${CONFIG_SERVICE_ID}],
       imports: [${CONFIG_MODULE_ID}],
     })`,
