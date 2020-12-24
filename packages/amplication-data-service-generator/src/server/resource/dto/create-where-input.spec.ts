@@ -1,8 +1,6 @@
 import { builders } from "ast-types";
 import { print } from "recast";
-import { NamedClassDeclaration } from "../../../util/ast";
 import { EntityField, Entity, EnumDataType } from "../../../types";
-import { createFieldClassProperty } from "./create-field-class-property";
 import { createWhereInput, createWhereInputID } from "./create-where-input";
 import { createInput } from "./create-input";
 
@@ -37,18 +35,11 @@ describe("createWhereInput", () => {
     ).toEqual(
       print(
         createInput(
-          builders.classDeclaration(
-            createWhereInputID(EXAMPLE_ENTITY_NAME),
-            builders.classBody([
-              createFieldClassProperty(
-                EXAMPLE_ENTITY_FIELD,
-                true,
-                true,
-                true,
-                EXAMPLE_ENTITY_ID_TO_NAME
-              ),
-            ])
-          ) as NamedClassDeclaration
+          createWhereInputID(EXAMPLE_ENTITY_NAME),
+          [EXAMPLE_ENTITY_FIELD],
+          true,
+          true,
+          EXAMPLE_ENTITY_ID_TO_NAME
         )
       ).code
     );

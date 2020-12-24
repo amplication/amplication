@@ -1,7 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { Entity, EntityField } from "../../../types";
-import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
-import { createFieldClassProperty } from "./create-field-class-property";
+import { NamedClassDeclaration } from "../../../util/ast";
 import {
   isRelationField,
   isOneToOneRelationField,
@@ -14,17 +13,13 @@ export function createWhereInput(
   entity: Entity,
   entityIdToName: Record<string, string>
 ): NamedClassDeclaration {
-  const properties = entity.fields
-    .filter((field) => isQueryableField(field))
-    /** @todo support filters */
-    .map((field) =>
-      createFieldClassProperty(field, true, true, true, entityIdToName)
-    );
+  const fields = entity.fields.filter((field) => isQueryableField(field));
   return createInput(
-    classDeclaration(
-      createWhereInputID(entity.name),
-      builders.classBody(properties)
-    ) as NamedClassDeclaration
+    createWhereInputID(entity.name),
+    fields,
+    true,
+    true,
+    entityIdToName
   );
 }
 
