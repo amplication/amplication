@@ -43262,7 +43262,8 @@ BCRYPT_SALT=10",
   "server/.pretttierignore": "node_modules/
 dist/
 prisma/migrations/
-package-lock.json",
+package-lock.json
+coverage/",
   "server/README.md": "# Getting started with your app
 
 ## Available Scripts
