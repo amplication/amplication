@@ -68013,6 +68013,9 @@ class CustomerCreateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerCreateInput };
@@ -68157,6 +68160,9 @@ class CustomerUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerUpdateInput };
@@ -70669,6 +70675,7 @@ class OrderCreateInput {
   })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
+  @Field(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
   @ApiProperty({
     required: true,
@@ -70706,6 +70713,9 @@ class OrderUpdateInput {
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
+  @Field(() => CustomerWhereUniqueInput, {
+    nullable: true,
+  })
   customer?: CustomerWhereUniqueInput;
   @ApiProperty({
     required: false,
@@ -73309,6 +73319,9 @@ class UserCreateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: true,
@@ -73466,6 +73479,9 @@ class UserUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
