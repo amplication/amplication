@@ -130,13 +130,12 @@ jobs:
         with:
           terraform_version: 0.13.5
       - run: terraform init
-        with:
+        env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         working-directory: terraform/envs/dev
       - run: terraform plan
-        with:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           TF_VAR_image_id: amplication/amplication:${{ github.sha }}
           TF_VAR_generated_app_base_image_id: amplication/app-node:${{ github.sha }}
         working-directory: terraform/envs/dev
