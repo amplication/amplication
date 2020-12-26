@@ -48,7 +48,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 120
-    if: github.ref == 'refs/heads/master' || contains(github.ref, 'ci') || contains(github.ref, 'e2e')
+    if: ${{ github.ref == 'refs/heads/master' || contains(github.ref, 'ci') || contains(github.ref, 'e2e') }}
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
@@ -95,7 +95,7 @@ jobs:
     needs: e2e
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    if: github.ref == 'refs/heads/master' || contains(github.ref, 'ci')
+    if: ${{ github.ref == 'refs/heads/master' || contains(github.ref, 'ci') }}
     steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-buildx-action@v1
