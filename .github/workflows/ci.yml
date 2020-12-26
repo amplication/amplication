@@ -112,7 +112,7 @@ jobs:
           cache-to: type=inline
           tags: |
             amplication/amplication:latest
-            amplication/amplication:${github.sha}
+            amplication/amplication:${{ github.sha }}
       - name: "Build and push amplication/app-node Docker image"
         uses: docker/build-push-action@v2
         with:
@@ -124,7 +124,7 @@ jobs:
           cache-to: type=inline
           tags: |
             amplication/app-node:latest
-            amplication/app-node:${github.sha}
+            amplication/app-node:${{ github.sha }}
       - name: "Build and push amplication/scheduler Docker image"
         uses: docker/build-push-action@v2
         with:
@@ -136,4 +136,4 @@ jobs:
           cache-to: type=inline
           tags: |
             amplication/scheduler:latest
-            amplication/scheduler:${github.sha}
+            amplication/scheduler:${{ github.sha }}
