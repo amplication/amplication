@@ -3,6 +3,8 @@ ARG IMAGE=node@sha256:bef791f512bb4c3051a1210d7fbd58206538f41eea9b966031abc8a745
 
 FROM $IMAGE
 
+# Define how verbose should npm install be
+ARG NPM_LOG_LEVEL=silent
 # Hide Open Collective message from install logs
 ENV OPENCOLLECTIVE_HIDE=1
 # Hiden NPM security message from install logs
@@ -21,8 +23,8 @@ COPY server/package.json server/package-lock.json ./server/
 COPY admin/package.json admin/package-lock.json ./admin/
 
 # Install dependencies
-RUN cd server; npm ci --silent;
-RUN cd admin; npm ci --silent;
+RUN cd server; npm ci --loglevel=$NPM_LOG_LEVEL;
+RUN cd admin; npm ci --loglevel=$NPM_LOG_LEVEL;
 
 # Copy Prisma schema
 COPY server/prisma/schema.prisma ./server/prisma/
