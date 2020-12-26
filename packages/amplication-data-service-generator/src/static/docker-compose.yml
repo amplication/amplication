@@ -3,6 +3,8 @@ services:
   server:
     build:
       context: .
+      args:
+        NPM_LOG_LEVEL: notice
     ports:
       - "${SERVER_PORT}:3000"
     environment:
@@ -13,6 +15,8 @@ services:
   migrate:
     build:
       context: .
+      args:
+        NPM_LOG_LEVEL: notice
     command: npm run db:init
     working_dir: /app/server
     environment:
