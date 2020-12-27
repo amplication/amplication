@@ -242,7 +242,7 @@ describe("classDeclaration", () => {
       )
     );
   });
-  test.skip("creates class declaration with decorators", () => {
+  test("creates class declaration with decorators", () => {
     const declaration = classDeclaration(
       builders.identifier("A"),
       builders.classBody([]),
@@ -254,25 +254,25 @@ describe("classDeclaration", () => {
 class A {}`
     );
   });
+});
 
-  describe("parse", () => {
-    test("parses", () => {
-      const EXAMPLE_SOURCE = "exampleSource";
-      expect(parse(EXAMPLE_SOURCE)).toEqual(
-        recast.parse(EXAMPLE_SOURCE, { parser })
-      );
-    });
+describe("parse", () => {
+  test("parses", () => {
+    const EXAMPLE_SOURCE = "exampleSource";
+    expect(parse(EXAMPLE_SOURCE)).toEqual(
+      recast.parse(EXAMPLE_SOURCE, { parser })
+    );
+  });
 
-    test("tries to parse but catches an error", () => {
-      const EXAMPLE_ERROR = new SyntaxError("exampleError");
-      const EXAMPLE_SOURCE = "exampleSource";
-      // @ts-ignore
-      recast.parse.mockImplementation(() => {
-        throw EXAMPLE_ERROR;
-      });
-      expect(() => parse(EXAMPLE_SOURCE)).toThrow(
-        new ParseError(EXAMPLE_ERROR.message, EXAMPLE_SOURCE)
-      );
+  test("tries to parse but catches an error", () => {
+    const EXAMPLE_ERROR = new SyntaxError("exampleError");
+    const EXAMPLE_SOURCE = "exampleSource";
+    // @ts-ignore
+    recast.parse.mockImplementation(() => {
+      throw EXAMPLE_ERROR;
     });
+    expect(() => parse(EXAMPLE_SOURCE)).toThrow(
+      new ParseError(EXAMPLE_ERROR.message, EXAMPLE_SOURCE)
+    );
   });
 });
