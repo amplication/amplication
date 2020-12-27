@@ -1,16 +1,17 @@
 import { namedTypes, builders } from "ast-types";
+import { ExpressionKind } from "ast-types/gen/kinds";
 import { isRelationField } from "../../../util/field";
 import { Entity } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
 
-export const DATA_ID = builders.identifier("data");
 export const CONNECT_ID = builders.identifier("connect");
 export const UNDEFINED_ID = builders.identifier("undefined");
 
 export function createDataMapping(
   entity: Entity,
-  dto: NamedClassDeclaration
-): namedTypes.Identifier | namedTypes.ObjectExpression {
+  dto: NamedClassDeclaration,
+  data: ExpressionKind
+): ExpressionKind {
   const relationFields = entity.fields.filter((field) =>
     isRelationField(field)
   );
@@ -25,12 +26,12 @@ export function createDataMapping(
       relationFieldNames.has(member.key.name)
   );
   if (!objectProperties.length) {
-    return DATA_ID;
+    return data;
   }
   return builders.objectExpression([
-    builders.spreadElement(DATA_ID),
+    builders.spreadElement(data),
     ...objectProperties.map((property) => {
-      const member = builders.memberExpression(DATA_ID, property.key);
+      const member = builders.memberExpression(data, property.key);
       const connect = builders.objectExpression([
         builders.property("init", CONNECT_ID, member),
       ]);

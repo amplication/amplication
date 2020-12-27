@@ -17,6 +17,7 @@ import {
   NamedClassDeclaration,
   getMethods,
   deleteClassMemberByKey,
+  memberExpression,
 } from "../../../util/ast";
 import {
   isOneToOneRelationField,
@@ -26,8 +27,10 @@ import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { createServiceId } from "../service/create-service";
+import { createDataMapping } from "../controller/create-data-mapping";
 
 const MIXIN_ID = builders.identifier("Mixin");
+const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
 const templatePath = require.resolve("./resolver.template.ts");
 const toOneTemplatePath = require.resolve("./to-one.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
@@ -78,6 +81,16 @@ export async function createResolverModule(
     DELETE_ARGS: deleteArgs.id,
     FIND_MANY_ARGS: findManyArgs.id,
     FIND_ONE_ARGS: findOneArgs.id,
+    CREATE_DATA_MAPPING: createDataMapping(
+      entity,
+      entityDTOs.createInput,
+      DATA_MEMBER_EXPRESSION
+    ),
+    UPDATE_DATA_MAPPING: createDataMapping(
+      entity,
+      entityDTOs.updateInput,
+      DATA_MEMBER_EXPRESSION
+    ),
   });
 
   const classDeclaration = getClassDeclarationById(file, id);

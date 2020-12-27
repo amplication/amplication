@@ -4,5 +4,5 @@
     "packages/amplication-data-service-generator/src/admin/static/",
     "packages/amplication-data-service-generator/src/server/static/"
   ],
-  "version": "0.1.1"
+  "version": "0.2.0"
 }
