@@ -40,18 +40,3 @@ module "env" {
   apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
 }
-
-module "cd" {
-  source                             = "../../modules/cd"
-  project                            = var.project
-  region                             = var.region
-  database_name                      = module.env.database_name
-  database_instance                  = module.env.database_instance
-  github_client_secret_id            = var.github_client_secret_id
-  image_repository                   = var.image_repository
-  app_base_image_repository          = var.app_base_image_repository
-  google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
-  github_owner                       = var.github_owner
-  github_name                        = var.github_name
-  github_branch                      = var.github_branch
-}
