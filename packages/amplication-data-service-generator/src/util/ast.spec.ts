@@ -15,17 +15,15 @@ import {
 } from "./ast";
 import * as recast from "recast";
 import * as parser from "./parser";
+const actualRecast = jest.requireActual("recast");
 
-jest.mock("recast", () => {
-  const actualRecast = jest.requireActual("recast");
-  return {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    __esModule: true,
-    parse: jest.fn(actualRecast.parse),
-    print: jest.fn(actualRecast.print),
-    visit: jest.fn(actualRecast.visit),
-  };
-});
+jest.mock("recast");
+// @ts-ignore
+recast.parse = jest.fn(actualRecast.parse).mockName("parseMock");
+// @ts-ignore
+recast.print = jest.fn(actualRecast.print);
+// @ts-ignore
+recast.visit = jest.fn(actualRecast.visit);
 
 describe("interpolate", () => {
   test("Evaluates template literal", () => {
@@ -269,7 +267,9 @@ class A {}`
       const EXAMPLE_ERROR = new SyntaxError("exampleError");
       const EXAMPLE_SOURCE = "exampleSource";
       // @ts-ignore
-      recast.parse.mockImplementationOnce(() => EXAMPLE_ERROR);
+      recast.parse.mockImplementation(() => {
+        throw EXAMPLE_ERROR;
+      });
       expect(() => parse(EXAMPLE_SOURCE)).toThrow(
         new ParseError(EXAMPLE_ERROR.message, EXAMPLE_SOURCE)
       );
