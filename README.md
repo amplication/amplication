@@ -26,7 +26,7 @@
   <img src="https://amplication.com/assets/images/amplication build mockup.png" />
 </p>
 
-## [Getting Started](https://docs.amplication.com/guides/getting-started/first-app)
+## [Getting Started](https://docs.amplication.com/docs/getting-started)
 
 - Head to our [deployed platform](https://app.amplication.com)
 - Enter the sample application
