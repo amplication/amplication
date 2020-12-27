@@ -133,9 +133,20 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         working-directory: terraform/envs/dev
-      - run: terraform plan
+      - run: terraform apply -auto-approve
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           TF_VAR_image_id: amplication/amplication:${{ github.sha }}
           TF_VAR_generated_app_base_image_id: amplication/app-node:${{ github.sha }}
         working-directory: terraform/envs/dev
+      - uses: mattes/gce-cloudsql-proxy-action@v1
+        with:
+          creds: ${{ secrets.GOOGLE_CREDENTIALS }}
+          instance: ${{ secrets.STAGING_DB_INSTANCE_NAME }}
+      - run: |
+          set -e;
+          docker run \
+            --network host
+            --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@127.0.0.1:5432/${{ secrets.STAGING_DB_NAME }}"
+            amplication/amplication:${{ github.sha }} \
+            npm run migrate:up -- --create-db --auto-approve --experimental;
