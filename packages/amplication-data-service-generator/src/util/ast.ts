@@ -30,7 +30,7 @@ const ARRAY_ID = builders.identifier("Array");
 type ParseOptions = Omit<recast.Options, "parser">;
 type PartialParseOptions = Omit<ParserOptions, "tolerant">;
 
-class ParseError extends SyntaxError {
+export class ParseError extends SyntaxError {
   constructor(message: string, source: string) {
     super(`${message}\nSource:\n${source}`);
   }
