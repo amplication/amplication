@@ -242,7 +242,7 @@ describe("classDeclaration", () => {
       )
     );
   });
-  test.skip("creates class declaration with decorators", () => {
+  test("creates class declaration with decorators", () => {
     const declaration = classDeclaration(
       builders.identifier("A"),
       builders.classBody([]),
