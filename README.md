@@ -4,7 +4,10 @@
   </a>
 </p>
 <h1 align="center">Amplication</h1>
-<p align="center">Open source platform for creating business applications.</p>
+<p align="center">An open-source dev tool for building fully functional server-side Node.js apps with React clients...blazing fast!</p>
+<p align="center">
+  <img src="https://amplication.com/assets/images/amplication build mockup.png" />
+</p>
 <p align="center">
     <a href="https://docs.amplication.com/docs/">Docs</a> <a href="https://twitter.com/amplication">Twitter</a>
 </p>
@@ -20,10 +23,6 @@
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License">
   </a>
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
-</p>
-
-<p align="center">
-  <img src="https://amplication.com/assets/images/amplication build mockup.png" />
 </p>
 
 ## [Getting Started](https://docs.amplication.com/docs/getting-started)
