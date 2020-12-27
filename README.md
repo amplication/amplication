@@ -27,9 +27,8 @@
 
 ## [Getting Started](https://docs.amplication.com/docs/getting-started)
 
-- Head to our [deployed platform](https://app.amplication.com)
-- Enter the sample application
-- Enter the sandbox deployment of the application
+- Try amplication immediately on [amplication.com](http://amplication.com/)
+- or [follow the instructions](#development) to run it locally
 
 ## Features
 
