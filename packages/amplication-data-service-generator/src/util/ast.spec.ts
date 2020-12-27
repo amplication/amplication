@@ -15,6 +15,8 @@ import {
 import * as recast from "recast";
 import * as parser from "./parser";
 
+jest.mock("recast");
+
 describe("interpolate", () => {
   test("Evaluates template literal", () => {
     const mapping = {
