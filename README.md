@@ -1,48 +1,48 @@
+# Amplication
+
 <p align="center">
   <a href="https://amplication.com" target="_blank">
-    <img width="344" height="70" src="https://amplication.com/assets/amplication-logo.svg" alt="amplication  Logo"></a>
+    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo.svg"/>
+  </a>
 </p>
-
- <p align="center"><b>Developer Oriented, open Source, low-code Platform. <br/>
- Design and deploy your own data services application. Easily create APIs and connect from any server, mobile, or web client instantly.</b></p>
-
-![Node.js CI](https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg)
-[![Discord](https://img.shields.io/discord/757179260417867879?label=discord)](https://discord.gg/b8MrjU6)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-<img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
-
-# About the Amplication project
-
-Amplication is an open-source low-code framework designed for professional developers. The platform empowers developers by enabling them to create efficient, scalable business applications without losing the ability to custom code any part of the application. Each app developed on the Amplication platform can either be deployed on our cloud, or can be downloaded and deployed elsewhere. There are two download options: one is as complete Node.js readable source code, and the other is as a Docker container that can be deployed anywhere. The derived application has no license, which means that you can customize it and if you want sell it as closed source, since you are the owner of the derived app. The platform itself is open source under the Apache 2.0 license, which again, gives you the freedom to customize and run it anywhere else.
-
-The project is quite fresh and we've just released our first alpha stable version, which includes the following functional features:
-
-<ul>
-  <li>Create data models, and configure role-based access control</li>
-  <li>Get a Docker container with your database and Node.js application, or download the source code</li>
-  <li>Continuously deploy your application to the cloud or your local environment</li>
-</ul>
-
-Low code is growing rapidly, but is still at the beginning. We see vendors that are steering it to proprietary directions, which we are not happy with. We'd like to empower professional developers and see them use our platform to elevate their skills and not the other way around.
-
-We'll be thrilled to see the community take an active role and be part of our vision of developing the first truly low code open source project. Harnessing collective wisdom, we can all take part and define the future of low code development.
-
-[https://amplication.com](https://amplication.com)
+<h1 align="center">Amplication</h1>
+<p align="center">Open source platform for creating business applications.</p>
+<p align="center">
+    <a href="https://docs.amplication.com/docs/">Docs</a> <a href="https://twitter.com/amplication">Twitter</a>
+</p>
+<p align="center">
+  <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
+  <a href="https://discord.gg/b8MrjU6">
+    <img src="https://img.shields.io/discord/757179260417867879?label=discord" alt="Discord">
+  </a>
+  <a href="code_of_conduct.md">
+    <img src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg" alt="Contributor Covenant">
+  </a>
+  <a href="https://opensource.org/licenses/Apache-2.0">
+    <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License">
+  </a>
+  <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
+</p>
 
 <p align="center">
-<img src="https://amplication.com/assets/images/amplication build mockup.png" height="400"/>
+  <img src="https://amplication.com/assets/images/amplication build mockup.png" />
 </p>
 
-### [Getting started guide](https://docs.amplication.com/guides/getting-started/first-app)
+## [Getting Started](https://docs.amplication.com/guides/getting-started/first-app)
 
-In this guide we show how to create an app, entities, roles, and permissions. The app can be deployed to our cloud or downloaded as Node.js source code. Each app includes version control, so you can roll back, deploy to the cloud, or download source code per the selected target version. We even included a built-in compare tool similar to GitHub PR.
+- Head to our [deployed platform](https://app.amplication.com)
+- Enter the sample application
+- Enter the sandbox deployment of the application
 
-If you have any question in any step along the way, don't hesitate to contact us at our [Discord channel](https://discord.gg/b8MrjU6), We are always happy to help.
+## Features
 
-# Installation
+- Auto-generated human-editable source code
+- Node.js server built with Nest.js and Passport with REST API and GraphQL
+- Admin UI built with React
+- Role-based access control
+- Docker and docker-compose integration out of the box
 
-## Main packages
+## Development
 
 Amplication is constructed of multiple packages. To start working on Amplication follow the installation instructions on "Amplication Server" and "Amplication Client".
 
