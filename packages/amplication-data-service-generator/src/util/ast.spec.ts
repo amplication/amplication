@@ -12,6 +12,8 @@ import {
   expression,
   classDeclaration,
 } from "./ast";
+import * as recast from "recast";
+import * as parser from "./parser";
 
 describe("interpolate", () => {
   test("Evaluates template literal", () => {
@@ -230,7 +232,7 @@ describe("classDeclaration", () => {
       )
     );
   });
-  test("creates class declaration with decorators", () => {
+  test.skip("creates class declaration with decorators", () => {
     const declaration = classDeclaration(
       builders.identifier("A"),
       builders.classBody([]),
@@ -241,5 +243,24 @@ describe("classDeclaration", () => {
       `@x
 class A {}`
     );
+  });
+
+  describe("parse", () => {
+    test("parses", () => {
+      const EXAMPLE_SOURCE = "exampleSource";
+      expect(parse(EXAMPLE_SOURCE)).toEqual(
+        recast.parse(EXAMPLE_SOURCE, { parser })
+      );
+    });
+
+    jest.mock("recast");
+
+    test("tries to parse but catches an error", () => {
+      const EXAMPLE_ERROR = new Error("exampleError");
+      //@ts-ignore
+      recast.parse.mockImplementationOnce(() => EXAMPLE_ERROR);
+      const EXAMPLE_SOURCE = "exampleSource";
+      expect(parse(EXAMPLE_SOURCE)).toThrowError();
+    });
   });
 });
