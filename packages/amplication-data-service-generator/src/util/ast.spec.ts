@@ -19,6 +19,8 @@ import * as parser from "./parser";
 jest.mock("recast", () => {
   const actualRecast = jest.requireActual("recast");
   return {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    __esModule: true,
     parse: jest.fn(actualRecast.parse),
     print: jest.fn(actualRecast.print),
     visit: jest.fn(actualRecast.visit),
@@ -263,9 +265,11 @@ class A {}`
       );
     });
 
-    test.skip("tries to parse but catches an error", () => {
-      const EXAMPLE_ERROR = new Error("exampleError");
+    test("tries to parse but catches an error", () => {
+      const EXAMPLE_ERROR = new SyntaxError("exampleError");
       const EXAMPLE_SOURCE = "exampleSource";
+      // @ts-ignore
+      recast.parse.mockImplementationOnce(() => EXAMPLE_ERROR);
       expect(() => parse(EXAMPLE_SOURCE)).toThrow(
         new ParseError(EXAMPLE_ERROR.message, EXAMPLE_SOURCE)
       );
