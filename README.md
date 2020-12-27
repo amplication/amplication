@@ -32,6 +32,9 @@
 
 ## Features
 
+Build business applications with:
+
+- Visually managed data model
 - Auto-generated human-editable source code
 - Node.js server built with Nest.js and Passport with REST API and GraphQL
 - Admin UI built with React
