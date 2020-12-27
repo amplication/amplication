@@ -137,3 +137,16 @@ jobs:
           tags: |
             amplication/scheduler:latest
             amplication/scheduler:${{ github.sha }}
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.13.5
+      - run: terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        working-directory: terraform/envs/dev
+      - run: terraform plan
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_image_id: amplication/amplication:${{ github.sha }}
+          TF_VAR_generated_app_base_image_id: amplication/app-node:${{ github.sha }}
+        working-directory: terraform/envs/dev
