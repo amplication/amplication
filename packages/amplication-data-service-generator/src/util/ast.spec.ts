@@ -11,7 +11,19 @@ import {
   removeESLintComments,
   expression,
   classDeclaration,
+  ParseError,
 } from "./ast";
+import * as recast from "recast";
+import * as parser from "./parser";
+const actualRecast = jest.requireActual("recast");
+
+jest.mock("recast");
+// @ts-ignore
+recast.parse = jest.fn(actualRecast.parse).mockName("parseMock");
+// @ts-ignore
+recast.print = jest.fn(actualRecast.print);
+// @ts-ignore
+recast.visit = jest.fn(actualRecast.visit);
 
 describe("interpolate", () => {
   test("Evaluates template literal", () => {
@@ -240,6 +252,27 @@ describe("classDeclaration", () => {
     expect(print(declaration).code).toBe(
       `@x
 class A {}`
+    );
+  });
+});
+
+describe("parse", () => {
+  test("parses", () => {
+    const EXAMPLE_SOURCE = "exampleSource";
+    expect(parse(EXAMPLE_SOURCE)).toEqual(
+      recast.parse(EXAMPLE_SOURCE, { parser })
+    );
+  });
+
+  test("tries to parse but catches an error", () => {
+    const EXAMPLE_ERROR = new SyntaxError("exampleError");
+    const EXAMPLE_SOURCE = "exampleSource";
+    // @ts-ignore
+    recast.parse.mockImplementation(() => {
+      throw EXAMPLE_ERROR;
+    });
+    expect(() => parse(EXAMPLE_SOURCE)).toThrow(
+      new ParseError(EXAMPLE_ERROR.message, EXAMPLE_SOURCE)
     );
   });
 });
