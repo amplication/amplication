@@ -22,7 +22,9 @@ jobs:
         with:
           node-version: 14.x
       - name: Echo git ref
-        run: echo ${{ github.ref }}
+        run: |
+          echo ${{ github.ref }};
+          echo ${{ github.head_ref }};
       - name: Update npm
         run: npm i -g npm@7.3.0
       - name: Cache node modules
