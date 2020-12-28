@@ -164,7 +164,7 @@ jobs:
       - run: |
           set -e;
           docker run \
-            --network host
-            --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@127.0.0.1:5432/${{ secrets.STAGING_DB_NAME }}"
+            --network host \
+            --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@127.0.0.1:5432/${{ secrets.STAGING_DB_NAME }}" \
             amplication/amplication:${{ github.sha }} \
             npm run migrate:up -- --create-db --auto-approve --experimental;
