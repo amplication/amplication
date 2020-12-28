@@ -3,6 +3,7 @@ import { types } from "@amplication/data";
 import { pascalCase } from "pascal-case";
 import { Entity, EntityField, EnumDataType } from "../../types";
 import { getEnumFields } from "../../util/entity";
+import { camelCase } from "camel-case";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -58,80 +59,98 @@ export function createPrismaModel(
 ): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
-    entity.fields.map((field) => createPrismaField(field, entityIdToName))
+    entity.fields.flatMap((field) => createPrismaFields(field, entityIdToName))
   );
 }
 
-export function createPrismaField(
+export function createPrismaFields(
   field: EntityField,
-  entityIdToName: Record<string, string>,
-  skipRelatedEntitiesValidation = false
-): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
+  entityIdToName: Record<string, string>
+):
+  | [PrismaSchemaDSL.ScalarField]
+  | [PrismaSchemaDSL.ObjectField]
+  | [PrismaSchemaDSL.ObjectField, PrismaSchemaDSL.ScalarField] {
   const { dataType, name, properties } = field;
   switch (dataType) {
     case EnumDataType.SingleLineText: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.String,
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.MultiLineText: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.String,
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.Email: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.String,
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.WholeNumber: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.Int,
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.Int,
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.DateTime: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.DateTime,
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.DateTime,
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.DecimalNumber: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.Float,
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.Float,
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.Boolean: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.Boolean,
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.Boolean,
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.GeographicLocation: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.String,
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.Lookup: {
       const {
@@ -141,94 +160,135 @@ export function createPrismaField(
 
       const relatedEntityName = entityIdToName[relatedEntityId];
 
-      if (!skipRelatedEntitiesValidation && !relatedEntityName) {
+      if (!relatedEntityName) {
         throw new Error(
           `Can't find related entity with ID '${relatedEntityId}' for field '${name}'`
         );
       }
 
-      return PrismaSchemaDSL.createObjectField(
-        name,
-        relatedEntityName,
-        allowMultipleSelection,
-        allowMultipleSelection ? true : field.required
-      );
+      if (allowMultipleSelection) {
+        return [
+          PrismaSchemaDSL.createObjectField(
+            name,
+            relatedEntityName,
+            true,
+            true,
+            name
+          ),
+        ];
+      }
+
+      const relatedEntityIdFieldName =
+        relatedEntityName && `${camelCase(relatedEntityName)}Id`;
+
+      return [
+        PrismaSchemaDSL.createObjectField(
+          name,
+          relatedEntityName,
+          false,
+          field.required,
+          name,
+          [relatedEntityIdFieldName]
+        ),
+        PrismaSchemaDSL.createScalarField(
+          relatedEntityIdFieldName,
+          PrismaSchemaDSL.ScalarType.String,
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.MultiSelectOptionSet: {
-      return PrismaSchemaDSL.createObjectField(
-        name,
-        createEnumName(field),
-        true,
-        true
-      );
+      return [
+        PrismaSchemaDSL.createObjectField(
+          name,
+          createEnumName(field),
+          true,
+          true
+        ),
+      ];
     }
     case EnumDataType.OptionSet: {
-      return PrismaSchemaDSL.createObjectField(
-        name,
-        createEnumName(field),
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createObjectField(
+          name,
+          createEnumName(field),
+          false,
+          field.required
+        ),
+      ];
     }
     case EnumDataType.Id: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        field.required,
-        false,
-        true,
-        false,
-        CUID_CALL_EXPRESSION
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.String,
+          false,
+          field.required,
+          false,
+          true,
+          false,
+          CUID_CALL_EXPRESSION
+        ),
+      ];
     }
     case EnumDataType.CreatedAt: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.DateTime,
-        false,
-        field.required,
-        false,
-        false,
-        false,
-        NOW_CALL_EXPRESSION
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.DateTime,
+          false,
+          field.required,
+          false,
+          false,
+          false,
+          NOW_CALL_EXPRESSION
+        ),
+      ];
     }
     case EnumDataType.UpdatedAt: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.DateTime,
-        false,
-        field.required,
-        false,
-        false,
-        true
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.DateTime,
+          false,
+          field.required,
+          false,
+          false,
+          true
+        ),
+      ];
     }
     case EnumDataType.Roles: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        true,
-        true
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.String,
+          true,
+          true
+        ),
+      ];
     }
     case EnumDataType.Username: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        field.required,
-        true
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.String,
+          false,
+          field.required,
+          true
+        ),
+      ];
     }
     case EnumDataType.Password: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        field.required
-      );
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.String,
+          false,
+          field.required
+        ),
+      ];
     }
     default: {
       throw new Error(`Unfamiliar data type: ${dataType}`);

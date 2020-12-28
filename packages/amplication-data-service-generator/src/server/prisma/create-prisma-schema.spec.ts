@@ -3,7 +3,7 @@ import {
   createPrismaSchema,
   CLIENT_GENERATOR,
   DATA_SOURCE,
-  createPrismaField,
+  createPrismaFields,
   CUID_CALL_EXPRESSION,
   NOW_CALL_EXPRESSION,
 } from "./create-prisma-schema";
@@ -145,7 +145,7 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
   });
 });
 
-describe("createPrismaField", () => {
+describe("createPrismaFields", () => {
   const cases: Array<[
     string,
     EnumDataType,
@@ -362,6 +362,6 @@ describe("createPrismaField", () => {
       properties,
     };
     const entityIdToName = { [EXAMPLE_ENTITY.id]: EXAMPLE_ENTITY_NAME };
-    expect(createPrismaField(field, entityIdToName)).toEqual(expected);
+    expect(createPrismaFields(field, entityIdToName)[0]).toEqual(expected);
   });
 });

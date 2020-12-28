@@ -15,7 +15,7 @@ import {
   removeTSIgnoreComments,
   removeESLintComments,
 } from "../../../util/ast";
-import { createPrismaField } from "../../prisma/create-prisma-schema";
+import { createPrismaFields } from "../../prisma/create-prisma-schema";
 import { Entity, EntityField, Module } from "../../../types";
 import { isOneToOneRelationField, isRelationField } from "../../../util/field";
 import { createServiceId } from "../service/create-service";
@@ -46,6 +46,12 @@ export async function createControllerSpecModule(
 
   const existingParam = camelCase(["existing", param].join(" "));
   const nonExistingParam = camelCase(["nonExisting", param].join(" "));
+  const fieldNameToPrismField = Object.fromEntries(
+    entity.fields.map((field) => [
+      field.name,
+      createPrismaFields(field, entityIdToName)[0],
+    ])
+  );
 
   interpolate(file, {
     CONTROLLER: controllerId,
@@ -62,7 +68,8 @@ export async function createControllerSpecModule(
     CREATE_RESULT_VALUE: createTestData(entity.fields, entityIdToName),
     CREATE_EXPECTED_RESULT: createExpectedResult(
       CREATE_RESULT_ID,
-      entity.fields
+      entity.fields,
+      fieldNameToPrismField
     ),
     FIND_MANY_PATHNAME: builders.stringLiteral(`/${resource}`),
     FIND_MANY_RESULT_VALUE: builders.arrayExpression([
@@ -71,7 +78,8 @@ export async function createControllerSpecModule(
     FIND_MANY_EXPECTED_RESULT: builders.arrayExpression([
       createExpectedResult(
         builders.memberExpression(FIND_MANY_RESULT_ID, builders.literal(0)),
-        entity.fields
+        entity.fields,
+        fieldNameToPrismField
       ),
     ]),
     FIND_ONE_PATHNAME: builders.stringLiteral(`/${resource}/:${param}`),
@@ -81,7 +89,8 @@ export async function createControllerSpecModule(
     FIND_ONE_RESULT_VALUE: createTestData(entity.fields, entityIdToName),
     FIND_ONE_EXPECTED_RESULT: createExpectedResult(
       FIND_ONE_RESULT_ID,
-      entity.fields
+      entity.fields,
+      fieldNameToPrismField
     ),
   });
 
@@ -110,11 +119,10 @@ export async function createControllerSpecModule(
 
 function createExpectedResult<T extends kinds.ExpressionKind>(
   object: T,
-  fields: EntityField[]
+  fields: EntityField[],
+  fieldNameToPrismField: Record<string, ScalarField | ObjectField>
 ): T | namedTypes.ObjectExpression {
-  const prismaFields = fields.map((field) =>
-    createPrismaField(field, {}, true)
-  );
+  const prismaFields = fields.map((field) => fieldNameToPrismField[field.name]);
   const dateFields = prismaFields.filter((field) => {
     return field.type === ScalarType.DateTime;
   });
@@ -178,7 +186,7 @@ function createFieldTestValue(
   entityIdToName: Record<string, string>
 ): TestValue {
   // Use Prisma type as it already reduces the amount of possible types
-  const prismaField = createPrismaField(field, entityIdToName);
+  const [prismaField] = createPrismaFields(field, entityIdToName);
   if (prismaField.isList) {
     const value = createFieldTestValueFromPrisma({
       ...prismaField,

@@ -9,7 +9,7 @@ import {
 import { EntityField } from "../../../types";
 import {
   createEnumName,
-  createPrismaField,
+  createPrismaFields,
 } from "../../prisma/create-prisma-schema";
 import { classProperty, createGenericArray } from "../../../util/ast";
 import { isEnumField, isOneToOneRelationField } from "../../../util/field";
@@ -82,7 +82,7 @@ export function createFieldClassProperty(
   isQuery: boolean,
   entityIdToName: Record<string, string>
 ): namedTypes.ClassProperty {
-  const prismaField = createPrismaField(field, entityIdToName);
+  const [prismaField] = createPrismaFields(field, entityIdToName);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
   const type = createFieldValueTypeFromPrismaField(
