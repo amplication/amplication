@@ -101,13 +101,20 @@ jobs:
           registry: gcr.io
           username: _json_key
           password: ${{ secrets.GOOGLE_CREDENTIALS }}
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
       - name: "Build and push amplication/amplication Docker image"
         uses: docker/build-push-action@v2
         with:
           pull: true
           push: true
-          cache-from: type=registry,ref=amplication/amplication:latest
-          cache-to: type=inline
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
           tags: |
             amplication/amplication:latest
             amplication/amplication:${{ github.sha }}
@@ -119,8 +126,8 @@ jobs:
           file: ./packages/amplication-data-service-generator/Dockerfile
           pull: true
           push: true
-          cache-from: type=registry,ref=amplication/app-node:latest
-          cache-to: type=inline
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
           tags: |
             amplication/app-node:latest
             amplication/app-node:${{ github.sha }}
@@ -132,8 +139,8 @@ jobs:
           file: ./packages/amplication-scheduler/Dockerfile
           pull: true
           push: true
-          cache-from: type=registry,ref=amplication/scheduler:latest
-          cache-to: type=inline
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
           tags: |
             amplication/scheduler:latest
             amplication/scheduler:${{ github.sha }}
