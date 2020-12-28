@@ -81,7 +81,7 @@
     "passport-http": "^0.3.0",
     "pluralize": "^8.0.0",
     "prettier": "^2.0.5",
-    "prisma-schema-dsl": "^1.1.4",
+    "prisma-schema-dsl": "^1.1.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-query": "^2.26.2",
