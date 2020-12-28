@@ -1,9 +1,8 @@
 <p align="center">
   <a href="https://amplication.com" target="_blank">
-    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo.svg"/>
+    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.png"/>
   </a>
 </p>
-<h1 align="center">Amplication</h1>
 <p align="center">An open-source dev tool for building fully functional server-side Node.js apps with React clients...blazing fast!</p>
 <p align="center">
   <img src="https://amplication.com/assets/images/amplication build mockup.png" />
