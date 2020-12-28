@@ -7,8 +7,11 @@ describe("createDataService", () => {
   test("creates app as expected", async () => {
     jest.setTimeout(10000);
     const modules = await createDataService(entities, roles, appInfo);
+    const typescriptModules = modules.filter(
+      (module) => module.path.endsWith(".ts") || module.path.endsWith(".tsx")
+    );
     const pathToCode = Object.fromEntries(
-      modules.map((module) => [module.path, module.code])
+      typescriptModules.map((module) => [module.path, module.code])
     );
     expect(pathToCode).toMatchSnapshot();
   });

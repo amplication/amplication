@@ -41,7 +41,7 @@ describe("createFindManyArgs", () => {
     ).toEqual(`@ArgsType()
 class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
   @Field(() => ${EXAMPLE_WHERE_INPUT.id.name}, { nullable: true })
-  where?: ${EXAMPLE_WHERE_INPUT.id.name} | null;
+  where?: ${EXAMPLE_WHERE_INPUT.id.name};
 }`);
   });
 });

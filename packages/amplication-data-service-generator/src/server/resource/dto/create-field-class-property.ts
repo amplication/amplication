@@ -12,7 +12,7 @@ import {
   createPrismaField,
 } from "../../prisma/create-prisma-schema";
 import { classProperty, createGenericArray } from "../../../util/ast";
-import { isEnumField } from "../../../util/field";
+import { isEnumField, isOneToOneRelationField } from "../../../util/field";
 import {
   IS_BOOLEAN_ID,
   IS_DATE_ID,
@@ -193,7 +193,11 @@ export function createFieldClassProperty(
       builders.decorator(builders.callExpression(IS_OPTIONAL_ID, []))
     );
   }
-  if (prismaField.kind !== FieldKind.Object || isEnum) {
+  if (
+    prismaField.kind !== FieldKind.Object ||
+    isEnum ||
+    (isInput && !isQuery && isOneToOneRelationField(field))
+  ) {
     decorators.push(
       createGraphQLFieldDecorator(prismaField, isEnum, field, optional)
     );
@@ -216,7 +220,7 @@ function createGraphQLFieldDecorator(
 ): namedTypes.Decorator {
   const type = builders.arrowFunctionExpression(
     [],
-    createGraphQLFieldType(prismaField, isEnum, field)
+    createGraphQLFieldType(prismaField, field, isEnum)
   );
   return builders.decorator(
     builders.callExpression(
@@ -235,14 +239,14 @@ function createGraphQLFieldDecorator(
 
 function createGraphQLFieldType(
   prismaField: ScalarField | ObjectField,
-  isEnum: boolean,
-  field: EntityField
+  field: EntityField,
+  isEnum: boolean
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (prismaField.isList) {
     const itemType = createGraphQLFieldType(
       { ...prismaField, isList: false },
-      isEnum,
-      field
+      field,
+      isEnum
     );
     return builders.arrayExpression([itemType]);
   }
@@ -264,6 +268,9 @@ function createGraphQLFieldType(
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field));
     return enumId;
+  }
+  if (isOneToOneRelationField(field)) {
+    return createWhereUniqueInputID(prismaField.type);
   }
   throw new Error("Could not create GraphQL Field type");
 }

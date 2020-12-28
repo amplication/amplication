@@ -1,6 +1,6 @@
 {
   "name": "@amplication/e2e-tester",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "build": "tsc",
     "lint": "eslint tests",
@@ -39,6 +39,14 @@
     "parserOptions": {
       "project": "tsconfig.json",
       "sourceType": "module"
+    },
+    "rules": {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "args": "none"
+        }
+      ]
     }
   }
 }
