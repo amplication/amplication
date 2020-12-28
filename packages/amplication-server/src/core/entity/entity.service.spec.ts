@@ -1033,4 +1033,45 @@ describe('EntityService', () => {
       displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME
     });
   });
+  it('create single field of lookup', async () => {
+    const relatedEntity = prismaEntityFindManyMock()[0];
+    expect(
+      await service.createFieldCreateInputByDisplayName({
+        data: {
+          displayName: relatedEntity.displayName.toLowerCase(),
+          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+        }
+      })
+    ).toEqual({
+      ...BASE_CREATE_INPUT,
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: relatedEntity.id,
+        allowMultipleSelection: false
+      },
+      displayName: relatedEntity.displayName,
+      name: camelCase(relatedEntity.displayName)
+    });
+  });
+  it('create field of plural lookup', async () => {
+    const relatedEntity = prismaEntityFindManyMock()[0];
+    const query = relatedEntity.pluralDisplayName.toLowerCase();
+    expect(
+      await service.createFieldCreateInputByDisplayName({
+        data: {
+          displayName: query,
+          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+        }
+      })
+    ).toEqual({
+      ...BASE_CREATE_INPUT,
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: relatedEntity.id,
+        allowMultipleSelection: true
+      },
+      displayName: query,
+      name: camelCase(query)
+    });
+  });
 });
