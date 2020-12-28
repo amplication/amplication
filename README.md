@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://amplication.com" target="_blank">
-    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.png"/>
+    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
   </a>
 </p>
 <p align="center">An open-source dev tool for building fully functional server-side Node.js apps with React clients...blazing fast!</p>
