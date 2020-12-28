@@ -1,3 +1,18 @@
+# Deploy Amplication as a production service
+# This deployment includes
+# - An instance of the Amplication server
+# - A PostgreSQL database instance
+# - A migration service to update the database schema
+# - A scheduler service to trigger Amplication server update every minute
+# Variables:
+# - POSTGRESQL_USER - PostgreSQL user name
+# - POSTGRESQL_PASSWORD - PostgreSQL user password
+# - JWT_SECRET - Server secret for creating JWT tokens
+# - SERVICE_JWT_SECRET - Server secret for creating JWT tokens for services
+# - BCRYPT_SALT_OR_ROUNDS - Server salt for hashing passwords in the database
+# - LOCAL_DISK_ROOT - Server parameter where to save artifacts (e.g. generated code) to
+# - GENERATED_APP_BASE_IMAGE - Server parameter which base image
+
 version: "3"
 services:
   postgres:
@@ -14,6 +29,7 @@ services:
       - "3000:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - artifacts:/artifacts
     environment:
       POSTGRESQL_URL: postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432
       JWT_SECRET: "${JWT_SECRET}"
@@ -23,10 +39,10 @@ services:
       CORS_ENABLE: 1
       PORT: 3000
       HOST: http://localhost:3000
-      DEFAULT_DISK: "${DEFAULT_DISK}"
-      LOCAL_DISK_ROOT: "${LOCAL_DISK_ROOT}"
-      CONTAINER_BUILDER_DEFAULT: "${CONTAINER_BUILDER_DEFAULT}"
-      GENERATED_APP_BASE_IMAGE: "${GENERATED_APP_BASE_IMAGE}"
+      DEFAULT_DISK: local
+      LOCAL_DISK_ROOT: /artifacts
+      CONTAINER_BUILDER_DEFAULT: docker
+      GENERATED_APP_BASE_IMAGE: amplication/app-node:6bc72e5dd42d480ec1d3cb6fa02ac1390685c38b
   migrate:
     image: amplication/amplication
     environment:
@@ -37,3 +53,4 @@ services:
     command: --request.url http://app:3000/system/update-statuses --request.method POST --schedule '* * * * *'
 volumes:
   postgres: ~
+  artifacts: ~
