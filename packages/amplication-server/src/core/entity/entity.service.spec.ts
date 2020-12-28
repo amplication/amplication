@@ -8,7 +8,11 @@ import {
 } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import { pick, omit } from 'lodash';
-import { EntityService, NAME_VALIDATION_ERROR_MESSAGE } from './entity.service';
+import {
+  EntityPendingChange,
+  EntityService,
+  NAME_VALIDATION_ERROR_MESSAGE
+} from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
@@ -16,6 +20,10 @@ import { FindManyEntityArgs } from './dto';
 import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
+import {
+  EnumPendingChangeAction,
+  EnumPendingChangeResourceType
+} from '../app/dto';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
@@ -83,6 +91,14 @@ const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
   displayName: 'example entity',
   pluralDisplayName: 'exampleEntities',
   description: 'example entity'
+};
+
+const EXAMPLE_ENTITY_PENDING_CHANGE: EntityPendingChange = {
+  resourceId: EXAMPLE_ENTITY.id,
+  action: EnumPendingChangeAction.Create,
+  resourceType: EnumPendingChangeResourceType.Entity,
+  versionNumber: 1,
+  resource: EXAMPLE_ENTITY
 };
 
 const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
@@ -1073,5 +1089,16 @@ describe('EntityService', () => {
       displayName: query,
       name: camelCase(query)
     });
+  });
+  it('pending changed entities', async () => {
+    prismaEntityFindManyMock.mockImplementationOnce(() => [
+      {
+        ...EXAMPLE_ENTITY,
+        versions: [EXAMPLE_CURRENT_ENTITY_VERSION]
+      }
+    ]);
+    expect(
+      await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
+    ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE]);
   });
 });
