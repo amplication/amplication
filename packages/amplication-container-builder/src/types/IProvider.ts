@@ -16,4 +16,8 @@ export interface IProvider {
    * @param statusQuery Provider specific query to be used to find the requested build
    */
   getStatus(statusQuery: any): Promise<BuildResult>;
+  /**
+   * Creates an image ID for the given tag
+   */
+  createImageId(tag: string): string;
 }

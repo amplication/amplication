@@ -1,5 +1,4 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -43,8 +42,6 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 
-export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
-export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
@@ -136,7 +133,6 @@ const CONTAINER_STATUS_UPDATE_INTERVAL_SEC = 10;
 export class BuildService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService,
     private readonly storageService: StorageService,
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
@@ -389,9 +385,7 @@ export class BuildService {
     build: Build,
     tarballURL: string
   ): Promise<void> {
-    const generatedAppBaseImage = this.configService.get(
-      GENERATED_APP_BASE_IMAGE_VAR
-    );
+    const previousImages = await this.findPreviousBuildImages(build);
     return this.actionService.run(
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_NAME,
@@ -401,18 +395,35 @@ export class BuildService {
           step,
           BUILD_DOCKER_IMAGE_STEP_START_LOG
         );
-
+        const latestTag = `${build.appId}:latest`;
         const result = await this.containerBuilderService.build({
-          tags: [`${build.appId}:${build.id}`, `${build.appId}:latest`],
-          url: tarballURL,
-          args: {
-            [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: generatedAppBaseImage
-          }
+          tags: [`${build.appId}:${build.id}`, latestTag],
+          cacheFrom: [
+            ...previousImages,
+            await this.containerBuilderService.createImageId(latestTag)
+          ],
+          url: tarballURL
         });
         await this.handleContainerBuilderResult(build, step, result);
       },
       true
     );
+  }
+
+  private async findPreviousBuildImages(build: Build): Promise<string[]> {
+    const previousBuild = await this.prisma.build.findFirst({
+      where: {
+        appId: build.appId
+      },
+      cursor: {
+        id: build.id
+      },
+      take: -1,
+      select: {
+        images: true
+      }
+    });
+    return previousBuild?.images || [];
   }
 
   async handleContainerBuilderResult(

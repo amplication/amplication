@@ -10,8 +10,9 @@ const EXAMPLE_OBJECT = "EXAMPLE_OBJECT";
 const EXAMPLE_GCS_BUILD_ID = "EXAMPLE_BUILD_ID";
 const EXAMPLE_GCS_CODE_URL = `https://${GCS_HOST}/${EXAMPLE_BUCKET}/${EXAMPLE_OBJECT}`;
 const EXAMPLE_GCR_IMAGES = [`gcr.io/${EXAMPLE_BUCKET}/${EXAMPLE_OBJECT}`];
-const EXAMPLE_BUILD_ARGS = {
-  EXAMPLE_KEY: "EXAMPLE_VALUE",
+const EXAMPLE_BUILD_REQUEST = {
+  tags: EXAMPLE_TAGS,
+  url: EXAMPLE_GCS_CODE_URL,
 };
 const EXAMPLE_FINISHED_CLOUD_BUILD_BUILD = {
   id: EXAMPLE_GCS_BUILD_ID,
@@ -37,7 +38,6 @@ describe("CloudBuildProvider", () => {
       ).build({
         tags: EXAMPLE_TAGS,
         url: EXAMPLE_GCS_CODE_URL,
-        args: EXAMPLE_BUILD_ARGS,
       })
     ).resolves.toEqual({
       status: EnumBuildStatus.Running,
@@ -46,11 +46,7 @@ describe("CloudBuildProvider", () => {
     expect(cloudBuildCreateBuildMock).toBeCalledTimes(1);
     expect(cloudBuildCreateBuildMock).toBeCalledWith({
       projectId: EXAMPLE_PROJECT_ID,
-      build: createConfig({
-        tags: EXAMPLE_TAGS,
-        url: EXAMPLE_GCS_CODE_URL,
-        args: EXAMPLE_BUILD_ARGS,
-      }),
+      build: createConfig(EXAMPLE_BUILD_REQUEST, EXAMPLE_PROJECT_ID),
     });
   });
 });

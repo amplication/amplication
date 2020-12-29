@@ -7,12 +7,13 @@ export const CLOUD_BUILDERS_DOCKER_IMAGE = "gcr.io/cloud-builders/docker";
 export const DEFAULT_TAGS = ["container-builder"];
 
 export function createConfig(
-  request: BuildRequest
+  request: BuildRequest,
+  projectId: string
 ): google.devtools.cloudbuild.v1.IBuild {
   const { bucket, object } = parseGCSObjectURL(request.url);
-  const images = request.tags.map(createImage);
+  const images = request.tags.map((tag) => createImageId(tag, projectId));
   return {
-    steps: [createBuildStep(request, images), ...images.map(createPushStep)],
+    steps: [createBuildStep(request, images)],
     images,
     source: {
       storageSource: {
@@ -24,8 +25,8 @@ export function createConfig(
   };
 }
 
-export function createImage(tag: string): string {
-  return `${GCR_HOST}/${tag}`;
+export function createImageId(tag: string, projectId: string): string {
+  return `${GCR_HOST}/${projectId}/${tag}`;
 }
 
 export function createBuildStep(
@@ -33,27 +34,20 @@ export function createBuildStep(
   images: string[]
 ): google.devtools.cloudbuild.v1.IBuildStep {
   const tagParameters = images.map(createTagParameter);
-  const buildArgParameters = Object.entries(request.args).map(([name, value]) =>
+  const { args = {}, cacheFrom = [] } = request;
+  const buildArgParameters = Object.entries(args).map(([name, value]) =>
     createBuildArgParameter(name, value)
   );
+  const cacheFromParameters = cacheFrom.map(createCacheFromParameter);
   return {
     name: CLOUD_BUILDERS_DOCKER_IMAGE,
     args: [
       "build",
       ...tagParameters,
       ...buildArgParameters,
-      request.cacheFrom && createCacheFromParameter(request.cacheFrom),
+      ...cacheFromParameters,
       ".",
-    ].filter((arg): arg is string => typeof arg === "string"),
-  };
-}
-
-export function createPushStep(
-  tag: string
-): google.devtools.cloudbuild.v1.IBuildStep {
-  return {
-    name: CLOUD_BUILDERS_DOCKER_IMAGE,
-    args: ["push", tag],
+    ],
   };
 }
 

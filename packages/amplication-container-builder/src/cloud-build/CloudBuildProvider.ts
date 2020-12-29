@@ -8,7 +8,7 @@ import {
   IProvider,
 } from "../types";
 import { defaultLogger } from "../logging";
-import { createConfig } from "./config";
+import { createConfig, createImageId } from "./config";
 import { InvalidBuildProviderState } from "../builder/InvalidBuildProviderState";
 
 type StatusQuery = {
@@ -34,7 +34,7 @@ export class CloudBuildProvider implements IProvider {
 
     const [operation] = await this.cloudBuild.createBuild({
       projectId: this.projectId,
-      build: createConfig(request),
+      build: createConfig(request, this.projectId),
     });
 
     const {
@@ -89,5 +89,9 @@ export class CloudBuildProvider implements IProvider {
           status: EnumBuildStatus.Failed,
         };
     }
+  }
+
+  createImageId(tag: string): string {
+    return createImageId(tag, this.projectId);
   }
 }

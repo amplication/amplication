@@ -8,10 +8,13 @@ import {
 const EXAMPLE_TAGS = ["EXAMPLE_REPOSITORY:EXAMPLE_TAG"];
 const EXAMPLE_LOCAL_CODE_URL = `/example-directory/example-filename`;
 const EXAMPLE_BUILD_ARGS = { EXAMPLE_KEY: "EXAMPLE_VALUE" };
-const EXAMPLE_CACHE_FROM = "EXAMPLE_CACHE_FROM";
+const EXAMPLE_CACHE_FROM = ["EXAMPLE_CACHE_FROM_IMAGE"];
 const EXAMPLE_BUILD_REQUEST: BuildRequest = {
   tags: EXAMPLE_TAGS,
   url: EXAMPLE_LOCAL_CODE_URL,
+};
+const EXAMPLE_BUILD_REQUEST_WITH_ARGS: BuildRequest = {
+  ...EXAMPLE_BUILD_REQUEST,
   args: EXAMPLE_BUILD_ARGS,
 };
 const EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM: BuildRequest = {
@@ -39,7 +42,6 @@ describe("DockerProvider", () => {
     expect(dockerBuildImageMock).toBeCalledTimes(1);
     expect(dockerBuildImageMock).toBeCalledWith(EXAMPLE_LOCAL_CODE_URL, {
       t: EXAMPLE_TAGS,
-      buildargs: EXAMPLE_BUILD_ARGS,
     });
   });
 });
@@ -51,7 +53,14 @@ describe("createBuildImageOptions", () => {
       EXAMPLE_BUILD_REQUEST,
       {
         t: EXAMPLE_TAGS,
-        buildargs: EXAMPLE_BUILD_REQUEST.args,
+      },
+    ],
+    [
+      "With build args",
+      EXAMPLE_BUILD_REQUEST_WITH_ARGS,
+      {
+        t: EXAMPLE_TAGS,
+        buildargs: EXAMPLE_BUILD_ARGS,
       },
     ],
     [
@@ -59,8 +68,9 @@ describe("createBuildImageOptions", () => {
       EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM,
       {
         t: EXAMPLE_TAGS,
-        buildargs: EXAMPLE_BUILD_REQUEST.args,
-        cachefrom: EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM.cacheFrom,
+        cachefrom: JSON.stringify(
+          EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM.cacheFrom
+        ),
       },
     ],
   ];

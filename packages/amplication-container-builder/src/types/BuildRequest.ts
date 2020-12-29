@@ -3,8 +3,8 @@ export type BuildRequest = {
   tags: string[];
   /** Tarball URL context */
   url: string;
-  /** Image to cache from  */
-  cacheFrom?: string;
+  /** Images used for build cache resolution */
+  cacheFrom?: string[];
   /** Map of string pairs for build-time variables */
-  args: Record<string, string>;
+  args?: Record<string, string>;
 };

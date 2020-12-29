@@ -29,4 +29,10 @@ export class ContainerBuilder {
     const provider = await this.options.providers[providerName];
     return provider.getStatus(statusQuery);
   }
+
+  async createImageId(tag: string, providerName?: string): Promise<string> {
+    providerName = providerName || this.options.default;
+    const provider = await this.options.providers[providerName];
+    return provider.createImageId(tag);
+  }
 }

@@ -14,7 +14,6 @@ import {
   ENTITIES_INCLUDE,
   BUILD_DOCKER_IMAGE_STEP_MESSAGE,
   BUILD_DOCKER_IMAGE_STEP_NAME,
-  GENERATED_APP_BASE_IMAGE_BUILD_ARG,
   BUILD_DOCKER_IMAGE_STEP_START_LOG,
   BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
   BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
@@ -32,7 +31,6 @@ import { Build } from './dto/Build';
 import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { ConfigService } from '@nestjs/config';
 import { DeploymentService } from '../deployment/deployment.service';
 import {
   BuildResult,
@@ -323,9 +321,6 @@ const EXAMPLE_LOCAL_DISK = {
 
 const localDiskServiceGetDiskMock = jest.fn(() => EXAMPLE_LOCAL_DISK);
 
-const EXAMPLED_GENERATED_BASE_IMAGE = 'EXAMPLED_GENERATED_BASE_IMAGE';
-const configServiceGetMock = jest.fn(() => EXAMPLED_GENERATED_BASE_IMAGE);
-
 const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
@@ -356,12 +351,6 @@ describe('BuildService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BuildService,
-        {
-          provide: ConfigService,
-          useValue: {
-            get: configServiceGetMock
-          }
-        },
         {
           provide: PrismaService,
           useValue: {
@@ -603,10 +592,7 @@ describe('BuildService', () => {
     expect(containerBuilderServiceBuildMock).toBeCalledWith(
       EXAMPLE_BUILD.appId,
       EXAMPLE_BUILD_ID,
-      EXAMPLE_URL,
-      {
-        [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE
-      }
+      EXAMPLE_URL
     );
     expect(prismaBuildUpdateMock).toBeCalledTimes(1);
     expect(prismaBuildUpdateMock).toBeCalledWith({

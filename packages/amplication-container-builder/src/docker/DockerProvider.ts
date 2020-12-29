@@ -30,10 +30,10 @@ export class DockerProvider implements IProvider {
       "getStatus is not implemented for DockerProvider"
     );
   }
-}
 
-export function createImageID(repository: string, tag: string): string {
-  return `${repository}:${tag}`;
+  createImageId(tag: string): string {
+    return tag;
+  }
 }
 
 export function createBuildImageOptions(
@@ -42,6 +42,6 @@ export function createBuildImageOptions(
   return {
     t: request.tags,
     buildargs: request.args,
-    cachefrom: request.cacheFrom,
+    cachefrom: request.cacheFrom && JSON.stringify(request.cacheFrom),
   };
 }
