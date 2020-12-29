@@ -9,6 +9,7 @@ import {
   CLOUD_BUILDERS_DOCKER_IMAGE,
   createTagParameter,
   createImageId,
+  createCacheFromPullStep,
 } from "./config";
 import { GCS_HOST } from "./gcs.util";
 
@@ -43,6 +44,25 @@ describe("createConfig", () => {
     const image = createImageId(EXAMPLE_TAG, EXAMPLE_PROJECT_ID);
     expect(createConfig(EXAMPLE_BUILD_REQUEST, EXAMPLE_PROJECT_ID)).toEqual({
       steps: [createBuildStep(EXAMPLE_BUILD_REQUEST, [image])],
+      images: [image],
+      source: {
+        storageSource: {
+          bucket: EXAMPLE_BUCKET,
+          object: EXAMPLE_OBJECT,
+        },
+      },
+      tags: createBuildTags(EXAMPLE_TAGS),
+    });
+  });
+  test("creates config with cache from pull step", () => {
+    const image = createImageId(EXAMPLE_TAG, EXAMPLE_PROJECT_ID);
+    expect(
+      createConfig(EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM, EXAMPLE_PROJECT_ID)
+    ).toEqual({
+      steps: [
+        createCacheFromPullStep(EXAMPLE_CACHE_FROM_IMAGE),
+        createBuildStep(EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM, [image]),
+      ],
       images: [image],
       source: {
         storageSource: {

@@ -10,10 +10,14 @@ export function createConfig(
   request: BuildRequest,
   projectId: string
 ): google.devtools.cloudbuild.v1.IBuild {
+  const { cacheFrom = [] } = request;
   const { bucket, object } = parseGCSObjectURL(request.url);
   const images = request.tags.map((tag) => createImageId(tag, projectId));
   return {
-    steps: [createBuildStep(request, images)],
+    steps: [
+      ...cacheFrom.map((image) => createCacheFromPullStep(image)),
+      createBuildStep(request, images),
+    ],
     images,
     source: {
       storageSource: {
@@ -61,6 +65,16 @@ export function createBuildArgParameter(name: string, value: string): string {
 
 export function createCacheFromParameter(image: string): string {
   return `--cache-from=${image}`;
+}
+
+export function createCacheFromPullStep(
+  image: string
+): google.devtools.cloudbuild.v1.IBuildStep {
+  return {
+    name: CLOUD_BUILDERS_DOCKER_IMAGE,
+    entrypoint: "bash",
+    args: ["-c", `docker pull ${image}:latest || exit 0`],
+  };
 }
 
 export function createBuildTags(tags: string[]): string[] {
