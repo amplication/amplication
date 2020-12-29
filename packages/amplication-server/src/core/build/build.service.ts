@@ -385,7 +385,6 @@ export class BuildService {
     build: Build,
     tarballURL: string
   ): Promise<void> {
-    const previousImages = await this.findPreviousBuildImages(build);
     return this.actionService.run(
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_NAME,
@@ -395,35 +394,20 @@ export class BuildService {
           step,
           BUILD_DOCKER_IMAGE_STEP_START_LOG
         );
+        const tag = `${build.appId}:${build.id}`;
         const latestTag = `${build.appId}:latest`;
+        const latestImageId = await this.containerBuilderService.createImageId(
+          latestTag
+        );
         const result = await this.containerBuilderService.build({
-          tags: [`${build.appId}:${build.id}`, latestTag],
-          cacheFrom: [
-            ...previousImages,
-            await this.containerBuilderService.createImageId(latestTag)
-          ],
+          tags: [tag, latestTag],
+          cacheFrom: [latestImageId],
           url: tarballURL
         });
         await this.handleContainerBuilderResult(build, step, result);
       },
       true
     );
-  }
-
-  private async findPreviousBuildImages(build: Build): Promise<string[]> {
-    const previousBuild = await this.prisma.build.findFirst({
-      where: {
-        appId: build.appId
-      },
-      cursor: {
-        id: build.id
-      },
-      take: -1,
-      select: {
-        images: true
-      }
-    });
-    return previousBuild?.images || [];
   }
 
   async handleContainerBuilderResult(
