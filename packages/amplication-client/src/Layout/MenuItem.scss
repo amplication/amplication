@@ -29,6 +29,10 @@ $inverted-border-radius: 6px;
     width: 0;
     letter-spacing: normal;
   }
+  &__badge {
+    @include counterBadge;
+    background-color: var(--negative-light);
+  }
 
   &:hover {
     background-color: transparent !important;

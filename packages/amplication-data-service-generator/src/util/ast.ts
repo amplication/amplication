@@ -30,7 +30,7 @@ const ARRAY_ID = builders.identifier("Array");
 type ParseOptions = Omit<recast.Options, "parser">;
 type PartialParseOptions = Omit<ParserOptions, "tolerant">;
 
-class ParseError extends SyntaxError {
+export class ParseError extends SyntaxError {
   constructor(message: string, source: string) {
     super(`${message}\nSource:\n${source}`);
   }
@@ -597,6 +597,10 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
   );
 }
 
+/**
+ * Returns the constructor of the given classDeclaration
+ * @param classDeclaration
+ */
 export function findConstructor(
   classDeclaration: namedTypes.ClassDeclaration
 ): namedTypes.ClassMethod | undefined {

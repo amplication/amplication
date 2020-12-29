@@ -16,6 +16,8 @@ services:
         NPM_LOG_LEVEL: notice
     ports:
       - "3000:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       POSTGRESQL_URL: postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432
       JWT_SECRET: "${JWT_SECRET}"
