@@ -19,9 +19,6 @@ const EXAMPLE_FINISHED_CLOUD_BUILD_BUILD = {
   images: EXAMPLE_GCR_IMAGES,
 };
 
-// const cloudBuildBuildPromiseMock = jest.fn(() => [
-//   EXAMPLE_FINISHED_CLOUD_BUILD_BUILD,
-// ]);
 const cloudBuildCreateBuildMock = jest.fn(() => [
   {
     metadata: { build: EXAMPLE_FINISHED_CLOUD_BUILD_BUILD },
@@ -38,12 +35,12 @@ describe("CloudBuildProvider", () => {
         // @ts-ignore
         MOCK_CLOUD_BUILD_CLIENT,
         EXAMPLE_PROJECT_ID
-      ).build(
-        EXAMPLE_REPOSITORY,
-        EXAMPLE_TAG,
-        EXAMPLE_GCS_CODE_URL,
-        EXAMPLE_BUILD_ARGS
-      )
+      ).build({
+        repository: EXAMPLE_REPOSITORY,
+        tag: EXAMPLE_TAG,
+        url: EXAMPLE_GCS_CODE_URL,
+        args: EXAMPLE_BUILD_ARGS,
+      })
     ).resolves.toEqual({
       status: EnumBuildStatus.Running,
       statusQuery: { id: EXAMPLE_GCS_BUILD_ID },
@@ -51,14 +48,12 @@ describe("CloudBuildProvider", () => {
     expect(cloudBuildCreateBuildMock).toBeCalledTimes(1);
     expect(cloudBuildCreateBuildMock).toBeCalledWith({
       projectId: EXAMPLE_PROJECT_ID,
-      build: createConfig(
-        EXAMPLE_REPOSITORY,
-        EXAMPLE_TAG,
-        EXAMPLE_GCS_CODE_URL,
-        EXAMPLE_BUILD_ARGS
-      ),
+      build: createConfig({
+        repository: EXAMPLE_REPOSITORY,
+        tag: EXAMPLE_TAG,
+        url: EXAMPLE_GCS_CODE_URL,
+        args: EXAMPLE_BUILD_ARGS,
+      }),
     });
-    // expect(cloudBuildBuildPromiseMock).toBeCalledTimes(1);
-    // expect(cloudBuildBuildPromiseMock).toBeCalledWith();
   });
 });

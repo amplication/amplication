@@ -24,12 +24,12 @@ const EXAMPLE_BUILD_ARGS = {
 describe("createConfig", () => {
   test("creates config", () => {
     expect(
-      createConfig(
-        EXAMPLE_REPOSITORY,
-        EXAMPLE_TAG,
-        EXAMPLE_GCS_CODE_URL,
-        EXAMPLE_BUILD_ARGS
-      )
+      createConfig({
+        repository: EXAMPLE_REPOSITORY,
+        tag: EXAMPLE_TAG,
+        url: EXAMPLE_GCS_CODE_URL,
+        args: EXAMPLE_BUILD_ARGS,
+      })
     ).toEqual({
       steps: [
         createBuildStep([

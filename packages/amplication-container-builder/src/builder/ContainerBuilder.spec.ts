@@ -1,4 +1,5 @@
 import { BuildResult, EnumBuildStatus } from "../types";
+import { BuildRequest } from "../types/BuildRequest";
 import { ContainerBuilder } from "./ContainerBuilder";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
@@ -14,9 +15,7 @@ const EXAMPLE_BUILD_RESULT: BuildResult = {
 const EXAMPLE_BUILD_ARGS = { EXAMPLE_KEY: "EXAMPLE_VALUE" };
 
 const EXAMPLE_SYNC_PROVIDER = {
-  build: jest.fn(
-    async (repository: string, tag: string, url: string) => EXAMPLE_BUILD_RESULT
-  ),
+  build: jest.fn(async (request: BuildRequest) => EXAMPLE_BUILD_RESULT),
   getStatus: jest.fn(async (statusQuery: any) => EXAMPLE_BUILD_RESULT),
 };
 
@@ -30,12 +29,12 @@ describe("ContainerBuilder", () => {
         providers: {
           [EXAMPLE_PROVIDER_NAME]: EXAMPLE_SYNC_PROVIDER,
         },
-      }).build(
-        EXAMPLE_REPOSITORY,
-        EXAMPLE_TAG,
-        EXAMPLE_CODE_URL,
-        EXAMPLE_BUILD_ARGS
-      )
+      }).build({
+        repository: EXAMPLE_REPOSITORY,
+        tag: EXAMPLE_TAG,
+        url: EXAMPLE_CODE_URL,
+        args: EXAMPLE_BUILD_ARGS,
+      })
     ).resolves.toEqual(EXAMPLE_BUILD_RESULT);
   });
   test("builds using an async provider", async () => {
@@ -45,12 +44,12 @@ describe("ContainerBuilder", () => {
         providers: {
           [EXAMPLE_PROVIDER_NAME]: EXAMPLE_ASYNC_PROVIDER,
         },
-      }).build(
-        EXAMPLE_REPOSITORY,
-        EXAMPLE_TAG,
-        EXAMPLE_CODE_URL,
-        EXAMPLE_BUILD_ARGS
-      )
+      }).build({
+        repository: EXAMPLE_REPOSITORY,
+        tag: EXAMPLE_TAG,
+        url: EXAMPLE_CODE_URL,
+        args: EXAMPLE_BUILD_ARGS,
+      })
     ).resolves.toEqual(EXAMPLE_BUILD_RESULT);
   });
   test("throws an error for invalid default", () => {

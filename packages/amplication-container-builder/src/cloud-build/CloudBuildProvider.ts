@@ -5,6 +5,7 @@ import { IProvider, BuildResult, EnumBuildStatus } from "../types";
 import { defaultLogger } from "./logging";
 import { createConfig } from "./config";
 import { InvalidBuildProviderState } from "../builder/InvalidBuildProviderState";
+import { BuildRequest } from "../types/BuildRequest";
 
 type StatusQuery = {
   id: string;
@@ -22,25 +23,14 @@ export class CloudBuildProvider implements IProvider {
     readonly projectId: string,
     readonly logger: winston.Logger = defaultLogger
   ) {}
-  async build(
-    repository: string,
-    tag: string,
-    url: string,
-    buildArgs: Record<string, string>
-  ): Promise<BuildResult> {
-    const logger = this.logger.child({
-      repository,
-      tag,
-    });
+  async build(request: BuildRequest): Promise<BuildResult> {
+    const logger = this.logger.child({ request });
 
-    logger.info("Building container...", {
-      url,
-      buildArgs,
-    });
+    logger.info("Building container...");
 
     const [operation] = await this.cloudBuild.createBuild({
       projectId: this.projectId,
-      build: createConfig(repository, tag, url, buildArgs),
+      build: createConfig(request),
     });
 
     const {

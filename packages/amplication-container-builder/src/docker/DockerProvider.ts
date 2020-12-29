@@ -1,6 +1,7 @@
 import { NotImplementedException } from "@nestjs/common";
 import Docker from "dockerode";
 import { IProvider, BuildResult, EnumBuildStatus } from "../types";
+import { BuildRequest } from "../types/BuildRequest";
 
 export function createImageID(repository: string, tag: string): string {
   return `${repository}:${tag}`;
@@ -8,16 +9,11 @@ export function createImageID(repository: string, tag: string): string {
 
 export class DockerProvider implements IProvider {
   constructor(readonly docker: Docker) {}
-  async build(
-    repository: string,
-    tag: string,
-    url: string,
-    buildArgs: Record<string, string>
-  ): Promise<BuildResult> {
-    const imageId = createImageID(repository, tag);
-    await this.docker.buildImage(url, {
+  async build(request: BuildRequest): Promise<BuildResult> {
+    const imageId = createImageID(request.repository, request.tag);
+    await this.docker.buildImage(request.url, {
       t: imageId,
-      buildargs: buildArgs,
+      buildargs: request.args,
     });
     return { images: [imageId], status: EnumBuildStatus.Completed };
   }

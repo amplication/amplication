@@ -1,4 +1,5 @@
 import { BuildResult, IProvider } from "../types";
+import { BuildRequest } from "../types/BuildRequest";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
 export type ContainerBuilderOptions = {
@@ -13,15 +14,12 @@ export class ContainerBuilder {
     }
   }
   async build(
-    repository: string,
-    tag: string,
-    codeURL: string,
-    buildArgs: Record<string, string>,
+    request: BuildRequest,
     providerName?: string
   ): Promise<BuildResult> {
     providerName = providerName || this.options.default;
     const provider = await this.options.providers[providerName];
-    return provider.build(repository, tag, codeURL, buildArgs);
+    return provider.build(request);
   }
 
   async getStatus(

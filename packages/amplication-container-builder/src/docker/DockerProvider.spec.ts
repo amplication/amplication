@@ -19,12 +19,12 @@ describe("DockerProvider", () => {
       new DockerProvider(
         // @ts-ignore
         MOCK_DOCKER
-      ).build(
-        EXAMPLE_REPOSITORY,
-        EXAMPLE_TAG,
-        EXAMPLE_LOCAL_CODE_URL,
-        EXAMPLE_BUILD_ARGS
-      )
+      ).build({
+        repository: EXAMPLE_REPOSITORY,
+        tag: EXAMPLE_TAG,
+        url: EXAMPLE_LOCAL_CODE_URL,
+        args: EXAMPLE_BUILD_ARGS,
+      })
     ).resolves.toEqual({
       status: EnumBuildStatus.Completed,
       images: EXAMPLE_LOCAL_IMAGES,

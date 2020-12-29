@@ -1,4 +1,5 @@
 import { google } from "@google-cloud/cloudbuild/build/protos/protos";
+import { BuildRequest } from "../types/BuildRequest";
 import { parseGCSObjectURL } from "./gcs.util";
 
 export const IMAGE_REPOSITORY_SUBSTITUTION_KEY = "_IMAGE_REPOSITORY";
@@ -32,16 +33,13 @@ export function createBuildStep(
 }
 
 export function createConfig(
-  repository: string,
-  tag: string,
-  url: string,
-  buildArgs: Record<string, string>
+  request: BuildRequest
 ): google.devtools.cloudbuild.v1.IBuild {
-  const { bucket, object } = parseGCSObjectURL(url);
+  const { bucket, object } = parseGCSObjectURL(request.url);
   return {
     steps: [
       createBuildStep(
-        Object.entries(buildArgs).map(([name, value]) =>
+        Object.entries(request.args).map(([name, value]) =>
           createBuildArgParameter(name, value)
         )
       ),
@@ -55,11 +53,10 @@ export function createConfig(
       },
     },
     substitutions: {
-      /** @todo use a nicer repository name */
-      [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: repository,
-      [IMAGE_TAG_SUBSTITUTION_KEY]: tag,
+      [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: request.repository,
+      [IMAGE_TAG_SUBSTITUTION_KEY]: request.tag,
     },
-    tags: createTags(repository, tag),
+    tags: createTags(request.repository, request.tag),
   };
 }
 
