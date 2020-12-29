@@ -7,7 +7,7 @@ import {
   EnumBuildStatus,
   IProvider,
 } from "../types";
-import { defaultLogger } from "./logging";
+import { defaultLogger } from "../logging";
 import { createConfig } from "./config";
 import { InvalidBuildProviderState } from "../builder/InvalidBuildProviderState";
 
