@@ -58,7 +58,7 @@ export function createPushStep(
 }
 
 export function createTagParameter(tag: string): string {
-  return `--tag=${GCR_HOST}/${tag}`;
+  return `--tag=${tag}`;
 }
 
 export function createBuildArgParameter(name: string, value: string): string {
