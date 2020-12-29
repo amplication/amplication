@@ -2,21 +2,19 @@ import { google } from "@google-cloud/cloudbuild/build/protos/protos";
 import { BuildRequest } from "../types";
 import {
   createConfig,
-  IMAGE_REPOSITORY_SUBSTITUTION_KEY,
-  IMAGE_TAG_SUBSTITUTION_KEY,
-  DOCKER_PUSH_STEP,
-  IMAGES,
   createBuildArgParameter,
   createBuildStep,
-  createTags,
+  createBuildTags,
   createCacheFromParameter,
-  TAG_BUILD_ARG,
   CLOUD_BUILDERS_DOCKER_IMAGE,
+  createTagParameter,
+  createImage,
+  createPushStep,
 } from "./config";
 import { GCS_HOST } from "./gcs.util";
 
-const EXAMPLE_REPOSITORY = "EXAMPLE_REPOSITORY";
-const EXAMPLE_TAG = "EXAMPLE_TAG";
+const EXAMPLE_TAG = "EXAMPLE_REPOSITORY:EXAMPLE_TAG";
+const EXAMPLE_TAGS = [EXAMPLE_TAG];
 const EXAMPLE_BUCKET = "EXAMPLE_BUCKET";
 const EXAMPLE_OBJECT = "EXAMPLE_OBJECT";
 const EXAMPLE_GCS_CODE_URL = `https://${GCS_HOST}/${EXAMPLE_BUCKET}/${EXAMPLE_OBJECT}`;
@@ -27,8 +25,7 @@ const EXAMPLE_BUILD_ARGS = {
   [EXAMPLE_BUILD_ARG_NAME]: EXAMPLE_BUILD_ARG_VALUE,
 };
 const EXAMPLE_BUILD_REQUEST: BuildRequest = {
-  repository: EXAMPLE_REPOSITORY,
-  tag: EXAMPLE_TAG,
+  tags: EXAMPLE_TAGS,
   url: EXAMPLE_GCS_CODE_URL,
   args: EXAMPLE_BUILD_ARGS,
 };
@@ -39,26 +36,26 @@ const EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM: BuildRequest = {
 
 describe("createConfig", () => {
   test("creates config", () => {
+    const image = createImage(EXAMPLE_TAG);
     expect(createConfig(EXAMPLE_BUILD_REQUEST)).toEqual({
-      steps: [createBuildStep(EXAMPLE_BUILD_REQUEST), DOCKER_PUSH_STEP],
-      images: IMAGES,
+      steps: [
+        createBuildStep(EXAMPLE_BUILD_REQUEST, [image]),
+        createPushStep(image),
+      ],
+      images: [image],
       source: {
         storageSource: {
           bucket: EXAMPLE_BUCKET,
           object: EXAMPLE_OBJECT,
         },
       },
-      substitutions: {
-        /** @todo use a nicer repository name */
-        [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: EXAMPLE_REPOSITORY,
-        [IMAGE_TAG_SUBSTITUTION_KEY]: EXAMPLE_TAG,
-      },
-      tags: createTags(EXAMPLE_REPOSITORY, EXAMPLE_TAG),
+      tags: createBuildTags(EXAMPLE_TAGS),
     });
   });
 });
 
 describe("createBuildStep", () => {
+  const image = createImage(EXAMPLE_TAG);
   const cases: Array<[
     string,
     BuildRequest,
@@ -72,7 +69,7 @@ describe("createBuildStep", () => {
         name: CLOUD_BUILDERS_DOCKER_IMAGE,
         args: [
           "build",
-          TAG_BUILD_ARG,
+          createTagParameter(image),
           createBuildArgParameter(
             EXAMPLE_BUILD_ARG_NAME,
             EXAMPLE_BUILD_ARG_VALUE
@@ -89,7 +86,7 @@ describe("createBuildStep", () => {
         name: CLOUD_BUILDERS_DOCKER_IMAGE,
         args: [
           "build",
-          TAG_BUILD_ARG,
+          createTagParameter(image),
           createBuildArgParameter(
             EXAMPLE_BUILD_ARG_NAME,
             EXAMPLE_BUILD_ARG_VALUE
@@ -101,7 +98,7 @@ describe("createBuildStep", () => {
     ],
   ];
   test.each(cases)("%s", (name, request, expected) => {
-    expect(createBuildStep(request)).toEqual(expected);
+    expect(createBuildStep(request, [image])).toEqual(expected);
   });
 });
 

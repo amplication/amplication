@@ -4,7 +4,7 @@ import { IProvider, BuildResult, EnumBuildStatus } from "../types";
 import { BuildRequest } from "../types/BuildRequest";
 
 export type BuildImageOptions = {
-  t?: string;
+  t?: string[];
   buildargs?: Record<string, string>;
   cachefrom?: string;
 };
@@ -12,10 +12,9 @@ export type BuildImageOptions = {
 export class DockerProvider implements IProvider {
   constructor(readonly docker: Docker) {}
   async build(request: BuildRequest): Promise<BuildResult> {
-    const imageId = createImageID(request.repository, request.tag);
-    const options = createBuildImageOptions(request, imageId);
+    const options = createBuildImageOptions(request);
     await this.docker.buildImage(request.url, options);
-    return { images: [imageId], status: EnumBuildStatus.Completed };
+    return { images: request.tags, status: EnumBuildStatus.Completed };
   }
 
   async getStatus(statusQuery: any): Promise<BuildResult> {
@@ -30,11 +29,10 @@ export function createImageID(repository: string, tag: string): string {
 }
 
 export function createBuildImageOptions(
-  request: BuildRequest,
-  imageId: string
+  request: BuildRequest
 ): BuildImageOptions {
   return {
-    t: imageId,
+    t: request.tags,
     buildargs: request.args,
     cachefrom: request.cacheFrom,
   };

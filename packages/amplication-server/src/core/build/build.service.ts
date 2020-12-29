@@ -403,8 +403,7 @@ export class BuildService {
         );
 
         const result = await this.containerBuilderService.build({
-          repository: build.appId,
-          tag: build.id,
+          tags: [`${build.appId}:${build.id}`, `${build.appId}:latest`],
           url: tarballURL,
           args: {
             [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: generatedAppBaseImage

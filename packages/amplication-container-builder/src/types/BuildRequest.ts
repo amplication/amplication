@@ -1,8 +1,6 @@
 export type BuildRequest = {
-  /** Desired Docker image repository */
-  repository: string;
-  /** Desired Docker image tag */
-  tag: string;
+  /** Desired Docker image tags */
+  tags: string[];
   /** Tarball URL context */
   url: string;
   /** Image to cache from  */
