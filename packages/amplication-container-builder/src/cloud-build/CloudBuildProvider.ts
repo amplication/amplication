@@ -1,11 +1,15 @@
 import { CloudBuildClient } from "@google-cloud/cloudbuild/build/src/v1/cloud_build_client";
 import { google } from "@google-cloud/cloudbuild/build/protos/protos";
 import * as winston from "winston";
-import { IProvider, BuildResult, EnumBuildStatus } from "../types";
+import {
+  BuildRequest,
+  BuildResult,
+  EnumBuildStatus,
+  IProvider,
+} from "../types";
 import { defaultLogger } from "./logging";
 import { createConfig } from "./config";
 import { InvalidBuildProviderState } from "../builder/InvalidBuildProviderState";
-import { BuildRequest } from "../types/BuildRequest";
 
 type StatusQuery = {
   id: string;

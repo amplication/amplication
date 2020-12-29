@@ -1,5 +1,4 @@
-import { BuildResult, IProvider } from "../types";
-import { BuildRequest } from "../types/BuildRequest";
+import { BuildRequest, BuildResult, IProvider } from "../types";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
 export type ContainerBuilderOptions = {

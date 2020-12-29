@@ -1,5 +1,4 @@
-import { BuildResult, EnumBuildStatus } from "../types";
-import { BuildRequest } from "../types/BuildRequest";
+import { BuildRequest, BuildResult, EnumBuildStatus } from "../types";
 import { ContainerBuilder } from "./ContainerBuilder";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
