@@ -98,6 +98,18 @@ export type BulkEntityData = Omit<
   fields: BulkEntityFieldData[];
 };
 
+export type EntityPendingChange = {
+  /** The id of the changed entity */
+  resourceId: string;
+  /** The type of change */
+  action: EnumPendingChangeAction;
+  resourceType: EnumPendingChangeResourceType.Entity;
+  /** The entity version number */
+  versionNumber: number;
+  /** The entity */
+  resource: Entity;
+};
+
 /**
  * Expect format for entity field name, matches the format of JavaScript variable name
  */
@@ -353,8 +365,16 @@ export class EntityService {
     });
   }
 
-  async getChangedEntities(appId: string, userId: string) {
-    const changedEntity = await this.prisma.entity.findMany({
+  /**
+   * Gets all the entities changed since the last app commit
+   * @param appId the app ID to find changes to
+   * @param userId the user ID the app ID relates to
+   */
+  async getChangedEntities(
+    appId: string,
+    userId: string
+  ): Promise<EntityPendingChange[]> {
+    const changedEntities = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId,
         appId
@@ -371,7 +391,7 @@ export class EntityService {
       }
     });
 
-    return changedEntity.map(entity => {
+    return changedEntities.map(entity => {
       const [lastVersion] = entity.versions;
       const action = entity.deletedAt
         ? EnumPendingChangeAction.Delete
@@ -1332,6 +1352,14 @@ export class EntityService {
     args: CreateOneEntityFieldByDisplayNameArgs,
     user: User
   ): Promise<EntityField> {
+    const data = await this.createFieldCreateInputByDisplayName(args);
+
+    return this.createField({ data }, user);
+  }
+
+  async createFieldCreateInputByDisplayName(
+    args: CreateOneEntityFieldByDisplayNameArgs
+  ): Promise<EntityFieldCreateInput> {
     const lowerCaseName = args.data.displayName.toLowerCase();
     const name = camelCase(args.data.displayName);
     let dataType: EnumDataType = EnumDataType.SingleLineText;
@@ -1416,22 +1444,16 @@ export class EntityService {
         };
       }
     }
-
-    return this.createField(
-      {
-        data: {
-          dataType: dataType,
-          name: name,
-          displayName: args.data.displayName,
-          properties: properties,
-          required: false,
-          searchable: false,
-          description: '',
-          entity: args.data.entity
-        }
-      },
-      user
-    );
+    return {
+      dataType,
+      name,
+      properties,
+      displayName: args.data.displayName,
+      required: false,
+      searchable: false,
+      description: '',
+      entity: args.data.entity
+    };
   }
 
   async validateFieldData(

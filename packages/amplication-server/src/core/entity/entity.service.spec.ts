@@ -6,9 +6,11 @@ import {
   EntityVersionCreateArgs,
   EnumEntityAction
 } from '@prisma/client';
+import { camelCase } from 'camel-case';
 import { pick, omit } from 'lodash';
 import {
   DELETE_ONE_USER_ENTITY_ERROR_MESSAGE,
+  EntityPendingChange,
   EntityService,
   NAME_VALIDATION_ERROR_MESSAGE
 } from './entity.service';
@@ -23,6 +25,10 @@ import {
 } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
+import {
+  EnumPendingChangeAction,
+  EnumPendingChangeResourceType
+} from '../app/dto';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
@@ -92,6 +98,14 @@ const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
   description: 'example entity'
 };
 
+const EXAMPLE_ENTITY_PENDING_CHANGE: EntityPendingChange = {
+  resourceId: EXAMPLE_ENTITY.id,
+  action: EnumPendingChangeAction.Create,
+  resourceType: EnumPendingChangeResourceType.Entity,
+  versionNumber: 1,
+  resource: EXAMPLE_ENTITY
+};
+
 const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
   id: EXAMPLE_LAST_ENTITY_VERSION_ID,
   createdAt: new Date(),
@@ -122,6 +136,14 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
     maxLength: 42
   },
   entityVersion: { connect: { id: EXAMPLE_CURRENT_ENTITY_VERSION.id } }
+};
+
+const EXAMPLE_ENTITY_WHERE_PARENT_ID = { connect: { id: 'EXAMPLE_ID' } };
+const BASE_CREATE_INPUT = {
+  required: false,
+  searchable: false,
+  description: '',
+  entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
 };
 
 const prismaEntityFindOneMock = jest.fn(() => {
@@ -219,6 +241,7 @@ const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
+const EXAMPLE_USER = new User();
 describe('EntityService', () => {
   let service: EntityService;
 
@@ -967,5 +990,164 @@ describe('EntityService', () => {
     expect(prismaEntityPermissionFieldFindManyMock).toBeCalledWith(
       permissionFieldArgs
     );
+  });
+
+  it('create field by display name', async () => {
+    expect(
+      await service.createFieldByDisplayName(
+        {
+          data: {
+            displayName: 'EXAMPLE_DISPLAY_NAME',
+            entity: { connect: { id: 'EXAMPLE_ID' } }
+          }
+        },
+        EXAMPLE_USER
+      )
+    ).toEqual(EXAMPLE_ENTITY_FIELD);
+  });
+
+  it('create field of date', async () => {
+    const EXAMPLE_DATE_DISPLAY_NAME = 'EXAMPLE_DISPLAY_NAME' + ' date';
+
+    expect(
+      await service.createFieldCreateInputByDisplayName({
+        data: {
+          displayName: EXAMPLE_DATE_DISPLAY_NAME,
+          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+        }
+      })
+    ).toEqual({
+      ...BASE_CREATE_INPUT,
+      dataType: EnumDataType.DateTime,
+      name: camelCase(EXAMPLE_DATE_DISPLAY_NAME),
+      properties: {
+        timeZone: 'localTime',
+        dateOnly: false
+      },
+      displayName: EXAMPLE_DATE_DISPLAY_NAME
+    });
+  });
+  it('create field of description', async () => {
+    const EXAMPLE_DESCRIPTION_DISPLAY_NAME =
+      'EXAMPLE_DISPLAY_NAME' + ' description';
+    expect(
+      await service.createFieldCreateInputByDisplayName({
+        data: {
+          displayName: EXAMPLE_DESCRIPTION_DISPLAY_NAME,
+          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+        }
+      })
+    ).toEqual({
+      ...BASE_CREATE_INPUT,
+      dataType: EnumDataType.MultiLineText,
+      name: camelCase(EXAMPLE_DESCRIPTION_DISPLAY_NAME),
+      properties: {
+        maxLength: 1000
+      },
+      displayName: EXAMPLE_DESCRIPTION_DISPLAY_NAME
+    });
+  });
+  it('create field of email', async () => {
+    const EXAMPLE_EMAIL_DISPLAY_NAME = 'EXAMPLE_DISPLAY_NAME' + ' email';
+    expect(
+      await service.createFieldCreateInputByDisplayName({
+        data: {
+          displayName: EXAMPLE_EMAIL_DISPLAY_NAME,
+          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+        }
+      })
+    ).toEqual({
+      ...BASE_CREATE_INPUT,
+      dataType: EnumDataType.Email,
+      name: camelCase(EXAMPLE_EMAIL_DISPLAY_NAME),
+      properties: {},
+      displayName: EXAMPLE_EMAIL_DISPLAY_NAME
+    });
+  });
+  it('create field of status', async () => {
+    const EXAMPLE_STATUS_DISPLAY_NAME = 'EXAMPLE_DISPLAY_NAME' + ' status';
+    expect(
+      await service.createFieldCreateInputByDisplayName({
+        data: {
+          displayName: EXAMPLE_STATUS_DISPLAY_NAME,
+          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+        }
+      })
+    ).toEqual({
+      ...BASE_CREATE_INPUT,
+      dataType: EnumDataType.OptionSet,
+      name: camelCase(EXAMPLE_STATUS_DISPLAY_NAME),
+      properties: { options: [{ label: 'Option 1', value: 'Option1' }] },
+      displayName: EXAMPLE_STATUS_DISPLAY_NAME
+    });
+  });
+  it('create field of boolean', async () => {
+    const EXAMPLE_BOOLEAN_DISPLAY_NAME = 'is' + 'EXAMPLE_DISPLAY_NAME';
+    expect(
+      await service.createFieldCreateInputByDisplayName({
+        data: {
+          displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME,
+          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+        }
+      })
+    ).toEqual({
+      ...BASE_CREATE_INPUT,
+      dataType: EnumDataType.Boolean,
+      name: camelCase(EXAMPLE_BOOLEAN_DISPLAY_NAME),
+      properties: {},
+      displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME
+    });
+  });
+  it('create single field of lookup', async () => {
+    const relatedEntity = prismaEntityFindManyMock()[0];
+    expect(
+      await service.createFieldCreateInputByDisplayName({
+        data: {
+          displayName: relatedEntity.displayName.toLowerCase(),
+          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+        }
+      })
+    ).toEqual({
+      ...BASE_CREATE_INPUT,
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: relatedEntity.id,
+        allowMultipleSelection: false
+      },
+      displayName: relatedEntity.displayName,
+      name: camelCase(relatedEntity.displayName)
+    });
+  });
+  it('create field of plural lookup', async () => {
+    const relatedEntity = prismaEntityFindManyMock()[0];
+    const query = relatedEntity.pluralDisplayName.toLowerCase();
+    expect(
+      await service.createFieldCreateInputByDisplayName({
+        data: {
+          displayName: query,
+          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+        }
+      })
+    ).toEqual({
+      ...BASE_CREATE_INPUT,
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: relatedEntity.id,
+        allowMultipleSelection: true
+      },
+      displayName: query,
+      name: camelCase(query)
+    });
+  });
+  it('pending changed entities', async () => {
+    prismaEntityFindManyMock.mockImplementationOnce(() => [
+      {
+        ...EXAMPLE_ENTITY,
+        versions: [EXAMPLE_CURRENT_ENTITY_VERSION]
+      }
+    ]);
+    expect(
+      await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
+    ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE]);
   });
 });
