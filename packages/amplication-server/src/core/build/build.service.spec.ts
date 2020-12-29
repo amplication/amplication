@@ -342,7 +342,7 @@ const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
 const containerBuilderServiceGetStatusMock = jest.fn(
   () => EXAMPLE_DOCKER_BUILD_RESULT_RUNNING
 );
-const createImageIdMock = jest.fn((tag) => tag);
+const createImageIdMock = jest.fn(tag => tag);
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
 const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
