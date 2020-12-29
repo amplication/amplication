@@ -11,6 +11,7 @@ import {
   createTags,
   createCacheFromParameter,
   TAG_BUILD_ARG,
+  CLOUD_BUILDERS_DOCKER_IMAGE,
 } from "./config";
 import { GCS_HOST } from "./gcs.util";
 
@@ -68,7 +69,7 @@ describe("createBuildStep", () => {
       EXAMPLE_BUILD_REQUEST,
       {
         id: "docker-build",
-        name: "gcr.io/cloud-builders/docker",
+        name: CLOUD_BUILDERS_DOCKER_IMAGE,
         args: [
           "build",
           TAG_BUILD_ARG,
@@ -85,7 +86,7 @@ describe("createBuildStep", () => {
       EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM,
       {
         id: "docker-build",
-        name: "gcr.io/cloud-builders/docker",
+        name: CLOUD_BUILDERS_DOCKER_IMAGE,
         args: [
           "build",
           TAG_BUILD_ARG,

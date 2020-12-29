@@ -4,9 +4,10 @@ import { parseGCSObjectURL } from "./gcs.util";
 
 export const IMAGE_REPOSITORY_SUBSTITUTION_KEY = "_IMAGE_REPOSITORY";
 export const IMAGE_TAG_SUBSTITUTION_KEY = "_BUILD_ID";
+export const CLOUD_BUILDERS_DOCKER_IMAGE = "gcr.io/cloud-builders/docker";
 export const DOCKER_PUSH_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
   id: "docker-push",
-  name: "gcr.io/cloud-builders/docker",
+  name: CLOUD_BUILDERS_DOCKER_IMAGE,
   args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$_BUILD_ID"],
 };
 export const IMAGES = ["gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$_BUILD_ID"];
@@ -30,7 +31,7 @@ export function createBuildStep(
   );
   return {
     id: "docker-build",
-    name: "gcr.io/cloud-builders/docker",
+    name: CLOUD_BUILDERS_DOCKER_IMAGE,
     args: [
       "build",
       TAG_BUILD_ARG,
