@@ -4,9 +4,6 @@
   </a>
 </p>
 <p align="center">
-  <img src="https://amplication.com/assets/images/amplication build mockup.png" />
-</p>
-<p align="center">
     <a href="https://docs.amplication.com/docs/">Docs</a> <a href="https://twitter.com/amplication">Twitter</a>
 </p>
 <p align="center">
