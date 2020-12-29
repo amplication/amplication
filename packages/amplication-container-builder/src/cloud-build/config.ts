@@ -73,7 +73,7 @@ export function createCacheFromPullStep(
   return {
     name: CLOUD_BUILDERS_DOCKER_IMAGE,
     entrypoint: "bash",
-    args: ["-c", `docker pull ${image}:latest || exit 0`],
+    args: ["-c", `docker pull ${image} || exit 0`],
   };
 }
 
