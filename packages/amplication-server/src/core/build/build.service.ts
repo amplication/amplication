@@ -1,10 +1,10 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { subSeconds } from 'date-fns';
 import { SortOrder } from '@prisma/client';
-
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
@@ -42,6 +42,7 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 
+export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
@@ -131,7 +132,10 @@ const CONTAINER_STATUS_UPDATE_INTERVAL_SEC = 10;
 
 @Injectable()
 export class BuildService {
+  generatedAppBaseImage: string;
+
   constructor(
+    private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
     private readonly entityService: EntityService,
@@ -146,6 +150,10 @@ export class BuildService {
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
+
+    this.generatedAppBaseImage = this.configService.get(
+      GENERATED_APP_BASE_IMAGE_VAR
+    );
   }
 
   async create(args: CreateBuildArgs): Promise<Build> {
@@ -401,7 +409,7 @@ export class BuildService {
         );
         const result = await this.containerBuilderService.build({
           tags: [tag, latestTag],
-          cacheFrom: [latestImageId],
+          cacheFrom: [this.generatedAppBaseImage, latestImageId],
           url: tarballURL
         });
         await this.handleContainerBuilderResult(build, step, result);

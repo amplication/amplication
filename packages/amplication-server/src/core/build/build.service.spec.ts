@@ -1,5 +1,6 @@
 import { Readable } from 'stream';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -321,6 +322,9 @@ const EXAMPLE_LOCAL_DISK = {
 
 const localDiskServiceGetDiskMock = jest.fn(() => EXAMPLE_LOCAL_DISK);
 
+const EXAMPLED_GENERATED_BASE_IMAGE = 'EXAMPLED_GENERATED_BASE_IMAGE';
+const configServiceGetMock = jest.fn(() => EXAMPLED_GENERATED_BASE_IMAGE);
+
 const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
@@ -351,6 +355,12 @@ describe('BuildService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BuildService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: configServiceGetMock
+          }
+        },
         {
           provide: PrismaService,
           useValue: {
