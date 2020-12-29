@@ -3,7 +3,6 @@
     <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
   </a>
 </p>
-<p align="center">An open-source dev tool for building fully functional server-side Node.js apps with React clients...blazing fast!</p>
 <p align="center">
   <img src="https://amplication.com/assets/images/amplication build mockup.png" />
 </p>
@@ -23,6 +22,8 @@
   </a>
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
 </p>
+
+An open-source dev tool for building fully functional server-side Node.js apps with React clients...blazing fast!
 
 ## [Getting Started](https://docs.amplication.com/docs/getting-started)
 
