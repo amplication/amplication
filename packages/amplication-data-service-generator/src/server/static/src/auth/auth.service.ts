@@ -3,11 +3,7 @@ import { PasswordService } from "./password.service";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from "../user/user.service";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from "../user/user";
-
-export type UserInfo = Pick<User, "username" | "roles">;
+import { UserInfo } from "./UserInfo";
 
 @Injectable()
 export class AuthService {
