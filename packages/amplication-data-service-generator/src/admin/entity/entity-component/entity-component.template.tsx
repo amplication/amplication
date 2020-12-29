@@ -41,10 +41,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     return response.data;
   });
 
-  const [
-    deleteEntity,
-    { error: deleteError, isError: deleteIsError },
-  ] = useMutation<ENTITY, AxiosError>(
+  const [deleteEntity] = useMutation<ENTITY, AxiosError>(
     async (data) => {
       const response = await api.delete(`${RESOURCE}/${id}`, data);
       return response.data;

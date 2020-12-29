@@ -103,7 +103,7 @@
 
 @mixin textField--disabled {
   background: var(--black5);
-  border: var(--black10);
+  border: 1px solid var(--black10);
 }
 
 @mixin counterBadge {

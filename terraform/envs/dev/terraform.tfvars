@@ -21,14 +21,6 @@ server_database_connection_limit = 2
 server_min_scale = 0
 server_max_scale = 2
 
-# Cloud Build
-image_repository = "amplication"
-app_base_image_repository = "app-node"
-google_cloudbuild_trigger_filename = "cloudbuild.yaml"
-github_owner = "amplication"
-github_name = "amplication"
-github_branch = "master"
-
 # Secret Manager
 github_client_secret_id = "github_client_secret"
 

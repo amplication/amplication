@@ -1,7 +1,9 @@
 import { builders } from "ast-types";
 import { Entity, EntityField, EnumDataType } from "../../../types";
 import { createCreateInput } from "../dto/create-create-input";
-import { CONNECT_ID, createDataMapping, DATA_ID } from "./create-data-mapping";
+import { CONNECT_ID, createDataMapping } from "./create-data-mapping";
+
+const DATA_ID = builders.identifier("data");
 
 const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
 const EXAMPLE_ENTITY_FIELD: EntityField = {
@@ -46,7 +48,7 @@ const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
 describe("createDataMapping", () => {
   test("does nothing if there are no object properties", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
-    expect(createDataMapping(EXAMPLE_ENTITY, dto)).toBe(DATA_ID);
+    expect(createDataMapping(EXAMPLE_ENTITY, dto, DATA_ID)).toBe(DATA_ID);
   });
   test("creates mapping of object properties", () => {
     const dto = createCreateInput(
@@ -54,7 +56,9 @@ describe("createDataMapping", () => {
       EXAMPLE_ENTITY_ID_TO_NAME
     );
     const [property] = dto.body.body;
-    expect(createDataMapping(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD, dto)).toEqual(
+    expect(
+      createDataMapping(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD, dto, DATA_ID)
+    ).toEqual(
       builders.objectExpression([
         builders.spreadElement(DATA_ID),
         builders.property(

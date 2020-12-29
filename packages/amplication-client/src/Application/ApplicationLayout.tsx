@@ -59,7 +59,7 @@ function ApplicationLayout({ match }: Props) {
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
   const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
-    EnumFixedPanelKeys.PendingChanges
+    EnumFixedPanelKeys.None
   );
 
   const handleMenuItemWithFixedPanelClicked = useCallback(
@@ -146,6 +146,9 @@ function ApplicationLayout({ match }: Props) {
     [pendingChanges, addEntity, addBlock, addChange, refetch]
   );
 
+  const pendingChangesBadge =
+    (pendingChanges.length && pendingChanges.length.toString()) || null;
+
   return (
     <PendingChangesContext.Provider value={pendingChangesContextValue}>
       <MainLayout className={CLASS_NAME}>
@@ -168,6 +171,7 @@ function ApplicationLayout({ match }: Props) {
             icon="pending_changes_outline"
             isOpen={selectedFixedPanel === EnumFixedPanelKeys.PendingChanges}
             panelKey={EnumFixedPanelKeys.PendingChanges}
+            badgeValue={pendingChangesBadge}
             onClick={handleMenuItemWithFixedPanelClicked}
           >
             <PendingChangesBar applicationId={application} />

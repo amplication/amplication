@@ -5,6 +5,9 @@ import { CircleBadge } from "./CircleBadge";
 export default {
   title: "CircleBadge",
   component: CircleBadge,
+  argTypes: {
+    color: { control: "color" },
+  },
 } as Meta;
 
 export const Default = (props: any) => {
@@ -12,5 +15,5 @@ export const Default = (props: any) => {
 };
 
 export const ChangeColor = (props: any) => {
-  return <CircleBadge name="Amplication" color="#FF6E6E" />;
+  return <CircleBadge name="Amplication" color={props.color} />;
 };

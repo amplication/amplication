@@ -9,7 +9,11 @@ import uniqBy from "lodash.uniqby";
 import * as parser from "./parser";
 import * as partialParser from "./partial-parser";
 
-export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
+export type ClassDeclaration = namedTypes.ClassDeclaration & {
+  decorators: namedTypes.Decorator[];
+};
+
+export type NamedClassDeclaration = ClassDeclaration & {
   id: namedTypes.Identifier;
 };
 
@@ -26,7 +30,7 @@ const ARRAY_ID = builders.identifier("Array");
 type ParseOptions = Omit<recast.Options, "parser">;
 type PartialParseOptions = Omit<ParserOptions, "tolerant">;
 
-class ParseError extends SyntaxError {
+export class ParseError extends SyntaxError {
   constructor(message: string, source: string) {
     super(`${message}\nSource:\n${source}`);
   }
@@ -182,7 +186,7 @@ export function getExportedNames(
  */
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode }
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   return recast.visit(ast, {
     visitIdentifier(path) {
@@ -258,7 +262,7 @@ export function interpolate(
 
 export function evaluateJSX(
   path: NodePath,
-  mapping: { [key: string]: ASTNode }
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   const childrenPath = path.get("children");
   childrenPath.each(
@@ -546,6 +550,23 @@ export function getClassDeclarationById(
   return classDeclaration;
 }
 
+export function deleteClassMemberByKey(
+  declaration: namedTypes.ClassDeclaration,
+  id: namedTypes.Identifier
+): void {
+  for (const [index, member] of declaration.body.body.entries()) {
+    if (
+      member &&
+      "key" in member &&
+      namedTypes.Identifier.check(member.key) &&
+      member.key.name === id.name
+    ) {
+      delete declaration.body.body[index];
+      break;
+    }
+  }
+}
+
 export function importContainedIdentifiers(
   node: ASTNode,
   moduleToIdentifiers: Record<string, namedTypes.Identifier[]>
@@ -576,6 +597,10 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
   );
 }
 
+/**
+ * Returns the constructor of the given classDeclaration
+ * @param classDeclaration
+ */
 export function findConstructor(
   classDeclaration: namedTypes.ClassDeclaration
 ): namedTypes.ClassMethod | undefined {

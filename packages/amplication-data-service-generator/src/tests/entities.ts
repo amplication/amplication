@@ -574,6 +574,71 @@ const CUSTOMER: Entity = {
   ],
 };
 
-const entities: Entity[] = [USER, ORDER, ORGANIZATION, CUSTOMER];
+const EMPTY: Entity = {
+  id: "0c5ad4df-0467-444a-a249-94c2465ae90d",
+  name: "Empty",
+  displayName: "Empty",
+  pluralDisplayName: "Empties",
+  fields: [
+    {
+      name: "id",
+      displayName: "Id",
+      dataType: EnumDataType.Id,
+      properties: {},
+      required: true,
+      searchable: false,
+    },
+    {
+      name: "createdAt",
+      displayName: "Created At",
+      dataType: EnumDataType.CreatedAt,
+      properties: {},
+      required: true,
+      searchable: false,
+    },
+    {
+      name: "updatedAt",
+      displayName: "Updated At",
+      dataType: EnumDataType.UpdatedAt,
+      properties: {},
+      required: true,
+      searchable: false,
+    },
+  ],
+  permissions: [
+    {
+      action: EnumEntityAction.Create,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Delete,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Search,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Update,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.View,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+  ],
+};
+
+const entities: Entity[] = [USER, ORDER, ORGANIZATION, CUSTOMER, EMPTY];
 
 export default entities;

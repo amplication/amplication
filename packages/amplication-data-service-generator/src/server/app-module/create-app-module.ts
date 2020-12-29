@@ -20,6 +20,7 @@ const MODULE_PATH = `${SRC_DIRECTORY}/app.module.ts`;
 const MODULE_PATTERN = /\.module\.ts$/;
 const MORGAN_MODULE_ID = builders.identifier("MorganModule");
 const CONFIG_MODULE_ID = builders.identifier("ConfigModule");
+const CONFIG_SERVICE_ID = builders.identifier("ConfigService");
 const SERVE_STATIC_MODULE_ID = builders.identifier("ServeStaticModule");
 const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
   "ServeStaticOptionsService"
@@ -60,7 +61,19 @@ export async function createAppModule(
     callExpression`${SERVE_STATIC_MODULE_ID}.forRootAsync({
       useClass: ${SERVE_STATIC_OPTIONS_SERVICE_ID}
     })`,
-    callExpression`${GRAPHQL_MODULE_ID}.forRoot({ autoSchemaFile: true })`,
+    callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
+      useFactory: (configService) => {
+        const playground = configService.get("GRAPHQL_PLAYGROUND");
+        const introspection = configService.get("GRAPHQL_INTROSPECTION");
+        return {
+          autoSchemaFile: true,
+          playground,
+          introspection: playground || introspection
+        }
+      },
+      inject: [${CONFIG_SERVICE_ID}],
+      imports: [${CONFIG_MODULE_ID}],
+    })`,
   ]);
 
   const file = await readFile(appModuleTemplatePath);
@@ -72,7 +85,7 @@ export async function createAppModule(
   addImports(file, [
     ...moduleImports,
     importDeclaration`import { ${MORGAN_MODULE_ID} } from "nest-morgan"`,
-    importDeclaration`import { ${CONFIG_MODULE_ID} } from "@nestjs/config"`,
+    importDeclaration`import { ${CONFIG_MODULE_ID}, ${CONFIG_SERVICE_ID} } from "@nestjs/config"`,
     importDeclaration`import { ${SERVE_STATIC_MODULE_ID} } from "@nestjs/serve-static"`,
     importDeclaration`import { ${SERVE_STATIC_OPTIONS_SERVICE_ID} } from "./serveStaticOptions.service"`,
     importDeclaration`import { ${GRAPHQL_MODULE_ID} } from "@nestjs/graphql"`,

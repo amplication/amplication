@@ -7,6 +7,7 @@ import {
   removeTSClassDeclares,
   getClassDeclarationById,
 } from "../../../../../util/ast";
+import { isInputType } from "../../nestjs-graphql.util";
 
 const templatePath = require.resolve("./update-args.template.ts");
 
@@ -14,9 +15,9 @@ export async function createUpdateArgs(
   entity: Entity,
   whereUniqueInput: NamedClassDeclaration,
   updateInput: NamedClassDeclaration
-): Promise<NamedClassDeclaration> {
+): Promise<NamedClassDeclaration | null> {
   const file = await readFile(templatePath);
-  const id = createId(entity.name);
+  const id = createUpdateArgsId(entity.name);
 
   interpolate(file, {
     ID: id,
@@ -24,11 +25,17 @@ export async function createUpdateArgs(
     UPDATE_INPUT: updateInput.id,
   });
 
+  const classDeclaration = getClassDeclarationById(file, id);
+
+  if (!isInputType(updateInput)) {
+    return null;
+  }
+
   removeTSClassDeclares(file);
 
-  return getClassDeclarationById(file, id) as NamedClassDeclaration;
+  return classDeclaration as NamedClassDeclaration;
 }
 
-export function createId(entityType: string): namedTypes.Identifier {
+export function createUpdateArgsId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`Update${entityType}Args`);
 }

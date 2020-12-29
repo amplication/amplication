@@ -1,7 +1,7 @@
 import * as models from "../models";
 import * as permissionTypes from "../Permissions/types";
 
-export const USER_ENTITY = "user";
+export const USER_ENTITY = "User";
 
 export const ENTITY_ACTIONS: permissionTypes.PermissionAction[] = [
   {

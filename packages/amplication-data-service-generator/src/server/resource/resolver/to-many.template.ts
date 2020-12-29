@@ -1,5 +1,7 @@
 import * as graphql from "@nestjs/graphql";
 import * as nestAccessControl from "nest-access-control";
+// @ts-ignore
+import * as gqlUserRoles from "../auth/gqlUserRoles.decorator";
 
 declare interface WHERE_UNIQUE_INPUT {}
 declare interface RELATED_ENTITY_WHERE_INPUT {}
@@ -40,7 +42,7 @@ export class Mixin {
   async FIND_MANY(
     @graphql.Parent() parent: ENTITY,
     @graphql.Args() args: ARGS,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<RELATED_ENTITY[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,

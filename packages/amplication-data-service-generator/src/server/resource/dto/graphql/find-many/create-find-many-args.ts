@@ -15,7 +15,7 @@ export async function createFindManyArgs(
   whereInput: NamedClassDeclaration
 ): Promise<NamedClassDeclaration> {
   const file = await readFile(templatePath);
-  const id = createId(entity.name);
+  const id = createFindManyArgsId(entity.name);
 
   interpolate(file, {
     ID: id,
@@ -27,6 +27,8 @@ export async function createFindManyArgs(
   return getClassDeclarationById(file, id) as NamedClassDeclaration;
 }
 
-export function createId(entityType: string): namedTypes.Identifier {
+export function createFindManyArgsId(
+  entityType: string
+): namedTypes.Identifier {
   return builders.identifier(`FindMany${entityType}Args`);
 }

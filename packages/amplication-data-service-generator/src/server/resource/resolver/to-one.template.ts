@@ -1,5 +1,7 @@
 import * as graphql from "@nestjs/graphql";
 import * as nestAccessControl from "nest-access-control";
+// @ts-ignore
+import * as gqlUserRoles from "../auth/gqlUserRoles.decorator";
 
 declare interface WHERE_UNIQUE_INPUT {}
 declare interface RELATED_ENTITY_WHERE_INPUT {}
@@ -8,17 +10,12 @@ declare interface ENTITY {
   id: string;
 }
 declare class RELATED_ENTITY {}
-declare interface ARGS {
-  where: RELATED_ENTITY_WHERE_INPUT;
-}
 
 declare interface SERVICE {
   findOne(args: {
     where: WHERE_UNIQUE_INPUT;
   }): {
-    PROPERTY(args: {
-      where: RELATED_ENTITY_WHERE_INPUT;
-    }): Promise<RELATED_ENTITY>;
+    PROPERTY(): Promise<RELATED_ENTITY>;
   };
 }
 
@@ -39,8 +36,7 @@ export class Mixin {
   })
   async FIND_ONE(
     @graphql.Parent() parent: ENTITY,
-    @graphql.Args() args: ARGS,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<RELATED_ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -50,8 +46,7 @@ export class Mixin {
     });
     const result = await this.service
       .findOne({ where: { id: parent.id } })
-      // @ts-ignore
-      .PROPERTY(args);
+      .PROPERTY();
 
     if (!result) {
       return null;
