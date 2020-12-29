@@ -601,11 +601,17 @@ describe('BuildService', () => {
     );
     expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
     expect(containerBuilderServiceBuildMock).toBeCalledTimes(1);
-    expect(containerBuilderServiceBuildMock).toBeCalledWith(
-      EXAMPLE_BUILD.appId,
-      EXAMPLE_BUILD_ID,
-      EXAMPLE_URL
-    );
+    expect(containerBuilderServiceBuildMock).toBeCalledWith({
+      tags: [
+        `${EXAMPLE_BUILD.appId}:${EXAMPLE_BUILD.id}`,
+        `${EXAMPLE_BUILD.appId}:latest`
+      ],
+      cacheFrom: [
+        EXAMPLED_GENERATED_BASE_IMAGE,
+        `${EXAMPLE_BUILD.appId}:latest`
+      ],
+      url: EXAMPLE_URL
+    });
     expect(prismaBuildUpdateMock).toBeCalledTimes(1);
     expect(prismaBuildUpdateMock).toBeCalledWith({
       where: {
