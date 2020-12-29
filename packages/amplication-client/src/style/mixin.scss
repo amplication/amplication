@@ -139,6 +139,7 @@ $bullet-size: 6px;
   top: -8px;
   left: calc(100% - 14px);
   height: 16px;
+  min-width: 16px;
   background-color: var(--primary);
   color: var(--white);
   border-radius: 8px;

@@ -11,9 +11,6 @@
     border-top: $border-black10;
     margin: 0;
   }
-  &__counter {
-    @include counterBadge;
-  }
 
   .build-header {
     margin-top: var(--double-spacing);
