@@ -402,14 +402,14 @@ export class BuildService {
           BUILD_DOCKER_IMAGE_STEP_START_LOG
         );
 
-        const result = await this.containerBuilderService.build(
-          build.appId,
-          build.id,
-          tarballURL,
-          {
+        const result = await this.containerBuilderService.build({
+          repository: build.appId,
+          tag: build.id,
+          url: tarballURL,
+          args: {
             [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: generatedAppBaseImage
           }
-        );
+        });
         await this.handleContainerBuilderResult(build, step, result);
       },
       true
