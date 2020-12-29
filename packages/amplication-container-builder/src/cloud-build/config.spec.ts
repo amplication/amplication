@@ -65,7 +65,6 @@ describe("createBuildStep", () => {
       "Basic request",
       EXAMPLE_BUILD_REQUEST,
       {
-        id: "docker-build",
         name: CLOUD_BUILDERS_DOCKER_IMAGE,
         args: [
           "build",
@@ -82,7 +81,6 @@ describe("createBuildStep", () => {
       "With cache from",
       EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM,
       {
-        id: "docker-build",
         name: CLOUD_BUILDERS_DOCKER_IMAGE,
         args: [
           "build",

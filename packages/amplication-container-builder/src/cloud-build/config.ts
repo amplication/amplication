@@ -37,7 +37,6 @@ export function createBuildStep(
     createBuildArgParameter(name, value)
   );
   return {
-    id: "docker-build",
     name: CLOUD_BUILDERS_DOCKER_IMAGE,
     args: [
       "build",
@@ -53,7 +52,6 @@ export function createPushStep(
   tag: string
 ): google.devtools.cloudbuild.v1.IBuildStep {
   return {
-    id: "docker-push-latest",
     name: CLOUD_BUILDERS_DOCKER_IMAGE,
     args: ["push", tag],
   };
