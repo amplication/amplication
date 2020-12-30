@@ -264,6 +264,7 @@ export type Customer = {
   favoriteColors: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization: OrganizationWhereUniqueInput | null;
+  vipOrganization: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -281,6 +282,7 @@ export type CustomerCreateInput = {
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -298,6 +300,7 @@ export type CustomerUpdateInput = {
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerWhereInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -317,6 +320,7 @@ export type CustomerWhereInput = {
   comments?: string | null;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
@@ -983,6 +987,12 @@ export const CreateCustomer = (): React.ReactElement => {
           <div>
             <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
           </div>
+          <div>
+            <OrganizationSelect
+              label=\\"VIP Organization\\"
+              name=\\"vipOrganization.id\\"
+            />
+          </div>
         </Form>
       </Formik>
       <Snackbar open={isError} message={error?.response?.data?.message} />
@@ -1080,6 +1090,7 @@ export const Customer = (): React.ReactElement => {
         \\"favoriteColors\\",
         \\"customerType\\",
         \\"organization\\",
+        \\"vipOrganization\\",
       ]),
     [data]
   );
@@ -1184,6 +1195,12 @@ export const Customer = (): React.ReactElement => {
             </div>
             <div>
               <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
+            </div>
+            <div>
+              <OrganizationSelect
+                label=\\"VIP Organization\\"
+                name=\\"vipOrganization.id\\"
+              />
             </div>
           </Form>
         </Formik>
@@ -1319,6 +1336,11 @@ const FIELDS: DataField[] = [
     title: \\"Organization\\",
     sortable: false,
   },
+  {
+    name: \\"vipOrganization\\",
+    title: \\"VIP Organization\\",
+    sortable: false,
+  },
 ];
 
 export const CustomerList = (): React.ReactElement => {
@@ -1401,6 +1423,9 @@ export const CustomerList = (): React.ReactElement => {
                 </DataGridCell>
                 <DataGridCell>
                   <OrganizationTitle id={item.organization?.id} />
+                </DataGridCell>
+                <DataGridCell>
+                  <OrganizationTitle id={item.vipOrganization?.id} />
                 </DataGridCell>
               </DataGridRow>
             );
@@ -4093,6 +4118,14 @@ class Customer {
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization!: OrganizationWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  vipOrganization!: OrganizationWhereUniqueInput | null;
 }
 export { Customer };
 ",
@@ -4237,6 +4270,17 @@ class CustomerCreateInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerCreateInput };
 ",
@@ -4384,6 +4428,17 @@ class CustomerUpdateInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerUpdateInput };
 ",
@@ -4545,6 +4600,15 @@ class CustomerWhereInput {
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @Transform(JSON.parse)
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerWhereInput };
 ",
@@ -4889,6 +4953,12 @@ export class CustomerController {
               connect: data.organization,
             }
           : undefined,
+
+        vipOrganization: data.vipOrganization
+          ? {
+              connect: data.vipOrganization,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -4907,6 +4977,12 @@ export class CustomerController {
         customerType: true,
 
         organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
           select: {
             id: true,
           },
@@ -4958,6 +5034,12 @@ export class CustomerController {
             id: true,
           },
         },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     return results.map((result) => permission.filter(result));
@@ -5005,6 +5087,12 @@ export class CustomerController {
         customerType: true,
 
         organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
           select: {
             id: true,
           },
@@ -5068,6 +5156,12 @@ export class CustomerController {
                 connect: data.organization,
               }
             : undefined,
+
+          vipOrganization: data.vipOrganization
+            ? {
+                connect: data.vipOrganization,
+              }
+            : undefined,
         },
         select: {
           id: true,
@@ -5086,6 +5180,12 @@ export class CustomerController {
           customerType: true,
 
           organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          vipOrganization: {
             select: {
               id: true,
             },
@@ -5138,6 +5238,12 @@ export class CustomerController {
           customerType: true,
 
           organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          vipOrganization: {
             select: {
               id: true,
             },
@@ -5456,6 +5562,12 @@ export class CustomerResolver {
               connect: args.data.organization,
             }
           : undefined,
+
+        vipOrganization: args.data.vipOrganization
+          ? {
+              connect: args.data.vipOrganization,
+            }
+          : undefined,
       },
     });
   }
@@ -5501,6 +5613,12 @@ export class CustomerResolver {
           organization: args.data.organization
             ? {
                 connect: args.data.organization,
+              }
+            : undefined,
+
+          vipOrganization: args.data.vipOrganization
+            ? {
+                connect: args.data.vipOrganization,
               }
             : undefined,
         },
@@ -5580,6 +5698,32 @@ export class CustomerResolver {
     const result = await this.service
       .findOne({ where: { id: parent.id } })
       .organization();
+
+    if (!result) {
+      return null;
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.ResolveField(() => Organization, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async organization(
+    @graphql.Parent() parent: Customer,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const result = await this.service
+      .findOne({ where: { id: parent.id } })
+      .vipOrganization();
 
     if (!result) {
       return null;
@@ -7917,6 +8061,185 @@ export class OrganizationController {
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get(\\"/:id/users\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Query() query: CustomerWhereInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findOne({ where: params }).users({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Post(\\"/:id/users\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Patch(\\"/:id/users\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Delete(\\"/:id/users\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @common.Get(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -7953,6 +8276,12 @@ export class OrganizationController {
         customerType: true,
 
         organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
           select: {
             id: true,
           },
@@ -8061,6 +8390,185 @@ export class OrganizationController {
   ): Promise<void> {
     const data = {
       customers: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get(\\"/:id/vipCustomers\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Query() query: CustomerWhereInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findOne({ where: params }).vipCustomers({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Post(\\"/:id/vipCustomers\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Patch(\\"/:id/vipCustomers\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Delete(\\"/:id/vipCustomers\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
         disconnect: body,
       },
     };
@@ -8309,7 +8817,55 @@ export class OrganizationResolver {
     const results = await this.service
       .findOne({ where: { id: parent.id } })
       // @ts-ignore
+      .users(args);
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.ResolveField(() => [Customer])
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async customers(
+    @graphql.Parent() parent: Organization,
+    @graphql.Args() args: FindManyCustomerArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service
+      .findOne({ where: { id: parent.id } })
+      // @ts-ignore
       .customers(args);
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.ResolveField(() => [Customer])
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async customers(
+    @graphql.Parent() parent: Organization,
+    @graphql.Args() args: FindManyCustomerArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service
+      .findOne({ where: { id: parent.id } })
+      // @ts-ignore
+      .vipCustomers(args);
     return results.map((result) => permission.filter(result));
   }
 }
