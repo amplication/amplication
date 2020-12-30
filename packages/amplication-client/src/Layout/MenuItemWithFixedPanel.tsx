@@ -5,7 +5,6 @@ import { Tooltip } from "@primer/components";
 import { MenuFixedPanel } from "../util/teleporter";
 
 import { Icon } from "@rmwc/icon";
-import "./MenuItem.scss";
 
 type Props = {
   /** Text to be displayed as a tooltip */
