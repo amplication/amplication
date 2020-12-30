@@ -11,14 +11,14 @@
       "$ref": "#/definitions/EntityId",
       "default": null
     },
-    "allowMultipleSelection": {
-      "type": "boolean",
-      "default": false
-    },
-    "mainLookupFieldId": {
+    "relatedFieldId": {
       "title": "Main Lookup Field",
       "$ref": "#/definitions/EntityFieldId",
       "default": null
+    },
+    "allowMultipleSelection": {
+      "type": "boolean",
+      "default": false
     }
   },
   "definitions": {
