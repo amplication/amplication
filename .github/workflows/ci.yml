@@ -34,29 +34,36 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - run: npm run bootstrap -- --loglevel verbose
-      - run: npm run prisma:generate
+      - name: Install packages' dependencies
+        run: npm run bootstrap -- --loglevel verbose
+      - name: Update Prisma client
+        run: npm run prisma:generate
       - name: Define Lerna since parameter
         run: echo "SINCE=origin/master" >> $GITHUB_ENV
         if: ${{ github.ref != 'refs/heads/master' }}
-      - run: npm run check-format -- --since $SINCE
-      - run: npm run build -- --since $SINCE
-      - run: npm run lint -- --since $SINCE
-      - run: npm run check-graphql-schema -- --since $SINCE
-      - run: npm test -- --since $SINCE --ignore @amplication/e2e-tester
+      - name: Check format
+        run: npm run check-format -- --since $SINCE
+      - name: Build packages
+        run: npm run build -- --since $SINCE
+      - name: Lint
+        run: npm run lint -- --since $SINCE
+      - name: Check GraphQL schema
+        run: npm run check-graphql-schema -- --since $SINCE
+      - name: Run tests
+        run: npm test -- --since $SINCE --ignore @amplication/e2e-tester
       # E2E tests to run on merge to master
       - name: Generate test data service
         run: npm run generate-test-data-service
         if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
-      - name: Install test data service dependencies
+      - name: Install test data service's dependencies
         working-directory: packages/amplication-data-service-generator/generated/server
         run: npm ci && npm run prisma:generate
         if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
-      - name: Run tests data service tests
+      - name: Run test data service's tests
         working-directory: packages/amplication-data-service-generator/generated/server
         run: npm test
         if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
-      - name: "Data Service Generator: E2E test"
+      - name: Run Data Service Generator E2E test
         run: npm run test:e2e -- --scope @amplication/data-service-generator
         if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
   deploy:
