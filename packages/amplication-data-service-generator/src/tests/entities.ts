@@ -343,7 +343,7 @@ const ORGANIZATION: Entity = {
       displayName: "Users",
       dataType: EnumDataType.Lookup,
       properties: {
-        relatedEntityId: CUSTOMER_ENTITY_ID,
+        relatedEntityId: USER.id,
         relatedFieldId: USER_ORGANIZATION_FIELD_ID,
         allowMultipleSelection: true,
       },
