@@ -26,6 +26,7 @@ import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
+export const DATA_ID = builders.identifier("data");
 
 const controllerTemplatePath = require.resolve("./controller.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
@@ -60,9 +61,17 @@ export async function createControllerModule(
     UPDATE_QUERY: builders.tsTypeLiteral([]),
     DELETE_QUERY: builders.tsTypeLiteral([]),
     CREATE_INPUT: entityDTOs.createInput.id,
-    CREATE_DATA_MAPPING: createDataMapping(entity, entityDTOs.createInput),
+    CREATE_DATA_MAPPING: createDataMapping(
+      entity,
+      entityDTOs.createInput,
+      DATA_ID
+    ),
     UPDATE_INPUT: entityDTOs.updateInput.id,
-    UPDATE_DATA_MAPPING: createDataMapping(entity, entityDTOs.updateInput),
+    UPDATE_DATA_MAPPING: createDataMapping(
+      entity,
+      entityDTOs.updateInput,
+      DATA_ID
+    ),
     /** @todo extend */
     WHERE_INPUT: entityDTOs.whereInput.id,
     /** @todo make dynamic */
