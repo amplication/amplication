@@ -12,6 +12,7 @@ import {
   Module,
   EnumDataType,
   LookupResolvedProperties,
+  EntityField,
 } from "./types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -66,24 +67,39 @@ export async function createDataService(
 }
 
 function resolveLookupFields(entities: Entity[]): Entity[] {
-  const entityIdToEntity = Object.fromEntries(
-    entities.map((entity) => [entity.id, entity])
-  );
+  const entityIdToEntity: Record<string, Entity> = {};
+  const fieldIdToField: Record<string, EntityField> = {};
+  for (const entity of entities) {
+    entityIdToEntity[entity.id] = entity;
+    for (const field of entity.fields) {
+      fieldIdToField[field.id] = field;
+    }
+  }
   return entities.map((entity) => {
     return {
       ...entity,
       fields: entity.fields.map((field) => {
         if (field.dataType === EnumDataType.Lookup) {
-          const { relatedEntityId } = field.properties as types.Lookup;
+          const {
+            relatedEntityId,
+            relatedFieldId,
+          } = field.properties as types.Lookup;
           const relatedEntity = entityIdToEntity[relatedEntityId];
+          const relatedField = fieldIdToField[relatedFieldId];
           if (!relatedEntity) {
             throw new Error(
-              `Could not find entity with the ID ${relatedEntityId} referenced in field ${field.name}`
+              `Could not find entity with the ID ${relatedEntityId} referenced in entity field ${field.name}`
+            );
+          }
+          if (!relatedField) {
+            throw new Error(
+              `Could not find entity field with the ID ${relatedFieldId} referenced in entity field ${field.name}`
             );
           }
           const properties: LookupResolvedProperties = {
             ...field.properties,
             relatedEntity,
+            relatedField,
           };
           return {
             ...field,

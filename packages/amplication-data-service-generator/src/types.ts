@@ -73,6 +73,7 @@ export type EntityField = Omit<
 
 export type LookupResolvedProperties = types.Lookup & {
   relatedEntity: Entity;
+  relatedField: EntityField;
 };
 
 export type EntityLookupField = Omit<EntityField, "properties"> & {
