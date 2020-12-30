@@ -79,10 +79,9 @@ export function createFieldClassProperty(
   field: EntityField,
   optional: boolean,
   isInput: boolean,
-  isQuery: boolean,
-  entityIdToName: Record<string, string>
+  isQuery: boolean
 ): namedTypes.ClassProperty {
-  const prismaField = createPrismaField(field, entityIdToName);
+  const prismaField = createPrismaField(field);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
   const type = createFieldValueTypeFromPrismaField(

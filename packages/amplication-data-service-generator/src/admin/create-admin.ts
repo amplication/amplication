@@ -33,7 +33,6 @@ export async function createAdminModules(
   roles: Role[],
   appInfo: AppInfo,
   dtos: DTOs,
-  entityIdToName: Record<string, string>,
   logger: winston.Logger
 ): Promise<Module[]> {
   logger.info("Creating admin...");
@@ -99,7 +98,6 @@ export async function createAdminModules(
     entityToPath,
     entityToResource,
     dtoNameToPath,
-    entityIdToName,
     entityToSelectComponent,
     entityToTitleComponent
   );

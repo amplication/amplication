@@ -1,23 +1,25 @@
-import { BuildResult, EnumBuildStatus } from "../types";
+import { BuildRequest, BuildResult, EnumBuildStatus } from "../types";
 import { ContainerBuilder } from "./ContainerBuilder";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
 const EXAMPLE_PROVIDER_NAME = "example";
 const INVALID_DEFAULT = "INVALID_DEFAULT";
-const EXAMPLE_REPOSITORY = "EXAMPLE_REPOSITORY";
-const EXAMPLE_TAG = "EXAMPLE_TAG";
+const EXAMPLE_TAG = "EXAMPLE_REPOSITORY:EXAMPLE_TAG";
+const EXAMPLE_TAGS = [EXAMPLE_TAG];
 const EXAMPLE_CODE_URL = "EXAMPLE_CODE_URL";
+const EXAMPLE_BUILD_REQUEST: BuildRequest = {
+  tags: EXAMPLE_TAGS,
+  url: EXAMPLE_CODE_URL,
+};
 const EXAMPLE_BUILD_RESULT: BuildResult = {
   images: ["EXAMPLE_IMAGE_ID"],
   status: EnumBuildStatus.Completed,
 };
-const EXAMPLE_BUILD_ARGS = { EXAMPLE_KEY: "EXAMPLE_VALUE" };
 
 const EXAMPLE_SYNC_PROVIDER = {
-  build: jest.fn(
-    async (repository: string, tag: string, url: string) => EXAMPLE_BUILD_RESULT
-  ),
+  build: jest.fn(async (request: BuildRequest) => EXAMPLE_BUILD_RESULT),
   getStatus: jest.fn(async (statusQuery: any) => EXAMPLE_BUILD_RESULT),
+  createImageId: jest.fn((tag) => tag),
 };
 
 const EXAMPLE_ASYNC_PROVIDER = Promise.resolve(EXAMPLE_SYNC_PROVIDER);
@@ -30,12 +32,7 @@ describe("ContainerBuilder", () => {
         providers: {
           [EXAMPLE_PROVIDER_NAME]: EXAMPLE_SYNC_PROVIDER,
         },
-      }).build(
-        EXAMPLE_REPOSITORY,
-        EXAMPLE_TAG,
-        EXAMPLE_CODE_URL,
-        EXAMPLE_BUILD_ARGS
-      )
+      }).build(EXAMPLE_BUILD_REQUEST)
     ).resolves.toEqual(EXAMPLE_BUILD_RESULT);
   });
   test("builds using an async provider", async () => {
@@ -45,12 +42,7 @@ describe("ContainerBuilder", () => {
         providers: {
           [EXAMPLE_PROVIDER_NAME]: EXAMPLE_ASYNC_PROVIDER,
         },
-      }).build(
-        EXAMPLE_REPOSITORY,
-        EXAMPLE_TAG,
-        EXAMPLE_CODE_URL,
-        EXAMPLE_BUILD_ARGS
-      )
+      }).build(EXAMPLE_BUILD_REQUEST)
     ).resolves.toEqual(EXAMPLE_BUILD_RESULT);
   });
   test("throws an error for invalid default", () => {
@@ -63,5 +55,15 @@ describe("ContainerBuilder", () => {
           },
         })
     ).toThrow(new InvalidDefaultError(INVALID_DEFAULT));
+  });
+  test("creates image id", () => {
+    expect(
+      new ContainerBuilder({
+        default: EXAMPLE_PROVIDER_NAME,
+        providers: {
+          [EXAMPLE_PROVIDER_NAME]: EXAMPLE_SYNC_PROVIDER,
+        },
+      }).createImageId(EXAMPLE_TAG)
+    ).resolves.toEqual(EXAMPLE_TAG);
   });
 });

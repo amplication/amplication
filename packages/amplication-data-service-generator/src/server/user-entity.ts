@@ -8,7 +8,8 @@ import {
 
 export const USER_ENTITY_NAME = "User";
 
-export const USER_NAME_FIELD = {
+export const USER_NAME_FIELD: EntityField = {
+  id: "USER_NAME_FIELD",
   name: "username",
   displayName: "Username",
   dataType: EnumDataType.Username,
@@ -16,7 +17,8 @@ export const USER_NAME_FIELD = {
   searchable: false,
 };
 
-export const USER_PASSWORD_FIELD = {
+export const USER_PASSWORD_FIELD: EntityField = {
+  id: "USER_PASSWORD_FIELD",
   name: "password",
   displayName: "Password",
   dataType: EnumDataType.Password,
@@ -24,13 +26,23 @@ export const USER_PASSWORD_FIELD = {
   searchable: false,
 };
 
-export const USER_ROLES_FIELD = {
+export const USER_ROLES_FIELD: EntityField = {
+  id: "USER_ROLES_FIELD",
   name: "roles",
   displayName: "Roles",
   dataType: EnumDataType.Roles,
   required: true,
   searchable: false,
   properties: {},
+};
+
+const USER_ID_FIELD = {
+  id: "USER_ID_FIELD",
+  name: "id",
+  displayName: "Id",
+  dataType: EnumDataType.Id,
+  required: true,
+  searchable: false,
 };
 
 export const USER_AUTH_FIELDS: EntityField[] = [
@@ -44,16 +56,7 @@ export const DEFAULT_USER_ENTITY: Entity = {
   name: USER_ENTITY_NAME,
   displayName: "User",
   pluralDisplayName: "Users",
-  fields: [
-    {
-      name: "id",
-      displayName: "Id",
-      dataType: EnumDataType.Id,
-      required: true,
-      searchable: false,
-    },
-    ...USER_AUTH_FIELDS,
-  ],
+  fields: [USER_ID_FIELD, ...USER_AUTH_FIELDS],
   permissions: [
     {
       action: EnumEntityAction.Create,
