@@ -56,7 +56,9 @@ describe("Data Service Generator", () => {
     const directory = path.join(os.tmpdir(), "test-data-service");
 
     // Clean the temporary directory
-    await fs.promises.rm(directory, { recursive: true });
+    try {
+      await fs.promises.rm(directory, { recursive: true });
+    } catch {}
     await fs.promises.mkdir(directory);
 
     // Generate the test data service
