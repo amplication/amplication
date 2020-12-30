@@ -3609,7 +3609,7 @@ import { LoginArgs } from \\"./LoginArgs\\";
 @Resolver(UserInfo)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
-  @Mutation()
+  @Mutation(() => UserInfo)
   async login(@Args() args: LoginArgs): Promise<UserInfo> {
     const user = await this.authService.validateUser(
       args.credentials.username,
