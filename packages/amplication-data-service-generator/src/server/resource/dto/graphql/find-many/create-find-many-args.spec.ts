@@ -18,7 +18,7 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
-const EXAMPLE_WHERE_INPUT = createWhereInput(EXAMPLE_ENTITY, {});
+const EXAMPLE_WHERE_INPUT = createWhereInput(EXAMPLE_ENTITY);
 
 describe("createFindManyArgs", () => {
   test("creates find many args", async () => {

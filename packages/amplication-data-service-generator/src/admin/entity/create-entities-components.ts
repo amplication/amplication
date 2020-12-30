@@ -10,7 +10,6 @@ export async function createEntitiesComponents(
   entityToPath: Record<string, string>,
   entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
-  entityIdToName: Record<string, string>,
   entityToSelectComponent: Record<string, EntityComponent>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<Record<string, EntityComponents>> {
@@ -25,7 +24,6 @@ export async function createEntitiesComponents(
             entityToPath,
             entityToResource,
             dtoNameToPath,
-            entityIdToName,
             entityToSelectComponent,
             entityToTitleComponent
           );

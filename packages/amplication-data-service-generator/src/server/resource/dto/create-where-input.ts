@@ -9,18 +9,9 @@ import {
 } from "../../../util/field";
 import { createInput } from "./create-input";
 
-export function createWhereInput(
-  entity: Entity,
-  entityIdToName: Record<string, string>
-): NamedClassDeclaration {
+export function createWhereInput(entity: Entity): NamedClassDeclaration {
   const fields = entity.fields.filter((field) => isQueryableField(field));
-  return createInput(
-    createWhereInputID(entity.name),
-    fields,
-    true,
-    true,
-    entityIdToName
-  );
+  return createInput(createWhereInputID(entity.name), fields, true, true);
 }
 
 export function createWhereInputID(entityName: string): namedTypes.Identifier {

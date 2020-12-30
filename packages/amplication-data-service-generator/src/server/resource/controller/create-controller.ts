@@ -37,9 +37,7 @@ export async function createControllerModule(
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
-  dtos: DTOs,
-  entityIdToName: Record<string, string>,
-  entitiesByName: Record<string, Entity>
+  dtos: DTOs
 ): Promise<Module> {
   const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.controller.ts`;
   const file = await readFile(controllerTemplatePath);
@@ -93,8 +91,6 @@ export async function createControllerModule(
           entityType,
           entityDTOs.whereUniqueInput,
           dtos,
-          entityIdToName,
-          entitiesByName,
           serviceId
         )
       )
@@ -136,21 +132,17 @@ async function createToManyRelationMethods(
   entityType: string,
   whereUniqueInput: NamedClassDeclaration,
   dtos: DTOs,
-  entityIdToName: Record<string, string>,
-  entitiesByName: Record<string, Entity>,
   serviceId: namedTypes.Identifier
 ) {
   const toManyFile = await readFile(toManyTemplatePath);
-  const { relatedEntityId } = field.properties;
-  const relatedEntityName = entityIdToName[relatedEntityId];
-  const relatedEntity = entitiesByName[relatedEntityName];
-  const relatedEntityDTOs = dtos[relatedEntityName];
+  const { relatedEntity } = field.properties;
+  const relatedEntityDTOs = dtos[relatedEntity.name];
 
   interpolate(toManyFile, {
     RELATED_ENTITY_WHERE_UNIQUE_INPUT: relatedEntityDTOs.whereUniqueInput.id,
     RELATED_ENTITY_WHERE_INPUT: relatedEntityDTOs.whereInput.id,
-    RELATED_ENTITY: builders.identifier(relatedEntityName),
-    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntityName),
+    RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     WHERE_UNIQUE_INPUT: whereUniqueInput.id,
     SERVICE: serviceId,
     ENTITY_NAME: builders.stringLiteral(entityType),

@@ -5,6 +5,7 @@ import { Entity } from "../../../types";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
+  EXAMPLE_OTHER_ENTITY,
 } from "../util/test-data";
 import {
   createDTOModulePath,
@@ -22,9 +23,7 @@ import {
 } from "./nestjs-graphql.util";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
-const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
-const EXAMPLE_OTHER_ENTITY_NAME = "ExampleOtherEntityName";
 const EXAMPLE_ENTITY_NAME_DIRECTORY = "exampleEntityName";
 const EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY = "exampleOtherEntityName";
 const EXAMPLE_ENTITY: Entity = {
@@ -35,10 +34,6 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
-const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
-  [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
-  [EXAMPLE_OTHER_ENTITY_ID]: EXAMPLE_OTHER_ENTITY_NAME,
-};
 const EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME = createCreateInputID(
   EXAMPLE_ENTITY_NAME
 ).name;
@@ -47,15 +42,15 @@ const EXAMPLE_DTO_NAME_TO_PATH = {
     EXAMPLE_ENTITY_NAME_DIRECTORY,
     EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME
   ),
-  [EXAMPLE_OTHER_ENTITY_NAME]: createDTOModulePath(
+  [EXAMPLE_OTHER_ENTITY.name]: createDTOModulePath(
     EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
-    EXAMPLE_OTHER_ENTITY_NAME
+    EXAMPLE_OTHER_ENTITY.name
   ),
 };
 
 describe("createDTOModule", () => {
   test("creates module", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
+    const dto = createCreateInput(EXAMPLE_ENTITY);
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
       dto.id.name
@@ -70,7 +65,7 @@ describe("createDTOModule", () => {
 
 describe("createDTOFile", () => {
   test("creates file", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
+    const dto = createCreateInput(EXAMPLE_ENTITY);
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
       dto.id.name

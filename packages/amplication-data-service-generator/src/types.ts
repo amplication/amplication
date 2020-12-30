@@ -71,8 +71,12 @@ export type EntityField = Omit<
   dataType: models.EnumDataType;
 };
 
+export type LookupResolvedProperties = types.Lookup & {
+  relatedEntity: Entity;
+};
+
 export type EntityLookupField = Omit<EntityField, "properties"> & {
-  properties: types.Lookup;
+  properties: LookupResolvedProperties;
 };
 
 export type EntityOptionSetField = Omit<EntityField, "properties"> & {

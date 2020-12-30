@@ -1,6 +1,11 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { Entity, EnumDataType, EntityField } from "../../../types";
+import {
+  Entity,
+  EnumDataType,
+  EntityField,
+  LookupResolvedProperties,
+} from "../../../types";
 import {
   addImports,
   getNamedProperties,
@@ -32,7 +37,6 @@ export async function createEntityListComponent(
   entityToPath: Record<string, string>,
   entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
-  entityIdToName: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
@@ -93,7 +97,6 @@ export async function createEntityListComponent(
         jsxElement`<DataGridCell>${createFieldValue(
           field,
           ITEM_ID,
-          entityIdToName,
           entityToTitleComponent
         )}</DataGridCell>`
     )}</>`,
@@ -103,10 +106,9 @@ export async function createEntityListComponent(
   addImports(
     file,
     relationFields.map((field) => {
-      const relatedEntityName =
-        entityIdToName[field.properties.relatedEntityId];
+      const { relatedEntity } = field.properties as LookupResolvedProperties;
       const relatedEntitySelectComponent =
-        entityToTitleComponent[relatedEntityName];
+        entityToTitleComponent[relatedEntity.name];
       return importNames(
         [builders.identifier(relatedEntitySelectComponent.name)],
         relativeImportPath(modulePath, relatedEntitySelectComponent.modulePath)

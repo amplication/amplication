@@ -8,7 +8,6 @@ import {
   NOW_CALL_EXPRESSION,
 } from "./create-prisma-schema";
 import { Entity, EntityField, EnumDataType } from "../../types";
-import { getEntityIdToName } from "../../util/entity";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
@@ -79,6 +78,7 @@ const EXAMPLE_LOOKUP_ENTITY: Entity = {
       displayName: "Example Lookup Field",
       properties: {
         relatedEntityId: EXAMPLE_ENTITY.id,
+        relatedEntity: EXAMPLE_ENTITY,
       },
     },
   ],
@@ -141,8 +141,7 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
     ],
   ];
   test.each(cases)("%s", async (name, entities: Entity[], expected: string) => {
-    const entityIdToName = getEntityIdToName(entities);
-    const schema = await createPrismaSchema(entities, entityIdToName);
+    const schema = await createPrismaSchema(entities);
     expect(schema).toBe(expected);
   });
 });
@@ -245,7 +244,7 @@ describe("createPrismaField", () => {
     [
       "Lookup",
       EnumDataType.Lookup,
-      { relatedEntityId: EXAMPLE_ENTITY.id },
+      { relatedEntityId: EXAMPLE_ENTITY.id, relatedEntity: EXAMPLE_ENTITY },
       PrismaSchemaDSL.createObjectField(
         EXAMPLE_ENTITY_FIELD_NAME,
         EXAMPLE_ENTITY_NAME,
@@ -364,7 +363,6 @@ describe("createPrismaField", () => {
       searchable: false,
       properties,
     };
-    const entityIdToName = { [EXAMPLE_ENTITY.id]: EXAMPLE_ENTITY_NAME };
-    expect(createPrismaField(field, entityIdToName)).toEqual(expected);
+    expect(createPrismaField(field)).toEqual(expected);
   });
 });

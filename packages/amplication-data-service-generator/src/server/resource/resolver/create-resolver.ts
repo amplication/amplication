@@ -40,9 +40,7 @@ export async function createResolverModule(
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
-  dtos: DTOs,
-  entityIdToName: Record<string, string>,
-  entitiesByName: Record<string, Entity>
+  dtos: DTOs
 ): Promise<Module> {
   const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.resolver.ts`;
   const file = await readFile(templatePath);
@@ -103,8 +101,6 @@ export async function createResolverModule(
           entityDTO,
           entityType,
           dtos,
-          entityIdToName,
-          entitiesByName,
           serviceId
         )
       )
@@ -119,8 +115,6 @@ export async function createResolverModule(
           entityDTO,
           entityType,
           dtos,
-          entityIdToName,
-          entitiesByName,
           serviceId
         )
       )
@@ -172,22 +166,18 @@ async function createToOneRelationMethods(
   entityDTO: NamedClassDeclaration,
   entityType: string,
   dtos: DTOs,
-  entityIdToName: Record<string, string>,
-  entitiesByName: Record<string, Entity>,
   serviceId: namedTypes.Identifier
 ) {
   const toOneFile = await readFile(toOneTemplatePath);
-  const { relatedEntityId } = field.properties;
-  const relatedEntityName = entityIdToName[relatedEntityId];
-  const relatedEntity = entitiesByName[relatedEntityName];
-  const relatedEntityDTOs = dtos[relatedEntityName];
+  const { relatedEntity } = field.properties;
+  const relatedEntityDTOs = dtos[relatedEntity.name];
 
   interpolate(toOneFile, {
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
-    RELATED_ENTITY: builders.identifier(relatedEntityName),
-    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntityName),
+    RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: builders.identifier(camelCase(relatedEntity.name)),
     ARGS: relatedEntityDTOs.findOneArgs.id,
@@ -201,22 +191,18 @@ async function createToManyRelationMethods(
   entityDTO: NamedClassDeclaration,
   entityType: string,
   dtos: DTOs,
-  entityIdToName: Record<string, string>,
-  entitiesByName: Record<string, Entity>,
   serviceId: namedTypes.Identifier
 ) {
   const toManyFile = await readFile(toManyTemplatePath);
-  const { relatedEntityId } = field.properties;
-  const relatedEntityName = entityIdToName[relatedEntityId];
-  const relatedEntity = entitiesByName[relatedEntityName];
-  const relatedEntityDTOs = dtos[relatedEntityName];
+  const { relatedEntity } = field.properties;
+  const relatedEntityDTOs = dtos[relatedEntity.name];
 
   interpolate(toManyFile, {
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
-    RELATED_ENTITY: builders.identifier(relatedEntityName),
-    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntityName),
+    RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: builders.identifier(camelCase(relatedEntity.pluralDisplayName)),
     ARGS: relatedEntityDTOs.findManyArgs.id,

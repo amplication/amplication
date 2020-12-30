@@ -3,14 +3,21 @@ import path from "path";
 import normalize from "normalize-path";
 import winston from "winston";
 
-import { getEntityIdToName } from "./util/entity";
 import { createDTOs } from "./server/resource/create-dtos";
 import { defaultLogger } from "./server/logging";
-import { Entity, Role, AppInfo, Module } from "./types";
+import {
+  Entity,
+  Role,
+  AppInfo,
+  Module,
+  EnumDataType,
+  LookupResolvedProperties,
+} from "./types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
 import { createServerModules } from "./server/create-server";
 import { readStaticModules } from "./read-static-modules";
+import { types } from "@amplication/data";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 const BASE_DIRECTORY = "";
@@ -24,12 +31,13 @@ export async function createDataService(
   logger.info("Creating application...");
   const timer = logger.startTimer();
 
-  const [normalizedEntities, userEntity] = createUserEntityIfNotExist(entities);
-
-  const entityIdToName = getEntityIdToName(normalizedEntities);
+  const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
+    entities
+  );
+  const normalizedEntities = resolveLookupFields(entitiesWithUserEntity);
 
   logger.info("Creating DTOs...");
-  const dtos = await createDTOs(normalizedEntities, entityIdToName);
+  const dtos = await createDTOs(normalizedEntities);
 
   logger.info("Copying static modules...");
 
@@ -40,19 +48,11 @@ export async function createDataService(
         normalizedEntities,
         roles,
         appInfo,
-        entityIdToName,
         dtos,
         userEntity,
         logger
       ),
-      createAdminModules(
-        normalizedEntities,
-        roles,
-        appInfo,
-        dtos,
-        entityIdToName,
-        logger
-      ),
+      createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
     ])
   ).flat();
 
@@ -63,4 +63,35 @@ export async function createDataService(
     ...module,
     path: normalize(module.path),
   }));
+}
+
+function resolveLookupFields(entities: Entity[]): Entity[] {
+  const entityIdToEntity = Object.fromEntries(
+    entities.map((entity) => [entity.id, entity])
+  );
+  return entities.map((entity) => {
+    return {
+      ...entity,
+      fields: entity.fields.map((field) => {
+        if (field.dataType === EnumDataType.Lookup) {
+          const { relatedEntityId } = field.properties as types.Lookup;
+          const relatedEntity = entityIdToEntity[relatedEntityId];
+          if (!relatedEntity) {
+            throw new Error(
+              `Could not find entity with the ID ${relatedEntityId} referenced in field ${field.name}`
+            );
+          }
+          const properties: LookupResolvedProperties = {
+            ...field.properties,
+            relatedEntity,
+          };
+          return {
+            ...field,
+            properties,
+          };
+        }
+        return field;
+      }),
+    };
+  });
 }

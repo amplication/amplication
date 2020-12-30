@@ -31,7 +31,6 @@ export async function createNewEntityComponent(
   entityToPath: Record<string, string>,
   entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
-  entityIdToName: Record<string, string>,
   entityToSelectComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
@@ -66,7 +65,7 @@ export async function createNewEntityComponent(
     ENTITY: entityDTO.id,
     CREATE_INPUT: dto.id,
     INPUTS: jsxFragment`<>${fields.map((field) => {
-      return createFieldInput(field, entityIdToName, entityToSelectComponent);
+      return createFieldInput(field, entityToSelectComponent);
     })}</>`,
   });
 
@@ -74,10 +73,9 @@ export async function createNewEntityComponent(
   addImports(
     file,
     relationFields.map((field) => {
-      const relatedEntityName =
-        entityIdToName[field.properties.relatedEntityId];
+      const { relatedEntity } = field.properties;
       const relatedEntitySelectComponent =
-        entityToSelectComponent[relatedEntityName];
+        entityToSelectComponent[relatedEntity.name];
       return importNames(
         [builders.identifier(relatedEntitySelectComponent.name)],
         relativeImportPath(modulePath, relatedEntitySelectComponent.modulePath)

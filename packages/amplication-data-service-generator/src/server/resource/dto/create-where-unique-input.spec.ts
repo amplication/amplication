@@ -10,9 +10,6 @@ import {
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
-const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
-  [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
-};
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
   name: EXAMPLE_ENTITY_NAME,
@@ -24,17 +21,13 @@ const EXAMPLE_ENTITY: Entity = {
 
 describe("createWhereUniqueInput", () => {
   test("creates input", () => {
-    expect(
-      print(createWhereUniqueInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME))
-        .code
-    ).toEqual(
+    expect(print(createWhereUniqueInput(EXAMPLE_ENTITY)).code).toEqual(
       print(
         createInput(
           createWhereUniqueInputID(EXAMPLE_ENTITY_NAME),
           [EXAMPLE_ID_FIELD],
           false,
-          true,
-          EXAMPLE_ENTITY_ID_TO_NAME
+          true
         )
       ).code
     );

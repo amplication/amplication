@@ -1,6 +1,11 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { Entity, EnumDataType, EntityField } from "../../../types";
+import {
+  Entity,
+  EnumDataType,
+  EntityField,
+  LookupResolvedProperties,
+} from "../../../types";
 import {
   addImports,
   getNamedProperties,
@@ -32,7 +37,6 @@ export async function createEntityComponent(
   entityToPath: Record<string, string>,
   entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
-  entityIdToName: Record<string, string>,
   entityToSelectComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const name = entity.name;
@@ -63,7 +67,7 @@ export async function createEntityComponent(
     UPDATE_INPUT: dto.id,
     ENTITY_TITLE_FIELD: builders.identifier(getEntityTitleField(entity)),
     INPUTS: jsxFragment`<>${fields.map((field) =>
-      createFieldInput(field, entityIdToName, entityToSelectComponent)
+      createFieldInput(field, entityToSelectComponent)
     )}</>`,
     EDITABLE_PROPERTIES: builders.arrayExpression(
       dtoProperties.map((property) => builders.stringLiteral(property.key.name))
@@ -74,10 +78,9 @@ export async function createEntityComponent(
   addImports(
     file,
     relationFields.map((field) => {
-      const relatedEntityName =
-        entityIdToName[field.properties.relatedEntityId];
+      const { relatedEntity } = field.properties as LookupResolvedProperties;
       const relatedEntitySelectComponent =
-        entityToSelectComponent[relatedEntityName];
+        entityToSelectComponent[relatedEntity.name];
       return importNames(
         [builders.identifier(relatedEntitySelectComponent.name)],
         relativeImportPath(modulePath, relatedEntitySelectComponent.modulePath)

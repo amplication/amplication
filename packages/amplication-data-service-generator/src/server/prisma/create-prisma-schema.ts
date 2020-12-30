@@ -1,7 +1,12 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
-import { types } from "@amplication/data";
 import { pascalCase } from "pascal-case";
-import { Entity, EntityField, EnumDataType } from "../../types";
+import { types } from "@amplication/data";
+import {
+  Entity,
+  EntityField,
+  EnumDataType,
+  LookupResolvedProperties,
+} from "../../types";
 import { getEnumFields } from "../../util/entity";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
@@ -23,13 +28,8 @@ export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.NOW
 );
 
-export async function createPrismaSchema(
-  entities: Entity[],
-  entityIdToName: Record<string, string>
-): Promise<string> {
-  const models = entities.map((entity) =>
-    createPrismaModel(entity, entityIdToName)
-  );
+export async function createPrismaSchema(entities: Entity[]): Promise<string> {
+  const models = entities.map((entity) => createPrismaModel(entity));
 
   const enums = entities.flatMap(getEnumFields).map(createPrismaEnum);
 
@@ -52,20 +52,15 @@ export function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
-export function createPrismaModel(
-  entity: Entity,
-  entityIdToName: Record<string, string>
-): PrismaSchemaDSL.Model {
+export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
-    entity.fields.map((field) => createPrismaField(field, entityIdToName))
+    entity.fields.map((field) => createPrismaField(field))
   );
 }
 
 export function createPrismaField(
-  field: EntityField,
-  entityIdToName: Record<string, string>,
-  skipRelatedEntitiesValidation = false
+  field: EntityField
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
   const { dataType, name, properties } = field;
   switch (dataType) {
@@ -135,21 +130,13 @@ export function createPrismaField(
     }
     case EnumDataType.Lookup: {
       const {
-        relatedEntityId,
+        relatedEntity,
         allowMultipleSelection,
-      } = properties as types.Lookup;
-
-      const relatedEntityName = entityIdToName[relatedEntityId];
-
-      if (!skipRelatedEntitiesValidation && !relatedEntityName) {
-        throw new Error(
-          `Can't find related entity with ID '${relatedEntityId}' for field '${name}'`
-        );
-      }
+      } = properties as LookupResolvedProperties;
 
       return PrismaSchemaDSL.createObjectField(
         name,
-        relatedEntityName,
+        relatedEntity.name,
         allowMultipleSelection,
         allowMultipleSelection ? true : field.required
       );

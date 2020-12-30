@@ -20,7 +20,6 @@ export async function createServerModules(
   entities: Entity[],
   roles: Role[],
   appInfo: AppInfo,
-  entityIdToName: Record<string, string>,
   dtos: DTOs,
   userEntity: Entity,
   logger: winston.Logger
@@ -38,12 +37,7 @@ export async function createServerModules(
 
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos);
-  const resourcesModules = await createResourcesModules(
-    entities,
-    entityIdToName,
-    dtos,
-    logger
-  );
+  const resourcesModules = await createResourcesModules(entities, dtos, logger);
 
   logger.info("Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
@@ -69,10 +63,7 @@ export async function createServerModules(
   }));
 
   logger.info("Creating Prisma schema...");
-  const prismaSchemaModule = await createPrismaSchemaModule(
-    entities,
-    entityIdToName
-  );
+  const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
   logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(entities, roles);

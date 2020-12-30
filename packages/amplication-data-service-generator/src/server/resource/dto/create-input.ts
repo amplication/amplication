@@ -12,16 +12,14 @@ export function createInput(
   id: namedTypes.Identifier,
   fields: EntityField[],
   allFieldsOptional: boolean,
-  isQuery: boolean,
-  entityIdToName: Record<string, string>
+  isQuery: boolean
 ): NamedClassDeclaration {
   const properties = fields.map((field) =>
     createFieldClassProperty(
       field,
       allFieldsOptional || !field.required,
       true,
-      isQuery,
-      entityIdToName
+      isQuery
     )
   );
   const decorators = properties.length ? [INPUT_TYPE_DECORATOR] : [];

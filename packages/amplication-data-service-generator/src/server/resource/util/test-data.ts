@@ -23,6 +23,10 @@ export const EXAMPLE_SINGLE_LINE_TEXT_FIELD: EntityField = {
 };
 
 export const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
+export const EXAMPLE_OTHER_ENTITY = {
+  id: EXAMPLE_OTHER_ENTITY_ID,
+  name: "ExampleOtherEntity",
+};
 
 export const EXAMPLE_LOOKUP_FIELD: EntityField = {
   id: "EXAMPLE_LOOKUP_FIELD_ID",
@@ -33,5 +37,6 @@ export const EXAMPLE_LOOKUP_FIELD: EntityField = {
   searchable: false,
   properties: {
     relatedEntityId: EXAMPLE_OTHER_ENTITY_ID,
+    relatedEntity: EXAMPLE_OTHER_ENTITY,
   },
 };

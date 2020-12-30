@@ -14,24 +14,11 @@ import { createResolverModule } from "./resolver/create-resolver";
 
 export async function createResourcesModules(
   entities: Entity[],
-  entityIdToName: Record<string, string>,
   dtos: DTOs,
   logger: winston.Logger
 ): Promise<Module[]> {
-  const entitiesByName = Object.fromEntries(
-    entities.map((entity) => [entity.name, entity])
-  );
-
   const resourceModuleLists = await Promise.all(
-    entities.map((entity) =>
-      createResourceModules(
-        entity,
-        entityIdToName,
-        dtos,
-        entitiesByName,
-        logger
-      )
-    )
+    entities.map((entity) => createResourceModules(entity, dtos, logger))
   );
   const resourcesModules = flatten(resourceModuleLists);
   return resourcesModules;
@@ -39,9 +26,7 @@ export async function createResourcesModules(
 
 async function createResourceModules(
   entity: Entity,
-  entityIdToName: Record<string, string>,
   dtos: DTOs,
-  entitiesByName: Record<string, Entity>,
   logger: winston.Logger
 ): Promise<Module[]> {
   const entityType = entity.name;
@@ -64,9 +49,7 @@ async function createResourceModules(
     entityType,
     serviceModule.path,
     entity,
-    dtos,
-    entityIdToName,
-    entitiesByName
+    dtos
   );
 
   const resolverModule = await createResolverModule(
@@ -74,9 +57,7 @@ async function createResourceModules(
     entityType,
     serviceModule.path,
     entity,
-    dtos,
-    entityIdToName,
-    entitiesByName
+    dtos
   );
 
   const resourceModule = await createModule(
@@ -92,8 +73,7 @@ async function createResourceModules(
     entity,
     entityType,
     serviceModule.path,
-    controllerModule.path,
-    entityIdToName
+    controllerModule.path
   );
 
   return [
