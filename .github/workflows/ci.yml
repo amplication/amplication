@@ -133,11 +133,11 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.13.5
-      - run: terraform init
+      - run: terraform init -lock-timeout=1200s
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         working-directory: terraform/envs/dev
-      - run: terraform apply -auto-approve
+      - run: terraform apply -auto-approve -lock-timeout=1200s
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           TF_VAR_image_id: gcr.io/amplication/amplication:${{ github.sha }}
