@@ -339,6 +339,7 @@ const ORGANIZATION: Entity = {
     },
     // Additional lookup field to the same entity
     {
+      id: "141818f7-528c-4036-944e-7b5a7e504d2d",
       name: "vipCustomers",
       displayName: "VIP Customers",
       dataType: EnumDataType.Lookup,
