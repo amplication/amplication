@@ -98,6 +98,18 @@ export type BulkEntityData = Omit<
   fields: BulkEntityFieldData[];
 };
 
+export type EntityPendingChange = {
+  /** The id of the changed entity */
+  resourceId: string;
+  /** The type of change */
+  action: EnumPendingChangeAction;
+  resourceType: EnumPendingChangeResourceType.Entity;
+  /** The entity version number */
+  versionNumber: number;
+  /** The entity */
+  resource: Entity;
+};
+
 /**
  * Expect format for entity field name, matches the format of JavaScript variable name
  */
@@ -353,8 +365,16 @@ export class EntityService {
     });
   }
 
-  async getChangedEntities(appId: string, userId: string) {
-    const changedEntity = await this.prisma.entity.findMany({
+  /**
+   * Gets all the entities changed since the last app commit
+   * @param appId the app ID to find changes to
+   * @param userId the user ID the app ID relates to
+   */
+  async getChangedEntities(
+    appId: string,
+    userId: string
+  ): Promise<EntityPendingChange[]> {
+    const changedEntities = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId,
         appId
@@ -371,7 +391,7 @@ export class EntityService {
       }
     });
 
-    return changedEntity.map(entity => {
+    return changedEntities.map(entity => {
       const [lastVersion] = entity.versions;
       const action = entity.deletedAt
         ? EnumPendingChangeAction.Delete

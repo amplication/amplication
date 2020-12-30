@@ -151,6 +151,9 @@ export class AppService {
     return this.prisma.app.update(args);
   }
 
+  /**
+   * Gets all the resources changed since the last commit in the app
+   */
   async getPendingChanges(
     args: FindPendingChangesArgs,
     user: User
