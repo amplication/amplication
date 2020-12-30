@@ -60,7 +60,7 @@ jobs:
         run: npm run test:e2e -- --scope @amplication/data-service-generator
         if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
   deploy:
-    needs: builds
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 60
     if: github.ref == 'refs/heads/master' || contains('ci', github.ref)
