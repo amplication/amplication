@@ -14,10 +14,18 @@
     "allowMultipleSelection": {
       "type": "boolean",
       "default": false
+    },
+    "mainLookupFieldId": {
+      "title": "Main Lookup Field",
+      "$ref": "#/definitions/EntityFieldId",
+      "default": null
     }
   },
   "definitions": {
     "EntityId": {
+      "type": "string"
+    },
+    "EntityFieldId": {
       "type": "string"
     }
   }
