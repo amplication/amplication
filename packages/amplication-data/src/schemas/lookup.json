@@ -12,7 +12,7 @@
       "default": null
     },
     "relatedFieldId": {
-      "title": "Main Lookup Field",
+      "title": "Related Field",
       "$ref": "#/definitions/EntityFieldId",
       "default": null
     },
