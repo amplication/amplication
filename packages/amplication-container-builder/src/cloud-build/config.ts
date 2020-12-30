@@ -1,69 +1,89 @@
 import { google } from "@google-cloud/cloudbuild/build/protos/protos";
+import { BuildRequest } from "../types";
 import { parseGCSObjectURL } from "./gcs.util";
 
-export const IMAGE_REPOSITORY_SUBSTITUTION_KEY = "_IMAGE_REPOSITORY";
-export const IMAGE_TAG_SUBSTITUTION_KEY = "_BUILD_ID";
-export const DOCKER_PUSH_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
-  id: "docker-push",
-  name: "gcr.io/cloud-builders/docker",
-  args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$_BUILD_ID"],
-};
-export const IMAGES = ["gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$_BUILD_ID"];
-
-export function createBuildArgParameter(name: string, value: string): string {
-  return `--build-arg=${name}=${value}`;
-}
-
+export const GCR_HOST = "gcr.io";
+export const CLOUD_BUILDERS_DOCKER_IMAGE = "gcr.io/cloud-builders/docker";
 export const DEFAULT_TAGS = ["container-builder"];
 
-export function createBuildStep(
-  parameters: string[]
-): google.devtools.cloudbuild.v1.IBuildStep {
-  return {
-    id: "docker-build",
-    name: "gcr.io/cloud-builders/docker",
-    args: [
-      "build",
-      "-t=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$_BUILD_ID",
-      ...parameters,
-      ".",
-    ],
-  };
-}
-
 export function createConfig(
-  repository: string,
-  tag: string,
-  url: string,
-  buildArgs: Record<string, string>
+  request: BuildRequest,
+  projectId: string
 ): google.devtools.cloudbuild.v1.IBuild {
-  const { bucket, object } = parseGCSObjectURL(url);
+  const { cacheFrom = [] } = request;
+  const { bucket, object } = parseGCSObjectURL(request.url);
+  const images = request.tags.map((tag) => createImageId(tag, projectId));
   return {
     steps: [
-      createBuildStep(
-        Object.entries(buildArgs).map(([name, value]) =>
-          createBuildArgParameter(name, value)
-        )
-      ),
-      DOCKER_PUSH_STEP,
+      ...cacheFrom.map((image) => createCacheFromPullStep(image)),
+      createBuildStep(request, images),
     ],
-    images: IMAGES,
+    images,
     source: {
       storageSource: {
         bucket,
         object,
       },
     },
-    substitutions: {
-      /** @todo use a nicer repository name */
-      [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: repository,
-      [IMAGE_TAG_SUBSTITUTION_KEY]: tag,
-    },
-    tags: createTags(repository, tag),
+    tags: createBuildTags(request.tags),
   };
 }
 
-export function createTags(repository: string, tag: string): string[] {
+export function createImageId(tag: string, projectId: string): string {
+  return `${GCR_HOST}/${projectId}/${tag}`;
+}
+
+export function createBuildStep(
+  request: BuildRequest,
+  images: string[]
+): google.devtools.cloudbuild.v1.IBuildStep {
+  const tagParameters = images.map(createTagParameter);
+  const { args = {}, cacheFrom = [] } = request;
+  const buildArgParameters = Object.entries(args).map(([name, value]) =>
+    createBuildArgParameter(name, value)
+  );
+  const cacheFromParameters = cacheFrom.map(createCacheFromParameter);
+  return {
+    name: CLOUD_BUILDERS_DOCKER_IMAGE,
+    args: [
+      "build",
+      ...tagParameters,
+      ...buildArgParameters,
+      ...cacheFromParameters,
+      ".",
+    ],
+  };
+}
+
+export function createTagParameter(tag: string): string {
+  return `--tag=${tag}`;
+}
+
+export function createBuildArgParameter(name: string, value: string): string {
+  return `--build-arg=${name}=${value}`;
+}
+
+export function createCacheFromParameter(image: string): string {
+  return `--cache-from=${image}`;
+}
+
+export function createCacheFromPullStep(
+  image: string
+): google.devtools.cloudbuild.v1.IBuildStep {
+  return {
+    name: CLOUD_BUILDERS_DOCKER_IMAGE,
+    entrypoint: "bash",
+    args: ["-c", `docker pull ${image} || exit 0`],
+    waitFor: [],
+  };
+}
+
+export function createBuildTags(tags: string[]): string[] {
   // Tags format: ^[\w][\w.-]{0,127}$
-  return [...DEFAULT_TAGS, `repository-${repository}`, `tag-${tag}`];
+  return [
+    ...DEFAULT_TAGS,
+    // Replace any forbidden character with a dash
+    // Limit the tag length to 128 characters
+    ...tags.map((tag) => `tag-${tag.replace(/[^\w.-]/, "-")}`.slice(128)),
+  ];
 }

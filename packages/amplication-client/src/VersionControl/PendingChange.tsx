@@ -31,7 +31,6 @@ const PendingChange = ({ change }: Props) => {
       </div>
       <div>{change.resource.displayName}</div>
       <div className={`${CLASS_NAME}__spacer`} />
-      <div className={`${CLASS_NAME}__version`}>V{change.versionNumber}</div>
     </div>
   );
 };

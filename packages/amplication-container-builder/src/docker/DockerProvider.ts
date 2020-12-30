@@ -1,25 +1,28 @@
 import { NotImplementedException } from "@nestjs/common";
 import Docker from "dockerode";
+import * as winston from "winston";
+import { defaultLogger } from "../logging";
 import { IProvider, BuildResult, EnumBuildStatus } from "../types";
+import { BuildRequest } from "../types/BuildRequest";
 
-export function createImageID(repository: string, tag: string): string {
-  return `${repository}:${tag}`;
-}
+export type BuildImageOptions = {
+  t?: string[];
+  buildargs?: Record<string, string>;
+  cachefrom?: string;
+};
 
 export class DockerProvider implements IProvider {
-  constructor(readonly docker: Docker) {}
-  async build(
-    repository: string,
-    tag: string,
-    url: string,
-    buildArgs: Record<string, string>
-  ): Promise<BuildResult> {
-    const imageId = createImageID(repository, tag);
-    await this.docker.buildImage(url, {
-      t: imageId,
-      buildargs: buildArgs,
-    });
-    return { images: [imageId], status: EnumBuildStatus.Completed };
+  constructor(
+    readonly docker: Docker,
+    readonly logger: winston.Logger = defaultLogger
+  ) {}
+  async build(request: BuildRequest): Promise<BuildResult> {
+    const logger = this.logger.child({ request });
+    logger.info("Building container...");
+    const options = createBuildImageOptions(request);
+    await this.docker.buildImage(request.url, options);
+    logger.info("Built container successfully");
+    return { images: request.tags, status: EnumBuildStatus.Completed };
   }
 
   async getStatus(statusQuery: any): Promise<BuildResult> {
@@ -27,4 +30,18 @@ export class DockerProvider implements IProvider {
       "getStatus is not implemented for DockerProvider"
     );
   }
+
+  createImageId(tag: string): string {
+    return tag;
+  }
+}
+
+export function createBuildImageOptions(
+  request: BuildRequest
+): BuildImageOptions {
+  return {
+    t: request.tags,
+    buildargs: request.args,
+    cachefrom: request.cacheFrom && JSON.stringify(request.cacheFrom),
+  };
 }

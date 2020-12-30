@@ -1,11 +1,12 @@
 import { Controller, Post, Body, UnauthorizedException } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { AuthService, UserInfo } from "./auth/auth.service";
-import { Credentials } from "./auth/Credentials";
+import { AuthService } from "./auth.service";
+import { UserInfo } from "./UserInfo";
+import { Credentials } from "./Credentials";
 
-@ApiTags("general")
+@ApiTags("auth")
 @Controller()
-export class AppController {
+export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post("login")
   async login(@Body() body: Credentials): Promise<UserInfo> {
