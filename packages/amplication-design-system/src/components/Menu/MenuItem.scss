@@ -30,6 +30,11 @@ $inverted-border-radius: 6px;
     letter-spacing: normal;
   }
 
+  &__badge {
+    @include counterBadge;
+    background-color: var(--negative-light);
+  }
+
   &:hover {
     background-color: transparent !important;
   }
@@ -56,31 +61,9 @@ $inverted-border-radius: 6px;
   }
 
   &--with-fixed-panel {
-    .amp-menu-item__wrapper {
-      &:after,
-      &:before {
-        content: "";
-        position: absolute;
-        background-color: transparent;
-        bottom: calc(var(--default-spacing-small) * -1);
-        height: $inverted-border-radius * 2;
-        width: $inverted-border-radius;
-        right: 0;
-        border-top-right-radius: $inverted-border-radius;
-        box-shadow: none;
-      }
-      &:before {
-        bottom: auto;
-        top: calc(var(--default-spacing-small) * -1);
-        border-top-right-radius: 0;
-        border-bottom-right-radius: $inverted-border-radius;
-        box-shadow: none;
-      }
-    }
-
     &:before,
     &:hover:before {
-      width: $inverted-border-radius;
+      width: 0;
       height: $select-item-width;
       border-radius: var(--default-border-radius);
       border-top-right-radius: 0;
@@ -94,16 +77,6 @@ $inverted-border-radius: 6px;
     }
 
     &--active {
-      .amp-menu-item__wrapper {
-        &:after,
-        &:before {
-          box-shadow: 0 #{-$inverted-border-radius} 0 0 var(--white);
-        }
-        &:before {
-          box-shadow: 0 #{$inverted-border-radius} 0 0 var(--white);
-        }
-      }
-
       &:before,
       &:hover:before {
         width: calc(100% - (100% - #{$select-item-width}) / 2);
