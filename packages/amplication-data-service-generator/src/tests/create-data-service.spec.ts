@@ -5,7 +5,7 @@ import appInfo from "./appInfo";
 
 describe("createDataService", () => {
   test("creates app as expected", async () => {
-    jest.setTimeout(10000);
+    jest.setTimeout(100000);
     const modules = await createDataService(entities, roles, appInfo);
     const typescriptModules = modules.filter(
       (module) => module.path.endsWith(".ts") || module.path.endsWith(".tsx")
