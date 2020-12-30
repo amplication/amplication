@@ -53,6 +53,7 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: EntityPermission = {
   permissionRoles: [EXAMPLE_PERMISSION_ROLE],
 };
 const EXAMPLE_FIELD: EntityField = {
+  id: "EXAMPLE_FIELD_ID",
   dataType: EnumDataType.Id,
   displayName: "Example Field",
   name: "exampleField",

@@ -21,6 +21,7 @@ const EXAMPLE_LOOKUP_ENTITY_NAME = "ExampleLookupEntity";
 const EXAMPLE_LOOKUP_FIELD_NAME = "exampleLookupField";
 
 const EXAMPLE_FIELD: EntityField = {
+  id: "EXAMPLE_FIELD_ID",
   name: EXAMPLE_ENTITY_FIELD_NAME,
   dataType: EnumDataType.SingleLineText,
   properties: {},
@@ -70,6 +71,7 @@ const EXAMPLE_LOOKUP_ENTITY: Entity = {
   name: EXAMPLE_LOOKUP_ENTITY_NAME,
   fields: [
     {
+      id: "EXAMPLE_LOOKUP_FIELD_ID",
       dataType: EnumDataType.Lookup,
       required: true,
       searchable: false,
@@ -354,6 +356,7 @@ describe("createPrismaField", () => {
   ];
   test.each(cases)("%s", (name, dataType, properties, expected) => {
     const field: EntityField = {
+      id: "EXAMPLE_FIELD_ID",
       name: EXAMPLE_ENTITY_FIELD_NAME,
       displayName: "Example Field Display Name",
       dataType,
