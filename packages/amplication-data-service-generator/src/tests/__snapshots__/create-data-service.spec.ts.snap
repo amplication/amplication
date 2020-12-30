@@ -3372,6 +3372,116 @@ export const UserTitle = ({ id }: Props) => {
   },
 ];
 ",
+  "server/prisma/schema.prisma": "datasource postgres {
+  provider = \\"postgresql\\"
+  url      = env(\\"POSTGRESQL_URL\\")
+}
+
+generator client {
+  provider = \\"prisma-client-js\\"
+}
+
+model User {
+  username       String          @unique
+  password       String
+  roles          String[]
+  id             String          @id @default(cuid())
+  name           String
+  bio            String
+  email          String
+  age            Int
+  birthDate      DateTime
+  score          Float
+  organization   Organization?   @relation(name: \\"OrganizationUsersUserOrganization\\", fields: [organizationId])
+  organizationId String?
+  interests      EnumInterests[]
+  priority       EnumPriority
+  isCurious      Boolean
+  location       String
+}
+
+model Order {
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customer   Customer   @relation(name: \\"CustomerOrdersOrderCustomer\\", fields: [customerId])
+  customerId String
+  status     EnumStatus
+  label      EnumLabel?
+}
+
+model Organization {
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  name         String
+  users        User[]     @relation(name: \\"OrganizationUsersUserOrganization\\")
+  customers    Customer[] @relation(name: \\"CustomerOrganizationOrganizationCustomers\\")
+  vipCustomers Customer[] @relation(name: \\"CustomerVipOrganizationOrganizationVipCustomers\\")
+}
+
+model Customer {
+  id                String               @id @default(cuid())
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  email             String
+  firstName         String?
+  lastName          String?
+  isVip             Boolean?
+  birthData         DateTime?
+  averageSale       Float?
+  favoriteNumber    Int?
+  geoLocation       String?
+  comments          String?
+  favoriteColors    EnumFavoriteColors[]
+  customerType      EnumCustomerType?
+  organization      Organization?        @relation(name: \\"CustomerOrganizationOrganizationCustomers\\", fields: [organizationId])
+  organizationId    String?
+  vipOrganization   Organization?        @relation(name: \\"CustomerVipOrganizationOrganizationVipCustomers\\", fields: [vipOrganizationId])
+  vipOrganizationId String?
+  orders            Order[]              @relation(name: \\"CustomerOrdersOrderCustomer\\")
+}
+
+model Empty {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EnumInterests {
+  programming
+  design
+}
+
+enum EnumPriority {
+  high
+  medium
+  low
+}
+
+enum EnumStatus {
+  pending
+  inProgress
+  done
+}
+
+enum EnumLabel {
+  fragile
+}
+
+enum EnumFavoriteColors {
+  red
+  green
+  purple
+  yellow
+}
+
+enum EnumCustomerType {
+  platinum
+  gold
+  bronze
+  regular
+}",
   "server/scripts/clean.ts": "/**
  * Clean all the tables and types created by Prisma in the database
  */
@@ -7833,6 +7943,8 @@ import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
+import { UserWhereInput } from \\"../user/UserWhereInput\\";
+import { User } from \\"../user/User\\";
 import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
 import { Customer } from \\"../customer/Customer\\";
 
@@ -8069,32 +8181,27 @@ export class OrganizationController {
   })
   async findManyUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Query() query: CustomerWhereInput,
+    @common.Query() query: UserWhereInput,
     @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Customer[]> {
+  ): Promise<User[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
       possession: \\"any\\",
-      resource: \\"Customer\\",
+      resource: \\"User\\",
     });
     const results = await this.service.findOne({ where: params }).users({
       where: query,
       select: {
+        username: true,
+        roles: true,
         id: true,
-        createdAt: true,
-        updatedAt: true,
+        name: true,
+        bio: true,
         email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
+        age: true,
+        birthDate: true,
+        score: true,
 
         organization: {
           select: {
@@ -8102,11 +8209,10 @@ export class OrganizationController {
           },
         },
 
-        vipOrganization: {
-          select: {
-            id: true,
-          },
-        },
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -8635,6 +8741,8 @@ import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
 import { FindManyOrganizationArgs } from \\"./FindManyOrganizationArgs\\";
 import { FindOneOrganizationArgs } from \\"./FindOneOrganizationArgs\\";
 import { Organization } from \\"./Organization\\";
+import { FindManyUserArgs } from \\"../user/FindManyUserArgs\\";
+import { User } from \\"../user/User\\";
 import { FindManyCustomerArgs } from \\"../customer/FindManyCustomerArgs\\";
 import { Customer } from \\"../customer/Customer\\";
 
@@ -8797,22 +8905,22 @@ export class OrganizationResolver {
     }
   }
 
-  @graphql.ResolveField(() => [Customer])
+  @graphql.ResolveField(() => [User])
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async customers(
+  async users(
     @graphql.Parent() parent: Organization,
-    @graphql.Args() args: FindManyCustomerArgs,
+    @graphql.Args() args: FindManyUserArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<Customer[]> {
+  ): Promise<User[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
       possession: \\"any\\",
-      resource: \\"Customer\\",
+      resource: \\"User\\",
     });
     const results = await this.service
       .findOne({ where: { id: parent.id } })
