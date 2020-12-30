@@ -30,6 +30,7 @@ const EXAMPLE_LOOKUP_FIELD: EntityField = {
   displayName: "Example Lookup Field",
   properties: {
     relatedEntityId: EXAMPLE_ENTITY.id,
+    relatedEntity: EXAMPLE_ENTITY,
   },
 };
 const EXAMPLE_LOOKUP_ENTITY: Entity = {
@@ -49,7 +50,7 @@ describe("createSelect", () => {
   ]> = [
     [
       "adds true property for scalar field",
-      createEntityDTO(EXAMPLE_ENTITY, {}),
+      createEntityDTO(EXAMPLE_ENTITY),
       EXAMPLE_ENTITY,
       builders.objectExpression([
         createSelectProperty(builders.identifier(EXAMPLE_ID_FIELD.name)),
@@ -57,9 +58,7 @@ describe("createSelect", () => {
     ],
     [
       "adds true property for lookup field",
-      createEntityDTO(EXAMPLE_LOOKUP_ENTITY, {
-        [EXAMPLE_ENTITY.id]: EXAMPLE_ENTITY.name,
-      }),
+      createEntityDTO(EXAMPLE_LOOKUP_ENTITY),
       EXAMPLE_LOOKUP_ENTITY,
       builders.objectExpression([
         createObjectSelectProperty(

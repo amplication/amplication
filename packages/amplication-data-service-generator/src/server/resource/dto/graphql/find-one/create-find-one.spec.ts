@@ -15,7 +15,7 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
-const EXAMPLE_WHERE_UNIQUE_INPUT = createWhereUniqueInput(EXAMPLE_ENTITY, {});
+const EXAMPLE_WHERE_UNIQUE_INPUT = createWhereUniqueInput(EXAMPLE_ENTITY);
 
 describe("createFindOneArgs", () => {
   test("creates find one args", async () => {

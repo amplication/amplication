@@ -32,8 +32,7 @@ export async function createControllerSpecModule(
   entity: Entity,
   entityType: string,
   entityServiceModule: string,
-  entityControllerModule: string,
-  entityIdToName: Record<string, string>
+  entityControllerModule: string
 ): Promise<Module> {
   const modulePath = replaceExt(entityControllerModule, ".spec.ts");
   const file = await readFile(testTemplatePath);
@@ -47,10 +46,7 @@ export async function createControllerSpecModule(
   const existingParam = camelCase(["existing", param].join(" "));
   const nonExistingParam = camelCase(["nonExisting", param].join(" "));
   const fieldNameToPrismField = Object.fromEntries(
-    entity.fields.map((field) => [
-      field.name,
-      createPrismaFields(field, entityIdToName)[0],
-    ])
+    entity.fields.map((field) => [field.name, createPrismaFields(field)[0]])
   );
 
   interpolate(file, {
@@ -64,8 +60,8 @@ export async function createControllerSpecModule(
     NON_EXISTING_PARAM: builders.stringLiteral(nonExistingParam),
     CREATE_PATHNAME: builders.stringLiteral(`/${resource}`),
     CREATE_INPUT_TYPE: builders.identifier(`Create${entityType}`),
-    CREATE_INPUT_VALUE: createTestData(entity.fields, entityIdToName),
-    CREATE_RESULT_VALUE: createTestData(entity.fields, entityIdToName),
+    CREATE_INPUT_VALUE: createTestData(entity.fields),
+    CREATE_RESULT_VALUE: createTestData(entity.fields),
     CREATE_EXPECTED_RESULT: createExpectedResult(
       CREATE_RESULT_ID,
       entity.fields,
@@ -73,7 +69,7 @@ export async function createControllerSpecModule(
     ),
     FIND_MANY_PATHNAME: builders.stringLiteral(`/${resource}`),
     FIND_MANY_RESULT_VALUE: builders.arrayExpression([
-      createTestData(entity.fields, entityIdToName),
+      createTestData(entity.fields),
     ]),
     FIND_MANY_EXPECTED_RESULT: builders.arrayExpression([
       createExpectedResult(
@@ -86,7 +82,7 @@ export async function createControllerSpecModule(
     RESOURCE: builders.stringLiteral(`/${resource}`),
     FIND_ONE_PARAM: paramType,
     FIND_ONE_PARAM_NAME: builders.stringLiteral(param),
-    FIND_ONE_RESULT_VALUE: createTestData(entity.fields, entityIdToName),
+    FIND_ONE_RESULT_VALUE: createTestData(entity.fields),
     FIND_ONE_EXPECTED_RESULT: createExpectedResult(
       FIND_ONE_RESULT_ID,
       entity.fields,
@@ -153,17 +149,14 @@ function createToISOStringCallExpression(
   );
 }
 
-function createTestData(
-  fields: EntityField[],
-  entityIdToName: Record<string, string>
-): namedTypes.ObjectExpression {
+function createTestData(fields: EntityField[]): namedTypes.ObjectExpression {
   return builders.objectExpression(
     fields
       .filter(
         (field) => !isRelationField(field) || isOneToOneRelationField(field)
       )
       .map((field) => {
-        const value = createFieldTestValue(field, entityIdToName);
+        const value = createFieldTestValue(field);
         return (
           value &&
           builders.property("init", builders.identifier(field.name), value)
@@ -181,12 +174,9 @@ type TestValue =
   | namedTypes.NewExpression
   | null;
 
-function createFieldTestValue(
-  field: EntityField,
-  entityIdToName: Record<string, string>
-): TestValue {
+function createFieldTestValue(field: EntityField): TestValue {
   // Use Prisma type as it already reduces the amount of possible types
-  const [prismaField] = createPrismaFields(field, entityIdToName);
+  const [prismaField] = createPrismaFields(field);
   if (prismaField.isList) {
     const value = createFieldTestValueFromPrisma({
       ...prismaField,

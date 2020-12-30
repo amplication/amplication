@@ -15,7 +15,7 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
-const EXAMPLE_CREATE_INPUT = createCreateInput(EXAMPLE_ENTITY, {});
+const EXAMPLE_CREATE_INPUT = createCreateInput(EXAMPLE_ENTITY);
 const EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS: Entity = {
   id: "EXAMPLE_ENTITY_WITHOUT_CREATABLE_FIELDS_ID",
   name: "ExampleEntityWithoutCreatableFields",
@@ -25,8 +25,7 @@ const EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS: Entity = {
   permissions: [],
 };
 const EXAMPLE_CREATE_INPUT_WITHOUT_CREATABLE_FIELDS = createCreateInput(
-  EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS,
-  {}
+  EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS
 );
 
 describe("createCreateArgs", () => {
