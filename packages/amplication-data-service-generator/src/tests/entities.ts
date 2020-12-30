@@ -609,8 +609,8 @@ const CUSTOMER: Entity = {
     },
     {
       id: CUSTOMER_VIP_ORGANIZATION_FIELD_ID,
-      name: "organization",
-      displayName: "Organization",
+      name: "vipOrganization",
+      displayName: "VIP Organization",
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: ORGANIZATION.id,
