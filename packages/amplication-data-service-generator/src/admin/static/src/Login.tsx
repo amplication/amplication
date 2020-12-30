@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
 import { useMutation } from "react-query";
 import { Formik, Form } from "formik";
@@ -9,6 +8,7 @@ import {
   TextField,
   Button,
   EnumPanelStyle,
+  EnumButtonStyle,
 } from "@amplication/design-system";
 import { Credentials } from "./auth";
 import { api } from "./api";
@@ -40,25 +40,46 @@ const Login = ({ onLogin }: Props) => {
   );
   return (
     <div className="login-page">
-      <Panel panelStyle={EnumPanelStyle.Bordered}>
-        <PanelHeader>Sign In</PanelHeader>
-        <div className="message">
-          By default, your app comes with one user with the username "admin" and
-          password "admin".
-        </div>
-        <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-          <Form>
-            <TextField label="Username" name="username" type="text" />
-            <TextField label="Password" name="password" type="password" />
-            <Button type="submit">Continue</Button>
-          </Form>
-        </Formik>
-        {error && error.response?.data?.message}
-
-        <div className="docs">
-          <Link to="/apis-page">View API Docs</Link>
-        </div>
-      </Panel>
+      <div className="options-container">
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <PanelHeader>Sign In to Admin UI</PanelHeader>
+          <div className="message">
+            By default, your app comes with one user with the username "admin"
+            and password "admin".
+          </div>
+          <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+            <Form>
+              <TextField label="Username" name="username" type="text" />
+              <TextField label="Password" name="password" type="password" />
+              <Button type="submit">Continue</Button>
+            </Form>
+          </Formik>
+          {error && error.response?.data?.message}
+        </Panel>
+        <div className="divider">Or</div>
+        <Panel panelStyle={EnumPanelStyle.Bordered}>
+          <PanelHeader>Connect via API</PanelHeader>
+          <div className="message">
+            Connect to your app using REST or GraphQL API. Read the docs to
+            learn about authentication and more.
+          </div>
+          <a href="/graphql" target="graphql">
+            <Button type="button" buttonStyle={EnumButtonStyle.Secondary}>
+              GraphQL API
+            </Button>
+          </a>
+          <a href="/api" target="api">
+            <Button type="button" buttonStyle={EnumButtonStyle.Secondary}>
+              REST API
+            </Button>
+          </a>
+          <a href="https://docs.amplication.com/docs/api" target="docs">
+            <Button type="button" buttonStyle={EnumButtonStyle.Secondary}>
+              Amplication docs
+            </Button>
+          </a>
+        </Panel>
+      </div>
     </div>
   );
 };

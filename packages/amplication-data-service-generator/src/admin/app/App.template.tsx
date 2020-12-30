@@ -5,12 +5,9 @@ import Navigation from "./Navigation";
 // @ts-ignore
 import Login from "./Login";
 // @ts-ignore
-import ApisPage from "./ApisPage";
-// @ts-ignore
 import { Credentials, setCredentials, removeCredentials } from "./auth";
 import {
   Menu,
-  MenuItem,
   MainLayout,
   Page,
   CircleBadge,
@@ -43,7 +40,6 @@ const App = (): React.ReactElement => {
       <MainLayout>
         <Switch>
           <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
-          <Route path="/apis-page" component={ApisPage} />
           <PrivateRoute path="/" component={AppLayout} />
         </Switch>
       </MainLayout>
@@ -78,11 +74,6 @@ const AppLayout = (): React.ReactElement => {
             <CircleBadge name={APP_NAME} />
           </Link>
         }
-        bottomContent={
-          <Link to="/pages/api">
-            <MenuItem icon="code" title="APIs"></MenuItem>
-          </Link>
-        }
       ></Menu>
       <MainLayout.Content>
         <Breadcrumbs>
@@ -101,8 +92,6 @@ const AppLayout = (): React.ReactElement => {
         <Page>
           <Switch>
             <PrivateRoute exact path="/" component={Navigation} />
-            <Route path="/pages/api" component={ApisPage} />
-
             {ROUTES}
           </Switch>
         </Page>

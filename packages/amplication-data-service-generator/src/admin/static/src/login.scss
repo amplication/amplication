@@ -5,31 +5,56 @@
   align-items: center;
   justify-content: center;
 
-  .amp-panel {
-    padding: var(--triple-spacing);
+  .options-container {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
 
-    &__header {
-      justify-content: center;
-      margin-bottom: var(--double-spacing);
+    .divider {
+      margin: 0 var(--double-spacing);
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      &:before,
+      &:after {
+        content: "";
+        position: absolute;
+        top: 10%;
+        height: calc(40% - var(--double-spacing));
+        border-right: 1px solid var(--black20);
+        width: 0;
+        left: 50%;
+      }
+
+      &:after {
+        top: auto;
+        bottom: 10%;
+      }
+    }
+    .amp-panel {
+      padding: var(--triple-spacing);
+      margin-bottom: 0;
+      flex: 1;
+      width: 400px;
+
+      &__header {
+        justify-content: center;
+        margin-bottom: var(--double-spacing);
+      }
+
+      .message {
+        color: var(--black60);
+        margin: auto;
+        margin-bottom: var(--double-spacing);
+        margin-top: var(--double-spacing);
+        text-align: center;
+      }
     }
 
-    .message {
-      color: var(--black60);
-      max-width: 300px;
-      margin-bottom: var(--double-spacing);
+    .amp-button {
+      width: 100%;
       margin-top: var(--double-spacing);
     }
-
-    .docs {
-      margin-bottom: var(--double-spacing);
-      margin-top: var(--double-spacing);
-      text-align: center;
-      color: var(--primary);
-    }
-  }
-
-  .amp-button {
-    width: 100%;
-    margin-top: var(--double-spacing);
   }
 }
