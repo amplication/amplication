@@ -1,4 +1,5 @@
 import * as os from "os";
+import * as fs from "fs";
 import * as path from "path";
 import base64 from "base-64";
 import * as compose from "docker-compose";
@@ -53,6 +54,11 @@ describe("Data Service Generator", () => {
   let apolloClient: ApolloClient<any>;
   beforeAll(async () => {
     const directory = path.join(os.tmpdir(), "test-data-service");
+
+    // Clean the temporary directory
+    await fs.promises.rm(directory, { recursive: true });
+    await fs.promises.mkdir(directory);
+
     // Generate the test data service
     await generateTestDataService(directory);
 
@@ -99,6 +105,9 @@ describe("Data Service Generator", () => {
         POSTGRESQL_PORT: String(dbPort),
         SERVER_PORT: String(port),
         BCRYPT_SALT: "10",
+        // See: https://www.docker.com/blog/faster-builds-in-compose-thanks-to-buildkit-support/
+        COMPOSE_DOCKER_CLI_BUILD: "1",
+        DOCKER_BUILDKIT: "1",
       },
     };
 
