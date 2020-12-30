@@ -23,6 +23,7 @@ describe("createWhereInput", () => {
         createInput(
           createWhereInputID(EXAMPLE_ENTITY_NAME),
           [EXAMPLE_ID_FIELD],
+          EXAMPLE_ENTITY,
           true,
           true
         )

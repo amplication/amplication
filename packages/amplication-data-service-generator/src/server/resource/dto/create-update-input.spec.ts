@@ -27,6 +27,7 @@ describe("createUpdateInput", () => {
           createInput(
             createUpdateInputID(EXAMPLE_ENTITY_NAME),
             [EXAMPLE_SINGLE_LINE_TEXT_FIELD],
+            EXAMPLE_ENTITY,
             true,
             false
           )

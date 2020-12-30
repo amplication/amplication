@@ -6,7 +6,17 @@ import {
 } from "../types";
 
 const CUSTOMER_ENTITY_ID = "b8d49afb-8c12-49fa-9d6e-eb64be0ddded";
+const CUSTOMER_ORDERS_FIELD_ID = "a766a160-506c-4212-9e5e-8ecd1d530eb4";
+const CUSTOMER_ORGANIZATION_FIELD_ID = "e4ea7c84-e998-482e-8bd2-34657a3ff23c";
+const CUSTOMER_VIP_ORGANIZATION_FIELD_ID =
+  "3e64e7d1-b1d2-4c5a-a546-b4f493dc4f57";
 const ORGANIZATION_ID = "3426e3f7-c316-416e-b7a1-d2a1bce17a4";
+const ORGANIZATION_USERS_FIELD_ID = "3c5f6e76-a124-4f9a-a944-c75f55495859";
+const ORGANIZATION_CUSTOMERS_FIELD_ID = "8d84e22b-ced7-46d7-8ffb-78b74477553a";
+const ORGANIZATION_VIP_CUSTOMERS_FIELD_ID =
+  "e0c1e5c4-71ae-4584-9e8b-fd1ac8c3b577";
+const ORDER_CUSTOMER_FIELD_ID = "77c79b5e-b298-44b2-9648-d417c92a282b";
+const USER_ORGANIZATION_FIELD_ID = "ae21f2fb-9174-49de-9576-632d859a5dd1";
 
 const USER: Entity = {
   id: "075c5413-42c3-4445-af6a-d8e5b8cbf53b",
@@ -73,7 +83,7 @@ const USER: Entity = {
       dataType: EnumDataType.DecimalNumber,
     },
     {
-      id: "ae21f2fb-9174-49de-9576-632d859a5dd1",
+      id: USER_ORGANIZATION_FIELD_ID,
       name: "organization",
       displayName: "Organization",
       required: false,
@@ -81,6 +91,7 @@ const USER: Entity = {
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: ORGANIZATION_ID,
+        relatedFieldId: ORGANIZATION_USERS_FIELD_ID,
         allowMultipleSelection: false,
       },
     },
@@ -204,6 +215,7 @@ const ORDER: Entity = {
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: CUSTOMER_ENTITY_ID,
+        relatedFieldId: CUSTOMER_ORDERS_FIELD_ID,
       },
       required: true,
       searchable: false,
@@ -326,12 +338,26 @@ const ORGANIZATION: Entity = {
       searchable: false,
     },
     {
-      id: "94434ceb-f5ae-4f13-b705-6b0a914451bb",
+      id: ORGANIZATION_USERS_FIELD_ID,
+      name: "users",
+      displayName: "Users",
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: CUSTOMER_ENTITY_ID,
+        relatedFieldId: USER_ORGANIZATION_FIELD_ID,
+        allowMultipleSelection: true,
+      },
+      required: true,
+      searchable: false,
+    },
+    {
+      id: ORGANIZATION_CUSTOMERS_FIELD_ID,
       name: "customers",
       displayName: "Customers",
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: CUSTOMER_ENTITY_ID,
+        relatedFieldId: CUSTOMER_ORGANIZATION_FIELD_ID,
         allowMultipleSelection: true,
       },
       required: true,
@@ -339,12 +365,13 @@ const ORGANIZATION: Entity = {
     },
     // Additional lookup field to the same entity
     {
-      id: "141818f7-528c-4036-944e-7b5a7e504d2d",
+      id: ORGANIZATION_VIP_CUSTOMERS_FIELD_ID,
       name: "vipCustomers",
       displayName: "VIP Customers",
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: CUSTOMER_ENTITY_ID,
+        relatedFieldId: CUSTOMER_VIP_ORGANIZATION_FIELD_ID,
         allowMultipleSelection: true,
       },
       required: true,
@@ -568,24 +595,39 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
-      id: "443fe9ac-f6d3-4923-a34c-b2b98d57f77a",
+      id: CUSTOMER_ORGANIZATION_FIELD_ID,
       name: "organization",
       displayName: "Organization",
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: ORGANIZATION.id,
+        relatedFieldId: ORGANIZATION_CUSTOMERS_FIELD_ID,
         allowMultipleSelection: false,
       },
       required: false,
       searchable: false,
     },
     {
-      id: "2ea07063-413c-4374-aa67-15097420e54b",
+      id: CUSTOMER_VIP_ORGANIZATION_FIELD_ID,
+      name: "organization",
+      displayName: "Organization",
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: ORGANIZATION.id,
+        relatedFieldId: ORGANIZATION_VIP_CUSTOMERS_FIELD_ID,
+        allowMultipleSelection: false,
+      },
+      required: false,
+      searchable: false,
+    },
+    {
+      id: CUSTOMER_ORDERS_FIELD_ID,
       name: "orders",
       displayName: "Orders",
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: ORDER.id,
+        relatedFieldId: ORDER_CUSTOMER_FIELD_ID,
         allowMultipleSelection: true,
       },
       required: false,

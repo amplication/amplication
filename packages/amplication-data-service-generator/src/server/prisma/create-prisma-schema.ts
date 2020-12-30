@@ -55,12 +55,13 @@ export function createEnumName(field: EntityField): string {
 export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
-    entity.fields.flatMap((field) => createPrismaFields(field))
+    entity.fields.flatMap((field) => createPrismaFields(field, entity))
   );
 }
 
 export function createPrismaFields(
-  field: EntityField
+  field: EntityField,
+  entity: Entity
 ):
   | [PrismaSchemaDSL.ScalarField]
   | [PrismaSchemaDSL.ObjectField]
@@ -150,8 +151,15 @@ export function createPrismaFields(
     case EnumDataType.Lookup: {
       const {
         relatedEntity,
+        relatedField,
         allowMultipleSelection,
       } = properties as LookupResolvedProperties;
+      const relationName = createRelationName(
+        entity.name,
+        field.name,
+        relatedEntity.name,
+        relatedField.name
+      );
 
       if (allowMultipleSelection) {
         return [
@@ -160,12 +168,12 @@ export function createPrismaFields(
             relatedEntity.name,
             true,
             true,
-            name
+            relationName
           ),
         ];
       }
 
-      const relatedEntityIdFieldName = `${name}Id`;
+      const scalarRelationFieldName = `${name}Id`;
 
       return [
         PrismaSchemaDSL.createObjectField(
@@ -173,12 +181,12 @@ export function createPrismaFields(
           relatedEntity.name,
           false,
           field.required,
-          name,
-          [relatedEntityIdFieldName]
+          relationName,
+          [scalarRelationFieldName]
         ),
         // Prisma Scalar Relation Field
         PrismaSchemaDSL.createScalarField(
-          relatedEntityIdFieldName,
+          scalarRelationFieldName,
           PrismaSchemaDSL.ScalarType.String,
           false,
           field.required
@@ -281,4 +289,19 @@ export function createPrismaFields(
       throw new Error(`Unfamiliar data type: ${dataType}`);
     }
   }
+}
+
+function createRelationName(
+  entityName: string,
+  fieldName: string,
+  relatedEntityName: string,
+  relatedFieldName: string
+) {
+  const entityAndField = [entityName, fieldName].join(" ");
+  const relatedEntityAndField = [relatedEntityName, relatedFieldName].join(" ");
+  const parts = [entityAndField, relatedEntityAndField];
+  // Sort parts for deterministic results regardless of entity and related order
+  parts.sort();
+  /** @todo make shorter names for special cases */
+  return pascalCase(parts.join(" "));
 }

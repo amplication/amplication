@@ -84,6 +84,16 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             relatedEntityId,
             relatedFieldId,
           } = field.properties as types.Lookup;
+          if (!relatedEntityId) {
+            throw new Error(
+              `Lookup entity field ${field.name} must have a relatedEntityId property with a valid entity ID`
+            );
+          }
+          if (!relatedFieldId) {
+            throw new Error(
+              `Lookup entity field ${field.name} must have a relatedFieldId property with a valid entity ID`
+            );
+          }
           const relatedEntity = entityIdToEntity[relatedEntityId];
           const relatedField = fieldIdToField[relatedFieldId];
           if (!relatedEntity) {

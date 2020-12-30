@@ -9,7 +9,7 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { classProperty, createGenericArray } from "../../../util/ast";
-import { EntityField, EnumDataType } from "../../../types";
+import { Entity, EntityField, EnumDataType } from "../../../types";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_LOOKUP_FIELD,
@@ -34,6 +34,14 @@ import {
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { FIELD_ID } from "./nestjs-graphql.util";
 
+const EXAMPLE_ENTITY: Entity = {
+  id: "EXAMPLE_ENTITY_ID",
+  name: "ExampleEntity",
+  displayName: "Example Entity",
+  pluralDisplayName: "Example Entities",
+  fields: [],
+  permissions: [],
+};
 const EXAMPLE_OPTIONAL_ENTITY_FIELD: EntityField = {
   id: "EXAMPLE_OPTIONAL_ENTITY_FIELD_ID",
   name: "exampleOptionalEntityField",
@@ -179,7 +187,15 @@ describe("createFieldClassProperty", () => {
     "%s",
     (name, field, optional, isInput, isQuery, expected) => {
       expect(
-        print(createFieldClassProperty(field, optional, isInput, isQuery)).code
+        print(
+          createFieldClassProperty(
+            field,
+            EXAMPLE_ENTITY,
+            optional,
+            isInput,
+            isQuery
+          )
+        ).code
       ).toEqual(print(expected).code);
     }
   );

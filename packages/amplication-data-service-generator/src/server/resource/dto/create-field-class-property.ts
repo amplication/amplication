@@ -6,7 +6,7 @@ import {
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { EntityField } from "../../../types";
+import { Entity, EntityField } from "../../../types";
 import {
   createEnumName,
   createPrismaFields,
@@ -77,11 +77,12 @@ export const NULLABLE_ID = builders.identifier("nullable");
 
 export function createFieldClassProperty(
   field: EntityField,
+  entity: Entity,
   optional: boolean,
   isInput: boolean,
   isQuery: boolean
 ): namedTypes.ClassProperty {
-  const [prismaField] = createPrismaFields(field);
+  const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
   const type = createFieldValueTypeFromPrismaField(
