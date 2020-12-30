@@ -190,6 +190,7 @@ export function createPrismaFields(
           name,
           [relatedEntityIdFieldName]
         ),
+        // Prisma Scalar Relation Field
         PrismaSchemaDSL.createScalarField(
           relatedEntityIdFieldName,
           PrismaSchemaDSL.ScalarType.String,
