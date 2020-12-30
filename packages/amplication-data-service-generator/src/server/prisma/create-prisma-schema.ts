@@ -155,12 +155,16 @@ export function createPrismaFields(
         relatedField,
         allowMultipleSelection,
       } = properties as LookupResolvedProperties;
-      const relationName = createRelationName(
-        entity,
-        field,
-        relatedEntity,
-        relatedField
+      const hasAnotherRelation = entity.fields.some(
+        (entityField) =>
+          entityField.id !== field.id &&
+          entityField.dataType === EnumDataType.Lookup &&
+          entityField.properties.relatedEntity.name === relatedEntity.name
       );
+
+      const relationName = !hasAnotherRelation
+        ? null
+        : createRelationName(entity, field, relatedEntity, relatedField);
 
       if (allowMultipleSelection) {
         return [
@@ -293,7 +297,9 @@ export function createPrismaFields(
 }
 
 /**
- * Creates Prisma Schema relation name according to the names of the entity, field, relatedEntity and relatedField
+ * Creates Prisma Schema relation name according to the names of the entity,
+ * field, relatedEntity and relatedField.
+ * This function is assumed to be used when a relation name is necessary
  * @param entity
  * @param field
  * @param relatedEntity
