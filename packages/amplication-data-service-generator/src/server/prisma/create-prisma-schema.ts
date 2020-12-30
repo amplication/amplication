@@ -292,6 +292,14 @@ export function createPrismaFields(
   }
 }
 
+/**
+ * Creates Prisma Schema relation name according to the names of the entity, field, relatedEntity and relatedField
+ * @param entity
+ * @param field
+ * @param relatedEntity
+ * @param relatedField
+ * @returns Prisma Schema relation name
+ */
 export function createRelationName(
   entity: Entity,
   field: EntityField,
@@ -322,6 +330,5 @@ export function createRelationName(
   const parts = [entityAndField, relatedEntityAndField];
   // Sort parts for deterministic results regardless of entity and related order
   parts.sort();
-  /** @todo make shorter names for special cases */
   return pascalCase(parts.join(" "));
 }
