@@ -57,6 +57,7 @@ function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
+  const [commitRunning, setCommitRunning] = useState<boolean>(false);
 
   const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
     EnumFixedPanelKeys.None
@@ -135,15 +136,37 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
+  const resetPendingChanges = useCallback(() => {
+    setPendingChanges([]);
+    refetch();
+  }, [refetch]);
+
+  const setCommitRunningCallback = useCallback(
+    (isRunning: boolean) => {
+      setCommitRunning(isRunning);
+    },
+    [setCommitRunning]
+  );
+
   const pendingChangesContextValue = useMemo(
     () => ({
       pendingChanges,
+      commitRunning,
+      setCommitRunning: setCommitRunningCallback,
       addEntity,
       addBlock,
       addChange,
-      reset: refetch,
+      reset: resetPendingChanges,
     }),
-    [pendingChanges, addEntity, addBlock, addChange, refetch]
+    [
+      pendingChanges,
+      commitRunning,
+      addEntity,
+      addBlock,
+      addChange,
+      resetPendingChanges,
+      setCommitRunningCallback,
+    ]
   );
 
   const pendingChangesBadge =

@@ -8,6 +8,8 @@ export type PendingChangeItem = Pick<
 
 export type ContextDataType = {
   pendingChanges: PendingChangeItem[];
+  commitRunning: boolean /**@todo: change build process to be async in the server and remove this property */;
+  setCommitRunning: (isRunning: boolean) => void;
   addEntity: (entityId: string) => void;
   addBlock: (blockId: string) => void;
   addChange: (
@@ -19,6 +21,10 @@ export type ContextDataType = {
 
 const PendingChangesContext = createContext<ContextDataType>({
   pendingChanges: [],
+  commitRunning: false,
+  setCommitRunning: (isRunning: boolean) => {
+    throw new Error();
+  },
   addEntity: (entityId: string) => {
     throw new Error();
   },

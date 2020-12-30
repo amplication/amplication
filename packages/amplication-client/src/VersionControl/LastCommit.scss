@@ -1,8 +1,20 @@
 @import "../style/index.scss";
 
+$panel-height: 318px;
+
 .last-commit {
+  min-height: $panel-height;
   &__message {
     margin: var(--default-spacing) 0;
     color: var(--black60);
+  }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    > * {
+      margin-right: var(--default-spacing);
+    }
   }
 }
