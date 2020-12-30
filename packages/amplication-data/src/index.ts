@@ -1,8 +1,2 @@
-export * as schemas from "./schemas";
-export {
-  DataTypeToSchema,
-  Schema,
-  dataTypeToSchema,
-  getSchemaForDataType,
-} from "./data-type-to-schema";
+export { Schema, getSchemaForDataType } from "./get-schema-for-data-type";
 export * as types from "./types";

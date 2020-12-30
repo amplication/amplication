@@ -3,6 +3,7 @@ import { print } from "recast";
 import { Entity, EntityField, EnumDataType } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
 import { createEntityDTO } from "../dto/create-entity-dto";
+import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import {
   createObjectSelectProperty,
   createSelect,
@@ -12,23 +13,16 @@ import {
   TRUE_BOOLEAN_LITERAL,
 } from "./create-select";
 
-const EXAMPLE_ENTITY_FIELD: EntityField = {
-  name: "exampleEntityFieldName",
-  displayName: "Example Entity Field Display Name",
-  description: "Example entity field description",
-  dataType: EnumDataType.Id,
-  required: true,
-  searchable: false,
-};
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
   name: "ExampleEntityName",
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
-  fields: [EXAMPLE_ENTITY_FIELD],
+  fields: [EXAMPLE_ID_FIELD],
   permissions: [],
 };
 const EXAMPLE_LOOKUP_FIELD: EntityField = {
+  id: "EXAMPLE_LOOKUP_FIELD_ID",
   dataType: EnumDataType.Lookup,
   required: true,
   searchable: false,
@@ -58,7 +52,7 @@ describe("createSelect", () => {
       createEntityDTO(EXAMPLE_ENTITY, {}),
       EXAMPLE_ENTITY,
       builders.objectExpression([
-        createSelectProperty(builders.identifier(EXAMPLE_ENTITY_FIELD.name)),
+        createSelectProperty(builders.identifier(EXAMPLE_ID_FIELD.name)),
       ]),
     ],
     [

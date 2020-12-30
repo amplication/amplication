@@ -1,35 +1,21 @@
 import { builders } from "ast-types";
-import { Entity, EntityField, EnumDataType } from "../../../types";
+import { Entity } from "../../../types";
 import { createCreateInput } from "../dto/create-create-input";
+import {
+  EXAMPLE_ID_FIELD,
+  EXAMPLE_LOOKUP_FIELD,
+  EXAMPLE_OTHER_ENTITY_ID,
+} from "../util/test-data";
 import { CONNECT_ID, createDataMapping } from "./create-data-mapping";
 
 const DATA_ID = builders.identifier("data");
 
-const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
-const EXAMPLE_ENTITY_FIELD: EntityField = {
-  name: "exampleEntityFieldName",
-  displayName: "Example Entity Field Display Name",
-  description: "Example entity field description",
-  dataType: EnumDataType.Id,
-  required: true,
-  searchable: false,
-};
-const EXAMPLE_ENTITY_LOOKUP_FIELD: EntityField = {
-  dataType: EnumDataType.Lookup,
-  displayName: "Example Lookup Field",
-  name: "exampleLookupField",
-  required: true,
-  searchable: false,
-  properties: {
-    relatedEntityId: EXAMPLE_OTHER_ENTITY_ID,
-  },
-};
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
   name: "ExampleEntityName",
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
-  fields: [EXAMPLE_ENTITY_FIELD],
+  fields: [EXAMPLE_ID_FIELD],
   permissions: [],
 };
 const EXAMPLE_ENTITY_WITH_LOOKUP_FIELD: Entity = {
@@ -37,7 +23,7 @@ const EXAMPLE_ENTITY_WITH_LOOKUP_FIELD: Entity = {
   name: "ExampleEntityWithLookupField",
   displayName: "Example Entity With Lookup Field",
   pluralDisplayName: "Example Entities With Lookup Field",
-  fields: [EXAMPLE_ENTITY_LOOKUP_FIELD],
+  fields: [EXAMPLE_LOOKUP_FIELD],
   permissions: [],
 };
 
