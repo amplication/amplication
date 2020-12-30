@@ -155,10 +155,10 @@ export function createPrismaFields(
         allowMultipleSelection,
       } = properties as LookupResolvedProperties;
       const relationName = createRelationName(
-        entity.name,
-        field.name,
-        relatedEntity.name,
-        relatedField.name
+        entity,
+        field,
+        relatedEntity,
+        relatedField
       );
 
       if (allowMultipleSelection) {
@@ -292,13 +292,21 @@ export function createPrismaFields(
 }
 
 function createRelationName(
-  entityName: string,
-  fieldName: string,
-  relatedEntityName: string,
-  relatedFieldName: string
-) {
-  const entityAndField = [entityName, fieldName].join(" ");
-  const relatedEntityAndField = [relatedEntityName, relatedFieldName].join(" ");
+  entity: Entity,
+  field: EntityField,
+  relatedEntity: Entity,
+  relatedField: EntityField
+): string {
+  if (field.name === relatedEntity.name && relatedField.name === entity.name) {
+    const names = [entity.name, relatedEntity.name];
+    // Sort names for deterministic results regardless of entity and related order
+    names.sort();
+    return names.join("On");
+  }
+  const entityAndField = [entity.name, field.name].join(" ");
+  const relatedEntityAndField = [relatedEntity.name, relatedField.name].join(
+    " "
+  );
   const parts = [entityAndField, relatedEntityAndField];
   // Sort parts for deterministic results regardless of entity and related order
   parts.sort();
