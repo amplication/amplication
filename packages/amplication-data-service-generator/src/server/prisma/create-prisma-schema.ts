@@ -1,4 +1,5 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
 import { types } from "@amplication/data";
 import {
@@ -291,14 +292,25 @@ export function createPrismaFields(
   }
 }
 
-function createRelationName(
+export function createRelationName(
   entity: Entity,
   field: EntityField,
   relatedEntity: Entity,
   relatedField: EntityField
 ): string {
-  if (field.name === relatedEntity.name && relatedField.name === entity.name) {
-    const names = [entity.name, relatedEntity.name];
+  const relatedEntityNames = [
+    relatedEntity.name,
+    relatedEntity.pluralDisplayName,
+  ];
+  const entityNames = [entity.name, entity.pluralDisplayName];
+  const matchingRelatedEntityName = relatedEntityNames.find(
+    (name) => field.name === camelCase(name)
+  );
+  const matchingEntityName = entityNames.find(
+    (name) => relatedField.name === camelCase(name)
+  );
+  if (matchingRelatedEntityName && matchingEntityName) {
+    const names = [matchingRelatedEntityName, matchingEntityName];
     // Sort names for deterministic results regardless of entity and related order
     names.sort();
     return names.join("On");

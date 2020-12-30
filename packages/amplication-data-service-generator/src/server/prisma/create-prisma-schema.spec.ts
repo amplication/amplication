@@ -6,6 +6,7 @@ import {
   createPrismaFields,
   CUID_CALL_EXPRESSION,
   NOW_CALL_EXPRESSION,
+  createRelationName,
 } from "./create-prisma-schema";
 import { Entity, EntityField, EnumDataType } from "../../types";
 
@@ -78,7 +79,9 @@ const EXAMPLE_LOOKUP_ENTITY: Entity = {
       displayName: "Example Lookup Field",
       properties: {
         relatedEntityId: EXAMPLE_ENTITY.id,
+        relatedFieldId: EXAMPLE_FIELD.id,
         relatedEntity: EXAMPLE_ENTITY,
+        relatedField: EXAMPLE_FIELD,
       },
     },
   ],
@@ -244,7 +247,11 @@ describe("createPrismaFields", () => {
     [
       "Lookup",
       EnumDataType.Lookup,
-      { relatedEntityId: EXAMPLE_ENTITY.id, relatedEntity: EXAMPLE_ENTITY },
+      {
+        relatedEntityId: EXAMPLE_ENTITY.id,
+        relatedEntity: EXAMPLE_ENTITY,
+        relatedField: EXAMPLE_FIELD,
+      },
       PrismaSchemaDSL.createObjectField(
         EXAMPLE_ENTITY_FIELD_NAME,
         EXAMPLE_ENTITY_NAME,
@@ -365,4 +372,80 @@ describe("createPrismaFields", () => {
     };
     expect(createPrismaFields(field, EXAMPLE_ENTITY)[0]).toEqual(expected);
   });
+});
+
+describe("createRelationName", () => {
+  const cases: Array<[
+    string,
+    Entity,
+    EntityField,
+    Entity,
+    EntityField,
+    string
+  ]> = [
+    [
+      "Singular - Singular",
+      { ...EXAMPLE_ENTITY, name: "Foo" },
+      { ...EXAMPLE_FIELD, name: "bar" },
+      { ...EXAMPLE_ENTITY, name: "Bar" },
+      { ...EXAMPLE_FIELD, name: "foo" },
+      "BarOnFoo",
+    ],
+    [
+      "Singular - Singular Reversed",
+      { ...EXAMPLE_ENTITY, name: "Bar" },
+      { ...EXAMPLE_FIELD, name: "foo" },
+      { ...EXAMPLE_ENTITY, name: "Foo" },
+      { ...EXAMPLE_FIELD, name: "bar" },
+      "BarOnFoo",
+    ],
+    [
+      "Plural - Singular",
+      { ...EXAMPLE_ENTITY, name: "Foo" },
+      { ...EXAMPLE_FIELD, name: "bars" },
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars" },
+      { ...EXAMPLE_FIELD, name: "foo" },
+      "BarsOnFoo",
+    ],
+    [
+      "Singular - Plural",
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars" },
+      { ...EXAMPLE_FIELD, name: "foo" },
+      { ...EXAMPLE_ENTITY, name: "Foo" },
+      { ...EXAMPLE_FIELD, name: "bars" },
+      "BarsOnFoo",
+    ],
+    [
+      "Plural - Plural",
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars" },
+      { ...EXAMPLE_FIELD, name: "foos" },
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos" },
+      { ...EXAMPLE_FIELD, name: "bars" },
+      "BarsOnFoos",
+    ],
+    [
+      "Self Singular",
+      { ...EXAMPLE_ENTITY, name: "Foo" },
+      { ...EXAMPLE_FIELD, name: "foo" },
+      { ...EXAMPLE_ENTITY, name: "Foo" },
+      { ...EXAMPLE_FIELD, name: "foo" },
+      "FooOnFoo",
+    ],
+    [
+      "Self Plural",
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos" },
+      { ...EXAMPLE_FIELD, name: "foos" },
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos" },
+      { ...EXAMPLE_FIELD, name: "foos" },
+      "FoosOnFoos",
+    ],
+  ];
+  test.each(cases)(
+    "%s",
+    (name, entity, field, relatedEntity, relatedField, expected) => {
+      expect(
+        createRelationName(entity, field, relatedEntity, relatedField)
+      ).toEqual(expected);
+    }
+  );
 });
