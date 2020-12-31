@@ -1,9 +1,14 @@
 import { CloudBuildClient } from "@google-cloud/cloudbuild/build/src/v1/cloud_build_client";
 import { google } from "@google-cloud/cloudbuild/build/protos/protos";
 import * as winston from "winston";
-import { IProvider, BuildResult, EnumBuildStatus } from "../types";
-import { defaultLogger } from "./logging";
-import { createConfig } from "./config";
+import {
+  BuildRequest,
+  BuildResult,
+  EnumBuildStatus,
+  IProvider,
+} from "../types";
+import { defaultLogger } from "../logging";
+import { createConfig, createImageId } from "./config";
 import { InvalidBuildProviderState } from "../builder/InvalidBuildProviderState";
 
 type StatusQuery = {
@@ -22,25 +27,14 @@ export class CloudBuildProvider implements IProvider {
     readonly projectId: string,
     readonly logger: winston.Logger = defaultLogger
   ) {}
-  async build(
-    repository: string,
-    tag: string,
-    url: string,
-    buildArgs: Record<string, string>
-  ): Promise<BuildResult> {
-    const logger = this.logger.child({
-      repository,
-      tag,
-    });
+  async build(request: BuildRequest): Promise<BuildResult> {
+    const logger = this.logger.child({ request });
 
-    logger.info("Building container...", {
-      url,
-      buildArgs,
-    });
+    logger.info("Building container...");
 
     const [operation] = await this.cloudBuild.createBuild({
       projectId: this.projectId,
-      build: createConfig(repository, tag, url, buildArgs),
+      build: createConfig(request, this.projectId),
     });
 
     const {
@@ -95,5 +89,9 @@ export class CloudBuildProvider implements IProvider {
           status: EnumBuildStatus.Failed,
         };
     }
+  }
+
+  createImageId(tag: string): string {
+    return createImageId(tag, this.projectId);
   }
 }

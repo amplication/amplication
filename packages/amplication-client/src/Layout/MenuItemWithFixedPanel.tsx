@@ -5,7 +5,6 @@ import { Tooltip } from "@primer/components";
 import { MenuFixedPanel } from "../util/teleporter";
 
 import { Icon } from "@rmwc/icon";
-import "./MenuItem.scss";
 
 type Props = {
   /** Text to be displayed as a tooltip */
@@ -18,6 +17,8 @@ type Props = {
   children?: ReactNode;
   /* the key of the panel to be returned to the menu component when this item is clicked*/
   panelKey: string;
+  /* The value to show on a badge. When null or undefined the badge is hidden*/
+  badgeValue?: string | null;
   onClick: (panelKey: string) => void;
 };
 
@@ -30,6 +31,7 @@ const MenuItemWithFixedPanel = ({
   isOpen,
   children,
   panelKey,
+  badgeValue,
   onClick,
 }: Props) => {
   const handleClick = useCallback(() => {
@@ -57,6 +59,9 @@ const MenuItemWithFixedPanel = ({
               }}
             />
           </Button>
+          {badgeValue && (
+            <span className="amp-menu-item__badge">{badgeValue}</span>
+          )}
         </Tooltip>
       </div>
       {isOpen && <MenuFixedPanel.Source>{children}</MenuFixedPanel.Source>}

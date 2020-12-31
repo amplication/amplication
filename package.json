@@ -16,7 +16,8 @@
     "check-graphql-schema": "lerna run --scope @amplication/server check-graphql-schema",
     "generate-graphql-code": "graphql-codegen",
     "generate": "run-s generate-graphql-schema generate-graphql-code",
-    "build-storybook": "lerna run build-storybook"
+    "build-storybook": "lerna run build-storybook",
+    "generate-test-data-service": "lerna run --scope @amplication/data-service-generator generate-test-data-service"
   },
   "dependencies": {
     "lerna": "^3.22.1"

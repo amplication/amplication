@@ -61,14 +61,11 @@ export function getDTONameToPath(dtos: DTOs): Record<string, string> {
   );
 }
 
-export async function createDTOs(
-  entities: Entity[],
-  entityIdToName: Record<string, string>
-): Promise<DTOs> {
+export async function createDTOs(entities: Entity[]): Promise<DTOs> {
   return Object.fromEntries(
     await Promise.all(
       entities.map(async (entity) => {
-        const entityDTOs = await createEntityDTOs(entity, entityIdToName);
+        const entityDTOs = await createEntityDTOs(entity);
         const entityEnumDTOs = createEntityEnumDTOs(entity);
         const dtos = {
           ...entityDTOs,
@@ -80,15 +77,12 @@ export async function createDTOs(
   );
 }
 
-async function createEntityDTOs(
-  entity: Entity,
-  entityIdToName: Record<string, string>
-): Promise<EntityDTOs> {
-  const entityDTO = createEntityDTO(entity, entityIdToName);
-  const createInput = createCreateInput(entity, entityIdToName);
-  const updateInput = createUpdateInput(entity, entityIdToName);
-  const whereInput = createWhereInput(entity, entityIdToName);
-  const whereUniqueInput = createWhereUniqueInput(entity, entityIdToName);
+async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
+  const entityDTO = createEntityDTO(entity);
+  const createInput = createCreateInput(entity);
+  const updateInput = createUpdateInput(entity);
+  const whereInput = createWhereInput(entity);
+  const whereUniqueInput = createWhereUniqueInput(entity);
   const createArgs = await createCreateArgs(entity, createInput);
   const deleteArgs = await createDeleteArgs(entity, whereUniqueInput);
   const findManyArgs = await createFindManyArgs(entity, whereInput);

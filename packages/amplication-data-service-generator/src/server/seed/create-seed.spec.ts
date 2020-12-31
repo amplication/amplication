@@ -17,12 +17,18 @@ import { createEnumName } from "../prisma/create-prisma-schema";
 import { memberExpression } from "../../util/ast";
 
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityField";
-const EXAMPLE_ENTITY_FIELD_DISPLAY_NAME = "Example Entity Field";
-const EXAMPLE_SINGLE_LINE_TEXT_FIELD = {
+const EXAMPLE_FIELD_BASE: Pick<
+  EntityField,
+  "id" | "name" | "displayName" | "required" | "searchable"
+> = {
+  id: "exampleEntityFieldId",
   name: EXAMPLE_ENTITY_FIELD_NAME,
-  displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
+  displayName: "Example Entity Field",
   required: true,
   searchable: false,
+};
+const EXAMPLE_SINGLE_LINE_TEXT_FIELD: EntityField = {
+  ...EXAMPLE_FIELD_BASE,
   dataType: EnumDataType.SingleLineText,
 };
 const EXAMPLE_OPTION_SET_OPTION = {
@@ -30,10 +36,7 @@ const EXAMPLE_OPTION_SET_OPTION = {
   label: "EXAMPLE_LABEL",
 };
 const EXAMPLE_OPTION_SET_FIELD: EntityField = {
-  name: EXAMPLE_ENTITY_FIELD_NAME,
-  displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-  required: true,
-  searchable: false,
+  ...EXAMPLE_FIELD_BASE,
   dataType: EnumDataType.OptionSet,
   properties: {
     options: [EXAMPLE_OPTION_SET_OPTION],
@@ -66,10 +69,7 @@ describe("createDefaultValue", () => {
     [
       "MultiLineText",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.MultiLineText,
       },
       DEFAULT_EMPTY_STRING_LITERAL,
@@ -77,10 +77,7 @@ describe("createDefaultValue", () => {
     [
       "Email",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.Email,
       },
       DEFAULT_EMAIL_LITERAL,
@@ -88,10 +85,7 @@ describe("createDefaultValue", () => {
     [
       "WholeNumber",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.WholeNumber,
       },
       DEFAULT_NUMBER_LITERAL,
@@ -99,10 +93,7 @@ describe("createDefaultValue", () => {
     [
       "DateTime",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.DateTime,
       },
       NEW_DATE_EXPRESSION,
@@ -110,10 +101,7 @@ describe("createDefaultValue", () => {
     [
       "DecimalNumber",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.DecimalNumber,
       },
       DEFAULT_NUMBER_LITERAL,
@@ -121,10 +109,7 @@ describe("createDefaultValue", () => {
     [
       "MultiSelectOptionSet",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.MultiSelectOptionSet,
         properties: {
           options: [
@@ -147,10 +132,7 @@ describe("createDefaultValue", () => {
     [
       "Boolean",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.Boolean,
       },
       DEFAULT_BOOLEAN_LITERAL,
@@ -158,10 +140,7 @@ describe("createDefaultValue", () => {
     [
       "GeographicLocation",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.GeographicLocation,
       },
       DEFAULT_ADDRESS_LITERAL,
@@ -169,10 +148,7 @@ describe("createDefaultValue", () => {
     [
       "Id",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.Id,
       },
       null,
@@ -180,10 +156,7 @@ describe("createDefaultValue", () => {
     [
       "CreatedAt",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.CreatedAt,
       },
       null,
@@ -191,10 +164,7 @@ describe("createDefaultValue", () => {
     [
       "UpdatedAt",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.UpdatedAt,
       },
       null,
@@ -202,10 +172,7 @@ describe("createDefaultValue", () => {
     [
       "Roles",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.Roles,
       },
       null,
@@ -213,10 +180,7 @@ describe("createDefaultValue", () => {
     [
       "Username",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.Username,
       },
       null,
@@ -224,10 +188,7 @@ describe("createDefaultValue", () => {
     [
       "Password",
       {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
+        ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.Password,
       },
       null,

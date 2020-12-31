@@ -13,7 +13,6 @@ export async function createEntityComponents(
   entityToPath: Record<string, string>,
   entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
-  entityIdToName: Record<string, string>,
   entityToSelectComponent: Record<string, EntityComponent>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponents> {
@@ -25,7 +24,6 @@ export async function createEntityComponents(
       entityToPath,
       entityToResource,
       dtoNameToPath,
-      entityIdToName,
       entityToTitleComponent
     ),
     createNewEntityComponent(
@@ -35,7 +33,6 @@ export async function createEntityComponents(
       entityToPath,
       entityToResource,
       dtoNameToPath,
-      entityIdToName,
       entityToSelectComponent
     ),
     createEntityComponent(
@@ -45,7 +42,6 @@ export async function createEntityComponents(
       entityToPath,
       entityToResource,
       dtoNameToPath,
-      entityIdToName,
       entityToSelectComponent
     ),
   ]);

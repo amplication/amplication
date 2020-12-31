@@ -1,6 +1,10 @@
 import { namedTypes } from "ast-types";
 import { memberExpression } from "../../util/ast";
-import { EntityField, EnumDataType, EntityLookupField } from "../../types";
+import {
+  EntityField,
+  EnumDataType,
+  LookupResolvedProperties,
+} from "../../types";
 import { jsxElement, jsxFragment } from "../util";
 import { EntityComponent } from "../types";
 /**
@@ -11,7 +15,6 @@ import { EntityComponent } from "../types";
 export function createFieldValue(
   field: EntityField,
   dataId: namedTypes.Identifier,
-  entityIdToName: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): namedTypes.JSXElement | namedTypes.JSXFragment {
   const value = memberExpression`${dataId}.${field.name}`;
@@ -20,11 +23,9 @@ export function createFieldValue(
     case EnumDataType.UpdatedAt:
       return jsxElement`<TimeSince time={${value}} />`;
     case EnumDataType.Lookup:
-      const lookupField = field as EntityLookupField;
-      const relatedEntityName =
-        entityIdToName[lookupField.properties.relatedEntityId];
+      const { relatedEntity } = field.properties as LookupResolvedProperties;
       const relatedEntityTitleComponent =
-        entityToTitleComponent[relatedEntityName];
+        entityToTitleComponent[relatedEntity.name];
 
       return jsxElement`<${relatedEntityTitleComponent.name} id={${value}?.id}  />`;
 

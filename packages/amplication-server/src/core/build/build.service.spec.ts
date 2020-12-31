@@ -1,5 +1,6 @@
 import { Readable } from 'stream';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -14,7 +15,6 @@ import {
   ENTITIES_INCLUDE,
   BUILD_DOCKER_IMAGE_STEP_MESSAGE,
   BUILD_DOCKER_IMAGE_STEP_NAME,
-  GENERATED_APP_BASE_IMAGE_BUILD_ARG,
   BUILD_DOCKER_IMAGE_STEP_START_LOG,
   BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
   BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
@@ -32,7 +32,6 @@ import { Build } from './dto/Build';
 import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { ConfigService } from '@nestjs/config';
 import { DeploymentService } from '../deployment/deployment.service';
 import {
   BuildResult,
@@ -343,6 +342,7 @@ const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
 const containerBuilderServiceGetStatusMock = jest.fn(
   () => EXAMPLE_DOCKER_BUILD_RESULT_RUNNING
 );
+const createImageIdMock = jest.fn(tag => tag);
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
 const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
@@ -420,7 +420,8 @@ describe('BuildService', () => {
           provide: ContainerBuilderService,
           useValue: {
             build: containerBuilderServiceBuildMock,
-            getStatus: containerBuilderServiceGetStatusMock
+            getStatus: containerBuilderServiceGetStatusMock,
+            createImageId: createImageIdMock
           }
         },
         {
@@ -600,14 +601,17 @@ describe('BuildService', () => {
     );
     expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
     expect(containerBuilderServiceBuildMock).toBeCalledTimes(1);
-    expect(containerBuilderServiceBuildMock).toBeCalledWith(
-      EXAMPLE_BUILD.appId,
-      EXAMPLE_BUILD_ID,
-      EXAMPLE_URL,
-      {
-        [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE
-      }
-    );
+    expect(containerBuilderServiceBuildMock).toBeCalledWith({
+      tags: [
+        `${EXAMPLE_BUILD.appId}:${EXAMPLE_BUILD.id}`,
+        `${EXAMPLE_BUILD.appId}:latest`
+      ],
+      cacheFrom: [
+        EXAMPLED_GENERATED_BASE_IMAGE,
+        `${EXAMPLE_BUILD.appId}:latest`
+      ],
+      url: EXAMPLE_URL
+    });
     expect(prismaBuildUpdateMock).toBeCalledTimes(1);
     expect(prismaBuildUpdateMock).toBeCalledWith({
       where: {

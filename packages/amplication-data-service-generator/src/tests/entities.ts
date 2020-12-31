@@ -15,6 +15,7 @@ const USER: Entity = {
   pluralDisplayName: "Users",
   fields: [
     {
+      id: "053e75d0-9f02-4182-8f61-46fbdbaa71bd",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -23,6 +24,7 @@ const USER: Entity = {
       searchable: false,
     },
     {
+      id: "a4e0c058-5768-4481-9da9-e48c73ab224d",
       name: "name",
       displayName: "Name",
       required: true,
@@ -30,6 +32,7 @@ const USER: Entity = {
       dataType: EnumDataType.SingleLineText,
     },
     {
+      id: "e3fa6ddd-ad36-48ce-8042-9c0aa576e5a9",
       name: "bio",
       displayName: "Bio",
       required: true,
@@ -37,6 +40,7 @@ const USER: Entity = {
       dataType: EnumDataType.MultiLineText,
     },
     {
+      id: "8c5c4130-94b0-4ce4-a4cb-4e42bf7a9b37",
       name: "email",
       displayName: "Email",
       required: true,
@@ -44,6 +48,7 @@ const USER: Entity = {
       dataType: EnumDataType.Email,
     },
     {
+      id: "71ba3f5e-7324-4ace-af95-d4bcea8f8368",
       name: "age",
       displayName: "Age",
       required: true,
@@ -51,6 +56,7 @@ const USER: Entity = {
       dataType: EnumDataType.WholeNumber,
     },
     {
+      id: "b491038d-f588-45e3-b97f-9074f3ed8c83",
       name: "birthDate",
       displayName: "Birth Date",
       required: true,
@@ -59,6 +65,7 @@ const USER: Entity = {
       properties: { dataOnly: false },
     },
     {
+      id: "9fa9604e-f9ab-45fb-b8bd-557ae10eda8c",
       name: "score",
       displayName: "Score",
       required: true,
@@ -66,6 +73,7 @@ const USER: Entity = {
       dataType: EnumDataType.DecimalNumber,
     },
     {
+      id: "ae21f2fb-9174-49de-9576-632d859a5dd1",
       name: "organization",
       displayName: "Organization",
       required: false,
@@ -77,6 +85,7 @@ const USER: Entity = {
       },
     },
     {
+      id: "1a34cc0e-91dd-4ef2-b8eb-df5a44154a21",
       name: "interests",
       displayName: "Interests",
       required: true,
@@ -90,6 +99,7 @@ const USER: Entity = {
       },
     },
     {
+      id: "daa757a6-4e15-4afc-a6e3-d4366d64367a",
       name: "priority",
       displayName: "Priority",
       required: true,
@@ -104,6 +114,7 @@ const USER: Entity = {
       },
     },
     {
+      id: "e88e745f-e4a0-414a-b43d-99d7728d1207",
       name: "isCurious",
       displayName: "Is Curious",
       required: true,
@@ -111,6 +122,7 @@ const USER: Entity = {
       dataType: EnumDataType.Boolean,
     },
     {
+      id: "e8b7aca3-e761-4d0c-9196-b983d63ae80d",
       name: "location",
       displayName: "Location",
       required: true,
@@ -159,6 +171,7 @@ const ORDER: Entity = {
   pluralDisplayName: "Orders",
   fields: [
     {
+      id: "77f9b90c-d304-4d2f-a4de-82d9d08ab291",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -167,6 +180,7 @@ const ORDER: Entity = {
       searchable: false,
     },
     {
+      id: "67063f41-e123-4c19-9707-5df92df469a4",
       name: "createdAt",
       displayName: "Created At",
       dataType: EnumDataType.CreatedAt,
@@ -175,6 +189,7 @@ const ORDER: Entity = {
       searchable: false,
     },
     {
+      id: "b77e5adf-71ce-4b22-b37b-f8641e277032",
       name: "updatedAt",
       displayName: "Updated At",
       dataType: EnumDataType.UpdatedAt,
@@ -183,6 +198,7 @@ const ORDER: Entity = {
       searchable: false,
     },
     {
+      id: "77c79b5e-b298-44b2-9648-d417c92a282b",
       name: "customer",
       displayName: "Customer",
       dataType: EnumDataType.Lookup,
@@ -193,6 +209,7 @@ const ORDER: Entity = {
       searchable: false,
     },
     {
+      id: "474eda0e-4ad1-4ab6-9cd5-bfde089a833c",
       name: "status",
       displayName: "Status",
       dataType: EnumDataType.OptionSet,
@@ -216,6 +233,7 @@ const ORDER: Entity = {
       searchable: false,
     },
     {
+      id: "8ee1d632-078e-4932-8fbd-1470df109821",
       name: "label",
       displayName: "Label",
       dataType: EnumDataType.OptionSet,
@@ -272,6 +290,7 @@ const ORGANIZATION: Entity = {
   pluralDisplayName: "Organizations",
   fields: [
     {
+      id: "afcc24cf-e302-46f7-9457-843a0ec7a9d5",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -280,6 +299,7 @@ const ORGANIZATION: Entity = {
       searchable: false,
     },
     {
+      id: "4c22d45e-997c-4c9a-8bb8-c7b69c273da1",
       name: "createdAt",
       displayName: "Created At",
       dataType: EnumDataType.CreatedAt,
@@ -288,6 +308,7 @@ const ORGANIZATION: Entity = {
       searchable: false,
     },
     {
+      id: "3f34a87a-f392-47bf-bfab-2eb23cdbffd4",
       name: "updatedAt",
       displayName: "Updated At",
       dataType: EnumDataType.UpdatedAt,
@@ -296,6 +317,7 @@ const ORGANIZATION: Entity = {
       searchable: false,
     },
     {
+      id: "22c4a27a-6490-4fb8-b951-7f42ded681bc",
       name: "name",
       displayName: "Name",
       dataType: EnumDataType.SingleLineText,
@@ -304,6 +326,7 @@ const ORGANIZATION: Entity = {
       searchable: false,
     },
     {
+      id: "94434ceb-f5ae-4f13-b705-6b0a914451bb",
       name: "customers",
       displayName: "Customers",
       dataType: EnumDataType.Lookup,
@@ -356,6 +379,7 @@ const CUSTOMER: Entity = {
   pluralDisplayName: "Customers",
   fields: [
     {
+      id: "492ba140-5dde-419a-a087-199ddb8b2dc0",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -364,6 +388,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "d4d95cff-e8f4-4bd4-b102-fd10c93d5dea",
       name: "createdAt",
       displayName: "Created At",
       dataType: EnumDataType.CreatedAt,
@@ -372,6 +397,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "68435ba2-711c-4a86-aa8f-af3b693c4433",
       name: "updatedAt",
       displayName: "Updated At",
       dataType: EnumDataType.UpdatedAt,
@@ -380,6 +406,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "15ca8761-2b26-4893-9306-a6fd384efdce",
       name: "email",
       displayName: "Email",
       dataType: EnumDataType.Email,
@@ -388,6 +415,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "ad93150b-615a-4b95-837e-3b3ab4d378eb",
       name: "firstName",
       displayName: "First Name",
       dataType: EnumDataType.SingleLineText,
@@ -396,6 +424,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "6a12fcaa-9e0f-4d4a-b2ce-67d7d896f438",
       name: "lastName",
       displayName: "Last Name",
       dataType: EnumDataType.SingleLineText,
@@ -404,6 +433,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "9f1681d5-59ac-4d6a-9fe5-d90832cd32fe",
       name: "isVip",
       displayName: "VIP",
       dataType: EnumDataType.Boolean,
@@ -412,6 +442,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "02242b3d-7f0b-489b-ae83-b772975dea06",
       name: "birthData",
       displayName: "Birth Data",
       dataType: EnumDataType.DateTime,
@@ -423,6 +454,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "fa359cdb-60b1-4a8c-a59b-d70a2370fbd6",
       name: "averageSale",
       displayName: "Average Sale (-1500.00 - 1500.00)",
       dataType: EnumDataType.DecimalNumber,
@@ -435,6 +467,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "88931847-cfff-4345-8faf-82a762160340",
       name: "favoriteNumber",
       displayName: "Favorite Number (1 - 20)",
       dataType: EnumDataType.WholeNumber,
@@ -446,6 +479,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "75f4b8c8-a1e7-4b83-aef2-b3b0b0c5d0bc",
       name: "geoLocation",
       displayName: "Geographic Location",
       dataType: EnumDataType.GeographicLocation,
@@ -454,6 +488,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "ecd8dbca-3524-4e38-985e-cc72c28f0b99",
       name: "comments",
       displayName: "Comments (up to 500 characters)",
       dataType: EnumDataType.MultiLineText,
@@ -464,6 +499,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "e0d70a60-6a1c-47be-8687-2d07f3e93b0b",
       name: "favoriteColors",
       displayName: "Favorite Colors (multi-select)",
       dataType: EnumDataType.MultiSelectOptionSet,
@@ -491,6 +527,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "b227bd7a-2fe5-47f8-8f3e-29a2c26104a8",
       name: "customerType",
       displayName: "Customer Type",
       dataType: EnumDataType.OptionSet,
@@ -518,6 +555,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "443fe9ac-f6d3-4923-a34c-b2b98d57f77a",
       name: "organization",
       displayName: "Organization",
       dataType: EnumDataType.Lookup,
@@ -529,6 +567,7 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      id: "2ea07063-413c-4374-aa67-15097420e54b",
       name: "orders",
       displayName: "Orders",
       dataType: EnumDataType.Lookup,
@@ -581,6 +620,7 @@ const EMPTY: Entity = {
   pluralDisplayName: "Empties",
   fields: [
     {
+      id: "d5e8346e-5382-41cb-bcf7-563678709bea",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -589,6 +629,7 @@ const EMPTY: Entity = {
       searchable: false,
     },
     {
+      id: "26273293-4cd3-4765-b316-07d68ca99d44",
       name: "createdAt",
       displayName: "Created At",
       dataType: EnumDataType.CreatedAt,
@@ -597,6 +638,7 @@ const EMPTY: Entity = {
       searchable: false,
     },
     {
+      id: "97c4cded-8b11-4907-8079-861b2d83125f",
       name: "updatedAt",
       displayName: "Updated At",
       dataType: EnumDataType.UpdatedAt,

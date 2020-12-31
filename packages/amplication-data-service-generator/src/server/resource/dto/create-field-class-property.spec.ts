@@ -11,6 +11,11 @@ import {
 import { classProperty, createGenericArray } from "../../../util/ast";
 import { EntityField, EnumDataType } from "../../../types";
 import {
+  EXAMPLE_ID_FIELD,
+  EXAMPLE_LOOKUP_FIELD,
+  EXAMPLE_OTHER_ENTITY,
+} from "../util/test-data";
+import {
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
   IS_OPTIONAL_ID,
@@ -29,20 +34,8 @@ import {
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { FIELD_ID } from "./nestjs-graphql.util";
 
-const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
-const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
-const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
-const EXAMPLE_OTHER_ENTITY_NAME = "ExampleOtherEntityName";
-const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
-const EXAMPLE_ENTITY_FIELD: EntityField = {
-  name: EXAMPLE_ENTITY_FIELD_NAME,
-  displayName: "Example Entity Field Display Name",
-  description: "Example entity field description",
-  dataType: EnumDataType.Id,
-  required: true,
-  searchable: false,
-};
 const EXAMPLE_OPTIONAL_ENTITY_FIELD: EntityField = {
+  id: "EXAMPLE_OPTIONAL_ENTITY_FIELD_ID",
   name: "exampleOptionalEntityField",
   displayName: "Example Optional Entity Field",
   description: "Example optional entity field description",
@@ -51,26 +44,13 @@ const EXAMPLE_OPTIONAL_ENTITY_FIELD: EntityField = {
   searchable: false,
 };
 const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
+  id: "EXAMPLE_LIST_ENTITY_FIELD_ID",
   name: "exampleListEntityField",
   displayName: "Example List Entity Field",
   description: "Example list entity field description",
   dataType: EnumDataType.Roles,
   required: true,
   searchable: false,
-};
-const EXAMPLE_ENTITY_LOOKUP_FIELD: EntityField = {
-  dataType: EnumDataType.Lookup,
-  displayName: "Example Lookup Field",
-  name: "exampleLookupField",
-  required: true,
-  searchable: false,
-  properties: {
-    relatedEntityId: EXAMPLE_OTHER_ENTITY_ID,
-  },
-};
-const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
-  [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
-  [EXAMPLE_OTHER_ENTITY_ID]: EXAMPLE_OTHER_ENTITY_NAME,
 };
 
 describe("createFieldClassProperty", () => {
@@ -80,18 +60,16 @@ describe("createFieldClassProperty", () => {
     boolean,
     boolean,
     boolean,
-    Record<string, string>,
     namedTypes.ClassProperty
   ]> = [
     [
       "id field (not input)",
-      EXAMPLE_ENTITY_FIELD,
-      !EXAMPLE_ENTITY_FIELD.required,
+      EXAMPLE_ID_FIELD,
+      !EXAMPLE_ID_FIELD.required,
       false,
       false,
-      EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
-        builders.identifier(EXAMPLE_ENTITY_FIELD.name),
+        builders.identifier(EXAMPLE_ID_FIELD.name),
         builders.tsTypeAnnotation(builders.tsStringKeyword()),
         true,
         false,
@@ -120,7 +98,6 @@ describe("createFieldClassProperty", () => {
       !EXAMPLE_OPTIONAL_ENTITY_FIELD.required,
       false,
       false,
-      EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
         builders.identifier(EXAMPLE_OPTIONAL_ENTITY_FIELD.name),
         builders.tsTypeAnnotation(
@@ -159,16 +136,15 @@ describe("createFieldClassProperty", () => {
     ],
     [
       "lookup field (not input)",
-      EXAMPLE_ENTITY_LOOKUP_FIELD,
-      !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
+      EXAMPLE_LOOKUP_FIELD,
+      !EXAMPLE_LOOKUP_FIELD.required,
       false,
       false,
-      EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
-        builders.identifier(EXAMPLE_ENTITY_LOOKUP_FIELD.name),
+        builders.identifier(EXAMPLE_LOOKUP_FIELD.name),
         builders.tsTypeAnnotation(
           builders.tsTypeReference(
-            createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+            createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
           )
         ),
         true,
@@ -181,7 +157,7 @@ describe("createFieldClassProperty", () => {
                 builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
                 builders.objectProperty(
                   TYPE_ID,
-                  createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+                  createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
                 ),
               ]),
             ])
@@ -191,7 +167,7 @@ describe("createFieldClassProperty", () => {
             builders.callExpression(classTransformerUtil.TYPE_ID, [
               builders.arrowFunctionExpression(
                 [],
-                createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+                createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
               ),
             ])
           ),
@@ -201,17 +177,9 @@ describe("createFieldClassProperty", () => {
   ];
   test.each(cases)(
     "%s",
-    (name, field, optional, isInput, isQuery, entityIdToName, expected) => {
+    (name, field, optional, isInput, isQuery, expected) => {
       expect(
-        print(
-          createFieldClassProperty(
-            field,
-            optional,
-            isInput,
-            isQuery,
-            entityIdToName
-          )
-        ).code
+        print(createFieldClassProperty(field, optional, isInput, isQuery)).code
       ).toEqual(print(expected).code);
     }
   );
@@ -228,53 +196,48 @@ describe("createFieldValueTypeFromPrismaField", () => {
   ]> = [
     [
       "scalar type",
-      EXAMPLE_ENTITY_FIELD,
-      createScalarField(
-        EXAMPLE_ENTITY_FIELD.name,
-        ScalarType.String,
-        false,
-        true
-      ),
+      EXAMPLE_ID_FIELD,
+      createScalarField(EXAMPLE_ID_FIELD.name, ScalarType.String, false, true),
       false,
       false,
       builders.tsStringKeyword(),
     ],
     [
       "lookup type, not isInput",
-      EXAMPLE_ENTITY_LOOKUP_FIELD,
+      EXAMPLE_LOOKUP_FIELD,
       createObjectField(
-        EXAMPLE_ENTITY_LOOKUP_FIELD.name,
-        EXAMPLE_OTHER_ENTITY_NAME,
+        EXAMPLE_LOOKUP_FIELD.name,
+        EXAMPLE_OTHER_ENTITY.name,
         false,
         true
       ),
       false,
       false,
       builders.tsTypeReference(
-        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
       ),
     ],
     [
       "lookup type, isInput",
-      EXAMPLE_ENTITY_LOOKUP_FIELD,
+      EXAMPLE_LOOKUP_FIELD,
       createObjectField(
-        EXAMPLE_ENTITY_LOOKUP_FIELD.name,
-        EXAMPLE_OTHER_ENTITY_NAME,
+        EXAMPLE_LOOKUP_FIELD.name,
+        EXAMPLE_OTHER_ENTITY.name,
         false,
         true
       ),
       true,
       false,
       builders.tsTypeReference(
-        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
       ),
     ],
     [
       "lookup type, isInput, optional",
-      EXAMPLE_ENTITY_LOOKUP_FIELD,
+      EXAMPLE_LOOKUP_FIELD,
       createObjectField(
-        EXAMPLE_ENTITY_LOOKUP_FIELD.name,
-        EXAMPLE_OTHER_ENTITY_NAME,
+        EXAMPLE_LOOKUP_FIELD.name,
+        EXAMPLE_OTHER_ENTITY.name,
         false,
         false
       ),
@@ -282,7 +245,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       false,
       builders.tsUnionType([
         builders.tsTypeReference(
-          createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+          createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
         ),
         builders.tsNullKeyword(),
       ]),

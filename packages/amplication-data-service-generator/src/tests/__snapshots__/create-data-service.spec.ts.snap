@@ -3456,30 +3456,7 @@ async function seed(bcryptSalt: Salt) {
   console.info(\\"Seeded database successfully\\");
 }
 ",
-  "server/src/app.controller.ts": "import { Controller, Post, Body, UnauthorizedException } from \\"@nestjs/common\\";
-import { ApiTags } from \\"@nestjs/swagger\\";
-import { AuthService, UserInfo } from \\"./auth/auth.service\\";
-import { Credentials } from \\"./auth/Credentials\\";
-
-@ApiTags(\\"general\\")
-@Controller()
-export class AppController {
-  constructor(private readonly authService: AuthService) {}
-  @Post(\\"login\\")
-  async login(@Body() body: Credentials): Promise<UserInfo> {
-    const user = await this.authService.validateUser(
-      body.username,
-      body.password
-    );
-    if (!user) {
-      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
-    }
-    return user;
-  }
-}
-",
   "server/src/app.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { AppController } from \\"./app.controller\\";
 import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
@@ -3494,7 +3471,7 @@ import { ServeStaticOptionsService } from \\"./serveStaticOptions.service\\";
 import { GraphQLModule } from \\"@nestjs/graphql\\";
 
 @Module({
-  controllers: [AppController],
+  controllers: [],
   imports: [
     UserModule,
     OrderModule,
@@ -3526,13 +3503,36 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
 })
 export class AppModule {}
 ",
-  "server/src/auth/Credentials.ts": "import { IsString } from \\"class-validator\\";
+  "server/src/auth/Credentials.ts": "import { InputType } from \\"@nestjs/graphql\\";
+import { IsString } from \\"class-validator\\";
 
+@InputType()
 export class Credentials {
   @IsString()
   username!: string;
   @IsString()
   password!: string;
+}
+",
+  "server/src/auth/LoginArgs.ts": "import { ArgsType } from \\"@nestjs/graphql\\";
+import { Credentials } from \\"./Credentials\\";
+
+@ArgsType()
+export class LoginArgs {
+  credentials!: Credentials;
+}
+",
+  "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { User } from \\"../user/user\\";
+
+@ObjectType()
+export class UserInfo implements Partial<User> {
+  @Field(() => String)
+  username!: string;
+  @Field(() => [String])
+  roles!: string[];
 }
 ",
   "server/src/auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
@@ -3558,21 +3558,69 @@ import grants from \\"../grants.json\\";
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
+  "server/src/auth/auth.controller.ts": "import { Controller, Post, Body, UnauthorizedException } from \\"@nestjs/common\\";
+import { ApiTags } from \\"@nestjs/swagger\\";
+import { AuthService } from \\"./auth.service\\";
+import { UserInfo } from \\"./UserInfo\\";
+import { Credentials } from \\"./Credentials\\";
+
+@ApiTags(\\"auth\\")
+@Controller()
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+  @Post(\\"login\\")
+  async login(@Body() body: Credentials): Promise<UserInfo> {
+    const user = await this.authService.validateUser(
+      body.username,
+      body.password
+    );
+    if (!user) {
+      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
+    }
+    return user;
+  }
+}
+",
   "server/src/auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
+import { AuthController } from \\"./auth.controller\\";
+import { AuthResolver } from \\"./auth.resolver\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
 import { PasswordService } from \\"./password.service\\";
 
 @Module({
   imports: [forwardRef(() => UserModule), PassportModule],
-  providers: [AuthService, BasicStrategy, PasswordService],
+  providers: [AuthService, BasicStrategy, PasswordService, AuthResolver],
+  controllers: [AuthController],
   exports: [AuthService, PasswordService],
 })
 export class AuthModule {}
+",
+  "server/src/auth/auth.resolver.ts": "import { Args, Mutation, Resolver } from \\"@nestjs/graphql\\";
+import { ApolloError } from \\"apollo-server-express\\";
+import { AuthService } from \\"./auth.service\\";
+import { UserInfo } from \\"./UserInfo\\";
+import { LoginArgs } from \\"./LoginArgs\\";
+
+@Resolver(UserInfo)
+export class AuthResolver {
+  constructor(private readonly authService: AuthService) {}
+  @Mutation(() => UserInfo)
+  async login(@Args() args: LoginArgs): Promise<UserInfo> {
+    const user = await this.authService.validateUser(
+      args.credentials.username,
+      args.credentials.password
+    );
+    if (!user) {
+      throw new ApolloError(\\"The passed credentials are incorrect\\");
+    }
+    return user;
+  }
+}
 ",
   "server/src/auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
 import { AuthService } from \\"./auth.service\\";
@@ -3650,11 +3698,7 @@ import { PasswordService } from \\"./password.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../user/user.service\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from \\"../user/user\\";
-
-export type UserInfo = Pick<User, \\"username\\" | \\"roles\\">;
+import { UserInfo } from \\"./UserInfo\\";
 
 @Injectable()
 export class AuthService {
@@ -3681,7 +3725,8 @@ export class AuthService {
   "server/src/auth/basic.strategy.ts": "import { BasicStrategy as Strategy } from \\"passport-http\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
-import { AuthService, UserInfo } from \\"./auth.service\\";
+import { AuthService } from \\"./auth.service\\";
+import { UserInfo } from \\"./UserInfo\\";
 
 @Injectable()
 export class BasicStrategy extends PassportStrategy(Strategy) {
