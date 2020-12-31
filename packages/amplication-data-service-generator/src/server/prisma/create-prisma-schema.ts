@@ -2,6 +2,7 @@ import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
 import { types } from "@amplication/data";
+import countBy from "lodash.countby";
 import {
   Entity,
   EntityField,
@@ -30,7 +31,13 @@ export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
 );
 
 export async function createPrismaSchema(entities: Entity[]): Promise<string> {
-  const models = entities.map((entity) => createPrismaModel(entity));
+  const fieldNamesCount = countBy(
+    entities.flatMap((entity) => entity.fields),
+    "name"
+  );
+  const models = entities.map((entity) =>
+    createPrismaModel(entity, fieldNamesCount)
+  );
 
   const enums = entities.flatMap(getEnumFields).map(createPrismaEnum);
 
@@ -53,16 +60,22 @@ export function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
-export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {
+export function createPrismaModel(
+  entity: Entity,
+  fieldNamesCount: Record<string, number>
+): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
-    entity.fields.flatMap((field) => createPrismaFields(field, entity))
+    entity.fields.flatMap((field) =>
+      createPrismaFields(field, entity, fieldNamesCount)
+    )
   );
 }
 
 export function createPrismaFields(
   field: EntityField,
-  entity: Entity
+  entity: Entity,
+  fieldNamesCount: Record<string, number> = {}
 ):
   | [PrismaSchemaDSL.ScalarField]
   | [PrismaSchemaDSL.ObjectField]
@@ -164,7 +177,14 @@ export function createPrismaFields(
 
       const relationName = !hasAnotherRelation
         ? null
-        : createRelationName(entity, field, relatedEntity, relatedField);
+        : createRelationName(
+            entity,
+            field,
+            relatedEntity,
+            relatedField,
+            fieldNamesCount[field.name] === 1,
+            fieldNamesCount[relatedField.name] === 1
+          );
 
       if (allowMultipleSelection) {
         return [
@@ -304,13 +324,17 @@ export function createPrismaFields(
  * @param field
  * @param relatedEntity
  * @param relatedField
+ * @param fieldHasUniqueName
  * @returns Prisma Schema relation name
+ * @todo use unique name of one of the fields deterministically (VIPCustomers or VIPOrganizations)
  */
 export function createRelationName(
   entity: Entity,
   field: EntityField,
   relatedEntity: Entity,
-  relatedField: EntityField
+  relatedField: EntityField,
+  fieldHasUniqueName: boolean,
+  relatedFieldHasUniqueName: boolean
 ): string {
   const relatedEntityNames = [
     relatedEntity.name,
@@ -328,6 +352,18 @@ export function createRelationName(
     // Sort names for deterministic results regardless of entity and related order
     names.sort();
     return names.join("On");
+  }
+  if (fieldHasUniqueName || relatedFieldHasUniqueName) {
+    const names = [];
+    if (fieldHasUniqueName) {
+      names.push(field.name);
+    }
+    if (relatedFieldHasUniqueName) {
+      names.push(relatedField.name);
+    }
+    // Sort names for deterministic results regardless of entity and related order
+    names.sort();
+    return names[0];
   }
   const entityAndField = [entity.name, field.name].join(" ");
   const relatedEntityAndField = [relatedEntity.name, relatedField.name].join(

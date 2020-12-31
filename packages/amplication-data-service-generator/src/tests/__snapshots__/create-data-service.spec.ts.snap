@@ -3392,7 +3392,7 @@ model User {
   age            Int
   birthDate      DateTime
   score          Float
-  organization   Organization?   @relation(name: \\"OrganizationUsersUserOrganization\\", fields: [organizationId])
+  organization   Organization?   @relation(fields: [organizationId])
   organizationId String?
   interests      EnumInterests[]
   priority       EnumPriority
@@ -3404,7 +3404,7 @@ model Order {
   id         String     @id @default(cuid())
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  customer   Customer   @relation(name: \\"CustomerOrdersOrderCustomer\\", fields: [customerId])
+  customer   Customer   @relation(fields: [customerId])
   customerId String
   status     EnumStatus
   label      EnumLabel?
@@ -3415,9 +3415,9 @@ model Organization {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   name         String
-  users        User[]     @relation(name: \\"OrganizationUsersUserOrganization\\")
-  customers    Customer[] @relation(name: \\"CustomerOrganizationOrganizationCustomers\\")
-  vipCustomers Customer[] @relation(name: \\"CustomerVipOrganizationOrganizationVipCustomers\\")
+  users        User[]
+  customers    Customer[] @relation(name: \\"CustomersOnOrganization\\")
+  vipCustomers Customer[] @relation(name: \\"vipCustomers\\")
 }
 
 model Customer {
@@ -3435,11 +3435,11 @@ model Customer {
   comments          String?
   favoriteColors    EnumFavoriteColors[]
   customerType      EnumCustomerType?
-  organization      Organization?        @relation(name: \\"CustomerOrganizationOrganizationCustomers\\", fields: [organizationId])
+  organization      Organization?        @relation(name: \\"CustomersOnOrganization\\", fields: [organizationId])
   organizationId    String?
-  vipOrganization   Organization?        @relation(name: \\"CustomerVipOrganizationOrganizationVipCustomers\\", fields: [vipOrganizationId])
+  vipOrganization   Organization?        @relation(name: \\"vipCustomers\\", fields: [vipOrganizationId])
   vipOrganizationId String?
-  orders            Order[]              @relation(name: \\"CustomerOrdersOrderCustomer\\")
+  orders            Order[]
 }
 
 model Empty {

@@ -139,7 +139,8 @@ model ${EXAMPLE_ENTITY_NAME} {
 }
 
 model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
-  ${EXAMPLE_LOOKUP_FIELD_NAME} ${EXAMPLE_ENTITY_NAME}
+  ${EXAMPLE_LOOKUP_FIELD_NAME}   ${EXAMPLE_ENTITY_NAME} @relation(fields: [${EXAMPLE_LOOKUP_FIELD_NAME}Id])
+  ${EXAMPLE_LOOKUP_FIELD_NAME}Id String
 }`,
     ],
   ];
@@ -256,7 +257,9 @@ describe("createPrismaFields", () => {
         EXAMPLE_ENTITY_FIELD_NAME,
         EXAMPLE_ENTITY_NAME,
         false,
-        true
+        true,
+        null,
+        [`${EXAMPLE_ENTITY_FIELD_NAME}Id`]
       ),
     ],
     [
@@ -381,14 +384,48 @@ describe("createRelationName", () => {
     EntityField,
     Entity,
     EntityField,
+    boolean,
+    boolean,
     string
   ]> = [
+    [
+      "Unique field",
+      { ...EXAMPLE_ENTITY },
+      { ...EXAMPLE_FIELD, name: "bar" },
+      { ...EXAMPLE_ENTITY },
+      { ...EXAMPLE_FIELD },
+      true,
+      false,
+      "bar",
+    ],
+    [
+      "Unique related field",
+      { ...EXAMPLE_ENTITY },
+      { ...EXAMPLE_FIELD },
+      { ...EXAMPLE_ENTITY },
+      { ...EXAMPLE_FIELD, name: "foo" },
+      false,
+      true,
+      "foo",
+    ],
+    [
+      "Unique field and related field",
+      { ...EXAMPLE_ENTITY },
+      { ...EXAMPLE_FIELD, name: "bar" },
+      { ...EXAMPLE_ENTITY },
+      { ...EXAMPLE_FIELD, name: "foo" },
+      true,
+      true,
+      "bar",
+    ],
     [
       "Singular - Singular",
       { ...EXAMPLE_ENTITY, name: "Foo" },
       { ...EXAMPLE_FIELD, name: "bar" },
       { ...EXAMPLE_ENTITY, name: "Bar" },
       { ...EXAMPLE_FIELD, name: "foo" },
+      false,
+      false,
       "BarOnFoo",
     ],
     [
@@ -397,6 +434,8 @@ describe("createRelationName", () => {
       { ...EXAMPLE_FIELD, name: "foo" },
       { ...EXAMPLE_ENTITY, name: "Foo" },
       { ...EXAMPLE_FIELD, name: "bar" },
+      false,
+      false,
       "BarOnFoo",
     ],
     [
@@ -405,6 +444,8 @@ describe("createRelationName", () => {
       { ...EXAMPLE_FIELD, name: "bars" },
       { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars" },
       { ...EXAMPLE_FIELD, name: "foo" },
+      false,
+      false,
       "BarsOnFoo",
     ],
     [
@@ -413,6 +454,8 @@ describe("createRelationName", () => {
       { ...EXAMPLE_FIELD, name: "foo" },
       { ...EXAMPLE_ENTITY, name: "Foo" },
       { ...EXAMPLE_FIELD, name: "bars" },
+      false,
+      false,
       "BarsOnFoo",
     ],
     [
@@ -421,6 +464,8 @@ describe("createRelationName", () => {
       { ...EXAMPLE_FIELD, name: "foos" },
       { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos" },
       { ...EXAMPLE_FIELD, name: "bars" },
+      false,
+      false,
       "BarsOnFoos",
     ],
     [
@@ -429,6 +474,8 @@ describe("createRelationName", () => {
       { ...EXAMPLE_FIELD, name: "foo" },
       { ...EXAMPLE_ENTITY, name: "Foo" },
       { ...EXAMPLE_FIELD, name: "foo" },
+      false,
+      false,
       "FooOnFoo",
     ],
     [
@@ -437,14 +484,32 @@ describe("createRelationName", () => {
       { ...EXAMPLE_FIELD, name: "foos" },
       { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos" },
       { ...EXAMPLE_FIELD, name: "foos" },
+      false,
+      false,
       "FoosOnFoos",
     ],
   ];
   test.each(cases)(
     "%s",
-    (name, entity, field, relatedEntity, relatedField, expected) => {
+    (
+      name,
+      entity,
+      field,
+      relatedEntity,
+      relatedField,
+      fieldHasUniqueName,
+      relatedFieldHasUniqueName,
+      expected
+    ) => {
       expect(
-        createRelationName(entity, field, relatedEntity, relatedField)
+        createRelationName(
+          entity,
+          field,
+          relatedEntity,
+          relatedField,
+          fieldHasUniqueName,
+          relatedFieldHasUniqueName
+        )
       ).toEqual(expected);
     }
   );
