@@ -1451,8 +1451,11 @@ export class EntityService {
       };
     } else {
       const relatedEntity = await this.findEntityByName(name, entity.appId);
+      const relatedFieldNameExists = relatedEntity.fields.some(
+        field => field.name === camelCase(entity.name)
+      );
 
-      if (relatedEntity) {
+      if (relatedEntity && !relatedFieldNameExists) {
         const allowMultipleSelection =
           relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
         return {
@@ -1475,7 +1478,7 @@ export class EntityService {
   }
 
   private findEntityByName(name: string, appId: string): Promise<Entity> {
-    return this.prisma.entity.findFirst({
+    const entities = this.entities({
       where: {
         appId,
         // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
@@ -1502,8 +1505,10 @@ export class EntityService {
             ]
           }
         ]
-      }
+      },
+      take: 1
     });
+    return entities[0];
   }
 
   async validateFieldData(
