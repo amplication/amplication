@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
+import cuid from 'cuid';
 import {
   Injectable,
   NotFoundException,
@@ -30,12 +31,14 @@ import {
   EntityPermission,
   EntityPermissionField
 } from 'src/models';
-import { JsonObject, JsonValue } from 'type-fest';
+import { JsonObject } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
 import { getSchemaForDataType } from '@amplication/data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
-import { EnumDataType } from 'src/enums/EnumDataType';
+import { WhereUniqueInput } from 'src/dto';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
@@ -77,9 +80,8 @@ import {
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
-import { EnumEntityAction } from 'src/enums/EnumEntityAction';
-import { WhereParentIdInput, WhereUniqueInput } from 'src/dto';
 import { CreateLookupEntityFieldArgs } from './dto/CreateLookupEntityFieldArgs';
+import { LookupPropertiesInput } from './dto/LookupPropertiesInput';
 
 type EntityInclude = Omit<
   EntityVersionInclude,
@@ -1374,13 +1376,18 @@ export class EntityService {
     const data = await this.createFieldCreateInputByDisplayName(args, entity);
 
     if (data.dataType === EnumDataType.Lookup) {
+      const properties = data.properties as LookupPropertiesInput;
+
       return this.createLookupField(
         {
           data: {
             ...BASE_FIELD,
             ...args.data,
-            ...data
-          }
+            ...data,
+            properties
+          },
+          relatedFieldName: camelCase(entity.name),
+          relatedFieldDisplayName: entity.name
         },
         user
       );
@@ -1401,7 +1408,7 @@ export class EntityService {
   async createFieldCreateInputByDisplayName(
     args: CreateOneEntityFieldByDisplayNameArgs,
     entity: Entity
-  ): Promise<Pick<EntityFieldCreateInput, 'dataType' | 'name' | 'properties'>> {
+  ): Promise<{ name: string; dataType: EnumDataType; properties: JsonObject }> {
     const { displayName } = args.data;
     const lowerCaseName = displayName.toLowerCase();
     const name = camelCase(displayName);
@@ -1535,7 +1542,7 @@ export class EntityService {
     // Validate entity field data
     await this.validateFieldData(data);
 
-    // Get the field's entity
+    // Get the field's entity and acquire lock to edit it
     const entity = await this.acquireLock(
       { where: args.data.entity.connect },
       user
@@ -1566,7 +1573,13 @@ export class EntityService {
     args: CreateLookupEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
-    // Get the field's entity
+    // Omit entity from received data
+    const data = omit(args.data, ['entity']);
+
+    // Validate entity field data
+    await this.validateFieldData(data);
+
+    // Get the field's entity and acquire lock to edit it
     const entity = await this.acquireLock(
       { where: args.data.entity.connect },
       user
@@ -1579,16 +1592,75 @@ export class EntityService {
       );
     }
 
-    return this.createField(
-      {
-        ...args,
-        data: {
-          ...args.data,
-          dataType: EnumDataType.Lookup
-        }
-      },
+    // Get the field's entity current version
+    const currentEntityVersion = await this.getCurrentVersionWhereUniqueInput(
+      args.data.entity.connect
+    );
+
+    // Create field ID ahead of time so it can be used in the related field creation
+    const fieldId = cuid();
+
+    // Create a related lookup field in the related entity
+    const relatedField = await this.createLookupRelatedField(
+      args.relatedFieldName,
+      args.relatedFieldDisplayName,
+      !args.data.properties.allowMultipleSelection,
+      args.data.properties.relatedEntityId,
+      entity.id,
+      fieldId,
       user
     );
+
+    // Create entity field
+    return this.prisma.entityField.create({
+      data: {
+        ...data,
+        id: fieldId,
+        dataType: EnumDataType.Lookup,
+        entityVersion: {
+          connect: currentEntityVersion
+        },
+        properties: {
+          ...data.properties,
+          relatedFieldId: relatedField.id
+        }
+      }
+    });
+  }
+
+  private async createLookupRelatedField(
+    name: string,
+    displayName: string,
+    allowMultipleSelection: boolean,
+    entityId: string,
+    relatedEntityId: string,
+    relatedFieldId: string,
+    user: User
+  ): Promise<EntityField> {
+    // Acquire lock to edit the entity
+    await this.acquireLock({ where: { id: entityId } }, user);
+
+    // Get the field's entity current version
+    const currentEntityVersion = await this.getCurrentVersionWhereUniqueInput({
+      id: entityId
+    });
+
+    return this.prisma.entityField.create({
+      data: {
+        ...BASE_FIELD,
+        name,
+        displayName,
+        dataType: EnumDataType.Lookup,
+        entityVersion: {
+          connect: currentEntityVersion
+        },
+        properties: {
+          allowMultipleSelection,
+          relatedEntityId,
+          relatedFieldId
+        }
+      }
+    });
   }
 
   private async getCurrentVersionWhereUniqueInput(

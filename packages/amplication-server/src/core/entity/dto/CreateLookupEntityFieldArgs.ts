@@ -5,6 +5,10 @@ import { LookupEntityFieldCreateInput } from './LookupEntityFieldCreateInput';
 export class CreateLookupEntityFieldArgs {
   @Field(() => LookupEntityFieldCreateInput, { nullable: false })
   data!: LookupEntityFieldCreateInput;
+
   @Field(() => String, { nullable: false })
   relatedFieldName!: string;
+
+  @Field(() => String, { nullable: false })
+  relatedFieldDisplayName!: string;
 }
