@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 import {
   Injectable,
   NotFoundException,
@@ -76,6 +78,8 @@ import {
   DeleteEntityPermissionFieldArgs
 } from './dto';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { WhereParentIdInput, WhereUniqueInput } from 'src/dto';
+import { CreateLookupEntityFieldArgs } from './dto/CreateLookupEntityFieldArgs';
 
 type EntityInclude = Omit<
   EntityVersionInclude,
@@ -118,6 +122,15 @@ export const NAME_VALIDATION_ERROR_MESSAGE =
   'Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number';
 
 export const DELETE_ONE_USER_ENTITY_ERROR_MESSAGE = `The 'user' entity is a reserved entity and it cannot be deleted`;
+
+const BASE_FIELD: Pick<
+  EntityField,
+  'required' | 'searchable' | 'description'
+> = {
+  required: false,
+  searchable: false,
+  description: ''
+};
 
 @Injectable()
 export class EntityService {
@@ -1306,7 +1319,7 @@ export class EntityService {
 
   private async validateFieldProperties(
     dataType: EnumDataType,
-    properties: JsonValue
+    properties: JsonObject
   ): Promise<SchemaValidationResult> {
     try {
       const data = properties;
@@ -1342,127 +1355,164 @@ export class EntityService {
   }
 
   /** Validate name value conforms expected format */
-  private static validateFieldName(name: string): void {
-    if (!NAME_REGEX.test(name)) {
-      throw new ConflictException(NAME_VALIDATION_ERROR_MESSAGE);
-    }
-  }
-
   async createFieldByDisplayName(
     args: CreateOneEntityFieldByDisplayNameArgs,
     user: User
   ): Promise<EntityField> {
-    const data = await this.createFieldCreateInputByDisplayName(args);
+    const entity = await this.prisma.entity.findOne({
+      where: args.data.entity.connect
+    });
 
-    return this.createField({ data }, user);
+    if (!entity) {
+      throw new DataConflictError(
+        `Could not find entity where ${JSON.stringify(
+          args.data.entity.connect
+        )}`
+      );
+    }
+
+    const data = await this.createFieldCreateInputByDisplayName(args, entity);
+
+    if (data.dataType === EnumDataType.Lookup) {
+      return this.createLookupField(
+        {
+          data: {
+            ...BASE_FIELD,
+            ...args.data,
+            ...data
+          }
+        },
+        user
+      );
+    }
+
+    return this.createField(
+      {
+        data: {
+          ...BASE_FIELD,
+          ...args.data,
+          ...data
+        }
+      },
+      user
+    );
   }
 
   async createFieldCreateInputByDisplayName(
-    args: CreateOneEntityFieldByDisplayNameArgs
-  ): Promise<EntityFieldCreateInput> {
-    const lowerCaseName = args.data.displayName.toLowerCase();
-    const name = camelCase(args.data.displayName);
-    let dataType: EnumDataType = EnumDataType.SingleLineText;
-    let properties = {};
-    properties = {
-      maxLength: 1000
-    };
-
+    args: CreateOneEntityFieldByDisplayNameArgs,
+    entity: Entity
+  ): Promise<Pick<EntityFieldCreateInput, 'dataType' | 'name' | 'properties'>> {
+    const { displayName } = args.data;
+    const lowerCaseName = displayName.toLowerCase();
+    const name = camelCase(displayName);
     if (lowerCaseName.includes('date')) {
-      dataType = EnumDataType.DateTime;
-      properties = {
-        timeZone: 'localTime',
-        dateOnly: false
+      return {
+        name,
+        dataType: EnumDataType.DateTime,
+        properties: {
+          timeZone: 'localTime',
+          dateOnly: false
+        }
       };
     } else if (lowerCaseName.includes('description')) {
-      dataType = EnumDataType.MultiLineText;
-      properties = {
-        maxLength: 1000
+      return {
+        name,
+        dataType: EnumDataType.MultiLineText,
+        properties: {
+          maxLength: 1000
+        }
       };
     } else if (lowerCaseName.includes('email')) {
-      dataType = EnumDataType.Email;
-      properties = {};
+      return {
+        name,
+        dataType: EnumDataType.Email,
+        properties: {}
+      };
     } else if (lowerCaseName.includes('status')) {
-      dataType = EnumDataType.OptionSet;
-      properties = {
-        options: [{ label: 'Option 1', value: 'Option1' }]
+      return {
+        name,
+        dataType: EnumDataType.OptionSet,
+        properties: {
+          options: [{ label: 'Option 1', value: 'Option1' }]
+        }
       };
     } else if (lowerCaseName.startsWith('is')) {
-      dataType = EnumDataType.Boolean;
-      properties = {};
+      return {
+        name,
+        dataType: EnumDataType.Boolean,
+        properties: {}
+      };
     } else {
-      const existingEntity = await this.prisma.entity.findOne({
-        where: {
-          id: args.data.entity.connect.id
-        }
-      });
+      const relatedEntity = await this.findEntityByName(name, entity.appId);
 
-      if (!existingEntity) {
-        throw new DataConflictError(
-          `Can't find Entity ${args.data.entity.connect.id} `
-        );
-      }
-
-      const [entity] = await this.prisma.entity.findMany({
-        where: {
-          appId: existingEntity.appId,
-          // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
-          AND: [
-            {
-              name: {
-                equals: name,
-                mode: QueryMode.insensitive
-              },
-              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
-              OR: [
-                {
-                  displayName: {
-                    equals: name,
-                    mode: QueryMode.insensitive
-                  }
-                },
-                {
-                  pluralDisplayName: {
-                    equals: name,
-                    mode: QueryMode.insensitive
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      });
-
-      if (entity) {
-        dataType = EnumDataType.Lookup;
-        properties = {
-          relatedEntityId: entity.id,
-          allowMultipleSelection:
-            entity.pluralDisplayName.toLowerCase() === lowerCaseName
-              ? true
-              : false
+      if (relatedEntity) {
+        const allowMultipleSelection =
+          relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
+        return {
+          name,
+          dataType: EnumDataType.Lookup,
+          properties: {
+            relatedEntityId: relatedEntity.id,
+            allowMultipleSelection
+          }
         };
       }
     }
     return {
-      dataType,
       name,
-      properties,
-      displayName: args.data.displayName,
-      required: false,
-      searchable: false,
-      description: '',
-      entity: args.data.entity
+      dataType: EnumDataType.SingleLineText,
+      properties: {
+        maxLength: 1000
+      }
     };
+  }
+
+  private findEntityByName(name: string, appId: string): Promise<Entity> {
+    return this.prisma.entity.findFirst({
+      where: {
+        appId,
+        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+        AND: [
+          {
+            name: {
+              equals: name,
+              mode: QueryMode.insensitive
+            },
+            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            OR: [
+              {
+                displayName: {
+                  equals: name,
+                  mode: QueryMode.insensitive
+                }
+              },
+              {
+                pluralDisplayName: {
+                  equals: name,
+                  mode: QueryMode.insensitive
+                }
+              }
+            ]
+          }
+        ]
+      }
+    });
   }
 
   async validateFieldData(
     data: EntityFieldCreateInput | EntityFieldUpdateInput
   ): Promise<void> {
-    // Validate name
-    EntityService.validateFieldName(data.name);
+    // Validate the field's name
+    validateFieldName(data.name);
 
-    // Validate the properties
+    // Validate the field's dataType is not a system data type
+    if (isSystemDataType(data.dataType as EnumDataType)) {
+      throw new DataConflictError(
+        `The ${data.dataType} data type cannot be used to create new fields`
+      );
+    }
+
+    // Validate the field's properties
     const validationResults = await this.validateFieldProperties(
       EnumDataType[data.dataType],
       data.properties
@@ -1479,54 +1529,78 @@ export class EntityService {
     args: CreateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
-    // Extract entity from data
-    const { entity, ...data } = args.data;
-
-    if (SYSTEM_DATA_TYPES.has(args.data.dataType as EnumDataType)) {
-      throw new DataConflictError(
-        `The ${args.data.dataType} data type cannot be used to create new fields`
-      );
-    }
+    // Omit entity from received data
+    const data = omit(args.data, ['entity']);
 
     // Validate entity field data
     await this.validateFieldData(data);
 
-    const existingEntity = await this.acquireLock(
-      { where: { id: entity.connect.id } },
+    // Get the field's entity
+    const entity = await this.acquireLock(
+      { where: args.data.entity.connect },
       user
     );
 
-    if (existingEntity.name === USER_ENTITY_NAME) {
-      if (USER_ENTITY_FIELDS.includes(args.data.name.toLowerCase())) {
-        throw new ConflictException(
-          `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
-        );
-      }
-
-      if (args.data.dataType === EnumDataType.Lookup && args.data.required) {
-        throw new ConflictException(
-          "Lookup fields cannot be required on the 'user' Entity. Please remove the required flag and try again"
-        );
-      }
+    // In case the entity is User, make sure the field's name is not reserved
+    if (isUserEntity(entity) && isReservedUserEntityFieldName(args.data.name)) {
+      throw new DataConflictError(
+        `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
+      );
     }
 
-    // Get field's entity current version
-    const [currentEntityVersion] = await this.prisma.entityVersion.findMany({
-      where: {
-        entity: { id: entity.connect.id }
-      },
-      orderBy: { versionNumber: SortOrder.asc },
-      take: 1,
-      select: { id: true }
-    });
+    // Get the field's entity current version
+    const currentEntityVersion = await this.getCurrentVersionWhereUniqueInput(
+      args.data.entity.connect
+    );
 
     // Create entity field
     return this.prisma.entityField.create({
       data: {
         ...data,
-        entityVersion: { connect: { id: currentEntityVersion.id } }
+        entityVersion: { connect: currentEntityVersion }
       }
     });
+  }
+
+  async createLookupField(
+    args: CreateLookupEntityFieldArgs,
+    user: User
+  ): Promise<EntityField> {
+    // Get the field's entity
+    const entity = await this.acquireLock(
+      { where: args.data.entity.connect },
+      user
+    );
+
+    // In case the entity is User, make sure the field is not required
+    if (isUserEntity(entity) && args.data.required) {
+      throw new DataConflictError(
+        "Lookup fields cannot be required on the 'user' Entity. Please remove the required flag and try again"
+      );
+    }
+
+    return this.createField(
+      {
+        ...args,
+        data: {
+          ...args.data,
+          dataType: EnumDataType.Lookup
+        }
+      },
+      user
+    );
+  }
+
+  private async getCurrentVersionWhereUniqueInput(
+    entity: WhereUniqueInput
+  ): Promise<WhereUniqueInput> {
+    const version = await this.prisma.entityVersion.findFirst({
+      where: { entity },
+      orderBy: { versionNumber: SortOrder.asc },
+      take: 1,
+      select: { id: true }
+    });
+    return version;
   }
 
   async updateField(
@@ -1637,4 +1711,22 @@ export class EntityService {
 
     return this.prisma.entityField.delete(args);
   }
+}
+
+function validateFieldName(name: string): void {
+  if (!NAME_REGEX.test(name)) {
+    throw new ConflictException(NAME_VALIDATION_ERROR_MESSAGE);
+  }
+}
+
+function isSystemDataType(dataType: EnumDataType): boolean {
+  return SYSTEM_DATA_TYPES.has(dataType);
+}
+
+function isReservedUserEntityFieldName(name: string): boolean {
+  return USER_ENTITY_FIELDS.includes(name.toLowerCase());
+}
+
+function isUserEntity(existingEntity: Entity): boolean {
+  return existingEntity.name === USER_ENTITY_NAME;
 }

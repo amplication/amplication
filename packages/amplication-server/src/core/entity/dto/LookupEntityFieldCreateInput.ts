@@ -1,14 +1,12 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { GraphQLJSONObject } from 'graphql-type-json';
-import { JsonObject } from 'type-fest';
-import { EnumDataType } from 'src/enums/EnumDataType';
 import { WhereParentIdInput } from 'src/dto';
+import { LookupPropertiesInput } from './LookupPropertiesInput';
 
 @InputType({
   isAbstract: true,
   description: undefined
 })
-export class EntityFieldCreateInput {
+export class LookupEntityFieldCreateInput {
   @Field(() => String, {
     nullable: false,
     description: undefined
@@ -21,17 +19,11 @@ export class EntityFieldCreateInput {
   })
   displayName!: string;
 
-  @Field(() => EnumDataType, {
+  @Field(() => LookupPropertiesInput, {
     nullable: false,
     description: undefined
   })
-  dataType!: keyof typeof EnumDataType;
-
-  @Field(() => GraphQLJSONObject, {
-    nullable: false,
-    description: undefined
-  })
-  properties!: JsonObject;
+  properties!: LookupPropertiesInput;
 
   @Field(() => Boolean, {
     nullable: false,

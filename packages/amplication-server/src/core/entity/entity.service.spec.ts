@@ -139,14 +139,12 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
 };
 
 const EXAMPLE_ENTITY_WHERE_PARENT_ID = { connect: { id: 'EXAMPLE_ID' } };
-const BASE_CREATE_INPUT = {
-  required: false,
-  searchable: false,
-  description: '',
-  entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-};
 
 const prismaEntityFindOneMock = jest.fn(() => {
+  return EXAMPLE_ENTITY;
+});
+
+const prismaEntityFindFirstMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
@@ -258,6 +256,7 @@ describe('EntityService', () => {
           useClass: jest.fn(() => ({
             entity: {
               findOne: prismaEntityFindOneMock,
+              findFirst: prismaEntityFindFirstMock,
               findMany: prismaEntityFindManyMock,
               create: prismaEntityCreateMock,
               delete: prismaEntityDeleteMock,
@@ -1010,134 +1009,145 @@ describe('EntityService', () => {
     const EXAMPLE_DATE_DISPLAY_NAME = 'EXAMPLE_DISPLAY_NAME' + ' date';
 
     expect(
-      await service.createFieldCreateInputByDisplayName({
-        data: {
-          displayName: EXAMPLE_DATE_DISPLAY_NAME,
-          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-        }
-      })
+      await service.createFieldCreateInputByDisplayName(
+        {
+          data: {
+            displayName: EXAMPLE_DATE_DISPLAY_NAME,
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+          }
+        },
+        EXAMPLE_ENTITY
+      )
     ).toEqual({
-      ...BASE_CREATE_INPUT,
       dataType: EnumDataType.DateTime,
       name: camelCase(EXAMPLE_DATE_DISPLAY_NAME),
       properties: {
         timeZone: 'localTime',
         dateOnly: false
-      },
-      displayName: EXAMPLE_DATE_DISPLAY_NAME
+      }
     });
   });
   it('create field of description', async () => {
     const EXAMPLE_DESCRIPTION_DISPLAY_NAME =
       'EXAMPLE_DISPLAY_NAME' + ' description';
     expect(
-      await service.createFieldCreateInputByDisplayName({
-        data: {
-          displayName: EXAMPLE_DESCRIPTION_DISPLAY_NAME,
-          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-        }
-      })
+      await service.createFieldCreateInputByDisplayName(
+        {
+          data: {
+            displayName: EXAMPLE_DESCRIPTION_DISPLAY_NAME,
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+          }
+        },
+        EXAMPLE_ENTITY
+      )
     ).toEqual({
-      ...BASE_CREATE_INPUT,
       dataType: EnumDataType.MultiLineText,
       name: camelCase(EXAMPLE_DESCRIPTION_DISPLAY_NAME),
       properties: {
         maxLength: 1000
-      },
-      displayName: EXAMPLE_DESCRIPTION_DISPLAY_NAME
+      }
     });
   });
   it('create field of email', async () => {
     const EXAMPLE_EMAIL_DISPLAY_NAME = 'EXAMPLE_DISPLAY_NAME' + ' email';
     expect(
-      await service.createFieldCreateInputByDisplayName({
-        data: {
-          displayName: EXAMPLE_EMAIL_DISPLAY_NAME,
-          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-        }
-      })
+      await service.createFieldCreateInputByDisplayName(
+        {
+          data: {
+            displayName: EXAMPLE_EMAIL_DISPLAY_NAME,
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+          }
+        },
+        EXAMPLE_ENTITY
+      )
     ).toEqual({
-      ...BASE_CREATE_INPUT,
       dataType: EnumDataType.Email,
       name: camelCase(EXAMPLE_EMAIL_DISPLAY_NAME),
-      properties: {},
-      displayName: EXAMPLE_EMAIL_DISPLAY_NAME
+      properties: {}
     });
   });
   it('create field of status', async () => {
     const EXAMPLE_STATUS_DISPLAY_NAME = 'EXAMPLE_DISPLAY_NAME' + ' status';
     expect(
-      await service.createFieldCreateInputByDisplayName({
-        data: {
-          displayName: EXAMPLE_STATUS_DISPLAY_NAME,
-          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-        }
-      })
+      await service.createFieldCreateInputByDisplayName(
+        {
+          data: {
+            displayName: EXAMPLE_STATUS_DISPLAY_NAME,
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+          }
+        },
+        EXAMPLE_ENTITY
+      )
     ).toEqual({
-      ...BASE_CREATE_INPUT,
       dataType: EnumDataType.OptionSet,
       name: camelCase(EXAMPLE_STATUS_DISPLAY_NAME),
-      properties: { options: [{ label: 'Option 1', value: 'Option1' }] },
-      displayName: EXAMPLE_STATUS_DISPLAY_NAME
+      properties: { options: [{ label: 'Option 1', value: 'Option1' }] }
     });
   });
   it('create field of boolean', async () => {
     const EXAMPLE_BOOLEAN_DISPLAY_NAME = 'is' + 'EXAMPLE_DISPLAY_NAME';
     expect(
-      await service.createFieldCreateInputByDisplayName({
-        data: {
-          displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME,
-          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-        }
-      })
+      await service.createFieldCreateInputByDisplayName(
+        {
+          data: {
+            displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME,
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+          }
+        },
+        EXAMPLE_ENTITY
+      )
     ).toEqual({
-      ...BASE_CREATE_INPUT,
       dataType: EnumDataType.Boolean,
       name: camelCase(EXAMPLE_BOOLEAN_DISPLAY_NAME),
-      properties: {},
-      displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME
+      properties: {}
     });
   });
   it('create single field of lookup', async () => {
-    const relatedEntity = prismaEntityFindManyMock()[0];
+    const relatedEntity = prismaEntityFindFirstMock();
+    prismaEntityFindFirstMock.mockClear();
     expect(
-      await service.createFieldCreateInputByDisplayName({
-        data: {
-          displayName: relatedEntity.displayName.toLowerCase(),
-          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-        }
-      })
+      await service.createFieldCreateInputByDisplayName(
+        {
+          data: {
+            displayName: relatedEntity.displayName.toLowerCase(),
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+          }
+        },
+        EXAMPLE_ENTITY
+      )
     ).toEqual({
-      ...BASE_CREATE_INPUT,
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: relatedEntity.id,
         allowMultipleSelection: false
       },
-      displayName: relatedEntity.displayName,
       name: camelCase(relatedEntity.displayName)
     });
+    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
   });
   it('create field of plural lookup', async () => {
-    const relatedEntity = prismaEntityFindManyMock()[0];
+    const relatedEntity = prismaEntityFindFirstMock();
+    prismaEntityFindFirstMock.mockClear();
     const query = relatedEntity.pluralDisplayName.toLowerCase();
     expect(
-      await service.createFieldCreateInputByDisplayName({
-        data: {
-          displayName: query,
-          entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-        }
-      })
+      await service.createFieldCreateInputByDisplayName(
+        {
+          data: {
+            displayName: query,
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
+          }
+        },
+        EXAMPLE_ENTITY
+      )
     ).toEqual({
-      ...BASE_CREATE_INPUT,
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: relatedEntity.id,
         allowMultipleSelection: true
       },
-      displayName: query,
       name: camelCase(query)
     });
+    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
   });
   it('pending changed entities', async () => {
     prismaEntityFindManyMock.mockImplementationOnce(() => [
