@@ -165,3 +165,5 @@ export {
   Snackbar,
   Props as SnackbarProps,
 } from "./components/Snackbar/Snackbar";
+
+export { Popover, Props as PopoverProps } from "./components/Popover/Popover";

@@ -1,0 +1,24 @@
+@import "../../style/index.scss";
+
+$width-short: 100px;
+
+.amp-popover {
+  &:not(.rmwc-tooltip-zoom-enter):not(.rmwc-tooltip-zoom-appear) {
+    opacity: 1;
+  }
+
+  .rmwc-tooltip-inner {
+    background-color: var(--black100);
+    padding: 0;
+  }
+
+  --mdc-theme-on-surface: var(--black100);
+
+  &__content {
+    color: var(--white);
+
+    a {
+      color: var(--white);
+    }
+  }
+}
