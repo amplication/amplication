@@ -24,28 +24,28 @@ An open-source dev tool for building fully functional server-side Node.js apps w
 
 ## [Getting Started](https://docs.amplication.com/docs/getting-started)
 
-- Try amplication immediately on [amplication.com](http://amplication.com/)
-- or [follow the instructions](#development) to run it locally
+Try amplication immediately on [amplication.com](http://amplication.com/)
+or [follow the instructions](#development) to run it locally
 
 ## Features
 
 Build business applications with:
 
-- Visually managed data model
+- Visually managed data models
 - Auto-generated human-editable source code
 - Node.js server built with Nest.js and Passport with REST API and GraphQL
 - Admin UI built with React
 - Role-based access control
-- Docker and docker-compose integration out of the box
+- OOB Docker and docker-compose integration
 
 ## Development
 
-Amplication is constructed of multiple packages. To start working on Amplication follow the installation instructions on "Amplication Server" and "Amplication Client".
+Amplication is constructed of multiple packages. To start working on Amplication follow the "Amplication Server" and "Amplication Client" installation instructions.
 
 ### [Amplication Server](./packages/amplication-server/README.md)
 
 Amplication Server is the main component of the platform that provides all the core functionality to design and create low-code applications.
-The server exposes a GraphQL API for all actions. The server is built with the following awesome open source technologies: Node.js, NestJS, Prisma over PostgreSQL, GraphQL API, and many more...
+The server exposes a GraphQL API for all actions. The server is built with the following awesome open-source technologies: Node.js, NestJS, Prisma over PostgreSQL, GraphQL API, and many more...
 
 ### [Amplication Client](./packages/amplication-client/README.md)
 
@@ -62,31 +62,31 @@ To use this package as a library or as a CLI with other projects, follow the ins
 
 ## Alpha version
 
-Please note that Amplication is currently in alpha version. <b>This means that any app data hosted on our cloud can get reset at any time.</b> At this point if you want tTo use your app in a production environment, you'll need to download the app as a Docker container and deploy on your own cloud service.
+Please note that Amplication is currently in alpha version. <b>This means that any app data hosted on our cloud can get reset at any time.</b> At this point if you want to use your app in a production environment, you'll need to download the app as a Docker container and deploy on your own cloud service.
 
 # Support
 
 ### Ask a question about Amplication
 
-You can ask questions, and participate in discussions about Amplication-related topics in the `Amplication` discord channel.
+You can ask questions, and participate in discussions about Amplication-related topics in the `Amplication` Discord channel.
 
 <a href="https://discord.gg/b8MrjU6"><img src="https://amplication.com/assets/images/discord_banner.png" /></a>
 
 ### Create a bug report
 
-If you see an error message or run into an issue, please create a bug report, it's really important for making this platform the best it can be!
+If you see an error message or run into an issue, please create a bug report, this effort is valued and it will help all. 
 
 [**Create bug report**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=)
 
 ### Submit a feature request
 
 If you have an idea, or you're missing a capability that would make development easier and more robust, please submit a feature request.<br/>
-In case a similar feature request already exists, don't forget to leave a "+1". Adding some more info such as thoughts and your vision about the feature will be embraced warmly :)
+In case a similar feature request already exists, don't forget to leave a "+1". Adding some more information such as thoughts and your vision about the feature will be embraced warmly :)
 
 [**Submit feature request**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=)
 
 # Contributing
 
-Amplication is an open source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fixing bugs, proposing new feature, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
+Amplication is an open source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
 
 Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
