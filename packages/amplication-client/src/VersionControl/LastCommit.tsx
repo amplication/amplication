@@ -63,7 +63,6 @@ const LastCommit = ({ applicationId }: Props) => {
     <Panel panelStyle={EnumPanelStyle.Transparent} className={`${CLASS_NAME}`}>
       <PanelHeader>
         <h3>Last Commit</h3>
-        <Link to={`/${applicationId}/commits`}>View All</Link>
       </PanelHeader>
       {Boolean(error) && errorMessage}
 
