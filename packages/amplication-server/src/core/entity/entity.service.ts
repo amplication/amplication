@@ -1558,6 +1558,11 @@ export class EntityService {
       user
     );
 
+    if (args.data.dataType === EnumDataType.Lookup) {
+      // If field data type is Lookup add relatedFieldId to field properties
+      args.data.properties.relatedFieldId = cuid();
+    }
+
     // Validate entity field data
     await this.validateFieldData(data, entity);
 
@@ -1569,7 +1574,8 @@ export class EntityService {
       const properties = (args.data.properties as unknown) as types.Lookup;
 
       // Create a related lookup field in the related entity
-      const relatedField = await this.createLookupRelatedField(
+      await this.createLookupRelatedField(
+        args.data.properties.relatedFieldId as string,
         args.relatedFieldName,
         args.relatedFieldDisplayName,
         !properties.allowMultipleSelection,
@@ -1578,9 +1584,6 @@ export class EntityService {
         fieldId,
         user
       );
-
-      // Add the related field ID to the field properties
-      properties.relatedFieldId = relatedField.id;
     }
 
     // Create entity field
@@ -1602,6 +1605,7 @@ export class EntityService {
   }
 
   private async createLookupRelatedField(
+    id: string,
     name: string,
     displayName: string,
     allowMultipleSelection: boolean,
@@ -1616,6 +1620,7 @@ export class EntityService {
     return this.prisma.entityField.create({
       data: {
         ...BASE_FIELD,
+        id,
         name,
         displayName,
         dataType: EnumDataType.Lookup,
@@ -1667,6 +1672,14 @@ export class EntityService {
       user
     );
 
+    if (
+      field.dataType !== EnumDataType.Lookup &&
+      args.data.dataType === EnumDataType.Lookup
+    ) {
+      // If field data type is changed to Lookup add relatedFieldId to field properties
+      args.data.properties.relatedFieldId = cuid();
+    }
+
     // Validate entity field data
     await this.validateFieldData(args.data, entity);
 
@@ -1691,7 +1704,8 @@ export class EntityService {
         const properties = (args.data.properties as unknown) as types.Lookup;
 
         // Create a related lookup field in the related entity
-        const relatedField = await this.createLookupRelatedField(
+        await this.createLookupRelatedField(
+          args.data.properties.relatedFieldId as string,
           args.relatedFieldName,
           args.relatedFieldDisplayName,
           !properties.allowMultipleSelection,
@@ -1700,9 +1714,6 @@ export class EntityService {
           field.id,
           user
         );
-
-        // Add the related field ID to the field properties
-        properties.relatedFieldId = relatedField.id;
       }
     }
 
