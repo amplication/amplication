@@ -167,7 +167,6 @@ export class EntityService {
     });
   }
 
-  /** @todo replace with newer Prisma */
   async findFirst(args: FindManyEntityArgs): Promise<Entity | null> {
     const [first] = await this.entities({ ...args, take: 1 });
     return first || null;
@@ -1478,7 +1477,7 @@ export class EntityService {
   }
 
   private findEntityByName(name: string, appId: string): Promise<Entity> {
-    const entities = this.entities({
+    return this.findFirst({
       where: {
         appId,
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -1508,7 +1507,6 @@ export class EntityService {
       },
       take: 1
     });
-    return entities[0];
   }
 
   async validateFieldData(

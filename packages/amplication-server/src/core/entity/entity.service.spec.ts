@@ -135,16 +135,20 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
   properties: {
     maxLength: 42
   },
-  entityVersion: { connect: { id: EXAMPLE_CURRENT_ENTITY_VERSION.id } }
+  entityVersion: {
+    connect: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      entityId_versionNumber: {
+        entityId: EXAMPLE_ENTITY_ID,
+        versionNumber: CURRENT_VERSION_NUMBER
+      }
+    }
+  }
 };
 
 const EXAMPLE_ENTITY_WHERE_PARENT_ID = { connect: { id: 'EXAMPLE_ID' } };
 
 const prismaEntityFindOneMock = jest.fn(() => {
-  return EXAMPLE_ENTITY;
-});
-
-const prismaEntityFindFirstMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
@@ -256,7 +260,6 @@ describe('EntityService', () => {
           useClass: jest.fn(() => ({
             entity: {
               findOne: prismaEntityFindOneMock,
-              findFirst: prismaEntityFindFirstMock,
               findMany: prismaEntityFindManyMock,
               create: prismaEntityCreateMock,
               delete: prismaEntityDeleteMock,
@@ -916,15 +919,6 @@ describe('EntityService', () => {
     expect(prismaEntityFieldCreateMock).toBeCalledWith({
       data: EXAMPLE_ENTITY_FIELD_DATA
     });
-    expect(prismaEntityVersionFindManyMock).toBeCalledTimes(1);
-    expect(prismaEntityVersionFindManyMock).toBeCalledWith({
-      where: {
-        entity: { id: EXAMPLE_ENTITY.id }
-      },
-      orderBy: { versionNumber: SortOrder.asc },
-      take: 1,
-      select: { id: true }
-    });
   });
   it('should fail to create entity field with bad name', async () => {
     await expect(
@@ -1103,8 +1097,7 @@ describe('EntityService', () => {
     });
   });
   it('create single field of lookup', async () => {
-    const relatedEntity = prismaEntityFindFirstMock();
-    prismaEntityFindFirstMock.mockClear();
+    const [relatedEntity] = prismaEntityFindManyMock();
     expect(
       await service.createFieldCreateInputByDisplayName(
         {
@@ -1123,11 +1116,10 @@ describe('EntityService', () => {
       },
       name: camelCase(relatedEntity.displayName)
     });
-    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
   });
   it('create field of plural lookup', async () => {
-    const relatedEntity = prismaEntityFindFirstMock();
-    prismaEntityFindFirstMock.mockClear();
+    const [relatedEntity] = prismaEntityFindManyMock();
     const query = relatedEntity.pluralDisplayName.toLowerCase();
     expect(
       await service.createFieldCreateInputByDisplayName(
@@ -1147,7 +1139,7 @@ describe('EntityService', () => {
       },
       name: camelCase(query)
     });
-    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
   });
   it('pending changed entities', async () => {
     prismaEntityFindManyMock.mockImplementationOnce(() => [
