@@ -1031,6 +1031,22 @@ export type LoginInput = {
   password: Scalars["String"];
 };
 
+export type LookupEntityFieldCreateInput = {
+  name: Scalars["String"];
+  displayName: Scalars["String"];
+  properties: LookupPropertiesInput;
+  required: Scalars["Boolean"];
+  searchable: Scalars["Boolean"];
+  description: Scalars["String"];
+  entity: WhereParentIdInput;
+  position?: Maybe<Scalars["Int"]>;
+};
+
+export type LookupPropertiesInput = {
+  relatedEntityId: Scalars["String"];
+  allowMultipleSelection: Scalars["String"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   updateAccount: Account;
@@ -1041,15 +1057,16 @@ export type Mutation = {
   deleteEntity?: Maybe<Entity>;
   updateEntity?: Maybe<Entity>;
   lockEntity?: Maybe<Entity>;
-  updateEntityPermission?: Maybe<EntityPermission>;
-  updateEntityPermissionRoles?: Maybe<EntityPermission>;
-  addEntityPermissionField?: Maybe<EntityPermissionField>;
-  deleteEntityPermissionField?: Maybe<EntityPermissionField>;
-  updateEntityPermissionFieldRoles?: Maybe<EntityPermissionField>;
-  createEntityField?: Maybe<EntityField>;
-  createEntityFieldByDisplayName?: Maybe<EntityField>;
-  deleteEntityField?: Maybe<EntityField>;
-  updateEntityField?: Maybe<EntityField>;
+  updateEntityPermission: EntityPermission;
+  updateEntityPermissionRoles: EntityPermission;
+  addEntityPermissionField: EntityPermissionField;
+  deleteEntityPermissionField: EntityPermissionField;
+  updateEntityPermissionFieldRoles: EntityPermissionField;
+  createEntityField: EntityField;
+  createLookupField: EntityField;
+  createEntityFieldByDisplayName: EntityField;
+  deleteEntityField: EntityField;
+  updateEntityField: EntityField;
   createAppRole: AppRole;
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
@@ -1130,6 +1147,12 @@ export type MutationUpdateEntityPermissionFieldRolesArgs = {
 
 export type MutationCreateEntityFieldArgs = {
   data: EntityFieldCreateInput;
+};
+
+export type MutationCreateLookupFieldArgs = {
+  data: LookupEntityFieldCreateInput;
+  relatedFieldName: Scalars["String"];
+  relatedFieldDisplayName: Scalars["String"];
 };
 
 export type MutationCreateEntityFieldByDisplayNameArgs = {
@@ -1311,9 +1334,8 @@ export type Query = {
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
-  commits: Array<Commit>;
-  findOne?: Maybe<Commit>;
-  findMany?: Maybe<Array<Commit>>;
+  commit?: Maybe<Commit>;
+  commits?: Maybe<Array<Commit>>;
   me: User;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
   ConnectorRestApis: Array<ConnectorRestApi>;
@@ -1393,18 +1415,11 @@ export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
 };
 
-export type QueryCommitsArgs = {
-  where?: Maybe<CommitWhereInput>;
-  orderBy?: Maybe<CommitOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryFindOneArgs = {
+export type QueryCommitArgs = {
   where: CommitWhereUniqueInput;
 };
 
-export type QueryFindManyArgs = {
+export type QueryCommitsArgs = {
   where?: Maybe<CommitWhereInput>;
   orderBy?: Maybe<CommitOrderByInput>;
   cursor?: Maybe<CommitWhereUniqueInput>;
