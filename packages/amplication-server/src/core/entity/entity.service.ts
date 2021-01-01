@@ -1499,8 +1499,7 @@ export class EntityService {
             ]
           }
         ]
-      },
-      take: 1
+      }
     });
   }
 
