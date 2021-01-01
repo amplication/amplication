@@ -18,6 +18,8 @@ import {
 import { FindOneArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { DataConflictError } from 'src/errors/DataConflictError';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
@@ -222,6 +224,7 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
+    this.validateFieldMutationArgs(args);
     return this.entityService.createField(args, user);
   }
 
@@ -252,6 +255,25 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: UpdateOneEntityFieldArgs
   ): Promise<EntityField | null> {
+    this.validateFieldMutationArgs(args);
     return this.entityService.updateField(args, user);
+  }
+
+  private validateFieldMutationArgs(
+    args: CreateOneEntityFieldArgs | UpdateOneEntityFieldArgs
+  ): void {
+    if (args.data.dataType === EnumDataType.Lookup) {
+      if (!args.relatedFieldName || !args.relatedFieldDisplayName) {
+        throw new DataConflictError(
+          'When data.dataType is Lookup, relatedFieldName and relatedFieldDisplayName must not be null'
+        );
+      }
+    } else {
+      if (args.relatedFieldName || args.relatedFieldDisplayName) {
+        throw new DataConflictError(
+          'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null'
+        );
+      }
+    }
   }
 }
