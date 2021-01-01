@@ -1097,7 +1097,9 @@ describe('EntityService', () => {
     });
   });
   it('create single field of lookup', async () => {
+    prismaEntityFieldFindManyMock.mockImplementationOnce(() => []);
     const [relatedEntity] = prismaEntityFindManyMock();
+    prismaEntityFindManyMock.mockClear();
     expect(
       await service.createFieldCreateInputByDisplayName(
         {
@@ -1117,9 +1119,12 @@ describe('EntityService', () => {
       name: camelCase(relatedEntity.displayName)
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
   });
   it('create field of plural lookup', async () => {
+    prismaEntityFieldFindManyMock.mockImplementationOnce(() => []);
     const [relatedEntity] = prismaEntityFindManyMock();
+    prismaEntityFindManyMock.mockClear();
     const query = relatedEntity.pluralDisplayName.toLowerCase();
     expect(
       await service.createFieldCreateInputByDisplayName(
@@ -1140,6 +1145,7 @@ describe('EntityService', () => {
       name: camelCase(query)
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
   });
   it('pending changed entities', async () => {
     prismaEntityFindManyMock.mockImplementationOnce(() => [

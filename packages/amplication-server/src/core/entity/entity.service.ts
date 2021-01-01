@@ -35,7 +35,6 @@ import { JsonObject } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
 import { getSchemaForDataType } from '@amplication/data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
-import { WhereUniqueInput } from 'src/dto';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
@@ -522,7 +521,14 @@ export class EntityService {
     });
   }
 
-  //The function must only be used from a @FieldResolver on Entity, otherwise it may return fields of a deleted entity
+  /**
+   * Gets the fields associated with an entity. This function assumes the given
+   * entity ID is of a non-deleted entity. If it is used on a deleted entity it
+   * may return fields even though the entity is deleted.
+   * @param entityId The entity ID to find fields for
+   * @param args find many entity fields arguments
+   * @returns fields of the given entity at the given version that match given arguments
+   */
   async getFields(
     entityId: string,
     args: FindManyEntityFieldArgs
@@ -530,13 +536,21 @@ export class EntityService {
     return this.getVersionFields(entityId, CURRENT_VERSION_NUMBER, args);
   }
 
-  //The function must only be used from a @FieldResolver on Entity, otherwise it may return fields of a deleted entity
+  /**
+   * Gets the fields associated with an entity version. This function assumes
+   * the given entity ID is of a non-deleted entity. If it is used on a deleted
+   * entity it may return fields even though the entity is deleted.
+   * @param entityId The entity ID to find fields for
+   * @param versionNumber the entity version number to find fields for
+   * @param args find many entity fields arguments
+   * @returns fields of the given entity at the given version that match given arguments
+   */
   async getVersionFields(
     entityId: string,
     versionNumber: number,
     args: FindManyEntityFieldArgs
   ): Promise<EntityField[]> {
-    const entityFields = await this.prisma.entityField.findMany({
+    return await this.prisma.entityField.findMany({
       ...args,
       where: {
         ...args.where,
@@ -546,8 +560,6 @@ export class EntityService {
         }
       }
     });
-
-    return entityFields;
   }
 
   // Tries to acquire a lock on the given entity for the given user.
@@ -1450,11 +1462,13 @@ export class EntityService {
       };
     } else {
       const relatedEntity = await this.findEntityByName(name, entity.appId);
-      const relatedFieldNameExists = relatedEntity.fields.some(
-        field => field.name === camelCase(entity.name)
+      const relatedEntityFieldsWithEntityName = await this.getFields(
+        relatedEntity.id,
+        {
+          where: { name: { equals: camelCase(entity.name) } }
+        }
       );
-
-      if (relatedEntity && !relatedFieldNameExists) {
+      if (relatedEntity && relatedEntityFieldsWithEntityName.length === 0) {
         const allowMultipleSelection =
           relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
         return {
