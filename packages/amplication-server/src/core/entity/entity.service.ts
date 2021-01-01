@@ -14,7 +14,8 @@ import {
   FindManyEntityPermissionArgs,
   EntityVersionWhereInput,
   FindManyEntityArgs,
-  QueryMode
+  QueryMode,
+  FindOneEntityFieldArgs
 } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
@@ -1524,7 +1525,8 @@ export class EntityService {
   }
 
   async validateFieldData(
-    data: EntityFieldCreateInput | EntityFieldUpdateInput
+    data: EntityFieldCreateInput | EntityFieldUpdateInput,
+    entity: Entity
   ): Promise<void> {
     // Validate the field's name
     validateFieldName(data.name);
@@ -1532,8 +1534,23 @@ export class EntityService {
     // Validate the field's dataType is not a system data type
     if (isSystemDataType(data.dataType as EnumDataType)) {
       throw new DataConflictError(
-        `The ${data.dataType} data type cannot be used to create new fields`
+        `The data type ${data.dataType} cannot be used for non-system fields`
       );
+    }
+
+    if (isUserEntity(entity)) {
+      // Make sure the field's name is not reserved
+      if (isReservedUserEntityFieldName(data.name)) {
+        throw new DataConflictError(
+          `The field name '${data.name}' is a reserved field name and it cannot be used on the 'user' entity`
+        );
+      }
+      // In case the field data type is Lookup make sure it is not required
+      if (data.dataType === EnumDataType.Lookup && data.required) {
+        throw new DataConflictError(
+          'Fields with data type "Lookup" of the entity "User" must not be marked as required. Please unmark the field as required and try again'
+        );
+      }
     }
 
     // Validate the field's properties
@@ -1556,21 +1573,14 @@ export class EntityService {
     // Omit entity from received data
     const data = omit(args.data, ['entity']);
 
-    // Validate entity field data
-    await this.validateFieldData(data);
-
     // Get the field's entity and acquire lock to edit it
     const entity = await this.acquireLock(
       { where: args.data.entity.connect },
       user
     );
 
-    // In case the entity is User, make sure the field's name is not reserved
-    if (isUserEntity(entity) && isReservedUserEntityFieldName(args.data.name)) {
-      throw new DataConflictError(
-        `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
-      );
-    }
+    // Validate entity field data
+    await this.validateFieldData(data, entity);
 
     // Create entity field
     return this.prisma.entityField.create({
@@ -1596,21 +1606,16 @@ export class EntityService {
     // Omit entity from received data
     const data = omit(args.data, ['entity']);
 
-    // Validate entity field data
-    await this.validateFieldData(data);
-
     // Get the field's entity and acquire lock to edit it
     const entity = await this.acquireLock(
       { where: args.data.entity.connect },
       user
     );
 
+    // Validate entity field data
+    await this.validateFieldData(data, entity);
+
     // In case the entity is User, make sure the field is not required
-    if (isUserEntity(entity) && args.data.required) {
-      throw new DataConflictError(
-        "Lookup fields cannot be required on the 'user' Entity. Please remove the required flag and try again"
-      );
-    }
 
     // Create field ID ahead of time so it can be used in the related field creation
     const fieldId = cuid();
@@ -1689,71 +1694,26 @@ export class EntityService {
     args: UpdateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
-    //Validate the field is linked to current version (other versions cannot be updated)
-    const entityField = await this.prisma.entityField.findOne({
-      where: { id: args.where.id },
-      include: {
-        entityVersion: true
-      }
-    });
+    const field = await this.getField({ where: args.where });
 
-    if (!entityField) {
-      throw new NotFoundException(`Cannot find entity field ${args.where.id}`);
-    }
-
-    if (entityField.entityVersion.versionNumber !== CURRENT_VERSION_NUMBER) {
+    if (isSystemDataType(field.dataType as EnumDataType)) {
       throw new ConflictException(
-        `Cannot update fields of previous versions (version ${entityField.entityVersion.versionNumber}) `
+        `Cannot update entity field ${field.name} because fields with data type ${field.dataType} cannot be updated`
       );
     }
 
-    if (SYSTEM_DATA_TYPES.has(entityField.dataType as EnumDataType)) {
-      throw new ConflictException(
-        `The ${entityField.name} field cannot be deleted or updated`
-      );
-    }
-
-    if (SYSTEM_DATA_TYPES.has(args.data.dataType as EnumDataType)) {
-      throw new ConflictException(
-        `The ${args.data.dataType} data type cannot be used to create new fields`
-      );
-    }
+    const entity = await this.acquireLock(
+      { where: { id: field.entityVersion.entityId } },
+      user
+    );
 
     // Validate entity field data
-    await this.validateFieldData(args.data);
+    await this.validateFieldData(args.data, entity);
 
     /**
      * @todo validate the field was not published - only specific properties of
      * fields that were already published can be updated
      */
-
-    const entity = await this.acquireLock(
-      { where: { id: entityField.entityVersion.entityId } },
-      user
-    );
-
-    //special validation on the USER entity
-    if (entity.name === USER_ENTITY_NAME) {
-      if (
-        args.data.name &&
-        USER_ENTITY_FIELDS.includes(args.data.name.toLowerCase())
-      ) {
-        throw new ConflictException(
-          `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
-        );
-      }
-
-      const updatedEntityField = { ...entityField, ...args.data };
-
-      if (
-        updatedEntityField.dataType === EnumDataType.Lookup &&
-        updatedEntityField.required
-      ) {
-        throw new ConflictException(
-          "Lookup fields cannot be required on the 'user' Entity. Please remove the required flag and try again"
-        );
-      }
-    }
 
     return this.prisma.entityField.update(args);
   }
@@ -1762,36 +1722,48 @@ export class EntityService {
     args: DeleteEntityFieldArgs,
     user: User
   ): Promise<EntityField | null> {
-    //Validate the field is linked to current version (other versions cannot be updated)
-    const entityField = await this.prisma.entityField.findOne({
-      where: { id: args.where.id },
-      include: {
-        entityVersion: true
-      }
-    });
+    const field = await this.getField(args);
 
-    if (!entityField) {
+    if (!field) {
       throw new NotFoundException(`Cannot find entity field ${args.where.id}`);
     }
 
-    if (entityField.entityVersion.versionNumber !== CURRENT_VERSION_NUMBER) {
+    if (isSystemDataType(field.dataType as EnumDataType)) {
       throw new ConflictException(
-        `Cannot delete fields of previous versions (version ${entityField.entityVersion.versionNumber}) `
-      );
-    }
-
-    if (SYSTEM_DATA_TYPES.has(entityField.dataType as EnumDataType)) {
-      throw new ConflictException(
-        `The ${entityField.name} field cannot be deleted or updated`
+        `Cannot delete entity field ${field.dataType} because fields with the data type ${field.dataType} cannot be deleted`
       );
     }
 
     await this.acquireLock(
-      { where: { id: entityField.entityVersion.entityId } },
+      { where: { id: field.entityVersion.entityId } },
       user
     );
 
     return this.prisma.entityField.delete(args);
+  }
+
+  /**
+   * Gets a field according to provided arguments.
+   * @param args arguments to find field according to
+   * @returns the entity field
+   * @throws {NotFoundException} thrown if the field is not found
+   */
+  private async getField(args: FindOneEntityFieldArgs): Promise<EntityField> {
+    const field = await this.prisma.entityField.findFirst({
+      ...args,
+      where: {
+        ...args.where,
+        entityVersion: {
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
+    });
+    if (!field) {
+      throw new NotFoundException(
+        `Could not find an entity field for the args: ${JSON.stringify(args)}`
+      );
+    }
+    return field;
   }
 }
 
@@ -1809,6 +1781,6 @@ function isReservedUserEntityFieldName(name: string): boolean {
   return USER_ENTITY_FIELDS.includes(name.toLowerCase());
 }
 
-function isUserEntity(existingEntity: Entity): boolean {
-  return existingEntity.name === USER_ENTITY_NAME;
+function isUserEntity(entity: Entity): boolean {
+  return entity.name === USER_ENTITY_NAME;
 }
