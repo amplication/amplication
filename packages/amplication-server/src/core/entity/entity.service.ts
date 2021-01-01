@@ -1575,7 +1575,7 @@ export class EntityService {
 
       // Create a related lookup field in the related entity
       await this.createLookupRelatedField(
-        args.data.properties.relatedFieldId as string,
+        properties.relatedFieldId,
         args.relatedFieldName,
         args.relatedFieldDisplayName,
         !properties.allowMultipleSelection,
@@ -1673,10 +1673,10 @@ export class EntityService {
     );
 
     if (
-      field.dataType !== EnumDataType.Lookup &&
-      args.data.dataType === EnumDataType.Lookup
+      args.data.dataType === EnumDataType.Lookup &&
+      !args.data.properties.relatedFieldId
     ) {
-      // If field data type is changed to Lookup add relatedFieldId to field properties
+      // If field data type is Lookup and relatedFieldId is not defined assign it a new ID
       args.data.properties.relatedFieldId = cuid();
     }
 
@@ -1689,14 +1689,40 @@ export class EntityService {
      */
 
     if (field.dataType === EnumDataType.Lookup) {
+      // Cast the field properties as Lookup properties
+      const properties = (field.properties as unknown) as types.Lookup;
       if (args.data.dataType !== EnumDataType.Lookup) {
-        // Cast the field properties as Lookup properties
-        const properties = (field.properties as unknown) as types.Lookup;
+        // In case field data type is changed from Lookup delete related lookup
+        // field in the related entity
         await this.deleteLookupRelatedField(
           properties.relatedFieldId,
           properties.relatedEntityId,
           user
         );
+      } else {
+        // Cast the updated field properties as Lookup properties
+        const updatedProperties = (args.data
+          .properties as unknown) as types.Lookup;
+        if (updatedProperties.relatedEntityId !== properties.relatedEntityId) {
+          // In case Lookup field related entity is changed delete lookup relation
+          // field in the old related entity
+          await this.deleteLookupRelatedField(
+            properties.relatedFieldId,
+            properties.relatedEntityId,
+            user
+          );
+          // Create a related lookup field in the related entity
+          await this.createLookupRelatedField(
+            updatedProperties.relatedEntityId,
+            args.relatedFieldName,
+            args.relatedFieldDisplayName,
+            !updatedProperties.allowMultipleSelection,
+            updatedProperties.relatedEntityId,
+            entity.id,
+            field.id,
+            user
+          );
+        }
       }
     } else {
       if (args.data.dataType === EnumDataType.Lookup) {
@@ -1705,7 +1731,7 @@ export class EntityService {
 
         // Create a related lookup field in the related entity
         await this.createLookupRelatedField(
-          args.data.properties.relatedFieldId as string,
+          properties.relatedFieldId,
           args.relatedFieldName,
           args.relatedFieldDisplayName,
           !properties.allowMultipleSelection,
