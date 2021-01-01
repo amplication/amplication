@@ -76,16 +76,23 @@ export const SchemaField = ({
       }
     }
     default: {
-      if (propertySchema?.$ref === "#/definitions/EntityId") {
-        return (
-          <EntitySelectField
-            label={label}
-            name={fieldName}
-            disabled={isDisabled}
-            applicationId={applicationId}
-          />
-        );
+      switch (propertySchema?.$ref) {
+        case "#/definitions/EntityId": {
+          return (
+            <EntitySelectField
+              label={label}
+              name={fieldName}
+              disabled={isDisabled}
+              applicationId={applicationId}
+            />
+          );
+        }
+        case "#/definitions/EntityFieldId": {
+          /** @todo add link to field */
+          return <div>Entity Field</div>;
+        }
       }
+
       throw new Error(`Unexpected propertySchema.type: ${propertySchema.type}`);
     }
   }
