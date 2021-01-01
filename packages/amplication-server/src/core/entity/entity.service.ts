@@ -1562,12 +1562,12 @@ export class EntityService {
     // Validate entity field data
     await this.validateFieldData(data, entity);
 
+    // Create field ID ahead of time so it can be used in the related field creation
+    const fieldId = cuid();
+
     if (args.data.dataType === EnumDataType.Lookup) {
       // Cast the received properties to Lookup properties type
       const properties = (args.data.properties as unknown) as types.Lookup;
-
-      // Create field ID ahead of time so it can be used in the related field creation
-      const fieldId = cuid();
 
       // Create a related lookup field in the related entity
       const relatedField = await this.createLookupRelatedField(
@@ -1588,6 +1588,7 @@ export class EntityService {
     return this.prisma.entityField.create({
       data: {
         ...data,
+        id: fieldId,
         entityVersion: {
           connect: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -1637,6 +1638,19 @@ export class EntityService {
     });
   }
 
+  private async deleteLookupRelatedField(
+    fieldId: string,
+    entityId: string,
+    user: User
+  ): Promise<void> {
+    // Acquire lock to edit the entity
+    await this.acquireLock({ where: { id: entityId } }, user);
+
+    await this.prisma.entityField.delete({
+      where: { id: fieldId }
+    });
+  }
+
   async updateField(
     args: UpdateOneEntityFieldArgs,
     user: User
@@ -1662,7 +1676,40 @@ export class EntityService {
      * fields that were already published can be updated
      */
 
-    return this.prisma.entityField.update(args);
+    if (field.dataType === EnumDataType.Lookup) {
+      if (args.data.dataType !== EnumDataType.Lookup) {
+        // Cast the field properties as Lookup properties
+        const properties = (field.properties as unknown) as types.Lookup;
+        await this.deleteLookupRelatedField(
+          properties.relatedFieldId,
+          properties.relatedEntityId,
+          user
+        );
+      }
+    } else {
+      if (args.data.dataType === EnumDataType.Lookup) {
+        // Cast the received properties as Lookup properties
+        const properties = (args.data.properties as unknown) as types.Lookup;
+
+        // Create a related lookup field in the related entity
+        const relatedField = await this.createLookupRelatedField(
+          args.relatedFieldName,
+          args.relatedFieldDisplayName,
+          !properties.allowMultipleSelection,
+          properties.relatedEntityId,
+          entity.id,
+          field.id,
+          user
+        );
+
+        // Add the related field ID to the field properties
+        properties.relatedFieldId = relatedField.id;
+      }
+    }
+
+    return this.prisma.entityField.update(
+      omit(args, ['relatedFieldName', 'relatedFieldDisplayName'])
+    );
   }
 
   async deleteField(
