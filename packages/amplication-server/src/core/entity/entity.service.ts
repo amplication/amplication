@@ -1385,7 +1385,15 @@ export class EntityService {
       );
     }
 
-    const data = await this.createFieldCreateInputByDisplayName(args, entity);
+    const createInput = await this.createFieldCreateInputByDisplayName(
+      args,
+      entity
+    );
+    const data = {
+      ...BASE_FIELD,
+      ...args.data,
+      ...createInput
+    };
 
     if (data.dataType === EnumDataType.Lookup) {
       const properties = data.properties as LookupPropertiesInput;
@@ -1393,8 +1401,6 @@ export class EntityService {
       return this.createLookupField(
         {
           data: {
-            ...BASE_FIELD,
-            ...args.data,
             ...data,
             properties
           },
@@ -1405,16 +1411,7 @@ export class EntityService {
       );
     }
 
-    return this.createField(
-      {
-        data: {
-          ...BASE_FIELD,
-          ...args.data,
-          ...data
-        }
-      },
-      user
-    );
+    return this.createField({ data }, user);
   }
 
   async createFieldCreateInputByDisplayName(
@@ -1570,6 +1567,11 @@ export class EntityService {
     args: CreateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
+    if (args.data.dataType === EnumDataType.Lookup) {
+      throw new DataConflictError(
+        'The createField() method should not be used for creating Lookup fields, use the createLookupField method instead'
+      );
+    }
     // Omit entity from received data
     const data = omit(args.data, ['entity']);
 
