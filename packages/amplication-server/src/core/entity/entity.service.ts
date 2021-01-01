@@ -505,7 +505,7 @@ export class EntityService {
         versions: {
           update: {
             where: {
-              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               entityId_versionNumber: {
                 entityId: args.where.id,
                 versionNumber: CURRENT_VERSION_NUMBER
@@ -824,7 +824,7 @@ export class EntityService {
               return {
                 field: {
                   connect: {
-                    // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
                     entityVersionId_permanentId: {
                       entityVersionId: targetVersionId,
                       permanentId: permissionField.fieldPermanentId
@@ -834,7 +834,7 @@ export class EntityService {
                 permissionRoles: {
                   connect: permissionField.permissionRoles.map(fieldRole => {
                     return {
-                      // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
                       entityVersionId_action_appRoleId: {
                         action: fieldRole.action,
                         entityVersionId: targetVersionId,
@@ -1000,7 +1000,7 @@ export class EntityService {
 
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.data.entity.connect.id,
           versionNumber: CURRENT_VERSION_NUMBER
@@ -1153,7 +1153,7 @@ export class EntityService {
 
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.data.entity.connect.id,
           versionNumber: CURRENT_VERSION_NUMBER
@@ -1166,7 +1166,7 @@ export class EntityService {
       data: {
         field: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             entityVersionId_name: {
               entityVersionId: entityVersionId,
               name: args.data.fieldName
@@ -1175,7 +1175,7 @@ export class EntityService {
         },
         permission: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             entityVersionId_action: {
               entityVersionId: entityVersionId,
               action: args.data.action
@@ -1481,14 +1481,14 @@ export class EntityService {
     const entities = this.entities({
       where: {
         appId,
-        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         AND: [
           {
             name: {
               equals: name,
               mode: QueryMode.insensitive
             },
-            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             OR: [
               {
                 displayName: {
@@ -1560,16 +1560,19 @@ export class EntityService {
       );
     }
 
-    // Get the field's entity current version
-    const currentEntityVersion = await this.getCurrentVersionWhereUniqueInput(
-      args.data.entity.connect
-    );
-
     // Create entity field
     return this.prisma.entityField.create({
       data: {
         ...data,
-        entityVersion: { connect: currentEntityVersion }
+        entityVersion: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: entity.id,
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
+          }
+        }
       }
     });
   }
@@ -1597,11 +1600,6 @@ export class EntityService {
       );
     }
 
-    // Get the field's entity current version
-    const currentEntityVersion = await this.getCurrentVersionWhereUniqueInput(
-      args.data.entity.connect
-    );
-
     // Create field ID ahead of time so it can be used in the related field creation
     const fieldId = cuid();
 
@@ -1623,7 +1621,13 @@ export class EntityService {
         id: fieldId,
         dataType: EnumDataType.Lookup,
         entityVersion: {
-          connect: currentEntityVersion
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: entity.id,
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
+          }
         },
         properties: {
           ...data.properties,
@@ -1645,11 +1649,6 @@ export class EntityService {
     // Acquire lock to edit the entity
     await this.acquireLock({ where: { id: entityId } }, user);
 
-    // Get the field's entity current version
-    const currentEntityVersion = await this.getCurrentVersionWhereUniqueInput({
-      id: entityId
-    });
-
     return this.prisma.entityField.create({
       data: {
         ...BASE_FIELD,
@@ -1657,7 +1656,13 @@ export class EntityService {
         displayName,
         dataType: EnumDataType.Lookup,
         entityVersion: {
-          connect: currentEntityVersion
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId,
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
+          }
         },
         properties: {
           allowMultipleSelection,
@@ -1666,18 +1671,6 @@ export class EntityService {
         }
       }
     });
-  }
-
-  private async getCurrentVersionWhereUniqueInput(
-    entity: WhereUniqueInput
-  ): Promise<WhereUniqueInput> {
-    const version = await this.prisma.entityVersion.findFirst({
-      where: { entity },
-      orderBy: { versionNumber: SortOrder.asc },
-      take: 1,
-      select: { id: true }
-    });
-    return version;
   }
 
   async updateField(
