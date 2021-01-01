@@ -1733,6 +1733,16 @@ export class EntityService {
       user
     );
 
+    if (field.dataType === EnumDataType.Lookup) {
+      // Cast the field properties as Lookup properties
+      const properties = (field.properties as unknown) as types.Lookup;
+      await this.deleteLookupRelatedField(
+        properties.relatedFieldId,
+        properties.relatedEntityId,
+        user
+      );
+    }
+
     return this.prisma.entityField.delete(args);
   }
 
