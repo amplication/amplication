@@ -1389,8 +1389,14 @@ export class EntityService {
       data.dataType === EnumDataType.Lookup
         ? {
             data,
-            relatedFieldName: camelCase(entity.name),
-            relatedFieldDisplayName: entity.name
+            relatedFieldName: camelCase(
+              data.properties.allowMultipleSelection
+                ? entity.pluralDisplayName
+                : entity.name
+            ),
+            relatedFieldDisplayName: data.properties.allowMultipleSelection
+              ? entity.pluralDisplayName
+              : entity.displayName
           }
         : { data };
 
