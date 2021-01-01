@@ -951,22 +951,6 @@ input LoginInput {
   password: String!
 }
 
-input LookupEntityFieldCreateInput {
-  name: String!
-  displayName: String!
-  properties: LookupPropertiesInput!
-  required: Boolean!
-  searchable: Boolean!
-  description: String!
-  entity: WhereParentIdInput!
-  position: Int
-}
-
-input LookupPropertiesInput {
-  relatedEntityId: String!
-  allowMultipleSelection: String!
-}
-
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteOrganization(where: WhereUniqueInput!): Organization
@@ -981,8 +965,7 @@ type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
-  createEntityField(data: EntityFieldCreateInput!): EntityField!
-  createLookupField(data: LookupEntityFieldCreateInput!, relatedFieldName: String!, relatedFieldDisplayName: String!): EntityField!
+  createEntityField(data: EntityFieldCreateInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
   deleteEntityField(where: WhereUniqueInput!): EntityField!
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField!

@@ -1031,22 +1031,6 @@ export type LoginInput = {
   password: Scalars["String"];
 };
 
-export type LookupEntityFieldCreateInput = {
-  name: Scalars["String"];
-  displayName: Scalars["String"];
-  properties: LookupPropertiesInput;
-  required: Scalars["Boolean"];
-  searchable: Scalars["Boolean"];
-  description: Scalars["String"];
-  entity: WhereParentIdInput;
-  position?: Maybe<Scalars["Int"]>;
-};
-
-export type LookupPropertiesInput = {
-  relatedEntityId: Scalars["String"];
-  allowMultipleSelection: Scalars["String"];
-};
-
 export type Mutation = {
   __typename?: "Mutation";
   updateAccount: Account;
@@ -1063,7 +1047,6 @@ export type Mutation = {
   deleteEntityPermissionField: EntityPermissionField;
   updateEntityPermissionFieldRoles: EntityPermissionField;
   createEntityField: EntityField;
-  createLookupField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   deleteEntityField: EntityField;
   updateEntityField: EntityField;
@@ -1147,12 +1130,8 @@ export type MutationUpdateEntityPermissionFieldRolesArgs = {
 
 export type MutationCreateEntityFieldArgs = {
   data: EntityFieldCreateInput;
-};
-
-export type MutationCreateLookupFieldArgs = {
-  data: LookupEntityFieldCreateInput;
-  relatedFieldName: Scalars["String"];
-  relatedFieldDisplayName: Scalars["String"];
+  relatedFieldName?: Maybe<Scalars["String"]>;
+  relatedFieldDisplayName?: Maybe<Scalars["String"]>;
 };
 
 export type MutationCreateEntityFieldByDisplayNameArgs = {

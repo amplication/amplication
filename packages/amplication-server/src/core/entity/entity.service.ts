@@ -34,7 +34,7 @@ import {
 } from 'src/models';
 import { JsonObject } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
-import { getSchemaForDataType } from '@amplication/data';
+import { getSchemaForDataType, types } from '@amplication/data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EnumDataType } from 'src/enums/EnumDataType';
@@ -80,8 +80,6 @@ import {
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
-import { CreateLookupEntityFieldArgs } from './dto/CreateLookupEntityFieldArgs';
-import { LookupPropertiesInput } from './dto/LookupPropertiesInput';
 
 type EntityInclude = Omit<
   EntityVersionInclude,
@@ -142,19 +140,18 @@ export class EntityService {
   ) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
-    const entity = await this.prisma.entity.findMany({
+    const entity = await this.prisma.entity.findFirst({
       where: {
         id: args.where.id,
         deletedAt: null
-      },
-      take: 1
+      }
     });
 
-    if (isEmpty(entity)) {
-      throw new Error(`Can't find Entity ${args.where.id} `);
+    if (!entity) {
+      throw new Error(`Cannot find entity where ${JSON.stringify(args.where)}`);
     }
 
-    return entity[0];
+    return entity;
   }
 
   async entities(args: FindManyEntityArgs): Promise<Entity[]> {
@@ -570,19 +567,11 @@ export class EntityService {
   async acquireLock(args: LockEntityArgs, user: User): Promise<Entity | null> {
     const entityId = args.where.id;
 
-    const entities = await this.prisma.entity.findMany({
+    const entity = await this.entity({
       where: {
-        id: entityId,
-        deletedAt: null
-      },
-      take: 1
+        id: entityId
+      }
     });
-
-    if (isEmpty(entities)) {
-      throw new Error(`Can't find Entity ${entityId} `);
-    }
-
-    const [entity] = entities;
 
     if (entity.lockedByUserId === user.id) {
       return entity;
@@ -1373,7 +1362,7 @@ export class EntityService {
     args: CreateOneEntityFieldByDisplayNameArgs,
     user: User
   ): Promise<EntityField> {
-    const entity = await this.prisma.entity.findOne({
+    const entity = await this.entity({
       where: args.data.entity.connect
     });
 
@@ -1389,29 +1378,23 @@ export class EntityService {
       args,
       entity
     );
+
     const data = {
       ...BASE_FIELD,
       ...args.data,
       ...createInput
     };
 
-    if (data.dataType === EnumDataType.Lookup) {
-      const properties = data.properties as LookupPropertiesInput;
+    const createFieldArgs =
+      data.dataType === EnumDataType.Lookup
+        ? {
+            data,
+            relatedFieldName: camelCase(entity.name),
+            relatedFieldDisplayName: entity.name
+          }
+        : { data };
 
-      return this.createLookupField(
-        {
-          data: {
-            ...data,
-            properties
-          },
-          relatedFieldName: camelCase(entity.name),
-          relatedFieldDisplayName: entity.name
-        },
-        user
-      );
-    }
-
-    return this.createField({ data }, user);
+    return this.createField(createFieldArgs, user);
   }
 
   async createFieldCreateInputByDisplayName(
@@ -1567,22 +1550,39 @@ export class EntityService {
     args: CreateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
+    // Omit entity from received data
+    const data = omit(args.data, ['entity']);
+
+    // Get the field's entity and acquire lock to edit it
+    const entity = await this.acquireLock(
+      { where: args.data.entity.connect },
+      user
+    );
+
+    // Validate entity field data
+    await this.validateFieldData(data, entity);
+
     if (args.data.dataType === EnumDataType.Lookup) {
-      throw new DataConflictError(
-        'The createField() method should not be used for creating Lookup fields, use the createLookupField method instead'
+      // Cast the received properties to Lookup properties type
+      const properties = (args.data.properties as unknown) as types.Lookup;
+
+      // Create field ID ahead of time so it can be used in the related field creation
+      const fieldId = cuid();
+
+      // Create a related lookup field in the related entity
+      const relatedField = await this.createLookupRelatedField(
+        args.relatedFieldName,
+        args.relatedFieldDisplayName,
+        !properties.allowMultipleSelection,
+        properties.relatedEntityId,
+        entity.id,
+        fieldId,
+        user
       );
+
+      // Add the related field ID to the field properties
+      properties.relatedFieldId = relatedField.id;
     }
-    // Omit entity from received data
-    const data = omit(args.data, ['entity']);
-
-    // Get the field's entity and acquire lock to edit it
-    const entity = await this.acquireLock(
-      { where: args.data.entity.connect },
-      user
-    );
-
-    // Validate entity field data
-    await this.validateFieldData(data, entity);
 
     // Create entity field
     return this.prisma.entityField.create({
@@ -1596,61 +1596,6 @@ export class EntityService {
               versionNumber: CURRENT_VERSION_NUMBER
             }
           }
-        }
-      }
-    });
-  }
-
-  async createLookupField(
-    args: CreateLookupEntityFieldArgs,
-    user: User
-  ): Promise<EntityField> {
-    // Omit entity from received data
-    const data = omit(args.data, ['entity']);
-
-    // Get the field's entity and acquire lock to edit it
-    const entity = await this.acquireLock(
-      { where: args.data.entity.connect },
-      user
-    );
-
-    // Validate entity field data
-    await this.validateFieldData(data, entity);
-
-    // In case the entity is User, make sure the field is not required
-
-    // Create field ID ahead of time so it can be used in the related field creation
-    const fieldId = cuid();
-
-    // Create a related lookup field in the related entity
-    const relatedField = await this.createLookupRelatedField(
-      args.relatedFieldName,
-      args.relatedFieldDisplayName,
-      !args.data.properties.allowMultipleSelection,
-      args.data.properties.relatedEntityId,
-      entity.id,
-      fieldId,
-      user
-    );
-
-    // Create entity field
-    return this.prisma.entityField.create({
-      data: {
-        ...data,
-        id: fieldId,
-        dataType: EnumDataType.Lookup,
-        entityVersion: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityId_versionNumber: {
-              entityId: entity.id,
-              versionNumber: CURRENT_VERSION_NUMBER
-            }
-          }
-        },
-        properties: {
-          ...data.properties,
-          relatedFieldId: relatedField.id
         }
       }
     });

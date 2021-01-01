@@ -18,6 +18,7 @@
     "teleporter",
     "uncontained",
     "unelevated",
+    "unmark",
     "upsert"
   ],
   "eslint.workingDirectories": [
