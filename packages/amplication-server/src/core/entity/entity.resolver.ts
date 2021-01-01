@@ -22,8 +22,6 @@ import { UserEntity } from 'src/decorators/user.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { EnumDataType } from 'src/enums/EnumDataType';
-import { DataConflictError } from 'src/errors/DataConflictError';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UserService } from '../user/user.service';
 import {
@@ -224,12 +222,6 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
-    if (args.data.dataType === EnumDataType.Lookup) {
-      throw new DataConflictError(
-        'The createField mutation should not be used for creating Lookup fields, use the createLookupField mutation instead'
-      );
-    }
-
     return this.entityService.createField(args, user);
   }
 
