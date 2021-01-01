@@ -1145,6 +1145,8 @@ export type MutationDeleteEntityFieldArgs = {
 export type MutationUpdateEntityFieldArgs = {
   data: EntityFieldUpdateInput;
   where: WhereUniqueInput;
+  relatedFieldName?: Maybe<Scalars["String"]>;
+  relatedFieldDisplayName?: Maybe<Scalars["String"]>;
 };
 
 export type MutationCreateAppRoleArgs = {
