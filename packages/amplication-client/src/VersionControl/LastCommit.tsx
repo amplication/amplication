@@ -2,7 +2,6 @@ import React, { useMemo, useState, useContext } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
-import { Link } from "react-router-dom";
 import { CircularProgress } from "@rmwc/circular-progress";
 import * as models from "../models";
 import {
