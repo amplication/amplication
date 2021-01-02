@@ -118,6 +118,10 @@ const EntityFieldForm = ({
       onSubmit({
         ...pendingData,
         ...data,
+        properties: {
+          ...pendingData.properties,
+          relatedFieldId: undefined,
+        },
       });
     },
     [onSubmit]
