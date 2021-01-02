@@ -123,8 +123,9 @@ const EntityFieldForm = ({
           relatedFieldId: undefined,
         },
       });
+      setRelatedFieldDialogDisplayed(false);
     },
-    [onSubmit]
+    [onSubmit, setRelatedFieldDialogDisplayed]
   );
 
   return (
