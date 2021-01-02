@@ -271,7 +271,7 @@ export class EntityResolver {
     } else {
       if (args.relatedFieldName || args.relatedFieldDisplayName) {
         throw new DataConflictError(
-          'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null and not be empty'
+          'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null'
         );
       }
     }
