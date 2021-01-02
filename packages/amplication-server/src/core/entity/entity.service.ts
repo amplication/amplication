@@ -1626,10 +1626,10 @@ export class EntityService {
     return this.prisma.entityField.create({
       data: {
         ...BASE_FIELD,
-        id,
         name,
         displayName,
         dataType: EnumDataType.Lookup,
+        permanentId: id,
         entityVersion: {
           connect: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -1650,14 +1650,26 @@ export class EntityService {
 
   private async deleteLookupRelatedField(
     fieldId: string,
-    entityId: string,
     user: User
   ): Promise<void> {
+    const field = await this.getField({
+      where: { id: fieldId },
+      include: { entityVersion: true }
+    });
     // Acquire lock to edit the entity
-    await this.acquireLock({ where: { id: entityId } }, user);
+    await this.acquireLock(
+      { where: { id: field.entityVersion.entityId } },
+      user
+    );
 
     await this.prisma.entityField.delete({
-      where: { id: fieldId }
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        entityVersionId_permanentId: {
+          entityVersionId: field.entityVersion.id,
+          permanentId: fieldId
+        }
+      }
     });
   }
 
@@ -1703,11 +1715,7 @@ export class EntityService {
       if (args.data.dataType !== EnumDataType.Lookup) {
         // In case field data type is changed from Lookup delete related lookup
         // field in the related entity
-        await this.deleteLookupRelatedField(
-          properties.relatedFieldId,
-          properties.relatedEntityId,
-          user
-        );
+        await this.deleteLookupRelatedField(properties.relatedFieldId, user);
       } else {
         // Cast the updated field properties as Lookup properties
         const updatedProperties = (args.data
@@ -1715,11 +1723,7 @@ export class EntityService {
         if (updatedProperties.relatedEntityId !== properties.relatedEntityId) {
           // In case Lookup field related entity is changed delete lookup relation
           // field in the old related entity
-          await this.deleteLookupRelatedField(
-            properties.relatedFieldId,
-            properties.relatedEntityId,
-            user
-          );
+          await this.deleteLookupRelatedField(properties.relatedFieldId, user);
           // Create a related lookup field in the related entity
           await this.createLookupRelatedField(
             updatedProperties.relatedEntityId,
@@ -1786,11 +1790,7 @@ export class EntityService {
     if (field.dataType === EnumDataType.Lookup) {
       // Cast the field properties as Lookup properties
       const properties = (field.properties as unknown) as types.Lookup;
-      await this.deleteLookupRelatedField(
-        properties.relatedFieldId,
-        properties.relatedEntityId,
-        user
-      );
+      await this.deleteLookupRelatedField(properties.relatedFieldId, user);
     }
 
     return this.prisma.entityField.delete(args);
