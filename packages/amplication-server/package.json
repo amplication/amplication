@@ -16,7 +16,7 @@
     "prisma:studio": "prisma studio --experimental",
     "prisma:generate": "prisma generate",
     "prisma:generate:watch": "prisma generate --watch",
-    "lint": "eslint --cache --ext ts .",
+    "lint": "eslint --cache .",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest",
     "test:watch": "jest --watch",

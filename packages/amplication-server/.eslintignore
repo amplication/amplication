@@ -4,3 +4,4 @@ prisma/migrations/
 dist/
 coverage/
 migration-scripts/
+*.js
