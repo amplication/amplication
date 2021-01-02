@@ -77,7 +77,7 @@
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
-    "lint": "eslint src --ext js,ts,tsx",
+    "lint": "eslint src --ext js,ts,tsx --cache",
     "lint:fix": "npm run lint -- --fix",
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
