@@ -3369,6 +3369,113 @@ export const UserTitle = ({ id }: Props) => {
   },
 ];
 ",
+  "server/prisma/schema.prisma": "datasource postgres {
+  provider = \\"postgresql\\"
+  url      = env(\\"POSTGRESQL_URL\\")
+}
+
+generator client {
+  provider = \\"prisma-client-js\\"
+}
+
+model User {
+  username       String          @unique
+  password       String
+  roles          String[]
+  id             String          @id @default(cuid())
+  name           String
+  bio            String
+  email          String
+  age            Int
+  birthDate      DateTime
+  score          Float
+  organization   Organization?   @relation(fields: [organizationId], references: [id])
+  interests      EnumInterests[]
+  priority       EnumPriority
+  isCurious      Boolean
+  location       String
+  organizationId String?
+}
+
+model Order {
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  status     EnumStatus
+  label      EnumLabel?
+  customerId String
+}
+
+model Organization {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String
+  customers Customer[]
+  User      User[]
+}
+
+model Customer {
+  id             String               @id @default(cuid())
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  email          String
+  firstName      String?
+  lastName       String?
+  isVip          Boolean?
+  birthData      DateTime?
+  averageSale    Float?
+  favoriteNumber Int?
+  geoLocation    String?
+  comments       String?
+  favoriteColors EnumFavoriteColors[]
+  customerType   EnumCustomerType?
+  organization   Organization?        @relation(fields: [organizationId], references: [id])
+  orders         Order[]
+  organizationId String?
+}
+
+model Empty {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EnumInterests {
+  programming
+  design
+}
+
+enum EnumPriority {
+  high
+  medium
+  low
+}
+
+enum EnumStatus {
+  pending
+  inProgress
+  done
+}
+
+enum EnumLabel {
+  fragile
+}
+
+enum EnumFavoriteColors {
+  red
+  green
+  purple
+  yellow
+}
+
+enum EnumCustomerType {
+  platinum
+  gold
+  bronze
+  regular
+}",
   "server/scripts/clean.ts": "/**
  * Clean all the tables and types created by Prisma in the database
  */

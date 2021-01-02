@@ -1,1 +1,3 @@
 dist/
+# ESLint
+.eslintcache
