@@ -951,18 +951,6 @@ describe('EntityService', () => {
       }
     };
     const user = new User();
-    const permissionFieldArgs = {
-      where: {
-        permission: {
-          entityVersion: {
-            entityId: args.where.entityId,
-            versionNumber: CURRENT_VERSION_NUMBER
-          },
-          action: args.where.action
-        },
-        fieldPermanentId: args.where.fieldPermanentId
-      }
-    };
     await expect(
       service.deleteEntityPermissionField(args, user)
     ).rejects.toThrowError('Record not found');
@@ -974,9 +962,18 @@ describe('EntityService', () => {
       }
     });
     expect(prismaEntityPermissionFieldFindManyMock).toBeCalledTimes(1);
-    expect(prismaEntityPermissionFieldFindManyMock).toBeCalledWith(
-      permissionFieldArgs
-    );
+    expect(prismaEntityPermissionFieldFindManyMock).toBeCalledWith({
+      where: {
+        permission: {
+          entityVersion: {
+            entityId: args.where.entityId,
+            versionNumber: CURRENT_VERSION_NUMBER
+          },
+          action: args.where.action
+        },
+        fieldPermanentId: args.where.fieldPermanentId
+      }
+    });
   });
 
   it('create field by display name', async () => {
