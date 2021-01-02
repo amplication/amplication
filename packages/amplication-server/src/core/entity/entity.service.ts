@@ -1690,7 +1690,7 @@ export class EntityService {
     // Change related field in case related entity ID is changed
     const shouldChangeRelated =
       args.data.properties.relatedEntityId !==
-      ((field.properties as unknown) as types.Lookup).relatedEntityId;
+      ((field.properties as unknown) as types.Lookup)?.relatedEntityId;
 
     // Delete related field in case field data type is changed from lookup
     const shouldDeleteRelated =
