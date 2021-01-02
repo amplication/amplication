@@ -1665,7 +1665,10 @@ export class EntityService {
     args: UpdateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
-    const field = await this.getField({ where: args.where });
+    const field = await this.getField({
+      where: args.where,
+      include: { entityVersion: true }
+    });
 
     if (isSystemDataType(field.dataType as EnumDataType)) {
       throw new ConflictException(
@@ -1758,7 +1761,12 @@ export class EntityService {
     args: DeleteEntityFieldArgs,
     user: User
   ): Promise<EntityField | null> {
-    const field = await this.getField(args);
+    const field = await this.getField({
+      ...args,
+      include: {
+        entityVersion: true
+      }
+    });
 
     if (!field) {
       throw new NotFoundException(`Cannot find entity field ${args.where.id}`);
