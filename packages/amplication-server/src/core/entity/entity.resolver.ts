@@ -262,17 +262,21 @@ export class EntityResolver {
   private validateFieldMutationArgs(
     args: CreateOneEntityFieldArgs | UpdateOneEntityFieldArgs
   ): void {
-    if (args.data.dataType === EnumDataType.Lookup) {
-      if (
-        !args.data.properties.relatedFieldId &&
-        (!args.relatedFieldName || !args.relatedFieldDisplayName)
-      ) {
+    const { data, relatedFieldName, relatedFieldDisplayName } = args;
+    if (data.dataType === EnumDataType.Lookup) {
+      const { relatedFieldId } = data.properties;
+      if (relatedFieldId && (relatedFieldName || relatedFieldDisplayName)) {
+        throw new DataConflictError(
+          'When data.dataType is Lookup and data.properties.relatedFieldId is defined, relatedFieldName and relatedFieldDisplayName must be null'
+        );
+      }
+      if (!relatedFieldId && (!relatedFieldName || !relatedFieldDisplayName)) {
         throw new DataConflictError(
           'When data.dataType is Lookup, either data.properties.relatedFieldId must be defined or relatedFieldName and relatedFieldDisplayName must not be null and not be empty'
         );
       }
     } else {
-      if (args.relatedFieldName || args.relatedFieldDisplayName) {
+      if (relatedFieldName || relatedFieldDisplayName) {
         throw new DataConflictError(
           'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null'
         );
