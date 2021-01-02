@@ -15,7 +15,7 @@ import {
   EntityVersionWhereInput,
   FindManyEntityArgs,
   QueryMode,
-  FindOneEntityFieldArgs
+  FindFirstEntityFieldArgs
 } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
@@ -1648,23 +1648,24 @@ export class EntityService {
     });
   }
 
-  private async deleteRelatedField(fieldId: string, user: User): Promise<void> {
-    const field = await this.getField({
-      where: { id: fieldId },
-      include: { entityVersion: true }
-    });
+  private async deleteRelatedField(
+    permanentId: string,
+    entityId: string,
+    user: User
+  ): Promise<void> {
     // Acquire lock to edit the entity
-    await this.acquireLock(
-      { where: { id: field.entityVersion.entityId } },
-      user
-    );
+    await this.acquireLock({ where: { id: entityId } }, user);
 
+    // Get field to delete
+    const field = await this.getField({ where: { permanentId } });
+
+    // Delete the related field from the database
     await this.prisma.entityField.delete({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         entityVersionId_permanentId: {
-          entityVersionId: field.entityVersion.id,
-          permanentId: fieldId
+          permanentId,
+          entityVersionId: field.entityVersionId
         }
       }
     });
@@ -1674,6 +1675,7 @@ export class EntityService {
     args: UpdateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
+    // Get field to update
     const field = await this.getField({
       where: args.where,
       include: { entityVersion: true }
@@ -1722,8 +1724,12 @@ export class EntityService {
 
     // In case related field should be deleted or changed, delete the existing related field
     if (shouldDeleteRelated || shouldChangeRelated) {
-      const { relatedFieldId } = (field.properties as unknown) as types.Lookup;
-      await this.deleteRelatedField(relatedFieldId, user);
+      const properties = (field.properties as unknown) as types.Lookup;
+      await this.deleteRelatedField(
+        properties.relatedFieldId,
+        properties.relatedEntityId,
+        user
+      );
     }
 
     // In case related field should be created or changed, create a new related field
@@ -1777,7 +1783,11 @@ export class EntityService {
     if (field.dataType === EnumDataType.Lookup) {
       // Cast the field properties as Lookup properties
       const properties = (field.properties as unknown) as types.Lookup;
-      await this.deleteRelatedField(properties.relatedFieldId, user);
+      await this.deleteRelatedField(
+        properties.relatedFieldId,
+        properties.relatedEntityId,
+        user
+      );
     }
 
     return this.prisma.entityField.delete(args);
@@ -1787,9 +1797,10 @@ export class EntityService {
    * Gets a field according to provided arguments.
    * @param args arguments to find field according to
    * @returns the entity field
-   * @throws {NotFoundException} thrown if the field is not found
+   * @throws {NotFoundException} thrown if the field is not found or it relates
+   * to a past entity version
    */
-  private async getField(args: FindOneEntityFieldArgs): Promise<EntityField> {
+  private async getField(args: FindFirstEntityFieldArgs): Promise<EntityField> {
     const field = await this.prisma.entityField.findFirst({
       ...args,
       where: {
@@ -1801,7 +1812,7 @@ export class EntityService {
     });
     if (!field) {
       throw new NotFoundException(
-        `Could not find an entity field for the args: ${JSON.stringify(args)}`
+        `Could not find an entity field for: ${JSON.stringify(args.where)}`
       );
     }
     return field;
