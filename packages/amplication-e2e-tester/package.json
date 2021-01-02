@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint tests",
+    "lint": "eslint --cache tests",
     "test": "jest",
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
@@ -22,7 +22,7 @@
     "@types/puppeteer": "^3.0.2",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
-    "eslint": "^7.10.0",
+    "eslint": "^7.17.0",
     "eslint-plugin-import": "^2.22.1",
     "prettier": "^2.1.2",
     "ts-jest": "^26.4.1"

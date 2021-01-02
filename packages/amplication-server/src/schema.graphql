@@ -960,15 +960,15 @@ type Mutation {
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
-  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission
-  updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission
-  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField
-  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField
-  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField
-  createEntityField(data: EntityFieldCreateInput!): EntityField
-  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField
-  deleteEntityField(where: WhereUniqueInput!): EntityField
-  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
+  updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
+  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
+  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
+  createEntityField(data: EntityFieldCreateInput!): EntityField!
+  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
+  deleteEntityField(where: WhereUniqueInput!): EntityField!
+  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField!
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
