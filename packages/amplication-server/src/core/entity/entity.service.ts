@@ -1596,7 +1596,7 @@ export class EntityService {
     return this.prisma.entityField.create({
       data: {
         ...data,
-        id: fieldId,
+        permanentId: fieldId,
         entityVersion: {
           connect: {
             // eslint-disable-next-line @typescript-eslint/naming-convention

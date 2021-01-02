@@ -148,7 +148,7 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
 
 const EXAMPLE_ENTITY_WHERE_PARENT_ID = { connect: { id: 'EXAMPLE_ID' } };
 
-const prismaEntityFindOneMock = jest.fn(() => {
+const prismaEntityFindFirstMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
@@ -226,15 +226,17 @@ const prismaEntityFieldFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY_FIELD];
 });
 
-const prismaEntityFieldFindOneMock = jest.fn((args: FindOneEntityFieldArgs) => {
-  if (args?.include?.entityVersion) {
-    return {
-      ...EXAMPLE_ENTITY_FIELD,
-      entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
-    };
+const prismaEntityFieldFindFirstMock = jest.fn(
+  (args: FindOneEntityFieldArgs) => {
+    if (args?.include?.entityVersion) {
+      return {
+        ...EXAMPLE_ENTITY_FIELD,
+        entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
+      };
+    }
+    return EXAMPLE_ENTITY_FIELD;
   }
-  return EXAMPLE_ENTITY_FIELD;
-});
+);
 const prismaEntityFieldCreateMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 const prismaEntityFieldUpdateMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 
@@ -259,7 +261,7 @@ describe('EntityService', () => {
           provide: PrismaService,
           useClass: jest.fn(() => ({
             entity: {
-              findOne: prismaEntityFindOneMock,
+              findFirst: prismaEntityFindFirstMock,
               findMany: prismaEntityFindManyMock,
               create: prismaEntityCreateMock,
               delete: prismaEntityDeleteMock,
@@ -272,7 +274,7 @@ describe('EntityService', () => {
               findOne: prismaEntityVersionFindOneMock
             },
             entityField: {
-              findOne: prismaEntityFieldFindOneMock,
+              findFirst: prismaEntityFieldFindFirstMock,
               create: prismaEntityFieldCreateMock,
               update: prismaEntityFieldUpdateMock,
               findMany: prismaEntityFieldFindManyMock
@@ -328,16 +330,14 @@ describe('EntityService', () => {
       },
       version: EXAMPLE_CURRENT_ENTITY_VERSION.versionNumber
     };
-    const returnArgs = {
+    expect(await service.entity(args)).toEqual(EXAMPLE_ENTITY);
+    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
+    expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: args.where.id,
         deletedAt: null
-      },
-      take: 1
-    };
-    expect(await service.entity(args)).toEqual(EXAMPLE_ENTITY);
-    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
-    expect(prismaEntityFindManyMock).toBeCalledWith(returnArgs);
+      }
+    });
   });
 
   it('should find many entities', async () => {
@@ -440,13 +440,12 @@ describe('EntityService', () => {
       await service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
     ).toEqual(EXAMPLE_ENTITY);
 
-    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
-    expect(prismaEntityFindManyMock).toBeCalledWith({
+    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
+    expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: EXAMPLE_ENTITY_ID,
         deletedAt: null
-      },
-      take: 1
+      }
     });
 
     expect(prismaEntityUpdateMock).toBeCalledTimes(1);
@@ -461,24 +460,21 @@ describe('EntityService', () => {
       user: new User()
     };
 
-    prismaEntityFindManyMock.mockImplementation(() => [
-      {
-        ...EXAMPLE_ENTITY,
-        name: USER_ENTITY_NAME
-      }
-    ]);
+    prismaEntityFindFirstMock.mockImplementationOnce(() => ({
+      ...EXAMPLE_ENTITY,
+      name: USER_ENTITY_NAME
+    }));
 
     await expect(
       service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
     ).rejects.toThrow(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
 
-    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
-    expect(prismaEntityFindManyMock).toBeCalledWith({
+    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
+    expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: EXAMPLE_ENTITY_ID,
         deletedAt: null
-      },
-      take: 1
+      }
     });
 
     expect(prismaEntityUpdateMock).toBeCalledTimes(0);
@@ -856,33 +852,30 @@ describe('EntityService', () => {
       user: new User()
     };
     const entityId = lockArgs.args.where.id;
-    const entityArgs = {
-      where: {
-        id: entityId,
-        deletedAt: null
-      },
-      take: 1
-    };
-    //   const updateArgs = {
-    // 	  where: {
-    // 		  id: entityId
-    // 	  },
-    // 	  data: {
-    // 		  lockedByUser : {
-    // 			  connect: {
-    // 				  id: lockArgs.user.id
-    // 			  }
-    // 		  },
-    // 		  lockedAt: new Date()
-    // 	  }
-    //   }
     expect(await service.acquireLock(lockArgs.args, lockArgs.user)).toEqual(
       EXAMPLE_ENTITY
     );
-    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
-    expect(prismaEntityFindManyMock).toBeCalledWith(entityArgs);
-    //expect(prismaEntityUpdateMock).toBeCalledTimes(1);
-    //expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
+    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
+    expect(prismaEntityFindFirstMock).toBeCalledWith({
+      where: {
+        id: entityId,
+        deletedAt: null
+      }
+    });
+    // expect(prismaEntityUpdateMock).toBeCalledTimes(1);
+    // expect(prismaEntityUpdateMock).toBeCalledWith({
+    //   where: {
+    //     id: entityId
+    //   },
+    //   data: {
+    //     lockedByUser: {
+    //       connect: {
+    //         id: lockArgs.user.id
+    //       }
+    //     },
+    //     lockedAt: expect.any(Date)
+    //   }
+    // });
   });
 
   it('should release a lock', async () => {
@@ -917,7 +910,10 @@ describe('EntityService', () => {
     ).toEqual(EXAMPLE_ENTITY_FIELD);
     expect(prismaEntityFieldCreateMock).toBeCalledTimes(1);
     expect(prismaEntityFieldCreateMock).toBeCalledWith({
-      data: EXAMPLE_ENTITY_FIELD_DATA
+      data: {
+        ...EXAMPLE_ENTITY_FIELD_DATA,
+        permanentId: expect.any(String)
+      }
     });
   });
   it('should fail to create entity field with bad name', async () => {
@@ -946,7 +942,7 @@ describe('EntityService', () => {
     expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
   });
 
-  it('should throw an error Record not Found', async () => {
+  it('should throw a "Record not found" error', async () => {
     const args = {
       where: {
         entityId: EXAMPLE_ENTITY_ID,
@@ -955,13 +951,6 @@ describe('EntityService', () => {
       }
     };
     const user = new User();
-    const findManyArgs = {
-      where: {
-        id: args.where.entityId,
-        deletedAt: null
-      },
-      take: 1
-    };
     const permissionFieldArgs = {
       where: {
         permission: {
@@ -977,8 +966,13 @@ describe('EntityService', () => {
     await expect(
       service.deleteEntityPermissionField(args, user)
     ).rejects.toThrowError('Record not found');
-    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
-    expect(prismaEntityFindManyMock).toBeCalledWith(findManyArgs);
+    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
+    expect(prismaEntityFindFirstMock).toBeCalledWith({
+      where: {
+        id: args.where.entityId,
+        deletedAt: null
+      }
+    });
     expect(prismaEntityPermissionFieldFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityPermissionFieldFindManyMock).toBeCalledWith(
       permissionFieldArgs
