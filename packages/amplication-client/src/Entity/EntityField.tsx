@@ -138,8 +138,15 @@ const UPDATE_ENTITY_FIELD = gql`
   mutation updateEntityField(
     $data: EntityFieldUpdateInput!
     $where: WhereUniqueInput!
+    $relatedFieldName: String
+    $relatedFieldDisplayName: String
   ) {
-    updateEntityField(data: $data, where: $where) {
+    updateEntityField(
+      data: $data
+      where: $where
+      relatedFieldName: $relatedFieldName
+      relatedFieldDisplayName: $relatedFieldDisplayName
+    ) {
       id
       createdAt
       updatedAt
