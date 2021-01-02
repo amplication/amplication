@@ -263,9 +263,12 @@ export class EntityResolver {
     args: CreateOneEntityFieldArgs | UpdateOneEntityFieldArgs
   ): void {
     if (args.data.dataType === EnumDataType.Lookup) {
-      if (!args.relatedFieldName || !args.relatedFieldDisplayName) {
+      if (
+        !args.data.properties.relatedFieldId &&
+        (!args.relatedFieldName || !args.relatedFieldDisplayName)
+      ) {
         throw new DataConflictError(
-          'When data.dataType is Lookup, relatedFieldName and relatedFieldDisplayName must not be null and not be empty'
+          'When data.dataType is Lookup, either data.properties.relatedFieldId must be defined or relatedFieldName and relatedFieldDisplayName must not be null and not be empty'
         );
       }
     } else {
