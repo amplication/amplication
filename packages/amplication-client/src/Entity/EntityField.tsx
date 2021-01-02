@@ -60,13 +60,15 @@ const EntityField = () => {
 
   const handleSubmit = useCallback(
     (data) => {
-      const { id, ...rest } = data;
+      const { id, relatedFieldName, relatedFieldDisplayName, ...rest } = data;
       updateEntityField({
         variables: {
           where: {
             id: field,
           },
           data: rest,
+          relatedFieldName,
+          relatedFieldDisplayName,
         },
       }).catch(console.error);
     },

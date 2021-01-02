@@ -1,19 +1,23 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Formik, FormikErrors } from "formik";
 import omit from "lodash.omit";
 import { isEmpty } from "lodash";
-import { getSchemaForDataType } from "@amplication/data";
-import * as models from "../models";
-import { SchemaFields } from "./SchemaFields";
-import DataTypeSelectField from "./DataTypeSelectField";
+import { getSchemaForDataType, types } from "@amplication/data";
 import { ToggleField } from "@amplication/design-system";
+import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
+import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
-import { Form } from "../Components/Form";
 import { validate } from "../util/formikValidateJsonSchema";
 import { SYSTEM_DATA_TYPES } from "./constants";
+import DataTypeSelectField from "./DataTypeSelectField";
+import { SchemaFields } from "./SchemaFields";
+import {
+  RelatedFieldDialog,
+  Values as RelatedFieldValues,
+} from "./RelatedFieldDialog";
 
 type Values = {
   id: string; //the id field is required in the form context to be used in "DataTypeSelectField"
@@ -27,7 +31,7 @@ type Values = {
 };
 
 type Props = {
-  onSubmit: (values: Values) => void;
+  onSubmit: (values: Values | (Values & RelatedFieldValues)) => void;
   isDisabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
   applicationId: string;
@@ -66,6 +70,11 @@ const EntityFieldForm = ({
   isDisabled,
   applicationId,
 }: Props) => {
+  const pendingDataRef = useRef<Values | null>(null);
+  const [
+    relatedFieldDialogDisplayed,
+    setRelatedFieldDialogDisplayed,
+  ] = useState(false);
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -77,72 +86,116 @@ const EntityFieldForm = ({
     };
   }, [defaultValues]);
 
-  return (
-    <Formik
-      initialValues={initialValues}
-      validate={(values: Values) => {
-        const errors: FormikErrors<Values> = validate<Values>(
-          values,
-          FORM_SCHEMA
-        );
-
-        //validate the field dynamic properties
-        const schema = getSchemaForDataType(values.dataType);
-        const propertiesError = validate<Object>(values.properties, schema);
-        if (!isEmpty(propertiesError)) {
-          errors.properties = propertiesError;
+  const handleSubmit = useCallback(
+    (data: Values) => {
+      if (data.dataType === models.EnumDataType.Lookup) {
+        const properties = data.properties as types.Lookup;
+        if (
+          properties.relatedEntityId !==
+          defaultValues.properties.relatedEntityId
+        ) {
+          pendingDataRef.current = data;
+          setRelatedFieldDialogDisplayed(true);
+          return;
         }
-        return errors;
-      }}
-      enableReinitialize
-      onSubmit={onSubmit}
-    >
-      {(formik) => {
-        const schema = getSchemaForDataType(formik.values.dataType);
+      }
+      onSubmit(data);
+    },
+    [onSubmit, setRelatedFieldDialogDisplayed, defaultValues]
+  );
 
-        return (
-          <Form childrenAsBlocks>
-            {!isDisabled && <FormikAutoSave debounceMS={1000} />}
+  const hideRelatedFieldDialog = useCallback(() => {
+    pendingDataRef.current = null;
+    setRelatedFieldDialogDisplayed(false);
+  }, [setRelatedFieldDialogDisplayed]);
 
-            <DisplayNameField
-              name="displayName"
-              label="Display Name"
-              disabled={isDisabled}
-              required
-            />
-            <NameField name="name" disabled={isDisabled} required />
-            <OptionalDescriptionField
-              name="description"
-              label="Description"
-              disabled={isDisabled}
-            />
-            <hr />
-            <div>
-              <ToggleField
-                name="required"
-                label="Required Field"
+  const handleRelatedFieldFormSubmit = useCallback(
+    (data: RelatedFieldValues) => {
+      const pendingData = pendingDataRef.current;
+      if (!pendingData) {
+        throw new Error("Pending data should be defined");
+      }
+      onSubmit({
+        ...pendingData,
+        ...data,
+      });
+    },
+    [onSubmit]
+  );
+
+  return (
+    <>
+      <Formik
+        initialValues={initialValues}
+        validate={(values: Values) => {
+          const errors: FormikErrors<Values> = validate<Values>(
+            values,
+            FORM_SCHEMA
+          );
+
+          //validate the field dynamic properties
+          const schema = getSchemaForDataType(values.dataType);
+          const propertiesError = validate<Object>(values.properties, schema);
+          if (!isEmpty(propertiesError)) {
+            errors.properties = propertiesError;
+          }
+          return errors;
+        }}
+        enableReinitialize
+        onSubmit={handleSubmit}
+      >
+        {(formik) => {
+          const schema = getSchemaForDataType(formik.values.dataType);
+
+          return (
+            <Form childrenAsBlocks>
+              {!isDisabled && <FormikAutoSave debounceMS={1000} />}
+
+              <DisplayNameField
+                name="displayName"
+                label="Display Name"
+                disabled={isDisabled}
+                required
+              />
+              <NameField name="name" disabled={isDisabled} required />
+              <OptionalDescriptionField
+                name="description"
+                label="Description"
                 disabled={isDisabled}
               />
-            </div>
-            <div>
-              <ToggleField
-                name="searchable"
-                label="Searchable"
-                disabled={isDisabled}
+              <hr />
+              <div>
+                <ToggleField
+                  name="required"
+                  label="Required Field"
+                  disabled={isDisabled}
+                />
+              </div>
+              <div>
+                <ToggleField
+                  name="searchable"
+                  label="Searchable"
+                  disabled={isDisabled}
+                />
+              </div>
+              {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
+                <DataTypeSelectField label="Data Type" disabled={isDisabled} />
+              )}
+              <SchemaFields
+                schema={schema}
+                isDisabled={isDisabled}
+                applicationId={applicationId}
               />
-            </div>
-            {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
-              <DataTypeSelectField label="Data Type" disabled={isDisabled} />
-            )}
-            <SchemaFields
-              schema={schema}
-              isDisabled={isDisabled}
-              applicationId={applicationId}
-            />
-          </Form>
-        );
-      }}
-    </Formik>
+            </Form>
+          );
+        }}
+      </Formik>
+      <RelatedFieldDialog
+        isOpen={relatedFieldDialogDisplayed}
+        onDismiss={hideRelatedFieldDialog}
+        onSubmit={handleRelatedFieldFormSubmit}
+      />
+    </>
   );
 };
 
