@@ -265,13 +265,13 @@ export class EntityResolver {
     if (args.data.dataType === EnumDataType.Lookup) {
       if (!args.relatedFieldName || !args.relatedFieldDisplayName) {
         throw new DataConflictError(
-          'When data.dataType is Lookup, relatedFieldName and relatedFieldDisplayName must not be null'
+          'When data.dataType is Lookup, relatedFieldName and relatedFieldDisplayName must not be null and not be empty'
         );
       }
     } else {
       if (args.relatedFieldName || args.relatedFieldDisplayName) {
         throw new DataConflictError(
-          'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null'
+          'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null and not be empty'
         );
       }
     }
