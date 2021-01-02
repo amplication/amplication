@@ -9,3 +9,4 @@ coverage/
 prisma/migrations/dev/
 artifacts/
 .env.local
+.eslintcache
