@@ -7,7 +7,7 @@
     "build-storybook": "build-storybook",
     "check-format": "prettier --check .",
     "format": "prettier --write .",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "build": "rollup -c",
     "watch": "npm run build -- --watch",
     "prepare": "npm run build"
@@ -38,7 +38,7 @@
     "@storybook/react": "^6.0.28",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
-    "eslint": "^7.14.0",
+    "eslint": "^7.17.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-flowtype": "^5.2.0",
     "eslint-plugin-import": "^2.22.1",

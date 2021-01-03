@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nest start",
+    "start:watch": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
     "build": "nest build",
     "test": "jest",
     "seed": "ts-node scripts/seed.ts",
