@@ -78,7 +78,7 @@ export const RelatedFieldDialog = ({
               disabled={loading}
             />
             <NameField name="relatedFieldName" required disabled={loading} />
-            <Button>Create</Button>
+            <Button type="submit">Create</Button>
           </Form>
         )}
       </Formik>
