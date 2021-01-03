@@ -89,9 +89,17 @@ const EntityFieldForm = ({
         //validate the field dynamic properties
         const schema = getSchemaForDataType(values.dataType);
         const propertiesError = validate<Object>(values.properties, schema);
+
+        // Ignore related field ID error
+        if ("relatedFieldId" in propertiesError) {
+          // @ts-ignore
+          delete propertiesError.relatedFieldId;
+        }
+
         if (!isEmpty(propertiesError)) {
           errors.properties = propertiesError;
         }
+
         return errors;
       }}
       enableReinitialize
