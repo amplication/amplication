@@ -1456,7 +1456,7 @@ export class EntityService {
             where: { name: { equals: camelCase(entity.name) } }
           }
         );
-        if (relatedEntityFieldsWithEntityName.length === 0) {
+        if (isEmpty(relatedEntityFieldsWithEntityName)) {
           const allowMultipleSelection =
             relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
           return {
