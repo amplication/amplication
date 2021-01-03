@@ -90,7 +90,7 @@ const EntityField = () => {
         },
       }).catch(console.error);
     },
-    [updateEntityField, field, entityField]
+    [updateEntityField, entity, field, entityField]
   );
 
   const handleRelatedFieldFormSubmit = useCallback(
