@@ -19,7 +19,7 @@ export type Values = {
   relatedFieldDisplayName: string;
 };
 
-export type Props = DialogProps & {
+export type Props = Omit<DialogProps, "title"> & {
   onSubmit: (data: Values) => void;
   relatedEntityId: string | undefined;
   allowMultipleSelection: boolean;
