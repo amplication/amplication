@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FieldArray, FieldArrayRenderProps, getIn } from "formik";
 import { pascalCase } from "pascal-case";
 import { get } from "lodash";
@@ -20,12 +20,15 @@ type Props = {
 };
 
 const CLASS_NAME = "option-set";
-const NEW_OPTION: OptionItem = { value: "", label: "" };
 
-const OptionSet = ({ label, name, isDisabled }: Props) => {
+const OptionSet = ({ name, label }: Props) => {
   return (
     <div className={CLASS_NAME}>
-      <FieldArray name={name} component={OptionSetOptions} />
+      <FieldArray
+        name={name}
+        validateOnChange
+        render={(props) => <OptionSetOptions {...props} label={label} />}
+      />
     </div>
   );
 };
@@ -35,21 +38,14 @@ export default OptionSet;
 const OptionSetOptions = ({
   form,
   name,
-  push,
   remove,
   replace,
-}: FieldArrayRenderProps) => {
-  const value = get(form.values, name);
-
-  const handleAddOption = useCallback(() => {
-    push(NEW_OPTION);
-  }, [push]);
-
-  useEffect(() => {
-    if (!value || !value.length) {
-      push(NEW_OPTION);
-    }
-  }, [value, push]);
+  label,
+}: {
+  label: string;
+} & FieldArrayRenderProps) => {
+  const value = get(form.values, name) || [];
+  const [push, hasNew] = useVirtualPush(value);
 
   const errors = useMemo(() => {
     const error = getIn(form.errors, name);
@@ -57,11 +53,13 @@ const OptionSetOptions = ({
     return null;
   }, [form.errors, name]);
 
+  const options = hasNew ? [...value, {}] : value;
+
   return (
     <div>
-      <h3>Options</h3>
+      <h3>{label}</h3>
       {errors && <div className="option-set__error-message">{errors}</div>}
-      {value?.map((option: OptionItem, index: number) => (
+      {options.map((option: OptionItem, index: number) => (
         <OptionSetOption
           key={index}
           index={index}
@@ -70,13 +68,36 @@ const OptionSetOptions = ({
           name={name}
         />
       ))}
-      <Button onClick={handleAddOption} buttonStyle={EnumButtonStyle.Clear}>
+      <Button onClick={push} buttonStyle={EnumButtonStyle.Clear}>
         <Icon icon="plus" />
         Add option
       </Button>
     </div>
   );
 };
+
+/**
+ * Replaces ArrayField's push behavior to indicate when to display an item
+ * before pushing to the array so the new item won't trigger validation and won't be submitted
+ * @param value the array value from the form
+ */
+function useVirtualPush(value: unknown[]): [() => void, boolean] {
+  const [indexOfNew, setIndexOfNew] = useState<number | null>(0);
+
+  const add = useCallback(() => {
+    setIndexOfNew(value.length);
+  }, [setIndexOfNew, value]);
+
+  useEffect(() => {
+    if (indexOfNew !== null && value.length > indexOfNew) {
+      setIndexOfNew(null);
+    }
+  }, [value, indexOfNew, setIndexOfNew]);
+
+  const hasNew = indexOfNew !== null;
+
+  return [add, hasNew];
+}
 
 type OptionSetOption = {
   name: string;
