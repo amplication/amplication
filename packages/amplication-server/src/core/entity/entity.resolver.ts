@@ -18,8 +18,6 @@ import {
 import { FindOneArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
-import { EnumDataType } from 'src/enums/EnumDataType';
-import { DataConflictError } from 'src/errors/DataConflictError';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
@@ -45,13 +43,6 @@ import {
   UpdateOneEntityFieldArgs
 } from './dto';
 import { EntityService } from './entity.service';
-
-const RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
-  'When data.dataType is Lookup and data.properties.relatedFieldId is defined, relatedFieldName and relatedFieldDisplayName must be null';
-const RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE =
-  'When data.dataType is Lookup, either data.properties.relatedFieldId must be defined or relatedFieldName and relatedFieldDisplayName must not be null and not be empty';
-const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
-  'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null';
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -231,7 +222,6 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
-    this.validateFieldMutationArgs(args);
     return this.entityService.createField(args, user);
   }
 
@@ -262,32 +252,6 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: UpdateOneEntityFieldArgs
   ): Promise<EntityField | null> {
-    this.validateFieldMutationArgs(args);
     return this.entityService.updateField(args, user);
-  }
-
-  private validateFieldMutationArgs(
-    args: CreateOneEntityFieldArgs | UpdateOneEntityFieldArgs
-  ): void {
-    const { data, relatedFieldName, relatedFieldDisplayName } = args;
-    if (data.dataType === EnumDataType.Lookup) {
-      const { relatedFieldId } = data.properties;
-      if (!relatedFieldId && (!relatedFieldName || !relatedFieldDisplayName)) {
-        throw new DataConflictError(
-          RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE
-        );
-      }
-      if (relatedFieldId && (relatedFieldName || relatedFieldDisplayName)) {
-        throw new DataConflictError(
-          RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE
-        );
-      }
-    } else {
-      if (relatedFieldName || relatedFieldDisplayName) {
-        throw new DataConflictError(
-          RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE
-        );
-      }
-    }
   }
 }

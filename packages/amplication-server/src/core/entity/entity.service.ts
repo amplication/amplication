@@ -123,6 +123,15 @@ export const NAME_VALIDATION_ERROR_MESSAGE =
 
 export const DELETE_ONE_USER_ENTITY_ERROR_MESSAGE = `The 'user' entity is a reserved entity and it cannot be deleted`;
 
+const RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
+  'When data.dataType is Lookup and data.properties.relatedFieldId is defined, relatedFieldName and relatedFieldDisplayName must be null';
+
+const RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE =
+  'When data.dataType is Lookup, either data.properties.relatedFieldId must be defined or relatedFieldName and relatedFieldDisplayName must not be null and not be empty';
+
+const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
+  'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null';
+
 const BASE_FIELD: Pick<
   EntityField,
   'required' | 'searchable' | 'description'
@@ -1513,7 +1522,9 @@ export class EntityService {
 
   async validateFieldData(
     data: EntityFieldCreateInput | EntityFieldUpdateInput,
-    entity: Entity
+    entity: Entity,
+    relatedFieldName?: string,
+    relatedFieldDisplayName?: string
   ): Promise<void> {
     // Validate the field's name
     validateFieldName(data.name);
@@ -1536,6 +1547,30 @@ export class EntityService {
       if (data.dataType === EnumDataType.Lookup && data.required) {
         throw new DataConflictError(
           'Fields with data type "Lookup" of the entity "User" must not be marked as required. Please unmark the field as required and try again'
+        );
+      }
+    }
+
+    if (data.dataType === EnumDataType.Lookup) {
+      const { relatedFieldId } = (data.properties as unknown) as types.Lookup;
+      if (
+        !relatedFieldId &&
+        (!relatedFieldName || !relatedFieldDisplayName) &&
+        data.properties.relatedEntityId === entity.id
+      ) {
+        throw new DataConflictError(
+          RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE
+        );
+      }
+      if (relatedFieldId && (relatedFieldName || relatedFieldDisplayName)) {
+        throw new DataConflictError(
+          RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE
+        );
+      }
+    } else {
+      if (relatedFieldName || relatedFieldDisplayName) {
+        throw new DataConflictError(
+          RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE
         );
       }
     }
@@ -1572,7 +1607,12 @@ export class EntityService {
     }
 
     // Validate entity field data
-    await this.validateFieldData(data, entity);
+    await this.validateFieldData(
+      data,
+      entity,
+      args.relatedFieldName,
+      args.relatedFieldDisplayName
+    );
 
     // Create field ID ahead of time so it can be used in the related field creation
     const fieldId = cuid();
@@ -1719,7 +1759,12 @@ export class EntityService {
     }
 
     // Validate entity field data
-    await this.validateFieldData(args.data, entity);
+    await this.validateFieldData(
+      args.data,
+      entity,
+      args.relatedFieldName,
+      args.relatedFieldDisplayName
+    );
 
     /**
      * @todo validate the field was not published - only specific properties of
