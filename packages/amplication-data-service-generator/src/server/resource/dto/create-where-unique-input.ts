@@ -3,17 +3,13 @@ import { Entity, EntityField, EnumDataType } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
 import { createInput } from "./create-input";
 
-export function createWhereUniqueInput(
-  entity: Entity,
-  entityIdToName: Record<string, string>
-): NamedClassDeclaration {
+export function createWhereUniqueInput(entity: Entity): NamedClassDeclaration {
   const fields = entity.fields.filter(isUniqueField);
   return createInput(
     createWhereUniqueInputID(entity.name),
     fields,
     false,
-    true,
-    entityIdToName
+    true
   );
 }
 

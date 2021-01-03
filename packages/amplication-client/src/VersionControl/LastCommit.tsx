@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useContext } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
-import { Link } from "react-router-dom";
+import { CircularProgress } from "@rmwc/circular-progress";
 import * as models from "../models";
 import {
   Panel,
@@ -13,6 +13,7 @@ import {
 import { ClickableId } from "../Components/ClickableId";
 import BuildSteps from "./BuildSteps";
 import BuildHeader from "./BuildHeader";
+import PendingChangesContext from "./PendingChangesContext";
 import "./LastCommit.scss";
 
 type TData = {
@@ -26,6 +27,7 @@ type Props = {
 const CLASS_NAME = "last-commit";
 
 const LastCommit = ({ applicationId }: Props) => {
+  const pendingChangesContext = useContext(PendingChangesContext);
   const [error, setError] = useState<Error>();
 
   const { data, loading, error: errorLoading } = useQuery<TData>(
@@ -60,20 +62,28 @@ const LastCommit = ({ applicationId }: Props) => {
     <Panel panelStyle={EnumPanelStyle.Transparent} className={`${CLASS_NAME}`}>
       <PanelHeader>
         <h3>Last Commit</h3>
-        <Link to={`/${applicationId}/commits`}>View All</Link>
       </PanelHeader>
       {Boolean(error) && errorMessage}
-      <ClickableId
-        to={`/${build?.appId}/commits/${lastCommit.id}`}
-        id={lastCommit.id}
-        label="Commit ID"
-      />
-      <div className={`${CLASS_NAME}__message`}>{lastCommit?.message}</div>
-      <UserAndTime account={account} time={lastCommit.createdAt} />
-      {build && (
+
+      {pendingChangesContext.commitRunning ? (
+        <div className={`${CLASS_NAME}__loading`}>
+          <CircularProgress /> Generating new build...
+        </div>
+      ) : (
         <>
-          <BuildHeader build={build} deployments={build.deployments} />
-          <BuildSteps build={build} onError={setError} />
+          <ClickableId
+            to={`/${build?.appId}/commits/${lastCommit.id}`}
+            id={lastCommit.id}
+            label="Commit ID"
+          />
+          <div className={`${CLASS_NAME}__message`}>{lastCommit?.message}</div>
+          <UserAndTime account={account} time={lastCommit.createdAt} />
+          {build && (
+            <>
+              <BuildHeader build={build} deployments={build.deployments} />
+              <BuildSteps build={build} onError={setError} />
+            </>
+          )}
         </>
       )}
     </Panel>

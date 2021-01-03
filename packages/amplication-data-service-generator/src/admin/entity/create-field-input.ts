@@ -2,9 +2,9 @@ import { namedTypes } from "ast-types";
 import {
   EnumDataType,
   EntityField,
-  EntityLookupField,
   EntityOptionSetField,
   EntityMultiSelectOptionSetField,
+  LookupResolvedProperties,
 } from "../../types";
 import { EntityComponent } from "../types";
 import { jsxElement } from "../util";
@@ -16,7 +16,6 @@ import { jsxElement } from "../util";
  */
 export function createFieldInput(
   field: EntityField,
-  entityIdToName: Record<string, string>,
   entityToSelectComponent: Record<string, EntityComponent>
 ): namedTypes.JSXElement {
   const createDataTypeFieldInput = DATA_TYPE_TO_FIELD_INPUT[field.dataType];
@@ -28,7 +27,6 @@ export function createFieldInput(
   }
   return jsxElement`<div>${createDataTypeFieldInput(
     field,
-    entityIdToName,
     entityToSelectComponent
   )}</div>`;
 }
@@ -38,7 +36,6 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     | null
     | ((
         field: EntityField,
-        entityIdToName: Record<string, string>,
         entityToSelectComponent: Record<string, EntityComponent>
       ) => namedTypes.JSXElement);
 } = {
@@ -59,12 +56,10 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.DecimalNumber]: (field) =>
     jsxElement`<TextField type="number" label="${field.displayName}" name="${field.name}" />`,
   /** @todo use search */
-  [EnumDataType.Lookup]: (field, entityIdToName, entityToSelectComponent) => {
-    const lookupField = field as EntityLookupField;
-    const relatedEntityName =
-      entityIdToName[lookupField.properties.relatedEntityId];
+  [EnumDataType.Lookup]: (field, entityToSelectComponent) => {
+    const { relatedEntity } = field.properties as LookupResolvedProperties;
     const relatedEntitySelectComponent =
-      entityToSelectComponent[relatedEntityName];
+      entityToSelectComponent[relatedEntity.name];
     return jsxElement`<${relatedEntitySelectComponent.name} label="${field.displayName}" name="${field.name}.id" />`;
   },
   [EnumDataType.MultiSelectOptionSet]: (field) => {

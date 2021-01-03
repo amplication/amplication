@@ -13,10 +13,7 @@ export const OBJECT_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(OBJECT_TYPE_ID, [])
 );
 
-export function createEntityDTO(
-  entity: Entity,
-  entityIdToName: Record<string, string>
-): NamedClassDeclaration {
+export function createEntityDTO(entity: Entity): NamedClassDeclaration {
   const properties = entity.fields
     .filter(
       (field) =>
@@ -24,13 +21,7 @@ export function createEntityDTO(
         !isPasswordField(field)
     )
     .map((field) =>
-      createFieldClassProperty(
-        field,
-        !field.required,
-        false,
-        false,
-        entityIdToName
-      )
+      createFieldClassProperty(field, !field.required, false, false)
     );
   return classDeclaration(
     builders.identifier(entity.name),

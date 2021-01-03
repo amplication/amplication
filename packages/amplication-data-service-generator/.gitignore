@@ -4,3 +4,5 @@ coverage/
 generated/
 *.d.ts
 *.map
+# ESLint
+.eslintcache
