@@ -1714,7 +1714,7 @@ export class EntityService {
 
     // In case related field should be created or changed, assign properties a
     // new related field ID
-    if (shouldCreateRelated && shouldChangeRelated) {
+    if (shouldCreateRelated || shouldChangeRelated) {
       args.data.properties.relatedFieldId = cuid();
     }
 
