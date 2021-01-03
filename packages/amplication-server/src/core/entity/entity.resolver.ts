@@ -272,7 +272,6 @@ export class EntityResolver {
     const { data, relatedFieldName, relatedFieldDisplayName } = args;
     if (data.dataType === EnumDataType.Lookup) {
       const { relatedFieldId } = data.properties;
-      RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE;
       if (!relatedFieldId && (!relatedFieldName || !relatedFieldDisplayName)) {
         throw new DataConflictError(
           RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE
