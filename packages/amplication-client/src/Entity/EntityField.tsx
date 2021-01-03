@@ -1,17 +1,22 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { types } from "@amplication/data";
 import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 
 import { formatError } from "../util/error";
-import EntityFieldForm from "./EntityFieldForm";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import SidebarHeader from "../Layout/SidebarHeader";
 import { SYSTEM_DATA_TYPES } from "./constants";
+import EntityFieldForm, { Values } from "./EntityFieldForm";
+import {
+  RelatedFieldDialog,
+  Values as RelatedFieldValues,
+} from "./RelatedFieldDialog";
 
 type TData = {
   entity: models.Entity;
@@ -23,6 +28,9 @@ type UpdateData = {
 
 const EntityField = () => {
   const { trackEvent } = useTracking();
+  const [lookupPendingData, setLookupPendingData] = useState<Values | null>(
+    null
+  );
 
   const match = useRouteMatch<{
     application: string;
@@ -60,20 +68,58 @@ const EntityField = () => {
 
   const handleSubmit = useCallback(
     (data) => {
-      const { id, relatedFieldName, relatedFieldDisplayName, ...rest } = data;
+      if (data.dataType === models.EnumDataType.Lookup) {
+        const properties = data.properties as types.Lookup;
+        if (
+          entityField?.dataType !== models.EnumDataType.Lookup ||
+          properties.relatedEntityId !== entityField?.properties.relatedEntityId
+        ) {
+          setLookupPendingData(data);
+          return;
+        }
+      }
+      const { id, ...rest } = data;
       updateEntityField({
         variables: {
           where: {
             id: field,
           },
           data: rest,
-          relatedFieldName,
-          relatedFieldDisplayName,
         },
       }).catch(console.error);
     },
-    [updateEntityField, field]
+    [updateEntityField, field, entityField]
   );
+
+  const handleRelatedFieldFormSubmit = useCallback(
+    (relatedFieldValues: RelatedFieldValues) => {
+      if (!lookupPendingData) {
+        throw new Error("lookupPendingData must be defined");
+      }
+      const { id, ...rest } = lookupPendingData;
+      updateEntityField({
+        variables: {
+          where: {
+            id: field,
+          },
+          data: {
+            ...rest,
+            properties: {
+              ...lookupPendingData.properties,
+              relatedFieldId: undefined,
+            },
+          },
+          ...relatedFieldValues,
+        },
+      }).catch(console.error);
+      setLookupPendingData(null);
+    },
+    [updateEntityField, lookupPendingData, field]
+  );
+
+  const hideRelatedFieldDialog = useCallback(() => {
+    setLookupPendingData(null);
+  }, [setLookupPendingData]);
 
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
@@ -106,6 +152,18 @@ const EntityField = () => {
           />
         </DrawerContent>
       )}
+      {data && (
+        <RelatedFieldDialog
+          isOpen={lookupPendingData !== null}
+          onDismiss={hideRelatedFieldDialog}
+          onSubmit={handleRelatedFieldFormSubmit}
+          relatedEntityId={lookupPendingData?.properties?.relatedEntityId}
+          allowMultipleSelection={
+            !lookupPendingData?.properties?.allowMultipleSelection
+          }
+          entity={data.entity}
+        />
+      )}
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );
@@ -117,7 +175,9 @@ const GET_ENTITY_FIELD = gql`
   query getEntityField($entity: String!, $field: String) {
     entity(where: { id: $entity }) {
       id
+      name
       displayName
+      pluralDisplayName
       fields(where: { id: { equals: $field } }) {
         id
         createdAt
