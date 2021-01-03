@@ -16,6 +16,7 @@ import UserBadge from "../Components/UserBadge";
 import { MenuFixedPanel } from "../util/teleporter";
 import { Popover } from "@amplication/design-system";
 import SupportMenu from "./SupportMenu";
+import { useTracking } from "../util/analytics";
 import "./MainLayout.scss";
 
 type Props = {
@@ -42,6 +43,7 @@ type MenuProps = {
 const Menu = ({ children }: MenuProps) => {
   const history = useHistory();
   const [supportMenuOpen, setSupportMenuOpen] = React.useState(false);
+  const { trackEvent } = useTracking();
 
   const apolloClient = useApolloClient();
 
@@ -54,8 +56,11 @@ const Menu = ({ children }: MenuProps) => {
   }, [history, apolloClient]);
 
   const handleSupportClick = useCallback(() => {
+    trackEvent({
+      eventName: "supportButtonClick",
+    });
     setSupportMenuOpen(!supportMenuOpen);
-  }, [setSupportMenuOpen, supportMenuOpen]);
+  }, [setSupportMenuOpen, supportMenuOpen, trackEvent]);
 
   return (
     <Drawer className={classNames("main-layout__side")}>
