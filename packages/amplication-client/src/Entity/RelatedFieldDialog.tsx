@@ -11,7 +11,7 @@ import { Formik } from "formik";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
-import { Entity } from "../models";
+import * as models from "../models";
 import "./RelatedFieldDialog.scss";
 
 export type Values = {
@@ -23,7 +23,7 @@ export type Props = DialogProps & {
   onSubmit: (data: Values) => void;
   relatedEntityId: string | undefined;
   allowMultipleSelection: boolean;
-  entity: Entity;
+  entity: models.Entity;
 };
 
 const EMPTY_VALUES: Values = {
@@ -41,23 +41,33 @@ export const RelatedFieldDialog = ({
   relatedEntityId,
   allowMultipleSelection,
 }: Props): React.ReactElement => {
-  const { data, loading } = useQuery(GET_RELATED_ENTITY_FIELDS, {
-    variables: {
-      entityId: relatedEntityId,
-    },
-    skip: !relatedEntityId,
-  });
-  const initialValues: Values = data
-    ? allowMultipleSelection
-      ? {
-          relatedFieldName: camelCase(entity.pluralDisplayName),
-          relatedFieldDisplayName: entity.pluralDisplayName,
-        }
-      : {
-          relatedFieldName: camelCase(entity.name),
-          relatedFieldDisplayName: entity.displayName,
-        }
-    : EMPTY_VALUES;
+  const { data, loading } = useQuery<{ entity: models.Entity }>(
+    GET_RELATED_ENTITY_FIELDS,
+    {
+      variables: {
+        entityId: relatedEntityId,
+      },
+      skip: !relatedEntityId,
+    }
+  );
+  const valuesSuggestion = allowMultipleSelection
+    ? {
+        relatedFieldName: camelCase(entity.pluralDisplayName),
+        relatedFieldDisplayName: entity.pluralDisplayName,
+      }
+    : {
+        relatedFieldName: camelCase(entity.name),
+        relatedFieldDisplayName: entity.displayName,
+      };
+  const initialValues: Values =
+    data &&
+    data.entity.fields?.every(
+      (field) =>
+        field.name !== valuesSuggestion.relatedFieldName &&
+        field.displayName !== valuesSuggestion.relatedFieldDisplayName
+    )
+      ? valuesSuggestion
+      : EMPTY_VALUES;
   return (
     <Dialog
       isOpen={isOpen}
@@ -102,6 +112,10 @@ const GET_RELATED_ENTITY_FIELDS = gql`
     entity(where: { id: $entityId }) {
       name
       displayName
+      fields {
+        id
+        name
+      }
     }
   }
 `;
