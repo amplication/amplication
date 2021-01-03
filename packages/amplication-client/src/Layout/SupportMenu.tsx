@@ -35,7 +35,7 @@ const SupportMenu = () => {
     <div className={CLASS_NAME}>
       <a
         href="https://docs.amplication.com"
-        target="_blank"
+        target="docs"
         rel="noopener"
         onClick={handleDocsClick}
       >
@@ -43,7 +43,7 @@ const SupportMenu = () => {
       </a>
       <a
         href="https://discord.gg/b8MrjU6"
-        target="_blank"
+        target="community"
         rel="noopener"
         onClick={handleCommunityClick}
       >
@@ -51,7 +51,7 @@ const SupportMenu = () => {
       </a>
       <a
         href="https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title="
-        target="_blank"
+        target="githubissue"
         rel="noopener"
         onClick={handleIssueClick}
       >
@@ -59,7 +59,7 @@ const SupportMenu = () => {
       </a>
       <a
         href="https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title="
-        target="_blank"
+        target="githubfeature"
         rel="noopener"
         onClick={handleFeatureRequestClick}
       >
