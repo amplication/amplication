@@ -213,6 +213,11 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}/roles`}
             icon="roles_outline"
           />
+          <MenuItem
+            title="Commits"
+            to={`/${application}/commits`}
+            icon="history_commit_outline"
+          />
         </MainLayout.Menu>
         <MainLayout.Content>
           <Switch>
