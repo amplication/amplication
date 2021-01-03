@@ -1449,23 +1449,25 @@ export class EntityService {
       };
     } else {
       const relatedEntity = await this.findEntityByName(name, entity.appId);
-      const relatedEntityFieldsWithEntityName = await this.getFields(
-        relatedEntity.id,
-        {
-          where: { name: { equals: camelCase(entity.name) } }
-        }
-      );
-      if (relatedEntity && relatedEntityFieldsWithEntityName.length === 0) {
-        const allowMultipleSelection =
-          relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
-        return {
-          name,
-          dataType: EnumDataType.Lookup,
-          properties: {
-            relatedEntityId: relatedEntity.id,
-            allowMultipleSelection
+      if (relatedEntity) {
+        const relatedEntityFieldsWithEntityName = await this.getFields(
+          relatedEntity.id,
+          {
+            where: { name: { equals: camelCase(entity.name) } }
           }
-        };
+        );
+        if (relatedEntityFieldsWithEntityName.length === 0) {
+          const allowMultipleSelection =
+            relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
+          return {
+            name,
+            dataType: EnumDataType.Lookup,
+            properties: {
+              relatedEntityId: relatedEntity.id,
+              allowMultipleSelection
+            }
+          };
+        }
       }
     }
     return {
