@@ -46,6 +46,13 @@ import {
 } from './dto';
 import { EntityService } from './entity.service';
 
+const RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
+  'When data.dataType is Lookup and data.properties.relatedFieldId is defined, relatedFieldName and relatedFieldDisplayName must be null';
+const RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE =
+  'When data.dataType is Lookup, either data.properties.relatedFieldId must be defined or relatedFieldName and relatedFieldDisplayName must not be null and not be empty';
+const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
+  'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null';
+
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -265,20 +272,21 @@ export class EntityResolver {
     const { data, relatedFieldName, relatedFieldDisplayName } = args;
     if (data.dataType === EnumDataType.Lookup) {
       const { relatedFieldId } = data.properties;
-      if (relatedFieldId && (relatedFieldName || relatedFieldDisplayName)) {
-        throw new DataConflictError(
-          'When data.dataType is Lookup and data.properties.relatedFieldId is defined, relatedFieldName and relatedFieldDisplayName must be null'
-        );
-      }
+      RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE;
       if (!relatedFieldId && (!relatedFieldName || !relatedFieldDisplayName)) {
         throw new DataConflictError(
-          'When data.dataType is Lookup, either data.properties.relatedFieldId must be defined or relatedFieldName and relatedFieldDisplayName must not be null and not be empty'
+          RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE
+        );
+      }
+      if (relatedFieldId && (relatedFieldName || relatedFieldDisplayName)) {
+        throw new DataConflictError(
+          RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE
         );
       }
     } else {
       if (relatedFieldName || relatedFieldDisplayName) {
         throw new DataConflictError(
-          'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null'
+          RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE
         );
       }
     }
