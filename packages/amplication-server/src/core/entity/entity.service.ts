@@ -1689,20 +1689,22 @@ export class EntityService {
       );
     }
 
-    // Change related field in case related entity ID is changed
-    const shouldChangeRelated =
-      args.data.properties.relatedEntityId !==
-      ((field.properties as unknown) as types.Lookup)?.relatedEntityId;
-
     // Delete related field in case field data type is changed from lookup
     const shouldDeleteRelated =
       field.dataType === EnumDataType.Lookup &&
       args.data.dataType !== EnumDataType.Lookup;
 
-    // Create related field in case related field ID is not defined
+    // Create related field in case field data type is changed to lookup
     const shouldCreateRelated =
       args.data.dataType === EnumDataType.Lookup &&
-      !args.data.properties.relatedFieldId;
+      field.dataType !== EnumDataType.Lookup;
+
+    // Change related field in case related entity ID is changed
+    const shouldChangeRelated =
+      !shouldCreateRelated &&
+      !shouldDeleteRelated &&
+      args.data.properties.relatedEntityId !==
+        ((field.properties as unknown) as types.Lookup)?.relatedEntityId;
 
     // Get the field's entity
     const entity = await this.acquireLock(
