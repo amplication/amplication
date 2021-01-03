@@ -1786,16 +1786,19 @@ export class EntityService {
       // Cast the received properties as Lookup properties
       const properties = (args.data.properties as unknown) as types.Lookup;
 
-      await this.createRelatedField(
-        properties.relatedFieldId,
-        args.relatedFieldName,
-        args.relatedFieldDisplayName,
-        !properties.allowMultipleSelection,
-        properties.relatedEntityId,
-        entity.id,
-        field.permanentId,
-        user
-      );
+      // Create related field only if it is not for the same entity
+      if (properties.relatedEntityId !== entity.id) {
+        await this.createRelatedField(
+          properties.relatedFieldId,
+          args.relatedFieldName,
+          args.relatedFieldDisplayName,
+          !properties.allowMultipleSelection,
+          properties.relatedEntityId,
+          entity.id,
+          field.permanentId,
+          user
+        );
+      }
     }
 
     return this.prisma.entityField.update(
