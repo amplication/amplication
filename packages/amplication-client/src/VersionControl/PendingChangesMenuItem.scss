@@ -1,0 +1,26 @@
+@import "../style/index.scss";
+
+.pending-changes-menu-item {
+  &__popover {
+    width: 180px;
+    border-radius: var(--default-border-radius);
+    padding: var(--default-spacing);
+    background-color: var(--theme-blue);
+    color: var(--white);
+
+    --mdc-theme-on-surface: var(--theme-blue);
+
+    .rmwc-tooltip-inner {
+      background-color: var(--theme-blue);
+    }
+  }
+
+  &--popover-open {
+    .amp-menu-item__tooltip:hover {
+      &:before,
+      &:after {
+        display: none;
+      }
+    }
+  }
+}
