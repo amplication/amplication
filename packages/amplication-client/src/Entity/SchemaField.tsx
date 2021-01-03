@@ -87,9 +87,9 @@ export const SchemaField = ({
             />
           );
         }
+        // Hide entity field ID properties
         case "#/definitions/EntityFieldId": {
-          /** @todo add link to field */
-          return <div>Entity Field</div>;
+          return null;
         }
       }
 
