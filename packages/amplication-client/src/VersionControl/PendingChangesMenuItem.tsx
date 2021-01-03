@@ -51,9 +51,8 @@ const PendingChangesMenuItem = ({
         className={`${CLASS_NAME}__popover`}
         content={
           <div>
-            Your changes are automatically saved, but are not committed. Click
-            on this menu, to view and commit your pending changes, and start a
-            new build.
+            Click here to view and commit your pending changes, and start a new
+            build.
           </div>
         }
         open={pendingChangesPopoverOpen}
