@@ -16,7 +16,6 @@ import "./ApplicationLayout.scss";
 import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
-import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import MainLayout from "../Layout/MainLayout";
 import { CircleBadge } from "@amplication/design-system";
 
@@ -27,7 +26,7 @@ import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import PendingChangesBar from "../VersionControl/PendingChangesBar";
+import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
 import Commits from "../VersionControl/Commits";
 
 enum EnumFixedPanelKeys {
@@ -189,16 +188,13 @@ function ApplicationLayout({ match }: Props) {
               {applicationData?.app.name}
             </span>
           </MenuItem>
-          <MenuItemWithFixedPanel
-            tooltip="Pending Changes"
-            icon="pending_changes_outline"
+          <PendingChangesMenuItem
+            applicationId={application}
             isOpen={selectedFixedPanel === EnumFixedPanelKeys.PendingChanges}
+            onClick={handleMenuItemWithFixedPanelClicked}
             panelKey={EnumFixedPanelKeys.PendingChanges}
             badgeValue={pendingChangesBadge}
-            onClick={handleMenuItemWithFixedPanelClicked}
-          >
-            <PendingChangesBar applicationId={application} />
-          </MenuItemWithFixedPanel>
+          />
           <div className={`${CLASS_NAME}__menu-group`} />
           <MenuItem
             title="Entities"
