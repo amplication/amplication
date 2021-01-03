@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { validate } from "../util/formikValidateJsonSchema";
+import { Icon } from "@rmwc/icon";
 
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -92,7 +93,10 @@ function ApplicationForm({ app }: Props) {
               />
               <div>
                 <hr />
-                <h2>App Color</h2>
+                <h2>
+                  <Icon icon="color" />
+                  App Color
+                </h2>
                 {COLORS.map((color) => (
                   <ColorSelectButton
                     color={color}

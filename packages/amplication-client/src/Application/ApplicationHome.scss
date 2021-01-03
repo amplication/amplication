@@ -4,7 +4,8 @@ $info-panel-height: 140px;
 $application-badge-size-large: 100px;
 $app-icon-large-font-size: 70px;
 $circle-badge-border: 2px;
-$tiles-breakpoint: 700px;
+$tiles-min-width: 450px;
+$form-width: 350px;
 
 .application-home {
   background: var(--white);
@@ -80,7 +81,7 @@ $tiles-breakpoint: 700px;
         margin-top: var(--double-spacing);
         margin-bottom: var(--double-spacing);
       }
-      width: 400px;
+      width: $form-width;
       padding: var(--double-spacing);
 
       hr {
@@ -92,7 +93,7 @@ $tiles-breakpoint: 700px;
     }
     &__tiles {
       padding: var(--double-spacing);
-      min-width: $tiles-breakpoint;
+
       flex: 1;
       @include flexFullRow;
       align-items: stretch;
@@ -100,6 +101,7 @@ $tiles-breakpoint: 700px;
 
       > * {
         flex: 0 50%;
+        min-width: $tiles-min-width;
       }
     }
   }

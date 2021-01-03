@@ -45,7 +45,6 @@ export const EntityListItem = ({
     {
       update(cache, { data }) {
         if (!data) return;
-        console.log(data);
         const deletedEntityId = data.deleteEntity.id;
 
         cache.modify({
