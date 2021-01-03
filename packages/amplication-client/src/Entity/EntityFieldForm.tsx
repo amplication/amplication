@@ -85,7 +85,6 @@ const EntityFieldForm = ({
           values,
           FORM_SCHEMA
         );
-
         //validate the field dynamic properties
         const schema = getSchemaForDataType(values.dataType);
         const propertiesError = validate<Object>(values.properties, schema);
