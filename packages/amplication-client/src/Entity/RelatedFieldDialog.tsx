@@ -1,9 +1,13 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import { Button } from "@amplication/design-system";
+import {
+  Button,
+  Dialog,
+  DialogProps,
+  EnumButtonStyle,
+} from "@amplication/design-system";
 import { camelCase } from "camel-case";
 import { Formik } from "formik";
-import { Dialog, DialogProps } from "@primer/components";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
@@ -26,6 +30,8 @@ const EMPTY_VALUES: Values = {
   relatedFieldName: "",
   relatedFieldDisplayName: "",
 };
+
+const CLASS_NAME = "RelatedFieldDialog";
 
 export const RelatedFieldDialog = ({
   isOpen,
@@ -56,7 +62,8 @@ export const RelatedFieldDialog = ({
     <Dialog
       isOpen={isOpen}
       onDismiss={onDismiss}
-      className="RelatedFieldDialog"
+      title="Create relation field in related entity"
+      className={CLASS_NAME}
     >
       <Formik
         onSubmit={onSubmit}
@@ -65,11 +72,6 @@ export const RelatedFieldDialog = ({
       >
         {(formik) => (
           <Form>
-            <h2>Create field in related entity</h2>
-            <p>
-              Create a lookup field in {data?.entity.displayName} for{" "}
-              {entity.displayName}
-            </p>
             {loading && "Loading..."}
             <DisplayNameField
               name="relatedFieldDisplayName"
@@ -78,7 +80,16 @@ export const RelatedFieldDialog = ({
               disabled={loading}
             />
             <NameField name="relatedFieldName" required disabled={loading} />
-            <Button type="submit">Create</Button>
+            <div className={`${CLASS_NAME}__buttons`}>
+              <Button
+                type="button"
+                buttonStyle={EnumButtonStyle.Clear}
+                onClick={onDismiss}
+              >
+                Dismiss
+              </Button>
+              <Button type="submit">Create</Button>
+            </div>
           </Form>
         )}
       </Formik>

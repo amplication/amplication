@@ -1,3 +1,15 @@
-.RelatedFieldDialog form {
-  padding: 16px;
+.RelatedFieldDialog {
+  p {
+    margin-top: 0;
+  }
+  &__buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: var(--large-spacing);
+
+    .amp-button {
+      margin-left: var(--large-spacing);
+    }
+  }
 }
