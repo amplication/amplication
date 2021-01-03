@@ -1390,11 +1390,11 @@ export class EntityService {
         ? {
             data,
             relatedFieldName: camelCase(
-              data.properties.allowMultipleSelection
+              !data.properties.allowMultipleSelection
                 ? entity.pluralDisplayName
                 : entity.name
             ),
-            relatedFieldDisplayName: data.properties.allowMultipleSelection
+            relatedFieldDisplayName: !data.properties.allowMultipleSelection
               ? entity.pluralDisplayName
               : entity.displayName
           }
