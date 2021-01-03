@@ -21,7 +21,6 @@ export const useTracking: () => Omit<
 export function dispatch(event: Partial<Event>) {
   if (REACT_APP_AMPLITUDE_API_KEY) {
     const { eventName, ...rest } = event;
-    console.log(REACT_APP_AMPLITUDE_API_KEY, event);
     amplitude.getInstance().logEvent(eventName || MISSING_EVENT_NAME, rest);
   }
 }
