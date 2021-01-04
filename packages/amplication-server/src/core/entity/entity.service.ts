@@ -15,7 +15,8 @@ import {
   EntityVersionWhereInput,
   FindManyEntityArgs,
   QueryMode,
-  FindFirstEntityFieldArgs
+  FindFirstEntityFieldArgs,
+  FindManyEntityFieldArgs
 } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
@@ -73,7 +74,6 @@ import {
   DeleteEntityFieldArgs,
   UpdateEntityPermissionArgs,
   LockEntityArgs,
-  FindManyEntityFieldArgs,
   EntityWhereInput,
   UpdateEntityPermissionRolesArgs,
   UpdateEntityPermissionFieldRolesArgs,
@@ -1394,20 +1394,23 @@ export class EntityService {
       ...createInput
     };
 
-    const createFieldArgs =
-      data.dataType === EnumDataType.Lookup
-        ? {
-            data,
-            relatedFieldName: camelCase(
-              !data.properties.allowMultipleSelection
-                ? entity.pluralDisplayName
-                : entity.name
-            ),
-            relatedFieldDisplayName: !data.properties.allowMultipleSelection
-              ? entity.pluralDisplayName
-              : entity.displayName
-          }
-        : { data };
+    const createFieldArgs: CreateOneEntityFieldArgs = { data };
+
+    // In case created data type is Lookup define related field names according
+    // to the entity
+    if (data.dataType === EnumDataType.Lookup) {
+      const {
+        allowMultipleSelection
+      } = (data.properties as unknown) as types.Lookup;
+
+      createFieldArgs.relatedFieldName = camelCase(
+        !allowMultipleSelection ? entity.pluralDisplayName : entity.name
+      );
+
+      createFieldArgs.relatedFieldDisplayName = !allowMultipleSelection
+        ? entity.pluralDisplayName
+        : entity.displayName;
+    }
 
     return this.createField(createFieldArgs, user);
   }
@@ -1457,17 +1460,30 @@ export class EntityService {
         properties: {}
       };
     } else {
+      // Find an entity with the field's display name
       const relatedEntity = await this.findEntityByName(name, entity.appId);
+      // If found attempt to create a lookup field
       if (relatedEntity) {
-        const relatedEntityFieldsWithEntityName = await this.getFields(
-          relatedEntity.id,
-          {
-            where: { name: { equals: camelCase(entity.name) } }
-          }
+        // The created field would be multiple selection if its name is equal to
+        // the related entity's plural display name
+        const allowMultipleSelection =
+          relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
+
+        // The related field allow multiple selection should be the opposite of
+        // the field's
+        const relatedFieldAllowMultipleSelection = !allowMultipleSelection;
+
+        // The related field name should resemble the name of the field's entity
+        const relatedFieldName = camelCase(
+          relatedFieldAllowMultipleSelection
+            ? entity.name
+            : entity.pluralDisplayName
         );
-        if (isEmpty(relatedEntityFieldsWithEntityName)) {
-          const allowMultipleSelection =
-            relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
+
+        // If there are no existing fields with the desired name, instruct to create a lookup field
+        if (
+          await this.isFieldNameAvailable(relatedFieldName, relatedEntity.id)
+        ) {
           return {
             name,
             dataType: EnumDataType.Lookup,
@@ -1486,6 +1502,20 @@ export class EntityService {
         maxLength: 1000
       }
     };
+  }
+
+  /**
+   * Check whether a given field name is available in a give entity
+   * @param entityId the entity ID to check name availability in
+   * @param name the name to check availability for
+   * @returns whether the field name is available in the given entity
+   */
+  private async isFieldNameAvailable(
+    name: string,
+    entityId: string,
+  ): Promise<boolean> {
+    const existing = await this.getFields(entityId, { where: { name } });
+    return isEmpty(existing);
   }
 
   private findEntityByName(name: string, appId: string): Promise<Entity> {
