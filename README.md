@@ -66,7 +66,7 @@ Amplication Data Service Generator is the component that generates the server-si
 
 To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
 
-### [Amplication Container Builder](./packages/amplication-data-service-generator/README.md)
+### [Amplication Container Builder](./packages/amplication-container-builder/README.md)
 
 Amplication Container Builder is a multi-provider library for building Docker containers.
 The package provides Nest.js integration out of the box.
