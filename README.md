@@ -60,6 +60,11 @@ Amplication Data Service Generator is the component that generates the server-si
 
 To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
 
+### [Amplication Scheduler](./packages/scheduler/README.md)
+
+Amplication Scheduler is a simple HTTP cron job scheduler.
+The service is integrated with Docker and Docker Compose.
+
 ## Alpha version
 
 Please note that Amplication is currently in alpha version. <b>This means that any app data hosted on our cloud can get reset at any time.</b> At this point if you want to use your app in a production environment, you'll need to download the app as a Docker container and deploy on your own cloud service.
@@ -74,7 +79,7 @@ You can ask questions, and participate in discussions about Amplication-related 
 
 ### Create a bug report
 
-If you see an error message or run into an issue, please create a bug report, this effort is valued and it will help all. 
+If you see an error message or run into an issue, please create a bug report, this effort is valued and it will help all.
 
 [**Create bug report**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=)
 
