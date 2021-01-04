@@ -15,7 +15,9 @@ import {
   EntityVersionWhereInput,
   FindManyEntityArgs,
   QueryMode,
-  FindFirstEntityFieldArgs
+  FindFirstEntityFieldArgs,
+  FindManyEntityFieldArgs,
+  EntityWhereInput
 } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
@@ -73,8 +75,6 @@ import {
   DeleteEntityFieldArgs,
   UpdateEntityPermissionArgs,
   LockEntityArgs,
-  FindManyEntityFieldArgs,
-  EntityWhereInput,
   UpdateEntityPermissionRolesArgs,
   UpdateEntityPermissionFieldRolesArgs,
   AddEntityPermissionFieldArgs,
@@ -1394,20 +1394,23 @@ export class EntityService {
       ...createInput
     };
 
-    const createFieldArgs =
-      data.dataType === EnumDataType.Lookup
-        ? {
-            data,
-            relatedFieldName: camelCase(
-              !data.properties.allowMultipleSelection
-                ? entity.pluralDisplayName
-                : entity.name
-            ),
-            relatedFieldDisplayName: !data.properties.allowMultipleSelection
-              ? entity.pluralDisplayName
-              : entity.displayName
-          }
-        : { data };
+    const createFieldArgs: CreateOneEntityFieldArgs = { data };
+
+    // In case created data type is Lookup define related field names according
+    // to the entity
+    if (data.dataType === EnumDataType.Lookup) {
+      const {
+        allowMultipleSelection
+      } = (data.properties as unknown) as types.Lookup;
+
+      createFieldArgs.relatedFieldName = camelCase(
+        !allowMultipleSelection ? entity.pluralDisplayName : entity.name
+      );
+
+      createFieldArgs.relatedFieldDisplayName = !allowMultipleSelection
+        ? entity.pluralDisplayName
+        : entity.displayName;
+    }
 
     return this.createField(createFieldArgs, user);
   }
@@ -1457,17 +1460,30 @@ export class EntityService {
         properties: {}
       };
     } else {
-      const relatedEntity = await this.findEntityByName(name, entity.appId);
+      // Find an entity with the field's display name
+      const relatedEntity = await this.findEntityByNames(name, entity.appId);
+      // If found attempt to create a lookup field
       if (relatedEntity) {
-        const relatedEntityFieldsWithEntityName = await this.getFields(
-          relatedEntity.id,
-          {
-            where: { name: { equals: camelCase(entity.name) } }
-          }
+        // The created field would be multiple selection if its name is equal to
+        // the related entity's plural display name
+        const allowMultipleSelection =
+          relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
+
+        // The related field allow multiple selection should be the opposite of
+        // the field's
+        const relatedFieldAllowMultipleSelection = !allowMultipleSelection;
+
+        // The related field name should resemble the name of the field's entity
+        const relatedFieldName = camelCase(
+          relatedFieldAllowMultipleSelection
+            ? entity.name
+            : entity.pluralDisplayName
         );
-        if (isEmpty(relatedEntityFieldsWithEntityName)) {
-          const allowMultipleSelection =
-            relatedEntity.pluralDisplayName.toLowerCase() === lowerCaseName;
+
+        // If there are no existing fields with the desired name, instruct to create a lookup field
+        if (
+          await this.isFieldNameAvailable(relatedFieldName, relatedEntity.id)
+        ) {
           return {
             name,
             dataType: EnumDataType.Lookup,
@@ -1488,36 +1504,28 @@ export class EntityService {
     };
   }
 
-  private findEntityByName(name: string, appId: string): Promise<Entity> {
-    return this.findFirst({
-      where: {
-        appId,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        AND: [
-          {
-            name: {
-              equals: name,
-              mode: QueryMode.insensitive
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            OR: [
-              {
-                displayName: {
-                  equals: name,
-                  mode: QueryMode.insensitive
-                }
-              },
-              {
-                pluralDisplayName: {
-                  equals: name,
-                  mode: QueryMode.insensitive
-                }
-              }
-            ]
-          }
-        ]
-      }
-    });
+  /**
+   * Check whether a given field name is available in a give entity
+   * @param entityId the entity ID to check name availability in
+   * @param name the name to check availability for
+   * @returns whether the field name is available in the given entity
+   */
+  private async isFieldNameAvailable(
+    name: string,
+    entityId: string
+  ): Promise<boolean> {
+    const existing = await this.getFields(entityId, { where: { name } });
+    return isEmpty(existing);
+  }
+
+  /**
+   * Find entity by its names (name, displayName and pluralDisplayName) in given app
+   * @param name the entity name query
+   * @param appId the app identifier to search entity for
+   * @returns entity with a name matching the given name in the given app
+   */
+  private findEntityByNames(name: string, appId: string): Promise<Entity> {
+    return this.findFirst({ where: createEntityNamesWhereInput(name, appId) });
   }
 
   validateFieldMutationArgs(
@@ -1887,4 +1895,37 @@ function isReservedUserEntityFieldName(name: string): boolean {
 
 function isUserEntity(entity: Entity): boolean {
   return entity.name === USER_ENTITY_NAME;
+}
+
+export function createEntityNamesWhereInput(
+  name: string,
+  appId: string
+): EntityWhereInput {
+  return {
+    appId,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    AND: [
+      {
+        name: {
+          equals: name,
+          mode: QueryMode.insensitive
+        },
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [
+          {
+            displayName: {
+              equals: name,
+              mode: QueryMode.insensitive
+            }
+          },
+          {
+            pluralDisplayName: {
+              equals: name,
+              mode: QueryMode.insensitive
+            }
+          }
+        ]
+      }
+    ]
+  };
 }

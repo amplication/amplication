@@ -9,6 +9,7 @@ import {
 import { camelCase } from 'camel-case';
 import { pick, omit } from 'lodash';
 import {
+  createEntityNamesWhereInput,
   DELETE_ONE_USER_ENTITY_ERROR_MESSAGE,
   EntityPendingChange,
   EntityService,
@@ -1117,11 +1118,13 @@ describe('EntityService', () => {
     prismaEntityFieldFindManyMock.mockImplementationOnce(() => []);
     const [relatedEntity] = prismaEntityFindManyMock();
     prismaEntityFindManyMock.mockClear();
+    const query = relatedEntity.displayName.toLowerCase();
+    const name = camelCase(query);
     expect(
       await service.createFieldCreateInputByDisplayName(
         {
           data: {
-            displayName: relatedEntity.displayName.toLowerCase(),
+            displayName: query,
             entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
           }
         },
@@ -1136,7 +1139,23 @@ describe('EntityService', () => {
       name: camelCase(relatedEntity.displayName)
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith({
+      where: {
+        ...createEntityNamesWhereInput(name, EXAMPLE_ENTITY.appId),
+        deletedAt: null
+      },
+      take: 1
+    });
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindManyMock).toBeCalledWith({
+      where: {
+        name,
+        entityVersion: {
+          entityId: EXAMPLE_ENTITY_ID,
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
+    });
   });
   it('create field of plural lookup', async () => {
     prismaEntityFieldFindManyMock.mockImplementationOnce(() => []);

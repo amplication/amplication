@@ -62,7 +62,8 @@ export const RelatedFieldDialog = ({
       };
   const initialValues: Values =
     data &&
-    data.entity.fields?.every(
+    data.entity.fields &&
+    data.entity.fields.every(
       (field) =>
         field.name !== valuesSuggestion.relatedFieldName &&
         field.displayName !== valuesSuggestion.relatedFieldDisplayName
