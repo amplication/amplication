@@ -69,7 +69,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     if: github.ref == 'refs/heads/master' || contains('ci', github.ref)
     steps:
       - uses: actions/checkout@v2
