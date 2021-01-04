@@ -1,6 +1,13 @@
-.RelatedFieldDialog {
-  p {
-    margin-top: 0;
+@import "../style/index.scss";
+
+$message-max-width: 400px;
+.related-field-dialog {
+  @include modalForm;
+
+  &__instructions {
+    max-width: $message-max-width;
+    width: 100%;
+    text-align: left;
   }
   &__buttons {
     display: flex;

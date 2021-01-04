@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { gql, useQuery } from "@apollo/client";
 import {
   Button,
@@ -7,7 +7,7 @@ import {
   EnumButtonStyle,
 } from "@amplication/design-system";
 import { camelCase } from "camel-case";
-import { Formik } from "formik";
+import { Formik, useFormikContext } from "formik";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
@@ -31,7 +31,7 @@ const EMPTY_VALUES: Values = {
   relatedFieldDisplayName: "",
 };
 
-const CLASS_NAME = "RelatedFieldDialog";
+const CLASS_NAME = "related-field-dialog";
 
 export const RelatedFieldDialog = ({
   isOpen,
@@ -50,6 +50,7 @@ export const RelatedFieldDialog = ({
       skip: !relatedEntityId,
     }
   );
+
   const valuesSuggestion = allowMultipleSelection
     ? {
         relatedFieldName: camelCase(entity.pluralDisplayName),
@@ -68,27 +69,31 @@ export const RelatedFieldDialog = ({
     )
       ? valuesSuggestion
       : EMPTY_VALUES;
+
   return (
     <Dialog
       isOpen={isOpen}
       onDismiss={onDismiss}
-      title="Create relation field in related entity"
-      className={CLASS_NAME}
+      title={`Name the relation field on ${data?.entity?.name}`}
     >
-      <Formik
-        onSubmit={onSubmit}
-        initialValues={initialValues}
-        enableReinitialize
-      >
-        {(formik) => (
+      <div className={CLASS_NAME}>
+        <div className={`${CLASS_NAME}__instructions`}>
+          To create the relation to <b>{data?.entity?.name}</b>, we also need to
+          create an opposite related field on <b>{data?.entity?.name}</b> back
+          to <b>{entity.name}</b>.
+        </div>
+        <div className={`${CLASS_NAME}__instructions`}>
+          Please select a name for the new field on <b>{data?.entity?.name}</b>
+        </div>
+        <Formik
+          onSubmit={onSubmit}
+          initialValues={initialValues}
+          enableReinitialize
+        >
           <Form>
             {loading && "Loading..."}
-            <DisplayNameField
-              name="relatedFieldDisplayName"
-              label="Display Name"
-              required
-              disabled={loading}
-            />
+
+            <RelatedFieldDisplayNameField disabled={loading} />
             <NameField name="relatedFieldName" required disabled={loading} />
             <div className={`${CLASS_NAME}__buttons`}>
               <Button
@@ -101,9 +106,35 @@ export const RelatedFieldDialog = ({
               <Button type="submit">Create</Button>
             </div>
           </Form>
-        )}
-      </Formik>
+        </Formik>
+      </div>
     </Dialog>
+  );
+};
+
+const RelatedFieldDisplayNameField = ({
+  disabled,
+}: {
+  disabled: boolean;
+}): React.ReactElement => {
+  const formik = useFormikContext<Values>();
+
+  const handleLabelChange = useCallback(
+    (event) => {
+      const newValue = camelCase(event.target.value);
+      formik.values.relatedFieldName = newValue;
+    },
+    [formik.values.relatedFieldName]
+  );
+
+  return (
+    <DisplayNameField
+      name="relatedFieldDisplayName"
+      label="Display Name"
+      required
+      disabled={disabled}
+      onChange={handleLabelChange}
+    />
   );
 };
 
