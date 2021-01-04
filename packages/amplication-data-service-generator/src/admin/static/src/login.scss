@@ -42,6 +42,11 @@
         justify-content: center;
         margin-bottom: var(--double-spacing);
       }
+      hr {
+        margin: var(--triple-spacing) 0;
+        border: none;
+        border-top: 1px solid var(--black10);
+      }
 
       .message {
         color: var(--black60);

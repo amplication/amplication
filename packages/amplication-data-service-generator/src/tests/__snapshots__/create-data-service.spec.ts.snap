@@ -165,8 +165,7 @@ const Login = ({ onLogin }: Props) => {
         <Panel panelStyle={EnumPanelStyle.Bordered}>
           <PanelHeader>Connect via API</PanelHeader>
           <div className=\\"message\\">
-            Connect to your app using REST or GraphQL API. Read the docs to
-            learn about authentication and more.
+            Choose the type of API for connecting to your app.
           </div>
           <a href=\\"/graphql\\" target=\\"graphql\\">
             <Button type=\\"button\\" buttonStyle={EnumButtonStyle.Secondary}>
@@ -178,11 +177,14 @@ const Login = ({ onLogin }: Props) => {
               REST API
             </Button>
           </a>
-          <a href=\\"https://docs.amplication.com/docs/api\\" target=\\"docs\\">
-            <Button type=\\"button\\" buttonStyle={EnumButtonStyle.Secondary}>
+          <hr />
+          <div className=\\"message\\">
+            <span>Read </span>
+            <a href=\\"https://docs.amplication.com/docs/api\\" target=\\"docs\\">
               Amplication docs
-            </Button>
-          </a>
+            </a>
+            <span> to learn more</span>
+          </div>
         </Panel>
       </div>
     </div>
