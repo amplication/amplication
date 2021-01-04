@@ -103,9 +103,28 @@ const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
   description: 'example entity'
 };
 
-const EXAMPLE_ENTITY_PENDING_CHANGE: EntityPendingChange = {
+const EXAMPLE_ENTITY_PENDING_CHANGE_CREATE: EntityPendingChange = {
   resourceId: EXAMPLE_ENTITY.id,
   action: EnumPendingChangeAction.Create,
+  resourceType: EnumPendingChangeResourceType.Entity,
+  versionNumber: 1,
+  resource: EXAMPLE_ENTITY
+};
+const EXAMPLE_DELETED_ENTITY = {
+  ...EXAMPLE_ENTITY,
+  versions: [EXAMPLE_CURRENT_ENTITY_VERSION],
+  deletedAt: new Date()
+};
+const EXAMPLE_ENTITY_PENDING_CHANGE_DELETE: EntityPendingChange = {
+  resourceId: EXAMPLE_ENTITY.id,
+  action: EnumPendingChangeAction.Delete,
+  resourceType: EnumPendingChangeResourceType.Entity,
+  versionNumber: 1,
+  resource: EXAMPLE_DELETED_ENTITY
+};
+const EXAMPLE_ENTITY_PENDING_CHANGE_UPDATE: EntityPendingChange = {
+  resourceId: EXAMPLE_ENTITY.id,
+  action: EnumPendingChangeAction.Update,
   resourceType: EnumPendingChangeResourceType.Entity,
   versionNumber: 1,
   resource: EXAMPLE_ENTITY
@@ -1140,7 +1159,7 @@ describe('EntityService', () => {
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
   });
-  it('pending changed entities', async () => {
+  it('pending changed entities "create"', async () => {
     prismaEntityFindManyMock.mockImplementationOnce(() => [
       {
         ...EXAMPLE_ENTITY,
@@ -1149,6 +1168,28 @@ describe('EntityService', () => {
     ]);
     expect(
       await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
-    ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE]);
+    ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_CREATE]);
+  });
+  it('pending changed entities "update"', async () => {
+    prismaEntityFindManyMock.mockImplementationOnce(() => [
+      {
+        ...EXAMPLE_ENTITY,
+        versions: [
+          EXAMPLE_CURRENT_ENTITY_VERSION,
+          EXAMPLE_CURRENT_ENTITY_VERSION
+        ]
+      }
+    ]);
+    expect(
+      await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
+    ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_UPDATE]);
+  });
+  it('pending changed entities "delete"', async () => {
+    prismaEntityFindManyMock.mockImplementationOnce(() => [
+      EXAMPLE_DELETED_ENTITY
+    ]);
+    expect(
+      await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
+    ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_DELETE]);
   });
 });
