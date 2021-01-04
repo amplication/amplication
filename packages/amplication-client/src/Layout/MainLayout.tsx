@@ -10,11 +10,14 @@ import classNames from "classnames";
 import { unsetToken } from "../authentication/authentication";
 import logo from "../assets/logo.svg";
 import { ReactComponent as LogoTextual } from "../assets/logo-textual.svg";
-import "./MainLayout.scss";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 import UserBadge from "../Components/UserBadge";
 import { MenuFixedPanel } from "../util/teleporter";
+import { Popover } from "@amplication/design-system";
+import SupportMenu from "./SupportMenu";
+import { useTracking } from "../util/analytics";
+import "./MainLayout.scss";
 
 type Props = {
   children: React.ReactNode;
@@ -39,6 +42,8 @@ type MenuProps = {
 
 const Menu = ({ children }: MenuProps) => {
   const history = useHistory();
+  const [supportMenuOpen, setSupportMenuOpen] = React.useState(false);
+  const { trackEvent } = useTracking();
 
   const apolloClient = useApolloClient();
 
@@ -49,6 +54,13 @@ const Menu = ({ children }: MenuProps) => {
 
     history.replace("/");
   }, [history, apolloClient]);
+
+  const handleSupportClick = useCallback(() => {
+    trackEvent({
+      eventName: "supportButtonClick",
+    });
+    setSupportMenuOpen(!supportMenuOpen);
+  }, [setSupportMenuOpen, supportMenuOpen, trackEvent]);
 
   return (
     <Drawer className={classNames("main-layout__side")}>
@@ -74,10 +86,21 @@ const Menu = ({ children }: MenuProps) => {
             {children}
           </div>
           <div className="bottom-menu-container">
+            <Popover
+              content={<SupportMenu />}
+              open={supportMenuOpen}
+              align={"right"}
+            >
+              <MenuItem
+                icon="help_outline"
+                hideTooltip
+                title="Help and support"
+                onClick={handleSupportClick}
+              />
+            </Popover>
             <MenuItem icon="plus" hideTooltip>
               <UserBadge />
             </MenuItem>
-
             <MenuItem
               title="Sign Out"
               icon="log_out_outline"

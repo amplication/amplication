@@ -1,0 +1,23 @@
+@import "../style/index.scss";
+
+$menu-width: 180px;
+
+.support-menu {
+  //margin: calc(var(--default-spacing-small) * -1);
+  overflow: hidden;
+  border-radius: var(--default-border-radius);
+  min-width: $menu-width;
+  a {
+    @include body2;
+    display: block;
+    padding: var(--default-spacing);
+    color: var(--white);
+
+    &:hover {
+      background-color: var(--black80);
+    }
+  }
+  &__divider {
+    border-top: 1px solid var(--black80);
+  }
+}
