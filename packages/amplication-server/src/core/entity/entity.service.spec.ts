@@ -1119,6 +1119,7 @@ describe('EntityService', () => {
     const [relatedEntity] = prismaEntityFindManyMock();
     prismaEntityFindManyMock.mockClear();
     const query = relatedEntity.displayName.toLowerCase();
+    const name = camelCase(query);
     expect(
       await service.createFieldCreateInputByDisplayName(
         {
@@ -1140,12 +1141,21 @@ describe('EntityService', () => {
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith({
       where: {
-        ...createEntityNamesWhereInput(camelCase(query), EXAMPLE_ENTITY.appId),
+        ...createEntityNamesWhereInput(name, EXAMPLE_ENTITY.appId),
         deletedAt: null
       },
       take: 1
     });
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindManyMock).toBeCalledWith({
+      where: {
+        name,
+        entityVersion: {
+          entityId: EXAMPLE_ENTITY_ID,
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
+    });
   });
   it('create field of plural lookup', async () => {
     prismaEntityFieldFindManyMock.mockImplementationOnce(() => []);
