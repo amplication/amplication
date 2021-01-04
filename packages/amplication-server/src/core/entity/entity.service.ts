@@ -1512,7 +1512,7 @@ export class EntityService {
    */
   private async isFieldNameAvailable(
     name: string,
-    entityId: string,
+    entityId: string
   ): Promise<boolean> {
     const existing = await this.getFields(entityId, { where: { name } });
     return isEmpty(existing);
