@@ -16,7 +16,8 @@ import {
   FindManyEntityArgs,
   QueryMode,
   FindFirstEntityFieldArgs,
-  FindManyEntityFieldArgs
+  FindManyEntityFieldArgs,
+  EntityWhereInput
 } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
@@ -74,7 +75,6 @@ import {
   DeleteEntityFieldArgs,
   UpdateEntityPermissionArgs,
   LockEntityArgs,
-  EntityWhereInput,
   UpdateEntityPermissionRolesArgs,
   UpdateEntityPermissionFieldRolesArgs,
   AddEntityPermissionFieldArgs,
@@ -1461,7 +1461,7 @@ export class EntityService {
       };
     } else {
       // Find an entity with the field's display name
-      const relatedEntity = await this.findEntityByName(name, entity.appId);
+      const relatedEntity = await this.findEntityByNames(name, entity.appId);
       // If found attempt to create a lookup field
       if (relatedEntity) {
         // The created field would be multiple selection if its name is equal to
@@ -1518,36 +1518,14 @@ export class EntityService {
     return isEmpty(existing);
   }
 
-  private findEntityByName(name: string, appId: string): Promise<Entity> {
-    return this.findFirst({
-      where: {
-        appId,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        AND: [
-          {
-            name: {
-              equals: name,
-              mode: QueryMode.insensitive
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            OR: [
-              {
-                displayName: {
-                  equals: name,
-                  mode: QueryMode.insensitive
-                }
-              },
-              {
-                pluralDisplayName: {
-                  equals: name,
-                  mode: QueryMode.insensitive
-                }
-              }
-            ]
-          }
-        ]
-      }
-    });
+  /**
+   * Find entity by its names (name, displayName and pluralDisplayName) in given app
+   * @param name the entity name query
+   * @param appId the app identifier to search entity for
+   * @returns entity with a name matching the given name in the given app
+   */
+  private findEntityByNames(name: string, appId: string): Promise<Entity> {
+    return this.findFirst({ where: createEntityNamesWhereInput(name, appId) });
   }
 
   validateFieldMutationArgs(
@@ -1917,4 +1895,37 @@ function isReservedUserEntityFieldName(name: string): boolean {
 
 function isUserEntity(entity: Entity): boolean {
   return entity.name === USER_ENTITY_NAME;
+}
+
+export function createEntityNamesWhereInput(
+  name: string,
+  appId: string
+): EntityWhereInput {
+  return {
+    appId,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    AND: [
+      {
+        name: {
+          equals: name,
+          mode: QueryMode.insensitive
+        },
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [
+          {
+            displayName: {
+              equals: name,
+              mode: QueryMode.insensitive
+            }
+          },
+          {
+            pluralDisplayName: {
+              equals: name,
+              mode: QueryMode.insensitive
+            }
+          }
+        ]
+      }
+    ]
+  };
 }
