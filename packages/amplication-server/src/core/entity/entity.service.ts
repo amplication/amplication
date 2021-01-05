@@ -92,7 +92,10 @@ type EntityInclude = Omit<
 export type BulkEntityFieldData = Omit<
   EntityField,
   'id' | 'createdAt' | 'updatedAt' | 'permanentId' | 'properties'
-> & { properties: JsonObject };
+> & {
+  permanentId?: string;
+  properties: JsonObject;
+};
 
 export type BulkEntityData = Omit<
   Entity,
@@ -329,6 +332,39 @@ export class EntityService {
 
                 fields: {
                   create: entity.fields
+                }
+              }
+            }
+          }
+        });
+      })
+    );
+  }
+
+  /**
+   * Bulk creates fields on existing entities
+   * @param user the user to associate with the entities creation
+   * @param entityId the entity to bulk create fields for
+   * @param fields the fields to create. id must be provided
+   */
+  async bulkCreateFields(
+    user: User,
+    entityId: string,
+    fields: (BulkEntityFieldData & { permanentId: string })[]
+  ): Promise<void> {
+    await this.acquireLock({ where: { id: entityId } }, user);
+
+    await Promise.all(
+      fields.map(field => {
+        return this.prisma.entityField.create({
+          data: {
+            ...field,
+            entityVersion: {
+              connect: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityId_versionNumber: {
+                  entityId: entityId,
+                  versionNumber: CURRENT_VERSION_NUMBER
                 }
               }
             }
