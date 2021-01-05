@@ -59,9 +59,14 @@ async function main() {
         where: {
           OR: [
             { name: relatedFieldName },
-            { displayName: relatedFieldDisplayName }
+            {
+              displayName: relatedFieldDisplayName
+            }
           ],
-          entityVersion: { entityId: properties.relatedEntityId }
+          entityVersion: {
+            entityId: properties.relatedEntityId,
+            versionNumber: 0
+          }
         }
       });
 
@@ -103,32 +108,59 @@ async function main() {
         }
       });
 
+      let relatedField;
       // Create the related field
-      const relatedField = await client.entityField.create({
-        data: {
-          required: false,
-          searchable: false,
-          description: '',
-          name: relatedFieldName,
-          displayName: relatedFieldDisplayName,
-          dataType: EnumDataType.Lookup,
-          entityVersion: {
-            connect: {
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              entityId_versionNumber: {
-                entityId: properties.relatedEntityId,
-                versionNumber: 0
+      try {
+        relatedField = await client.entityField.create({
+          data: {
+            required: false,
+            searchable: false,
+            description: '',
+            name: relatedFieldName,
+            displayName: relatedFieldDisplayName,
+            dataType: EnumDataType.Lookup,
+            entityVersion: {
+              connect: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityId_versionNumber: {
+                  entityId: properties.relatedEntityId,
+                  versionNumber: 0
+                }
               }
+            },
+            properties: {
+              allowMultipleSelection: !properties.allowMultipleSelection,
+              relatedEntityId: field.entityVersion.entity.id,
+              relatedFieldId: field.permanentId
             }
-          },
-          properties: {
-            allowMultipleSelection: !properties.allowMultipleSelection,
-            relatedEntityId: field.entityVersion.entity.id,
-            relatedFieldId: field.permanentId
           }
-        }
-      });
-
+        });
+      } catch (error) {
+        relatedField = await client.entityField.create({
+          data: {
+            required: false,
+            searchable: false,
+            description: '',
+            name: cuid(),
+            displayName: cuid(),
+            dataType: EnumDataType.Lookup,
+            entityVersion: {
+              connect: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityId_versionNumber: {
+                  entityId: properties.relatedEntityId,
+                  versionNumber: 0
+                }
+              }
+            },
+            properties: {
+              allowMultipleSelection: !properties.allowMultipleSelection,
+              relatedEntityId: field.entityVersion.entity.id,
+              relatedFieldId: field.permanentId
+            }
+          }
+        });
+      }
       // Update the field with the related field id
       await client.entityField.update({
         where: { id: field.id },
@@ -139,14 +171,9 @@ async function main() {
           }
         }
       });
-
-      // Create the related field
-
-      console.info(
-        `Added related field for ${field.id} in ${properties.relatedEntityId}`
-      );
     })
   );
+
   await client.$disconnect();
 }
 
