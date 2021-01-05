@@ -56,14 +56,9 @@ The client is based on React, Apollo client, Primer components, React Material W
 
 ### [Amplication Data Service Generator](./packages/amplication-data-service-generator/README.md)
 
-Amplication Data Service Generator is the component that generates the server-side code of apps built with Amplication. It generates the models, Prisma client, REST API, authentication, and authorization filters. This package is used internally by Amplication server.
+Amplication Data Service Generator is the component that generates the server-side code of apps built with Amplication. It generates the models, Prisma client, REST API, GraphQL, authentication and authorization filters, and more. This package is used internally by Amplication server.
 
 To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
-
-### [Amplication Container Builder](./packages/amplication-container-builder/README.md)
-
-Amplication Container Builder is a multi-provider library for building Docker containers.
-The package provides out-of-the-box Nest.js integration.
 
 ## Alpha version
 
