@@ -114,7 +114,7 @@ async function main() {
           },
           properties: {
             allowMultipleSelection: !properties.allowMultipleSelection,
-            relatedEntityId: properties.relatedEntityId,
+            relatedEntityId: field.entityVersion.entity.id,
             relatedFieldId: field.permanentId
           }
         }
