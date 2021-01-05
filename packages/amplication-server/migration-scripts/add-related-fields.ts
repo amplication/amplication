@@ -3,6 +3,7 @@
 import { PrismaClient, EnumDataType } from '@prisma/client';
 import { types } from '@amplication/data';
 import { camelCase } from 'camel-case';
+import cuid from 'cuid';
 
 // For every existing lookup field create a related field
 async function main() {
@@ -45,7 +46,7 @@ async function main() {
       const { entity } = field.entityVersion;
       const [user] = entity.app.organization.users;
       console.info(`Adding related field for ${field.id}...`);
-      const relatedFieldName = camelCase(entity.name);
+      let relatedFieldName = camelCase(entity.name);
 
       // Find fields with the desired related field name
       const existingFieldWithName = await client.entityField.findFirst({
@@ -57,8 +58,7 @@ async function main() {
 
       // In case such field skip the field
       if (existingFieldWithName) {
-        console.info(`Can not create related for ${field.id}`);
-        return;
+        relatedFieldName = cuid();
       }
 
       // Lock the entity
