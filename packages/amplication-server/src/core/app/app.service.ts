@@ -112,9 +112,18 @@ export class AppService {
       select: { id: true }
     });
 
-    const entities = createSampleAppEntities(userEntity.id);
+    const sampleAppData = createSampleAppEntities(userEntity.id);
 
-    await this.entityService.bulkCreateEntities(app.id, user, entities);
+    await this.entityService.bulkCreateEntities(
+      app.id,
+      user,
+      sampleAppData.entities
+    );
+    await this.entityService.bulkCreateFields(
+      user,
+      userEntity.id,
+      sampleAppData.userEntityFields
+    );
 
     await this.commit({
       data: {
