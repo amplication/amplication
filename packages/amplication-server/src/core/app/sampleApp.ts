@@ -30,6 +30,18 @@ export const PROJECT_OWNER_FIELD: BulkEntityFieldData = {
   }
 };
 
+export const USER_PROJECTS_FIELD: BulkEntityFieldData = {
+  displayName: 'Projects',
+  name: 'projects',
+  dataType: EnumDataType.Lookup,
+  required: false,
+  searchable: false,
+  description: 'The list of projects owned by the user',
+  properties: {
+    allowMultipleSelection: false
+  }
+};
+
 export const PROJECT_ENTITY: BulkEntityData = {
   name: 'Project',
   displayName: 'Project',
@@ -98,6 +110,18 @@ export const TASK_PROJECT_FIELD: BulkEntityFieldData = {
   }
 };
 
+export const PROJECT_TASKS_FIELD: BulkEntityFieldData = {
+  displayName: 'Tasks',
+  name: 'tasks',
+  dataType: EnumDataType.Lookup,
+  required: false,
+  searchable: false,
+  description: 'The list of tasks in this project',
+  properties: {
+    allowMultipleSelection: false
+  }
+};
+
 export const TASK_ASSIGNED_TO_FIELD: BulkEntityFieldData = {
   displayName: 'Assigned To',
   name: 'assignedTo',
@@ -105,6 +129,18 @@ export const TASK_ASSIGNED_TO_FIELD: BulkEntityFieldData = {
   required: false,
   searchable: false,
   description: 'The user who is currently assigned to this task',
+  properties: {
+    allowMultipleSelection: false
+  }
+};
+
+export const USER_TASKS_FIELD: BulkEntityFieldData = {
+  displayName: 'Tasks',
+  name: 'tasks',
+  dataType: EnumDataType.Lookup,
+  required: false,
+  searchable: false,
+  description: 'The list of tasks assigned to the user',
   properties: {
     allowMultipleSelection: false
   }
@@ -194,43 +230,95 @@ export const TASK_ENTITY: BulkEntityData = {
  */
 export function createSampleAppEntities(
   userEntityId: string
-): BulkEntityData[] {
+): {
+  entities: BulkEntityData[];
+  userEntityFields: (BulkEntityFieldData & { id: string })[];
+} {
   // Predefine the project entity ID so it can be used for links.
   const projectEntityId = cuid();
-  return [
-    {
-      ...PROJECT_ENTITY,
-      id: projectEntityId,
-      fields: [
-        ...PROJECT_ENTITY.fields,
-        {
-          ...PROJECT_OWNER_FIELD,
-          properties: {
-            ...PROJECT_OWNER_FIELD.properties,
-            relatedEntityId: userEntityId
-          }
+  const taskEntityId = cuid();
+
+  const taskAssignedToFieldId = cuid();
+  const userTasksFieldId = cuid();
+
+  const taskProjectFieldId = cuid();
+  const projectTasksFieldId = cuid();
+
+  const projectOwnerFieldId = cuid();
+  const userProjectsFieldId = cuid();
+
+  return {
+    userEntityFields: [
+      {
+        ...USER_PROJECTS_FIELD,
+        id: userProjectsFieldId,
+        properties: {
+          ...USER_PROJECTS_FIELD.properties,
+          relatedEntityId: projectEntityId,
+          relatedFieldId: projectOwnerFieldId
         }
-      ]
-    },
-    {
-      ...TASK_ENTITY,
-      fields: [
-        ...TASK_ENTITY.fields,
-        {
-          ...TASK_PROJECT_FIELD,
-          properties: {
-            ...TASK_PROJECT_FIELD.properties,
-            relatedEntityId: projectEntityId
-          }
-        },
-        {
-          ...TASK_ASSIGNED_TO_FIELD,
-          properties: {
-            ...TASK_ASSIGNED_TO_FIELD.properties,
-            relatedEntityId: userEntityId
-          }
+      },
+      {
+        ...USER_TASKS_FIELD,
+        id: userTasksFieldId,
+        properties: {
+          ...USER_TASKS_FIELD.properties,
+          relatedEntityId: taskEntityId,
+          relatedFieldId: taskAssignedToFieldId
         }
-      ]
-    }
-  ];
+      }
+    ],
+    entities: [
+      {
+        ...PROJECT_ENTITY,
+        id: projectEntityId,
+        fields: [
+          ...PROJECT_ENTITY.fields,
+          {
+            ...PROJECT_OWNER_FIELD,
+            id: projectOwnerFieldId,
+            properties: {
+              ...PROJECT_OWNER_FIELD.properties,
+              relatedEntityId: userEntityId,
+              relatedFieldId: userProjectsFieldId
+            }
+          },
+          {
+            ...PROJECT_TASKS_FIELD,
+            id: projectTasksFieldId,
+            properties: {
+              ...PROJECT_TASKS_FIELD.properties,
+              relatedEntityId: taskEntityId,
+              relatedFieldId: taskProjectFieldId
+            }
+          }
+        ]
+      },
+      {
+        ...TASK_ENTITY,
+        id: taskEntityId,
+        fields: [
+          ...TASK_ENTITY.fields,
+          {
+            ...TASK_PROJECT_FIELD,
+            id: taskProjectFieldId,
+            properties: {
+              ...TASK_PROJECT_FIELD.properties,
+              relatedEntityId: projectEntityId,
+              relatedFieldId: projectTasksFieldId
+            }
+          },
+          {
+            ...TASK_ASSIGNED_TO_FIELD,
+            id: taskAssignedToFieldId,
+            properties: {
+              ...TASK_ASSIGNED_TO_FIELD.properties,
+              relatedEntityId: userEntityId,
+              relatedFieldId: userTasksFieldId
+            }
+          }
+        ]
+      }
+    ]
+  };
 }
