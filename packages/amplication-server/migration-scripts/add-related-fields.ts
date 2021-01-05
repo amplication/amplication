@@ -11,7 +11,10 @@ async function main() {
   // Find all lookup fields in the database
   const lookupFields = await client.entityField.findMany({
     where: {
-      dataType: EnumDataType.Lookup
+      dataType: EnumDataType.Lookup,
+      entityVersion: {
+        versionNumber: 0
+      }
     },
     include: {
       entityVersion: {
