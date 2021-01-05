@@ -93,7 +93,7 @@ export type BulkEntityFieldData = Omit<
   EntityField,
   'id' | 'createdAt' | 'updatedAt' | 'permanentId' | 'properties'
 > & {
-  id?: string;
+  permanentId?: string;
   properties: JsonObject;
 };
 
@@ -350,7 +350,7 @@ export class EntityService {
   async bulkCreateFields(
     user: User,
     entityId: string,
-    fields: (BulkEntityFieldData & { id: string })[]
+    fields: (BulkEntityFieldData & { permanentId: string })[]
   ): Promise<void> {
     await this.acquireLock({ where: { id: entityId } }, user);
 
@@ -359,7 +359,6 @@ export class EntityService {
         return this.prisma.entityField.create({
           data: {
             ...field,
-            permanentId: field.id,
             entityVersion: {
               connect: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention

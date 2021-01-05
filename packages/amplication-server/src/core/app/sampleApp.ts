@@ -38,7 +38,7 @@ export const USER_PROJECTS_FIELD: BulkEntityFieldData = {
   searchable: false,
   description: 'The list of projects owned by the user',
   properties: {
-    allowMultipleSelection: false
+    allowMultipleSelection: true
   }
 };
 
@@ -118,7 +118,7 @@ export const PROJECT_TASKS_FIELD: BulkEntityFieldData = {
   searchable: false,
   description: 'The list of tasks in this project',
   properties: {
-    allowMultipleSelection: false
+    allowMultipleSelection: true
   }
 };
 
@@ -142,7 +142,7 @@ export const USER_TASKS_FIELD: BulkEntityFieldData = {
   searchable: false,
   description: 'The list of tasks assigned to the user',
   properties: {
-    allowMultipleSelection: false
+    allowMultipleSelection: true
   }
 };
 
@@ -232,7 +232,7 @@ export function createSampleAppEntities(
   userEntityId: string
 ): {
   entities: BulkEntityData[];
-  userEntityFields: (BulkEntityFieldData & { id: string })[];
+  userEntityFields: (BulkEntityFieldData & { permanentId: string })[];
 } {
   // Predefine the project entity ID so it can be used for links.
   const projectEntityId = cuid();
@@ -251,7 +251,7 @@ export function createSampleAppEntities(
     userEntityFields: [
       {
         ...USER_PROJECTS_FIELD,
-        id: userProjectsFieldId,
+        permanentId: userProjectsFieldId,
         properties: {
           ...USER_PROJECTS_FIELD.properties,
           relatedEntityId: projectEntityId,
@@ -260,7 +260,7 @@ export function createSampleAppEntities(
       },
       {
         ...USER_TASKS_FIELD,
-        id: userTasksFieldId,
+        permanentId: userTasksFieldId,
         properties: {
           ...USER_TASKS_FIELD.properties,
           relatedEntityId: taskEntityId,
@@ -276,7 +276,7 @@ export function createSampleAppEntities(
           ...PROJECT_ENTITY.fields,
           {
             ...PROJECT_OWNER_FIELD,
-            id: projectOwnerFieldId,
+            permanentId: projectOwnerFieldId,
             properties: {
               ...PROJECT_OWNER_FIELD.properties,
               relatedEntityId: userEntityId,
@@ -285,7 +285,7 @@ export function createSampleAppEntities(
           },
           {
             ...PROJECT_TASKS_FIELD,
-            id: projectTasksFieldId,
+            permanentId: projectTasksFieldId,
             properties: {
               ...PROJECT_TASKS_FIELD.properties,
               relatedEntityId: taskEntityId,
@@ -301,7 +301,7 @@ export function createSampleAppEntities(
           ...TASK_ENTITY.fields,
           {
             ...TASK_PROJECT_FIELD,
-            id: taskProjectFieldId,
+            permanentId: taskProjectFieldId,
             properties: {
               ...TASK_PROJECT_FIELD.properties,
               relatedEntityId: projectEntityId,
@@ -310,7 +310,7 @@ export function createSampleAppEntities(
           },
           {
             ...TASK_ASSIGNED_TO_FIELD,
-            id: taskAssignedToFieldId,
+            permanentId: taskAssignedToFieldId,
             properties: {
               ...TASK_ASSIGNED_TO_FIELD.properties,
               relatedEntityId: userEntityId,
