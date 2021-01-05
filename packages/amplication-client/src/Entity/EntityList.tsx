@@ -38,10 +38,6 @@ const fields: DataField[] = [
     sortable: true,
   },
   {
-    name: "versionNumber",
-    title: "Version",
-  },
-  {
     name: "lastCommitAt",
     title: "Last Commit",
   },

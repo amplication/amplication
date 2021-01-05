@@ -117,7 +117,6 @@ export const EntityListItem = ({
           </Link>
         </DataGridCell>
         <DataGridCell>{entity.description}</DataGridCell>
-        <DataGridCell>V{latestVersion.versionNumber}</DataGridCell>
         <DataGridCell>
           {latestVersion.commit && (
             <UserAndTime
