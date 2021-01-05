@@ -37,10 +37,12 @@ async function main() {
     }
   });
   console.info(`Found ${lookupFields.length} fields`);
-  // Filter out fields that have relatedFieldId already
+  // Filter out fields that have relatedFieldId already or their related entity id is corrupt
   const fieldsToUpdate = lookupFields.filter(field => {
     const properties = (field.properties as unknown) as types.Lookup;
-    return !properties.relatedFieldId;
+    return (
+      !properties.relatedFieldId && !properties.relatedEntityId.startsWith('[')
+    );
   });
   console.info(`Attempting to update ${fieldsToUpdate.length} fields`);
   await Promise.all(
@@ -50,18 +52,25 @@ async function main() {
       const [user] = entity.app.organization.users;
       console.info(`Adding related field for ${field.id}...`);
       let relatedFieldName = camelCase(entity.name);
+      let relatedFieldDisplayName = entity.name;
 
       // Find fields with the desired related field name
       const existingFieldWithName = await client.entityField.findFirst({
         where: {
-          name: relatedFieldName,
+          OR: [
+            { name: relatedFieldName },
+            { displayName: relatedFieldDisplayName }
+          ],
           entityVersion: { entityId: properties.relatedEntityId }
         }
       });
 
       // In case such field skip the field
-      if (existingFieldWithName) {
+      if (existingFieldWithName?.name === relatedFieldName) {
         relatedFieldName = cuid();
+      }
+      if (existingFieldWithName?.displayName === relatedFieldDisplayName) {
+        relatedFieldDisplayName = cuid();
       }
 
       // Lock the entity
@@ -101,7 +110,7 @@ async function main() {
           searchable: false,
           description: '',
           name: relatedFieldName,
-          displayName: entity.displayName,
+          displayName: relatedFieldDisplayName,
           dataType: EnumDataType.Lookup,
           entityVersion: {
             connect: {
