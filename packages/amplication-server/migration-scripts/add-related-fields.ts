@@ -70,12 +70,14 @@ async function main() {
         }
       });
 
-      // In case such field skip the field
-      if (existingFieldWithName?.name === relatedFieldName) {
-        relatedFieldName = cuid();
-      }
-      if (existingFieldWithName?.displayName === relatedFieldDisplayName) {
-        relatedFieldDisplayName = cuid();
+      // In case name exists use a generated name
+      if (
+        existingFieldWithName?.name === relatedFieldName &&
+        existingFieldWithName?.displayName === relatedFieldDisplayName
+      ) {
+        const name = `a${cuid().replace(/[^A-z0-9]/g, '')}`;
+        relatedFieldName = name;
+        relatedFieldDisplayName = name;
       }
 
       // Lock the entity
