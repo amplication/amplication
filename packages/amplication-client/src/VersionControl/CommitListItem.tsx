@@ -14,8 +14,9 @@ import {
   GENERATE_STEP_NAME,
   BUILD_DOCKER_IMAGE_STEP_NAME,
   EMPTY_STEP,
-  BuildStepsStatus,
 } from "./BuildSteps";
+
+import { BuildStepsStatus } from "./BuildStepsStatus";
 
 type DType = {
   deleteEntity: { id: string };

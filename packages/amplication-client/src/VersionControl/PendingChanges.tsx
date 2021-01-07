@@ -77,7 +77,7 @@ const PendingChanges = ({ applicationId }: Props) => {
           <img src={imageNoChanges} alt="no changes" />
 
           <div className={`${CLASS_NAME}__empty-state__title`}>
-            No pending changes! keep working and come back later
+            No pending changes! keep working.
           </div>
         </div>
       ) : (

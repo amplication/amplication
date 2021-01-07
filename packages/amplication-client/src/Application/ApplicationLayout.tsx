@@ -59,7 +59,7 @@ function ApplicationLayout({ match }: Props) {
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
 
   const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
-    EnumFixedPanelKeys.None
+    EnumFixedPanelKeys.PendingChanges
   );
 
   const handleMenuItemWithFixedPanelClicked = useCallback(

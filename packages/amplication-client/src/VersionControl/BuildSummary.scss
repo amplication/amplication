@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+$step-status-width: 25px;
+$step-min-height: 32px;
+.build-summary {
+  .amp-button {
+    width: 100%;
+    border-radius: var(--default-border-radius) !important;
+  }
+
+  &__download {
+    padding-bottom: var(--default-spacing);
+  }
+  &__sandbox {
+    @include flexFullRowWithSpacing;
+    padding-top: var(--default-spacing);
+    justify-content: flex-start;
+    align-items: flex-start;
+    color: var(--black60);
+    border-top: $border-black10;
+  }
+}

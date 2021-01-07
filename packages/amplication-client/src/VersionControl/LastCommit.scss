@@ -1,11 +1,11 @@
 @import "../style/index.scss";
 
-$panel-height: 318px;
+$panel-height: 280px;
 
 .last-commit {
+  padding-top: var(--double-spacing);
   min-height: $panel-height;
   &__message {
-    margin: var(--default-spacing) 0;
     color: var(--black60);
   }
 

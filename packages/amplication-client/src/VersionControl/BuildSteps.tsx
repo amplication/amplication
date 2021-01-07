@@ -1,14 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import download from "downloadjs";
 import { Icon } from "@rmwc/icon";
-import { CircularProgress } from "@rmwc/circular-progress";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
 
-import { STEP_STATUS_TO_ICON } from "./constants";
+import { BuildStepsStatus } from "./BuildStepsStatus";
 
 import "./BuildSteps.scss";
 
@@ -117,7 +116,7 @@ const BuildSteps = ({ build, onError }: Props) => {
       <div className={`${CLASS_NAME}__step`}>
         <BuildStepsStatus status={stepDeploy.status} />
         <Icon icon="publish" />
-        <span>Preview App</span>
+        <span>Publish App</span>
         <span className="spacer" />
 
         {deployment &&
@@ -140,25 +139,7 @@ const BuildSteps = ({ build, onError }: Props) => {
 
 export default BuildSteps;
 
-type BuildStepsStatusProps = {
-  status: models.EnumActionStepStatus;
-};
-
-export const BuildStepsStatus = ({ status }: BuildStepsStatusProps) => {
-  return (
-    <span
-      className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${status.toLowerCase()}`}
-    >
-      {status === models.EnumActionStepStatus.Running ? (
-        <CircularProgress size={"xsmall"} />
-      ) : (
-        <Icon icon={STEP_STATUS_TO_ICON[status]} />
-      )}
-    </span>
-  );
-};
-
-async function downloadArchive(uri: string): Promise<void> {
+export async function downloadArchive(uri: string): Promise<void> {
   const res = await fetch(uri);
   const url = new URL(res.url);
   switch (res.status) {

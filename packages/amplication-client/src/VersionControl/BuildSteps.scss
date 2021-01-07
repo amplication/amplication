@@ -2,6 +2,16 @@
 $step-status-width: 25px;
 $step-min-height: 32px;
 .build-steps {
+  &__download {
+    padding-bottom: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+    border-bottom: $border-black10;
+
+    .amp-button {
+      width: 100%;
+      border-radius: var(--default-border-radius) !important;
+    }
+  }
   &__step {
     @include flexFullRowWithSpacing;
     justify-content: flex-start;
@@ -10,37 +20,6 @@ $step-min-height: 32px;
 
     i {
       color: var(--black80);
-    }
-    &__status {
-      width: $step-status-width;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      i {
-        font-weight: bold;
-      }
-      &--success {
-        i {
-          color: var(--positive-default);
-        }
-      }
-
-      &--failed {
-        i {
-          color: var(--negative);
-        }
-      }
-      &--waiting {
-        i {
-          color: var(--black20);
-        }
-      }
-
-      &--running {
-        .rmwc-circular-progress {
-          color: var(--primary);
-        }
-      }
     }
     /**@todo: remove after adding endpoint to download container   */
     .hidden {

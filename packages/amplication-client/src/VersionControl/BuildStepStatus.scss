@@ -1,0 +1,34 @@
+@import "../style/index.scss";
+$step-status-width: 25px;
+
+.build-step-status {
+  width: $step-status-width;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  i {
+    font-weight: bold;
+  }
+  &--success {
+    i {
+      color: var(--positive-default) !important;
+    }
+  }
+
+  &--failed {
+    i {
+      color: var(--negative) !important;
+    }
+  }
+  &--waiting {
+    i {
+      color: var(--black20) !important;
+    }
+  }
+
+  &--running {
+    .rmwc-circular-progress {
+      color: var(--primary) !important;
+    }
+  }
+}
