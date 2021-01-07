@@ -76,12 +76,15 @@ const LastCommit = ({ applicationId }: Props) => {
             to={`/${build?.appId}/commits/${lastCommit.id}`}
             id={lastCommit.id}
             label="Commit ID"
+            eventData={{
+              eventName: "lastCommitIdClick",
+            }}
           />
           <div className={`${CLASS_NAME}__message`}>{lastCommit?.message}</div>
 
           {build && (
             <>
-              <BuildHeader build={build} deployments={build.deployments} />
+              <BuildHeader build={build} />
               <BuildSummary build={build} onError={setError} />
             </>
           )}

@@ -20,14 +20,6 @@ $background-size: 60%;
     }
   }
 
-  &__bg {
-    background-image: url("../assets/images/my-apps-bg.svg");
-    background-position: bottom center;
-    background-repeat: no-repeat;
-    background-size: $background-size;
-    min-height: calc(100% + var(--default-page-padding));
-  }
-
   main {
     max-width: calc(100% - var(--menu-width));
     min-width: 0;

@@ -79,6 +79,7 @@ const BuildPage = ({ match }: Props) => {
               {commitData && (
                 <div className={`${CLASS_NAME}__commit-header`}>
                   <CommitHeader
+                    clickableId
                     commit={commitData.commit}
                     applicationId={data.build.appId}
                   />

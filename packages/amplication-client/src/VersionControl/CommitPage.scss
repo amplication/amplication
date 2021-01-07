@@ -3,6 +3,10 @@
 .commit-page {
   .commit-header {
     margin-bottom: var(--triple-spacing);
+
+    .truncated-id {
+      @include semiBold;
+    }
   }
   .pending-change-with-compare {
     margin-left: 0;
