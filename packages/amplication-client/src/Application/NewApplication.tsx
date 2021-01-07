@@ -134,7 +134,11 @@ const NewApplication = () => {
               >
                 Create App
               </Button>
-              {loading && <CircularProgress />}
+              {loading && (
+                <div className={`${CLASS_NAME}__loader`}>
+                  <CircularProgress />
+                </div>
+              )}
               <Snackbar open={Boolean(error)} message={errorMessage} />
             </Form>
           );
