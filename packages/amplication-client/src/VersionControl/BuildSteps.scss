@@ -1,11 +1,12 @@
 @import "../style/index.scss";
 $step-status-width: 25px;
-
+$step-min-height: 32px;
 .build-steps {
   &__step {
     @include flexFullRowWithSpacing;
     justify-content: flex-start;
     color: var(--black100);
+    min-height: $step-min-height;
 
     i {
       color: var(--black80);

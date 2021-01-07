@@ -121,20 +121,18 @@ const BuildSteps = ({ build, onError }: Props) => {
         <span className="spacer" />
 
         {deployment &&
-        stepDeploy.status === models.EnumActionStepStatus.Success ? (
-          <a href={deployment.environment.address} target="app">
-            <Button
-              buttonStyle={EnumButtonStyle.Clear}
-              icon="link_2"
-              eventData={{
-                eventName: "openPreviewApp",
-                versionNumber: data.build.version,
-              }}
-            />
-          </a>
-        ) : (
-          <Button buttonStyle={EnumButtonStyle.Clear} icon="link_2" disabled />
-        )}
+          stepDeploy.status === models.EnumActionStepStatus.Success && (
+            <a href={deployment.environment.address} target="app">
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                icon="link_2"
+                eventData={{
+                  eventName: "openPreviewApp",
+                  versionNumber: data.build.version,
+                }}
+              />
+            </a>
+          )}
       </div>
     </div>
   );
