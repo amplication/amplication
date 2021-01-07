@@ -8,6 +8,7 @@ import { downloadArchive } from "./BuildSteps";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import { BuildStepsStatus } from "./BuildStepsStatus";
+import { useTracking } from "../util/analytics";
 
 import "./BuildSummary.scss";
 
@@ -32,10 +33,17 @@ type Props = {
 
 const BuildSummary = ({ build, onError }: Props) => {
   const { data } = useBuildWatchStatus(build);
+  const { trackEvent } = useTracking();
 
   const handleDownloadClick = useCallback(() => {
     downloadArchive(data.build.archiveURI).catch(onError);
   }, [data.build.archiveURI, onError]);
+
+  const handleViewBuildClick = useCallback(() => {
+    trackEvent({
+      eventName: "BuildSandboxViewDetailsClick",
+    });
+  }, [trackEvent]);
 
   const stepGenerateCode = useMemo(() => {
     if (!data.build.action?.steps?.length) {
@@ -98,7 +106,13 @@ const BuildSummary = ({ build, onError }: Props) => {
           <span>
             We prepare your sandbox environment. It may take around 5 minutes,
             keep working and come back later.{" "}
-            <Link to={`/${build.appId}/builds/${build.id}`}> View Details</Link>
+            <Link
+              to={`/${build.appId}/builds/${build.id}`}
+              onClick={handleViewBuildClick}
+            >
+              {" "}
+              View Details
+            </Link>
           </span>
         </div>
       ) : deployment &&
@@ -119,7 +133,13 @@ const BuildSummary = ({ build, onError }: Props) => {
           <BuildStepsStatus status={models.EnumActionStepStatus.Failed} />
           <span>
             Deployment to sandbox environment failed.{" "}
-            <Link to={`/${build.appId}/builds/${build.id}`}> View Details</Link>
+            <Link
+              to={`/${build.appId}/builds/${build.id}`}
+              onClick={handleViewBuildClick}
+            >
+              {" "}
+              View Details
+            </Link>
           </span>
         </div>
       )}

@@ -69,6 +69,9 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
           id={commit.id}
           label=""
           to={`/${applicationId}/commit/${commit.id}`}
+          eventData={{
+            eventName: "commitListCommitIdClick",
+          }}
         />
       </DataGridCell>
       <DataGridCell>
@@ -82,6 +85,9 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
             to={`/${applicationId}/builds/${build.id}`}
             id={build.id}
             onClick={handleBuildLinkClick}
+            eventData={{
+              eventName: "commitListBuildIdClick",
+            }}
           />
         )}
       </DataGridCell>

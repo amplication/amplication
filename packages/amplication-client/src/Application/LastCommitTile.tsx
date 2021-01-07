@@ -66,6 +66,9 @@ function LastCommitTile({ applicationId }: Props) {
                 to={`/${applicationId}/commits/${lastCommit.id}`}
                 id={lastCommit.id}
                 label=""
+                eventData={{
+                  eventName: "lastCommitTileIdClick",
+                }}
               />
             )}
           </h2>

@@ -28,6 +28,9 @@ const BuildHeader = ({ build, deployments }: Props) => {
         to={`/${build.appId}/builds/${build.id}`}
         id={build.id}
         label="Build ID"
+        eventData={{
+          eventName: "buildHeaderIdClick",
+        }}
       />
       <span className="spacer" />
       {deployment && isDeployed && (

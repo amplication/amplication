@@ -48,7 +48,10 @@ const CommitPage = ({ match }: Props) => {
             "loading..."
           ) : (
             <>
-              <CommitHeader commit={data.commit} applicationId={build?.appId} />
+              <CommitHeader
+                commit={data.commit}
+                applicationId={build?.appId || ""}
+              />
               {build && <BuildHeader build={build} />}
             </>
           )}
