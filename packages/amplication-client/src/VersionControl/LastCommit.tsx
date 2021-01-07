@@ -11,7 +11,7 @@ import {
   UserAndTime,
 } from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
-import BuildSteps from "./BuildSteps";
+import BuildSummary from "./BuildSummary";
 import BuildHeader from "./BuildHeader";
 import PendingChangesContext from "./PendingChangesContext";
 import "./LastCommit.scss";
@@ -62,6 +62,7 @@ const LastCommit = ({ applicationId }: Props) => {
     <Panel panelStyle={EnumPanelStyle.Transparent} className={`${CLASS_NAME}`}>
       <PanelHeader>
         <h3>Last Commit</h3>
+        <UserAndTime account={account} time={lastCommit.createdAt} />
       </PanelHeader>
       {Boolean(error) && errorMessage}
 
@@ -77,11 +78,11 @@ const LastCommit = ({ applicationId }: Props) => {
             label="Commit ID"
           />
           <div className={`${CLASS_NAME}__message`}>{lastCommit?.message}</div>
-          <UserAndTime account={account} time={lastCommit.createdAt} />
+
           {build && (
             <>
               <BuildHeader build={build} deployments={build.deployments} />
-              <BuildSteps build={build} onError={setError} />
+              <BuildSummary build={build} onError={setError} />
             </>
           )}
         </>

@@ -22,7 +22,7 @@ $empty-state-image-size: 120px;
     }
 
     &__title {
-      @include body1;
+      @include body2;
       text-align: center;
       margin-bottom: var(--large-spacing);
     }
