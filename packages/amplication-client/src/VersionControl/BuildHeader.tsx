@@ -34,12 +34,9 @@ const BuildHeader = ({ build, deployments }: Props) => {
       />
       <span className="spacer" />
       {deployment && isDeployed && (
-        <>
-          <Icon icon="publish" />
-          <a href={deployment.environment.address} target="app">
-            <Icon icon="link_2" />
-          </a>
-        </>
+        <a href={deployment.environment.address} target="app">
+          <Icon icon="link_2" />
+        </a>
       )}
     </div>
   );

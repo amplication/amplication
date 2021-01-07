@@ -84,7 +84,7 @@ const LastCommit = ({ applicationId }: Props) => {
 
           {build && (
             <>
-              <BuildHeader build={build} deployments={build.deployments} />
+              <BuildHeader build={build} />
               <BuildSummary build={build} onError={setError} />
             </>
           )}
