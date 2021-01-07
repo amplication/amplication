@@ -12,6 +12,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { TextField } from "@amplication/design-system";
 import { COLORS } from "./constants";
 import { ColorSelectButton } from "../Components/ColorSelectButton";
+import { useTracking } from "../util/analytics";
 
 type Props = {
   app: models.App;
@@ -36,12 +37,16 @@ const FORM_SCHEMA = {
 
 function ApplicationForm({ app }: Props) {
   const applicationId = app.id;
+  const { trackEvent } = useTracking();
 
   const [updateApp, { error }] = useMutation<TData>(UPDATE_APP);
 
   const handleSubmit = useCallback(
     (data) => {
       const { name, description, color } = data;
+      trackEvent({
+        eventName: "updateAppInfo",
+      });
       updateApp({
         variables: {
           data: {
@@ -53,11 +58,14 @@ function ApplicationForm({ app }: Props) {
         },
       }).catch(console.error);
     },
-    [updateApp, applicationId]
+    [updateApp, applicationId, trackEvent]
   );
 
   const handleColorChange = useCallback(
     (color: string) => {
+      trackEvent({
+        eventName: "updateAppColor",
+      });
       updateApp({
         variables: {
           data: {
@@ -67,7 +75,7 @@ function ApplicationForm({ app }: Props) {
         },
       }).catch(console.error);
     },
-    [updateApp, applicationId]
+    [updateApp, applicationId, trackEvent]
   );
 
   const errorMessage = formatError(error);
