@@ -898,6 +898,14 @@ type Environment {
   address: String!
 }
 
+type GithubRepo {
+  name: String!
+  url: String!
+  private: String!
+  fullName: String!
+  admin: String!
+}
+
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -1061,6 +1069,7 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]!
   deployment(where: WhereUniqueInput!): Deployment!
+  githubRepos: [GithubRepo!]!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!

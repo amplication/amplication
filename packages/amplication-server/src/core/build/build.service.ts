@@ -42,6 +42,8 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 
+import { GithubService } from '../github/github.service';
+
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
@@ -144,6 +146,7 @@ export class BuildService {
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
+    private readonly githubService: GithubService,
     @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
@@ -377,6 +380,8 @@ export class BuildService {
 
         const tarballURL = await this.save(build, modules);
 
+        await this.saveToGitHub(build, modules);
+
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
         return tarballURL;
@@ -530,6 +535,21 @@ export class BuildService {
       )
     ]);
     return this.getFileURL(disk, tarFilePath);
+  }
+
+  private async saveToGitHub(
+    build: Build,
+    modules: DataServiceGenerator.Module[]
+  ) {
+    await this.githubService.createPullRequest(
+      'yuval-hazaz' /**@todo: get repo name from app settings */,
+      'amplication-sync' /**@todo: get repo name from app settings */,
+      modules,
+      `amplication-build-${build.id}`,
+      `Amplication Build ${build.id}`,
+      `Amplication Build ${build.id}`,
+      'main'
+    );
   }
 
   /** @todo move */

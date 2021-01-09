@@ -19,6 +19,7 @@ import { DeploymentModule } from './deployment/deployment.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
 import { SystemModule } from './system/system.module';
+import { GithubModule } from './github/github.module';
 @Module({
   imports: [
     AccountModule,
@@ -38,7 +39,8 @@ import { SystemModule } from './system/system.module';
     DeploymentModule,
     EnvironmentModule,
     CommitModule,
-    SystemModule
+    SystemModule,
+    GithubModule
   ],
   providers: [],
   exports: [
@@ -57,7 +59,8 @@ import { SystemModule } from './system/system.module';
     ActionModule,
     DeploymentModule,
     EnvironmentModule,
-    CommitModule
+    CommitModule,
+    GithubModule
   ]
 })
 export class CoreModule {}
