@@ -7,6 +7,9 @@ github_client_id    = "cc622ae6020e92fa1442"
 github_scope        = "user:email"
 github_redirect_uri = "https://app.amplication.com/github/callback"
 
+github_app_auth_scope       = "user:email,repo,read:org";
+github_app_auth_redirect_uri = "https://app.amplication.com/github-auth-app/callback/{appId}"
+
 # Amplitude
 amplitude_api_key = "d6c2950cd60b91196e678f9a3a7ac705"
 

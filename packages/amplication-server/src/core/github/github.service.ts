@@ -11,8 +11,8 @@ export const GCS_BUCKET_VAR = 'GCS_BUCKET';
 export const GITHUB_CLIENT_ID_VAR = 'GITHUB_CLIENT_ID';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
 export const GITHUB_SECRET_SECRET_NAME_VAR = 'GITHUB_SECRET_SECRET_NAME';
-export const GITHUB_REDIRECT_URI_VAR = 'GITHUB_REDIRECT_URI';
-export const GITHUB_SCOPE_VAR = 'GITHUB_SCOPE';
+export const GITHUB_APP_AUTH_REDIRECT_URI_VAR = 'GITHUB_APP_AUTH_REDIRECT_URI';
+export const GITHUB_APP_AUTH_SCOPE_VAR = 'GITHUB_APP_AUTH_SCOPE';
 export const MISSING_CLIENT_SECRET_ERROR = `Must provide either ${GITHUB_CLIENT_SECRET_VAR} or ${GITHUB_SECRET_SECRET_NAME_VAR}`;
 
 @Injectable()
@@ -124,9 +124,10 @@ export class GithubService {
       clientSecret: clientSecret
     });
 
-    /**todo: add a new configuration for callback url */
-    const redirectURL = `http://localhost:3001/github-auth-app/callback/${appId}`; // this.configService.get(GITHUB_REDIRECT_URI_VAR);
-    const scope = ['user:email', 'repo', 'read:org']; // this.configService.get(GITHUB_SCOPE_VAR);
+    const redirectURL: string = this.configService
+      .get(GITHUB_APP_AUTH_REDIRECT_URI_VAR)
+      .replace('{appId}', appId);
+    const scope = this.configService.get(GITHUB_APP_AUTH_SCOPE_VAR);
 
     const url = app.getAuthorizationUrl({
       redirectUrl: redirectURL,

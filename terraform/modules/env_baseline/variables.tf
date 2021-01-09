@@ -26,6 +26,13 @@ variable "github_redirect_uri" {
   type = string
 }
 
+variable "github_app_auth_scope" {
+  type = string
+}
+
+variable "github_app_auth_redirect_uri" {
+  type = string
+}
 # Amplitude
 
 variable "amplitude_api_key" {
@@ -52,7 +59,7 @@ variable "bcrypt_salt_or_rounds" {
 }
 
 variable "feature_flags" {
-  type = map
+  type = map(any)
 }
 
 variable "host" {

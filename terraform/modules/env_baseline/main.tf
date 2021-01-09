@@ -209,6 +209,14 @@ resource "google_cloud_run_service" "default" {
           value = var.github_redirect_uri
         }
         env {
+          name  = "GITHUB_APP_AUTH_SCOPE"
+          value = var.github_app_auth_scope
+        }
+        env {
+          name  = "GITHUB_APP_AUTH_REDIRECT_URI"
+          value = var.github_app_auth_redirect_uri
+        }
+        env {
           name  = "DEFAULT_DISK"
           value = var.default_disk
         }
