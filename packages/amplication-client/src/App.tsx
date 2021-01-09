@@ -10,6 +10,7 @@ import Applications from "./Application/Applications";
 import PrivateRoute from "./authentication/PrivateRoute";
 import BreadcrumbsProvider from "./Layout/BreadcrumbsProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
+import AuthAppWithGithubCallback from "./Settings/AuthAppWithGithubCallback";
 
 const { NODE_ENV } = process.env;
 
@@ -52,6 +53,11 @@ function App() {
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
+        <PrivateRoute
+          exact
+          path="/github-auth-app/callback/:application"
+          component={AuthAppWithGithubCallback}
+        />
         <PrivateRoute exact path="/" component={Applications} />
         <PrivateRoute path="/:application" component={ApplicationLayout} />
       </Switch>

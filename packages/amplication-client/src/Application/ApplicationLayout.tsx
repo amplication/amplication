@@ -6,6 +6,7 @@ import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
+import AuthAppWithGithub from "../Settings/AuthAppWithGithub";
 import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
@@ -214,10 +215,19 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}/commits`}
             icon="history_commit_outline"
           />
+          <MenuItem
+            title="Settings"
+            to={`/${application}/settings`}
+            icon="setting_outline"
+          />
         </MainLayout.Menu>
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
+            <Route
+              path="/:application/settings"
+              component={AuthAppWithGithub}
+            />
             <Route
               path="/:application/pending-changes"
               component={PendingChangesPage}
