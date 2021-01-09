@@ -13,6 +13,7 @@ import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
+  FindAvailableGithubReposArgs,
   PendingChange
 } from './dto';
 import { FindOneArgs } from 'src/dto';
@@ -37,6 +38,7 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { FindManyEntityArgs } from '../entity/dto';
+import { GithubRepo } from '../github/dto/githubRepo';
 
 @Resolver(() => App)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -191,5 +193,16 @@ export class AppResolver {
   ): Promise<boolean> {
     await this.appService.completeAuthorizeAppWithGithub(args);
     return true;
+  }
+
+  @Query(() => [GithubRepo], {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  async appAvailableGithubRepos(
+    @Args() args: FindAvailableGithubReposArgs,
+    @UserEntity() user: User
+  ): Promise<GithubRepo[]> {
+    return this.appService.findAvailableGithubRepos(args);
   }
 }

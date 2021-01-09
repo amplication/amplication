@@ -6,7 +6,7 @@ import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
-import AuthAppWithGithub from "../Settings/AuthAppWithGithub";
+import Settings from "../Settings/Settings";
 import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
@@ -224,10 +224,7 @@ function ApplicationLayout({ match }: Props) {
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
-            <Route
-              path="/:application/settings"
-              component={AuthAppWithGithub}
-            />
+            <Route path="/:application/settings" component={Settings} />
             <Route
               path="/:application/pending-changes"
               component={PendingChangesPage}

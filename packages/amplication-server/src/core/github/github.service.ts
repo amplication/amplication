@@ -22,21 +22,14 @@ export class GithubService {
     private readonly googleSecretManagerService: GoogleSecretsManagerService
   ) {}
 
-  async getRepos(userName: string, token: string): Promise<GithubRepo[]> {
+  async listRepoForAuthenticatedUser(token: string): Promise<GithubRepo[]> {
     const octokit = new Octokit({
       auth: token
     });
 
-    console.time();
-
     const results = await octokit.repos.listForAuthenticatedUser({
-      username: userName,
       type: 'all'
     });
-
-    console.timeEnd();
-
-    console.log(results);
 
     return results.data.map(repo => ({
       name: repo.name,

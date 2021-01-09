@@ -20,13 +20,15 @@ import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
-  PendingChange
+  PendingChange,
+  FindAvailableGithubReposArgs
 } from './dto';
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
 import { EnvironmentService } from '../environment/environment.service';
 import { InvalidColorError } from './InvalidColorError';
 import { GithubService } from '../github/github.service';
+import { GithubRepo } from '../github/dto/githubRepo';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -345,5 +347,17 @@ export class AppService {
         description: token
       }
     });
+  }
+
+  async findAvailableGithubRepos(
+    args: FindAvailableGithubReposArgs
+  ): Promise<GithubRepo[]> {
+    const { description } = await this.app({
+      where: {
+        id: args.where.app.id
+      }
+    });
+
+    return await this.githubService.listRepoForAuthenticatedUser(description);
   }
 }

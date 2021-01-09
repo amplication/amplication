@@ -127,6 +127,10 @@ type AuthorizeAppWithGithubResult {
   url: String!
 }
 
+input AvailableGithubReposFindInput {
+  app: WhereUniqueInput!
+}
+
 type Block {
   id: String!
   createdAt: DateTime!
@@ -1080,10 +1084,10 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]!
   deployment(where: WhereUniqueInput!): Deployment!
-  githubRepos: [GithubRepo!]!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  appAvailableGithubRepos(where: AvailableGithubReposFindInput!): [GithubRepo!]!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   me: User!

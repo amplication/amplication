@@ -1,31 +1,20 @@
 import React, { useCallback } from "react";
-import { match } from "react-router-dom";
 import { Icon } from "@rmwc/icon";
 import { Snackbar } from "@rmwc/snackbar";
-import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";
-
-import "./AuthAppWithGithub.scss";
-
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
-const CLASS_NAME = "settings-page";
 
 type DType = {
   startAuthorizeAppWithGithub: models.AuthorizeAppWithGithubResult;
 };
 
 type Props = {
-  match: match<{ application: string }>;
+  applicationId: string;
 };
 
-function AuthAppWithGithub({ match }: Props) {
-  useBreadcrumbs(match.url, "Settings");
-  const { application } = match.params;
-
+function AuthAppWithGithub({ applicationId }: Props) {
   const [authWithGithub, { loading, error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
     {
@@ -42,35 +31,31 @@ function AuthAppWithGithub({ match }: Props) {
     (data) => {
       authWithGithub({
         variables: {
-          appId: application,
+          appId: applicationId,
         },
       }).catch(console.error);
     },
-    [authWithGithub, application]
+    [authWithGithub, applicationId]
   );
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME} withFloatingBar>
-      <main>
-        <FloatingToolbar />
+    <div>
+      <Button
+        type="button"
+        onClick={handleAuthWithGithubClick}
+        disabled={loading}
+        buttonStyle={EnumButtonStyle.CallToAction}
+        eventData={{
+          eventName: "authAppInWithGitHub",
+        }}
+      >
+        <Icon icon="github" />
+        Connect your app with GitHub
+      </Button>
 
-        <Button
-          type="button"
-          onClick={handleAuthWithGithubClick}
-          disabled={loading}
-          buttonStyle={EnumButtonStyle.CallToAction}
-          eventData={{
-            eventName: "authAppInWithGitHub",
-          }}
-        >
-          <Icon icon="github" />
-          Connect your app with GitHub
-        </Button>
-
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </main>
-    </PageContent>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
+    </div>
   );
 }
 
