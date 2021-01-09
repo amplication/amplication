@@ -123,6 +123,10 @@ type Auth {
   token: String!
 }
 
+type AuthorizeAppWithGithubResult {
+  url: String!
+}
+
 type Block {
   id: String!
   createdAt: DateTime!
@@ -295,6 +299,11 @@ input CommitWhereInput {
 
 input CommitWhereUniqueInput {
   id: String
+}
+
+input CompleteAuthorizeAppWithGithubInput {
+  code: String!
+  state: String!
 }
 
 type ConnectorRestApi implements IBlock {
@@ -987,6 +996,8 @@ type Mutation {
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
+  startAuthorizeAppWithGithub(where: WhereUniqueInput!): AuthorizeAppWithGithubResult!
+  completeAuthorizeAppWithGithub(data: CompleteAuthorizeAppWithGithubInput!, where: WhereUniqueInput!): Boolean!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   changePassword(data: ChangePasswordInput!): Account!

@@ -50,6 +50,7 @@
     "@nestjs/platform-express": "^7.3.2",
     "@nestjs/serve-static": "^2.1.3",
     "@octokit/core": "^3.2.4",
+    "@octokit/oauth-app": "^2.0.3",
     "@octokit/rest": "^18.0.6",
     "@prisma/cli": "2.11.0",
     "@prisma/client": "2.11.0",

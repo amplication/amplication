@@ -157,6 +157,11 @@ export type Auth = {
   token: Scalars["String"];
 };
 
+export type AuthorizeAppWithGithubResult = {
+  __typename?: "AuthorizeAppWithGithubResult";
+  url: Scalars["String"];
+};
+
 export type Block = {
   __typename?: "Block";
   id: Scalars["String"];
@@ -982,6 +987,15 @@ export type Environment = {
   address: Scalars["String"];
 };
 
+export type GithubRepo = {
+  __typename?: "GithubRepo";
+  name: Scalars["String"];
+  url: Scalars["String"];
+  private: Scalars["String"];
+  fullName: Scalars["String"];
+  admin: Scalars["String"];
+};
+
 export type HttpBasicAuthenticationSettings = {
   __typename?: "HttpBasicAuthenticationSettings";
   username: Scalars["String"];
@@ -1060,6 +1074,7 @@ export type Mutation = {
   updateApp?: Maybe<App>;
   commit?: Maybe<Commit>;
   discardPendingChanges?: Maybe<Scalars["Boolean"]>;
+  authorizeAppWithGithub: AuthorizeAppWithGithubResult;
   signup: Auth;
   login: Auth;
   changePassword: Account;
@@ -1187,6 +1202,10 @@ export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
 };
 
+export type MutationAuthorizeAppWithGithubArgs = {
+  where: WhereUniqueInput;
+};
+
 export type MutationSignupArgs = {
   data: SignupInput;
 };
@@ -1308,6 +1327,7 @@ export type Query = {
   action: Action;
   deployments: Array<Deployment>;
   deployment: Deployment;
+  githubRepos: Array<GithubRepo>;
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;

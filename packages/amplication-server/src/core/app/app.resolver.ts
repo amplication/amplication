@@ -23,6 +23,9 @@ import { AppService, EntityService } from '../';
 import { BuildService } from '../build/build.service';
 import { EnvironmentService } from '../environment/environment.service';
 import { FindManyBuildArgs } from '../build/dto/FindManyBuildArgs';
+import { AuthorizeAppWithGithubResult } from './dto/AuthorizeAppWithGithubResult';
+import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
+
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 
@@ -163,5 +166,30 @@ export class AppResolver {
     @UserEntity() user: User
   ): Promise<PendingChange[]> {
     return this.appService.getPendingChanges(args, user);
+  }
+
+  @Mutation(() => AuthorizeAppWithGithubResult, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async startAuthorizeAppWithGithub(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: User
+  ): Promise<AuthorizeAppWithGithubResult> {
+    return {
+      url: await this.appService.startAuthorizeAppWithGithub(args.where.id)
+    };
+  }
+
+  @Mutation(() => Boolean, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async completeAuthorizeAppWithGithub(
+    @Args() args: CompleteAuthorizeAppWithGithubArgs,
+    @UserEntity() user: User
+  ): Promise<boolean> {
+    await this.appService.completeAuthorizeAppWithGithub(args);
+    return true;
   }
 }

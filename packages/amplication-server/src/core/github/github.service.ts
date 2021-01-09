@@ -3,17 +3,28 @@ import { ConfigService } from '@nestjs/config';
 import { Octokit } from '@octokit/rest';
 import { GithubRepo } from './dto/githubRepo';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { OAuthApp } from '@octokit/oauth-app';
 
 export const GCS_BUCKET_VAR = 'GCS_BUCKET';
 
+export const GITHUB_CLIENT_ID_VAR = 'GITHUB_CLIENT_ID';
+export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
+export const GITHUB_SECRET_SECRET_NAME_VAR = 'GITHUB_SECRET_SECRET_NAME';
+export const GITHUB_REDIRECT_URI_VAR = 'GITHUB_REDIRECT_URI';
+export const GITHUB_SCOPE_VAR = 'GITHUB_SCOPE';
+export const MISSING_CLIENT_SECRET_ERROR = `Must provide either ${GITHUB_CLIENT_SECRET_VAR} or ${GITHUB_SECRET_SECRET_NAME_VAR}`;
+
 @Injectable()
 export class GithubService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly googleSecretManagerService: GoogleSecretsManagerService
+  ) {}
 
-  async getRepos(userName: string): Promise<GithubRepo[]> {
+  async getRepos(userName: string, token: string): Promise<GithubRepo[]> {
     const octokit = new Octokit({
-      auth:
-        'XXXX' /**todo: get auth token from app settings or use clientID and clientSecret with authorized app*/
+      auth: token
     });
 
     console.time();
@@ -43,12 +54,12 @@ export class GithubService {
     commitName: string,
     commitMessage: string,
     commitDescription: string,
-    baseBranchName: string
+    baseBranchName: string,
+    token: string
   ): Promise<boolean> {
     const myOctokit = Octokit.plugin(createPullRequest);
 
-    const TOKEN =
-      'XXXX'; /**todo: get auth token from app settings or use clientID and clientSecret with authorized app*/
+    const TOKEN = token;
     const octokit = new myOctokit({
       auth: TOKEN
     });
@@ -99,5 +110,71 @@ export class GithubService {
 
     console.log(pr);
     return true;
+  }
+
+  async getOAuthAppAuthorizationUrl(appId: string) {
+    const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
+    if (!clientID) {
+      return null;
+    }
+    const clientSecret = await this.getSecret();
+
+    const app = new OAuthApp({
+      clientId: clientID,
+      clientSecret: clientSecret
+    });
+
+    /**todo: add a new configuration for callback url */
+    const redirectURL = `http://localhost:3001/github-auth-app/callback/${appId}`; // this.configService.get(GITHUB_REDIRECT_URI_VAR);
+    const scope = ['user:email', 'repo', 'read:org']; // this.configService.get(GITHUB_SCOPE_VAR);
+
+    const url = app.getAuthorizationUrl({
+      redirectUrl: redirectURL,
+      state:
+        'state123' /**@todo: generate unique URL and save it for later check */,
+      scopes: scope
+    });
+
+    return url;
+  }
+
+  async createOAuthAppAuthorizationToken(
+    state: string,
+    code: string
+  ): Promise<string> {
+    const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
+    if (!clientID) {
+      return null;
+    }
+    const clientSecret = await this.getSecret();
+
+    const app = new OAuthApp({
+      clientId: clientID,
+      clientSecret: clientSecret
+    });
+
+    const { token } = await app.createToken({
+      state: state,
+      code: code
+    });
+
+    return token;
+  }
+
+  private async getSecret(): Promise<string> {
+    const clientSecret = this.configService.get(GITHUB_CLIENT_SECRET_VAR);
+    if (clientSecret) {
+      return clientSecret;
+    }
+    const secretName = this.configService.get(GITHUB_SECRET_SECRET_NAME_VAR);
+    if (!secretName) {
+      throw new Error(MISSING_CLIENT_SECRET_ERROR);
+    }
+    return this.getSecretFromManager(secretName);
+  }
+  private async getSecretFromManager(name: string): Promise<string> {
+    const secretManager = this.googleSecretManagerService;
+    const [version] = await secretManager.accessSecretVersion({ name });
+    return version.payload.data.toString();
   }
 }

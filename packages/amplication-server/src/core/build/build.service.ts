@@ -548,7 +548,8 @@ export class BuildService {
       `amplication-build-${build.id}`,
       `Amplication Build ${build.id}`,
       `Amplication Build ${build.id}`,
-      'main'
+      'main',
+      'token'
     );
   }
 

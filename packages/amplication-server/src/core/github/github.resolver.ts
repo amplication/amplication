@@ -17,7 +17,8 @@ export class GithubResolver {
   @Query(() => [GithubRepo])
   async githubRepos(@UserEntity() currentUser: User): Promise<GithubRepo[]> {
     return this.githubService.getRepos(
-      'yuval-hazaz'
+      'yuval-hazaz',
+      'token'
     ); /**@todo: get settings from app settings */
   }
 }

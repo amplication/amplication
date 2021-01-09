@@ -22,9 +22,11 @@ import {
   FindPendingChangesArgs,
   PendingChange
 } from './dto';
+import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
 import { EnvironmentService } from '../environment/environment.service';
 import { InvalidColorError } from './InvalidColorError';
+import { GithubService } from '../github/github.service';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -45,7 +47,8 @@ export class AppService {
     private readonly prisma: PrismaService,
     private entityService: EntityService,
     private environmentService: EnvironmentService,
-    private buildService: BuildService
+    private buildService: BuildService,
+    private readonly githubService: GithubService
   ) {}
 
   /**
@@ -321,5 +324,26 @@ export class AppService {
     //await this.prisma.$transaction(allPromises);
 
     return true;
+  }
+
+  async startAuthorizeAppWithGithub(appId: string) {
+    return this.githubService.getOAuthAppAuthorizationUrl(appId);
+  }
+
+  async completeAuthorizeAppWithGithub(
+    args: CompleteAuthorizeAppWithGithubArgs
+  ) {
+    const token = await this.githubService.createOAuthAppAuthorizationToken(
+      args.data.state,
+      args.data.code
+    );
+
+    /**@todo: save the token to a dedicated field */
+    await this.updateApp({
+      where: args.where,
+      data: {
+        description: token
+      }
+    });
   }
 }
