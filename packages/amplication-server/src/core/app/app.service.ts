@@ -21,7 +21,8 @@ import {
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
   PendingChange,
-  FindAvailableGithubReposArgs
+  FindAvailableGithubReposArgs,
+  AppEnableSyncWithGithubRepoArgs
 } from './dto';
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
@@ -340,11 +341,12 @@ export class AppService {
       args.data.code
     );
 
-    /**@todo: save the token to a dedicated field */
-    await this.updateApp({
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    await this.prisma.app.update({
       where: args.where,
       data: {
-        description: token
+        githubToken: token,
+        githubTokenCreatedDate: new Date()
       }
     });
   }
@@ -352,12 +354,73 @@ export class AppService {
   async findAvailableGithubRepos(
     args: FindAvailableGithubReposArgs
   ): Promise<GithubRepo[]> {
-    const { description } = await this.app({
+    const app = await this.app({
       where: {
         id: args.where.app.id
       }
     });
 
-    return await this.githubService.listRepoForAuthenticatedUser(description);
+    if (isEmpty(app.githubToken)) {
+      throw new Error(
+        `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
+      );
+    }
+
+    return await this.githubService.listRepoForAuthenticatedUser(
+      app.githubToken
+    );
+  }
+
+  async enableSyncWithGithubRepo(
+    args: AppEnableSyncWithGithubRepoArgs
+  ): Promise<App> {
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (app.githubSyncEnabled) {
+      throw new Error(
+        `Sync is already enabled for this app. To change the sync settings, first disable the sync and re-enable it with the new settings`
+      );
+    }
+
+    if (isEmpty(app.githubToken)) {
+      throw new Error(
+        `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
+      );
+    }
+
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    return this.prisma.app.update({
+      where: args.where,
+      data: {
+        ...args.data,
+        githubSyncEnabled: true
+      }
+    });
+  }
+
+  async disableSyncWithGithubRepo(args: FindOneArgs): Promise<App> {
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (!app.githubSyncEnabled) {
+      throw new Error(`Sync is not enabled for this app`);
+    }
+
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    return this.prisma.app.update({
+      where: args.where,
+      data: {
+        githubRepo: null, //reset the repo and branch to allow the user to set another branch when needed
+        githubBranch: null,
+        githubSyncEnabled: false
+      }
+    });
   }
 }

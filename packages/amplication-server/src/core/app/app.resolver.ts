@@ -14,7 +14,8 @@ import {
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
   FindAvailableGithubReposArgs,
-  PendingChange
+  PendingChange,
+  AppEnableSyncWithGithubRepoArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { App, Entity, User, Commit } from 'src/models';
@@ -200,9 +201,26 @@ export class AppResolver {
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async appAvailableGithubRepos(
-    @Args() args: FindAvailableGithubReposArgs,
-    @UserEntity() user: User
+    @Args() args: FindAvailableGithubReposArgs
   ): Promise<GithubRepo[]> {
     return this.appService.findAvailableGithubRepos(args);
+  }
+
+  @Mutation(() => App, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async appEnableSyncWithGithubRepo(
+    @Args() args: AppEnableSyncWithGithubRepoArgs
+  ): Promise<App> {
+    return this.appService.enableSyncWithGithubRepo(args);
+  }
+
+  @Mutation(() => App, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async appDisableSyncWithGithubRepo(@Args() args: FindOneArgs): Promise<App> {
+    return this.appService.disableSyncWithGithubRepo(args);
   }
 }
