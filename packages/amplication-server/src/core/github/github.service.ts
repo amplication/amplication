@@ -49,7 +49,7 @@ export class GithubService {
     commitDescription: string,
     baseBranchName: string,
     token: string
-  ): Promise<boolean> {
+  ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
 
     const TOKEN = token;
@@ -102,7 +102,7 @@ export class GithubService {
     });
 
     console.log(pr);
-    return true;
+    return pr.data.html_url;
   }
 
   async getOAuthAppAuthorizationUrl(appId: string) {

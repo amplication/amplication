@@ -44,6 +44,7 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 
 import { GithubService } from '../github/github.service';
 
+export const HOST_VAR = 'HOST';
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
@@ -56,6 +57,14 @@ export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
   'Waiting for Docker image...';
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
   'Starting to build Docker image. It should take a few minutes.';
+
+export const PUSH_TO_GITHUB_STEP_NAME = 'PUSH_TO_GITHUB';
+export const PUSH_TO_GITHUB_STEP_MESSAGE = 'Push changes to GitHub';
+export const PUSH_TO_GITHUB_STEP_START_LOG =
+  'Starting to push changes to GitHub.';
+export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
+  'Successfully pushed changes to GitHub';
+export const PUSH_TO_GITHUB_STEP_FAILED_LOG = 'Push changes to GitHub failed';
 
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
 export const ACTION_JOB_DONE_LOG = 'Build job done';
@@ -190,6 +199,10 @@ export class BuildService {
             }
           } //create action record
         }
+      },
+      include: {
+        commit: true,
+        app: true
       }
     });
 
@@ -541,35 +554,78 @@ export class BuildService {
     build: Build,
     modules: DataServiceGenerator.Module[]
   ) {
-    const app = await this.appService.app({
-      where: {
-        id: build.appId
-      }
-    });
-
-    const [userName, repoName] = app.githubRepo.split('/');
+    const app = build.app;
+    const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
-    if (app.githubSyncEnabled) {
-      try {
-        await this.githubService.createPullRequest(
-          userName,
-          repoName,
-          modules,
-          `amplication-build-${build.id}`,
-          `Amplication Build ${truncateBuildId}`,
-          `Amplication Build ${build.id}`,
-          app.githubBranch,
-          app.githubToken
-        );
+    const commitMessage =
+      (commit.message &&
+        `${commit.message} (Amplication build ${truncateBuildId})`) ||
+      `Amplication build ${truncateBuildId}`;
 
-        await this.appService.reportSyncMessage(
-          build.appId,
-          'Sync Completed Successfully'
-        );
-      } catch (error) {
-        await this.appService.reportSyncMessage(build.appId, `Error: ${error}`);
-      }
+    const host = (this.generatedAppBaseImage = this.configService.get(
+      HOST_VAR
+    ));
+
+    const url = `${host}/${build.appId}/builds/${build.id}`;
+
+    const [userName, repoName] = app.githubRepo.split('/');
+
+    if (app.githubSyncEnabled) {
+      return this.actionService.run(
+        build.actionId,
+        PUSH_TO_GITHUB_STEP_NAME,
+        PUSH_TO_GITHUB_STEP_MESSAGE,
+        async step => {
+          await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
+          try {
+            const prUrl = await this.githubService.createPullRequest(
+              userName,
+              repoName,
+              modules,
+              `amplication-build-${build.id}`,
+              commitMessage,
+              `Amplication build # ${build.id}.
+Commit message: ${commit.message}
+
+${url}
+`,
+              app.githubBranch,
+              app.githubToken
+            );
+
+            await this.appService.reportSyncMessage(
+              build.appId,
+              'Sync Completed Successfully'
+            );
+            await this.actionService.logInfo(step, prUrl);
+            await this.actionService.logInfo(
+              step,
+              PUSH_TO_GITHUB_STEP_FINISH_LOG
+            );
+
+            await this.actionService.complete(
+              step,
+              EnumActionStepStatus.Success
+            );
+          } catch (error) {
+            await this.actionService.logInfo(
+              step,
+              PUSH_TO_GITHUB_STEP_FAILED_LOG
+            );
+            await this.actionService.logInfo(step, error);
+            await this.actionService.complete(
+              step,
+              EnumActionStepStatus.Failed
+            );
+            await this.appService.reportSyncMessage(
+              build.appId,
+              `Error: ${error}`
+            );
+          }
+        },
+        true
+      );
     }
   }
 
