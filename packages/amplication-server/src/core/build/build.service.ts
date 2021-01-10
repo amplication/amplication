@@ -569,9 +569,9 @@ export class BuildService {
 
     const url = `${host}/${build.appId}/builds/${build.id}`;
 
-    const [userName, repoName] = app.githubRepo.split('/');
-
     if (app.githubSyncEnabled) {
+      const [userName, repoName] = app.githubRepo.split('/');
+
       return this.actionService.run(
         build.actionId,
         PUSH_TO_GITHUB_STEP_NAME,
