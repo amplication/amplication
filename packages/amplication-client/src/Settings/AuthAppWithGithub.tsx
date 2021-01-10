@@ -43,7 +43,6 @@ function AuthAppWithGithub({ applicationId, onDone }: Props) {
   );
 
   triggerOnDone = () => {
-    console.log("triggerOnDone");
     onDone();
   };
   const errorMessage = formatError(error);
