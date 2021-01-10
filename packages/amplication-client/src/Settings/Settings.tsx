@@ -25,7 +25,7 @@ function SettingsPage({ match }: Props) {
   useBreadcrumbs(match.url, "Settings");
   const { application } = match.params;
 
-  const { data, error, loading } = useQuery<{
+  const { data, error, loading, refetch } = useQuery<{
     app: models.App;
   }>(GET_APPLICATION, {
     variables: {
@@ -42,7 +42,7 @@ function SettingsPage({ match }: Props) {
         {loading ? (
           <CircularProgress />
         ) : isEmpty(data?.app.description) ? (
-          <AuthAppWithGithub applicationId={application} />
+          <AuthAppWithGithub applicationId={application} onDone={refetch} />
         ) : (
           <GithubRepos applicationId={application} />
         )}

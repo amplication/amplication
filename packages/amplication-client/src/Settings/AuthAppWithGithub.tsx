@@ -10,11 +10,15 @@ type DType = {
   startAuthorizeAppWithGithub: models.AuthorizeAppWithGithubResult;
 };
 
+// eslint-disable-next-line
+let triggerOnDone = () => {};
+
 type Props = {
   applicationId: string;
+  onDone: () => void;
 };
 
-function AuthAppWithGithub({ applicationId }: Props) {
+function AuthAppWithGithub({ applicationId, onDone }: Props) {
   const [authWithGithub, { loading, error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
     {
@@ -37,6 +41,11 @@ function AuthAppWithGithub({ applicationId }: Props) {
     },
     [authWithGithub, applicationId]
   );
+
+  triggerOnDone = () => {
+    console.log("triggerOnDone");
+    onDone();
+  };
   const errorMessage = formatError(error);
 
   return (
@@ -70,10 +79,10 @@ const START_AUTH_APP_WITH_GITHUB = gql`
 `;
 
 const receiveMessage = (event: any) => {
-  /**@todo: refresh the page to continue the process */
   const { data } = event;
-  //check if we trust the sender and the source is our popup
-  console.log("data", data);
+  if (data.completed) {
+    triggerOnDone();
+  }
 };
 
 let windowObjectReference: any = null;
@@ -82,9 +91,14 @@ const openSignInWindow = (url: string, name: string) => {
   // remove any existing event listeners
   window.removeEventListener("message", receiveMessage);
 
+  const width = 600;
+  const height = 700;
+
+  const left = (window.screen.width - width) / 2;
+  const top = 100;
+
   // window features
-  const strWindowFeatures =
-    "toolbar=no, menubar=no, width=600, height=700, top=100, left=100";
+  const strWindowFeatures = `toolbar=no, menubar=no, width=${width}, height=${height}, top=${top}, left=${left}`;
 
   windowObjectReference = window.open(url, name, strWindowFeatures);
   windowObjectReference.focus();
