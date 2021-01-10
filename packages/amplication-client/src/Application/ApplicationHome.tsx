@@ -87,6 +87,11 @@ export const GET_APPLICATION = gql`
       name
       description
       color
+      githubTokenCreatedDate
+      githubSyncEnabled
+      githubRepo
+      githubLastSync
+      githubLastMessage
     }
   }
 `;

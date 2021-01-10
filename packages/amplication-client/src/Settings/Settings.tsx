@@ -13,6 +13,7 @@ import { GET_APPLICATION } from "../Application/ApplicationHome";
 import "./Settings.scss";
 import AuthAppWithGithub from "./AuthAppWithGithub";
 import GithubRepos from "./GithubRepos";
+import GithubSyncDetails from "./GithubSyncDetails";
 
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 const CLASS_NAME = "settings-page";
@@ -41,10 +42,12 @@ function SettingsPage({ match }: Props) {
         <FloatingToolbar />
         {loading ? (
           <CircularProgress />
-        ) : isEmpty(data?.app.description) ? (
+        ) : isEmpty(data?.app.githubTokenCreatedDate) ? (
           <AuthAppWithGithub applicationId={application} onDone={refetch} />
-        ) : (
+        ) : !data?.app.githubSyncEnabled ? (
           <GithubRepos applicationId={application} />
+        ) : (
+          <GithubSyncDetails app={data.app} />
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </main>

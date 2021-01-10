@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Snackbar } from "@rmwc/snackbar";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { CircularProgress } from "@rmwc/circular-progress";
+import { Button } from "@amplication/design-system";
 
 const CLASS_NAME = "github-repos";
 
@@ -20,23 +21,57 @@ function GithubRepos({ applicationId }: Props) {
     },
   });
 
-  const errorMessage = formatError(error);
+  const [enableSyncWithGithub, { error: errorUpdate }] = useMutation<
+    models.App
+  >(ENABLE_SYNC_WITH_GITHUB);
+
+  const handleRepoSelected = useCallback(
+    (data: models.GithubRepo) => {
+      enableSyncWithGithub({
+        variables: {
+          githubRepo: data.fullName,
+          githubBranch: null,
+          appId: applicationId,
+        },
+      }).catch(console.error);
+    },
+    [enableSyncWithGithub, applicationId]
+  );
+
+  const errorMessage = formatError(error || errorUpdate);
 
   return (
     <div className={CLASS_NAME}>
       Select Repo
       {loading && <CircularProgress />}
       {data?.appAvailableGithubRepos.map((repo) => (
-        <div key={repo.fullName}>{repo.fullName}</div>
+        <div key={repo.fullName}>
+          <div>full name: {repo.fullName}</div>
+          <div>admin: {repo.admin}</div>
+          <div>name: {repo.name}</div>
+          <div>private: {repo.private}</div>
+          <div>url: {repo.url}</div>
+          {/**@todo: use child component to properly use callback  */}
+          <Button
+            onClick={() => {
+              handleRepoSelected(repo);
+            }}
+          >
+            Select
+          </Button>
+          <br />
+          <br />
+          <br />
+        </div>
       ))}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(error || errorUpdate)} message={errorMessage} />
     </div>
   );
 }
 
 export default GithubRepos;
 
-export const FIND_GITHUB_REPOS = gql`
+const FIND_GITHUB_REPOS = gql`
   query appAvailableGithubRepos($id: String!) {
     appAvailableGithubRepos(where: { app: { id: $id } }) {
       name
@@ -44,6 +79,24 @@ export const FIND_GITHUB_REPOS = gql`
       private
       fullName
       admin
+    }
+  }
+`;
+
+const ENABLE_SYNC_WITH_GITHUB = gql`
+  mutation appEnableSyncWithGithubRepo(
+    $githubRepo: String!
+    $githubBranch: String
+    $appId: String!
+  ) {
+    appEnableSyncWithGithubRepo(
+      data: { githubRepo: $githubRepo, githubBranch: $githubBranch }
+      where: { id: $appId }
+    ) {
+      id
+      githubSyncEnabled
+      githubRepo
+      githubBranch
     }
   }
 `;
