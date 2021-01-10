@@ -928,9 +928,9 @@ type Environment {
 type GithubRepo {
   name: String!
   url: String!
-  private: String!
+  private: Boolean!
   fullName: String!
-  admin: String!
+  admin: Boolean!
 }
 
 type HttpBasicAuthenticationSettings {
@@ -1015,7 +1015,8 @@ type Mutation {
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   startAuthorizeAppWithGithub(where: WhereUniqueInput!): AuthorizeAppWithGithubResult!
-  completeAuthorizeAppWithGithub(data: CompleteAuthorizeAppWithGithubInput!, where: WhereUniqueInput!): Boolean!
+  completeAuthorizeAppWithGithub(data: CompleteAuthorizeAppWithGithubInput!, where: WhereUniqueInput!): App!
+  removeAuthorizeAppWithGithub(where: WhereUniqueInput!): App!
   appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
   appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
   signup(data: SignupInput!): Auth!

@@ -33,7 +33,7 @@ export class GithubService {
 
     return results.data.map(repo => ({
       name: repo.name,
-      url: repo.url,
+      url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
       admin: repo.permissions.admin

@@ -11,12 +11,12 @@ export class GithubRepo {
   @Field(() => String)
   url: string | null;
 
-  @Field(() => String)
-  private: string | null;
+  @Field(() => Boolean)
+  private: boolean | null;
 
   @Field(() => String)
   fullName: string | null;
 
-  @Field(() => String)
+  @Field(() => Boolean)
   admin: boolean | null;
 }

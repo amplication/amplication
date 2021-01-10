@@ -184,16 +184,26 @@ export class AppResolver {
     };
   }
 
-  @Mutation(() => Boolean, {
+  @Mutation(() => App, {
     nullable: false
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async completeAuthorizeAppWithGithub(
     @Args() args: CompleteAuthorizeAppWithGithubArgs,
     @UserEntity() user: User
-  ): Promise<boolean> {
-    await this.appService.completeAuthorizeAppWithGithub(args);
-    return true;
+  ): Promise<App> {
+    return this.appService.completeAuthorizeAppWithGithub(args);
+  }
+
+  @Mutation(() => App, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async removeAuthorizeAppWithGithub(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: User
+  ): Promise<App> {
+    return this.appService.removeAuthorizeAppWithGithub(args);
   }
 
   @Query(() => [GithubRepo], {

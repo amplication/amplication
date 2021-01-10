@@ -335,18 +335,42 @@ export class AppService {
 
   async completeAuthorizeAppWithGithub(
     args: CompleteAuthorizeAppWithGithubArgs
-  ) {
+  ): Promise<App> {
     const token = await this.githubService.createOAuthAppAuthorizationToken(
       args.data.state,
       args.data.code
     );
 
     //directly update with prisma since we don't want to expose these fields for regular updates
-    await this.prisma.app.update({
+    return this.prisma.app.update({
       where: args.where,
       data: {
         githubToken: token,
         githubTokenCreatedDate: new Date()
+      }
+    });
+  }
+
+  async removeAuthorizeAppWithGithub(args: FindOneArgs): Promise<App> {
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (isEmpty(app.githubToken)) {
+      throw new Error(`This app is not authorized with any GitHub repo.`);
+    }
+
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    return this.prisma.app.update({
+      where: args.where,
+      data: {
+        githubToken: null,
+        githubTokenCreatedDate: null,
+        githubSyncEnabled: false,
+        githubRepo: null,
+        githubBranch: null
       }
     });
   }
