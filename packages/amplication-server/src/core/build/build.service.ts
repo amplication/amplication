@@ -541,16 +541,36 @@ export class BuildService {
     build: Build,
     modules: DataServiceGenerator.Module[]
   ) {
-    await this.githubService.createPullRequest(
-      'yuval-hazaz' /**@todo: get repo name from app settings */,
-      'amplication-sync' /**@todo: get repo name from app settings */,
-      modules,
-      `amplication-build-${build.id}`,
-      `Amplication Build ${build.id}`,
-      `Amplication Build ${build.id}`,
-      'main',
-      'token'
-    );
+    const app = await this.appService.app({
+      where: {
+        id: build.appId
+      }
+    });
+
+    const [userName, repoName] = app.githubRepo.split('/');
+    const truncateBuildId = build.id.slice(build.id.length - 8);
+
+    if (app.githubSyncEnabled) {
+      try {
+        await this.githubService.createPullRequest(
+          userName,
+          repoName,
+          modules,
+          `amplication-build-${build.id}`,
+          `Amplication Build ${truncateBuildId}`,
+          `Amplication Build ${build.id}`,
+          app.githubBranch,
+          app.githubToken
+        );
+
+        await this.appService.reportSyncMessage(
+          build.appId,
+          'Sync Completed Successfully'
+        );
+      } catch (error) {
+        await this.appService.reportSyncMessage(build.appId, `Error: ${error}`);
+      }
+    }
   }
 
   /** @todo move */

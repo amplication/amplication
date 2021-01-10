@@ -423,4 +423,17 @@ export class AppService {
       }
     });
   }
+
+  async reportSyncMessage(appId: string, message: string): Promise<App> {
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    return this.prisma.app.update({
+      where: {
+        id: appId
+      },
+      data: {
+        githubLastMessage: message,
+        githubLastSync: new Date()
+      }
+    });
+  }
 }
