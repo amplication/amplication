@@ -50,6 +50,18 @@ const COMPLETE_AUTH_APP_WITH_GITHUB = gql`
     completeAuthorizeAppWithGithub(
       data: { code: $code, state: $state }
       where: { id: $appId }
-    )
+    ) {
+      id
+      createdAt
+      updatedAt
+      name
+      description
+      color
+      githubTokenCreatedDate
+      githubSyncEnabled
+      githubRepo
+      githubLastSync
+      githubLastMessage
+    }
   }
 `;

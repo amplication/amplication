@@ -4,15 +4,17 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { CircularProgress } from "@rmwc/circular-progress";
-import { Button } from "@amplication/design-system";
+import GithubRepoItem from "./GithubRepoItem";
+import "./GithubRepos.scss";
 
 const CLASS_NAME = "github-repos";
 
 type Props = {
   applicationId: string;
+  onCompleted: () => void;
 };
 
-function GithubRepos({ applicationId }: Props) {
+function GithubRepos({ applicationId, onCompleted }: Props) {
   const { data, error, loading } = useQuery<{
     appAvailableGithubRepos: models.GithubRepo[];
   }>(FIND_GITHUB_REPOS, {
@@ -23,7 +25,11 @@ function GithubRepos({ applicationId }: Props) {
 
   const [enableSyncWithGithub, { error: errorUpdate }] = useMutation<
     models.App
-  >(ENABLE_SYNC_WITH_GITHUB);
+  >(ENABLE_SYNC_WITH_GITHUB, {
+    onCompleted: () => {
+      onCompleted();
+    },
+  });
 
   const handleRepoSelected = useCallback(
     (data: models.GithubRepo) => {
@@ -45,24 +51,11 @@ function GithubRepos({ applicationId }: Props) {
       Select Repo
       {loading && <CircularProgress />}
       {data?.appAvailableGithubRepos.map((repo) => (
-        <div key={repo.fullName}>
-          <div>full name: {repo.fullName}</div>
-          <div>admin: {repo.admin}</div>
-          <div>name: {repo.name}</div>
-          <div>private: {repo.private}</div>
-          <div>url: {repo.url}</div>
-          {/**@todo: use child component to properly use callback  */}
-          <Button
-            onClick={() => {
-              handleRepoSelected(repo);
-            }}
-          >
-            Select
-          </Button>
-          <br />
-          <br />
-          <br />
-        </div>
+        <GithubRepoItem
+          key={repo.fullName}
+          repo={repo}
+          onSelectRepo={handleRepoSelected}
+        />
       ))}
       <Snackbar open={Boolean(error || errorUpdate)} message={errorMessage} />
     </div>

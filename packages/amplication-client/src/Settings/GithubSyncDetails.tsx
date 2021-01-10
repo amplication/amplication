@@ -3,9 +3,10 @@ import { Snackbar } from "@rmwc/snackbar";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { Button } from "@amplication/design-system";
+import { Button, EnumButtonStyle } from "@amplication/design-system";
+import "./GithubSyncDetails.scss";
 
-const CLASS_NAME = "github-repos";
+const CLASS_NAME = "github-repo-details";
 
 type Props = {
   app: models.App;
@@ -25,19 +26,28 @@ function GithubSyncDetails({ app }: Props) {
   }, [disableSyncWithGithub, app]);
 
   const errorMessage = formatError(errorUpdate);
+  const repoUrl = `https://github.com/${app.githubRepo}`;
 
   return (
     <div className={CLASS_NAME}>
-      <div>
-        <div>Repo name: {app.githubRepo}</div>
-        <div>Last sync: {app.githubLastSync}</div>
-        <div>Last Message: {app.githubLastMessage}</div>
-
-        <Button onClick={handleDisableSync}>Disable Sync</Button>
-        <br />
-        <br />
-        <br />
+      <div className={`${CLASS_NAME}__details`}>
+        <div className={`${CLASS_NAME}__name`}>{app.githubRepo}</div>
+        <div>
+          <a href={repoUrl} target="github_repo">
+            {repoUrl}
+          </a>
+        </div>
       </div>
+
+      <div className={`${CLASS_NAME}__action`}>
+        <Button
+          buttonStyle={EnumButtonStyle.Secondary}
+          onClick={handleDisableSync}
+        >
+          Change Repo
+        </Button>
+      </div>
+
       <Snackbar open={Boolean(errorUpdate)} message={errorMessage} />
     </div>
   );

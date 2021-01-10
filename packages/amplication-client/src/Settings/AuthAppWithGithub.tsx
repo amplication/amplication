@@ -1,10 +1,16 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Icon } from "@rmwc/icon";
+import { isEmpty } from "lodash";
 import { Snackbar } from "@rmwc/snackbar";
-import { Button, EnumButtonStyle } from "../Components/Button";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";
+import GithubRepos from "./GithubRepos";
+import GithubSyncDetails from "./GithubSyncDetails";
+import { Button, EnumButtonStyle } from "../Components/Button";
+
+import { PanelCollapsible, Toggle, Dialog } from "@amplication/design-system";
+import "./AuthAppWithGithub.scss";
 
 type DType = {
   startAuthorizeAppWithGithub: models.AuthorizeAppWithGithubResult;
@@ -14,11 +20,15 @@ type DType = {
 let triggerOnDone = () => {};
 
 type Props = {
-  applicationId: string;
+  app: models.App;
   onDone: () => void;
 };
 
-function AuthAppWithGithub({ applicationId, onDone }: Props) {
+const CLASS_NAME = "auth-app-with-github";
+
+function AuthAppWithGithub({ app, onDone }: Props) {
+  const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
+
   const [authWithGithub, { loading, error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
     {
@@ -31,39 +41,115 @@ function AuthAppWithGithub({ applicationId, onDone }: Props) {
     }
   );
 
+  const [
+    removeAuthWithGithub,
+    { loading: removeLoading, error: removeError },
+  ] = useMutation<{
+    removeAuthorizeAppWithGithub: models.App;
+  }>(REMOVE_AUTH_APP_WITH_GITHUB, {
+    onCompleted: () => {
+      onDone();
+    },
+  });
+
+  const handleSelectRepoDialogDismiss = useCallback(() => {
+    setSelectRepoOpen(false);
+  }, []);
+
+  const handleSelectRepoDialogOpen = useCallback(() => {
+    setSelectRepoOpen(true);
+  }, []);
+
   const handleAuthWithGithubClick = useCallback(
     (data) => {
-      authWithGithub({
-        variables: {
-          appId: applicationId,
-        },
-      }).catch(console.error);
+      if (isEmpty(app.githubTokenCreatedDate)) {
+        // eventData={{
+        //   eventName: "authAppInWithGitHub",
+        // }}
+        authWithGithub({
+          variables: {
+            appId: app.id,
+          },
+        }).catch(console.error);
+      } else {
+        // eventData={{
+        //   eventName: "authAppInWithGitHub",
+        // }}
+        removeAuthWithGithub({
+          variables: {
+            appId: app.id,
+          },
+        }).catch(console.error);
+      }
     },
-    [authWithGithub, applicationId]
+    [authWithGithub, removeAuthWithGithub, app]
   );
 
   triggerOnDone = () => {
     onDone();
+    setSelectRepoOpen(true);
   };
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(error || removeError);
+
+  const isAuthenticatedWithGithub = !isEmpty(app.githubTokenCreatedDate);
 
   return (
-    <div>
-      <Button
-        type="button"
-        onClick={handleAuthWithGithubClick}
-        disabled={loading}
-        buttonStyle={EnumButtonStyle.CallToAction}
-        eventData={{
-          eventName: "authAppInWithGitHub",
-        }}
+    <>
+      <Dialog
+        className="select-repo-dialog"
+        isOpen={selectRepoOpen}
+        title="Select Repository"
+        onDismiss={handleSelectRepoDialogDismiss}
       >
-        <Icon icon="github" />
-        Connect your app with GitHub
-      </Button>
+        <GithubRepos
+          applicationId={app.id}
+          onCompleted={handleSelectRepoDialogDismiss}
+        />
+      </Dialog>
+      <PanelCollapsible
+        manualCollapseDisabled
+        initiallyOpen
+        collapseEnabled={isAuthenticatedWithGithub}
+        className={CLASS_NAME}
+        headerContent={
+          <>
+            <Icon icon={{ icon: "github", size: "large" }} />
+            <span className="spacer">Sync With GitHub</span>
+            <Toggle
+              title="Sync with Github"
+              onValueChange={handleAuthWithGithubClick}
+              checked={isAuthenticatedWithGithub}
+              disabled={loading || removeLoading || isEmpty(app)}
+            />
+          </>
+        }
+      >
+        {isAuthenticatedWithGithub && (
+          <div className={`${CLASS_NAME}__body`}>
+            {!app.githubSyncEnabled ? (
+              <>
+                <div className={`${CLASS_NAME}__details`}>
+                  No repository was selected
+                </div>
 
-      <Snackbar open={Boolean(error)} message={errorMessage} />
-    </div>
+                <div className={`${CLASS_NAME}__action`}>
+                  <Button
+                    buttonStyle={EnumButtonStyle.Primary}
+                    onClick={handleSelectRepoDialogOpen}
+                  >
+                    Select Repository
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <GithubSyncDetails app={app} />
+            )}
+          </div>
+        )}
+      </PanelCollapsible>
+
+      <Snackbar open={Boolean(error || removeError)} message={errorMessage} />
+    </>
   );
 }
 
@@ -73,6 +159,24 @@ const START_AUTH_APP_WITH_GITHUB = gql`
   mutation startAuthorizeAppWithGithub($appId: String!) {
     startAuthorizeAppWithGithub(where: { id: $appId }) {
       url
+    }
+  }
+`;
+
+const REMOVE_AUTH_APP_WITH_GITHUB = gql`
+  mutation removeAuthorizeAppWithGithub($appId: String!) {
+    removeAuthorizeAppWithGithub(where: { id: $appId }) {
+      id
+      createdAt
+      updatedAt
+      name
+      description
+      color
+      githubTokenCreatedDate
+      githubSyncEnabled
+      githubRepo
+      githubLastSync
+      githubLastMessage
     }
   }
 `;
