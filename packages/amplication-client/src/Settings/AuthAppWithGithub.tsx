@@ -9,7 +9,12 @@ import GithubRepos from "./GithubRepos";
 import GithubSyncDetails from "./GithubSyncDetails";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
-import { PanelCollapsible, Toggle, Dialog } from "@amplication/design-system";
+import {
+  PanelCollapsible,
+  Toggle,
+  Dialog,
+  ConfirmationDialog,
+} from "@amplication/design-system";
 import "./AuthAppWithGithub.scss";
 
 type DType = {
@@ -26,8 +31,12 @@ type Props = {
 
 const CLASS_NAME = "auth-app-with-github";
 
+const CONFIRM_BUTTON = { label: "Disable Sync" };
+const DISMISS_BUTTON = { label: "Dismiss" };
+
 function AuthAppWithGithub({ app, onDone }: Props) {
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
+  const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
 
   const [authWithGithub, { loading, error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
@@ -72,18 +81,27 @@ function AuthAppWithGithub({ app, onDone }: Props) {
           },
         }).catch(console.error);
       } else {
-        // eventData={{
-        //   eventName: "authAppInWithGitHub",
-        // }}
-        removeAuthWithGithub({
-          variables: {
-            appId: app.id,
-          },
-        }).catch(console.error);
+        setConfirmRemove(true);
       }
     },
-    [authWithGithub, removeAuthWithGithub, app]
+    [authWithGithub, app]
   );
+
+  const handleDismissRemove = useCallback(() => {
+    setConfirmRemove(false);
+  }, [setConfirmRemove]);
+
+  const handleConfirmRemoveAuth = useCallback(() => {
+    // eventData={{
+    //   eventName: "authAppInWithGitHub",
+    // }}
+    setConfirmRemove(false);
+    removeAuthWithGithub({
+      variables: {
+        appId: app.id,
+      },
+    }).catch(console.error);
+  }, [removeAuthWithGithub, app]);
 
   triggerOnDone = () => {
     onDone();
@@ -95,6 +113,15 @@ function AuthAppWithGithub({ app, onDone }: Props) {
 
   return (
     <>
+      <ConfirmationDialog
+        isOpen={confirmRemove}
+        title={`Disable Sync with GitHub`}
+        confirmButton={CONFIRM_BUTTON}
+        dismissButton={DISMISS_BUTTON}
+        message="Are you sure you want to disable sync with GitHub?"
+        onConfirm={handleConfirmRemoveAuth}
+        onDismiss={handleDismissRemove}
+      />
       <Dialog
         className="select-repo-dialog"
         isOpen={selectRepoOpen}

@@ -36,6 +36,12 @@ function SettingsPage({ match }: Props) {
     <PageContent className={CLASS_NAME} withFloatingBar>
       <main>
         <FloatingToolbar />
+        <h1>Sync with GitHub</h1>
+        <div className={`${CLASS_NAME}__message`}>
+          Enable sync with GitHub to automatically push the generated code of
+          your application and create a Pull Request in your GitHub repository
+          every time you commit your changes.
+        </div>
         {data?.app && <AuthAppWithGithub app={data.app} onDone={refetch} />}
 
         <Snackbar open={Boolean(error)} message={errorMessage} />

@@ -3,6 +3,7 @@
 $max-width: 700px;
 .auth-app-with-github {
   max-width: $max-width;
+  margin-left: 0;
 
   &__body {
     @include flexFullRowWithSpacing;
