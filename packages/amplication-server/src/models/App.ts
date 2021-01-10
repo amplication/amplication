@@ -63,4 +63,35 @@ export class App {
     description: undefined
   })
   builds?: Build[];
+
+  //Sensitive data - do not expose to graphQL
+  githubToken?: string;
+
+  @Field(() => Date, {
+    nullable: true
+  })
+  githubTokenCreatedDate?: Date;
+
+  @Field(() => Boolean)
+  githubSyncEnabled: boolean;
+
+  @Field(() => String, {
+    nullable: true
+  })
+  githubRepo?: string;
+
+  @Field(() => String, {
+    nullable: true
+  })
+  githubBranch?: string;
+
+  @Field(() => Date, {
+    nullable: true
+  })
+  githubLastSync?: Date;
+
+  @Field(() => String, {
+    nullable: true
+  })
+  githubLastMessage?: string;
 }
