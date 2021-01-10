@@ -3,7 +3,12 @@
 $max-width: 700px;
 
 .settings-page {
-  max-width: $max-width;
+  @media only screen and (min-height: 500px) and (min-width: 1100px) {
+    background-image: url("../assets/images/sync-with-github.svg");
+    background-position: bottom right;
+    background-repeat: no-repeat;
+  }
+
   h1 {
     margin-bottom: var(--default-spacing);
   }
@@ -11,5 +16,6 @@ $max-width: 700px;
     @include body1;
     color: var(--black60);
     margin-bottom: var(--triple-spacing);
+    max-width: $max-width;
   }
 }
