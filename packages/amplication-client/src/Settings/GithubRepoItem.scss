@@ -13,4 +13,12 @@
     padding-bottom: var(--default-spacing-small);
     margin-right: var(--default-spacing);
   }
+
+  &__privacy {
+    color: var(--primary);
+    .amp-icon {
+      color: var(--primary);
+      margin-right: var(--default-spacing-small);
+    }
+  }
 }

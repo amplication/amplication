@@ -279,6 +279,11 @@ $bullet-size: 6px;
     align-items: flex-start;
     height: 100%;
 
+    img {
+      max-width: 150px;
+      max-height: 150px;
+    }
+
     &__details {
       height: 100%;
       display: flex;

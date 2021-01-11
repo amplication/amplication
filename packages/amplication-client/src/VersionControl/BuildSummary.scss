@@ -10,6 +10,11 @@ $step-min-height: 32px;
   &__download {
     padding-bottom: var(--default-spacing);
   }
+
+  &__open-github {
+    margin-bottom: var(--default-spacing);
+    display: block;
+  }
   &__sandbox {
     @include flexFullRowWithSpacing;
     padding-top: var(--default-spacing);

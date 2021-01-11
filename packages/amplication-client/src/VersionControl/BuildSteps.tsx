@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import download from "downloadjs";
+import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
@@ -24,6 +25,7 @@ export const EMPTY_STEP: models.ActionStep = {
 export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
 export const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
   build: models.Build;
@@ -69,6 +71,32 @@ const BuildSteps = ({ build, onError }: Props) => {
     );
   }, [data.build.action]);
 
+  const stepGithub = useMemo(() => {
+    if (!data.build.action?.steps?.length) {
+      return null;
+    }
+    return (
+      data.build.action.steps.find(
+        (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+      ) || null
+    );
+  }, [data.build.action]);
+
+  const githubUrl = useMemo(() => {
+    if (!data.build.action?.steps?.length) {
+      return null;
+    }
+    const stepGithub = data.build.action.steps.find(
+      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+    );
+
+    const log = stepGithub?.logs?.find(
+      (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
+    );
+
+    return log?.meta?.githubUrl || null;
+  }, [data.build.action]);
+
   const deployment =
     data.build.deployments &&
     data.build.deployments.length &&
@@ -94,6 +122,30 @@ const BuildSteps = ({ build, onError }: Props) => {
           }}
         />
       </div>
+      {stepGithub && (
+        <div className={`${CLASS_NAME}__step`}>
+          <BuildStepsStatus status={stepGithub.status} />
+          <Icon icon="github" />
+          <span>Push Changes to GitHub</span>
+          <span className="spacer" />
+          {githubUrl && (
+            <a href={githubUrl} target="github">
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                icon="external_link"
+                disabled={
+                  stepGenerateCode.status !==
+                  models.EnumActionStepStatus.Success
+                }
+                eventData={{
+                  eventName: "openGithubPullRequest",
+                }}
+              />
+            </a>
+          )}
+        </div>
+      )}
+
       <div className={`${CLASS_NAME}__step`}>
         <BuildStepsStatus status={stepBuildDocker.status} />
         <Icon icon="docker" />
@@ -116,7 +168,7 @@ const BuildSteps = ({ build, onError }: Props) => {
       <div className={`${CLASS_NAME}__step`}>
         <BuildStepsStatus status={stepDeploy.status} />
         <Icon icon="publish" />
-        <span>Publish App</span>
+        <span>Publish App to Sandbox</span>
         <span className="spacer" />
 
         {deployment &&

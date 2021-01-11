@@ -1,6 +1,6 @@
 @import "../style/index.scss";
 
-$panel-height: 280px;
+$panel-height: 320px;
 
 .last-commit {
   padding-top: var(--double-spacing);
@@ -9,6 +9,10 @@ $panel-height: 280px;
     color: var(--black60);
   }
 
+  &__step-completed {
+    color: var(--positive-default);
+    margin-right: var(--default-spacing-small);
+  }
   &__loading {
     display: flex;
     align-items: center;

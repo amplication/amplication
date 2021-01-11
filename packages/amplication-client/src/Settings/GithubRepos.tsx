@@ -48,7 +48,7 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
 
   return (
     <div className={CLASS_NAME}>
-      Select Repo
+      <h3>Select a GitHub repository to sync your application with.</h3>
       {loading && <CircularProgress />}
       {data?.appAvailableGithubRepos.map((repo) => (
         <GithubRepoItem

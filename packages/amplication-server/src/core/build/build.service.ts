@@ -598,7 +598,7 @@ ${url}
               build.appId,
               'Sync Completed Successfully'
             );
-            await this.actionService.logInfo(step, prUrl);
+            await this.actionService.logInfo(step, prUrl, { githubUrl: prUrl });
             await this.actionService.logInfo(
               step,
               PUSH_TO_GITHUB_STEP_FINISH_LOG

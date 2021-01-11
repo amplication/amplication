@@ -4,6 +4,10 @@ $max-height: 80vh;
 .github-repos {
   overflow: auto;
 
+  h3 {
+    margin-top: 0;
+    @include body2;
+  }
   &__body {
     @include flexFullRowWithSpacing;
 
