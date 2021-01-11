@@ -11,7 +11,7 @@ import { CircleBadge } from "@amplication/design-system";
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import LastCommitTile from "./LastCommitTile";
-import PendingChangesTile from "./PendingChangesTile";
+import SyncWithGithubTile from "./SyncWithGithubTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
 import { COLOR_TO_NAME } from "./constants";
@@ -63,7 +63,7 @@ function ApplicationHome({ match }: Props) {
               <RolesTile applicationId={applicationId} />
             </div>
             <div>
-              <PendingChangesTile applicationId={applicationId} />
+              <SyncWithGithubTile applicationId={applicationId} />
             </div>
             <div>
               <LastCommitTile applicationId={applicationId} />
