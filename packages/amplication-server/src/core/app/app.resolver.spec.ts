@@ -121,6 +121,7 @@ const FIND_ONE_APP_QUERY = gql`
       updatedAt
       name
       description
+      githubSyncEnabled
       entities {
         id
         createdAt
@@ -206,6 +207,7 @@ const CREATE_APP_MUTATION = gql`
       updatedAt
       name
       description
+      githubSyncEnabled
       entities {
         id
         createdAt
@@ -243,6 +245,7 @@ const DELETE_APP_MUTATION = gql`
       updatedAt
       name
       description
+      githubSyncEnabled
       entities {
         id
         createdAt
