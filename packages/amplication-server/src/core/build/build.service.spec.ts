@@ -38,8 +38,7 @@ import {
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { App } from 'src/models';
-import { Commit } from 'src/models';
+import { App, Commit } from 'src/models';
 import {
   ActionStep,
   EnumActionLogLevel,

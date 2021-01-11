@@ -29,6 +29,7 @@ import { USER_ENTITY_NAME } from '../entity/constants';
 import { InvalidColorError } from './InvalidColorError';
 import { BuildService } from '../build/build.service';
 import { Build } from '../build/dto/Build';
+import { GithubService } from '../github/github.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -220,6 +221,10 @@ describe('AppService', () => {
             findFirst: entityServiceFindFirstMock,
             bulkCreateEntities: entityServiceBulkCreateEntities
           }))
+        },
+        {
+          provide: GithubService,
+          useValue: {}
         },
         {
           provide: EnvironmentService,
