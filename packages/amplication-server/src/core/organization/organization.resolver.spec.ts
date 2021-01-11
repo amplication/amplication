@@ -71,6 +71,7 @@ const GET_APPS_QUERY = gql`
         id
         name
         description
+        githubSyncEnabled
         createdAt
         updatedAt
       }
