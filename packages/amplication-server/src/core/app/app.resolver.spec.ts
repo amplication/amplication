@@ -93,6 +93,7 @@ const EXAMPLE_APP: App = {
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
   description: EXAMPLE_DESCRIPTION,
+  githubSyncEnabled: false,
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT]
@@ -279,6 +280,7 @@ const UPDATE_APP_MUTATION = gql`
       updatedAt
       name
       description
+      githubSyncEnabled
       entities {
         id
         createdAt

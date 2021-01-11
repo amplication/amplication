@@ -46,7 +46,8 @@ const EXAMPLE_APP: App = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_APP_NAME,
-  description: EXAMPLE_APP_DESCRIPTION
+  description: EXAMPLE_APP_DESCRIPTION,
+  githubSyncEnabled: false
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
