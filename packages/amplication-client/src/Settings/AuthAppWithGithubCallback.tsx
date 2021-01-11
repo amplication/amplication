@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { match } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
+import { useTracking } from "../util/analytics";
 
 type Props = {
   match: match<{ application: string }>;
@@ -8,6 +9,7 @@ type Props = {
 
 export default ({ match }: Props) => {
   const { application } = match.params;
+  const { trackEvent } = useTracking();
 
   const [completeAuthWithGithub] = useMutation<Boolean>(
     COMPLETE_AUTH_APP_WITH_GITHUB,
@@ -27,6 +29,9 @@ export default ({ match }: Props) => {
     const code = urlParams.get("code");
     const state = urlParams.get("state");
     if (window.opener) {
+      trackEvent({
+        eventName: "completeAuthAppWithGitHub",
+      });
       completeAuthWithGithub({
         variables: {
           appId: application,
@@ -35,7 +40,7 @@ export default ({ match }: Props) => {
         },
       }).catch(console.error);
     }
-  }, [completeAuthWithGithub, application]);
+  }, [completeAuthWithGithub, trackEvent, application]);
 
   /**@todo: show formatted layout and optional error message */
   return <p>Please wait...</p>;

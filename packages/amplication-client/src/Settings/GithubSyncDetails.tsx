@@ -4,7 +4,7 @@ import { Snackbar } from "@rmwc/snackbar";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { Button, EnumButtonStyle } from "@amplication/design-system";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import "./GithubSyncDetails.scss";
 
 const CLASS_NAME = "github-repo-details";
@@ -44,6 +44,9 @@ function GithubSyncDetails({ app }: Props) {
         <div className={`${CLASS_NAME}__action`}>
           <Button
             buttonStyle={EnumButtonStyle.Secondary}
+            eventData={{
+              eventName: "changeGithubRepo",
+            }}
             onClick={handleDisableSync}
           >
             Change Repo
