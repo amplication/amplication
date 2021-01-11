@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 
 import { Link } from "react-router-dom";
-
+import { isEmpty } from "lodash";
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 import { downloadArchive } from "./BuildSteps";
@@ -25,6 +25,7 @@ export const EMPTY_STEP: models.ActionStep = {
 export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
 export const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
   build: models.Build;
@@ -77,6 +78,21 @@ const BuildSummary = ({ build, onError }: Props) => {
     );
   }, [data.build.action]);
 
+  const githubUrl = useMemo(() => {
+    if (!data.build.action?.steps?.length) {
+      return null;
+    }
+    const stepGithub = data.build.action.steps.find(
+      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+    );
+
+    const log = stepGithub?.logs?.find(
+      (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
+    );
+
+    return log?.meta?.githubUrl || null;
+  }, [data.build.action]);
+
   const deployment =
     data.build.deployments &&
     data.build.deployments.length &&
@@ -85,8 +101,26 @@ const BuildSummary = ({ build, onError }: Props) => {
   return (
     <div className={`${CLASS_NAME}`}>
       <div className={`${CLASS_NAME}__download`}>
+        {githubUrl && (
+          <a
+            href={githubUrl}
+            target="github"
+            className={`${CLASS_NAME}__open-github`}
+          >
+            <Button
+              buttonStyle={EnumButtonStyle.Primary}
+              eventData={{
+                eventName: "openGithubPullRequest",
+              }}
+            >
+              Open GitHub
+            </Button>
+          </a>
+        )}
         <Button
-          buttonStyle={EnumButtonStyle.Primary}
+          buttonStyle={
+            githubUrl ? EnumButtonStyle.Secondary : EnumButtonStyle.Primary
+          }
           disabled={
             stepGenerateCode.status !== models.EnumActionStepStatus.Success
           }
@@ -99,6 +133,7 @@ const BuildSummary = ({ build, onError }: Props) => {
           Download Code
         </Button>
       </div>
+
       {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
       stepDeploy.status === models.EnumActionStepStatus.Running ? (
         <div className={`${CLASS_NAME}__sandbox`}>

@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import * as models from "../models";
+import { Icon } from "@rmwc/icon";
 import { Button } from "@amplication/design-system";
 import "./GithubRepoItem.scss";
 
@@ -23,7 +24,10 @@ function GithubRepoItem({ repo, onSelectRepo }: Props) {
       <div className={`${CLASS_NAME}__details`}>
         <span className={`${CLASS_NAME}__name`}>{repo.fullName}</span>
         {repo.private && (
-          <span className={`${CLASS_NAME}__privacy`}>Private</span>
+          <span className={`${CLASS_NAME}__privacy`}>
+            <Icon icon={{ icon: "lock", size: "xsmall" }} />
+            Private
+          </span>
         )}
 
         <div>

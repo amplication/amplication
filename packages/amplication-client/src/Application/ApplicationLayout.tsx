@@ -216,9 +216,9 @@ function ApplicationLayout({ match }: Props) {
             icon="history_commit_outline"
           />
           <MenuItem
-            title="Settings"
+            title="Sync with GitHub"
             to={`/${application}/settings`}
-            icon="setting_outline"
+            icon="Sync_with_Github_outline"
           />
         </MainLayout.Menu>
         <MainLayout.Content>
