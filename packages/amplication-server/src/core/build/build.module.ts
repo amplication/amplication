@@ -16,6 +16,7 @@ import { ActionModule } from '../action/action.module';
 import { DeploymentModule } from '../deployment/deployment.module';
 import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilderRoot.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
+import { GithubModule } from '../github/github.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
     ContainerBuilderRootModule,
     StorageOptionsModule,
     DeploymentModule,
+    GithubModule,
     forwardRef(() => AppModule)
   ],
   providers: [BuildService, BuildResolver],

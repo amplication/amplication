@@ -29,6 +29,7 @@ import { USER_ENTITY_NAME } from '../entity/constants';
 import { InvalidColorError } from './InvalidColorError';
 import { BuildService } from '../build/build.service';
 import { Build } from '../build/dto/Build';
+import { GithubService } from '../github/github.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -46,7 +47,8 @@ const EXAMPLE_APP: App = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_APP_NAME,
-  description: EXAMPLE_APP_DESCRIPTION
+  description: EXAMPLE_APP_DESCRIPTION,
+  githubSyncEnabled: false
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -219,6 +221,10 @@ describe('AppService', () => {
             findFirst: entityServiceFindFirstMock,
             bulkCreateEntities: entityServiceBulkCreateEntities
           }))
+        },
+        {
+          provide: GithubService,
+          useValue: {}
         },
         {
           provide: EnvironmentService,

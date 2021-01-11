@@ -1,1 +1,2 @@
 node_modules/
+terraform/envs/production/.terraform.lock.hcl

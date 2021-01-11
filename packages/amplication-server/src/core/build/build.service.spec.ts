@@ -38,7 +38,7 @@ import {
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { App } from 'src/models';
+import { App, Commit } from 'src/models';
 import {
   ActionStep,
   EnumActionLogLevel,
@@ -47,6 +47,7 @@ import {
 import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
+import { GithubService } from '../github/github.service';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -82,6 +83,15 @@ const EXAMPLE_DEPLOYMENT_MESSAGE = 'exampleDeploymentMessage';
 const EXAMPLE_ACTION_ID = 'exampleActionId';
 const EXAMPLE_ENVIRONMENT_NAME = 'exampleEnvironmentName';
 const EXAMPLE_ADDRESS = 'exampleAddress';
+
+const EXAMPLE_MESSAGE = 'exampleMessage';
+
+const EXAMPLE_COMMIT: Commit = {
+  id: EXAMPLE_COMMIT_ID,
+  createdAt: new Date(),
+  userId: EXAMPLE_USER_ID,
+  message: EXAMPLE_MESSAGE
+};
 
 const EXAMPLE_GENERATE_STEP = {
   id: 'ExampleActionStepId',
@@ -129,6 +139,7 @@ const EXAMPLE_BUILD: Build = {
   commitId: EXAMPLE_COMMIT_ID,
   action: EXAMPLE_ACTION
 };
+
 const EXAMPLE_COMPLETED_BUILD: Build = {
   ...EXAMPLE_BUILD,
   id: 'ExampleSuccessfulBuild',
@@ -206,6 +217,24 @@ const EXAMPLE_RUNNING_BUILD_RESULT: BuildResult = {
   status: ContainerBuildStatus.Running
 };
 
+const EXAMPLE_APP_ROLES = [];
+
+const EXAMPLE_APP: App = {
+  id: 'exampleAppId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: 'exampleAppName',
+  description: 'example App Description',
+  color: '#20A4F3',
+  githubSyncEnabled: false
+};
+
+const EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT: Build = {
+  ...EXAMPLE_BUILD,
+  commit: EXAMPLE_COMMIT,
+  app: EXAMPLE_APP
+};
+
 const commitId = EXAMPLE_COMMIT_ID;
 const version = commitId.slice(commitId.length - 8);
 const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
@@ -236,7 +265,9 @@ const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
 
 const EXAMPLE_MODULES = [];
 
-const prismaBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);
+const prismaBuildCreateMock = jest.fn(
+  () => EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT
+);
 
 const prismaBuildFindOneMock = jest.fn();
 
@@ -253,17 +284,6 @@ const entityServiceGetLatestVersionsMock = jest.fn(() => {
 const EXAMPLE_ENTITIES = [];
 
 const entityServiceGetEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
-
-const EXAMPLE_APP_ROLES = [];
-
-const EXAMPLE_APP: App = {
-  id: 'exampleAppId',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: 'exampleAppName',
-  description: 'example App Description',
-  color: '#20A4F3'
-};
 
 const appRoleServiceGetAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
 
@@ -439,6 +459,10 @@ describe('BuildService', () => {
           }
         },
         {
+          provide: GithubService,
+          useValue: {}
+        },
+        {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
             error: loggerErrorMock,
@@ -486,7 +510,9 @@ describe('BuildService', () => {
     const commitId = EXAMPLE_COMMIT_ID;
     const version = commitId.slice(commitId.length - 8);
     const latestEntityVersions = [{ id: EXAMPLE_ENTITY_VERSION_ID }];
-    expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
+    expect(await service.create(args)).toEqual(
+      EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT
+    );
     expect(entityServiceGetLatestVersionsMock).toBeCalledTimes(1);
     expect(entityServiceGetLatestVersionsMock).toBeCalledWith({
       where: { app: { id: EXAMPLE_APP_ID } }
@@ -514,6 +540,10 @@ describe('BuildService', () => {
             }
           }
         }
+      },
+      include: {
+        commit: true,
+        app: true
       }
     });
     expect(loggerChildMock).toBeCalledTimes(1);

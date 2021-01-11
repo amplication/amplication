@@ -17,6 +17,8 @@ module "env" {
   github_client_id                 = var.github_client_id
   github_scope                     = var.github_scope
   github_redirect_uri              = var.github_redirect_uri
+  github_app_auth_scope            = var.github_app_auth_scope
+  github_app_auth_redirect_uri     = var.github_app_auth_redirect_uri
   amplitude_api_key                = var.amplitude_api_key
   database_tier                    = var.database_tier
   image_id                         = var.image_id

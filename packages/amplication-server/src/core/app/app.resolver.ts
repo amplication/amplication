@@ -13,7 +13,9 @@ import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
-  PendingChange
+  FindAvailableGithubReposArgs,
+  PendingChange,
+  AppEnableSyncWithGithubRepoArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { App, Entity, User, Commit } from 'src/models';
@@ -23,6 +25,9 @@ import { AppService, EntityService } from '../';
 import { BuildService } from '../build/build.service';
 import { EnvironmentService } from '../environment/environment.service';
 import { FindManyBuildArgs } from '../build/dto/FindManyBuildArgs';
+import { AuthorizeAppWithGithubResult } from './dto/AuthorizeAppWithGithubResult';
+import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
+
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 
@@ -34,6 +39,7 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { FindManyEntityArgs } from '../entity/dto';
+import { GithubRepo } from '../github/dto/githubRepo';
 
 @Resolver(() => App)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -163,5 +169,68 @@ export class AppResolver {
     @UserEntity() user: User
   ): Promise<PendingChange[]> {
     return this.appService.getPendingChanges(args, user);
+  }
+
+  @Mutation(() => AuthorizeAppWithGithubResult, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async startAuthorizeAppWithGithub(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: User
+  ): Promise<AuthorizeAppWithGithubResult> {
+    return {
+      url: await this.appService.startAuthorizeAppWithGithub(args.where.id)
+    };
+  }
+
+  @Mutation(() => App, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async completeAuthorizeAppWithGithub(
+    @Args() args: CompleteAuthorizeAppWithGithubArgs,
+    @UserEntity() user: User
+  ): Promise<App> {
+    return this.appService.completeAuthorizeAppWithGithub(args);
+  }
+
+  @Mutation(() => App, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async removeAuthorizeAppWithGithub(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: User
+  ): Promise<App> {
+    return this.appService.removeAuthorizeAppWithGithub(args);
+  }
+
+  @Query(() => [GithubRepo], {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  async appAvailableGithubRepos(
+    @Args() args: FindAvailableGithubReposArgs
+  ): Promise<GithubRepo[]> {
+    return this.appService.findAvailableGithubRepos(args);
+  }
+
+  @Mutation(() => App, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async appEnableSyncWithGithubRepo(
+    @Args() args: AppEnableSyncWithGithubRepoArgs
+  ): Promise<App> {
+    return this.appService.enableSyncWithGithubRepo(args);
+  }
+
+  @Mutation(() => App, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async appDisableSyncWithGithubRepo(@Args() args: FindOneArgs): Promise<App> {
+    return this.appService.disableSyncWithGithubRepo(args);
   }
 }
