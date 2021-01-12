@@ -27,7 +27,7 @@ An open-source dev tool for building fully functional server-side Node.js apps w
 Try amplication immediately on [app.amplication.com](http://app.amplication.com/)
 or [follow the instructions](#development) to run a local instance.
 
-Visit [amplication.com](http://amplication.com/) to learn more.
+See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
 
 ## Features
 
