@@ -19,7 +19,7 @@ function WelcomePage({ children }: Props) {
         production.
       </p>
       <p>
-        amplication is an open-source project and you can send as{" "}
+        amplication is an open-source project and you can send us{" "}
         <a
           target="github"
           href="https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title="
