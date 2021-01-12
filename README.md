@@ -37,6 +37,7 @@ Build business applications with:
 - Admin UI built with React
 - Role-based access control
 - OOB Docker and docker-compose integration
+- Automatic push of the generated code to a GitHub repo
 
 ## Development
 
