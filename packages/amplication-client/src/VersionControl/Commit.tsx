@@ -2,7 +2,6 @@ import React, { useContext, useCallback } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { GlobalHotKeys } from "react-hotkeys";
-import { CircularProgress } from "@rmwc/circular-progress";
 import { gql, useMutation } from "@apollo/client";
 import PendingChangesContext from "./PendingChangesContext";
 import { formatError } from "../util/error";
