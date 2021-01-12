@@ -42,6 +42,10 @@ Build business applications with:
 
 See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
 
+[Watch this video](https://youtu.be/tKGeLXoPr94) for a quick reacap of everything you get with Amplication.
+
+
+
 ## Development
 
 Amplication is constructed of multiple packages. To start working on Amplication follow the "Amplication Server" and "Amplication Client" installation instructions.
