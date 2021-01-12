@@ -20,8 +20,9 @@
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
 </p>
 
-An open-source dev tool for building fully functional server-side Node.js apps with React clients...blazing fast!
+Amplication is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
 
+Amplication auto-generates fully functional apps based on TypeScript and Node.js.
 ## [Getting Started](https://docs.amplication.com/docs/getting-started)
 
 Try amplication immediately on [app.amplication.com](http://app.amplication.com/)
@@ -36,8 +37,8 @@ Build business applications with:
 - Node.js server built with Nest.js and Passport with REST API and GraphQL
 - Admin UI built with React
 - Role-based access control
-- OOB Docker and docker-compose integration
-- Automatic push of the generated code to a GitHub repo
+- Docker and docker-compose integration
+- Automatic push of the generated code to your GitHub repo
 
 See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
 
