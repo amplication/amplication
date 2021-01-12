@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import * as models from "../models";
 import { Icon } from "@rmwc/icon";
-import { Button } from "@amplication/design-system";
+import { Button } from "../Components/Button";
 import "./GithubRepoItem.scss";
 
 const CLASS_NAME = "github-repo-item";
@@ -39,6 +39,9 @@ function GithubRepoItem({ repo, onSelectRepo }: Props) {
 
       <div className={`${CLASS_NAME}__action`}>
         <Button
+          eventData={{
+            eventName: "selectGithubRepo",
+          }}
           onClick={() => {
             handleRepoSelected(repo);
           }}

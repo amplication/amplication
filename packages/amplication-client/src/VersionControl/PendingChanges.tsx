@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
+import { Tooltip } from "@primer/components";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
@@ -57,21 +58,39 @@ const PendingChanges = ({ applicationId }: Props) => {
 
   const errorMessage = formatError(error);
 
+  const noChanges = isEmpty(data?.pendingChanges);
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
-        <h3>Pending Changes {data?.pendingChanges.length}</h3>
+        <h3>Pending Changes</h3>
         <div className="spacer" />
-        {!loading && (
+      </div>
+      <Commit applicationId={applicationId} disabled={noChanges} />
+      <div className={`${CLASS_NAME}__changes-header`}>
+        <span>Changes</span>
+        <span className={`${CLASS_NAME}__changes-count`}>
+          {data?.pendingChanges.length}
+        </span>
+        <div className="spacer" />
+        <Tooltip aria-label={"Compare Changes"} direction="sw">
+          <Link to={`/${applicationId}/pending-changes`}>
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              disabled={loading || noChanges}
+              icon="compare"
+            />
+          </Link>
+        </Tooltip>
+        <Tooltip aria-label={"Discard Pending Changes"} direction="sw">
           <Button
             buttonStyle={EnumButtonStyle.Clear}
             onClick={handleToggleDiscardDialog}
-          >
-            Discard
-          </Button>
-        )}
+            disabled={loading || noChanges}
+            icon="trash_2"
+          />
+        </Tooltip>
       </div>
-
       {isEmpty(data?.pendingChanges) && !loading ? (
         <div className={`${CLASS_NAME}__empty-state`}>
           <img src={imageNoChanges} alt="no changes" />
@@ -82,8 +101,6 @@ const PendingChanges = ({ applicationId }: Props) => {
         </div>
       ) : (
         <>
-          <Commit applicationId={applicationId} />
-
           <Dialog
             className="discard-dialog"
             isOpen={discardDialogOpen}
@@ -101,12 +118,6 @@ const PendingChanges = ({ applicationId }: Props) => {
             <span>Loading...</span>
           ) : (
             <div className={`${CLASS_NAME}__changes`}>
-              <Link
-                className={`${CLASS_NAME}__changes__view-details`}
-                to={`/${applicationId}/pending-changes`}
-              >
-                Compare Changes
-              </Link>
               {data?.pendingChanges.map((change) => (
                 <PendingChange key={change.resourceId} change={change} />
               ))}

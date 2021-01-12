@@ -8,6 +8,7 @@ import * as models from "../models";
 import GithubRepos from "./GithubRepos";
 import GithubSyncDetails from "./GithubSyncDetails";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import { useTracking } from "../util/analytics";
 
 import {
   PanelCollapsible,
@@ -37,6 +38,7 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 function AuthAppWithGithub({ app, onDone }: Props) {
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
+  const { trackEvent } = useTracking();
 
   const [authWithGithub, { loading, error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
@@ -72,9 +74,9 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   const handleAuthWithGithubClick = useCallback(
     (data) => {
       if (isEmpty(app.githubTokenCreatedDate)) {
-        // eventData={{
-        //   eventName: "authAppInWithGitHub",
-        // }}
+        trackEvent({
+          eventName: "startAuthAppWithGitHub",
+        });
         authWithGithub({
           variables: {
             appId: app.id,
@@ -84,7 +86,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
         setConfirmRemove(true);
       }
     },
-    [authWithGithub, app]
+    [authWithGithub, app, trackEvent]
   );
 
   const handleDismissRemove = useCallback(() => {
@@ -92,16 +94,16 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   }, [setConfirmRemove]);
 
   const handleConfirmRemoveAuth = useCallback(() => {
-    // eventData={{
-    //   eventName: "authAppInWithGitHub",
-    // }}
+    trackEvent({
+      eventName: "removeAuthAppWithGitHub",
+    });
     setConfirmRemove(false);
     removeAuthWithGithub({
       variables: {
         appId: app.id,
       },
     }).catch(console.error);
-  }, [removeAuthWithGithub, app]);
+  }, [removeAuthWithGithub, app, trackEvent]);
 
   triggerOnDone = () => {
     onDone();
