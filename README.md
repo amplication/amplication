@@ -27,8 +27,6 @@ An open-source dev tool for building fully functional server-side Node.js apps w
 Try amplication immediately on [app.amplication.com](http://app.amplication.com/)
 or [follow the instructions](#development) to run a local instance.
 
-See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
-
 ## Features
 
 Build business applications with:
@@ -40,6 +38,8 @@ Build business applications with:
 - Role-based access control
 - OOB Docker and docker-compose integration
 - Automatic push of the generated code to a GitHub repo
+
+See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
 
 ## Development
 
