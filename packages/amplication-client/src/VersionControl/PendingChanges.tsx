@@ -78,7 +78,7 @@ const PendingChanges = ({ applicationId }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               disabled={loading || noChanges}
-              icon="file_plus"
+              icon="compare"
             />
           </Link>
         </Tooltip>
