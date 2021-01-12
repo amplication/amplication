@@ -23,6 +23,7 @@ const INITIAL_VALUES: TCommit = {
 
 type Props = {
   applicationId: string;
+  disabled: boolean;
 };
 const CLASS_NAME = "commit";
 
@@ -30,7 +31,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const Commit = ({ applicationId }: Props) => {
+const Commit = ({ applicationId, disabled }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
@@ -54,7 +55,7 @@ const Commit = ({ applicationId }: Props) => {
   });
 
   const handleSubmit = useCallback(
-    (data) => {
+    (data, { resetForm }) => {
       pendingChangesContext.setCommitRunning(true);
       commit({
         variables: {
@@ -62,6 +63,7 @@ const Commit = ({ applicationId }: Props) => {
           applicationId,
         },
       }).catch(console.error);
+      resetForm(INITIAL_VALUES);
       pendingChangesContext.reset();
     },
     [applicationId, commit, pendingChangesContext]
@@ -71,47 +73,48 @@ const Commit = ({ applicationId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      {loading ? (
+      {/* {loading ? (
         <CircularProgress />
-      ) : (
-        <Formik
-          initialValues={INITIAL_VALUES}
-          onSubmit={handleSubmit}
-          validateOnMount
-        >
-          {(formik) => {
-            const handlers = {
-              SUBMIT: formik.submitForm,
-            };
+      ) : ( */}
+      <Formik
+        initialValues={INITIAL_VALUES}
+        onSubmit={handleSubmit}
+        validateOnMount
+      >
+        {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
 
-            return (
-              <Form>
-                <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-                <TextField
-                  rows={3}
-                  textarea
-                  name="message"
-                  label="Type in a commit message"
-                  disabled={loading}
-                  autoFocus
-                  hideLabel
-                  placeholder="Type in a commit message"
-                  autoComplete="off"
-                />
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  eventData={{
-                    eventName: "commit",
-                  }}
-                >
-                  Commit Changes
-                </Button>
-              </Form>
-            );
-          }}
-        </Formik>
-      )}
+          return (
+            <Form>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              <TextField
+                rows={3}
+                textarea
+                name="message"
+                label="Type in a commit message"
+                disabled={loading || disabled}
+                autoFocus
+                hideLabel
+                placeholder={disabled ? "" : "Type in a commit message"}
+                autoComplete="off"
+              />
+              <Button
+                type="submit"
+                buttonStyle={EnumButtonStyle.Primary}
+                eventData={{
+                  eventName: "commit",
+                }}
+                disabled={loading || disabled}
+              >
+                Commit Changes
+              </Button>
+            </Form>
+          );
+        }}
+      </Formik>
+      {/* )} */}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

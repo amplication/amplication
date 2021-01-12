@@ -185,9 +185,6 @@ function ApplicationLayout({ match }: Props) {
               name={applicationData?.app.name || ""}
               color={applicationData?.app.color}
             />
-            <span className="amp-menu-item__title">
-              {applicationData?.app.name}
-            </span>
           </MenuItem>
           <PendingChangesMenuItem
             applicationId={application}

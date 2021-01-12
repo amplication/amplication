@@ -1,6 +1,7 @@
 @import "../style/index.scss";
 
 $empty-state-image-size: 120px;
+$counter-height: 18px;
 
 .pending-changes {
   padding: var(--default-spacing);
@@ -10,6 +11,38 @@ $empty-state-image-size: 120px;
     h3 {
       margin: 0;
     }
+  }
+
+  &__changes-header {
+    @include flexFullRowWithSpacing;
+    @include body2;
+
+    :last-child {
+      margin-left: 0;
+    }
+    .amp-button {
+      margin-left: 0;
+    }
+
+    .amp-icon {
+      font-size: 18px;
+    }
+  }
+
+  &__changes-count {
+    background-color: var(--black10);
+    height: $counter-height;
+    border-radius: var(--medium-button-radius);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    box-sizing: border-box;
+    white-space: nowrap;
+    width: auto;
+    margin-left: var(--default-spacing-small);
+    min-width: $counter-height;
   }
 
   &__empty-state {
@@ -32,12 +65,6 @@ $empty-state-image-size: 120px;
     margin-top: var(--default-spacing);
     position: relative;
     margin-bottom: var(--default-spacing);
-
-    &__view-details {
-      margin-bottom: var(--default-spacing);
-      display: block;
-      text-align: right;
-    }
   }
 }
 
