@@ -1,4 +1,4 @@
-import { Strategy, StrategyOptions, Profile } from 'passport-github';
+import { Strategy, StrategyOptions, Profile } from 'passport-github2';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { AuthService, AuthUser } from './auth.service';
