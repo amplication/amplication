@@ -1,3 +1,6 @@
+@mixin fontMono {
+  font-family: "DM Mono", monospace;
+}
 @mixin pageTitle {
   font-weight: normal;
   font-size: 24px;
