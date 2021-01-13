@@ -32,7 +32,7 @@ $message-margin-bottom: 40px;
   }
 
   &__policy {
-    margin-top: $policy-margin-top;
+    margin-top: $policy-margin-top !important;
     margin-bottom: 0;
     @include body2;
     color: var(--black40);

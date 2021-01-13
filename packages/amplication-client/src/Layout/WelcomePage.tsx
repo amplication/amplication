@@ -1,7 +1,8 @@
 import React from "react";
 import "./PageContent.scss";
 import { Panel } from "@amplication/design-system";
-import { ReactComponent as AmplicationLogo } from "../assets/logo-amplication.svg";
+import { ReactComponent as AmplicationLogo } from "../assets/logo-amplication-white.svg";
+import { ReactComponent as DiscordButton } from "../assets/images/discord-button.svg";
 import "./WelcomePage.scss";
 
 const CLASS_NAME = "welcome-page";
@@ -42,35 +43,36 @@ function WelcomePage({ children }: Props) {
         </a>
         .
       </p>
-
-      <p>
-        You may also chat with us on our{" "}
-        <a href="https://discord.gg/b8MrjU6" target="discord">
-          Discord server
-        </a>
-        .
-      </p>
     </div>
   );
 
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__stripe`}>
+        <a
+          href="https://amplication.com"
+          className={`${CLASS_NAME}__stripe__logo`}
+        >
+          <AmplicationLogo />
+        </a>
         <div>
-          <a href="https://amplication.com">
-            <AmplicationLogo />
-          </a>
           <div className={`${CLASS_NAME}__stripe__title`}>
-            Developer oriented
-            <br />
-            <span>Open source</span>
-            <br />
-            Low-code Platform
+            Instantly generate quality Node.js apps
+          </div>
+          <div className={`${CLASS_NAME}__stripe__subtitle`}>
+            Just code what matters.
           </div>
           <div className={`${CLASS_NAME}__stripe__open-source-message`}>
             {openSourceMessage}
           </div>
         </div>
+        <a
+          href="https://discord.gg/b8MrjU6"
+          target="discord"
+          className="discord-button"
+        >
+          <DiscordButton />
+        </a>
       </div>
       <div className={`${CLASS_NAME}__form`}>
         <Panel className={`${CLASS_NAME}__panel`} shadow>
