@@ -11,6 +11,7 @@ import { TextField } from "@amplication/design-system";
 import { Button } from "../Components/Button";
 import { Form } from "../Components/Form";
 import queryString from "query-string";
+import { Icon } from "@rmwc/icon";
 
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
@@ -70,6 +71,13 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
+          {urlError && (
+            <div className={`${CLASS_NAME}__login-error`}>
+              <Icon icon="alert_circle" />
+              {urlError}
+            </div>
+          )}
+
           {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
@@ -112,7 +120,6 @@ const Login = () => {
               </div>
             </>
           )}
-          <div className={`${CLASS_NAME}__login-error`}>{urlError}</div>
 
           <div className={`${CLASS_NAME}__policy`}>
             By signing up to amplication, you agree to our{" "}

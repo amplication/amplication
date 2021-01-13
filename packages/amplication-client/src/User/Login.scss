@@ -14,6 +14,23 @@ $message-margin-bottom: 40px;
     }
   }
 
+  &__login-error {
+    @include body2;
+    background-color: var(--negative-bg);
+    padding: var(--default-spacing-small);
+    border-radius: var(--default-border-radius);
+    color: var(--black80);
+    text-align: left;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .amp-icon {
+      margin-right: var(--default-spacing);
+      color: var(--negative);
+      font-weight: bold;
+    }
+  }
   &__message {
     @include body1;
     white-space: normal;
@@ -25,10 +42,6 @@ $message-margin-bottom: 40px;
   &__title {
     @include pageTitle;
     display: inline-block;
-  }
-
-  &__login-error {
-    color: var(--negative);
   }
 
   &__policy {
