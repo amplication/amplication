@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
-import { StrategyOptions } from 'passport-github';
+import { StrategyOptions } from 'passport-github2';
 import { Injectable } from '@nestjs/common';
 
 export const GITHUB_CLIENT_ID_VAR = 'GITHUB_CLIENT_ID';

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
@@ -10,6 +10,7 @@ import { formatError } from "../util/error";
 import { TextField } from "@amplication/design-system";
 import { Button } from "../Components/Button";
 import { Form } from "../Components/Form";
+import queryString from "query-string";
 
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
@@ -42,6 +43,13 @@ const Login = () => {
     },
     [login]
   );
+
+  const urlError = useMemo(() => {
+    const params = queryString.parse(location.search);
+    console.log("params", params);
+    console.log("params.error", params.error);
+    return params.error;
+  }, [location.search]);
 
   useEffect(() => {
     if (data) {
@@ -98,12 +106,14 @@ const Login = () => {
                 }}
               >
                 Continue
-              </Button>{" "}
+              </Button>
               <div className={`${CLASS_NAME}__signup`}>
                 Do not have an account? <Link to="/signup">Sign up</Link>
               </div>
             </>
           )}
+          <div className={`${CLASS_NAME}__login-error`}>{urlError}</div>
+
           <div className={`${CLASS_NAME}__policy`}>
             By signing up to amplication, you agree to our{" "}
             <a href="https://amplication.com/terms" target="terms">

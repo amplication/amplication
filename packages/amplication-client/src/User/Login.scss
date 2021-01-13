@@ -27,6 +27,10 @@ $message-margin-bottom: 40px;
     display: inline-block;
   }
 
+  &__login-error {
+    color: var(--negative);
+  }
+
   &__policy {
     margin-top: $policy-margin-top;
     margin-bottom: 0;
