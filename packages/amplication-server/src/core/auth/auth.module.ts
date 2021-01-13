@@ -8,6 +8,7 @@ import { PrismaModule } from 'nestjs-prisma';
 import { UserModule } from '../user/user.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { PermissionsModule } from '../permissions/permissions.module';
+import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { AuthService } from './auth.service';
@@ -33,6 +34,7 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
     AccountModule, // (AccountService, PasswordService)
     PrismaModule, // (PrismaService)
     PermissionsModule,
+    ExceptionFiltersModule,
     OrganizationModule,
     UserModule,
     GoogleSecretsManagerModule
