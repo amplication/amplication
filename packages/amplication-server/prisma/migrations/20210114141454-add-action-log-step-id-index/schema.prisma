@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
 }
 
 generator client {
@@ -332,8 +332,6 @@ model ActionStep {
   logs        ActionLog[]
   action      Action           @relation(fields: [actionId], references: [id])
   actionId    String
-
-  @@index([actionId])
 }
 
 enum EnumLogLevel {

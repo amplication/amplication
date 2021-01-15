@@ -14,14 +14,14 @@ github_app_auth_redirect_uri = "https://app.amplication.com/github-auth-app/call
 amplitude_api_key = "d6c2950cd60b91196e678f9a3a7ac705"
 
 # Cloud SQL
-database_tier = "db-g1-small"
+database_tier = "db-custom-4-8192"
 
 # Cloud Run
 bcrypt_salt_or_rounds = 10
 host = "https://app.amplication.com"
 server_database_connection_limit = 15
-server_min_scale = 1
-server_max_scale = 3
+server_min_scale = 6
+server_max_scale = 12
 
 # Secret Manager
 github_client_secret_id = "github_client_secret"
