@@ -35,6 +35,9 @@ describe("createConfig", () => {
           object: EXAMPLE_ARCHIVE_NAME,
         },
       },
+      options: {
+        machineType: "N1_HIGHCPU_8",
+      },
       tags: DEFAULT_TAGS,
     });
   });
