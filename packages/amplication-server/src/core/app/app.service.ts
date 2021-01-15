@@ -82,21 +82,24 @@ export class AppService {
 
     await this.environmentService.createDefaultEnvironment(app.id);
 
-    await this.commit({
-      data: {
-        app: {
-          connect: {
-            id: app.id
-          }
-        },
-        message: INITIAL_COMMIT_MESSAGE,
-        user: {
-          connect: {
-            id: user.id
+    await this.commit(
+      {
+        data: {
+          app: {
+            connect: {
+              id: app.id
+            }
+          },
+          message: INITIAL_COMMIT_MESSAGE,
+          user: {
+            connect: {
+              id: user.id
+            }
           }
         }
-      }
-    });
+      },
+      true
+    );
 
     return app;
   }
@@ -187,7 +190,10 @@ export class AppService {
     return this.entityService.getChangedEntities(appId, user.id);
   }
 
-  async commit(args: CreateCommitArgs): Promise<Commit | null> {
+  async commit(
+    args: CreateCommitArgs,
+    skipPublish?: boolean
+  ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const appId = args.data.app.connect.id;
 
@@ -255,26 +261,29 @@ export class AppService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    await this.buildService.create({
-      data: {
-        app: {
-          connect: {
-            id: appId
-          }
-        },
-        commit: {
-          connect: {
-            id: commit.id
-          }
-        },
-        createdBy: {
-          connect: {
-            id: userId
-          }
-        },
-        message: args.data.message
-      }
-    });
+    await this.buildService.create(
+      {
+        data: {
+          app: {
+            connect: {
+              id: appId
+            }
+          },
+          commit: {
+            connect: {
+              id: commit.id
+            }
+          },
+          createdBy: {
+            connect: {
+              id: userId
+            }
+          },
+          message: args.data.message
+        }
+      },
+      skipPublish
+    );
 
     return commit;
   }
