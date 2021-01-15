@@ -2,6 +2,8 @@ import React, { useCallback, useMemo } from "react";
 
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
+import { Icon } from "@rmwc/icon";
+
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 import { downloadArchive } from "./BuildSteps";
@@ -74,7 +76,7 @@ const BuildSummary = ({ build, onError }: Props) => {
     }
     return (
       data.build.action.steps.find((step) => step.name === DEPLOY_STEP_NAME) ||
-      EMPTY_STEP
+      null
     );
   }, [data.build.action]);
 
@@ -135,7 +137,7 @@ const BuildSummary = ({ build, onError }: Props) => {
       </div>
 
       {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
-      stepDeploy.status === models.EnumActionStepStatus.Running ? (
+      stepDeploy?.status === models.EnumActionStepStatus.Running ? (
         <div className={`${CLASS_NAME}__sandbox`}>
           <BuildStepsStatus status={models.EnumActionStepStatus.Running} />
           <span>
@@ -151,7 +153,7 @@ const BuildSummary = ({ build, onError }: Props) => {
           </span>
         </div>
       ) : deployment &&
-        stepDeploy.status === models.EnumActionStepStatus.Success ? (
+        stepDeploy?.status === models.EnumActionStepStatus.Success ? (
         <a href={deployment.environment.address} target="app">
           <Button
             buttonStyle={EnumButtonStyle.Secondary}
@@ -165,17 +167,27 @@ const BuildSummary = ({ build, onError }: Props) => {
         </a>
       ) : (
         <div className={`${CLASS_NAME}__sandbox`}>
-          <BuildStepsStatus status={models.EnumActionStepStatus.Failed} />
-          <span>
-            Deployment to sandbox environment failed.{" "}
-            <Link
-              to={`/${build.appId}/builds/${build.id}`}
-              onClick={handleViewBuildClick}
-            >
-              {" "}
-              View Details
-            </Link>
-          </span>
+          {stepDeploy ? (
+            <>
+              <BuildStepsStatus status={models.EnumActionStepStatus.Failed} />
+              <span>
+                Deployment to sandbox environment failed.{" "}
+                <Link
+                  to={`/${build.appId}/builds/${build.id}`}
+                  onClick={handleViewBuildClick}
+                >
+                  {" "}
+                  View Details
+                </Link>
+              </span>
+            </>
+          ) : (
+            <>
+              <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
+
+              <span>Commit changes to start deployment to sandbox. </span>
+            </>
+          )}
         </div>
       )}
     </div>

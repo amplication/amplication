@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Tooltip } from "@primer/components";
 import { Snackbar } from "@rmwc/snackbar";
@@ -14,11 +14,11 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { Dialog } from "@amplication/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 import "./PendingChanges.scss";
 
 const CLASS_NAME = "pending-changes";
-const POLL_INTERVAL = 1000;
 
 type TData = {
   pendingChanges: models.PendingChange[];
@@ -30,23 +30,21 @@ type Props = {
 
 const PendingChanges = ({ applicationId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
+  const pendingChangesContext = useContext(PendingChangesContext);
 
-  const { data, loading, error, stopPolling, startPolling, refetch } = useQuery<
-    TData
-  >(GET_PENDING_CHANGES, {
-    variables: {
-      applicationId,
-    },
-  });
+  const { data, loading, error, refetch } = useQuery<TData>(
+    GET_PENDING_CHANGES,
+    {
+      variables: {
+        applicationId,
+      },
+    }
+  );
 
-  //start polling with cleanup
+  //refetch when pending changes object change
   useEffect(() => {
     refetch().catch(console.error);
-    startPolling(POLL_INTERVAL);
-    return () => {
-      stopPolling();
-    };
-  }, [refetch, stopPolling, startPolling]);
+  }, [refetch, pendingChangesContext.pendingChanges]);
 
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
