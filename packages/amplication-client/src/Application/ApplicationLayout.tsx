@@ -107,7 +107,8 @@ function ApplicationLayout({ match }: Props) {
           changeItem.resourceType === resourceType
       );
       if (existingChange) {
-        return;
+        //reassign pending changes to trigger refresh
+        setPendingChanges([...pendingChanges]);
       }
 
       setPendingChanges(
