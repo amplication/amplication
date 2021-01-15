@@ -429,6 +429,7 @@ describe('AppService', () => {
       [findManyArgs],
       [findManyArgs]
     ]);
+
     expect(prismaCommitCreateMock).toBeCalledTimes(2);
     expect(prismaCommitCreateMock.mock.calls).toEqual([
       [initialCommitArgs],
@@ -541,7 +542,7 @@ describe('AppService', () => {
         message: args.data.message
       }
     };
-    expect(await service.commit(args)).toEqual(EXAMPLE_COMMIT);
+    expect(await service.commit(args, false)).toEqual(EXAMPLE_COMMIT);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(findManyArgs);
 
@@ -558,6 +559,6 @@ describe('AppService', () => {
       changedEntitiesArgs.userId
     );
     expect(buildServiceCreateMock).toBeCalledTimes(1);
-    expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs);
+    expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs, false);
   });
 });

@@ -168,7 +168,7 @@ export class BuildService {
     );
   }
 
-  async create(args: CreateBuildArgs): Promise<Build> {
+  async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
     const appId = args.data.app.connect.id;
 
     /**@todo: set version based on release when applicable */
@@ -211,7 +211,9 @@ export class BuildService {
     });
     logger.info(JOB_STARTED_LOG);
     const tarballURL = await this.generate(build);
-    await this.buildDockerImage(build, tarballURL);
+    if (!skipPublish) {
+      await this.buildDockerImage(build, tarballURL);
+    }
     logger.info(JOB_DONE_LOG);
 
     return build;
