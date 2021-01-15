@@ -51,6 +51,9 @@ describe("createConfig", () => {
           object: EXAMPLE_OBJECT,
         },
       },
+      options: {
+        machineType: "N1_HIGHCPU_8",
+      },
       tags: createBuildTags(EXAMPLE_TAGS),
     });
   });
@@ -69,6 +72,9 @@ describe("createConfig", () => {
           bucket: EXAMPLE_BUCKET,
           object: EXAMPLE_OBJECT,
         },
+      },
+      options: {
+        machineType: "N1_HIGHCPU_8",
       },
       tags: createBuildTags(EXAMPLE_TAGS),
     });
