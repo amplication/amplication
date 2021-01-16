@@ -105,6 +105,10 @@ variable "apps_project" {
   type = string
 }
 
+variable "apps_project_2" {
+  type = string
+}
+
 variable "container_builder_default" {
   type = string
 }

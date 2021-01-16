@@ -40,6 +40,7 @@ default_disk = "gcs"
 
 # Container Builder
 apps_project = "amplication-apps"
+apps_project_2 = "amplication-apps-2"
 container_builder_default = "cloud-build"
 
 # Deployer

@@ -19,9 +19,9 @@ database_tier = "db-custom-4-8192"
 # Cloud Run
 bcrypt_salt_or_rounds = 10
 host = "https://app.amplication.com"
-server_database_connection_limit = 15
-server_min_scale = 6
-server_max_scale = 12
+server_database_connection_limit = 30
+server_min_scale = 2
+server_max_scale = 10
 
 # Secret Manager
 github_client_secret_id = "github_client_secret"
@@ -47,6 +47,7 @@ github_tag = "v.+"
 
 # Apps Cloud Build
 apps_project = "amplication-production-apps"
+apps_project_2 = "amplication-production-apps-2"
 container_builder_default = "cloud-build"
 
 # Deployer
