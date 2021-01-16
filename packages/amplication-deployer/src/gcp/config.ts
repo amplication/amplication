@@ -39,9 +39,6 @@ export function createConfig(
         object: archiveFileName,
       },
     },
-    options: {
-      machineType: "N1_HIGHCPU_8",
-    },
     // Tags format: ^[\w][\w.-]{0,127}$
     tags: [
       ...DEFAULT_TAGS,

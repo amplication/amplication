@@ -25,9 +25,6 @@ export function createConfig(
         object,
       },
     },
-    options: {
-      machineType: "N1_HIGHCPU_8",
-    },
     tags: createBuildTags(request.tags),
   };
 }
