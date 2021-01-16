@@ -44,14 +44,16 @@ module "env" {
   server_max_scale                 = var.server_max_scale
   bucket                           = var.bucket
   bucket_location                  = var.bucket_location
-  apps_project                     = var.apps_project_2
+  apps_project                     = var.apps_project
+  apps_project_2                   = var.apps_project_2
   container_builder_default        = var.container_builder_default
   deployer_default                 = var.deployer_default
   apps_region                      = var.apps_region
   apps_terraform_state_bucket      = var.apps_terraform_state_bucket
+  apps_terraform_state_bucket_2    = var.apps_terraform_state_bucket_2
   apps_domain                      = var.apps_domain
-  apps_dns_zone                    = module.apps_env.zone
-  apps_database_instance           = module.apps_env.database_instance
+  apps_dns_zone                    = module.apps_env_2.zone
+  apps_database_instance           = module.apps_env_2.database_instance
 }
 
 module "deploy" {
