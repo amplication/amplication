@@ -127,6 +127,10 @@ variable "apps_terraform_state_bucket" {
   type = string
 }
 
+
+variable "apps_terraform_state_bucket_2" {
+  type = string
+}
 variable "apps_domain" {
   type = string
 }
