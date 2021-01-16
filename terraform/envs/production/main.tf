@@ -9,6 +9,17 @@ module "apps_env" {
   domain           = var.apps_domain
 }
 
+module "apps_env_2" {
+  source           = "../../modules/apps_env_baseline"
+  project          = var.apps_project_2
+  region           = var.apps_region
+  database_tier    = var.database_tier
+  bucket           = var.apps_terraform_state_bucket_2
+  bucket_location  = var.bucket_location
+  platform_project = var.project
+  domain           = var.apps_domain
+}
+
 module "env" {
   source                           = "../../modules/env_baseline"
   project                          = var.project
@@ -33,7 +44,7 @@ module "env" {
   server_max_scale                 = var.server_max_scale
   bucket                           = var.bucket
   bucket_location                  = var.bucket_location
-  apps_project                     = var.apps_project
+  apps_project                     = var.apps_project_2
   container_builder_default        = var.container_builder_default
   deployer_default                 = var.deployer_default
   apps_region                      = var.apps_region

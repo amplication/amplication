@@ -47,6 +47,7 @@ github_tag = "v.+"
 
 # Apps Cloud Build
 apps_project = "amplication-production-apps"
+apps_project_2 = "amplication-production-apps-2"
 container_builder_default = "cloud-build"
 
 # Deployer

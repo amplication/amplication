@@ -226,7 +226,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GCP_APPS_PROJECT_ID"
-          value = var.apps_project
+          value = var.apps_project_2
         }
         env {
           name  = "CONTAINER_BUILDER_DEFAULT"
