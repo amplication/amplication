@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
+import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
@@ -11,6 +12,7 @@ import { downloadArchive } from "./BuildSteps";
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 import { useTracking } from "../util/analytics";
+import { GET_APPLICATION } from "../Application/ApplicationHome";
 
 import "./BuildSummary.scss";
 
@@ -37,6 +39,14 @@ type Props = {
 const BuildSummary = ({ build, onError }: Props) => {
   const { data } = useBuildWatchStatus(build);
   const { trackEvent } = useTracking();
+
+  const { data: appData } = useQuery<{
+    app: models.App;
+  }>(GET_APPLICATION, {
+    variables: {
+      id: build.appId,
+    },
+  });
 
   const handleDownloadClick = useCallback(() => {
     downloadArchive(data.build.archiveURI).catch(onError);
@@ -103,7 +113,7 @@ const BuildSummary = ({ build, onError }: Props) => {
   return (
     <div className={`${CLASS_NAME}`}>
       <div className={`${CLASS_NAME}__download`}>
-        {githubUrl && (
+        {githubUrl ? ( //code was synced to github
           <a
             href={githubUrl}
             target="github"
@@ -118,11 +128,32 @@ const BuildSummary = ({ build, onError }: Props) => {
               Open GitHub
             </Button>
           </a>
+        ) : !appData?.app.githubSyncEnabled ? ( //app is not connected to github
+          <Link
+            to={`/${build.appId}/settings`}
+            className={`${CLASS_NAME}__open-github`}
+          >
+            <Button
+              buttonStyle={EnumButtonStyle.Primary}
+              eventData={{
+                eventName: "buildConnectToGithub",
+              }}
+            >
+              Push Code to GitHub
+            </Button>
+          </Link>
+        ) : (
+          //app was connected after this build was created
+          <div className={`${CLASS_NAME}__message`}>
+            <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
+            <span>
+              You are now connected to GitHub. Future builds will create a Pull
+              Request in your repo.
+            </span>
+          </div>
         )}
         <Button
-          buttonStyle={
-            githubUrl ? EnumButtonStyle.Secondary : EnumButtonStyle.Primary
-          }
+          buttonStyle={EnumButtonStyle.Secondary}
           disabled={
             stepGenerateCode.status !== models.EnumActionStepStatus.Success
           }

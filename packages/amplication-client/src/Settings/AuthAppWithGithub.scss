@@ -5,6 +5,14 @@ $max-width: 700px;
   max-width: $max-width;
   margin-left: 0 !important;
 
+  .toggle-field {
+    margin: 0;
+  }
+
+  .amp-panel-collapsible__header:hover {
+    box-shadow: none;
+    cursor: default;
+  }
   &__select-repo {
     @include flexFullRowWithSpacing;
 
