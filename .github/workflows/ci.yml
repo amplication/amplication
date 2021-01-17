@@ -131,8 +131,8 @@ jobs:
             amplication/scheduler:latest
             amplication/scheduler:${{ github.sha }}
       - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 0.13.5
+        # with:
+        # terraform_version: 0.13.5
       - run: terraform init -lock-timeout=1200s
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
