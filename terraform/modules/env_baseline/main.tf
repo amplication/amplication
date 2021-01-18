@@ -280,8 +280,8 @@ resource "google_cloud_run_service" "default" {
         }
       }
       container_concurrency = 10
-      # 15 minutes
-      timeout_seconds = 900
+      # 2 minutes
+      timeout_seconds = 120
     }
 
     metadata {
