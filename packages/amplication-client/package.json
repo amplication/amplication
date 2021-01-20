@@ -43,7 +43,7 @@
     "deepdash-es": "^5.2.1",
     "downloadjs": "^1.4.7",
     "events": "^3.1.0",
-    "formik": "^2.1.4",
+    "formik": "^2.2.5",
     "graphql": "^15.0.0",
     "lodash.debounce": "^4.0.8",
     "lodash.groupby": "^4.6.0",
