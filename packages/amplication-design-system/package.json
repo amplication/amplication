@@ -26,9 +26,9 @@
     "lodash": "^4.17.20",
     "react-animate-height": "^2.0.23",
     "react-device-detect": "^1.14.0",
-    "formik": "^2.2.5",
     "react-select": "^3.1.1",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "@primer/components": "^20.3.0"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.1.9",
@@ -53,7 +53,6 @@
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-postcss": "^3.1.8",
     "rollup-plugin-typescript2": "^0.29.0",
-    "@primer/components": "^20.3.0",
     "sass": "^1.29.0"
   },
   "eslintConfig": {
@@ -70,6 +69,7 @@
     "@rmwc/provider": "^6.1.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "styled-components": "^5.1.1"
+    "styled-components": "^5.1.1",
+    "formik": "^2.2.5"
   }
 }
