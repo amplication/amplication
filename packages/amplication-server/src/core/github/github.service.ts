@@ -101,7 +101,6 @@ export class GithubService {
       ]
     });
 
-    console.log(pr);
     return pr.data.html_url;
   }
 

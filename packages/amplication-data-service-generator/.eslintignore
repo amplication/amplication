@@ -7,3 +7,4 @@ scripts/
 test/
 coverage/
 .eslintrc.js
+*.js
