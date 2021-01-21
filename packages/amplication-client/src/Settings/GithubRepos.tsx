@@ -1,10 +1,11 @@
 import React, { useCallback } from "react";
 import { Snackbar } from "@rmwc/snackbar";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation, NetworkStatus } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { CircularProgress } from "@rmwc/circular-progress";
 import GithubRepoItem from "./GithubRepoItem";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import "./GithubRepos.scss";
 
 const CLASS_NAME = "github-repos";
@@ -15,12 +16,13 @@ type Props = {
 };
 
 function GithubRepos({ applicationId, onCompleted }: Props) {
-  const { data, error, loading } = useQuery<{
+  const { data, error, loading, refetch, networkStatus } = useQuery<{
     appAvailableGithubRepos: models.GithubRepo[];
   }>(FIND_GITHUB_REPOS, {
     variables: {
       id: applicationId,
     },
+    notifyOnNetworkStatusChange: true,
   });
 
   const [enableSyncWithGithub, { error: errorUpdate }] = useMutation<
@@ -30,6 +32,10 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
       onCompleted();
     },
   });
+
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   const handleRepoSelected = useCallback(
     (data: models.GithubRepo) => {
@@ -48,8 +54,19 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
 
   return (
     <div className={CLASS_NAME}>
-      <h3>Select a GitHub repository to sync your application with.</h3>
-      {loading && <CircularProgress />}
+      <div className={`${CLASS_NAME}__header`}>
+        <h3>Select a GitHub repository to sync your application with.</h3>
+        {(loading || networkStatus === NetworkStatus.refetch) && (
+          <CircularProgress />
+        )}
+        <Button
+          buttonStyle={EnumButtonStyle.Clear}
+          onClick={handleRefresh}
+          type="button"
+          icon="refresh_cw"
+          disabled={networkStatus === NetworkStatus.refetch}
+        />
+      </div>
       {data?.appAvailableGithubRepos.map((repo) => (
         <GithubRepoItem
           key={repo.fullName}
