@@ -15,6 +15,7 @@ $modal-top-position: 20vh;
   min-width: var(--modal-min-width);
   margin-top: $modal-top-position !important;
   margin-bottom: 0 !important;
+  background-color: var(--surface) !important;
 
   //mobile
   @media only screen and (max-width: $breakpoint-tablet) {

@@ -1,6 +1,6 @@
 :root {
-  --surface: #2c3249;
-  --white: #15192c; /*dark: black100 */
+  --surface: #15192c; /*dark: black100 */
+  --white: #22273c; /*dark: black90 */
 
   --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
     "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
