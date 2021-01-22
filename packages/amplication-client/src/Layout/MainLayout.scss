@@ -20,7 +20,7 @@ $expand-button-padding: 4px;
   &__side {
     height: 100%;
     width: auto;
-    background-color: var(--black100);
+    background-color: var(--menu-background-color);
     border-right: $border-black10;
     transition: width var(--menu-expand-animation-duration) ease-in;
     overflow: visible;
@@ -33,7 +33,7 @@ $expand-button-padding: 4px;
 
       &__menu-fixed-panel {
         @include scrollbars($default-scroll-width, var(--black60), transparent);
-        background-color: var(--white);
+        background-color: var(--menu-fixed-panel-background);
         height: 100%;
         width: var(--fixed-menu-panel-width);
         max-width: var(--fixed-menu-panel-max-width);

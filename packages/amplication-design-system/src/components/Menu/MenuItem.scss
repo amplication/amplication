@@ -46,7 +46,7 @@ $inverted-border-radius: 6px;
     background-size: contain;
     transition: all var(--menu-expand-animation-duration) ease-in;
     box-sizing: border-box;
-    color: var(--white);
+    color: var(--static-white);
   }
 
   &--active:before,

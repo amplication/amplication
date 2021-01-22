@@ -47,7 +47,7 @@ $background-size: 60%;
 
   &__new-app {
     @include applicationCard;
-    border: $border-black30;
+    border: $border-black10;
     align-items: center;
     justify-content: center;
     @include sectionTitle;

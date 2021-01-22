@@ -1,6 +1,7 @@
 :root {
   --surface: #f4f4f7;
   --white: #ffffff;
+  --static-white: #ffffff;
 
   --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
     "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
@@ -81,7 +82,7 @@
   --application-card-width: 390px;
   --application-card-height: 210px;
 
-  --default-border-radius: 4px;
+  --default-border-radius: 8px;
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);

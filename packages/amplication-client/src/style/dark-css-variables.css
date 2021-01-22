@@ -1,0 +1,44 @@
+:root {
+  --surface: #2c3249;
+  --white: #15192c; /*dark: black100 */
+
+  --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+
+  --primary: #7950ed;
+  --secondary: #a787ff;
+  --dark-purple: #6032ea; /** @todo rename */
+  --raised-button-fill: #6032ea;
+  --mdc-theme-primary: var(--primary);
+  --mdc-theme-secondary: (--dark-purple);
+
+  --black100: #ffffff; /*dark: white */
+  --black90: #b7bac7; /*dark: black10 */
+  --black80: #a3a8b8; /*dark: black20 */
+  --black60: #80869d; /*dark: black30 */
+  --black40: #686f8c; /*dark: black40 */
+  --black30: #515873; /*dark: black50 */
+  --black20: #444b66; /*dark: black60 */
+  --black10: #373d57; /*dark: black70 */
+  --black5: #2c3249; /*dark: black80 */
+  --black2: #22273c; /*dark: black90 */
+
+  /* Secondary green */
+  --secondary1: #f5a2f9;
+  /* Secondary green */
+  --secondary2: #59c4a9;
+
+  --secondary-turquoise: #32c9e5;
+  --secondary-light-blue: #20a4f3;
+  --secondary-blue: #144bc1;
+
+  --positive-default: #31c587;
+  --warning-default: #f6aa50;
+  --negative: #e93c51;
+
+  --modal-background: rgba(12, 11, 14, 0.48);
+
+  --menu-background-color: var(--white);
+  --menu-fixed-panel-background: var(--black2);
+}

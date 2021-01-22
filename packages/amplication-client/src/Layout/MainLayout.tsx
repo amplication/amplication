@@ -17,6 +17,7 @@ import { MenuFixedPanel } from "../util/teleporter";
 import { Popover } from "@amplication/design-system";
 import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
+import DarkModeToggle from "./DarkModeToggle";
 import "./MainLayout.scss";
 
 type Props = {
@@ -86,6 +87,7 @@ const Menu = ({ children }: MenuProps) => {
             {children}
           </div>
           <div className="bottom-menu-container">
+            <DarkModeToggle />
             <Popover
               content={<SupportMenu />}
               open={supportMenuOpen}

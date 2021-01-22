@@ -12,4 +12,7 @@
   --negative-light: #f85b6e;
 
   --negative-bg: #f8eaec;
+
+  --menu-background-color: var(--black100);
+  --menu-fixed-panel-background: var(--white);
 }

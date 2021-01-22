@@ -1,6 +1,10 @@
 @import "./style/css-variables.css";
 @import "./style/index.scss";
 
+body {
+  color: var(--black100);
+}
+
 #root {
   height: 100vh;
   overflow-y: hidden;
