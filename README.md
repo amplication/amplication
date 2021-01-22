@@ -28,8 +28,6 @@ Amplication auto-generates fully functional apps based on TypeScript and Node.js
 Try amplication immediately on [app.amplication.com](http://app.amplication.com/)
 or [follow the instructions](#development) to run a local instance.
 
-**HN Users - If you like Amplication don't forget to upvote**
-
 ## Features
 
 Build business applications with:
