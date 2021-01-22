@@ -9,7 +9,8 @@ export function createWhereUniqueInput(entity: Entity): NamedClassDeclaration {
     createWhereUniqueInputID(entity.name),
     fields,
     false,
-    true
+    true,
+    entity
   );
 }
 

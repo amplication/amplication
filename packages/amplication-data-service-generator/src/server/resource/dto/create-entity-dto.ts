@@ -21,7 +21,7 @@ export function createEntityDTO(entity: Entity): NamedClassDeclaration {
         !isPasswordField(field)
     )
     .map((field) =>
-      createFieldClassProperty(field, !field.required, false, false)
+      createFieldClassProperty(field, !field.required, false, false, entity)
     );
   return classDeclaration(
     builders.identifier(entity.name),

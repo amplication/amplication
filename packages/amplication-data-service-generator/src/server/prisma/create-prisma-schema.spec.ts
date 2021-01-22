@@ -363,6 +363,6 @@ describe("createPrismaField", () => {
       searchable: false,
       properties,
     };
-    expect(createPrismaField(field)).toEqual(expected);
+    expect(createPrismaField(field, EXAMPLE_ENTITY)).toEqual(expected);
   });
 });

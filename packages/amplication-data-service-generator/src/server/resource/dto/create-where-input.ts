@@ -11,7 +11,13 @@ import { createInput } from "./create-input";
 
 export function createWhereInput(entity: Entity): NamedClassDeclaration {
   const fields = entity.fields.filter((field) => isQueryableField(field));
-  return createInput(createWhereInputID(entity.name), fields, true, true);
+  return createInput(
+    createWhereInputID(entity.name),
+    fields,
+    true,
+    true,
+    entity
+  );
 }
 
 export function createWhereInputID(entityName: string): namedTypes.Identifier {

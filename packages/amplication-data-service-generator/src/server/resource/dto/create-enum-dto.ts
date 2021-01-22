@@ -1,7 +1,7 @@
 import { namedTypes, builders } from "ast-types";
 import { pascalCase } from "pascal-case";
 import { types } from "@amplication/data";
-import { EntityField } from "../../../types";
+import { EntityField, Entity } from "../../../types";
 import { createEnumName } from "../../prisma/create-prisma-schema";
 
 export type StringLiteralEnumMember = namedTypes.TSEnumMember & {
@@ -9,11 +9,12 @@ export type StringLiteralEnumMember = namedTypes.TSEnumMember & {
 };
 
 export function createEnumDTO(
-  field: EntityField
+  field: EntityField,
+  entity: Entity
 ): namedTypes.TSEnumDeclaration {
   const members = createEnumMembers(field);
   return builders.tsEnumDeclaration(
-    builders.identifier(createEnumName(field)),
+    builders.identifier(createEnumName(field, entity)),
     members
   );
 }

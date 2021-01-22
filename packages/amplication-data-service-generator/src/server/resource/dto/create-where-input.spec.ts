@@ -24,7 +24,8 @@ describe("createWhereInput", () => {
           createWhereInputID(EXAMPLE_ENTITY_NAME),
           [EXAMPLE_ID_FIELD],
           true,
-          true
+          true,
+          EXAMPLE_ENTITY
         )
       ).code
     );
