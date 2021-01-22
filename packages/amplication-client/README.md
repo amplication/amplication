@@ -27,7 +27,7 @@ npm run build -- --scope @amplication/client --include-dependencies
 
 ## Available Scripts
 
-In the project directory, after you setup the server, you can run:
+In the project directory, after you setup the server and client dependencies, you can run:
 
 ### `npm start`
 
