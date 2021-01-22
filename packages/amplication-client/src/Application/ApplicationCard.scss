@@ -2,6 +2,7 @@
 
 .application-card {
   @include applicationCard;
+  background-color: var(--black2);
 
   & &__header {
     @include flexFullRow;

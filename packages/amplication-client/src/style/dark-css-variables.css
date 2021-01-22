@@ -1,6 +1,6 @@
 :root {
   --surface: #15192c; /*dark: black100 */
-  --white: #22273c; /*dark: black90 */
+  --white: #15192c; /*dark: black90 */
 
   --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
     "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
@@ -39,6 +39,6 @@
 
   --modal-background: rgba(12, 11, 14, 0.48);
 
-  --menu-background-color: var(--white);
-  --menu-fixed-panel-background: var(--black2);
+  --menu-background-color: var(--black2);
+  --menu-fixed-panel-background: var(--white);
 }

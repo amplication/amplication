@@ -1,6 +1,6 @@
 :root {
   --surface: #ffffff; //solid white on the background
-  --white: #f9f9fa; //main white, to be used on top of the surface
+  --white: #ffffff; //main white
   --static-white: #ffffff; //static white stays white on dark mode, to be used on button and other color elements
 
   --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
@@ -91,10 +91,10 @@
   --side-bar-min-width: 30vw;
 
   --default-button-height: 32px;
-  --default-button-radius: calc(var(--default-button-height) / 2);
+  --default-button-radius: 4px;
 
   --medium-button-height: 28px;
-  --medium-button-radius: calc(var(--medium-button-height) / 2);
+  --medium-button-radius: var(--default-button-radius);
 
   --time-since-height: 24px;
 
