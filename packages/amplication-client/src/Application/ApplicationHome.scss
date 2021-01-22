@@ -4,15 +4,13 @@ $info-panel-height: 140px;
 $application-badge-size-large: 100px;
 $app-icon-large-font-size: 70px;
 $circle-badge-border: 2px;
-$tiles-min-width: 450px;
-$form-width: 350px;
 
 .application-home {
-  //background: var(--white);
   width: 100%;
 
   &__header {
     @include flexFullRowWithSpacing;
+    border-radius: var(--default-border-radius);
     position: relative;
     z-index: 0;
     height: $info-panel-height;
@@ -22,10 +20,8 @@ $form-width: 350px;
     background-position: left bottom;
     background-repeat: no-repeat;
     background-size: auto 100%;
-    border-radius: 0;
     border: none;
-    border-bottom: $border-black10;
-    margin-bottom: 0;
+    margin-bottom: ($application-badge-size-large / 2) + 20px;
 
     &.theme-yellow {
       background-color: var(--theme-yellow);
@@ -47,62 +43,30 @@ $form-width: 350px;
     }
   }
 
-  &__main {
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    position: relative;
-    z-index: 0;
-    padding-top: var(--triple-spacing);
+  .circle-badge {
+    width: $application-badge-size-large;
+    height: $application-badge-size-large;
+    font-size: $app-icon-large-font-size;
+    position: absolute;
+    bottom: $application-badge-size-large / -2;
+    left: calc(var(--double-spacing) * 2);
 
-    .circle-badge {
-      width: $application-badge-size-large;
-      height: $application-badge-size-large;
-      font-size: $app-icon-large-font-size;
+    &:before {
+      width: $application-badge-size-large + ($circle-badge-border * 4);
+      height: $application-badge-size-large + ($circle-badge-border * 4);
+      content: "";
+      background: var(--white);
+      z-index: -1;
       position: absolute;
-      top: $application-badge-size-large / -2;
-      left: calc(var(--double-spacing) * 2);
-
-      &:before {
-        width: $application-badge-size-large + ($circle-badge-border * 4);
-        height: $application-badge-size-large + ($circle-badge-border * 4);
-        content: "";
-        background: var(--white);
-        z-index: -1;
-        position: absolute;
-        border-radius: 50%;
-        border: $circle-badge-border solid var(--black10);
-        box-sizing: border-box;
-      }
+      border-radius: 50%;
+      border: $circle-badge-border solid var(--black10);
+      box-sizing: border-box;
     }
+  }
 
-    &__form {
-      h1 {
-        margin-top: var(--double-spacing);
-        margin-bottom: var(--double-spacing);
-      }
-      width: $form-width;
-      padding: var(--double-spacing);
-
-      hr {
-        border: none;
-        border-top: $border-black10;
-        margin-top: var(--double-spacing);
-        margin-bottom: var(--double-spacing);
-      }
-    }
-    &__tiles {
-      padding: var(--double-spacing);
-
-      flex: 1;
-      @include flexFullRow;
-      align-items: stretch;
-      flex-wrap: wrap;
-
-      > * {
-        flex: 0 50%;
-        min-width: $tiles-min-width;
-      }
+  &__tiles {
+    > * {
+      margin: var(--large-spacing) 0;
     }
   }
 }

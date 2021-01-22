@@ -13,6 +13,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
+    "@primer/components": "^20.3.0",
     "@rmwc/data-table": "^6.1.4",
     "@rmwc/drawer": "^6.1.4",
     "@rmwc/icon": "^6.1.4",
@@ -27,13 +28,13 @@
     "react-animate-height": "^2.0.23",
     "react-device-detect": "^1.14.0",
     "react-select": "^3.1.1",
-    "typescript": "~3.7.2",
-    "@primer/components": "^20.3.0"
+    "typescript": "~3.7.2"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.1.9",
     "@storybook/addon-essentials": "^6.1.9",
     "@storybook/addon-links": "^6.1.9",
+    "@storybook/cli": "^6.1.14",
     "@storybook/node-logger": "^6.1.9",
     "@storybook/preset-create-react-app": "^3.1.5",
     "@storybook/react": "^6.0.28",
@@ -67,9 +68,9 @@
   },
   "peerDependencies": {
     "@rmwc/provider": "^6.1.4",
+    "formik": "^2.2.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "styled-components": "^5.1.1",
-    "formik": "^2.2.5"
+    "styled-components": "^5.1.1"
   }
 }

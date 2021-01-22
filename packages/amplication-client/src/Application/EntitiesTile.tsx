@@ -44,12 +44,7 @@ function EntitiesTile({ applicationId }: Props) {
   );
 
   return (
-    <Panel
-      className={`${CLASS_NAME}`}
-      panelStyle={EnumPanelStyle.Bordered}
-      clickable
-      onClick={handleClick}
-    >
+    <Panel className={`${CLASS_NAME}`} clickable onClick={handleClick}>
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
           <h2>Entities</h2>
@@ -64,7 +59,7 @@ function EntitiesTile({ applicationId }: Props) {
             </>
           )}
           <Button
-            buttonStyle={EnumButtonStyle.Secondary}
+            buttonStyle={EnumButtonStyle.Primary}
             className={`${CLASS_NAME}__content__action`}
           >
             Create Entities

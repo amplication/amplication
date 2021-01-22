@@ -1,5 +1,5 @@
 import React from "react";
-import { match } from "react-router-dom";
+import { Switch, Route, match, NavLink } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -36,42 +36,47 @@ function ApplicationHome({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent>
-      <div className={CLASS_NAME}>
-        <div
-          //
-          className={classNames(
-            `${CLASS_NAME}__header`,
-            `theme-${data && COLOR_TO_NAME[data.app.color]}`
-          )}
-        />
-
-        <main className={`${CLASS_NAME}__main`}>
-          <CircleBadge
-            name={data?.app.name || ""}
-            color={data?.app.color || "transparent"}
-          />
-          <div className={`${CLASS_NAME}__main__form`}>
-            <h1>{data?.app.name}</h1>
-            {data?.app && <ApplicationForm app={data?.app} />}
+    <PageContent
+      className={CLASS_NAME}
+      sideContent={
+        <>
+          <div>
+            <NavLink to={`/${applicationId}/`}>Home</NavLink>
           </div>
-          <div className={`${CLASS_NAME}__main__tiles`}>
-            <div>
+          <div>
+            <NavLink to={`/${applicationId}/update`}>Settings</NavLink>
+          </div>
+        </>
+      }
+    >
+      <div
+        className={classNames(
+          `${CLASS_NAME}__header`,
+          `theme-${data && COLOR_TO_NAME[data.app.color]}`
+        )}
+      >
+        <CircleBadge
+          name={data?.app.name || ""}
+          color={data?.app.color || "transparent"}
+        />
+      </div>
+
+      <Switch>
+        <Route
+          exact
+          path="/:application/"
+          component={() => (
+            <div className={`${CLASS_NAME}__tiles`}>
               <EntitiesTile applicationId={applicationId} />
-            </div>
-            <div>
               <RolesTile applicationId={applicationId} />
-            </div>
-            <div>
               <SyncWithGithubTile applicationId={applicationId} />
-            </div>
-            <div>
               <LastCommitTile applicationId={applicationId} />
             </div>
-          </div>
-        </main>
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </div>
+          )}
+        />
+        <Route path="/:application/update" component={ApplicationForm} />
+      </Switch>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
   );
 }

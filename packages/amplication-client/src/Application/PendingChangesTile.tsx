@@ -35,12 +35,7 @@ function PendingChangesTile({ applicationId }: Props) {
   );
 
   return (
-    <Panel
-      className={`${CLASS_NAME}`}
-      panelStyle={EnumPanelStyle.Bordered}
-      clickable
-      onClick={handleClick}
-    >
+    <Panel className={`${CLASS_NAME}`} clickable onClick={handleClick}>
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
           <h2>Pending Changes</h2>
@@ -56,7 +51,7 @@ function PendingChangesTile({ applicationId }: Props) {
           )}
           <Button
             className={`${CLASS_NAME}__content__action`}
-            buttonStyle={EnumButtonStyle.Secondary}
+            buttonStyle={EnumButtonStyle.Primary}
           >
             View Changes
           </Button>

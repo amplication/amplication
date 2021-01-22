@@ -268,7 +268,7 @@ $bullet-size: 6px;
 @mixin homePageTile {
   padding: var(--double-spacing);
   position: relative;
-  height: 220px;
+  height: 170px;
 
   & &__title {
     margin-top: var(--default-spacing);

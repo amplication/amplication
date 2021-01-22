@@ -1,22 +1,34 @@
 @import "../style/index.scss";
 
 $side-min-width: 500px;
+$tabs-width: 300px;
 .amp-page-content {
   display: flex;
   flex-direction: row;
   height: 100%;
   flex-wrap: wrap;
+  align-items: stretch;
+  padding: var(--large-spacing);
+  background: var(--black2);
+  box-sizing: border-box;
+
+  &_tabs {
+    width: $tabs-width;
+    background: var(--white);
+    border-radius: var(--default-border-radius);
+    padding: var(--large-spacing);
+    box-sizing: border-box;
+  }
 
   main {
+    @include scrollbars(10px, var(--black60), transparent);
     flex: 1;
-    padding: var(--default-page-padding);
+    overflow: auto;
+    height: 100%;
+    flex: 1;
+    padding: 0 var(--large-spacing);
     position: relative;
-    max-width: $page-content-max-width;
-    margin-left: auto;
-    margin-right: auto;
     box-sizing: border-box;
-    min-width: $side-min-width;
-    flex: 1;
 
     @media only screen and (max-width: $page-content-min-width) {
       min-width: calc(#{$page-content-min-width} - var(--menu-width));

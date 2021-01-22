@@ -222,6 +222,11 @@ function ApplicationLayout({ match }: Props) {
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
+            <Route
+              exact
+              path="/:application/update"
+              component={ApplicationHome}
+            />
             <Route path="/:application/settings" component={Settings} />
             <Route
               path="/:application/pending-changes"
