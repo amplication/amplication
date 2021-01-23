@@ -12,7 +12,7 @@ import {
   SortData,
   Dialog,
 } from "@amplication/design-system";
-import useNavigationTabs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";

@@ -6,7 +6,7 @@ import PageContent from "../Layout/PageContent";
 import { RoleList } from "./RoleList";
 import Role from "./Role";
 import Sidebar from "../Layout/Sidebar";
-import useNavigationTabs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 type Props = {
   match: match<{ application: string }>;

@@ -9,7 +9,7 @@ export type NavigationTabItem = {
 export type ContextDataType = {
   items: NavigationTabItem[];
   registerItem: (item: NavigationTabItem) => void;
-  unregisterItem: (url: string) => void;
+  unregisterItem: (url: string) => string | undefined;
 };
 
 const NavigationTabsContext = createContext<ContextDataType>({

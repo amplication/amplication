@@ -4,7 +4,7 @@ import { Switch, Route, match } from "react-router-dom";
 import { CommitList } from "./CommitList";
 import CommitPage from "./CommitPage";
 
-import useNavigationTabs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 type Props = {
   match: match;

@@ -8,24 +8,24 @@
   justify-content: flex-start;
 
   &__tab {
-    padding: 0 var(--large-spacing);
+    padding-left: var(--large-spacing);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px 10px 0 0;
+    border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
     position: relative;
 
-    &:not(&--active):not(:last-child) {
-      &:before {
-        content: "";
-        position: absolute;
-        top: var(--default-spacing-small);
-        bottom: var(--default-spacing-small);
-        right: var(--default-spacing-small);
-        width: 1px;
-        background: var(--black10);
-      }
-    }
+    // &:not(&--active):not(:last-child) {
+    //   &:before {
+    //     content: "";
+    //     position: absolute;
+    //     top: var(--default-spacing-small);
+    //     bottom: var(--default-spacing-small);
+    //     right: var(--default-spacing-small);
+    //     width: 1px;
+    //     background: var(--black10);
+    //   }
+    // }
 
     &--active {
       background-color: var(--black2);

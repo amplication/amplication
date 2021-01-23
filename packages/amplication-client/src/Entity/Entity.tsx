@@ -14,7 +14,7 @@ import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
 import { Panel, EnumPanelStyle } from "@amplication/design-system";
-import useNavigationTabs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 import { useTracking, track } from "../util/analytics";
 
 import "./Entity.scss";

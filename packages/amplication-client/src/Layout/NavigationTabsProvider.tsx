@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { sortBy } from "lodash";
+import { last } from "lodash";
 import NavigationTabsContext, {
   NavigationTabItem,
 } from "./NavigationTabsContext";
@@ -17,7 +17,6 @@ function NavigationTabsProvider({ children }: Props) {
     (addItem: NavigationTabItem) => {
       setNavigationTabItems((items) => {
         let exist = false;
-
         const next = items.map((item) => {
           if (item.url === addItem.url) {
             exist = true;
@@ -36,14 +35,6 @@ function NavigationTabsProvider({ children }: Props) {
           });
         }
         return next;
-
-        // return sortBy(
-        //   [
-        //     ...items.filter((item) => item.url !== addItem.url),
-        //     { ...addItem, active: true },
-        //   ]
-        //   //(sortItem) => sortItem.url
-        // );
       });
     },
     [setNavigationTabItems]
@@ -51,14 +42,14 @@ function NavigationTabsProvider({ children }: Props) {
 
   const unregisterNavigationTabItem = useCallback(
     (url: string) => {
-      setNavigationTabItems((items) => {
-        return sortBy(
-          items.filter((item) => item.url !== url),
-          (sortItem) => sortItem.url
-        );
-      });
+      const nextItems = navigationTabItems.filter((item) => item.url !== url);
+
+      const nextUrl = last(nextItems)?.url;
+
+      setNavigationTabItems(nextItems);
+      return nextUrl;
     },
-    [setNavigationTabItems]
+    [setNavigationTabItems, navigationTabItems]
   );
 
   const NavigationTabsContextValue = useMemo(

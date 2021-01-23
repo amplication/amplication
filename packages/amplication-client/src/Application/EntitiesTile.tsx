@@ -5,7 +5,7 @@ import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
 
 import * as models from "../models";
-import { EnumPanelStyle, Panel } from "@amplication/design-system";
+import { Panel } from "@amplication/design-system";
 
 import { GET_ENTITIES } from "../Entity/EntityList";
 import { Button, EnumButtonStyle } from "../Components/Button";

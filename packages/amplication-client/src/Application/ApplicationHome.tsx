@@ -15,7 +15,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
 import { COLOR_TO_NAME } from "./constants";
-import useNavigationTabs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 type Props = {
   match: match<{ application: string }>;
@@ -33,7 +33,7 @@ function ApplicationHome({ match }: Props) {
       id: applicationId,
     },
   });
-  useNavigationTabs(match.url, data?.app.name);
+  useNavigationTabs(`/${applicationId}/`, data?.app.name);
 
   const errorMessage = formatError(error);
 
@@ -43,10 +43,10 @@ function ApplicationHome({ match }: Props) {
       sideContent={
         <>
           <div>
-            <NavLink to={`/${applicationId}/`}>Home</NavLink>
+            <NavLink to={`/${applicationId}/`}>Overview</NavLink>
           </div>
           <div>
-            <NavLink to={`/${applicationId}/update`}>Settings</NavLink>
+            <NavLink to={`/${applicationId}/update`}>General Settings</NavLink>
           </div>
         </>
       }

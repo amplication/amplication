@@ -7,7 +7,7 @@ import PageContent from "../Layout/PageContent";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
-import useNavigationTabs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiff";
 import { GET_PENDING_CHANGES } from "./PendingChanges";

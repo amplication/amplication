@@ -219,7 +219,7 @@ function ApplicationLayout({ match }: Props) {
         </MainLayout.Menu>
         <MainLayout.Content>
           <div className={`${CLASS_NAME}__app-container`}>
-            <NavigationTabs />
+            <NavigationTabs defaultTabUrl={`/${application}/`} />
 
             <Switch>
               <Route exact path="/:application/" component={ApplicationHome} />

@@ -6,7 +6,7 @@ import { BlockList } from "../Blocks/BlockList";
 import * as models from "../models";
 import "./Pages.scss";
 import PageContent from "../Layout/PageContent";
-import useNavigationTabs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 type Props = {
   match: match<{ application: string }>;

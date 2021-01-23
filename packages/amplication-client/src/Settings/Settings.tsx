@@ -10,7 +10,7 @@ import { GET_APPLICATION } from "../Application/ApplicationHome";
 import "./Settings.scss";
 import AuthAppWithGithub from "./AuthAppWithGithub";
 
-import useNavigationTabs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 const CLASS_NAME = "settings-page";
 
 type Props = {

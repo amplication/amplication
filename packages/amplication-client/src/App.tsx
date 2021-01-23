@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 
 import ApplicationLayout from "./Application/ApplicationLayout";
@@ -11,8 +11,6 @@ import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import AuthAppWithGithubCallback from "./Settings/AuthAppWithGithubCallback";
-
-const { NODE_ENV } = process.env;
 
 const context = {
   source: "amplication-client",
@@ -28,13 +26,6 @@ export const enhance = track<keyof typeof context>(
 );
 
 function App() {
-  const history = useHistory();
-  if (NODE_ENV === "development") {
-    history.listen((...args) => {
-      console.debug("History: ", ...args);
-    });
-  }
-
   useEffect(() => {
     initAnalytics();
   }, []);
