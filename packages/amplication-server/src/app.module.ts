@@ -39,8 +39,7 @@ import { RootStorageModule } from './core/storage/root-storage.module';
         debug: configService.get('GRAPHQL_DEBUG') === '1',
         playground: configService.get('PLAYGROUND_ENABLE') === '1',
         context: ({ req }: { req: Request }) => ({
-          req,
-          prisma: new PrismaClient()
+          req
         })
       }),
       inject: [ConfigService]
