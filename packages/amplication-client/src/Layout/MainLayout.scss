@@ -13,8 +13,7 @@ $expand-button-padding: 4px;
     padding: 0;
     flex: 1;
     height: 100%;
-    overflow: auto;
-    @include scrollbars(10px, var(--black60), transparent);
+    overflow: hidden;
     box-sizing: border-box;
   }
   &__side {

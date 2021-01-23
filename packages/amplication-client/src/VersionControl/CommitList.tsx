@@ -14,7 +14,6 @@ import {
 
 import { CommitListItem } from "./CommitListItem";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 
@@ -109,36 +108,32 @@ export const CommitList = ({ match }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className="pages" withFloatingBar>
-      <main>
-        <FloatingToolbar />
+    <PageContent className="pages">
+      <DataGrid
+        showSearch
+        fields={fields}
+        title="Commits"
+        titleType={EnumTitleType.PageTitle}
+        loading={loading}
+        sortDir={sortDir}
+        onSortChange={handleSortChange}
+        onSearchChange={handleSearchChange}
+        toolbarContentEnd={
+          <Button buttonStyle={EnumButtonStyle.Primary} onClick={() => {}}>
+            Create New
+          </Button>
+        }
+      >
+        {data?.commits.map((commit) => (
+          <CommitListItem
+            key={commit.id}
+            commit={commit}
+            applicationId={application}
+          />
+        ))}
+      </DataGrid>
 
-        <DataGrid
-          showSearch
-          fields={fields}
-          title="Commits"
-          titleType={EnumTitleType.PageTitle}
-          loading={loading}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onSearchChange={handleSearchChange}
-          toolbarContentEnd={
-            <Button buttonStyle={EnumButtonStyle.Primary} onClick={() => {}}>
-              Create New
-            </Button>
-          }
-        >
-          {data?.commits.map((commit) => (
-            <CommitListItem
-              key={commit.id}
-              commit={commit}
-              applicationId={application}
-            />
-          ))}
-        </DataGrid>
-
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </main>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
   );
 };

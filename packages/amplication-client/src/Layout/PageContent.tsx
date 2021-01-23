@@ -6,23 +6,13 @@ type Props = {
   children: React.ReactNode;
   sideContent?: React.ReactNode;
   className?: string;
-  withFloatingBar?: boolean;
 };
 
 const CLASS_NAME = "amp-page-content";
 
-function PageContent({
-  children,
-  sideContent,
-  className,
-  withFloatingBar = false,
-}: Props) {
+function PageContent({ children, sideContent, className }: Props) {
   return (
-    <div
-      className={classNames(CLASS_NAME, className, {
-        "amp-page-content--with-floating-bar": withFloatingBar,
-      })}
-    >
+    <div className={classNames(CLASS_NAME, className)}>
       {sideContent && <div className={`${CLASS_NAME}_tabs`}>{sideContent}</div>}
       <main className={`${CLASS_NAME}_main`}>{children}</main>
     </div>

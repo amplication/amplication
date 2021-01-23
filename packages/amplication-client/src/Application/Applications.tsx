@@ -48,33 +48,31 @@ function Applications() {
       <MainLayout>
         <MainLayout.Menu />
         <MainLayout.Content>
-          <PageContent className="applications" withFloatingBar>
-            <main>
-              <div className="applications__bg">
-                <div className="applications__header">
-                  <h1>My Apps</h1>
-                </div>
-                <div
-                  className={classNames("previews", {
-                    "previews--center": (data?.apps.length || 0) < 3,
-                  })}
-                >
-                  <Link
-                    onClick={handleNewAppClick}
-                    to=""
-                    className="applications__new-app"
-                  >
-                    <Icon icon="plus" />
-                    Create New App
-                  </Link>
-
-                  {data?.apps.map((app) => {
-                    return <ApplicationCard key={app.id} app={app} />;
-                  })}
-                </div>
+          <PageContent className="applications">
+            <div className="applications__bg">
+              <div className="applications__header">
+                <h1>My Apps</h1>
               </div>
-              <Snackbar open={Boolean(error)} message={errorMessage} />
-            </main>
+              <div
+                className={classNames("previews", {
+                  "previews--center": (data?.apps.length || 0) < 3,
+                })}
+              >
+                <Link
+                  onClick={handleNewAppClick}
+                  to=""
+                  className="applications__new-app"
+                >
+                  <Icon icon="plus" />
+                  Create New App
+                </Link>
+
+                {data?.apps.map((app) => {
+                  return <ApplicationCard key={app.id} app={app} />;
+                })}
+              </div>
+            </div>
+            <Snackbar open={Boolean(error)} message={errorMessage} />
           </PageContent>
         </MainLayout.Content>
       </MainLayout>

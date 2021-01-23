@@ -3,7 +3,6 @@ import { match } from "react-router-dom";
 import { Snackbar } from "@rmwc/snackbar";
 import PageContent from "../Layout/PageContent";
 
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import { useQuery } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";
@@ -33,19 +32,16 @@ function SettingsPage({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME} withFloatingBar>
-      <main>
-        <FloatingToolbar />
-        <h1>Sync with GitHub</h1>
-        <div className={`${CLASS_NAME}__message`}>
-          Enable sync with GitHub to automatically push the generated code of
-          your application and create a Pull Request in your GitHub repository
-          every time you commit your changes.
-        </div>
-        {data?.app && <AuthAppWithGithub app={data.app} onDone={refetch} />}
+    <PageContent className={CLASS_NAME}>
+      <h1>Sync with GitHub</h1>
+      <div className={`${CLASS_NAME}__message`}>
+        Enable sync with GitHub to automatically push the generated code of your
+        application and create a Pull Request in your GitHub repository every
+        time you commit your changes.
+      </div>
+      {data?.app && <AuthAppWithGithub app={data.app} onDone={refetch} />}
 
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </main>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
   );
 }

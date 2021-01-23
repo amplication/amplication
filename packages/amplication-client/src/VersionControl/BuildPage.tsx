@@ -4,7 +4,6 @@ import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
@@ -66,30 +65,27 @@ const BuildPage = ({ match }: Props) => {
 
   return (
     <>
-      <PageContent className={CLASS_NAME} withFloatingBar>
-        <main>
-          <FloatingToolbar />
-          {!data ? (
-            "loading..."
-          ) : (
-            <>
-              <h1>
-                Build <TruncatedId id={data.build.id} />
-              </h1>
-              {commitData && (
-                <div className={`${CLASS_NAME}__commit-header`}>
-                  <CommitHeader
-                    clickableId
-                    commit={commitData.commit}
-                    applicationId={data.build.appId}
-                  />
-                </div>
-              )}
-              <h2>Details</h2>
-              <BuildSteps build={data.build} onError={setError} />
-            </>
-          )}
-        </main>
+      <PageContent className={CLASS_NAME}>
+        {!data ? (
+          "loading..."
+        ) : (
+          <>
+            <h1>
+              Build <TruncatedId id={data.build.id} />
+            </h1>
+            {commitData && (
+              <div className={`${CLASS_NAME}__commit-header`}>
+                <CommitHeader
+                  clickableId
+                  commit={commitData.commit}
+                  applicationId={data.build.appId}
+                />
+              </div>
+            )}
+            <h2>Details</h2>
+            <BuildSteps build={data.build} onError={setError} />
+          </>
+        )}
         <aside className="log-container">
           <ActionLog
             action={actionLog?.action}

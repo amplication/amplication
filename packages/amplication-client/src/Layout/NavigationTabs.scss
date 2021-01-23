@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+
+.navigation-tabs {
+  height: 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  &__tab {
+    padding: 0 var(--large-spacing);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px 10px 0 0;
+
+    &--selected {
+      background-color: var(--black2);
+    }
+  }
+}

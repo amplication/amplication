@@ -3,6 +3,8 @@
 $app-icon-spacing: 64px;
 
 .application-layout {
+  &__app-container {
+  }
   &__app-icon {
     &.amp-menu-item--active:before {
       display: none;

@@ -4,7 +4,6 @@ import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
@@ -41,36 +40,33 @@ const CommitPage = ({ match }: Props) => {
   const errorMessage = formatError(error);
   return (
     <>
-      <PageContent className={CLASS_NAME} withFloatingBar>
-        <main>
-          <FloatingToolbar />
-          {!data ? (
-            "loading..."
-          ) : (
-            <>
-              <CommitHeader
-                commit={data.commit}
-                applicationId={build?.appId || ""}
-              />
-              {build && <BuildHeader build={build} />}
-            </>
-          )}
+      <PageContent className={CLASS_NAME}>
+        {!data ? (
+          "loading..."
+        ) : (
+          <>
+            <CommitHeader
+              commit={data.commit}
+              applicationId={build?.appId || ""}
+            />
+            {build && <BuildHeader build={build} />}
+          </>
+        )}
 
-          {data?.commit?.changes && (
-            <div className={`${CLASS_NAME}__changes`}>
-              <h3 className={`${CLASS_NAME}__changes__count`}>
-                {data.commit.changes.length} Changes
-              </h3>
-              {data.commit.changes.map((change) => (
-                <PendingChangeWithCompare
-                  key={change.resourceId}
-                  change={change}
-                  compareType={EnumCompareType.Previous}
-                />
-              ))}
-            </div>
-          )}
-        </main>
+        {data?.commit?.changes && (
+          <div className={`${CLASS_NAME}__changes`}>
+            <h3 className={`${CLASS_NAME}__changes__count`}>
+              {data.commit.changes.length} Changes
+            </h3>
+            {data.commit.changes.map((change) => (
+              <PendingChangeWithCompare
+                key={change.resourceId}
+                change={change}
+                compareType={EnumCompareType.Previous}
+              />
+            ))}
+          </div>
+        )}
       </PageContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>

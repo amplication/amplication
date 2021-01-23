@@ -4,7 +4,6 @@ import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
@@ -39,26 +38,23 @@ const PendingChangesPage = ({ match }: Props) => {
 
   return (
     <>
-      <PageContent className={CLASS_NAME} withFloatingBar>
-        <main>
-          <FloatingToolbar />
-          {!data ? (
-            "loading..."
-          ) : (
-            <div className={`${CLASS_NAME}__header`}>
-              <h1>Pending Changes</h1>
-            </div>
-          )}
-          <div className={`${CLASS_NAME}__changes`}>
-            {data?.pendingChanges.map((change) => (
-              <PendingChangeWithCompare
-                key={change.resourceId}
-                change={change}
-                compareType={EnumCompareType.Pending}
-              />
-            ))}
+      <PageContent className={CLASS_NAME}>
+        {!data ? (
+          "loading..."
+        ) : (
+          <div className={`${CLASS_NAME}__header`}>
+            <h1>Pending Changes</h1>
           </div>
-        </main>
+        )}
+        <div className={`${CLASS_NAME}__changes`}>
+          {data?.pendingChanges.map((change) => (
+            <PendingChangeWithCompare
+              key={change.resourceId}
+              change={change}
+              compareType={EnumCompareType.Pending}
+            />
+          ))}
+        </div>
       </PageContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>

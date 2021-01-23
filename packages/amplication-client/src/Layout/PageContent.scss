@@ -5,12 +5,12 @@ $tabs-width: 300px;
 .amp-page-content {
   display: flex;
   flex-direction: row;
-  height: 100%;
   flex-wrap: wrap;
   align-items: stretch;
   padding: var(--large-spacing);
   background: var(--black2);
   box-sizing: border-box;
+  flex: 1;
 
   &_tabs {
     width: $tabs-width;
@@ -39,11 +39,5 @@ $tabs-width: 300px;
     width: 50%;
     min-width: $side-min-width;
     max-height: 100vh;
-  }
-
-  &--with-floating-bar {
-    main {
-      padding-top: calc(var(--header-height) + var(--header-spacing));
-    }
   }
 }

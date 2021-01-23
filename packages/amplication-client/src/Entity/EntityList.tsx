@@ -16,7 +16,6 @@ import {
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 
@@ -118,51 +117,44 @@ export const EntityList = ({ match }: Props) => {
     formatError(errorLoading) || (error && formatError(error));
 
   return (
-    <PageContent className="pages" withFloatingBar>
-      <main>
-        <FloatingToolbar />
+    <PageContent className="pages">
+      <Dialog
+        className="new-entity-dialog"
+        isOpen={newEntity}
+        onDismiss={handleNewEntityClick}
+        title="New Entity"
+      >
+        <NewEntity applicationId={application} />
+      </Dialog>
+      <DataGrid
+        showSearch
+        fields={fields}
+        title="Entities"
+        titleType={EnumTitleType.PageTitle}
+        loading={loading}
+        sortDir={sortDir}
+        onSortChange={handleSortChange}
+        onSearchChange={handleSearchChange}
+        toolbarContentEnd={
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleNewEntityClick}
+          >
+            Create New
+          </Button>
+        }
+      >
+        {data?.entities.map((entity) => (
+          <EntityListItem
+            key={entity.id}
+            entity={entity}
+            applicationId={application}
+            onError={setError}
+          />
+        ))}
+      </DataGrid>
 
-        <Dialog
-          className="new-entity-dialog"
-          isOpen={newEntity}
-          onDismiss={handleNewEntityClick}
-          title="New Entity"
-        >
-          <NewEntity applicationId={application} />
-        </Dialog>
-        <DataGrid
-          showSearch
-          fields={fields}
-          title="Entities"
-          titleType={EnumTitleType.PageTitle}
-          loading={loading}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onSearchChange={handleSearchChange}
-          toolbarContentEnd={
-            <Button
-              buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleNewEntityClick}
-            >
-              Create New
-            </Button>
-          }
-        >
-          {data?.entities.map((entity) => (
-            <EntityListItem
-              key={entity.id}
-              entity={entity}
-              applicationId={application}
-              onError={setError}
-            />
-          ))}
-        </DataGrid>
-
-        <Snackbar
-          open={Boolean(error || errorLoading)}
-          message={errorMessage}
-        />
-      </main>
+      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </PageContent>
   );
   /**@todo: move error message to hosting page  */

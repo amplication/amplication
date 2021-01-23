@@ -7,7 +7,6 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import EntityForm from "./EntityForm";
 import { EntityFieldList } from "./EntityFieldList";
 import Sidebar from "../Layout/Sidebar";
@@ -105,29 +104,26 @@ const Entity = ({ match }: Props) => {
   const errorMessage = formatError(error || updateError);
 
   return (
-    <PageContent className="entity" withFloatingBar>
-      <main>
-        <FloatingToolbar />
-        {loading ? (
-          <span>Loading...</span>
-        ) : !data ? (
-          <span>can't find</span> /**@todo: Show formatted error message */
-        ) : (
-          <>
-            <EntityForm
-              entity={data.entity}
-              applicationId={application}
-              onSubmit={handleSubmit}
-            />
-            <Panel
-              className="entity-field-list"
-              panelStyle={EnumPanelStyle.Transparent}
-            >
-              <EntityFieldList entityId={data.entity.id} />
-            </Panel>
-          </>
-        )}
-      </main>
+    <PageContent className="entity">
+      {loading ? (
+        <span>Loading...</span>
+      ) : !data ? (
+        <span>can't find</span> /**@todo: Show formatted error message */
+      ) : (
+        <>
+          <EntityForm
+            entity={data.entity}
+            applicationId={application}
+            onSubmit={handleSubmit}
+          />
+          <Panel
+            className="entity-field-list"
+            panelStyle={EnumPanelStyle.Transparent}
+          >
+            <EntityFieldList entityId={data.entity.id} />
+          </Panel>
+        </>
+      )}
       {data && (
         <Sidebar
           modal

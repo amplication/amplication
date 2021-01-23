@@ -6,7 +6,6 @@ import { BlockList } from "../Blocks/BlockList";
 import * as models from "../models";
 import "./Pages.scss";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 type Props = {
@@ -28,16 +27,13 @@ function Pages({ match }: Props) {
   const { application } = match.params;
   useBreadcrumbs(match.url, "Pages");
   return (
-    <PageContent className="pages" withFloatingBar>
-        <main>
-          <FloatingToolbar />
-          <BlockList
-            title="All UI Elements"
-            applicationId={application}
-            blockTypes={blockTypes}
-          />
-        </main>
-      </PageContent>
+    <PageContent className="pages">
+      <BlockList
+        title="All UI Elements"
+        applicationId={application}
+        blockTypes={blockTypes}
+      />
+    </PageContent>
   );
 }
 

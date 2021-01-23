@@ -29,6 +29,7 @@ import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
 import Commits from "../VersionControl/Commits";
+import NavigationTabs from "../Layout/NavigationTabs";
 
 enum EnumFixedPanelKeys {
   None = "None",
@@ -220,39 +221,45 @@ function ApplicationLayout({ match }: Props) {
           />
         </MainLayout.Menu>
         <MainLayout.Content>
-          <Switch>
-            <Route exact path="/:application/" component={ApplicationHome} />
-            <Route
-              exact
-              path="/:application/update"
-              component={ApplicationHome}
-            />
-            <Route path="/:application/settings" component={Settings} />
-            <Route
-              path="/:application/pending-changes"
-              component={PendingChangesPage}
-            />
+          <div className={`${CLASS_NAME}__app-container`}>
+            <NavigationTabs />
+            <Switch>
+              <Route exact path="/:application/" component={ApplicationHome} />
+              <Route
+                exact
+                path="/:application/update"
+                component={ApplicationHome}
+              />
+              <Route path="/:application/settings" component={Settings} />
+              <Route
+                path="/:application/pending-changes"
+                component={PendingChangesPage}
+              />
 
-            <Route path="/:application/entities/" component={Entities} />
+              <Route path="/:application/entities/" component={Entities} />
 
-            {SHOW_UI_ELEMENTS && (
-              <>
-                <Route path="/:application/pages/" component={Pages} />
-                <Route
-                  path="/:application/entity-pages/new"
-                  component={NewEntityPage}
-                />
-                <Route
-                  path="/:application/entity-pages/:entityPageId"
-                  component={EntityPage}
-                />
-              </>
-            )}
-            <Route path="/:application/builds/:buildId" component={BuildPage} />
+              {SHOW_UI_ELEMENTS && (
+                <>
+                  <Route path="/:application/pages/" component={Pages} />
+                  <Route
+                    path="/:application/entity-pages/new"
+                    component={NewEntityPage}
+                  />
+                  <Route
+                    path="/:application/entity-pages/:entityPageId"
+                    component={EntityPage}
+                  />
+                </>
+              )}
+              <Route
+                path="/:application/builds/:buildId"
+                component={BuildPage}
+              />
 
-            <Route path="/:application/roles" component={RolesPage} />
-            <Route path="/:application/commits" component={Commits} />
-          </Switch>
+              <Route path="/:application/roles" component={RolesPage} />
+              <Route path="/:application/commits" component={Commits} />
+            </Switch>
+          </div>
         </MainLayout.Content>
         <ScreenResolutionMessage />
       </MainLayout>
