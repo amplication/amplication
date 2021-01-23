@@ -1,22 +1,23 @@
 import { useEffect, useContext } from "react";
-import BreadcrumbsContext from "../Layout/BreadcrumbsContext";
+import NavigationTabsContext from "../Layout/NavigationTabsContext";
 
-export default function useBreadcrumbs(url: string, name?: string | null) {
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+export default function useNavigationTabs(url: string, name?: string | null) {
+  const navigationTabsContext = useContext(NavigationTabsContext);
 
   useEffect(() => {
-    breadcrumbsContext.registerItem({
-      name,
+    navigationTabsContext.registerItem({
+      name: name || "Loading...",
       url,
+      active: true,
     });
-    return () => {
-      breadcrumbsContext.unregisterItem(url);
-    };
+    // return () => {
+    //   navigationTabsContext.unregisterItem(url);
+    // };
     // eslint-disable-next-line  react-hooks/exhaustive-deps
   }, [
     name,
     url,
-    breadcrumbsContext.registerItem,
-    breadcrumbsContext.unregisterItem,
+    navigationTabsContext.registerItem,
+    navigationTabsContext.unregisterItem,
   ]);
 }

@@ -8,7 +8,7 @@ import Signup from "./User/Signup";
 import Applications from "./Application/Applications";
 
 import PrivateRoute from "./authentication/PrivateRoute";
-import BreadcrumbsProvider from "./Layout/BreadcrumbsProvider";
+import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import AuthAppWithGithubCallback from "./Settings/AuthAppWithGithubCallback";
 
@@ -49,7 +49,7 @@ function App() {
   });
 
   return (
-    <BreadcrumbsProvider>
+    <NavigationTabsProvider>
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
@@ -61,7 +61,7 @@ function App() {
         <PrivateRoute exact path="/" component={Applications} />
         <PrivateRoute path="/:application" component={ApplicationLayout} />
       </Switch>
-    </BreadcrumbsProvider>
+    </NavigationTabsProvider>
   );
 }
 

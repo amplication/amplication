@@ -6,7 +6,7 @@ import PageContent from "../Layout/PageContent";
 import { RoleList } from "./RoleList";
 import Role from "./Role";
 import Sidebar from "../Layout/Sidebar";
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/use-breadcrumbs";
 
 type Props = {
   match: match<{ application: string }>;
@@ -15,7 +15,7 @@ type Props = {
 const RolesPage = ({ match }: Props) => {
   const { application } = match.params;
 
-  useBreadcrumbs(match.url, "Roles");
+  useNavigationTabs(match.url, "Roles");
 
   const roleMatch = useRouteMatch<{ roleId: string }>(
     "/:application/roles/:roleId"

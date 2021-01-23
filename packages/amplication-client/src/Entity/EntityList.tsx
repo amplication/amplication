@@ -12,6 +12,7 @@ import {
   SortData,
   Dialog,
 } from "@amplication/design-system";
+import useNavigationTabs from "../Layout/use-breadcrumbs";
 
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
@@ -63,6 +64,7 @@ const INITIAL_SORT_DATA = {
 const POLL_INTERVAL = 2000;
 
 export const EntityList = ({ match }: Props) => {
+  useNavigationTabs(match.url, "Entities");
   const [error, setError] = useState<Error>();
 
   const { application } = match.params;

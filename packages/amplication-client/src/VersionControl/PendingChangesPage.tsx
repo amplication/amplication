@@ -7,7 +7,7 @@ import PageContent from "../Layout/PageContent";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/use-breadcrumbs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiff";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
@@ -26,7 +26,7 @@ const CLASS_NAME = "pending-changes-page";
 
 const PendingChangesPage = ({ match }: Props) => {
   const { application } = match.params;
-  useBreadcrumbs(match.url, "Pending Changes");
+  useNavigationTabs(match.url, "Pending Changes");
 
   const { data, error } = useQuery<TData>(GET_PENDING_CHANGES, {
     variables: {

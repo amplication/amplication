@@ -7,7 +7,7 @@ import PageContent from "../Layout/PageContent";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/use-breadcrumbs";
 import { EnumCompareType } from "./PendingChangeDiff";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import CommitHeader from "./CommitHeader";
@@ -22,7 +22,7 @@ const CLASS_NAME = "commit-page";
 
 const CommitPage = ({ match }: Props) => {
   const { commitId } = match.params;
-  useBreadcrumbs(match.url, "Commit");
+  useNavigationTabs(match.url, "Commit");
 
   const { data, error } = useQuery<{
     commit: models.Commit;

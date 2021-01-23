@@ -6,7 +6,7 @@ import { BlockList } from "../Blocks/BlockList";
 import * as models from "../models";
 import "./Pages.scss";
 import PageContent from "../Layout/PageContent";
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/use-breadcrumbs";
 
 type Props = {
   match: match<{ application: string }>;
@@ -25,7 +25,7 @@ const blockTypes = [
 
 function Pages({ match }: Props) {
   const { application } = match.params;
-  useBreadcrumbs(match.url, "Pages");
+  useNavigationTabs(match.url, "Pages");
   return (
     <PageContent className="pages">
       <BlockList

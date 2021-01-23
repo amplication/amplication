@@ -23,7 +23,6 @@ import { CircleBadge } from "@amplication/design-system";
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
@@ -88,8 +87,6 @@ function ApplicationLayout({ match }: Props) {
       id: match.params.application,
     },
   });
-
-  useBreadcrumbs(match.url, applicationData?.app.name);
 
   useEffect(() => {
     setPendingChanges(
@@ -223,6 +220,7 @@ function ApplicationLayout({ match }: Props) {
         <MainLayout.Content>
           <div className={`${CLASS_NAME}__app-container`}>
             <NavigationTabs />
+
             <Switch>
               <Route exact path="/:application/" component={ApplicationHome} />
               <Route

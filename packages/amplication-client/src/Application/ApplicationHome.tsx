@@ -15,6 +15,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
 import { COLOR_TO_NAME } from "./constants";
+import useNavigationTabs from "../Layout/use-breadcrumbs";
 
 type Props = {
   match: match<{ application: string }>;
@@ -32,6 +33,7 @@ function ApplicationHome({ match }: Props) {
       id: applicationId,
     },
   });
+  useNavigationTabs(match.url, data?.app.name);
 
   const errorMessage = formatError(error);
 

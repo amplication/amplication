@@ -7,7 +7,7 @@ import PageContent from "../Layout/PageContent";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/use-breadcrumbs";
 import BuildSteps from "./BuildSteps";
 import { TruncatedId } from "../Components/TruncatedId";
 import ActionLog from "./ActionLog";
@@ -29,7 +29,7 @@ const CLASS_NAME = "build-page";
 
 const BuildPage = ({ match }: Props) => {
   const { buildId } = match.params;
-  useBreadcrumbs(match.url, "Build");
+  useNavigationTabs(match.url, "Build");
 
   const [error, setError] = useState<Error>();
 
