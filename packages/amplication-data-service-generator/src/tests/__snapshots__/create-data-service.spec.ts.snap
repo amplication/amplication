@@ -353,14 +353,14 @@ export type DeleteCustomerArgs = {
   where: CustomerWhereUniqueInput;
 };
 ",
-  "admin/src/api/customer/EnumCustomerType.ts": "export enum EnumCustomerType {
+  "admin/src/api/customer/EnumCustomerCustomerType.ts": "export enum EnumCustomerCustomerType {
   Platinum = \\"platinum\\",
   Gold = \\"gold\\",
   Bronze = \\"bronze\\",
   Regular = \\"regular\\",
 }
 ",
-  "admin/src/api/customer/EnumFavoriteColors.ts": "export enum EnumFavoriteColors {
+  "admin/src/api/customer/EnumCustomerFavoriteColors.ts": "export enum EnumCustomerFavoriteColors {
   Red = \\"red\\",
   Green = \\"green\\",
   Purple = \\"purple\\",
@@ -446,11 +446,11 @@ export type DeleteOrderArgs = {
   where: OrderWhereUniqueInput;
 };
 ",
-  "admin/src/api/order/EnumLabel.ts": "export enum EnumLabel {
+  "admin/src/api/order/EnumOrderLabel.ts": "export enum EnumOrderLabel {
   Fragile = \\"fragile\\",
 }
 ",
-  "admin/src/api/order/EnumStatus.ts": "export enum EnumStatus {
+  "admin/src/api/order/EnumOrderStatus.ts": "export enum EnumOrderStatus {
   Pending = \\"pending\\",
   InProgress = \\"inProgress\\",
   Done = \\"done\\",
@@ -588,12 +588,12 @@ export type DeleteUserArgs = {
   where: UserWhereUniqueInput;
 };
 ",
-  "admin/src/api/user/EnumInterests.ts": "export enum EnumInterests {
+  "admin/src/api/user/EnumUserInterests.ts": "export enum EnumUserInterests {
   Programming = \\"programming\\",
   Design = \\"design\\",
 }
 ",
-  "admin/src/api/user/EnumPriority.ts": "export enum EnumPriority {
+  "admin/src/api/user/EnumUserPriority.ts": "export enum EnumUserPriority {
   High = \\"high\\",
   Medium = \\"medium\\",
   Low = \\"low\\",
@@ -3381,31 +3381,31 @@ generator client {
 }
 
 model User {
-  username       String          @unique
+  username       String              @unique
   password       String
   roles          String[]
-  id             String          @id @default(cuid())
+  id             String              @id @default(cuid())
   name           String
   bio            String
   email          String
   age            Int
   birthDate      DateTime
   score          Float
-  organization   Organization?   @relation(fields: [organizationId], references: [id])
-  interests      EnumInterests[]
-  priority       EnumPriority
+  organization   Organization?       @relation(fields: [organizationId], references: [id])
+  interests      EnumUserInterests[]
+  priority       EnumUserPriority
   isCurious      Boolean
   location       String
   organizationId String?
 }
 
 model Order {
-  id         String     @id @default(cuid())
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  customer   Customer   @relation(fields: [customerId], references: [id])
-  status     EnumStatus
-  label      EnumLabel?
+  id         String          @id @default(cuid())
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  customer   Customer        @relation(fields: [customerId], references: [id])
+  status     EnumOrderStatus
+  label      EnumOrderLabel?
   customerId String
 }
 
@@ -3419,9 +3419,9 @@ model Organization {
 }
 
 model Customer {
-  id             String               @id @default(cuid())
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
+  id             String                       @id @default(cuid())
+  createdAt      DateTime                     @default(now())
+  updatedAt      DateTime                     @updatedAt
   email          String
   firstName      String?
   lastName       String?
@@ -3431,9 +3431,9 @@ model Customer {
   favoriteNumber Int?
   geoLocation    String?
   comments       String?
-  favoriteColors EnumFavoriteColors[]
-  customerType   EnumCustomerType?
-  organization   Organization?        @relation(fields: [organizationId], references: [id])
+  favoriteColors EnumCustomerFavoriteColors[]
+  customerType   EnumCustomerCustomerType?
+  organization   Organization?                @relation(fields: [organizationId], references: [id])
   orders         Order[]
   organizationId String?
 }
@@ -3444,35 +3444,35 @@ model Empty {
   updatedAt DateTime @updatedAt
 }
 
-enum EnumInterests {
+enum EnumUserInterests {
   programming
   design
 }
 
-enum EnumPriority {
+enum EnumUserPriority {
   high
   medium
   low
 }
 
-enum EnumStatus {
+enum EnumOrderStatus {
   pending
   inProgress
   done
 }
 
-enum EnumLabel {
+enum EnumOrderLabel {
   fragile
 }
 
-enum EnumFavoriteColors {
+enum EnumCustomerFavoriteColors {
   red
   green
   purple
   yellow
 }
 
-enum EnumCustomerType {
+enum EnumCustomerCustomerType {
   platinum
   gold
   bronze
@@ -3540,7 +3540,7 @@ WHERE n.nspname = 'public';
 import { PrismaClient } from \\"@prisma/client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
-import { EnumPriority } from \\"../src/user/EnumPriority\\";
+import { EnumUserPriority } from \\"../src/user/EnumUserPriority\\";
 
 if (require.main === module) {
   dotenv.config();
@@ -3574,7 +3574,7 @@ async function seed(bcryptSalt: Salt) {
     birthDate: new Date(),
     score: 0,
     interests: [],
-    priority: EnumPriority.High,
+    priority: EnumUserPriority.High,
     isCurious: false,
     location: \\"(32.085300, 34.781769)\\",
   };
@@ -4080,8 +4080,8 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
-import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
-import { EnumCustomerType } from \\"./EnumCustomerType\\";
+import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
+import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 @ObjectType()
 class Customer {
@@ -4195,24 +4195,24 @@ class Customer {
   comments!: string | null;
   @ApiProperty({
     required: false,
-    enum: EnumFavoriteColors,
+    enum: EnumCustomerFavoriteColors,
     isArray: true,
   })
-  @IsEnum(EnumFavoriteColors, {
+  @IsEnum(EnumCustomerFavoriteColors, {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumFavoriteColors], {
+  @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
   favoriteColors!: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
     required: false,
-    enum: EnumCustomerType,
+    enum: EnumCustomerCustomerType,
   })
-  @IsEnum(EnumCustomerType)
+  @IsEnum(EnumCustomerCustomerType)
   @IsOptional()
-  @Field(() => EnumCustomerType, {
+  @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
   customerType!: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -4242,8 +4242,8 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
-import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
-import { EnumCustomerType } from \\"./EnumCustomerType\\";
+import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
+import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 @InputType()
 class CustomerCreateInput {
@@ -4336,24 +4336,24 @@ class CustomerCreateInput {
   comments?: string | null;
   @ApiProperty({
     required: false,
-    enum: EnumFavoriteColors,
+    enum: EnumCustomerFavoriteColors,
     isArray: true,
   })
-  @IsEnum(EnumFavoriteColors, {
+  @IsEnum(EnumCustomerFavoriteColors, {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumFavoriteColors], {
+  @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
     required: false,
-    enum: EnumCustomerType,
+    enum: EnumCustomerCustomerType,
   })
-  @IsEnum(EnumCustomerType)
+  @IsEnum(EnumCustomerCustomerType)
   @IsOptional()
-  @Field(() => EnumCustomerType, {
+  @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -4386,8 +4386,8 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
-import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
-import { EnumCustomerType } from \\"./EnumCustomerType\\";
+import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
+import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 @InputType()
 class CustomerUpdateInput {
@@ -4483,24 +4483,24 @@ class CustomerUpdateInput {
   comments?: string | null;
   @ApiProperty({
     required: false,
-    enum: EnumFavoriteColors,
+    enum: EnumCustomerFavoriteColors,
     isArray: true,
   })
-  @IsEnum(EnumFavoriteColors, {
+  @IsEnum(EnumCustomerFavoriteColors, {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumFavoriteColors], {
+  @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
     required: false,
-    enum: EnumCustomerType,
+    enum: EnumCustomerCustomerType,
   })
-  @IsEnum(EnumCustomerType)
+  @IsEnum(EnumCustomerCustomerType)
   @IsOptional()
-  @Field(() => EnumCustomerType, {
+  @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -4533,7 +4533,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type, Transform } from \\"class-transformer\\";
-import { EnumCustomerType } from \\"./EnumCustomerType\\";
+import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 @InputType()
 class CustomerWhereInput {
@@ -4659,11 +4659,11 @@ class CustomerWhereInput {
   comments?: string | null;
   @ApiProperty({
     required: false,
-    enum: EnumCustomerType,
+    enum: EnumCustomerCustomerType,
   })
-  @IsEnum(EnumCustomerType)
+  @IsEnum(EnumCustomerCustomerType)
   @IsOptional()
-  @Field(() => EnumCustomerType, {
+  @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -4705,30 +4705,30 @@ class DeleteCustomerArgs {
 
 export { DeleteCustomerArgs };
 ",
-  "server/src/customer/EnumCustomerType.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/customer/EnumCustomerCustomerType.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
-export enum EnumCustomerType {
+export enum EnumCustomerCustomerType {
   Platinum = \\"platinum\\",
   Gold = \\"gold\\",
   Bronze = \\"bronze\\",
   Regular = \\"regular\\",
 }
 
-registerEnumType(EnumCustomerType, {
-  name: \\"EnumCustomerType\\",
+registerEnumType(EnumCustomerCustomerType, {
+  name: \\"EnumCustomerCustomerType\\",
 });
 ",
-  "server/src/customer/EnumFavoriteColors.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/customer/EnumCustomerFavoriteColors.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
-export enum EnumFavoriteColors {
+export enum EnumCustomerFavoriteColors {
   Red = \\"red\\",
   Green = \\"green\\",
   Purple = \\"purple\\",
   Yellow = \\"yellow\\",
 }
 
-registerEnumType(EnumFavoriteColors, {
-  name: \\"EnumFavoriteColors\\",
+registerEnumType(EnumCustomerFavoriteColors, {
+  name: \\"EnumCustomerFavoriteColors\\",
 });
 ",
   "server/src/customer/FindManyCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
@@ -6471,26 +6471,26 @@ class DeleteOrderArgs {
 
 export { DeleteOrderArgs };
 ",
-  "server/src/order/EnumLabel.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/order/EnumOrderLabel.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
-export enum EnumLabel {
+export enum EnumOrderLabel {
   Fragile = \\"fragile\\",
 }
 
-registerEnumType(EnumLabel, {
-  name: \\"EnumLabel\\",
+registerEnumType(EnumOrderLabel, {
+  name: \\"EnumOrderLabel\\",
 });
 ",
-  "server/src/order/EnumStatus.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/order/EnumOrderStatus.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
-export enum EnumStatus {
+export enum EnumOrderStatus {
   Pending = \\"pending\\",
   InProgress = \\"inProgress\\",
   Done = \\"done\\",
 }
 
-registerEnumType(EnumStatus, {
-  name: \\"EnumStatus\\",
+registerEnumType(EnumOrderStatus, {
+  name: \\"EnumOrderStatus\\",
 });
 ",
   "server/src/order/FindManyOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
@@ -6526,8 +6526,8 @@ import {
 } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
-import { EnumStatus } from \\"./EnumStatus\\";
-import { EnumLabel } from \\"./EnumLabel\\";
+import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
+import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @ObjectType()
 class Order {
   @ApiProperty({
@@ -6560,18 +6560,18 @@ class Order {
   customer!: CustomerWhereUniqueInput;
   @ApiProperty({
     required: true,
-    enum: EnumStatus,
+    enum: EnumOrderStatus,
   })
-  @IsEnum(EnumStatus)
-  @Field(() => EnumStatus)
+  @IsEnum(EnumOrderStatus)
+  @Field(() => EnumOrderStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
-    enum: EnumLabel,
+    enum: EnumOrderLabel,
   })
-  @IsEnum(EnumLabel)
+  @IsEnum(EnumOrderLabel)
   @IsOptional()
-  @Field(() => EnumLabel, {
+  @Field(() => EnumOrderLabel, {
     nullable: true,
   })
   label!: \\"fragile\\" | null;
@@ -6583,8 +6583,8 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { EnumStatus } from \\"./EnumStatus\\";
-import { EnumLabel } from \\"./EnumLabel\\";
+import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
+import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
 class OrderCreateInput {
   @ApiProperty({
@@ -6597,18 +6597,18 @@ class OrderCreateInput {
   customer!: CustomerWhereUniqueInput;
   @ApiProperty({
     required: true,
-    enum: EnumStatus,
+    enum: EnumOrderStatus,
   })
-  @IsEnum(EnumStatus)
-  @Field(() => EnumStatus)
+  @IsEnum(EnumOrderStatus)
+  @Field(() => EnumOrderStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
-    enum: EnumLabel,
+    enum: EnumOrderLabel,
   })
-  @IsEnum(EnumLabel)
+  @IsEnum(EnumOrderLabel)
   @IsOptional()
-  @Field(() => EnumLabel, {
+  @Field(() => EnumOrderLabel, {
     nullable: true,
   })
   label?: \\"fragile\\" | null;
@@ -6620,8 +6620,8 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { EnumStatus } from \\"./EnumStatus\\";
-import { EnumLabel } from \\"./EnumLabel\\";
+import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
+import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
 class OrderUpdateInput {
   @ApiProperty({
@@ -6637,21 +6637,21 @@ class OrderUpdateInput {
   customer?: CustomerWhereUniqueInput;
   @ApiProperty({
     required: false,
-    enum: EnumStatus,
+    enum: EnumOrderStatus,
   })
-  @IsEnum(EnumStatus)
+  @IsEnum(EnumOrderStatus)
   @IsOptional()
-  @Field(() => EnumStatus, {
+  @Field(() => EnumOrderStatus, {
     nullable: true,
   })
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
-    enum: EnumLabel,
+    enum: EnumOrderLabel,
   })
-  @IsEnum(EnumLabel)
+  @IsEnum(EnumOrderLabel)
   @IsOptional()
-  @Field(() => EnumLabel, {
+  @Field(() => EnumOrderLabel, {
     nullable: true,
   })
   label?: \\"fragile\\" | null;
@@ -6669,8 +6669,8 @@ import {
 } from \\"class-validator\\";
 import { Type, Transform } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
-import { EnumStatus } from \\"./EnumStatus\\";
-import { EnumLabel } from \\"./EnumLabel\\";
+import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
+import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
 class OrderWhereInput {
   @ApiProperty({
@@ -6714,21 +6714,21 @@ class OrderWhereInput {
   customer?: CustomerWhereUniqueInput;
   @ApiProperty({
     required: false,
-    enum: EnumStatus,
+    enum: EnumOrderStatus,
   })
-  @IsEnum(EnumStatus)
+  @IsEnum(EnumOrderStatus)
   @IsOptional()
-  @Field(() => EnumStatus, {
+  @Field(() => EnumOrderStatus, {
     nullable: true,
   })
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
-    enum: EnumLabel,
+    enum: EnumOrderLabel,
   })
-  @IsEnum(EnumLabel)
+  @IsEnum(EnumOrderLabel)
   @IsOptional()
-  @Field(() => EnumLabel, {
+  @Field(() => EnumOrderLabel, {
     nullable: true,
   })
   label?: \\"fragile\\" | null;
@@ -8624,27 +8624,27 @@ class DeleteUserArgs {
 
 export { DeleteUserArgs };
 ",
-  "server/src/user/EnumInterests.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/user/EnumUserInterests.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
-export enum EnumInterests {
+export enum EnumUserInterests {
   Programming = \\"programming\\",
   Design = \\"design\\",
 }
 
-registerEnumType(EnumInterests, {
-  name: \\"EnumInterests\\",
+registerEnumType(EnumUserInterests, {
+  name: \\"EnumUserInterests\\",
 });
 ",
-  "server/src/user/EnumPriority.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/user/EnumUserPriority.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
-export enum EnumPriority {
+export enum EnumUserPriority {
   High = \\"high\\",
   Medium = \\"medium\\",
   Low = \\"low\\",
 }
 
-registerEnumType(EnumPriority, {
-  name: \\"EnumPriority\\",
+registerEnumType(EnumUserPriority, {
+  name: \\"EnumUserPriority\\",
 });
 ",
   "server/src/user/FindManyUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
@@ -8699,8 +8699,8 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-import { EnumInterests } from \\"./EnumInterests\\";
-import { EnumPriority } from \\"./EnumPriority\\";
+import { EnumUserInterests } from \\"./EnumUserInterests\\";
+import { EnumUserPriority } from \\"./EnumUserPriority\\";
 @ObjectType()
 class User {
   @ApiProperty({
@@ -8778,23 +8778,23 @@ class User {
   organization!: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: true,
-    enum: EnumInterests,
+    enum: EnumUserInterests,
     isArray: true,
   })
-  @IsEnum(EnumInterests, {
+  @IsEnum(EnumUserInterests, {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumInterests], {
+  @Field(() => [EnumUserInterests], {
     nullable: true,
   })
   interests!: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
     required: true,
-    enum: EnumPriority,
+    enum: EnumUserPriority,
   })
-  @IsEnum(EnumPriority)
-  @Field(() => EnumPriority)
+  @IsEnum(EnumUserPriority)
+  @Field(() => EnumUserPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
     required: true,
@@ -8829,8 +8829,8 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-import { EnumInterests } from \\"./EnumInterests\\";
-import { EnumPriority } from \\"./EnumPriority\\";
+import { EnumUserInterests } from \\"./EnumUserInterests\\";
+import { EnumUserPriority } from \\"./EnumUserPriority\\";
 @InputType()
 class UserCreateInput {
   @ApiProperty({
@@ -8911,23 +8911,23 @@ class UserCreateInput {
   organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: true,
-    enum: EnumInterests,
+    enum: EnumUserInterests,
     isArray: true,
   })
-  @IsEnum(EnumInterests, {
+  @IsEnum(EnumUserInterests, {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumInterests], {
+  @Field(() => [EnumUserInterests], {
     nullable: true,
   })
   interests?: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
     required: true,
-    enum: EnumPriority,
+    enum: EnumUserPriority,
   })
-  @IsEnum(EnumPriority)
-  @Field(() => EnumPriority)
+  @IsEnum(EnumUserPriority)
+  @Field(() => EnumUserPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
     required: true,
@@ -8962,8 +8962,8 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-import { EnumInterests } from \\"./EnumInterests\\";
-import { EnumPriority } from \\"./EnumPriority\\";
+import { EnumUserInterests } from \\"./EnumUserInterests\\";
+import { EnumUserPriority } from \\"./EnumUserPriority\\";
 @InputType()
 class UserUpdateInput {
   @ApiProperty({
@@ -9071,24 +9071,24 @@ class UserUpdateInput {
   organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
-    enum: EnumInterests,
+    enum: EnumUserInterests,
     isArray: true,
   })
-  @IsEnum(EnumInterests, {
+  @IsEnum(EnumUserInterests, {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumInterests], {
+  @Field(() => [EnumUserInterests], {
     nullable: true,
   })
   interests?: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
     required: false,
-    enum: EnumPriority,
+    enum: EnumUserPriority,
   })
-  @IsEnum(EnumPriority)
+  @IsEnum(EnumUserPriority)
   @IsOptional()
-  @Field(() => EnumPriority, {
+  @Field(() => EnumUserPriority, {
     nullable: true,
   })
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -9131,7 +9131,7 @@ import {
 
 import { Type, Transform } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-import { EnumPriority } from \\"./EnumPriority\\";
+import { EnumUserPriority } from \\"./EnumUserPriority\\";
 @InputType()
 class UserWhereInput {
   @ApiProperty({
@@ -9225,11 +9225,11 @@ class UserWhereInput {
   organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
-    enum: EnumPriority,
+    enum: EnumUserPriority,
   })
-  @IsEnum(EnumPriority)
+  @IsEnum(EnumUserPriority)
   @IsOptional()
-  @Field(() => EnumPriority, {
+  @Field(() => EnumUserPriority, {
     nullable: true,
   })
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";

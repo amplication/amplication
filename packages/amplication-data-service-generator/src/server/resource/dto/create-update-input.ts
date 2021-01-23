@@ -6,7 +6,13 @@ import { createInput } from "./create-input";
 
 export function createUpdateInput(entity: Entity): NamedClassDeclaration {
   const fields = entity.fields.filter(isEditableField);
-  return createInput(createUpdateInputID(entity.name), fields, true, false);
+  return createInput(
+    createUpdateInputID(entity.name),
+    fields,
+    true,
+    false,
+    entity
+  );
 }
 
 export function createUpdateInputID(entityName: string): namedTypes.Identifier {

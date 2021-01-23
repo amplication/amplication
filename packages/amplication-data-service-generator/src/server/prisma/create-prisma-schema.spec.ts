@@ -258,7 +258,7 @@ describe("createPrismaField", () => {
       {},
       PrismaSchemaDSL.createObjectField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        `Enum${EXAMPLE_ENTITY_FIELD_NAME}`,
+        `Enum${EXAMPLE_ENTITY_NAME}${EXAMPLE_ENTITY_FIELD_NAME}`,
         true,
         true
       ),
@@ -269,7 +269,7 @@ describe("createPrismaField", () => {
       {},
       PrismaSchemaDSL.createObjectField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        `Enum${EXAMPLE_ENTITY_FIELD_NAME}`,
+        `Enum${EXAMPLE_ENTITY_NAME}${EXAMPLE_ENTITY_FIELD_NAME}`,
         false,
         true
       ),
@@ -363,6 +363,6 @@ describe("createPrismaField", () => {
       searchable: false,
       properties,
     };
-    expect(createPrismaField(field)).toEqual(expected);
+    expect(createPrismaField(field, EXAMPLE_ENTITY)).toEqual(expected);
   });
 });

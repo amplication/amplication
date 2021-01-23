@@ -27,7 +27,8 @@ describe("createWhereUniqueInput", () => {
           createWhereUniqueInputID(EXAMPLE_ENTITY_NAME),
           [EXAMPLE_ID_FIELD],
           false,
-          true
+          true,
+          EXAMPLE_ENTITY
         )
       ).code
     );

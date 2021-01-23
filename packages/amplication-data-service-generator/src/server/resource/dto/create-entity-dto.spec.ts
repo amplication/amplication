@@ -29,7 +29,8 @@ describe("createEntityDTO", () => {
               EXAMPLE_ID_FIELD,
               !EXAMPLE_ID_FIELD.required,
               false,
-              false
+              false,
+              EXAMPLE_ENTITY
             ),
           ]),
           null,

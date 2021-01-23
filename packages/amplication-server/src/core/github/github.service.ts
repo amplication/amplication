@@ -28,7 +28,9 @@ export class GithubService {
     });
 
     const results = await octokit.repos.listForAuthenticatedUser({
-      type: 'all'
+      type: 'all',
+      sort: 'updated',
+      direction: 'desc'
     });
 
     return results.data.map(repo => ({

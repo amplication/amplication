@@ -8,7 +8,7 @@
     "check-format": "prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint --cache .",
-    "build": "rollup -c",
+    "build": "npx rollup -c",
     "watch": "npm run build -- --watch",
     "prepare": "npm run build"
   },

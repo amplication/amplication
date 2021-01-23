@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { EntityField, EnumDataType } from "../../types";
+import { EntityField, EnumDataType, Entity } from "../../types";
 import {
   createDefaultValue,
   createUserObjectCustomProperties,
@@ -41,6 +41,17 @@ const EXAMPLE_OPTION_SET_FIELD: EntityField = {
   properties: {
     options: [EXAMPLE_OPTION_SET_OPTION],
   },
+};
+
+const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
+const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_ENTITY: Entity = {
+  id: EXAMPLE_ENTITY_ID,
+  name: EXAMPLE_ENTITY_NAME,
+  displayName: "Example Entity",
+  pluralDisplayName: "Example Entities",
+  fields: [EXAMPLE_SINGLE_LINE_TEXT_FIELD],
+  permissions: [],
 };
 
 describe("createUserObjectCustomProperties", () => {
@@ -126,7 +137,8 @@ describe("createDefaultValue", () => {
       "OptionSet",
       EXAMPLE_OPTION_SET_FIELD,
       memberExpression`${createEnumName(
-        EXAMPLE_OPTION_SET_FIELD
+        EXAMPLE_OPTION_SET_FIELD,
+        EXAMPLE_ENTITY
       )}.${createEnumMemberName(EXAMPLE_OPTION_SET_OPTION.label)}`,
     ],
     [
@@ -195,6 +207,6 @@ describe("createDefaultValue", () => {
     ],
   ];
   test.each(cases)("%s", (name, field, expected) => {
-    expect(createDefaultValue(field)).toEqual(expected);
+    expect(createDefaultValue(field, EXAMPLE_ENTITY)).toEqual(expected);
   });
 });
