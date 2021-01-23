@@ -4,47 +4,10 @@ import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField, SortData } from "@amplication/design-system";
 
 import NewEntityField from "./NewEntityField";
 import { EntityFieldListItem } from "./EntityFieldListItem";
 import { GET_ENTITIES } from "./EntityList";
-
-const fields: DataField[] = [
-  {
-    name: "displayName",
-    title: "Display Name",
-    sortable: true,
-  },
-  {
-    name: "name",
-    title: "Name",
-    sortable: true,
-  },
-
-  {
-    name: "dataType",
-    title: "Data Type",
-    sortable: true,
-  },
-  {
-    name: "required",
-    title: "Required",
-    sortable: true,
-    minWidth: true,
-  },
-  {
-    name: "searchable",
-    title: "Searchable",
-    sortable: true,
-    minWidth: true,
-  },
-  {
-    name: "description",
-    title: "Description",
-    sortable: true,
-  },
-];
 
 type TData = {
   entity: models.Entity;
@@ -52,23 +15,13 @@ type TData = {
 
 const DATE_CREATED_FIELD = "createdAt";
 
-const INITIAL_SORT_DATA = {
-  field: "position",
-  order: 1,
-};
-
 type Props = {
   entityId: string;
 };
 
 export const EntityFieldList = React.memo(({ entityId }: Props) => {
-  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
-
-  const handleSortChange = (sortData: SortData) => {
-    setSortDir(sortData);
-  };
 
   const handleSearchChange = (value: string) => {
     setSearchPhrase(value);
@@ -80,8 +33,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
     variables: {
       id: entityId,
       orderBy: {
-        [sortDir.field || DATE_CREATED_FIELD]:
-          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
+        [DATE_CREATED_FIELD]: models.SortOrder.Asc,
       },
       whereName:
         searchPhrase !== ""
@@ -121,36 +73,22 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
 
   return (
     <>
-      <DataGrid
-        showSearch
-        fields={fields}
-        title="Entity Fields"
-        loading={loading}
-        sortDir={sortDir}
-        onSortChange={handleSortChange}
-        onSearchChange={handleSearchChange}
-        toolbarContentStart={
-          data?.entity && (
-            <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
-          )
-        }
-      >
-        {data?.entity.fields?.map((field) => (
-          <EntityFieldListItem
-            key={field.id}
-            applicationId={data?.entity.appId}
-            entity={data?.entity}
-            entityField={field}
-            entityIdToName={entityIdToName}
-            onError={setError}
-          />
-        ))}
-      </DataGrid>
-
+      {data?.entity && (
+        <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
+      )}
+      {data?.entity.fields?.map((field) => (
+        <EntityFieldListItem
+          key={field.id}
+          applicationId={data?.entity.appId}
+          entity={data?.entity}
+          entityField={field}
+          entityIdToName={entityIdToName}
+          onError={setError}
+        />
+      ))}
       <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </>
   );
-  /**@todo: move error message to hosting page  */
 });
 
 /**@todo: expand search on other field  */

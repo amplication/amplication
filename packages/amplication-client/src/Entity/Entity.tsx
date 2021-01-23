@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import { match, useRouteMatch } from "react-router-dom";
+import { Switch, Route, match, Link } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -8,17 +8,14 @@ import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import EntityForm from "./EntityForm";
-import { EntityFieldList } from "./EntityFieldList";
-import Sidebar from "../Layout/Sidebar";
+import { EntityFieldLinkList } from "./EntityFieldLinkList";
 import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
-import { Panel, EnumPanelStyle } from "@amplication/design-system";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import { useTracking, track } from "../util/analytics";
 
 import "./Entity.scss";
-import { isEmpty } from "lodash";
 
 type Props = {
   match: match<{ application: string; entityId: string; fieldId: string }>;
@@ -36,24 +33,6 @@ const Entity = ({ match }: Props) => {
   const { entityId, application } = match.params;
   const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
-
-  const fieldMatch = useRouteMatch<{ fieldId: string }>(
-    "/:application/entities/:entityId/fields/:fieldId"
-  );
-
-  let fieldId = null;
-  if (fieldMatch) {
-    fieldId = fieldMatch.params.fieldId;
-  }
-
-  const permissionsMatch = useRouteMatch(
-    "/:application/entities/:entityId/permissions"
-  );
-
-  let isPermissionsOpen = false;
-  if (permissionsMatch) {
-    isPermissionsOpen = true;
-  }
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {
@@ -104,44 +83,65 @@ const Entity = ({ match }: Props) => {
   const errorMessage = formatError(error || updateError);
 
   return (
-    <PageContent className="entity">
+    <PageContent
+      className="entity"
+      sideContent={
+        data && (
+          <>
+            <div>
+              <Link to={`/${application}/entities/${data.entity.id}`}>
+                General Settings
+              </Link>
+            </div>
+            <div>
+              <Link
+                to={`/${application}/entities/${data.entity.id}/permissions`}
+              >
+                Permissions
+              </Link>
+            </div>
+            <EntityFieldLinkList entityId={data.entity.id} />
+          </>
+        )
+      }
+    >
       {loading ? (
         <span>Loading...</span>
       ) : !data ? (
         <span>can't find</span> /**@todo: Show formatted error message */
       ) : (
-        <>
-          <EntityForm
-            entity={data.entity}
-            applicationId={application}
-            onSubmit={handleSubmit}
+        <Switch>
+          <Route
+            exact
+            path="/:application/entities/:entityId"
+            component={() => (
+              <EntityForm
+                entity={data.entity}
+                applicationId={application}
+                onSubmit={handleSubmit}
+              />
+            )}
           />
-          <Panel
-            className="entity-field-list"
-            panelStyle={EnumPanelStyle.Transparent}
-          >
-            <EntityFieldList entityId={data.entity.id} />
-          </Panel>
-        </>
+          <Route
+            exact
+            path="/:application/entities/:entityId/permissions"
+            component={() => (
+              <PermissionsForm
+                entityId={entityId}
+                applicationId={application}
+                availableActions={ENTITY_ACTIONS}
+                backUrl={`/${application}/entities/${data.entity.id}`}
+                objectDisplayName={data.entity.pluralDisplayName}
+              />
+            )}
+          />
+          <Route
+            path="/:application/entities/:entityId/fields/:fieldId"
+            component={EntityField}
+          />
+        </Switch>
       )}
-      {data && (
-        <Sidebar
-          modal
-          open={!isEmpty(fieldId) || isPermissionsOpen}
-          largeMode={isPermissionsOpen}
-        >
-          {!isEmpty(fieldId) && <EntityField />}
-          {isPermissionsOpen && (
-            <PermissionsForm
-              entityId={entityId}
-              applicationId={application}
-              availableActions={ENTITY_ACTIONS}
-              backUrl={`/${application}/entities/${data.entity.id}`}
-              objectDisplayName={data.entity.pluralDisplayName}
-            />
-          )}
-        </Sidebar>
-      )}
+
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>
   );
