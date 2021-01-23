@@ -33,6 +33,7 @@ $inverted-border-radius: 6px;
   &__badge {
     @include counterBadge;
     background-color: var(--negative-light);
+    color: var(--static-white);
   }
 
   &:hover {
