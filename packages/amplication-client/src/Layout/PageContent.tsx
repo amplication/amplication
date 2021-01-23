@@ -13,8 +13,10 @@ const CLASS_NAME = "amp-page-content";
 function PageContent({ children, sideContent, className }: Props) {
   return (
     <div className={classNames(CLASS_NAME, className)}>
-      {sideContent && <div className={`${CLASS_NAME}_tabs`}>{sideContent}</div>}
-      <main className={`${CLASS_NAME}_main`}>{children}</main>
+      {sideContent && (
+        <div className={`${CLASS_NAME}__tabs`}>{sideContent}</div>
+      )}
+      <main className={`${CLASS_NAME}__main`}>{children}</main>
     </div>
   );
 }

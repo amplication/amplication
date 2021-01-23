@@ -11,8 +11,9 @@ $tabs-width: 300px;
   background: var(--black2);
   box-sizing: border-box;
   flex: 1;
+  overflow: auto;
 
-  &_tabs {
+  &__tabs {
     width: $tabs-width;
     background: var(--white);
     border-radius: var(--default-border-radius);
@@ -20,7 +21,7 @@ $tabs-width: 300px;
     box-sizing: border-box;
   }
 
-  main {
+  &__main {
     @include scrollbars(10px, var(--black60), transparent);
     flex: 1;
     overflow: auto;
@@ -29,6 +30,7 @@ $tabs-width: 300px;
     padding: 0 var(--large-spacing);
     position: relative;
     box-sizing: border-box;
+    height: 100%;
 
     @media only screen and (max-width: $page-content-min-width) {
       min-width: calc(#{$page-content-min-width} - var(--menu-width));

@@ -48,7 +48,7 @@ function Applications() {
       <MainLayout>
         <MainLayout.Menu />
         <MainLayout.Content>
-          <PageContent className="applications">
+          <div className="applications">
             <div className="applications__bg">
               <div className="applications__header">
                 <h1>My Apps</h1>
@@ -73,7 +73,7 @@ function Applications() {
               </div>
             </div>
             <Snackbar open={Boolean(error)} message={errorMessage} />
-          </PageContent>
+          </div>
         </MainLayout.Content>
       </MainLayout>
     </>

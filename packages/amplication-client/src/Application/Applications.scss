@@ -8,6 +8,8 @@ $list-padding-bottom: 200px;
 $background-size: 60%;
 
 .applications {
+  margin-top: var(--triple-spacing);
+
   & &__header {
     display: flex;
     flex-direction: row;
