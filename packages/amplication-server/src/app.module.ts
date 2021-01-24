@@ -4,7 +4,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { PrismaClient } from '@prisma/client';
 import { MorganModule } from 'nest-morgan';
 import { Request } from 'express';
 import { CoreModule } from './core/core.module';
@@ -39,8 +38,7 @@ import { RootStorageModule } from './core/storage/root-storage.module';
         debug: configService.get('GRAPHQL_DEBUG') === '1',
         playground: configService.get('PLAYGROUND_ENABLE') === '1',
         context: ({ req }: { req: Request }) => ({
-          req,
-          prisma: new PrismaClient()
+          req
         })
       }),
       inject: [ConfigService]

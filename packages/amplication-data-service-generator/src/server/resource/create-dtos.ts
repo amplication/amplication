@@ -115,8 +115,8 @@ function createEntityEnumDTOs(entity: Entity): EntityEnumDTOs {
   const enumFields = getEnumFields(entity);
   return Object.fromEntries(
     enumFields.map((field) => {
-      const enumDTO = createEnumDTO(field);
-      return [createEnumName(field), enumDTO];
+      const enumDTO = createEnumDTO(field, entity);
+      return [createEnumName(field, entity), enumDTO];
     })
   );
 }

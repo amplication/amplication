@@ -28,7 +28,8 @@ describe("createUpdateInput", () => {
             createUpdateInputID(EXAMPLE_ENTITY_NAME),
             [EXAMPLE_SINGLE_LINE_TEXT_FIELD],
             true,
-            false
+            false,
+            EXAMPLE_ENTITY
           )
         ).code
       );

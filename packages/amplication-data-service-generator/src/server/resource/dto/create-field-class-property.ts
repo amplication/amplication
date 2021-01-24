@@ -6,7 +6,7 @@ import {
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { EntityField } from "../../../types";
+import { EntityField, Entity } from "../../../types";
 import {
   createEnumName,
   createPrismaField,
@@ -79,9 +79,10 @@ export function createFieldClassProperty(
   field: EntityField,
   optional: boolean,
   isInput: boolean,
-  isQuery: boolean
+  isQuery: boolean,
+  entity: Entity
 ): namedTypes.ClassProperty {
-  const prismaField = createPrismaField(field);
+  const prismaField = createPrismaField(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
   const type = createFieldValueTypeFromPrismaField(
@@ -133,7 +134,7 @@ export function createFieldClassProperty(
     decorators.push(createTypeDecorator(DATE_ID));
   }
   if (isEnum) {
-    const enumId = builders.identifier(createEnumName(field));
+    const enumId = builders.identifier(createEnumName(field, entity));
     const enumAPIProperty = builders.objectProperty(ENUM_ID, enumId);
     const apiPropertyOptionsProperties = prismaField.isList
       ? [enumAPIProperty, builders.objectProperty(IS_ARRAY_ID, TRUE_LITERAL)]
@@ -198,7 +199,7 @@ export function createFieldClassProperty(
     (isInput && !isQuery && isOneToOneRelationField(field))
   ) {
     decorators.push(
-      createGraphQLFieldDecorator(prismaField, isEnum, field, optional)
+      createGraphQLFieldDecorator(prismaField, isEnum, field, optional, entity)
     );
   }
   return classProperty(
@@ -215,11 +216,12 @@ function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
   isEnum: boolean,
   field: EntityField,
-  optional: boolean
+  optional: boolean,
+  entity: Entity
 ): namedTypes.Decorator {
   const type = builders.arrowFunctionExpression(
     [],
-    createGraphQLFieldType(prismaField, field, isEnum)
+    createGraphQLFieldType(prismaField, field, isEnum, entity)
   );
   return builders.decorator(
     builders.callExpression(
@@ -239,13 +241,15 @@ function createGraphQLFieldDecorator(
 function createGraphQLFieldType(
   prismaField: ScalarField | ObjectField,
   field: EntityField,
-  isEnum: boolean
+  isEnum: boolean,
+  entity: Entity
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (prismaField.isList) {
     const itemType = createGraphQLFieldType(
       { ...prismaField, isList: false },
       field,
-      isEnum
+      isEnum,
+      entity
     );
     return builders.arrayExpression([itemType]);
   }
@@ -265,7 +269,7 @@ function createGraphQLFieldType(
     return STRING_ID;
   }
   if (isEnum) {
-    const enumId = builders.identifier(createEnumName(field));
+    const enumId = builders.identifier(createEnumName(field, entity));
     return enumId;
   }
   if (isOneToOneRelationField(field)) {
