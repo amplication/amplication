@@ -46,7 +46,7 @@ $input-translate: -22px;
     width: $track-width;
 
     &.mdc-switch--checked {
-      @include state(var(--white), var(--primary));
+      @include state(var(--static-white), var(--primary));
       .mdc-switch__thumb-underlay {
         transform: translateX(0);
       }
@@ -56,7 +56,7 @@ $input-translate: -22px;
     }
 
     &:not(.mdc-switch--checked) {
-      @include state(var(--white), var(--black20));
+      @include state(var(--static-white), var(--black20));
       .mdc-switch__thumb-underlay {
         transform: translateX(-$thumb-translate);
       }

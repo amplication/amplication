@@ -100,7 +100,7 @@ const EntityFieldForm = ({
         const schema = getSchemaForDataType(formik.values.dataType);
 
         return (
-          <Form childrenAsBlocks>
+          <Form>
             {!isDisabled && <FormikAutoSave debounceMS={1000} />}
 
             <DisplayNameField
@@ -115,7 +115,6 @@ const EntityFieldForm = ({
               label="Description"
               disabled={isDisabled}
             />
-            <hr />
             <div>
               <ToggleField
                 name="required"

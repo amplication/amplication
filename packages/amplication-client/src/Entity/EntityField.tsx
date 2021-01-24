@@ -87,22 +87,15 @@ const EntityField = () => {
 
   return (
     <>
-      <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
-        {loading
-          ? "Loading..."
-          : `${data?.entity.displayName} | ${entityField?.displayName}`}
-      </SidebarHeader>
       {!loading && (
-        <DrawerContent>
-          <EntityFieldForm
-            isDisabled={
-              defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
-            }
-            onSubmit={handleSubmit}
-            defaultValues={defaultValues}
-            applicationId={application}
-          />
-        </DrawerContent>
+        <EntityFieldForm
+          isDisabled={
+            defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
+          }
+          onSubmit={handleSubmit}
+          defaultValues={defaultValues}
+          applicationId={application}
+        />
       )}
       <Snackbar open={hasError} message={errorMessage} />
     </>

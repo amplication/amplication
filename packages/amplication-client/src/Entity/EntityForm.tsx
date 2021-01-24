@@ -11,6 +11,7 @@ import {
   PanelHeader,
   EnumPanelStyle,
 } from "@amplication/design-system";
+import { DisplayNameField } from "../Components/DisplayNameField";
 import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
@@ -57,6 +58,8 @@ const FORM_SCHEMA = {
   },
 };
 
+const CLASS_NAME = "entity-form";
+
 const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
@@ -74,7 +77,7 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
   }, [history, applicationId, entity]);
 
   return (
-    <div className="entity-form">
+    <div className={CLASS_NAME}>
       <Formik
         initialValues={initialValues}
         validate={(values: EntityInput) => validate(values, FORM_SCHEMA)}
@@ -86,53 +89,44 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
             <Form>
               <>
                 <FormikAutoSave debounceMS={1000} />
-                <div className="form__header">
-                  <EditableTitleField name="displayName" label="Display Name" />
-                  <EditableTitleField
-                    secondary
-                    name="description"
-                    label="Description"
-                  />
-                </div>
-                <div className="form__body">
-                  <Panel
-                    className="form__body__general"
-                    panelStyle={EnumPanelStyle.Bordered}
-                  >
-                    <PanelHeader>General</PanelHeader>
-                    <div className="form__body__general__fields">
-                      <NameField
-                        name="name"
-                        disabled={USER_ENTITY === entity?.name}
-                        capitalized
-                      />
-                      <TextField
-                        name="pluralDisplayName"
-                        label="Plural Display Name"
-                      />
-                    </div>
-                  </Panel>
-                  <Panel
-                    className="form__body__permissions"
-                    panelStyle={EnumPanelStyle.Bordered}
-                  >
-                    <PanelHeader>
-                      <h2>Permissions</h2>
-                      <Button
-                        buttonStyle={EnumButtonStyle.Clear}
-                        icon="edit"
-                        type="button"
-                        onClick={handlePermissionsClick}
-                      />
-                    </PanelHeader>
 
-                    <PermissionsPreview
-                      entityId={entity?.id}
-                      availableActions={ENTITY_ACTIONS}
-                      entityDisplayName={entity?.pluralDisplayName || ""}
+                <DisplayNameField name="displayName" label="Display Name" />
+
+                <NameField
+                  name="name"
+                  disabled={USER_ENTITY === entity?.name}
+                  capitalized
+                />
+                <TextField
+                  name="pluralDisplayName"
+                  label="Plural Display Name"
+                />
+                <TextField
+                  autoComplete="off"
+                  textarea
+                  rows={3}
+                  name="description"
+                  label="Description"
+                />
+                <Panel
+                  className={`${CLASS_NAME}__permissions`}
+                  panelStyle={EnumPanelStyle.Bordered}
+                >
+                  <PanelHeader>
+                    <h2>Permissions</h2>
+                    <Button
+                      buttonStyle={EnumButtonStyle.Clear}
+                      icon="edit"
+                      type="button"
+                      onClick={handlePermissionsClick}
                     />
-                  </Panel>
-                </div>
+                  </PanelHeader>
+                  <PermissionsPreview
+                    entityId={entity?.id}
+                    availableActions={ENTITY_ACTIONS}
+                    entityDisplayName={entity?.pluralDisplayName || ""}
+                  />
+                </Panel>
               </>
             </Form>
           );
