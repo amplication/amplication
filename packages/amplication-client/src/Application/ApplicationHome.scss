@@ -55,11 +55,11 @@ $circle-badge-border: 2px;
       width: $application-badge-size-large + ($circle-badge-border * 4);
       height: $application-badge-size-large + ($circle-badge-border * 4);
       content: "";
-      background: var(--white);
+      background: var(--black2);
       z-index: -1;
       position: absolute;
       border-radius: 50%;
-      border: $circle-badge-border solid var(--black10);
+      border: $circle-badge-border solid var(--black2);
       box-sizing: border-box;
     }
   }

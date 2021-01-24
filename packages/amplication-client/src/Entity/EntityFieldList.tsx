@@ -1,13 +1,14 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { useHistory } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
+import { CircularProgress } from "@rmwc/circular-progress";
 import { formatError } from "../util/error";
 import * as models from "../models";
+import { SearchField } from "@amplication/design-system";
 
-import NewEntityField from "./NewEntityField";
 import { EntityFieldListItem } from "./EntityFieldListItem";
 import { GET_ENTITIES } from "./EntityList";
+import "./EntityFieldList.scss";
 
 type TData = {
   entity: models.Entity;
@@ -23,11 +24,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
 
-  const handleSearchChange = (value: string) => {
-    setSearchPhrase(value);
-  };
-
-  const history = useHistory();
+  const CLASS_NAME = "entity-field-list";
 
   const { data, loading, error: errorLoading } = useQuery<TData>(GET_FIELDS, {
     variables: {
@@ -60,22 +57,29 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
     );
   }, [entityList]);
 
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
+
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
-  const handleFieldAdd = useCallback(
-    (field: models.EntityField) => {
-      const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
-      history.push(fieldUrl);
-    },
-    [data, history, entityId]
-  );
-
   return (
     <>
-      {data?.entity && (
-        <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
-      )}
+      <div className={`${CLASS_NAME}__header`}>
+        <SearchField
+          label="search"
+          placeholder="search"
+          onChange={handleSearchChange}
+        />
+      </div>
+      <div className={`${CLASS_NAME}__title`}>
+        {data?.entity.fields?.length} Fields
+      </div>
+      {loading && <CircularProgress />}
       {data?.entity.fields?.map((field) => (
         <EntityFieldListItem
           key={field.id}

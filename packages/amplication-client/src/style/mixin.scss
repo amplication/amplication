@@ -205,7 +205,7 @@ $bullet-size: 6px;
 
 @mixin applicationCard {
   box-sizing: border-box;
-  background: var(--white);
+  background: var(--black2);
   border-radius: var(--default-border-radius);
   border: none;
 
@@ -222,6 +222,7 @@ $bullet-size: 6px;
 
   &:hover {
     box-shadow: var(--hover-box-shadow);
+    background: var(--black5);
   }
 }
 

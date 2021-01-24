@@ -84,7 +84,7 @@ $split-icon-font-size: 20px;
 
   &.amp-button--clear {
     background-color: transparent;
-    color: var(--black80);
+    color: var(--black60);
     border: none;
     min-width: var(--default-button-height);
     height: var(--default-button-height);
@@ -96,7 +96,7 @@ $split-icon-font-size: 20px;
     &:hover,
     &:active,
     &:focus {
-      color: var(--primary);
+      color: var(--black100);
       background-color: transparent;
     }
 
