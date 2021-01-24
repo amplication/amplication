@@ -23,10 +23,11 @@ type TData = {
 };
 
 const CLASS_NAME = "pending-changes-page";
+const NAVIGATION_KEY = "PENDING_CHANGES";
 
 const PendingChangesPage = ({ match }: Props) => {
   const { application } = match.params;
-  useNavigationTabs(match.url, "Pending Changes");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Pending Changes");
 
   const { data, error } = useQuery<TData>(GET_PENDING_CHANGES, {
     variables: {

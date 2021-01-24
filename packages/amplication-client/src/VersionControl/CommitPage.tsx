@@ -19,10 +19,11 @@ type Props = {
   match: match<{ application: string; commitId: string }>;
 };
 const CLASS_NAME = "commit-page";
+const NAVIGATION_KEY = "COMMITS";
 
 const CommitPage = ({ match }: Props) => {
   const { commitId } = match.params;
-  useNavigationTabs(match.url, "Commit");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Commit");
 
   const { data, error } = useQuery<{
     commit: models.Commit;

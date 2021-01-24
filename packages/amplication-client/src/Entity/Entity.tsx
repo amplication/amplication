@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import { Switch, Route, match, Link } from "react-router-dom";
+import { Switch, Route, match, useLocation } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -30,11 +30,13 @@ type TData = {
 type UpdateData = {
   updateEntity: models.Entity;
 };
+const NAVIGATION_KEY = "ENTITY";
 
 const Entity = ({ match }: Props) => {
   const { entityId, application } = match.params;
   const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
+  const location = useLocation();
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {
@@ -42,7 +44,11 @@ const Entity = ({ match }: Props) => {
     },
   });
 
-  useNavigationTabs(match.url, data?.entity.displayName);
+  useNavigationTabs(
+    `${NAVIGATION_KEY}_${entityId}`,
+    location.pathname,
+    data?.entity.displayName
+  );
 
   const [updateEntity, { error: updateError }] = useMutation<UpdateData>(
     UPDATE_ENTITY,

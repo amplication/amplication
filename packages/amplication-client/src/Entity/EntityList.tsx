@@ -26,11 +26,12 @@ type Props = {
 
 const NAME_FIELD = "displayName";
 const CLASS_NAME = "entity-list";
+const NAVIGATION_KEY = "ENTITY_LIST";
 
 const POLL_INTERVAL = 2000;
 
 export const EntityList = ({ match }: Props) => {
-  useNavigationTabs(match.url, "Entities");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Entities");
   const [error, setError] = useState<Error>();
 
   const { application } = match.params;

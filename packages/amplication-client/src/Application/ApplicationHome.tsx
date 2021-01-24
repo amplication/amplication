@@ -23,6 +23,7 @@ type Props = {
 };
 
 const CLASS_NAME = "application-home";
+const NAVIGATION_KEY = "APP_HOME";
 
 function ApplicationHome({ match }: Props) {
   const applicationId = match.params.application;
@@ -34,7 +35,7 @@ function ApplicationHome({ match }: Props) {
       id: applicationId,
     },
   });
-  useNavigationTabs(`/${applicationId}/`, data?.app.name);
+  useNavigationTabs(NAVIGATION_KEY, match.url, data?.app.name);
 
   const errorMessage = formatError(error);
 

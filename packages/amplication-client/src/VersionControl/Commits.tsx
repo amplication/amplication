@@ -9,9 +9,10 @@ import useNavigationTabs from "../Layout/UseNavigationTabs";
 type Props = {
   match: match;
 };
+const NAVIGATION_KEY = "ENTITIES";
 
 function Entities({ match }: Props) {
-  useNavigationTabs(match.url, "Commits");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Commits");
 
   return (
     <Switch>

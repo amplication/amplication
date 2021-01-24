@@ -26,10 +26,11 @@ type Props = {
   match: match<{ application: string; buildId: string }>;
 };
 const CLASS_NAME = "build-page";
+const NAVIGATION_KEY = "BUILDS";
 
 const BuildPage = ({ match }: Props) => {
   const { buildId } = match.params;
-  useNavigationTabs(match.url, "Build");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Build");
 
   const [error, setError] = useState<Error>();
 

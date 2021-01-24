@@ -11,11 +11,12 @@ import useNavigationTabs from "../Layout/UseNavigationTabs";
 type Props = {
   match: match<{ application: string }>;
 };
+const NAVIGATION_KEY = "ROLE";
 
 const RolesPage = ({ match }: Props) => {
   const { application } = match.params;
 
-  useNavigationTabs(match.url, "Roles");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Roles");
 
   const roleMatch = useRouteMatch<{ roleId: string }>(
     "/:application/roles/:roleId"

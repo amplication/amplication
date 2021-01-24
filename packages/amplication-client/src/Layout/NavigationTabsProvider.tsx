@@ -18,7 +18,7 @@ function NavigationTabsProvider({ children }: Props) {
       setNavigationTabItems((items) => {
         let exist = false;
         const next = items.map((item) => {
-          if (item.url === addItem.url) {
+          if (item.key === addItem.key) {
             exist = true;
             return addItem;
           }
@@ -41,8 +41,8 @@ function NavigationTabsProvider({ children }: Props) {
   );
 
   const unregisterNavigationTabItem = useCallback(
-    (url: string) => {
-      const nextItems = navigationTabItems.filter((item) => item.url !== url);
+    (key: string) => {
+      const nextItems = navigationTabItems.filter((item) => item.key !== key);
 
       const nextUrl = last(nextItems)?.url;
 

@@ -1,7 +1,9 @@
 import React, { useCallback, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import classNames from "classnames";
-import NavigationTabsContext from "./NavigationTabsContext";
+import NavigationTabsContext, {
+  NavigationTabItem,
+} from "./NavigationTabsContext";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 import "./NavigationTabs.scss";
@@ -20,9 +22,7 @@ const NavigationTabs = ({ defaultTabUrl }: Props) => {
       {navigationTabsContext.items.map((item, index, items) => (
         <NavigationTabs.Tab
           key={index}
-          to={item.url}
-          text={item.name}
-          active={item.active}
+          item={item}
           defaultTabUrl={defaultTabUrl}
           tabsCount={items.length}
         />
@@ -32,32 +32,32 @@ const NavigationTabs = ({ defaultTabUrl }: Props) => {
 };
 
 type TabProps = {
-  to: string;
-  text: string;
-  active: boolean;
+  item: NavigationTabItem;
   defaultTabUrl: string;
   tabsCount: number;
 };
 
-const Tab = ({ to, text, active, defaultTabUrl, tabsCount }: TabProps) => {
+const Tab = ({ item, defaultTabUrl, tabsCount }: TabProps) => {
   const history = useHistory();
 
   const navigationTabsContext = useContext(NavigationTabsContext);
 
   const handleCloseTab = useCallback(() => {
-    const url = navigationTabsContext.unregisterItem(to);
+    const url = navigationTabsContext.unregisterItem(item.key);
     history.push(url || defaultTabUrl);
-  }, [navigationTabsContext, to, history, defaultTabUrl]);
+  }, [navigationTabsContext, item.key, history, defaultTabUrl]);
 
   const activeClass = `${CLASS_NAME}__tab--active`;
 
   return (
     <span
-      className={classNames(`${CLASS_NAME}__tab`, { [activeClass]: active })}
+      className={classNames(`${CLASS_NAME}__tab`, {
+        [activeClass]: item.active,
+      })}
     >
-      <Link to={to}>{text}</Link>
+      <Link to={item.url}>{item.name}</Link>
       <Button
-        disabled={to === defaultTabUrl && tabsCount === 1}
+        disabled={item.url === defaultTabUrl && tabsCount === 1}
         buttonStyle={EnumButtonStyle.Clear}
         icon="close"
         onClick={handleCloseTab}

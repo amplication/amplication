@@ -14,11 +14,14 @@ $tabs-width: 300px;
   overflow: auto;
 
   &__tabs {
+    @include scrollbars(10px, var(--black60), transparent);
     width: $tabs-width;
     background: var(--white);
     border-radius: var(--default-border-radius);
     padding: var(--large-spacing);
     box-sizing: border-box;
+    max-height: 100%;
+    overflow: auto;
 
     .sub-list {
       margin-left: var(--default-spacing);

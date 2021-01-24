@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useCallback } from "react";
+import { useHistory } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import InnerTabLink from "../Layout/InnerTabLink";
 import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
+import NewEntityField from "./NewEntityField";
 
 type TData = {
   entity: models.Entity;
@@ -25,6 +27,14 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
       },
     },
   });
+  const history = useHistory();
+  const handleFieldAdd = useCallback(
+    (field: models.EntityField) => {
+      const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
+      history.push(fieldUrl);
+    },
+    [data, history, entityId]
+  );
 
   const errorMessage = formatError(error);
 
@@ -40,6 +50,9 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
           </InnerTabLink>
         </div>
       ))}
+      {data?.entity && (
+        <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
+      )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );

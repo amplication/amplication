@@ -16,9 +16,10 @@ const CLASS_NAME = "settings-page";
 type Props = {
   match: match<{ application: string }>;
 };
+const NAVIGATION_KEY = "SETTINGS";
 
 function SettingsPage({ match }: Props) {
-  useNavigationTabs(match.url, "Settings");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Settings");
   const { application } = match.params;
 
   const { data, error, refetch } = useQuery<{

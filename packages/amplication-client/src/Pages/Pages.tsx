@@ -22,10 +22,11 @@ const blockTypes = [
   models.EnumBlockType.EntityPage,
   models.EnumBlockType.Document,
 ];
+const NAVIGATION_KEY = "PAGES";
 
 function Pages({ match }: Props) {
   const { application } = match.params;
-  useNavigationTabs(match.url, "Pages");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Pages");
   return (
     <PageContent className="pages">
       <BlockList

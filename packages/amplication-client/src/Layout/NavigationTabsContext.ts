@@ -2,6 +2,7 @@ import { createContext } from "react";
 
 export type NavigationTabItem = {
   name: string;
+  key: string;
   url: string;
   active: boolean;
 };
