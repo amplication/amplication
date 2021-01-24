@@ -19,6 +19,10 @@ $tabs-width: 300px;
     border-radius: var(--default-border-radius);
     padding: var(--large-spacing);
     box-sizing: border-box;
+
+    .sub-list {
+      margin-left: var(--default-spacing);
+    }
   }
 
   &__main {

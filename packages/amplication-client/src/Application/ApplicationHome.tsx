@@ -16,6 +16,7 @@ import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
 import { COLOR_TO_NAME } from "./constants";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
+import InnerTabLink from "../Layout/InnerTabLink";
 
 type Props = {
   match: match<{ application: string }>;
@@ -43,10 +44,14 @@ function ApplicationHome({ match }: Props) {
       sideContent={
         <>
           <div>
-            <NavLink to={`/${applicationId}/`}>Overview</NavLink>
+            <InnerTabLink to={`/${applicationId}/`} icon="home">
+              Overview
+            </InnerTabLink>
           </div>
           <div>
-            <NavLink to={`/${applicationId}/update`}>General Settings</NavLink>
+            <InnerTabLink to={`/${applicationId}/update`} icon="settings">
+              General Settings
+            </InnerTabLink>
           </div>
         </>
       }

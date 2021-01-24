@@ -9,11 +9,13 @@ import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import EntityForm from "./EntityForm";
 import { EntityFieldLinkList } from "./EntityFieldLinkList";
+import { EntityFieldList } from "./EntityFieldList";
 import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import { useTracking, track } from "../util/analytics";
+import InnerTabLink from "../Layout/InnerTabLink";
 
 import "./Entity.scss";
 
@@ -88,19 +90,27 @@ const Entity = ({ match }: Props) => {
       sideContent={
         data && (
           <>
-            <div>
-              <Link to={`/${application}/entities/${data.entity.id}`}>
-                General Settings
-              </Link>
+            <InnerTabLink
+              to={`/${application}/entities/${data.entity.id}`}
+              icon="settings"
+            >
+              General Settings
+            </InnerTabLink>
+            <InnerTabLink
+              to={`/${application}/entities/${data.entity.id}/permissions`}
+              icon="lock"
+            >
+              Permissions
+            </InnerTabLink>
+            <InnerTabLink
+              to={`/${application}/entities/${data.entity.id}/fields`}
+              icon="option_set"
+            >
+              Fields
+            </InnerTabLink>
+            <div className="sub-list">
+              <EntityFieldLinkList entityId={data.entity.id} />
             </div>
-            <div>
-              <Link
-                to={`/${application}/entities/${data.entity.id}/permissions`}
-              >
-                Permissions
-              </Link>
-            </div>
-            <EntityFieldLinkList entityId={data.entity.id} />
           </>
         )
       }
@@ -112,18 +122,6 @@ const Entity = ({ match }: Props) => {
       ) : (
         <Switch>
           <Route
-            exact
-            path="/:application/entities/:entityId"
-            component={() => (
-              <EntityForm
-                entity={data.entity}
-                applicationId={application}
-                onSubmit={handleSubmit}
-              />
-            )}
-          />
-          <Route
-            exact
             path="/:application/entities/:entityId/permissions"
             component={() => (
               <PermissionsForm
@@ -138,6 +136,20 @@ const Entity = ({ match }: Props) => {
           <Route
             path="/:application/entities/:entityId/fields/:fieldId"
             component={EntityField}
+          />
+          <Route
+            path="/:application/entities/:entityId/fields/"
+            component={() => <EntityFieldList entityId={data.entity.id} />}
+          />
+          <Route
+            path="/:application/entities/:entityId"
+            component={() => (
+              <EntityForm
+                entity={data.entity}
+                applicationId={application}
+                onSubmit={handleSubmit}
+              />
+            )}
           />
         </Switch>
       )}

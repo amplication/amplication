@@ -1,11 +1,10 @@
-import React, { useCallback } from "react";
-import { useHistory, Link } from "react-router-dom";
+import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
-
-import NewEntityField from "./NewEntityField";
+import InnerTabLink from "../Layout/InnerTabLink";
+import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 
 type TData = {
   entity: models.Entity;
@@ -18,9 +17,7 @@ type Props = {
 };
 
 export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
-  const history = useHistory();
-
-  const { data, loading, error } = useQuery<TData>(GET_FIELDS, {
+  const { data, error } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
       orderBy: {
@@ -31,27 +28,16 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
 
   const errorMessage = formatError(error);
 
-  const handleFieldAdd = useCallback(
-    (field: models.EntityField) => {
-      const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
-      history.push(fieldUrl);
-    },
-    [data, history, entityId]
-  );
-
   return (
     <>
-      {data?.entity && (
-        <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
-      )}
       {data?.entity.fields?.map((field) => (
         <div>
-          <Link
-            title={field.displayName}
+          <InnerTabLink
+            icon={DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon}
             to={`/${data?.entity.appId}/entities/${data?.entity.id}/fields/${field.id}`}
           >
             <span>{field.displayName}</span>
-          </Link>
+          </InnerTabLink>
         </div>
       ))}
       <Snackbar open={Boolean(error)} message={errorMessage} />
