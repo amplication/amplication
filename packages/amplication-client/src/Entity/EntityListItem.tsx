@@ -110,7 +110,7 @@ export const EntityListItem = ({
             title={entity.displayName}
             to={`/${applicationId}/entities/${entity.id}`}
           >
-            <span className="text-medium">{entity.displayName}</span>
+            {entity.displayName}
           </Link>
           {Boolean(entity.lockedByUser) && <LockStatusIcon enabled />}
 
