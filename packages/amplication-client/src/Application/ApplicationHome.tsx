@@ -63,6 +63,7 @@ function ApplicationHome({ match }: Props) {
           `theme-${data && COLOR_TO_NAME[data.app.color]}`
         )}
       >
+        {data?.app.name}
         <CircleBadge
           name={data?.app.name || ""}
           color={data?.app.color || "transparent"}

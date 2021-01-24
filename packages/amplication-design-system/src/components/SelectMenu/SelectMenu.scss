@@ -3,6 +3,7 @@
 .select-menu {
   margin-left: var(--default-spacing);
   color: var(--black80);
+  background-color: var(--black2);
 
   & &__item {
     border-bottom: $border-black10;

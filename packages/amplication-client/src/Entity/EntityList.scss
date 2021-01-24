@@ -6,14 +6,11 @@
     margin-bottom: var(--large-spacing);
 
     .search-field {
-      flex: 1;
+      width: var(--form-field-long);
     }
   }
   &__title {
     @include body2;
     margin-bottom: var(--large-spacing);
-  }
-  &__add-button {
-    min-width: 0;
   }
 }

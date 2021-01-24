@@ -134,7 +134,6 @@ const Entity = ({ match }: Props) => {
                 entityId={entityId}
                 applicationId={application}
                 availableActions={ENTITY_ACTIONS}
-                backUrl={`/${application}/entities/${data.entity.id}`}
                 objectDisplayName={data.entity.pluralDisplayName}
               />
             )}

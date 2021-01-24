@@ -103,7 +103,9 @@ export const EntityList = ({ match }: Props) => {
           buttonStyle={EnumButtonStyle.Primary}
           onClick={handleNewEntityClick}
           icon="plus"
-        />
+        >
+          Add entity
+        </Button>
       </div>
       <div className={`${CLASS_NAME}__title`}>
         {data?.entities.length} Entities

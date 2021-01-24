@@ -84,7 +84,7 @@ function LastCommitTile({ applicationId }: Props) {
             View Details
           </Button>
         </div>
-        <SvgThemeImage image={EnumImages.Commit} />;
+        <SvgThemeImage image={EnumImages.Commit} />
       </div>
     </Panel>
   );

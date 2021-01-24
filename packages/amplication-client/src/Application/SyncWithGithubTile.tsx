@@ -66,7 +66,7 @@ function SyncWithGithubTile({ applicationId }: Props) {
               : "View Settings"}
           </Button>
         </div>
-        <SvgThemeImage image={EnumImages.SyncWithGitHub} />;
+        <SvgThemeImage image={EnumImages.SyncWithGitHub} />
       </div>
     </Panel>
   );

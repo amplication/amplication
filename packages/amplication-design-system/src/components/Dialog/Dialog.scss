@@ -15,7 +15,7 @@ $modal-top-position: 20vh;
   min-width: var(--modal-min-width);
   margin-top: $modal-top-position !important;
   margin-bottom: 0 !important;
-  background-color: var(--surface) !important;
+  background-color: var(--black2) !important;
 
   //mobile
   @media only screen and (max-width: $breakpoint-tablet) {
@@ -29,6 +29,8 @@ $modal-top-position: 20vh;
   }
 
   & &__header {
+    @include semiBold;
+    color: var(--black100);
     background-color: transparent;
     height: $modal-header-height;
     box-sizing: border-box;
@@ -36,7 +38,7 @@ $modal-top-position: 20vh;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: $border-black10;
+    border-bottom: none;
     border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
 
     h3 {

@@ -108,25 +108,6 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                   name="description"
                   label="Description"
                 />
-                <Panel
-                  className={`${CLASS_NAME}__permissions`}
-                  panelStyle={EnumPanelStyle.Bordered}
-                >
-                  <PanelHeader>
-                    <h2>Permissions</h2>
-                    <Button
-                      buttonStyle={EnumButtonStyle.Clear}
-                      icon="edit"
-                      type="button"
-                      onClick={handlePermissionsClick}
-                    />
-                  </PanelHeader>
-                  <PermissionsPreview
-                    entityId={entity?.id}
-                    availableActions={ENTITY_ACTIONS}
-                    entityDisplayName={entity?.pluralDisplayName || ""}
-                  />
-                </Panel>
               </>
             </Form>
           );

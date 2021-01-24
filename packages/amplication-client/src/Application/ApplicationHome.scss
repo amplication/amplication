@@ -10,6 +10,7 @@ $circle-badge-border: 2px;
 
   &__header {
     @include flexFullRowWithSpacing;
+    @include pageTitle;
     border-radius: var(--default-border-radius);
     position: relative;
     z-index: 0;
@@ -22,6 +23,9 @@ $circle-badge-border: 2px;
     background-size: auto 100%;
     border: none;
     margin-bottom: ($application-badge-size-large / 2) + 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &.theme-yellow {
       background-color: var(--theme-yellow);
