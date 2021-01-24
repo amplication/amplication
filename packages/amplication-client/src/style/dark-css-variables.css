@@ -41,4 +41,11 @@
 
   --menu-background-color: var(--black2);
   --menu-fixed-panel-background: var(--white);
+  --svg-theme-color: var(--black40);
+
+  --image-roles: url("../assets/images/mono/roles-dark.svg");
+  --image-entities: url("../assets/images/mono/entities.svg");
+  --image-sync-github: url("../assets/images/mono/sync-github.svg");
+  --image-commit: url("../assets/images/mono/commit.svg");
+  --image-no-changes: url("../assets/images/mono/no-changes.svg");
 }

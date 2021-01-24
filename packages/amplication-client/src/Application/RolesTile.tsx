@@ -5,13 +5,13 @@ import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
 
 import * as models from "../models";
-import { EnumPanelStyle, Panel } from "@amplication/design-system";
+import { Panel } from "@amplication/design-system";
 
 import { GET_ROLES } from "../Roles/RoleList";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import imageRoles from "../assets/images/tile-roles.svg";
 import "./RolesTile.scss";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 type Props = {
   applicationId: string;
@@ -65,7 +65,7 @@ function RolesTile({ applicationId }: Props) {
             Create Roles
           </Button>
         </div>
-        <img src={imageRoles} alt="roles" />
+        <SvgThemeImage image={EnumImages.Roles} />
       </div>
     </Panel>
   );

@@ -9,9 +9,9 @@ import { Panel } from "@amplication/design-system";
 
 import { GET_ENTITIES } from "../Entity/EntityList";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import imageEntities from "../assets/images/tile-entities.svg";
-import "./EntitiesTile.scss";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
+import "./EntitiesTile.scss";
 
 type Props = {
   applicationId: string;
@@ -65,8 +65,7 @@ function EntitiesTile({ applicationId }: Props) {
             Create Entities
           </Button>
         </div>
-
-        <img src={imageEntities} alt="entities" />
+        <SvgThemeImage image={EnumImages.Entities} />
       </div>
     </Panel>
   );

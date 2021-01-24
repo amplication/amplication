@@ -1,14 +1,15 @@
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { Panel, EnumPanelStyle } from "@amplication/design-system";
+import { Panel } from "@amplication/design-system";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
-import imageChanges from "../assets/images/sync-with-github-no-margin.svg";
 import { GET_APPLICATION } from "../Application/ApplicationHome";
 
 import * as models from "../models";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
+
 import "./SyncWithGithubTile.scss";
 
 type Props = {
@@ -65,7 +66,7 @@ function SyncWithGithubTile({ applicationId }: Props) {
               : "View Settings"}
           </Button>
         </div>
-        <img src={imageChanges} alt="publish" />
+        <SvgThemeImage image={EnumImages.SyncWithGitHub} />;
       </div>
     </Panel>
   );

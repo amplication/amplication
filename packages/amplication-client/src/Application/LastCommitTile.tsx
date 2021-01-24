@@ -10,9 +10,9 @@ import { Panel, UserAndTime } from "@amplication/design-system";
 import { GET_LAST_COMMIT } from "../VersionControl/LastCommit";
 import "./LastCommitTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import publishImage from "../assets/images/tile-publish.svg";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import { ClickableId } from "../Components/ClickableId";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 type Props = {
   applicationId: string;
@@ -84,7 +84,7 @@ function LastCommitTile({ applicationId }: Props) {
             View Details
           </Button>
         </div>
-        <img src={publishImage} alt="publish" />
+        <SvgThemeImage image={EnumImages.Commit} />;
       </div>
     </Panel>
   );
