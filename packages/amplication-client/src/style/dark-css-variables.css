@@ -41,7 +41,6 @@
 
   --menu-background-color: var(--black2);
   --menu-fixed-panel-background: var(--white);
-  --svg-theme-color: var(--black40);
 
   --image-roles: url("../assets/images/mono/roles-dark.svg");
   --image-entities: url("../assets/images/mono/entities-dark.svg");

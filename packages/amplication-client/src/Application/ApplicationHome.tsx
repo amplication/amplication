@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route, match, NavLink } from "react-router-dom";
+import { Switch, Route, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";

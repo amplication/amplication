@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -10,7 +9,6 @@ import { formatError } from "../util/error";
 import EntityFieldForm from "./EntityFieldForm";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
-import SidebarHeader from "../Layout/SidebarHeader";
 import { SYSTEM_DATA_TYPES } from "./constants";
 
 type TData = {

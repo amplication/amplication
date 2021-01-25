@@ -1,23 +1,14 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo } from "react";
 import { Formik, Form } from "formik";
-import { useHistory } from "react-router-dom";
 
 import omitDeep from "deepdash-es/omitDeep";
 
 import * as models from "../models";
-import {
-  TextField,
-  Panel,
-  PanelHeader,
-  EnumPanelStyle,
-} from "@amplication/design-system";
+import { TextField } from "@amplication/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
-import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
-import PermissionsPreview from "../Permissions/PermissionsPreview";
-import { ENTITY_ACTIONS, USER_ENTITY } from "./constants";
-import { Button, EnumButtonStyle } from "../Components/Button";
+import { USER_ENTITY } from "./constants";
 import { validate } from "../util/formikValidateJsonSchema";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
@@ -70,11 +61,6 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
     );
     return sanitizedDefaultValues as EntityInput;
   }, [entity]);
-  const history = useHistory();
-
-  const handlePermissionsClick = useCallback(() => {
-    history.push(`/${applicationId}/entities/${entity?.id}/permissions`);
-  }, [history, applicationId, entity]);
 
   return (
     <div className={CLASS_NAME}>
