@@ -1,7 +1,10 @@
 import React, { useCallback, useState } from "react";
-import { Toggle } from "@amplication/design-system";
+import classNames from "classnames";
+import { Button, EnumButtonStyle } from "../Components/Button";
+import "./DarkModeToggle.scss";
 
 const LOCAL_STORAGE_KEY = "darkModeEnabled";
+const CLASS_NAME = "dark-mode-toggle";
 
 const DarkModeToggle = () => {
   const [darkMode, setDarkMode] = useState(
@@ -17,15 +20,25 @@ const DarkModeToggle = () => {
   const DarkModeCSS = React.lazy(() => import("./DarkModeTheme"));
 
   return (
-    <React.Suspense fallback={<></>}>
-      <Toggle
-        title="Dark mode"
-        onValueChange={handleClick}
-        checked={darkMode}
+    <div
+      className={classNames(CLASS_NAME, {
+        [`${CLASS_NAME}--active`]: darkMode,
+      })}
+    >
+      <Button
+        type="button"
+        buttonStyle={EnumButtonStyle.Clear}
+        onClick={handleClick}
+        eventData={{
+          eventName: darkMode ? "disableDarkMode" : "enableDarkMode",
+        }}
+        icon={darkMode ? "dark_mode" : "light_mode"}
       />
-      {String(darkMode)}
-      {darkMode && <DarkModeCSS />}
-    </React.Suspense>
+
+      <React.Suspense fallback={<></>}>
+        {darkMode && <DarkModeCSS />}
+      </React.Suspense>
+    </div>
   );
 };
 

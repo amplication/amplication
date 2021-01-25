@@ -1,0 +1,31 @@
+@import "../style/index.scss";
+
+$icon-font-size-xlarge: 32px;
+
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .amp-button {
+    color: var(--black5);
+
+    &:hover,
+    &:active {
+      color: var(--static-white);
+    }
+    i {
+      font-size: $icon-font-size-xlarge;
+    }
+  }
+
+  &--active {
+    .amp-button {
+      color: var(--primary);
+      &:hover,
+      &:active,
+      &:focus {
+        color: var(--primary);
+      }
+    }
+  }
+}
