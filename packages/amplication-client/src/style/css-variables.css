@@ -21,4 +21,5 @@
   --image-sync-github: url("../assets/images/mono/sync-github.svg");
   --image-commit: url("../assets/images/mono/commit.svg");
   --image-no-changes: url("../assets/images/mono/no-changes.svg");
+  --image-add-app: url("../assets/images/mono/add-app.svg");
 }

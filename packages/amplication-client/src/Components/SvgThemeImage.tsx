@@ -8,6 +8,7 @@ export enum EnumImages {
   SyncWithGitHub = "--image-sync-github",
   Commit = "--image-commit",
   NoChanges = "--image-no-changes",
+  AddApp = "--image-add-app",
 }
 
 type Props = {
