@@ -5,7 +5,6 @@ import { isEmpty } from "lodash";
 import PageContent from "../Layout/PageContent";
 import { RoleList } from "./RoleList";
 import Role from "./Role";
-import Sidebar from "../Layout/Sidebar";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 type Props = {
@@ -28,11 +27,11 @@ const RolesPage = ({ match }: Props) => {
   }
 
   return (
-    <PageContent className="roles">
-      <RoleList applicationId={application} />
-      <Sidebar modal open={!isEmpty(roleId)}>
-        {!isEmpty(roleId) && <Role />}
-      </Sidebar>
+    <PageContent
+      className="roles"
+      sideContent={<RoleList applicationId={application} />}
+    >
+      {!isEmpty(roleId) && <Role />}
     </PageContent>
   );
 };

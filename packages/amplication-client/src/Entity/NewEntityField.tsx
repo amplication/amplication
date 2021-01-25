@@ -121,7 +121,6 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
               label="New Field Name"
               disabled={loading}
               inputRef={inputRef}
-              // trailingButton={{ icon: "plus" }}
               placeholder="Add field"
               autoComplete="off"
               autoFocus={autoFocus}
