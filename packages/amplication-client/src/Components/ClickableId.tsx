@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { Link, LinkProps } from "react-router-dom";
 import { TruncatedId } from "./TruncatedId";
+import classNames from "classnames";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import "./ClickableId.scss";
 
@@ -15,6 +16,7 @@ export const ClickableId = ({
   id,
   label,
   eventData,
+  className,
   onClick,
   ...rest
 }: Props) => {
@@ -33,7 +35,7 @@ export const ClickableId = ({
   );
 
   return (
-    <span className="clickable-id">
+    <span className={classNames("clickable-id", className)}>
       {label}{" "}
       <Link {...rest} to={to} onClick={handleClick}>
         <TruncatedId id={id} />
