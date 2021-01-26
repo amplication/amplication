@@ -100,7 +100,7 @@ const EntityFieldForm = ({
         const schema = getSchemaForDataType(formik.values.dataType);
 
         return (
-          <Form>
+          <Form childrenAsBlocks>
             {!isDisabled && <FormikAutoSave debounceMS={1000} />}
 
             <DisplayNameField

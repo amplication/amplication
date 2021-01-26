@@ -4,7 +4,7 @@
   &--children-as-blocks {
     > * {
       display: block;
-      margin: var(--large-spacing) 0;
+      margin-bottom: var(--large-spacing);
     }
   }
 

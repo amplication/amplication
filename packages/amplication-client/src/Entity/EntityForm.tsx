@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Formik, Form } from "formik";
+import { Formik } from "formik";
 
 import omitDeep from "deepdash-es/omitDeep";
 
@@ -7,6 +7,7 @@ import * as models from "../models";
 import { TextField } from "@amplication/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
+import { Form } from "../Components/Form";
 import FormikAutoSave from "../util/formikAutoSave";
 import { USER_ENTITY } from "./constants";
 import { validate } from "../util/formikValidateJsonSchema";
@@ -72,7 +73,7 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
       >
         {(formik) => {
           return (
-            <Form>
+            <Form childrenAsBlocks>
               <>
                 <FormikAutoSave debounceMS={1000} />
 
