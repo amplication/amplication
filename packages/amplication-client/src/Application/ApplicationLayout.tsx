@@ -19,6 +19,7 @@ import * as models from "../models";
 import MenuItem from "../Layout/MenuItem";
 import MainLayout from "../Layout/MainLayout";
 import { CircleBadge } from "@amplication/design-system";
+import LastCommit from "../VersionControl/LastCommit";
 
 import PendingChangesContext, {
   PendingChangeItem,
@@ -173,7 +174,10 @@ function ApplicationLayout({ match }: Props) {
 
   return (
     <PendingChangesContext.Provider value={pendingChangesContextValue}>
-      <MainLayout className={CLASS_NAME}>
+      <MainLayout
+        className={CLASS_NAME}
+        footer={<LastCommit applicationId={application} />}
+      >
         <MainLayout.Menu>
           <MenuItem
             className={`${CLASS_NAME}__app-icon`}

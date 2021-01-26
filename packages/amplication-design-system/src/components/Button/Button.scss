@@ -69,16 +69,16 @@ $split-icon-font-size: 20px;
   }
 
   &.amp-button--secondary {
-    background-color: var(--white);
-    color: var(--primary);
-    border: $border-primary;
+    background-color: transparent;
+    color: var(--black100);
+    border: none;
 
     &:hover,
     &:active,
     &:focus {
-      background-color: var(--black5);
-      border-color: var(--primary) !important;
-      color: var(--primary);
+      background-color: var(--black10);
+      border-color: none !important;
+      color: var(--black100);
     }
   }
 

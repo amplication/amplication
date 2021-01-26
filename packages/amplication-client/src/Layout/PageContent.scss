@@ -7,11 +7,12 @@ $tabs-width: 300px;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: stretch;
-  padding: var(--large-spacing);
+  padding: 0 var(--large-spacing);
   background: var(--black2);
   box-sizing: border-box;
   flex: 1;
   overflow: auto;
+  border-bottom: $border-black10;
 
   &__tabs {
     @include scrollbars(10px, var(--black60), transparent);
@@ -22,6 +23,7 @@ $tabs-width: 300px;
     box-sizing: border-box;
     max-height: 100%;
     overflow: auto;
+    margin: var(--large-spacing) 0;
 
     .sub-list {
       margin-left: var(--triple-spacing);
@@ -34,7 +36,7 @@ $tabs-width: 300px;
     overflow: auto;
     height: 100%;
     flex: 1;
-    padding: 0 var(--large-spacing);
+    padding: var(--large-spacing);
     position: relative;
     box-sizing: border-box;
     height: 100%;

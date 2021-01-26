@@ -4,12 +4,8 @@ import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import { CircularProgress } from "@rmwc/circular-progress";
 import * as models from "../models";
-import {
-  Panel,
-  EnumPanelStyle,
-  PanelHeader,
-  UserAndTime,
-} from "@amplication/design-system";
+import { UserAndTime } from "@amplication/design-system";
+import { Tooltip } from "@primer/components";
 import { ClickableId } from "../Components/ClickableId";
 import BuildSummary from "./BuildSummary";
 import BuildHeader from "./BuildHeader";
@@ -58,12 +54,19 @@ const LastCommit = ({ applicationId }: Props) => {
 
   if (!lastCommit) return null;
 
+  const ClickableCommitId = (
+    <ClickableId
+      to={`/${build?.appId}/commits/${lastCommit.id}`}
+      id={lastCommit.id}
+      label="Last commit"
+      eventData={{
+        eventName: "lastCommitIdClick",
+      }}
+    />
+  );
+
   return (
-    <Panel panelStyle={EnumPanelStyle.Transparent} className={`${CLASS_NAME}`}>
-      <PanelHeader>
-        <h3>Last Commit</h3>
-        <UserAndTime account={account} time={lastCommit.createdAt} />
-      </PanelHeader>
+    <div className={`${CLASS_NAME}`}>
       {Boolean(error) && errorMessage}
 
       {pendingChangesContext.commitRunning ? (
@@ -72,15 +75,14 @@ const LastCommit = ({ applicationId }: Props) => {
         </div>
       ) : (
         <>
-          <ClickableId
-            to={`/${build?.appId}/commits/${lastCommit.id}`}
-            id={lastCommit.id}
-            label="Commit ID"
-            eventData={{
-              eventName: "lastCommitIdClick",
-            }}
-          />
-          <div className={`${CLASS_NAME}__message`}>{lastCommit?.message}</div>
+          {isEmpty(lastCommit?.message) ? (
+            ClickableCommitId
+          ) : (
+            <Tooltip aria-label={lastCommit?.message} direction="ne">
+              {ClickableCommitId}
+            </Tooltip>
+          )}
+          <UserAndTime account={account} time={lastCommit.createdAt} />
 
           {build && (
             <>
@@ -90,7 +92,7 @@ const LastCommit = ({ applicationId }: Props) => {
           )}
         </>
       )}
-    </Panel>
+    </div>
   );
 };
 
