@@ -44,7 +44,7 @@ export const CommitList = ({ match }: Props) => {
     variables: {
       appId: application,
       orderBy: {
-        [CREATED_AT_FIELD]: models.SortOrder.Asc,
+        [CREATED_AT_FIELD]: models.SortOrder.Desc,
       },
       whereMessage:
         searchPhrase !== ""

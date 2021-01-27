@@ -13,7 +13,8 @@ import { TruncatedId } from "../Components/TruncatedId";
 import ActionLog from "./ActionLog";
 import { GET_BUILD } from "./useBuildWatchStatus";
 import { GET_COMMIT } from "./CommitPage";
-import CommitHeader from "./CommitHeader";
+import { truncateId } from "../util/truncatedId";
+import { ClickableId } from "../Components/ClickableId";
 import "./BuildPage.scss";
 
 type LogData = {
@@ -29,8 +30,17 @@ const CLASS_NAME = "build-page";
 const NAVIGATION_KEY = "BUILDS";
 
 const BuildPage = ({ match }: Props) => {
-  const { buildId } = match.params;
-  useNavigationTabs(NAVIGATION_KEY, match.url, "Build");
+  const { application, buildId } = match.params;
+
+  const truncatedId = useMemo(() => {
+    return truncateId(buildId);
+  }, [buildId]);
+
+  useNavigationTabs(
+    `${NAVIGATION_KEY}_${buildId}`,
+    match.url,
+    `Build ${truncatedId}`
+  );
 
   const [error, setError] = useState<Error>();
 
@@ -71,29 +81,33 @@ const BuildPage = ({ match }: Props) => {
           "loading..."
         ) : (
           <>
-            <h1>
-              Build <TruncatedId id={data.build.id} />
-            </h1>
-            {commitData && (
-              <div className={`${CLASS_NAME}__commit-header`}>
-                <CommitHeader
-                  clickableId
-                  commit={commitData.commit}
-                  applicationId={data.build.appId}
+            <div className={`${CLASS_NAME}__header`}>
+              <h2>
+                Build <TruncatedId id={data.build.id} />
+              </h2>
+              {commitData && (
+                <ClickableId
+                  label="Commit"
+                  to={`/${application}/commits/${commitData.commit.id}`}
+                  id={commitData.commit.id}
+                  eventData={{
+                    eventName: "commitHeaderIdClick",
+                  }}
                 />
-              </div>
-            )}
-            <h2>Details</h2>
-            <BuildSteps build={data.build} onError={setError} />
+              )}
+            </div>
+            <div className={`${CLASS_NAME}__build-details`}>
+              <BuildSteps build={data.build} onError={setError} />
+              <aside className="log-container">
+                <ActionLog
+                  action={actionLog?.action}
+                  title={actionLog?.title || ""}
+                  versionNumber={actionLog?.versionNumber || ""}
+                />
+              </aside>
+            </div>
           </>
         )}
-        <aside className="log-container">
-          <ActionLog
-            action={actionLog?.action}
-            title={actionLog?.title || ""}
-            versionNumber={actionLog?.versionNumber || ""}
-          />
-        </aside>
       </PageContent>
       <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </>

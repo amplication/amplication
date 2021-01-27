@@ -3,12 +3,6 @@
 $max-width: 700px;
 
 .settings-page {
-  @media only screen and (min-height: 500px) and (min-width: 1100px) {
-    background-image: url("../assets/images/sync-with-github.svg");
-    background-position: bottom right;
-    background-repeat: no-repeat;
-  }
-
   h1 {
     margin-bottom: var(--default-spacing);
   }

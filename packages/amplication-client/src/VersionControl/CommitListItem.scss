@@ -17,7 +17,7 @@
     color: var(--black100);
 
     a {
-      color: var(--black100);
+      color: var(--black100) !important;
     }
   }
   &__description {

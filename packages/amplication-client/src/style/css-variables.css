@@ -17,6 +17,10 @@
   --menu-background-color: var(--black100);
   --menu-fixed-panel-background: var(--white);
 
+  --action-log-background-color: var(--black100);
+  --action-log-header-color: var(--white);
+  --action-log-step-color: var(--white);
+
   --image-roles: url("../assets/images/mono/roles.svg");
   --image-entities: url("../assets/images/mono/entities.svg");
   --image-sync-github: url("../assets/images/mono/sync-github.svg");
