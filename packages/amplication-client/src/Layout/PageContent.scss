@@ -8,7 +8,7 @@ $tabs-width: 300px;
   flex-wrap: wrap;
   align-items: stretch;
   padding: 0 var(--large-spacing);
-  background: var(--black2);
+  background: var(--page-content-background);
   box-sizing: border-box;
   flex: 1;
   overflow: auto;
@@ -17,7 +17,7 @@ $tabs-width: 300px;
   &__tabs {
     @include scrollbars(10px, var(--black60), transparent);
     width: $tabs-width;
-    background: var(--white);
+    background: var(--page-content-tab-background);
     border-radius: var(--default-border-radius);
     padding: var(--large-spacing);
     box-sizing: border-box;

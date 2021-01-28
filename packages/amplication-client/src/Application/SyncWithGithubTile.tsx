@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { Panel } from "@amplication/design-system";
+import { Panel, EnumPanelStyle } from "@amplication/design-system";
 import { Icon } from "@rmwc/icon";
 import { CircularProgress } from "@rmwc/circular-progress";
 
@@ -44,7 +44,12 @@ function SyncWithGithubTile({ applicationId }: Props) {
   );
 
   return (
-    <Panel className={`${CLASS_NAME}`} clickable onClick={handleClick}>
+    <Panel
+      className={`${CLASS_NAME}`}
+      clickable
+      onClick={handleClick}
+      panelStyle={EnumPanelStyle.Bordered}
+    >
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
           <h2>Sync with GitHub</h2>

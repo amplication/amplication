@@ -2,7 +2,11 @@ import React, { useCallback, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { isEmpty } from "lodash";
 import * as models from "../models";
-import { Panel, ConfirmationDialog } from "@amplication/design-system";
+import {
+  Panel,
+  ConfirmationDialog,
+  EnumPanelStyle,
+} from "@amplication/design-system";
 import { Link, useHistory } from "react-router-dom";
 import { Icon } from "@rmwc/icon";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -117,7 +121,12 @@ export const EntityFieldListItem = ({
         onDismiss={handleDismissDelete}
       />
 
-      <Panel className={CLASS_NAME} clickable onClick={handleRowClick}>
+      <Panel
+        className={CLASS_NAME}
+        clickable
+        onClick={handleRowClick}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <div className={`${CLASS_NAME}__row`}>
           <Link
             className={`${CLASS_NAME}__title`}

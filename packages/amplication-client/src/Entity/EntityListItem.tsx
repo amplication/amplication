@@ -5,6 +5,7 @@ import {
   ConfirmationDialog,
   UserAndTime,
   Panel,
+  EnumPanelStyle,
 } from "@amplication/design-system";
 import { Link, useHistory } from "react-router-dom";
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
@@ -103,7 +104,12 @@ export const EntityListItem = ({
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
-      <Panel className={CLASS_NAME} clickable onClick={handleRowClick}>
+      <Panel
+        className={CLASS_NAME}
+        clickable
+        onClick={handleRowClick}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <div className={`${CLASS_NAME}__row`}>
           <Link
             className={`${CLASS_NAME}__title`}

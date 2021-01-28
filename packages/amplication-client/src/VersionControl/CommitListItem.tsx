@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { Icon } from "@rmwc/icon";
 import { Tooltip } from "@primer/components";
 
-import { UserAndTime, Panel } from "@amplication/design-system";
+import { UserAndTime, Panel, EnumPanelStyle } from "@amplication/design-system";
 
 import { ClickableId } from "../Components/ClickableId";
 
@@ -65,7 +65,12 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
   const account = commit.user?.account;
 
   return (
-    <Panel className={CLASS_NAME} clickable onClick={handleRowClick}>
+    <Panel
+      className={CLASS_NAME}
+      clickable
+      onClick={handleRowClick}
+      panelStyle={EnumPanelStyle.Bordered}
+    >
       <div className={`${CLASS_NAME}__row`}>
         <ClickableId
           className={`${CLASS_NAME}__title`}

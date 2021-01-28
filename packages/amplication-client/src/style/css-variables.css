@@ -1,4 +1,18 @@
 :root {
+  --surface: #e8eaf0; /*dark: black100 */
+  --white: #ffffff;
+
+  --black100: #22273c;
+  --black90: #2c3249;
+  --black80: #686f8c;
+  --black60: #959cb4;
+  --black40: #c4c7d5;
+  --black30: #d5d8e3;
+  --black20: #dfe2ea;
+  --black10: #e8eaf0;
+  --black5: #f5f6fa;
+  --black2: #fafafc;
+
   --fixed-menu-panel-width: 350px;
   --fixed-menu-panel-max-width: 350px;
   --app-footer-height: 50px;
@@ -14,8 +28,14 @@
 
   --negative-bg: #f8eaec;
 
+  --panel-background: var(--white);
+  --panel-hover-background: var(--black2);
+
   --menu-background-color: var(--black100);
   --menu-fixed-panel-background: var(--white);
+
+  --page-content-background: var(--white);
+  --page-content-tab-background: var(--black5);
 
   --action-log-background-color: var(--black100);
   --action-log-header-color: var(--white);
@@ -30,25 +50,25 @@
 
   --diffViewerBackground: var(--white);
   --diffViewerColor: var(--black100);
-  --addedBackground: #e6ffed;
+  --addedBackground: #e2faf0;
   --addedColor: var(--black100);
-  --removedBackground: #ffeef0;
+  --removedBackground: #ffe0e4;
   --removedColor: var(--black100);
-  --wordAddedBackground: #acf2bd;
-  --wordRemovedBackground: #fdb8c0;
-  --addedGutterBackground: #cdffd8;
-  --removedGutterBackground: #ffdce0;
+  --wordAddedBackground: #9ae7c7;
+  --wordRemovedBackground: #ff9ca9;
+  --addedGutterBackground: #caf2e1;
+  --removedGutterBackground: #f8ced3;
   --gutterBackground: var(--white);
   --gutterBackgroundDark: var(--white);
   --highlightBackground: var(--white);
   --highlightGutterBackground: var(--white);
-  --codeFoldGutterBackground: #dbedff;
-  --codeFoldBackground: #f1f8ff;
+  --codeFoldGutterBackground: var(--black10);
+  --codeFoldBackground: var(--black5);
   --emptyLineBackground: #161b22;
   --gutterColor: var(--black100);
   --addedGutterColor: var(--black100);
   --removedGutterColor: var(--black100);
-  --codeFoldContentColor: var(--black80);
+  --codeFoldContentColor: var(--black100);
   --diffViewerTitleBackground: var(--white);
   --diffViewerTitleColor: var(--black100);
   --diffViewerTitleBorderColor: var(--white);

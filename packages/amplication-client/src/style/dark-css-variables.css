@@ -15,8 +15,14 @@
 
   --modal-background: rgba(12, 11, 14, 0.48);
 
+  --panel-background: var(--black5);
+  --panel-hover-background: var(--black10);
+
   --menu-background-color: var(--black2);
   --menu-fixed-panel-background: var(--white);
+
+  --page-content-background: var(--black2);
+  --page-content-tab-background: var(--white);
 
   --action-log-background-color: var(--white);
   --action-log-header-color: var(--black100);
@@ -31,25 +37,25 @@
 
   --diffViewerBackground: var(--white);
   --diffViewerColor: var(--black100);
-  --addedBackground: #19343b;
+  --addedBackground: #1b3b3e;
   --addedColor: var(--black100);
-  --removedBackground: #36191c;
+  --removedBackground: #3f2033;
   --removedColor: var(--black100);
-  --wordAddedBackground: #1e5049;
-  --wordRemovedBackground: #882728;
-  --addedGutterBackground: #1e5049;
-  --removedGutterBackground: #22151a;
-  --gutterBackground: var(--white);
+  --wordAddedBackground: #288e6a;
+  --wordRemovedBackground: #a53145;
+  --addedGutterBackground: #205e50;
+  --removedGutterBackground: #6a273b;
+  --gutterBackground: var(--black5);
   --gutterBackgroundDark: var(--white);
   --highlightBackground: var(--white);
   --highlightGutterBackground: var(--white);
-  --codeFoldGutterBackground: #18273a;
-  --codeFoldBackground: #15202f;
-  --emptyLineBackground: #161b22;
+  --codeFoldGutterBackground: var(--black5);
+  --codeFoldBackground: var(--black2);
+  --emptyLineBackground: var(--black2);
   --gutterColor: var(--black100);
   --addedGutterColor: var(--black100);
   --removedGutterColor: var(--black100);
-  --codeFoldContentColor: var(--black80);
+  --codeFoldContentColor: var(--black100);
   --diffViewerTitleBackground: var(--white);
   --diffViewerTitleColor: var(--black100);
   --diffViewerTitleBorderColor: var(--white);

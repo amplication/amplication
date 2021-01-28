@@ -6,7 +6,7 @@ import { CircularProgress } from "@rmwc/circular-progress";
 import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
-import { Panel } from "@amplication/design-system";
+import { Panel, EnumPanelStyle } from "@amplication/design-system";
 
 import { GET_ROLES } from "../Roles/RoleList";
 import "./RolesTile.scss";
@@ -44,7 +44,12 @@ function RolesTile({ applicationId }: Props) {
   );
 
   return (
-    <Panel className={`${CLASS_NAME}`} clickable onClick={handleClick}>
+    <Panel
+      className={`${CLASS_NAME}`}
+      clickable
+      onClick={handleClick}
+      panelStyle={EnumPanelStyle.Bordered}
+    >
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
           <h2>Roles</h2>
