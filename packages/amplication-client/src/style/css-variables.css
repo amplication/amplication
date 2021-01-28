@@ -27,4 +27,29 @@
   --image-commit: url("../assets/images/mono/commit.svg");
   --image-no-changes: url("../assets/images/mono/no-changes.svg");
   --image-add-app: url("../assets/images/mono/add-app.svg");
+
+  --diffViewerBackground: var(--white);
+  --diffViewerColor: var(--black100);
+  --addedBackground: #e6ffed;
+  --addedColor: var(--black100);
+  --removedBackground: #ffeef0;
+  --removedColor: var(--black100);
+  --wordAddedBackground: #acf2bd;
+  --wordRemovedBackground: #fdb8c0;
+  --addedGutterBackground: #cdffd8;
+  --removedGutterBackground: #ffdce0;
+  --gutterBackground: var(--white);
+  --gutterBackgroundDark: var(--white);
+  --highlightBackground: var(--white);
+  --highlightGutterBackground: var(--white);
+  --codeFoldGutterBackground: #dbedff;
+  --codeFoldBackground: #f1f8ff;
+  --emptyLineBackground: #161b22;
+  --gutterColor: var(--black100);
+  --addedGutterColor: var(--black100);
+  --removedGutterColor: var(--black100);
+  --codeFoldContentColor: var(--black80);
+  --diffViewerTitleBackground: var(--white);
+  --diffViewerTitleColor: var(--black100);
+  --diffViewerTitleBorderColor: var(--white);
 }

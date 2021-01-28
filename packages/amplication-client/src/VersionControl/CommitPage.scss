@@ -1,23 +1,31 @@
 @import "../style/index.scss";
 
 .commit-page {
-  .commit-header {
-    margin-bottom: var(--triple-spacing);
+  &__header {
+    color: var(--black80);
+
+    @include flexFullRowWithSpacing;
+    align-items: center;
 
     .truncated-id {
       @include semiBold;
+      color: var(--black100);
+    }
+
+    .clickable-id {
+      color: var(--black80);
+      a {
+        color: var(--black100);
+      }
     }
   }
+  &__commit-message {
+    margin-bottom: var(--double-spacing);
+    color: var(--black80);
+  }
+
   .pending-change-with-compare {
     margin-left: 0;
     margin-right: 0;
-  }
-  .build-header {
-    @include whiteListItem;
-    height: auto;
-    margin-bottom: var(--triple-spacing);
-    .clickable-id {
-      @include sectionTitle;
-    }
   }
 }

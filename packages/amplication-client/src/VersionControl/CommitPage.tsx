@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
@@ -10,8 +10,9 @@ import { formatError } from "../util/error";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import { EnumCompareType } from "./PendingChangeDiff";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
-import CommitHeader from "./CommitHeader";
-import BuildHeader from "./BuildHeader";
+import { TruncatedId } from "../Components/TruncatedId";
+import { ClickableId } from "../Components/ClickableId";
+import { truncateId } from "../util/truncatedId";
 
 import "./CommitPage.scss";
 
@@ -22,8 +23,17 @@ const CLASS_NAME = "commit-page";
 const NAVIGATION_KEY = "COMMITS";
 
 const CommitPage = ({ match }: Props) => {
-  const { commitId } = match.params;
-  useNavigationTabs(NAVIGATION_KEY, match.url, "Commit");
+  const { application, commitId } = match.params;
+
+  const truncatedId = useMemo(() => {
+    return truncateId(commitId);
+  }, [commitId]);
+
+  useNavigationTabs(
+    `${NAVIGATION_KEY}_${commitId}`,
+    match.url,
+    `Commit ${truncatedId}`
+  );
 
   const { data, error } = useQuery<{
     commit: models.Commit;
@@ -46,11 +56,24 @@ const CommitPage = ({ match }: Props) => {
           "loading..."
         ) : (
           <>
-            <CommitHeader
-              commit={data.commit}
-              applicationId={build?.appId || ""}
-            />
-            {build && <BuildHeader build={build} />}
+            <div className={`${CLASS_NAME}__header`}>
+              <h2>
+                Commit <TruncatedId id={data.commit.id} />
+              </h2>
+              {build && (
+                <ClickableId
+                  label="Build"
+                  to={`/${application}/builds/${build.id}`}
+                  id={build.id}
+                  eventData={{
+                    eventName: "buildHeaderIdClick",
+                  }}
+                />
+              )}
+            </div>
+            <div className={`${CLASS_NAME}__commit-message`}>
+              {data.commit.message}
+            </div>
           </>
         )}
 
