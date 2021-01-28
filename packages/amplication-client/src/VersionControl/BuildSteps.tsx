@@ -7,7 +7,7 @@ import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
-import { Panel } from "@amplication/design-system";
+import { Panel, EnumPanelStyle } from "@amplication/design-system";
 
 import { BuildStepsStatus } from "./BuildStepsStatus";
 
@@ -105,7 +105,10 @@ const BuildSteps = ({ build, onError }: Props) => {
 
   return (
     <div>
-      <Panel className={`${CLASS_NAME}__step`}>
+      <Panel
+        className={`${CLASS_NAME}__step`}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <Icon icon="code1" />
         <span>Generate Code</span>
         <BuildStepsStatus status={stepGenerateCode.status} />
@@ -124,7 +127,10 @@ const BuildSteps = ({ build, onError }: Props) => {
         />
       </Panel>
       {stepGithub && (
-        <Panel className={`${CLASS_NAME}__step`}>
+        <Panel
+          className={`${CLASS_NAME}__step`}
+          panelStyle={EnumPanelStyle.Bordered}
+        >
           <Icon icon="github" />
           <span>Push Changes to GitHub</span>
           <BuildStepsStatus status={stepGithub.status} />
@@ -147,7 +153,10 @@ const BuildSteps = ({ build, onError }: Props) => {
         </Panel>
       )}
 
-      <Panel className={`${CLASS_NAME}__step`}>
+      <Panel
+        className={`${CLASS_NAME}__step`}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <Icon icon="docker" />
         <span>Build Container</span>
         <BuildStepsStatus status={stepBuildDocker.status} />
@@ -166,7 +175,10 @@ const BuildSteps = ({ build, onError }: Props) => {
           }}
         />
       </Panel>
-      <Panel className={`${CLASS_NAME}__step`}>
+      <Panel
+        className={`${CLASS_NAME}__step`}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <Icon icon="publish" />
         <span>Publish App to Sandbox</span>
         <BuildStepsStatus status={stepDeploy.status} />
