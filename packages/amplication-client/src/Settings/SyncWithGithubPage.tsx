@@ -2,7 +2,6 @@ import React from "react";
 import { match } from "react-router-dom";
 import { Snackbar } from "@rmwc/snackbar";
 import { Icon } from "@rmwc/icon";
-import PageContent from "../Layout/PageContent";
 
 import { useQuery } from "@apollo/client";
 import { formatError } from "../util/error";
