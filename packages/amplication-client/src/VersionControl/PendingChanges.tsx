@@ -116,7 +116,12 @@ const PendingChanges = ({ applicationId }: Props) => {
           ) : (
             <div className={`${CLASS_NAME}__changes`}>
               {data?.pendingChanges.map((change) => (
-                <PendingChange key={change.resourceId} change={change} />
+                <PendingChange
+                  key={change.resourceId}
+                  change={change}
+                  applicationId={applicationId}
+                  linkToResource
+                />
               ))}
             </div>
           )}
