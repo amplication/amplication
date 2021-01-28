@@ -2,10 +2,14 @@
 
 .commit-page {
   &__header {
-    color: var(--black80);
-
     @include flexFullRowWithSpacing;
+    color: var(--black80);
     align-items: center;
+    margin-bottom: var(--default-spacing);
+
+    h2 {
+      margin: 0;
+    }
 
     .truncated-id {
       @include semiBold;
@@ -17,6 +21,15 @@
       a {
         color: var(--black100);
       }
+    }
+  }
+
+  &__changes__title {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+    .multi-state-toggle {
+      margin-bottom: 0;
+      width: var(--form-field-normal);
     }
   }
   &__commit-message {

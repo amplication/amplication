@@ -1,27 +1,18 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo } from "react";
 import YAML from "yaml";
 import { gql, useQuery } from "@apollo/client";
 import omitDeep from "deepdash-es/omitDeep";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";
-import { MultiStateToggle } from "@amplication/design-system";
 import "./PendingChangeDiff.scss";
 
 const CLASS_NAME = "pending-change-diff";
 const CURRENT_VERSION_NUMBER = 0;
 
-const SPLIT = "Split";
-const UNIFIED = "Unified";
-
 export enum EnumCompareType {
   Pending = "Pending",
   Previous = "Previous",
 }
-
-const OPTIONS = [
-  { value: UNIFIED, label: UNIFIED },
-  { value: SPLIT, label: SPLIT },
-];
 
 const NON_COMPARABLE_PROPERTIES = [
   "createdAt",
@@ -36,14 +27,14 @@ type TData = {
 type Props = {
   change: models.PendingChange;
   compareType?: EnumCompareType;
+  splitView: boolean;
 };
 
 const PendingChangeDiff = ({
   change,
   compareType = EnumCompareType.Pending,
+  splitView,
 }: Props) => {
-  const [splitView, setSplitView] = useState<boolean>(false);
-
   const { data: dataOtherVersion, loading: loadingOtherVersion } = useQuery<
     TData
   >(GET_ENTITY_VERSION, {
@@ -86,13 +77,6 @@ const PendingChangeDiff = ({
     return getEntityVersionYAML(dataOtherVersion);
   }, [dataOtherVersion]);
 
-  const handleChangeType = useCallback(
-    (type: string) => {
-      setSplitView(type === SPLIT);
-    },
-    [setSplitView]
-  );
-
   const diffStyles = {
     variables: {
       light: {
@@ -126,15 +110,6 @@ const PendingChangeDiff = ({
 
   return (
     <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__toolbar`}>
-        <MultiStateToggle
-          label=""
-          name="compareMode"
-          options={OPTIONS}
-          onChange={handleChangeType}
-          selectedValue={splitView ? SPLIT : UNIFIED}
-        />
-      </div>
       {loadingCurrentVersion || loadingOtherVersion ? (
         "Loading..."
       ) : (

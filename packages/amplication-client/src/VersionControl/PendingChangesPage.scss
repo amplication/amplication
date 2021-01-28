@@ -4,6 +4,11 @@
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--default-spacing);
+
+    .multi-state-toggle {
+      margin-bottom: 0;
+      width: var(--form-field-normal);
+    }
   }
 
   .pending-change-with-compare {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
@@ -11,6 +11,7 @@ import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiff";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
+import { MultiStateToggle } from "@amplication/design-system";
 
 import "./PendingChangesPage.scss";
 
@@ -24,11 +25,25 @@ type TData = {
 
 const CLASS_NAME = "pending-changes-page";
 const NAVIGATION_KEY = "PENDING_CHANGES";
+const SPLIT = "Split";
+const UNIFIED = "Unified";
+
+const OPTIONS = [
+  { value: UNIFIED, label: UNIFIED },
+  { value: SPLIT, label: SPLIT },
+];
 
 const PendingChangesPage = ({ match }: Props) => {
   const { application } = match.params;
   useNavigationTabs(NAVIGATION_KEY, match.url, "Pending Changes");
+  const [splitView, setSplitView] = useState<boolean>(false);
 
+  const handleChangeType = useCallback(
+    (type: string) => {
+      setSplitView(type === SPLIT);
+    },
+    [setSplitView]
+  );
   const { data, error } = useQuery<TData>(GET_PENDING_CHANGES, {
     variables: {
       applicationId: application,
@@ -45,6 +60,13 @@ const PendingChangesPage = ({ match }: Props) => {
         ) : (
           <div className={`${CLASS_NAME}__header`}>
             <h1>Pending Changes</h1>
+            <MultiStateToggle
+              label=""
+              name="compareMode"
+              options={OPTIONS}
+              onChange={handleChangeType}
+              selectedValue={splitView ? SPLIT : UNIFIED}
+            />
           </div>
         )}
         <div className={`${CLASS_NAME}__changes`}>
@@ -53,6 +75,7 @@ const PendingChangesPage = ({ match }: Props) => {
               key={change.resourceId}
               change={change}
               compareType={EnumCompareType.Pending}
+              splitView={splitView}
             />
           ))}
         </div>
