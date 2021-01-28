@@ -8,6 +8,8 @@ $expand-button-padding: 4px;
   height: calc(100%);
   display: flex;
   flex-direction: column;
+  background-color: var(--surface);
+  color: var(--black100);
 
   &__wrapper {
     flex: 1;
@@ -19,6 +21,7 @@ $expand-button-padding: 4px;
   &__footer {
     max-height: var(--app-footer-height);
     background-color: var(--black5);
+    border-top: $border-black10;
   }
 
   &__content {

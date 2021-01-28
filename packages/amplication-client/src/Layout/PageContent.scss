@@ -5,23 +5,21 @@ $tabs-width: 300px;
 .amp-page-content {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   align-items: stretch;
   padding: 0 var(--large-spacing);
   background: var(--page-content-background);
   box-sizing: border-box;
   flex: 1;
-  overflow: auto;
-  border-bottom: $border-black10;
+  overflow: hidden;
 
   &__tabs {
     @include scrollbars(10px, var(--black60), transparent);
     width: $tabs-width;
     background: var(--page-content-tab-background);
     border-radius: var(--default-border-radius);
+    border: $border-black10;
     padding: var(--large-spacing);
     box-sizing: border-box;
-    max-height: 100%;
     overflow: auto;
     margin: var(--large-spacing) 0;
 

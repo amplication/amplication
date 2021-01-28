@@ -14,9 +14,10 @@
     justify-content: center;
     border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
     position: relative;
+    white-space: nowrap;
 
     &--active {
-      background-color: var(--black2);
+      background-color: var(--page-content-background);
     }
   }
 }

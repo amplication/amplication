@@ -1,28 +1,36 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import useLocalStorage from "react-use-localstorage";
+import ThemeContext from "./ThemeContext";
 import "./DarkModeToggle.scss";
 
 const LOCAL_STORAGE_KEY = "darkModeEnabled";
 const CLASS_NAME = "dark-mode-toggle";
 
 const DarkModeToggle = () => {
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem(LOCAL_STORAGE_KEY) === "true"
-  );
+  const [darkMode, setDarkMode] = useLocalStorage(LOCAL_STORAGE_KEY, "false");
+
+  const themeContext = useContext(ThemeContext);
+
+  const isDarkMode = useMemo(() => {
+    return darkMode === "true";
+  }, [darkMode]);
+
+  themeContext.setTheme(isDarkMode ? "dark-mode" : "");
 
   const handleClick = useCallback(() => {
-    const nextValue = !darkMode;
-    setDarkMode(nextValue);
-    localStorage.setItem(LOCAL_STORAGE_KEY, String(nextValue));
-  }, [darkMode]);
+    const nextIsDark = !isDarkMode;
+    setDarkMode(String(nextIsDark));
+    themeContext.setTheme(nextIsDark ? "dark-mode" : "");
+  }, [setDarkMode, isDarkMode, themeContext]);
 
   const DarkModeCSS = React.lazy(() => import("./DarkModeTheme"));
 
   return (
     <div
       className={classNames(CLASS_NAME, {
-        [`${CLASS_NAME}--active`]: darkMode,
+        [`${CLASS_NAME}--active`]: isDarkMode,
       })}
     >
       <Button
@@ -32,11 +40,11 @@ const DarkModeToggle = () => {
         eventData={{
           eventName: darkMode ? "disableDarkMode" : "enableDarkMode",
         }}
-        icon={darkMode ? "dark_mode" : "light_mode"}
+        icon={isDarkMode ? "dark_mode" : "light_mode"}
       />
 
       <React.Suspense fallback={<></>}>
-        {darkMode && <DarkModeCSS />}
+        {isDarkMode && <DarkModeCSS />}
       </React.Suspense>
     </div>
   );

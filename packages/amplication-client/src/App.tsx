@@ -9,6 +9,7 @@ import Applications from "./Application/Applications";
 
 import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
+import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import AuthAppWithGithubCallback from "./Settings/AuthAppWithGithubCallback";
 
@@ -40,19 +41,21 @@ function App() {
   });
 
   return (
-    <NavigationTabsProvider>
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        <PrivateRoute
-          exact
-          path="/github-auth-app/callback/:application"
-          component={AuthAppWithGithubCallback}
-        />
-        <PrivateRoute exact path="/" component={Applications} />
-        <PrivateRoute path="/:application" component={ApplicationLayout} />
-      </Switch>
-    </NavigationTabsProvider>
+    <ThemeProvider>
+      <NavigationTabsProvider>
+        <Switch>
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
+          <PrivateRoute
+            exact
+            path="/github-auth-app/callback/:application"
+            component={AuthAppWithGithubCallback}
+          />
+          <PrivateRoute exact path="/" component={Applications} />
+          <PrivateRoute path="/:application" component={ApplicationLayout} />
+        </Switch>
+      </NavigationTabsProvider>
+    </ThemeProvider>
   );
 }
 
