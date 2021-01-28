@@ -6,7 +6,7 @@ import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
-import Settings from "../Settings/Settings";
+import SyncWithGithubPage from "../Settings/SyncWithGithubPage";
 import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
@@ -232,7 +232,10 @@ function ApplicationLayout({ match }: Props) {
                 path="/:application/update"
                 component={ApplicationHome}
               />
-              <Route path="/:application/settings" component={Settings} />
+              <Route
+                path="/:application/settings"
+                component={SyncWithGithubPage}
+              />
               <Route
                 path="/:application/pending-changes"
                 component={PendingChangesPage}

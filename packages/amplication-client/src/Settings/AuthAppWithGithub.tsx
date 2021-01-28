@@ -11,7 +11,8 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { useTracking } from "../util/analytics";
 
 import {
-  PanelCollapsible,
+  Panel,
+  EnumPanelStyle,
   Toggle,
   Dialog,
   ConfirmationDialog,
@@ -134,28 +135,18 @@ function AuthAppWithGithub({ app, onDone }: Props) {
           onCompleted={handleSelectRepoDialogDismiss}
         />
       </Dialog>
-      <PanelCollapsible
-        manualCollapseDisabled
-        initiallyOpen
-        collapseEnabled={isAuthenticatedWithGithub}
-        className={CLASS_NAME}
-        headerContent={
-          <>
-            <Icon icon={{ icon: "github", size: "large" }} />
-            <span className="spacer">Sync With GitHub</span>
-            <Toggle
-              title="Sync with Github"
-              onValueChange={handleAuthWithGithubClick}
-              checked={isAuthenticatedWithGithub}
-              disabled={loading || removeLoading || isEmpty(app)}
-            />
-          </>
-        }
-      >
-        {isAuthenticatedWithGithub && (
-          <div className={`${CLASS_NAME}__body`}>
-            {!app.githubSyncEnabled ? (
-              <>
+      <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
+        <Toggle
+          label="Sync with GitHub"
+          title="Sync with Github"
+          onValueChange={handleAuthWithGithubClick}
+          checked={isAuthenticatedWithGithub}
+          disabled={loading || removeLoading || isEmpty(app)}
+        />
+        <div className={`${CLASS_NAME}__body`}>
+          {isAuthenticatedWithGithub && (
+            <div className={`${CLASS_NAME}__auth`}>
+              {!app.githubSyncEnabled ? (
                 <div className={`${CLASS_NAME}__select-repo`}>
                   <div className={`${CLASS_NAME}__select-repo__details`}>
                     <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
@@ -171,39 +162,39 @@ function AuthAppWithGithub({ app, onDone }: Props) {
                     </Button>
                   </div>
                 </div>
-                <div className={`${CLASS_NAME}__notice`}>
-                  Please note:
-                  <ul>
-                    <li>
-                      <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
-                      The changes will be pushed to the root of the selected
-                      repository, using Pull Requests.
-                    </li>
-                    <li>
-                      <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
-                      The selected repository must not be empty, so please
-                      create at least one file in the root.
-                    </li>
-                    <li>
-                      <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
-                      <div>
-                        <a href="https://github.com/new" target="github_repo">
-                          Click here
-                        </a>{" "}
-                        to create a new repository. Please select{" "}
-                        <b>Initialize this repository with a README file</b> to
-                        make sure it is not empty.
-                      </div>
-                    </li>
-                  </ul>
+              ) : (
+                <GithubSyncDetails app={app} />
+              )}
+            </div>
+          )}
+          <div className={`${CLASS_NAME}__notice`}>
+            Please note:
+            <ul>
+              <li>
+                <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
+                The changes will be pushed to the root of the selected
+                repository, using Pull Requests.
+              </li>
+              <li>
+                <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
+                The selected repository must not be empty, so please create at
+                least one file in the root.
+              </li>
+              <li>
+                <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
+                <div>
+                  <a href="https://github.com/new" target="github_repo">
+                    Click here
+                  </a>{" "}
+                  to create a new repository. Please select{" "}
+                  <b>Initialize this repository with a README file</b> to make
+                  sure it is not empty.
                 </div>
-              </>
-            ) : (
-              <GithubSyncDetails app={app} />
-            )}
+              </li>
+            </ul>
           </div>
-        )}
-      </PanelCollapsible>
+        </div>
+      </Panel>
 
       <Snackbar open={Boolean(error || removeError)} message={errorMessage} />
     </>

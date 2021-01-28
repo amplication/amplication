@@ -17,6 +17,8 @@
 
   --panel-background: var(--black5);
   --panel-hover-background: var(--black10);
+  --inner-panel-background: var(--black10);
+  --inner-panel-border-color: var(--black20);
 
   --menu-background-color: var(--black2);
   --menu-fixed-panel-background: var(--white);
