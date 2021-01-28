@@ -79,7 +79,6 @@ function ApplicationHome({ match }: Props) {
               <EntitiesTile applicationId={applicationId} />
               <RolesTile applicationId={applicationId} />
               <SyncWithGithubTile applicationId={applicationId} />
-              <LastCommitTile applicationId={applicationId} />
             </div>
           )}
         />

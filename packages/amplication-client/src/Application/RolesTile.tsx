@@ -3,12 +3,12 @@ import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
+import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
 import { Panel } from "@amplication/design-system";
 
 import { GET_ROLES } from "../Roles/RoleList";
-import { Button, EnumButtonStyle } from "../Components/Button";
 import "./RolesTile.scss";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
@@ -48,22 +48,18 @@ function RolesTile({ applicationId }: Props) {
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
           <h2>Roles</h2>
+          Create roles and granularly set permissions per entity or specific
+          fields.
           {loading ? (
             <CircularProgress />
-          ) : !data?.appRoles.length ? (
-            <>There are no roles</>
           ) : (
-            <>
-              You have {data?.appRoles.length}
+            <span className={`${CLASS_NAME}__content__details__summary`}>
+              <Icon icon={{ icon: "lock", size: "medium" }} />
+
+              {data?.appRoles.length}
               {data?.appRoles.length > 1 ? " roles" : " role"}
-            </>
+            </span>
           )}
-          <Button
-            className={`${CLASS_NAME}__content__action`}
-            buttonStyle={EnumButtonStyle.Primary}
-          >
-            Create Roles
-          </Button>
         </div>
         <SvgThemeImage image={EnumImages.Roles} />
       </div>

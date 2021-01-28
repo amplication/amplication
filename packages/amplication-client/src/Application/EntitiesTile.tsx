@@ -3,12 +3,12 @@ import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
+import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
 import { Panel } from "@amplication/design-system";
 
 import { GET_ENTITIES } from "../Entity/EntityList";
-import { Button, EnumButtonStyle } from "../Components/Button";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./EntitiesTile.scss";
@@ -48,22 +48,18 @@ function EntitiesTile({ applicationId }: Props) {
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
           <h2>Entities</h2>
+          Define the data model of you application with data entities and
+          role‑based access.
           {loading ? (
             <CircularProgress />
-          ) : !data?.entities.length ? (
-            <>There are no entities</>
           ) : (
-            <>
-              You have {data?.entities.length}
+            <span className={`${CLASS_NAME}__content__details__summary`}>
+              <Icon icon={{ icon: "entity", size: "medium" }} />
+
+              {data?.entities.length}
               {data?.entities.length > 1 ? " entities" : " entity"}
-            </>
+            </span>
           )}
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            className={`${CLASS_NAME}__content__action`}
-          >
-            Create Entities
-          </Button>
         </div>
         <SvgThemeImage image={EnumImages.Entities} />
       </div>

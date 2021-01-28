@@ -285,16 +285,26 @@ $bullet-size: 6px;
 
     &__details {
       height: 100%;
+      max-width: 600px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       justify-content: space-between;
       flex: 1;
       margin-bottom: var(--double-spacing);
-      color: var(--black60);
-    }
-    &__action {
-      margin-top: auto;
+      color: var(--black80);
+      &__summary {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: auto;
+        color: var(--black100);
+
+        .amp-icon {
+          color: var(--black80);
+          margin-right: var(--default-spacing-small);
+        }
+      }
     }
   }
 }
