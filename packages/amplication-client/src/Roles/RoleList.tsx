@@ -70,7 +70,7 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
       </div>
       {loading && <CircularProgress />}
       {data?.appRoles?.map((role) => (
-        <div>
+        <div key={role.id}>
           <InnerTabLink icon="roles" to={`/${applicationId}/roles/${role.id}`}>
             <span>{role.displayName}</span>
           </InnerTabLink>
