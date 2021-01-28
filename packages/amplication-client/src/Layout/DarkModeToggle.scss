@@ -7,11 +7,11 @@ $icon-font-size-xlarge: 32px;
   align-items: center;
   justify-content: center;
   .amp-button {
-    color: var(--black5);
+    color: var(--menu-item-color);
 
     &:hover,
     &:active {
-      color: var(--static-white);
+      color: var(--menu-item-active-color);
     }
     i {
       font-size: $icon-font-size-xlarge;
