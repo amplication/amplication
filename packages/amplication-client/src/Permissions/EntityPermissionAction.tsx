@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useContext } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { isEmpty, cloneDeep } from "lodash";
 import difference from "@extra-set/difference";
+import { Icon } from "@rmwc/icon";
 
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
@@ -218,12 +219,22 @@ export const EntityPermissionAction = ({
               </span>{" "}
               {entityDisplayName}
             </h3>
-            <h4 className="text-muted">
-              {permission.type === models.EnumEntityPermissionType.AllRoles
-                ? "All roles selected"
-                : permission.type === models.EnumEntityPermissionType.Granular
-                ? `${selectedRoleIds.size} roles selected`
-                : "This action is disabled"}
+            <h4>
+              <Icon icon="lock" />
+              {permission.type === models.EnumEntityPermissionType.AllRoles ? (
+                <span className={`${CLASS_NAME}__action-summary`}>
+                  All roles selected
+                </span>
+              ) : permission.type ===
+                models.EnumEntityPermissionType.Granular ? (
+                <span className={`${CLASS_NAME}__action-summary`}>
+                  {selectedRoleIds.size} roles selected
+                </span>
+              ) : (
+                <span className={`${CLASS_NAME}__action-summary--muted`}>
+                  This action is disabled
+                </span>
+              )}
             </h4>
           </div>
           <div>

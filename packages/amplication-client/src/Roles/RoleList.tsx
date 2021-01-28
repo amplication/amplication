@@ -1,73 +1,42 @@
 import React, { useState, useCallback } from "react";
-import { useHistory, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
+import { CircularProgress } from "@rmwc/circular-progress";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import {
-  DataGrid,
-  DataField,
-  EnumTitleType,
-  DataGridRow,
-  DataGridCell,
-  SortData,
-} from "@amplication/design-system";
+import { SearchField } from "@amplication/design-system";
 import NewRole from "./NewRole";
+import InnerTabLink from "../Layout/InnerTabLink";
 import "./RoleList.scss";
-
-const fields: DataField[] = [
-  {
-    name: "displayName",
-    title: "Display Name",
-    sortable: true,
-  },
-  {
-    name: "name",
-    title: "Name",
-    sortable: true,
-  },
-  {
-    name: "description",
-    title: "Description",
-    sortable: true,
-  },
-];
 
 type TData = {
   appRoles: models.AppRole[];
 };
 
 const DATE_CREATED_FIELD = "createdAt";
-
-const INITIAL_SORT_DATA = {
-  field: null,
-  order: null,
-};
+const CLASS_NAME = "role-list";
 
 type Props = {
   applicationId: string;
 };
 
 export const RoleList = React.memo(({ applicationId }: Props) => {
-  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
-  const handleSortChange = (sortData: SortData) => {
-    setSortDir(sortData);
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearchPhrase(value);
-  };
-
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
   const history = useHistory();
 
   const { data, loading, error } = useQuery<TData>(GET_ROLES, {
     variables: {
       id: applicationId,
       orderBy: {
-        [sortDir.field || DATE_CREATED_FIELD]:
-          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
+        [DATE_CREATED_FIELD]: models.SortOrder.Asc,
       },
       whereName:
         searchPhrase !== ""
@@ -90,45 +59,26 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
   );
 
   return (
-    <div className="role-list">
-      <DataGrid
-        showSearch
-        fields={fields}
-        title="Roles"
-        titleType={EnumTitleType.PageTitle}
-        loading={loading}
-        sortDir={sortDir}
-        onSortChange={handleSortChange}
-        onSearchChange={handleSearchChange}
-        toolbarContentStart={
-          <NewRole onRoleAdd={handleRoleChange} applicationId={applicationId} />
-        }
-      >
-        {data?.appRoles.map((role) => {
-          const roleUrl = `/${applicationId}/roles/${role.id}`;
-
-          return (
-            <DataGridRow
-              onClick={handleRoleChange}
-              clickData={role}
-              key={role.id}
-            >
-              <DataGridCell>
-                <Link
-                  className="amp-data-grid-item--navigate"
-                  title={role.displayName}
-                  to={roleUrl}
-                >
-                  <span className="text-medium">{role.displayName}</span>
-                </Link>
-              </DataGridCell>
-              <DataGridCell>{role.name}</DataGridCell>
-              <DataGridCell>{role.description}</DataGridCell>
-            </DataGridRow>
-          );
-        })}
-      </DataGrid>
-
+    <div className={CLASS_NAME}>
+      <SearchField
+        label="search"
+        placeholder="search"
+        onChange={handleSearchChange}
+      />
+      <div className={`${CLASS_NAME}__header`}>
+        {data?.appRoles.length} Roles
+      </div>
+      {loading && <CircularProgress />}
+      {data?.appRoles?.map((role) => (
+        <div key={role.id}>
+          <InnerTabLink icon="roles" to={`/${applicationId}/roles/${role.id}`}>
+            <span>{role.displayName}</span>
+          </InnerTabLink>
+        </div>
+      ))}
+      {data?.appRoles && (
+        <NewRole onRoleAdd={handleRoleChange} applicationId={applicationId} />
+      )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

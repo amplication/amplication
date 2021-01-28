@@ -4,7 +4,7 @@ $expandable-bottom-max-height: 200px;
 $expandable-transition-duration: 0.1s;
 
 .amp-panel {
-  background: var(--white);
+  background: var(--panel-background);
   border-radius: var(--default-border-radius);
   border: none;
   box-sizing: border-box;
@@ -34,6 +34,7 @@ $expandable-transition-duration: 0.1s;
   &--clickable {
     cursor: pointer;
     &:hover {
+      background: var(--panel-hover-background);
       box-shadow: var(--hover-box-shadow);
     }
   }

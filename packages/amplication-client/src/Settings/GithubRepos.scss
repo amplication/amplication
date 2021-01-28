@@ -37,5 +37,6 @@ $max-height: 80vh;
   .amp-dialog__body {
     flex: 1;
     overflow: auto;
+    @include scrollbars($default-scroll-width, var(--black60), transparent);
   }
 }

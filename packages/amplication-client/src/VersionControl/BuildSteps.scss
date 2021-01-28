@@ -18,9 +18,6 @@ $step-min-height: 32px;
     color: var(--black100);
     min-height: $step-min-height;
 
-    i {
-      color: var(--black80);
-    }
     /**@todo: remove after adding endpoint to download container   */
     .hidden {
       visibility: hidden;

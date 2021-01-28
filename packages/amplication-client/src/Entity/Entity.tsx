@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import { match, useRouteMatch } from "react-router-dom";
+import { Switch, Route, match, useLocation } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -7,19 +7,17 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import EntityForm from "./EntityForm";
+import { EntityFieldLinkList } from "./EntityFieldLinkList";
 import { EntityFieldList } from "./EntityFieldList";
-import Sidebar from "../Layout/Sidebar";
 import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
-import { Panel, EnumPanelStyle } from "@amplication/design-system";
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 import { useTracking, track } from "../util/analytics";
+import InnerTabLink from "../Layout/InnerTabLink";
 
 import "./Entity.scss";
-import { isEmpty } from "lodash";
 
 type Props = {
   match: match<{ application: string; entityId: string; fieldId: string }>;
@@ -32,29 +30,13 @@ type TData = {
 type UpdateData = {
   updateEntity: models.Entity;
 };
+const NAVIGATION_KEY = "ENTITY";
 
 const Entity = ({ match }: Props) => {
   const { entityId, application } = match.params;
   const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
-
-  const fieldMatch = useRouteMatch<{ fieldId: string }>(
-    "/:application/entities/:entityId/fields/:fieldId"
-  );
-
-  let fieldId = null;
-  if (fieldMatch) {
-    fieldId = fieldMatch.params.fieldId;
-  }
-
-  const permissionsMatch = useRouteMatch(
-    "/:application/entities/:entityId/permissions"
-  );
-
-  let isPermissionsOpen = false;
-  if (permissionsMatch) {
-    isPermissionsOpen = true;
-  }
+  const location = useLocation();
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {
@@ -62,7 +44,11 @@ const Entity = ({ match }: Props) => {
     },
   });
 
-  useBreadcrumbs(match.url, data?.entity.displayName);
+  useNavigationTabs(
+    `${NAVIGATION_KEY}_${entityId}`,
+    location.pathname,
+    data?.entity.displayName
+  );
 
   const [updateEntity, { error: updateError }] = useMutation<UpdateData>(
     UPDATE_ENTITY,
@@ -105,47 +91,74 @@ const Entity = ({ match }: Props) => {
   const errorMessage = formatError(error || updateError);
 
   return (
-    <PageContent className="entity" withFloatingBar>
-      <main>
-        <FloatingToolbar />
-        {loading ? (
-          <span>Loading...</span>
-        ) : !data ? (
-          <span>can't find</span> /**@todo: Show formatted error message */
-        ) : (
+    <PageContent
+      className="entity"
+      sideContent={
+        data && (
           <>
-            <EntityForm
-              entity={data.entity}
-              applicationId={application}
-              onSubmit={handleSubmit}
-            />
-            <Panel
-              className="entity-field-list"
-              panelStyle={EnumPanelStyle.Transparent}
+            <InnerTabLink
+              to={`/${application}/entities/${data.entity.id}`}
+              icon="settings"
             >
-              <EntityFieldList entityId={data.entity.id} />
-            </Panel>
+              General Settings
+            </InnerTabLink>
+            <InnerTabLink
+              to={`/${application}/entities/${data.entity.id}/permissions`}
+              icon="lock"
+            >
+              Permissions
+            </InnerTabLink>
+            <InnerTabLink
+              to={`/${application}/entities/${data.entity.id}/fields`}
+              icon="option_set"
+            >
+              Fields
+            </InnerTabLink>
+            <div className="sub-list">
+              <EntityFieldLinkList entityId={data.entity.id} />
+            </div>
           </>
-        )}
-      </main>
-      {data && (
-        <Sidebar
-          modal
-          open={!isEmpty(fieldId) || isPermissionsOpen}
-          largeMode={isPermissionsOpen}
-        >
-          {!isEmpty(fieldId) && <EntityField />}
-          {isPermissionsOpen && (
-            <PermissionsForm
-              entityId={entityId}
-              applicationId={application}
-              availableActions={ENTITY_ACTIONS}
-              backUrl={`/${application}/entities/${data.entity.id}`}
-              objectDisplayName={data.entity.pluralDisplayName}
-            />
-          )}
-        </Sidebar>
+        )
+      }
+    >
+      {loading ? (
+        <span>Loading...</span>
+      ) : !data ? (
+        <span>can't find</span> /**@todo: Show formatted error message */
+      ) : (
+        <Switch>
+          <Route
+            path="/:application/entities/:entityId/permissions"
+            component={() => (
+              <PermissionsForm
+                entityId={entityId}
+                applicationId={application}
+                availableActions={ENTITY_ACTIONS}
+                objectDisplayName={data.entity.pluralDisplayName}
+              />
+            )}
+          />
+          <Route
+            path="/:application/entities/:entityId/fields/:fieldId"
+            component={EntityField}
+          />
+          <Route
+            path="/:application/entities/:entityId/fields/"
+            component={() => <EntityFieldList entityId={data.entity.id} />}
+          />
+          <Route
+            path="/:application/entities/:entityId"
+            component={() => (
+              <EntityForm
+                entity={data.entity}
+                applicationId={application}
+                onSubmit={handleSubmit}
+              />
+            )}
+          />
+        </Switch>
       )}
+
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>
   );

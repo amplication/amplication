@@ -10,7 +10,6 @@ import Sidebar from "../Layout/Sidebar";
 import { formatError } from "../util/error";
 import EntityPageForm from "./EntityPageForm";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 
 import "./EntityPage.scss";
 
@@ -55,19 +54,14 @@ function EntityPage({ match }: Props) {
 
   const errorMessage = formatError(error || updateError);
   return (
-    <PageContent className="entity-page" withFloatingBar>
-      <main>
-        {loading ? (
-          <span>Loading...</span>
-        ) : (
-          <>
-            <FloatingToolbar />
-            <div className="entity-page__preview">
-              <h1>{data?.EntityPage.displayName}</h1>
-            </div>
-          </>
-        )}
-      </main>
+    <PageContent className="entity-page">
+      {loading ? (
+        <span>Loading...</span>
+      ) : (
+        <div className="entity-page__preview">
+          <h1>{data?.EntityPage.displayName}</h1>
+        </div>
+      )}
       <Sidebar>
         {loading ? (
           <span>Loading...</span>

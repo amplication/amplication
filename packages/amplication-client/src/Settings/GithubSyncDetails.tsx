@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { Icon } from "@rmwc/icon";
 import { Snackbar } from "@rmwc/snackbar";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
@@ -43,7 +42,7 @@ function GithubSyncDetails({ app }: Props) {
 
         <div className={`${CLASS_NAME}__action`}>
           <Button
-            buttonStyle={EnumButtonStyle.Secondary}
+            buttonStyle={EnumButtonStyle.Primary}
             eventData={{
               eventName: "changeGithubRepo",
             }}
@@ -53,11 +52,7 @@ function GithubSyncDetails({ app }: Props) {
           </Button>
         </div>
       </div>
-      <div className={`${CLASS_NAME}__status`}>
-        <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
-        We will automatically create a Pull Request in this repo every time you
-        commit your changes.
-      </div>
+
       <Snackbar open={Boolean(errorUpdate)} message={errorMessage} />
     </div>
   );

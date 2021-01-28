@@ -31,9 +31,9 @@ $letter-spacing: 1px;
     height: calc(var(--time-since-height) + #{$user-border-width});
     width: calc(var(--time-since-height) + #{$user-border-width});
     text-align: center;
-    color: var(--white);
+    color: var(--static-white);
     text-transform: capitalize;
-    border: $user-border-width solid var(--white);
+    border: $user-border-width solid var(--black5);
     margin-right: var(--default-spacing-small);
     letter-spacing: $letter-spacing;
   }

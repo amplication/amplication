@@ -1,5 +1,5 @@
 import React from "react";
-import { match } from "react-router-dom";
+import { Switch, Route, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -9,18 +9,21 @@ import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import { CircleBadge } from "@amplication/design-system";
 import ApplicationForm from "./ApplicationForm";
+import SyncWithGithubPage from "../Settings/SyncWithGithubPage";
 import "./ApplicationHome.scss";
-import LastCommitTile from "./LastCommitTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
 import { COLOR_TO_NAME } from "./constants";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
+import InnerTabLink from "../Layout/InnerTabLink";
 
 type Props = {
   match: match<{ application: string }>;
 };
 
 const CLASS_NAME = "application-home";
+const NAVIGATION_KEY = "APP_HOME";
 
 function ApplicationHome({ match }: Props) {
   const applicationId = match.params.application;
@@ -32,46 +35,73 @@ function ApplicationHome({ match }: Props) {
       id: applicationId,
     },
   });
+  useNavigationTabs(NAVIGATION_KEY, match.url, data?.app.name);
 
   const errorMessage = formatError(error);
 
   return (
-    <PageContent>
-      <div className={CLASS_NAME}>
-        <div
-          //
-          className={classNames(
-            `${CLASS_NAME}__header`,
-            `theme-${data && COLOR_TO_NAME[data.app.color]}`
+    <PageContent
+      className={CLASS_NAME}
+      sideContent={
+        <>
+          <div>
+            <InnerTabLink to={`/${applicationId}/`} icon="home">
+              Overview
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink to={`/${applicationId}/update`} icon="settings">
+              General Settings
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink to={`/${applicationId}/github`} icon="github_outline">
+              Sync with GitHub
+            </InnerTabLink>
+          </div>
+        </>
+      }
+    >
+      <Switch>
+        <Route path="/:application/github" component={SyncWithGithubPage} />
+        <Route
+          path="/:application/"
+          component={() => (
+            <>
+              <div
+                className={classNames(
+                  `${CLASS_NAME}__header`,
+                  `theme-${data && COLOR_TO_NAME[data.app.color]}`
+                )}
+              >
+                {data?.app.name}
+                <CircleBadge
+                  name={data?.app.name || ""}
+                  color={data?.app.color || "transparent"}
+                />
+              </div>
+              <Switch>
+                <Route
+                  exact
+                  path="/:application/"
+                  component={() => (
+                    <div className={`${CLASS_NAME}__tiles`}>
+                      <EntitiesTile applicationId={applicationId} />
+                      <RolesTile applicationId={applicationId} />
+                      <SyncWithGithubTile applicationId={applicationId} />
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/:application/update"
+                  component={ApplicationForm}
+                />
+              </Switch>
+            </>
           )}
         />
-
-        <main className={`${CLASS_NAME}__main`}>
-          <CircleBadge
-            name={data?.app.name || ""}
-            color={data?.app.color || "transparent"}
-          />
-          <div className={`${CLASS_NAME}__main__form`}>
-            <h1>{data?.app.name}</h1>
-            {data?.app && <ApplicationForm app={data?.app} />}
-          </div>
-          <div className={`${CLASS_NAME}__main__tiles`}>
-            <div>
-              <EntitiesTile applicationId={applicationId} />
-            </div>
-            <div>
-              <RolesTile applicationId={applicationId} />
-            </div>
-            <div>
-              <SyncWithGithubTile applicationId={applicationId} />
-            </div>
-            <div>
-              <LastCommitTile applicationId={applicationId} />
-            </div>
-          </div>
-        </main>
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </div>
+      </Switch>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
   );
 }

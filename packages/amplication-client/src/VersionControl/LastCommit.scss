@@ -1,18 +1,26 @@
 @import "../style/index.scss";
 
-$panel-height: 320px;
-
 .last-commit {
-  padding-top: var(--double-spacing);
-  min-height: $panel-height;
+  @include flexFullRowWithSpacing;
+  height: var(--app-footer-height);
+  white-space: nowrap;
+  padding: 0 var(--default-spacing);
+
+  .clickable-id {
+    color: var(--black80);
+    a {
+      color: var(--black100);
+    }
+  }
+
+  .build-header {
+    margin-left: var(--double-spacing);
+  }
+
   &__message {
     color: var(--black60);
   }
 
-  &__step-completed {
-    color: var(--positive-default);
-    margin-right: var(--default-spacing-small);
-  }
   &__loading {
     display: flex;
     align-items: center;

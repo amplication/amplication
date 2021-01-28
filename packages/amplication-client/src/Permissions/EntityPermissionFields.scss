@@ -4,6 +4,7 @@
   &__add-field {
     @include flexFullRow;
     justify-content: flex-start;
+    color: var(--black90);
   }
 
   &__field {
@@ -15,9 +16,10 @@
 
   &__header {
     @include flexFullRow;
+    color: var(--black80);
     // margin-bottom: var(--default-spacing);
   }
   &__action-name {
-    color: var(--secondary-light-blue);
+    color: var(--black100);
   }
 }

@@ -1,50 +1,14 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { useHistory } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
+import { CircularProgress } from "@rmwc/circular-progress";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField, SortData } from "@amplication/design-system";
+import { SearchField } from "@amplication/design-system";
 
-import NewEntityField from "./NewEntityField";
 import { EntityFieldListItem } from "./EntityFieldListItem";
 import { GET_ENTITIES } from "./EntityList";
-
-const fields: DataField[] = [
-  {
-    name: "displayName",
-    title: "Display Name",
-    sortable: true,
-  },
-  {
-    name: "name",
-    title: "Name",
-    sortable: true,
-  },
-
-  {
-    name: "dataType",
-    title: "Data Type",
-    sortable: true,
-  },
-  {
-    name: "required",
-    title: "Required",
-    sortable: true,
-    minWidth: true,
-  },
-  {
-    name: "searchable",
-    title: "Searchable",
-    sortable: true,
-    minWidth: true,
-  },
-  {
-    name: "description",
-    title: "Description",
-    sortable: true,
-  },
-];
+import "./EntityFieldList.scss";
 
 type TData = {
   entity: models.Entity;
@@ -52,36 +16,21 @@ type TData = {
 
 const DATE_CREATED_FIELD = "createdAt";
 
-const INITIAL_SORT_DATA = {
-  field: "position",
-  order: 1,
-};
-
 type Props = {
   entityId: string;
 };
 
 export const EntityFieldList = React.memo(({ entityId }: Props) => {
-  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
 
-  const handleSortChange = (sortData: SortData) => {
-    setSortDir(sortData);
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearchPhrase(value);
-  };
-
-  const history = useHistory();
+  const CLASS_NAME = "entity-field-list";
 
   const { data, loading, error: errorLoading } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
       orderBy: {
-        [sortDir.field || DATE_CREATED_FIELD]:
-          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
+        [DATE_CREATED_FIELD]: models.SortOrder.Asc,
       },
       whereName:
         searchPhrase !== ""
@@ -108,49 +57,42 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
     );
   }, [entityList]);
 
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
+
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
-  const handleFieldAdd = useCallback(
-    (field: models.EntityField) => {
-      const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
-      history.push(fieldUrl);
-    },
-    [data, history, entityId]
-  );
-
   return (
     <>
-      <DataGrid
-        showSearch
-        fields={fields}
-        title="Entity Fields"
-        loading={loading}
-        sortDir={sortDir}
-        onSortChange={handleSortChange}
-        onSearchChange={handleSearchChange}
-        toolbarContentStart={
-          data?.entity && (
-            <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
-          )
-        }
-      >
-        {data?.entity.fields?.map((field) => (
-          <EntityFieldListItem
-            key={field.id}
-            applicationId={data?.entity.appId}
-            entity={data?.entity}
-            entityField={field}
-            entityIdToName={entityIdToName}
-            onError={setError}
-          />
-        ))}
-      </DataGrid>
-
+      <div className={`${CLASS_NAME}__header`}>
+        <SearchField
+          label="search"
+          placeholder="search"
+          onChange={handleSearchChange}
+        />
+      </div>
+      <div className={`${CLASS_NAME}__title`}>
+        {data?.entity.fields?.length} Fields
+      </div>
+      {loading && <CircularProgress />}
+      {data?.entity.fields?.map((field) => (
+        <EntityFieldListItem
+          key={field.id}
+          applicationId={data?.entity.appId}
+          entity={data?.entity}
+          entityField={field}
+          entityIdToName={entityIdToName}
+          onError={setError}
+        />
+      ))}
       <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </>
   );
-  /**@todo: move error message to hosting page  */
 });
 
 /**@todo: expand search on other field  */

@@ -4,17 +4,17 @@ import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 import BuildSteps from "./BuildSteps";
 import { TruncatedId } from "../Components/TruncatedId";
 import ActionLog from "./ActionLog";
 import { GET_BUILD } from "./useBuildWatchStatus";
 import { GET_COMMIT } from "./CommitPage";
-import CommitHeader from "./CommitHeader";
+import { truncateId } from "../util/truncatedId";
+import { ClickableId } from "../Components/ClickableId";
 import "./BuildPage.scss";
 
 type LogData = {
@@ -27,10 +27,20 @@ type Props = {
   match: match<{ application: string; buildId: string }>;
 };
 const CLASS_NAME = "build-page";
+const NAVIGATION_KEY = "BUILDS";
 
 const BuildPage = ({ match }: Props) => {
-  const { buildId } = match.params;
-  useBreadcrumbs(match.url, "Build");
+  const { application, buildId } = match.params;
+
+  const truncatedId = useMemo(() => {
+    return truncateId(buildId);
+  }, [buildId]);
+
+  useNavigationTabs(
+    `${NAVIGATION_KEY}_${buildId}`,
+    match.url,
+    `Build ${truncatedId}`
+  );
 
   const [error, setError] = useState<Error>();
 
@@ -66,37 +76,38 @@ const BuildPage = ({ match }: Props) => {
 
   return (
     <>
-      <PageContent className={CLASS_NAME} withFloatingBar>
-        <main>
-          <FloatingToolbar />
-          {!data ? (
-            "loading..."
-          ) : (
-            <>
-              <h1>
+      <PageContent className={CLASS_NAME}>
+        {!data ? (
+          "loading..."
+        ) : (
+          <>
+            <div className={`${CLASS_NAME}__header`}>
+              <h2>
                 Build <TruncatedId id={data.build.id} />
-              </h1>
+              </h2>
               {commitData && (
-                <div className={`${CLASS_NAME}__commit-header`}>
-                  <CommitHeader
-                    clickableId
-                    commit={commitData.commit}
-                    applicationId={data.build.appId}
-                  />
-                </div>
+                <ClickableId
+                  label="Commit"
+                  to={`/${application}/commits/${commitData.commit.id}`}
+                  id={commitData.commit.id}
+                  eventData={{
+                    eventName: "commitHeaderIdClick",
+                  }}
+                />
               )}
-              <h2>Details</h2>
+            </div>
+            <div className={`${CLASS_NAME}__build-details`}>
               <BuildSteps build={data.build} onError={setError} />
-            </>
-          )}
-        </main>
-        <aside className="log-container">
-          <ActionLog
-            action={actionLog?.action}
-            title={actionLog?.title || ""}
-            versionNumber={actionLog?.versionNumber || ""}
-          />
-        </aside>
+              <aside className="log-container">
+                <ActionLog
+                  action={actionLog?.action}
+                  title={actionLog?.title || ""}
+                  versionNumber={actionLog?.versionNumber || ""}
+                />
+              </aside>
+            </div>
+          </>
+        )}
       </PageContent>
       <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </>

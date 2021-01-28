@@ -19,27 +19,27 @@
 
       &:hover + span {
         background-color: var(--black20);
-        color: var(--white);
+        color: var(--static-white);
       }
 
       &:focus + span {
         background-color: var(--black20);
-        color: var(--white);
+        color: var(--static-white);
       }
 
       &:checked + span {
-        background-color: var(--secondary);
-        color: var(--white);
+        background-color: var(--primary);
+        color: var(--static-white);
       }
 
       &:checked:hover + span {
-        background-color: var(--primary);
-        color: var(--white);
+        background-color: var(--secondary);
+        color: var(--static-white);
       }
 
       &:checked:focus + span {
-        background-color: var(--primary);
-        color: var(--white);
+        background-color: var(--secondary);
+        color: var(--static-white);
       }
     }
   }

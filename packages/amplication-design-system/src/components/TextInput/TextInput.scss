@@ -43,6 +43,8 @@
   input,
   textarea {
     @include textField;
+    max-width: var(--form-field-long);
+    display: block;
 
     &:active,
     &:hover,
@@ -57,6 +59,7 @@
 
   textarea {
     width: 100%;
+    max-width: none;
     box-sizing: border-box;
     height: var(--textarea-height);
     resize: none;

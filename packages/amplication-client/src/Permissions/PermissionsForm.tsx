@@ -1,7 +1,5 @@
 import React, { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { DrawerContent } from "@rmwc/drawer";
-import "@rmwc/drawer/styles";
 
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -10,7 +8,6 @@ import "./PermissionsForm.scss";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import SidebarHeader from "../Layout/SidebarHeader";
 import { EntityPermissionAction } from "./EntityPermissionAction";
 import { preparePermissionsByAction } from "./permissionUtil";
 
@@ -22,7 +19,6 @@ type TData = {
 
 type Props = {
   availableActions: permissionsTypes.PermissionAction[];
-  backUrl: string;
   applicationId: string;
   entityId: string;
   objectDisplayName: string;
@@ -30,7 +26,6 @@ type Props = {
 
 const PermissionsForm = ({
   availableActions,
-  backUrl,
   applicationId,
   entityId,
   objectDisplayName,
@@ -51,23 +46,18 @@ const PermissionsForm = ({
 
   return (
     <div className="permissions-form">
-      <SidebarHeader showBack backUrl={backUrl}>
-        Permissions
-      </SidebarHeader>
-      <DrawerContent>
-        {loading
-          ? "Loading..."
-          : availableActions.map((action) => (
-              <EntityPermissionAction
-                key={action.action}
-                entityId={entityId}
-                permission={permissionsByAction[action.action]}
-                applicationId={applicationId}
-                permissionAction={action}
-                entityDisplayName={objectDisplayName}
-              />
-            ))}
-      </DrawerContent>
+      {loading
+        ? "Loading..."
+        : availableActions.map((action) => (
+            <EntityPermissionAction
+              key={action.action}
+              entityId={entityId}
+              permission={permissionsByAction[action.action]}
+              applicationId={applicationId}
+              permissionAction={action}
+              entityDisplayName={objectDisplayName}
+            />
+          ))}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

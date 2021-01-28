@@ -28,10 +28,6 @@ a {
   text-decoration: none;
   color: var(--black80);
   @include semiBold;
-
-  &:active {
-    color: var(--primary);
-  }
 }
 
 h1 {

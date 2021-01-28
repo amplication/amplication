@@ -6,8 +6,7 @@ import { BlockList } from "../Blocks/BlockList";
 import * as models from "../models";
 import "./Pages.scss";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 type Props = {
   match: match<{ application: string }>;
@@ -23,21 +22,19 @@ const blockTypes = [
   models.EnumBlockType.EntityPage,
   models.EnumBlockType.Document,
 ];
+const NAVIGATION_KEY = "PAGES";
 
 function Pages({ match }: Props) {
   const { application } = match.params;
-  useBreadcrumbs(match.url, "Pages");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Pages");
   return (
-    <PageContent className="pages" withFloatingBar>
-        <main>
-          <FloatingToolbar />
-          <BlockList
-            title="All UI Elements"
-            applicationId={application}
-            blockTypes={blockTypes}
-          />
-        </main>
-      </PageContent>
+    <PageContent className="pages">
+      <BlockList
+        title="All UI Elements"
+        applicationId={application}
+        blockTypes={blockTypes}
+      />
+    </PageContent>
   );
 }
 

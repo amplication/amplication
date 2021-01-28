@@ -1,17 +1,17 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiff";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
+import { MultiStateToggle } from "@amplication/design-system";
 
 import "./PendingChangesPage.scss";
 
@@ -24,11 +24,26 @@ type TData = {
 };
 
 const CLASS_NAME = "pending-changes-page";
+const NAVIGATION_KEY = "PENDING_CHANGES";
+const SPLIT = "Split";
+const UNIFIED = "Unified";
+
+const OPTIONS = [
+  { value: UNIFIED, label: UNIFIED },
+  { value: SPLIT, label: SPLIT },
+];
 
 const PendingChangesPage = ({ match }: Props) => {
   const { application } = match.params;
-  useBreadcrumbs(match.url, "Pending Changes");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Pending Changes");
+  const [splitView, setSplitView] = useState<boolean>(false);
 
+  const handleChangeType = useCallback(
+    (type: string) => {
+      setSplitView(type === SPLIT);
+    },
+    [setSplitView]
+  );
   const { data, error } = useQuery<TData>(GET_PENDING_CHANGES, {
     variables: {
       applicationId: application,
@@ -39,26 +54,31 @@ const PendingChangesPage = ({ match }: Props) => {
 
   return (
     <>
-      <PageContent className={CLASS_NAME} withFloatingBar>
-        <main>
-          <FloatingToolbar />
-          {!data ? (
-            "loading..."
-          ) : (
-            <div className={`${CLASS_NAME}__header`}>
-              <h1>Pending Changes</h1>
-            </div>
-          )}
-          <div className={`${CLASS_NAME}__changes`}>
-            {data?.pendingChanges.map((change) => (
-              <PendingChangeWithCompare
-                key={change.resourceId}
-                change={change}
-                compareType={EnumCompareType.Pending}
-              />
-            ))}
+      <PageContent className={CLASS_NAME}>
+        {!data ? (
+          "loading..."
+        ) : (
+          <div className={`${CLASS_NAME}__header`}>
+            <h1>Pending Changes</h1>
+            <MultiStateToggle
+              label=""
+              name="compareMode"
+              options={OPTIONS}
+              onChange={handleChangeType}
+              selectedValue={splitView ? SPLIT : UNIFIED}
+            />
           </div>
-        </main>
+        )}
+        <div className={`${CLASS_NAME}__changes`}>
+          {data?.pendingChanges.map((change) => (
+            <PendingChangeWithCompare
+              key={change.resourceId}
+              change={change}
+              compareType={EnumCompareType.Pending}
+              splitView={splitView}
+            />
+          ))}
+        </div>
       </PageContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>

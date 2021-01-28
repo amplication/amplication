@@ -2,18 +2,17 @@ import React, { useCallback, useContext, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
 import {
-  DataGridRow,
-  DataGridCell,
   ConfirmationDialog,
   UserAndTime,
+  Panel,
+  EnumPanelStyle,
 } from "@amplication/design-system";
 import { Link, useHistory } from "react-router-dom";
-
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { USER_ENTITY } from "./constants";
+import "./EntityListItem.scss";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -28,6 +27,8 @@ type Props = {
   onDelete?: () => void;
   onError: (error: Error) => void;
 };
+
+const CLASS_NAME = "entity-list-item";
 
 export const EntityListItem = ({
   entity,
@@ -103,32 +104,37 @@ export const EntityListItem = ({
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
-      <DataGridRow onClick={handleRowClick}>
-        <DataGridCell className="min-width">
-          {Boolean(entity.lockedByUser) && <LockStatusIcon enabled />}
-        </DataGridCell>
-        <DataGridCell>
+      <Panel
+        className={CLASS_NAME}
+        clickable
+        onClick={handleRowClick}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
+        <div className={`${CLASS_NAME}__row`}>
           <Link
-            className="amp-data-grid-item--navigate"
+            className={`${CLASS_NAME}__title`}
             title={entity.displayName}
             to={`/${applicationId}/entities/${entity.id}`}
           >
-            <span className="text-medium">{entity.displayName}</span>
+            {entity.displayName}
           </Link>
-        </DataGridCell>
-        <DataGridCell>{entity.description}</DataGridCell>
-        <DataGridCell>
+          {Boolean(entity.lockedByUser) && <LockStatusIcon enabled />}
+
+          <span className="spacer" />
+          <span className={`${CLASS_NAME}__description`}>
+            {latestVersion.commit?.message}
+          </span>
           {latestVersion.commit && (
             <UserAndTime
               account={latestVersion.commit.user?.account}
               time={latestVersion.commit.createdAt}
             />
           )}
-          <span className="text-medium space-before">
-            {latestVersion.commit?.message}{" "}
+        </div>
+        <div className={`${CLASS_NAME}__row`}>
+          <span className={`${CLASS_NAME}__description`}>
+            {entity.description}
           </span>
-        </DataGridCell>
-        <DataGridCell alignEnd>
           {!deleteLoading && entity.name !== USER_ENTITY && (
             <Button
               buttonStyle={EnumButtonStyle.Clear}
@@ -136,8 +142,8 @@ export const EntityListItem = ({
               onClick={handleDelete}
             />
           )}
-        </DataGridCell>
-      </DataGridRow>
+        </div>
+      </Panel>
     </>
   );
 };

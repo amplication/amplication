@@ -8,6 +8,8 @@ $list-padding-bottom: 200px;
 $background-size: 60%;
 
 .applications {
+  margin-top: var(--triple-spacing);
+
   & &__header {
     display: flex;
     flex-direction: row;
@@ -47,7 +49,8 @@ $background-size: 60%;
 
   &__new-app {
     @include applicationCard;
-    border: $border-black30;
+    background-color: var(--black2);
+    border: $border-black10;
     align-items: center;
     justify-content: center;
     @include sectionTitle;

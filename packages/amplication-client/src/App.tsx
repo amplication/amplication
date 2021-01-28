@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 
 import ApplicationLayout from "./Application/ApplicationLayout";
@@ -8,11 +8,10 @@ import Signup from "./User/Signup";
 import Applications from "./Application/Applications";
 
 import PrivateRoute from "./authentication/PrivateRoute";
-import BreadcrumbsProvider from "./Layout/BreadcrumbsProvider";
+import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
+import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import AuthAppWithGithubCallback from "./Settings/AuthAppWithGithubCallback";
-
-const { NODE_ENV } = process.env;
 
 const context = {
   source: "amplication-client",
@@ -28,13 +27,6 @@ export const enhance = track<keyof typeof context>(
 );
 
 function App() {
-  const history = useHistory();
-  if (NODE_ENV === "development") {
-    history.listen((...args) => {
-      console.debug("History: ", ...args);
-    });
-  }
-
   useEffect(() => {
     initAnalytics();
   }, []);
@@ -49,19 +41,21 @@ function App() {
   });
 
   return (
-    <BreadcrumbsProvider>
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        <PrivateRoute
-          exact
-          path="/github-auth-app/callback/:application"
-          component={AuthAppWithGithubCallback}
-        />
-        <PrivateRoute exact path="/" component={Applications} />
-        <PrivateRoute path="/:application" component={ApplicationLayout} />
-      </Switch>
-    </BreadcrumbsProvider>
+    <ThemeProvider>
+      <NavigationTabsProvider>
+        <Switch>
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
+          <PrivateRoute
+            exact
+            path="/github-auth-app/callback/:application"
+            component={AuthAppWithGithubCallback}
+          />
+          <PrivateRoute exact path="/" component={Applications} />
+          <PrivateRoute path="/:application" component={ApplicationLayout} />
+        </Switch>
+      </NavigationTabsProvider>
+    </ThemeProvider>
   );
 }
 

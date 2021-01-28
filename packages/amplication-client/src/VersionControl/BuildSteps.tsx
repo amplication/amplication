@@ -7,6 +7,7 @@ import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
+import { Panel, EnumPanelStyle } from "@amplication/design-system";
 
 import { BuildStepsStatus } from "./BuildStepsStatus";
 
@@ -104,10 +105,13 @@ const BuildSteps = ({ build, onError }: Props) => {
 
   return (
     <div>
-      <div className={`${CLASS_NAME}__step`}>
-        <BuildStepsStatus status={stepGenerateCode.status} />
+      <Panel
+        className={`${CLASS_NAME}__step`}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <Icon icon="code1" />
         <span>Generate Code</span>
+        <BuildStepsStatus status={stepGenerateCode.status} />
         <span className="spacer" />
         <Button
           buttonStyle={EnumButtonStyle.Clear}
@@ -121,12 +125,15 @@ const BuildSteps = ({ build, onError }: Props) => {
             versionNumber: data.build.version,
           }}
         />
-      </div>
+      </Panel>
       {stepGithub && (
-        <div className={`${CLASS_NAME}__step`}>
-          <BuildStepsStatus status={stepGithub.status} />
+        <Panel
+          className={`${CLASS_NAME}__step`}
+          panelStyle={EnumPanelStyle.Bordered}
+        >
           <Icon icon="github" />
           <span>Push Changes to GitHub</span>
+          <BuildStepsStatus status={stepGithub.status} />
           <span className="spacer" />
           {githubUrl && (
             <a href={githubUrl} target="github">
@@ -143,13 +150,16 @@ const BuildSteps = ({ build, onError }: Props) => {
               />
             </a>
           )}
-        </div>
+        </Panel>
       )}
 
-      <div className={`${CLASS_NAME}__step`}>
-        <BuildStepsStatus status={stepBuildDocker.status} />
+      <Panel
+        className={`${CLASS_NAME}__step`}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <Icon icon="docker" />
         <span>Build Container</span>
+        <BuildStepsStatus status={stepBuildDocker.status} />
         <span className="spacer" />
 
         {/*@todo: add missing endpoint to download container and remove className */}
@@ -164,11 +174,14 @@ const BuildSteps = ({ build, onError }: Props) => {
             versionNumber: data.build.version,
           }}
         />
-      </div>
-      <div className={`${CLASS_NAME}__step`}>
-        <BuildStepsStatus status={stepDeploy.status} />
+      </Panel>
+      <Panel
+        className={`${CLASS_NAME}__step`}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <Icon icon="publish" />
         <span>Publish App to Sandbox</span>
+        <BuildStepsStatus status={stepDeploy.status} />
         <span className="spacer" />
 
         {deployment &&
@@ -184,7 +197,7 @@ const BuildSteps = ({ build, onError }: Props) => {
               />
             </a>
           )}
-      </div>
+      </Panel>
     </div>
   );
 };

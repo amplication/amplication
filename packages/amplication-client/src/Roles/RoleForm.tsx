@@ -5,7 +5,7 @@ import omit from "lodash.omit";
 import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
-import OptionalDescriptionField from "../Components/OptionalDescriptionField";
+import { TextField } from "@amplication/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
@@ -61,23 +61,19 @@ const RoleForm = ({ onSubmit, defaultValues }: Props) => {
       enableReinitialize
       onSubmit={onSubmit}
     >
-      {(formik) => {
-        return (
-          <Form childrenAsBlocks>
-            <FormikAutoSave debounceMS={1000} />
+      <Form childrenAsBlocks>
+        <FormikAutoSave debounceMS={1000} />
 
-            <NameField name="name" />
+        <NameField name="name" />
 
-            <DisplayNameField
-              name="displayName"
-              label="Display Name"
-              minLength={1}
-            />
+        <DisplayNameField
+          name="displayName"
+          label="Display Name"
+          minLength={1}
+        />
 
-            <OptionalDescriptionField name="description" label="Description" />
-          </Form>
-        );
-      }}
+        <TextField name="description" label="Description" textarea rows={3} />
+      </Form>
     </Formik>
   );
 };

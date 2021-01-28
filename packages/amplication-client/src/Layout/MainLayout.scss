@@ -3,24 +3,39 @@
 $menu-icon-font-size: 16px;
 $logo-font-size: 24px;
 $expand-button-padding: 4px;
+
 .main-layout {
   height: calc(100%);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  background-color: var(--surface);
+  color: var(--black100);
+
+  &__wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+  }
+
+  &__footer {
+    max-height: var(--app-footer-height);
+    background-color: var(--black5);
+    border-top: $border-black10;
+  }
 
   &__content {
     position: relative;
     padding: 0;
     flex: 1;
     height: 100%;
-    overflow: auto;
-    @include scrollbars(10px, var(--black60), transparent);
+    overflow: hidden;
     box-sizing: border-box;
   }
   &__side {
     height: 100%;
     width: auto;
-    background-color: var(--black100);
+    background-color: var(--menu-background-color);
     border-right: $border-black10;
     transition: width var(--menu-expand-animation-duration) ease-in;
     overflow: visible;
@@ -33,7 +48,7 @@ $expand-button-padding: 4px;
 
       &__menu-fixed-panel {
         @include scrollbars($default-scroll-width, var(--black60), transparent);
-        background-color: var(--white);
+        background-color: var(--menu-fixed-panel-background);
         height: 100%;
         width: var(--fixed-menu-panel-width);
         max-width: var(--fixed-menu-panel-max-width);

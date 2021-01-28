@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -10,7 +9,6 @@ import { formatError } from "../util/error";
 import EntityFieldForm from "./EntityFieldForm";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
-import SidebarHeader from "../Layout/SidebarHeader";
 import { SYSTEM_DATA_TYPES } from "./constants";
 
 type TData = {
@@ -87,22 +85,15 @@ const EntityField = () => {
 
   return (
     <>
-      <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
-        {loading
-          ? "Loading..."
-          : `${data?.entity.displayName} | ${entityField?.displayName}`}
-      </SidebarHeader>
       {!loading && (
-        <DrawerContent>
-          <EntityFieldForm
-            isDisabled={
-              defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
-            }
-            onSubmit={handleSubmit}
-            defaultValues={defaultValues}
-            applicationId={application}
-          />
-        </DrawerContent>
+        <EntityFieldForm
+          isDisabled={
+            defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
+          }
+          onSubmit={handleSubmit}
+          defaultValues={defaultValues}
+          applicationId={application}
+        />
       )}
       <Snackbar open={hasError} message={errorMessage} />
     </>

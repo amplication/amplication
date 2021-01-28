@@ -6,7 +6,6 @@ import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
 import { Link } from "react-router-dom";
 
-import imageNoChanges from "../assets/images/no-changes.svg";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChange from "./PendingChange";
@@ -15,6 +14,7 @@ import { Dialog } from "@amplication/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import "./PendingChanges.scss";
 
@@ -91,8 +91,7 @@ const PendingChanges = ({ applicationId }: Props) => {
       </div>
       {isEmpty(data?.pendingChanges) && !loading ? (
         <div className={`${CLASS_NAME}__empty-state`}>
-          <img src={imageNoChanges} alt="no changes" />
-
+          <SvgThemeImage image={EnumImages.NoChanges} />
           <div className={`${CLASS_NAME}__empty-state__title`}>
             No pending changes! keep working.
           </div>
@@ -117,7 +116,12 @@ const PendingChanges = ({ applicationId }: Props) => {
           ) : (
             <div className={`${CLASS_NAME}__changes`}>
               {data?.pendingChanges.map((change) => (
-                <PendingChange key={change.resourceId} change={change} />
+                <PendingChange
+                  key={change.resourceId}
+                  change={change}
+                  applicationId={applicationId}
+                  linkToResource
+                />
               ))}
             </div>
           )}

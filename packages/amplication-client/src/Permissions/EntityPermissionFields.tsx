@@ -177,7 +177,7 @@ export const EntityPermissionFields = ({
         <SelectMenu
           title="Add Field"
           icon="plus"
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Secondary}
         >
           <SelectMenuModal>
             <SelectMenuList>

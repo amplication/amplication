@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -9,7 +8,6 @@ import "@rmwc/snackbar/styles";
 import { formatError } from "../util/error";
 import RoleForm from "./RoleForm";
 import * as models from "../models";
-import SidebarHeader from "../Layout/SidebarHeader";
 
 type TData = {
   appRole: models.AppRole;
@@ -21,7 +19,7 @@ const Role = () => {
     roleId: string;
   }>("/:application/roles/:roleId");
 
-  const { application, roleId } = match?.params ?? {};
+  const { roleId } = match?.params ?? {};
 
   const { data, error, loading } = useQuery<TData>(GET_ROLE, {
     variables: {
@@ -50,13 +48,8 @@ const Role = () => {
 
   return (
     <>
-      <SidebarHeader showBack backUrl={`/${application}/roles/`}>
-        {loading ? "Loading..." : `${data?.appRole.displayName} `}
-      </SidebarHeader>
       {!loading && (
-        <DrawerContent>
-          <RoleForm onSubmit={handleSubmit} defaultValues={data?.appRole} />
-        </DrawerContent>
+        <RoleForm onSubmit={handleSubmit} defaultValues={data?.appRole} />
       )}
       <Snackbar open={hasError} message={errorMessage} />
     </>

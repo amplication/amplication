@@ -1,6 +1,7 @@
 @import "../../style/index.scss";
 
 .select-field {
+  max-width: var(--form-field-long);
   label {
     @include label;
   }

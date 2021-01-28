@@ -4,7 +4,7 @@ $log-line-number-width: 30px;
 $step-status-width: 15px;
 
 .action-log {
-  background-color: var(--black100);
+  background-color: var(--action-log-background-color);
   height: 100%;
   overflow: auto;
   display: flex;
@@ -21,29 +21,26 @@ $step-status-width: 15px;
     align-items: center;
     flex-direction: column;
     height: 100%;
-    color: var(--black10);
+    color: var(--action-log-header-color);
     margin: 0;
     img {
       margin-bottom: var(--large-spacing);
     }
   }
   &__header {
+    @include flexFullRowWithSpacing;
     padding: var(--default-spacing);
-    color: var(--black10);
-    border-bottom: $border-black90;
+    color: var(--action-log-header-color);
+    margin-bottom: var(--double-spacing);
     box-sizing: border-box;
-
-    &__info {
-      margin-top: var(--default-spacing-small);
-      @include flexFullRowWithSpacing;
-
-      .circle-icon {
-        margin-right: var(--default-spacing);
-      }
+    .circle-icon {
+      margin-right: var(--default-spacing);
+      color: var(--static-white);
     }
+
     h3 {
       display: inline-block;
-      color: var(--black10);
+      color: var(--action-log-header-color);
       margin: 0;
       margin-left: var(--default-spacing);
       span {
@@ -58,7 +55,7 @@ $step-status-width: 15px;
     box-sizing: border-box;
   }
   &__step {
-    color: var(--white);
+    color: var(--action-log-step-color);
     margin-bottom: var(--large-spacing);
 
     &__row {
@@ -83,7 +80,7 @@ $step-status-width: 15px;
 
       &--running {
         .rmwc-circular-progress {
-          color: var(--white);
+          color: var(--action-log-header-color);
         }
       }
     }
@@ -102,7 +99,7 @@ $step-status-width: 15px;
 
   .react-lazylog {
     color: var(--black10);
-    background-color: var(--black100);
+    background-color: var(--action-log-background-color);
     height: auto !important;
     @include scrollbars($default-scroll-width, var(--black60), transparent);
 

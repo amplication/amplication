@@ -6,7 +6,6 @@ import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
-import Settings from "../Settings/Settings";
 import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
@@ -19,16 +18,17 @@ import * as models from "../models";
 import MenuItem from "../Layout/MenuItem";
 import MainLayout from "../Layout/MainLayout";
 import { CircleBadge } from "@amplication/design-system";
+import LastCommit from "../VersionControl/LastCommit";
 
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
 import Commits from "../VersionControl/Commits";
+import NavigationTabs from "../Layout/NavigationTabs";
 
 enum EnumFixedPanelKeys {
   None = "None",
@@ -87,8 +87,6 @@ function ApplicationLayout({ match }: Props) {
       id: match.params.application,
     },
   });
-
-  useBreadcrumbs(match.url, applicationData?.app.name);
 
   useEffect(() => {
     setPendingChanges(
@@ -175,7 +173,10 @@ function ApplicationLayout({ match }: Props) {
 
   return (
     <PendingChangesContext.Provider value={pendingChangesContextValue}>
-      <MainLayout className={CLASS_NAME}>
+      <MainLayout
+        className={CLASS_NAME}
+        footer={<LastCommit applicationId={application} />}
+      >
         <MainLayout.Menu>
           <MenuItem
             className={`${CLASS_NAME}__app-icon`}
@@ -213,41 +214,42 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}/commits`}
             icon="history_commit_outline"
           />
-          <MenuItem
-            title="Sync with GitHub"
-            to={`/${application}/settings`}
-            icon="Sync_with_Github_outline"
-          />
         </MainLayout.Menu>
         <MainLayout.Content>
-          <Switch>
-            <Route exact path="/:application/" component={ApplicationHome} />
-            <Route path="/:application/settings" component={Settings} />
-            <Route
-              path="/:application/pending-changes"
-              component={PendingChangesPage}
-            />
+          <div className={`${CLASS_NAME}__app-container`}>
+            <NavigationTabs defaultTabUrl={`/${application}/`} />
 
-            <Route path="/:application/entities/" component={Entities} />
+            <Switch>
+              <Route
+                path="/:application/pending-changes"
+                component={PendingChangesPage}
+              />
 
-            {SHOW_UI_ELEMENTS && (
-              <>
-                <Route path="/:application/pages/" component={Pages} />
-                <Route
-                  path="/:application/entity-pages/new"
-                  component={NewEntityPage}
-                />
-                <Route
-                  path="/:application/entity-pages/:entityPageId"
-                  component={EntityPage}
-                />
-              </>
-            )}
-            <Route path="/:application/builds/:buildId" component={BuildPage} />
+              <Route path="/:application/entities/" component={Entities} />
 
-            <Route path="/:application/roles" component={RolesPage} />
-            <Route path="/:application/commits" component={Commits} />
-          </Switch>
+              {SHOW_UI_ELEMENTS && (
+                <>
+                  <Route path="/:application/pages/" component={Pages} />
+                  <Route
+                    path="/:application/entity-pages/new"
+                    component={NewEntityPage}
+                  />
+                  <Route
+                    path="/:application/entity-pages/:entityPageId"
+                    component={EntityPage}
+                  />
+                </>
+              )}
+              <Route
+                path="/:application/builds/:buildId"
+                component={BuildPage}
+              />
+
+              <Route path="/:application/roles" component={RolesPage} />
+              <Route path="/:application/commits" component={Commits} />
+              <Route path="/:application/" component={ApplicationHome} />
+            </Switch>
+          </div>
         </MainLayout.Content>
         <ScreenResolutionMessage />
       </MainLayout>

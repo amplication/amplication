@@ -1,22 +1,43 @@
 @import "../style/index.scss";
 
 $side-min-width: 500px;
+$tabs-width: 300px;
 .amp-page-content {
   display: flex;
   flex-direction: row;
-  height: 100%;
-  flex-wrap: wrap;
+  align-items: stretch;
+  padding: 0 var(--large-spacing);
+  background: var(--page-content-background);
+  box-sizing: border-box;
+  flex: 1;
+  overflow: hidden;
 
-  main {
-    flex: 1;
-    padding: var(--default-page-padding);
-    position: relative;
-    max-width: $page-content-max-width;
-    margin-left: auto;
-    margin-right: auto;
+  &__tabs {
+    @include scrollbars(10px, var(--black60), transparent);
+    width: $tabs-width;
+    background: var(--page-content-tab-background);
+    border-radius: var(--default-border-radius);
+    border: $border-black10;
+    padding: var(--large-spacing);
     box-sizing: border-box;
-    min-width: $side-min-width;
+    overflow: auto;
+    margin: var(--large-spacing) 0;
+
+    .sub-list {
+      margin-left: var(--triple-spacing);
+    }
+  }
+
+  &__main {
+    @include scrollbars(10px, var(--black60), transparent);
     flex: 1;
+    overflow: auto;
+    height: 100%;
+    flex: 1;
+    padding: var(--large-spacing);
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
 
     @media only screen and (max-width: $page-content-min-width) {
       min-width: calc(#{$page-content-min-width} - var(--menu-width));
@@ -27,11 +48,5 @@ $side-min-width: 500px;
     width: 50%;
     min-width: $side-min-width;
     max-height: 100vh;
-  }
-
-  &--with-floating-bar {
-    main {
-      padding-top: calc(var(--header-height) + var(--header-spacing));
-    }
   }
 }

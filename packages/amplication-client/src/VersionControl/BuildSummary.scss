@@ -2,26 +2,29 @@
 $step-status-width: 25px;
 $step-min-height: 32px;
 .build-summary {
+  display: flex;
+  flex-direction: row-reverse;
+
   .amp-button {
     width: 100%;
-    border-radius: var(--default-border-radius) !important;
   }
 
   &__download {
-    padding-bottom: var(--default-spacing);
+    display: flex;
+    flex-direction: row-reverse;
+    > * {
+      margin-left: var(--default-spacing);
+    }
   }
 
   &__open-github {
-    margin-bottom: var(--default-spacing);
     display: block;
   }
   &__sandbox {
     @include flexFullRowWithSpacing;
-    padding-top: var(--default-spacing);
     justify-content: flex-start;
-    align-items: flex-start;
+    align-items: center;
     color: var(--black60);
-    border-top: $border-black10;
   }
 
   &__message {

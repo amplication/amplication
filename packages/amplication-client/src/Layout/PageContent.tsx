@@ -4,18 +4,19 @@ import classNames from "classnames";
 
 type Props = {
   children: React.ReactNode;
+  sideContent?: React.ReactNode;
   className?: string;
-  withFloatingBar?: boolean;
 };
 
-function PageContent({ children, className, withFloatingBar = false }: Props) {
+const CLASS_NAME = "amp-page-content";
+
+function PageContent({ children, sideContent, className }: Props) {
   return (
-    <div
-      className={classNames("amp-page-content", className, {
-        "amp-page-content--with-floating-bar": withFloatingBar,
-      })}
-    >
-      {children}
+    <div className={classNames(CLASS_NAME, className)}>
+      {sideContent && (
+        <div className={`${CLASS_NAME}__tabs`}>{sideContent}</div>
+      )}
+      <main className={`${CLASS_NAME}__main`}>{children}</main>
     </div>
   );
 }

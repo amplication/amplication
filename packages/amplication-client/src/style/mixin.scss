@@ -180,32 +180,9 @@ $bullet-size: 6px;
   height: var(--grid-row-height);
 }
 
-@mixin tag {
-  background-color: var(--white);
-  height: var(--medium-button-height);
-  border-radius: var(--medium-button-radius);
-  border: 1px solid var(--black10);
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: calc(var(--default-spacing-small) / 2) var(--default-spacing);
-  color: var(--black80);
-  box-sizing: border-box;
-  white-space: nowrap;
-  width: auto;
-  margin-right: var(--default-spacing-small);
-  margin-bottom: var(--default-spacing-small);
-  min-width: calc(var(--default-spacing) * 4);
-
-  i {
-    font-size: 20px;
-  }
-}
-
 @mixin applicationCard {
   box-sizing: border-box;
-  background: var(--white);
+  background: var(--black2);
   border-radius: var(--default-border-radius);
   border: none;
 
@@ -222,6 +199,7 @@ $bullet-size: 6px;
 
   &:hover {
     box-shadow: var(--hover-box-shadow);
+    background: var(--black5);
   }
 }
 
@@ -268,7 +246,7 @@ $bullet-size: 6px;
 @mixin homePageTile {
   padding: var(--double-spacing);
   position: relative;
-  height: 220px;
+  height: 170px;
 
   & &__title {
     margin-top: var(--default-spacing);
@@ -282,24 +260,28 @@ $bullet-size: 6px;
     align-items: flex-start;
     height: 100%;
 
-    img {
-      max-width: 150px;
-      max-height: 150px;
-      align-self: center;
-    }
-
     &__details {
       height: 100%;
+      max-width: 600px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       justify-content: space-between;
       flex: 1;
       margin-bottom: var(--double-spacing);
-      color: var(--black60);
-    }
-    &__action {
-      margin-top: auto;
+      color: var(--black80);
+      &__summary {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: auto;
+        color: var(--black100);
+
+        .amp-icon {
+          color: var(--black80);
+          margin-right: var(--default-spacing-small);
+        }
+      }
     }
   }
 }
