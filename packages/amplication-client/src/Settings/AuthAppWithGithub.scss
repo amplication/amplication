@@ -8,11 +8,7 @@
   }
 
   &__auth {
-    background-color: var(--inner-panel-background);
-    border: 1px solid var(--inner-panel-border-color);
-    padding: var(--default-spacing);
-    border-radius: var(--default-border-radius);
-    margin: var(--default-spacing) 0;
+    margin: var(--double-spacing) 0;
   }
   .amp-panel-collapsible__header:hover {
     box-shadow: none;

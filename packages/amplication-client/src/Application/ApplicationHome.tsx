@@ -9,8 +9,8 @@ import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import { CircleBadge } from "@amplication/design-system";
 import ApplicationForm from "./ApplicationForm";
+import SyncWithGithubPage from "../Settings/SyncWithGithubPage";
 import "./ApplicationHome.scss";
-import LastCommitTile from "./LastCommitTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
@@ -54,35 +54,52 @@ function ApplicationHome({ match }: Props) {
               General Settings
             </InnerTabLink>
           </div>
+          <div>
+            <InnerTabLink to={`/${applicationId}/github`} icon="github_outline">
+              Sync with GitHub
+            </InnerTabLink>
+          </div>
         </>
       }
     >
-      <div
-        className={classNames(
-          `${CLASS_NAME}__header`,
-          `theme-${data && COLOR_TO_NAME[data.app.color]}`
-        )}
-      >
-        {data?.app.name}
-        <CircleBadge
-          name={data?.app.name || ""}
-          color={data?.app.color || "transparent"}
-        />
-      </div>
-
       <Switch>
+        <Route path="/:application/github" component={SyncWithGithubPage} />
         <Route
-          exact
           path="/:application/"
           component={() => (
-            <div className={`${CLASS_NAME}__tiles`}>
-              <EntitiesTile applicationId={applicationId} />
-              <RolesTile applicationId={applicationId} />
-              <SyncWithGithubTile applicationId={applicationId} />
-            </div>
+            <>
+              <div
+                className={classNames(
+                  `${CLASS_NAME}__header`,
+                  `theme-${data && COLOR_TO_NAME[data.app.color]}`
+                )}
+              >
+                {data?.app.name}
+                <CircleBadge
+                  name={data?.app.name || ""}
+                  color={data?.app.color || "transparent"}
+                />
+              </div>
+              <Switch>
+                <Route
+                  exact
+                  path="/:application/"
+                  component={() => (
+                    <div className={`${CLASS_NAME}__tiles`}>
+                      <EntitiesTile applicationId={applicationId} />
+                      <RolesTile applicationId={applicationId} />
+                      <SyncWithGithubTile applicationId={applicationId} />
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/:application/update"
+                  component={ApplicationForm}
+                />
+              </Switch>
+            </>
           )}
         />
-        <Route path="/:application/update" component={ApplicationForm} />
       </Switch>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>

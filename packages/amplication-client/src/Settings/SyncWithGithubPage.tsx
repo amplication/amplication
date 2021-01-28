@@ -11,16 +11,13 @@ import { GET_APPLICATION } from "../Application/ApplicationHome";
 import "./SyncWithGithubPage.scss";
 import AuthAppWithGithub from "./AuthAppWithGithub";
 
-import useNavigationTabs from "../Layout/UseNavigationTabs";
 const CLASS_NAME = "sync-with-github-page";
 
 type Props = {
   match: match<{ application: string }>;
 };
-const NAVIGATION_KEY = "SYNC_WITH_GITHUB";
 
 function SyncWithGithubPage({ match }: Props) {
-  useNavigationTabs(NAVIGATION_KEY, match.url, "Sync with GitHub");
   const { application } = match.params;
 
   const { data, error, refetch } = useQuery<{
@@ -34,7 +31,7 @@ function SyncWithGithubPage({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME}>
+    <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
         <Icon icon={{ icon: "github", size: "xlarge" }} />
         <div className={`${CLASS_NAME}__message`}>
@@ -47,7 +44,7 @@ function SyncWithGithubPage({ match }: Props) {
       {data?.app && <AuthAppWithGithub app={data.app} onDone={refetch} />}
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </PageContent>
+    </div>
   );
 }
 

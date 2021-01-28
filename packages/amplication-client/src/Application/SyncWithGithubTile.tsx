@@ -38,7 +38,7 @@ function SyncWithGithubTile({ applicationId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${applicationId}/settings`);
+      history.push(`/${applicationId}/github`);
     },
     [history, trackEvent, applicationId]
   );

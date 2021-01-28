@@ -6,7 +6,6 @@ import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
-import SyncWithGithubPage from "../Settings/SyncWithGithubPage";
 import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
@@ -215,27 +214,12 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}/commits`}
             icon="history_commit_outline"
           />
-          <MenuItem
-            title="Sync with GitHub"
-            to={`/${application}/settings`}
-            icon="Sync_with_Github_outline"
-          />
         </MainLayout.Menu>
         <MainLayout.Content>
           <div className={`${CLASS_NAME}__app-container`}>
             <NavigationTabs defaultTabUrl={`/${application}/`} />
 
             <Switch>
-              <Route exact path="/:application/" component={ApplicationHome} />
-              <Route
-                exact
-                path="/:application/update"
-                component={ApplicationHome}
-              />
-              <Route
-                path="/:application/settings"
-                component={SyncWithGithubPage}
-              />
               <Route
                 path="/:application/pending-changes"
                 component={PendingChangesPage}
@@ -263,6 +247,7 @@ function ApplicationLayout({ match }: Props) {
 
               <Route path="/:application/roles" component={RolesPage} />
               <Route path="/:application/commits" component={Commits} />
+              <Route path="/:application/" component={ApplicationHome} />
             </Switch>
           </div>
         </MainLayout.Content>

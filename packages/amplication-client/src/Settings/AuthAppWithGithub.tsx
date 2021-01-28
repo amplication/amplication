@@ -135,7 +135,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
           onCompleted={handleSelectRepoDialogDismiss}
         />
       </Dialog>
-      <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
+      <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         <Toggle
           label="Sync with GitHub"
           title="Sync with Github"
@@ -145,7 +145,10 @@ function AuthAppWithGithub({ app, onDone }: Props) {
         />
         <div className={`${CLASS_NAME}__body`}>
           {isAuthenticatedWithGithub && (
-            <div className={`${CLASS_NAME}__auth`}>
+            <Panel
+              className={`${CLASS_NAME}__auth`}
+              panelStyle={EnumPanelStyle.Bordered}
+            >
               {!app.githubSyncEnabled ? (
                 <div className={`${CLASS_NAME}__select-repo`}>
                   <div className={`${CLASS_NAME}__select-repo__details`}>
@@ -165,7 +168,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
               ) : (
                 <GithubSyncDetails app={app} />
               )}
-            </div>
+            </Panel>
           )}
           <div className={`${CLASS_NAME}__notice`}>
             Please note:

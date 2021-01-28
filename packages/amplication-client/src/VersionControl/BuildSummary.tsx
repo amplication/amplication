@@ -123,7 +123,7 @@ const BuildSummary = ({ build, onError }: Props) => {
           </a>
         ) : !appData?.app.githubSyncEnabled ? ( //app is not connected to github
           <Link
-            to={`/${build.appId}/settings`}
+            to={`/${build.appId}/github`}
             className={`${CLASS_NAME}__open-github`}
           >
             <Button
