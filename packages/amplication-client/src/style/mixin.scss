@@ -180,29 +180,6 @@ $bullet-size: 6px;
   height: var(--grid-row-height);
 }
 
-@mixin tag {
-  background-color: var(--white);
-  height: var(--medium-button-height);
-  border-radius: var(--medium-button-radius);
-  border: 1px solid var(--black10);
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: calc(var(--default-spacing-small) / 2) var(--default-spacing);
-  color: var(--black80);
-  box-sizing: border-box;
-  white-space: nowrap;
-  width: auto;
-  margin-right: var(--default-spacing-small);
-  margin-bottom: var(--default-spacing-small);
-  min-width: calc(var(--default-spacing) * 4);
-
-  i {
-    font-size: 20px;
-  }
-}
-
 @mixin applicationCard {
   box-sizing: border-box;
   background: var(--black2);
