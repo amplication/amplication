@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useContext } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import "@rmwc/drawer/styles";
@@ -8,6 +8,8 @@ import "@rmwc/snackbar/styles";
 import { formatError } from "../util/error";
 import EntityFieldForm from "./EntityFieldForm";
 import * as models from "../models";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
+
 import { useTracking } from "../util/analytics";
 import { SYSTEM_DATA_TYPES } from "./constants";
 
@@ -21,6 +23,7 @@ type UpdateData = {
 
 const EntityField = () => {
   const { trackEvent } = useTracking();
+  const pendingChangesContext = useContext(PendingChangesContext);
 
   const match = useRouteMatch<{
     application: string;
@@ -47,6 +50,7 @@ const EntityField = () => {
     UPDATE_ENTITY_FIELD,
     {
       onCompleted: (data) => {
+        pendingChangesContext.addEntity(entity);
         trackEvent({
           eventName: "updateEntityField",
           entityFieldName: data.updateEntityField.displayName,
