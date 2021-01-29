@@ -107,16 +107,16 @@ function ApplicationLayout({ match }: Props) {
       if (existingChange) {
         //reassign pending changes to trigger refresh
         setPendingChanges([...pendingChanges]);
+      } else {
+        setPendingChanges(
+          pendingChanges.concat([
+            {
+              resourceId,
+              resourceType,
+            },
+          ])
+        );
       }
-
-      setPendingChanges(
-        pendingChanges.concat([
-          {
-            resourceId,
-            resourceType,
-          },
-        ])
-      );
     },
     [pendingChanges, setPendingChanges]
   );
