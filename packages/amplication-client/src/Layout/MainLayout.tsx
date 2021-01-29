@@ -92,6 +92,7 @@ const Menu = ({ children }: MenuProps) => {
           <div className="bottom-menu-container">
             <DarkModeToggle />
             <Popover
+              className="main-layout__side__popover"
               content={<SupportMenu />}
               open={supportMenuOpen}
               align={"right"}
