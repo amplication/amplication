@@ -3,29 +3,9 @@
 $icon-font-size-xlarge: 32px;
 
 .dark-mode-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  .amp-button {
-    color: var(--menu-item-color);
-
-    &:hover,
-    &:active {
-      color: var(--menu-item-active-color);
-    }
-    i {
-      font-size: $icon-font-size-xlarge;
-    }
-  }
-
   &--active {
-    .amp-button {
+    i {
       color: var(--primary);
-      &:hover,
-      &:active,
-      &:focus {
-        color: var(--primary);
-      }
     }
   }
 }

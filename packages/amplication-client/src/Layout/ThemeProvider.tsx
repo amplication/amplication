@@ -10,9 +10,14 @@ function ThemeProvider({ children }: Props) {
 
   const setTheme = useCallback(
     (theme: string) => {
+      const currentThemeClass = `amp-theme-${currentTheme}`;
+      document.body.classList.remove(currentThemeClass);
       setCurrentTheme(theme);
+      const nextThemeClass = `amp-theme-${theme}`;
+
+      document.body.classList.add(nextThemeClass);
     },
-    [setCurrentTheme]
+    [setCurrentTheme, currentTheme]
   );
 
   const ThemeContextValue = useMemo(

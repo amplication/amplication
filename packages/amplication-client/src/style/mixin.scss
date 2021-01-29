@@ -246,7 +246,7 @@ $bullet-size: 6px;
 @mixin homePageTile {
   padding: var(--double-spacing);
   position: relative;
-  height: 170px;
+  min-height: 170px;
 
   & &__title {
     margin-top: var(--default-spacing);
@@ -257,18 +257,18 @@ $bullet-size: 6px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: stretch;
     height: 100%;
 
     &__details {
-      height: 100%;
+      min-height: 100%;
       max-width: 600px;
+      min-width: 200px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       justify-content: space-between;
       flex: 1;
-      margin-bottom: var(--double-spacing);
       color: var(--black80);
       &__summary {
         display: flex;

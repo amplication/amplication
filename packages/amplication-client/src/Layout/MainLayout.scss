@@ -40,6 +40,13 @@ $expand-button-padding: 4px;
     transition: width var(--menu-expand-animation-duration) ease-in;
     overflow: visible;
 
+    &__popover {
+      --mdc-theme-on-surface: var(--menu-background-color);
+      .rmwc-tooltip-inner {
+        background-color: var(--menu-background-color);
+      }
+    }
+
     &__wrapper {
       height: 100%;
       overflow: visible;
