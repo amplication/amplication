@@ -1,8 +1,9 @@
 import React, { useCallback, useContext, useMemo } from "react";
 import classNames from "classnames";
-import { Button, EnumButtonStyle } from "../Components/Button";
 import useLocalStorage from "react-use-localstorage";
 import ThemeContext from "./ThemeContext";
+import MenuItem from "../Layout/MenuItem";
+import { useTracking } from "../util/analytics";
 import "./DarkModeToggle.scss";
 
 const LOCAL_STORAGE_KEY = "darkModeEnabled";
@@ -11,6 +12,7 @@ const THEME_DARK = "dark";
 const THEME_LIGHT = "light";
 const DarkModeToggle = () => {
   const [darkMode, setDarkMode] = useLocalStorage(LOCAL_STORAGE_KEY, "false");
+  const { trackEvent } = useTracking();
 
   const themeContext = useContext(ThemeContext);
 
@@ -24,24 +26,20 @@ const DarkModeToggle = () => {
     const nextIsDark = !isDarkMode;
     setDarkMode(String(nextIsDark));
     themeContext.setTheme(nextIsDark ? THEME_DARK : THEME_LIGHT);
-  }, [setDarkMode, isDarkMode, themeContext]);
+    trackEvent({
+      eventName: isDarkMode ? "disableDarkMode" : "enableDarkMode",
+    });
+  }, [setDarkMode, isDarkMode, themeContext, trackEvent]);
 
   return (
-    <div
+    <MenuItem
       className={classNames(CLASS_NAME, {
         [`${CLASS_NAME}--active`]: isDarkMode,
       })}
-    >
-      <Button
-        type="button"
-        buttonStyle={EnumButtonStyle.Clear}
-        onClick={handleClick}
-        eventData={{
-          eventName: darkMode ? "disableDarkMode" : "enableDarkMode",
-        }}
-        icon={isDarkMode ? "dark_mode" : "light_mode"}
-      />
-    </div>
+      title="Toggle dark mode"
+      icon={isDarkMode ? "dark_mode" : "light_mode"}
+      onClick={handleClick}
+    />
   );
 };
 
