@@ -7,7 +7,8 @@ import "./DarkModeToggle.scss";
 
 const LOCAL_STORAGE_KEY = "darkModeEnabled";
 const CLASS_NAME = "dark-mode-toggle";
-
+const THEME_DARK = "dark";
+const THEME_LIGHT = "light";
 const DarkModeToggle = () => {
   const [darkMode, setDarkMode] = useLocalStorage(LOCAL_STORAGE_KEY, "false");
 
@@ -17,15 +18,13 @@ const DarkModeToggle = () => {
     return darkMode === "true";
   }, [darkMode]);
 
-  themeContext.setTheme(isDarkMode ? "dark-mode" : "");
+  themeContext.setTheme(isDarkMode ? THEME_DARK : THEME_LIGHT);
 
   const handleClick = useCallback(() => {
     const nextIsDark = !isDarkMode;
     setDarkMode(String(nextIsDark));
-    themeContext.setTheme(nextIsDark ? "dark-mode" : "");
+    themeContext.setTheme(nextIsDark ? THEME_DARK : THEME_LIGHT);
   }, [setDarkMode, isDarkMode, themeContext]);
-
-  const DarkModeCSS = React.lazy(() => import("./DarkModeTheme"));
 
   return (
     <div
@@ -42,10 +41,6 @@ const DarkModeToggle = () => {
         }}
         icon={isDarkMode ? "dark_mode" : "light_mode"}
       />
-
-      <React.Suspense fallback={<></>}>
-        {isDarkMode && <DarkModeCSS />}
-      </React.Suspense>
     </div>
   );
 };
