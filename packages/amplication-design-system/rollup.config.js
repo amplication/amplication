@@ -15,7 +15,11 @@ export default {
   },
   plugins: [
     typescript(),
-    postcss(),
+    postcss({
+      inject: {
+        insertAt: "top", //inject the css at the top to allow overrides to be located below
+      },
+    }),
     copy({
       targets: [{ src: "src/assets/**", dest: "dist/assets", flatten: false }],
     }),
