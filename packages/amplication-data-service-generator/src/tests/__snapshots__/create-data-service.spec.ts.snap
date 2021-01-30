@@ -3634,22 +3634,34 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
 })
 export class AppModule {}
 ",
-  "server/src/auth/Credentials.ts": "import { InputType } from \\"@nestjs/graphql\\";
+  "server/src/auth/Credentials.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { IsString } from \\"class-validator\\";
 
 @InputType()
 export class Credentials {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
   @IsString()
+  @Field(() => String, { nullable: false })
   username!: string;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
   @IsString()
+  @Field(() => String, { nullable: false })
   password!: string;
 }
 ",
-  "server/src/auth/LoginArgs.ts": "import { ArgsType } from \\"@nestjs/graphql\\";
+  "server/src/auth/LoginArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { Credentials } from \\"./Credentials\\";
 
 @ArgsType()
 export class LoginArgs {
+  @Field(() => Credentials, { nullable: false })
   credentials!: Credentials;
 }
 ",
