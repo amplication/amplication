@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Drawer, DrawerContent } from "@rmwc/drawer";
 import { useApolloClient } from "@apollo/client";
@@ -17,7 +17,6 @@ import { MenuFixedPanel } from "../util/teleporter";
 import { Popover } from "@amplication/design-system";
 import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
-import ThemeContext from "./ThemeContext";
 import DarkModeToggle from "./DarkModeToggle";
 import "./MainLayout.scss";
 
@@ -29,24 +28,11 @@ type Props = {
 const CLASS_NAME = "main-layout";
 
 function MainLayout({ children, footer, className }: Props) {
-  const themeContext = useContext(ThemeContext);
-
-  const themeClass = useMemo(() => {
-    if (themeContext.theme && themeContext.theme.length)
-      return `amp-theme-${themeContext.theme}`;
-    return null;
-  }, [themeContext.theme]);
-
   return (
     <div
-      className={classNames(
-        CLASS_NAME,
-        className,
-        {
-          [`${CLASS_NAME}--mobile`]: isMobileOnly,
-        },
-        themeClass
-      )}
+      className={classNames(CLASS_NAME, className, {
+        [`${CLASS_NAME}--mobile`]: isMobileOnly,
+      })}
     >
       <div className={`${CLASS_NAME}__wrapper`}>{children}</div>
       {footer && <div className={`${CLASS_NAME}__footer`}>{footer}</div>}
@@ -106,6 +92,7 @@ const Menu = ({ children }: MenuProps) => {
           <div className="bottom-menu-container">
             <DarkModeToggle />
             <Popover
+              className="main-layout__side__popover"
               content={<SupportMenu />}
               open={supportMenuOpen}
               align={"right"}
