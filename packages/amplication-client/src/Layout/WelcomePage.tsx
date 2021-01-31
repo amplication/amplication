@@ -3,7 +3,6 @@ import "./PageContent.scss";
 import { Panel } from "@amplication/design-system";
 import { ReactComponent as AmplicationLogo } from "../assets/logo-amplication-white.svg";
 import { ReactComponent as DiscordButton } from "../assets/images/discord-button.svg";
-import DarkModeToggle from "./DarkModeToggle";
 import "./WelcomePage.scss";
 
 const CLASS_NAME = "welcome-page";
