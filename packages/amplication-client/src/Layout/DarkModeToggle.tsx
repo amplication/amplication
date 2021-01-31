@@ -1,35 +1,30 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext } from "react";
 import classNames from "classnames";
-import useLocalStorage from "react-use-localstorage";
 import ThemeContext from "./ThemeContext";
 import MenuItem from "../Layout/MenuItem";
 import { useTracking } from "../util/analytics";
 import "./DarkModeToggle.scss";
 
-const LOCAL_STORAGE_KEY = "darkModeEnabled";
 const CLASS_NAME = "dark-mode-toggle";
 const THEME_DARK = "dark";
 const THEME_LIGHT = "light";
 const DarkModeToggle = () => {
-  const [darkMode, setDarkMode] = useLocalStorage(LOCAL_STORAGE_KEY, "false");
   const { trackEvent } = useTracking();
 
   const themeContext = useContext(ThemeContext);
 
-  const isDarkMode = useMemo(() => {
-    return darkMode === "true";
-  }, [darkMode]);
-
-  themeContext.setTheme(isDarkMode ? THEME_DARK : THEME_LIGHT);
-
   const handleClick = useCallback(() => {
-    const nextIsDark = !isDarkMode;
-    setDarkMode(String(nextIsDark));
-    themeContext.setTheme(nextIsDark ? THEME_DARK : THEME_LIGHT);
+    const nextTheme =
+      themeContext.theme === THEME_LIGHT ? THEME_DARK : THEME_LIGHT;
+
+    themeContext.setTheme(nextTheme);
     trackEvent({
-      eventName: isDarkMode ? "disableDarkMode" : "enableDarkMode",
+      eventName: "setTheme",
+      theme: nextTheme,
     });
-  }, [setDarkMode, isDarkMode, themeContext, trackEvent]);
+  }, [themeContext, trackEvent]);
+
+  const isDarkMode = themeContext.theme === THEME_DARK;
 
   return (
     <MenuItem
