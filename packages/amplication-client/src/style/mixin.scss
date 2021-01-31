@@ -214,6 +214,11 @@ $bullet-size: 6px;
     height: $size;
   }
 
+  &::-webkit-scrollbar-button {
+    background-color: transparent;
+    height: 0;
+  }
+
   &::-webkit-scrollbar-thumb {
     background: $foreground-color;
     border-radius: $size / 2;
@@ -222,7 +227,7 @@ $bullet-size: 6px;
   &::-webkit-scrollbar-track {
     background: $background-color;
     border-radius: $size / 2;
-    margin: 10px;
+    margin: 5px;
   }
 
   // For Internet Explorer
