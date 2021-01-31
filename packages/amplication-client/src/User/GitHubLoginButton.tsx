@@ -5,7 +5,7 @@ import "./GitHubLoginButton.scss";
 
 export const GitHubLoginButton = () => {
   return (
-    <a href="http://localhost:3000/github" className="github-login-button">
+    <a href="/github" className="github-login-button">
       <Button
         type="button"
         buttonStyle={EnumButtonStyle.Primary}

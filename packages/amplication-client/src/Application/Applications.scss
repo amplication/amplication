@@ -8,7 +8,10 @@ $list-padding-bottom: 200px;
 $background-size: 60%;
 
 .applications {
-  margin-top: var(--triple-spacing);
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow: auto;
+  padding-top: var(--triple-spacing);
 
   & &__header {
     display: flex;

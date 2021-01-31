@@ -26,10 +26,11 @@
     }
   }
 
-  .circle-icon {
+  &__invalid {
+    color: var(--negative);
     position: absolute;
     right: 8px;
-    bottom: 8px;
+    bottom: 10px;
   }
 
   &__error {
