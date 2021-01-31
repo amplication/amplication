@@ -105,19 +105,6 @@ jobs:
             amplication/amplication:latest
             amplication/amplication:${{ github.sha }}
             gcr.io/amplication/amplication:${{ github.sha }}
-      - name: "Build and push amplication/app-node Docker image"
-        uses: docker/build-push-action@v2
-        with:
-          context: ./packages/amplication-data-service-generator
-          file: ./packages/amplication-data-service-generator/Dockerfile
-          pull: true
-          push: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          tags: |
-            amplication/app-node:latest
-            amplication/app-node:${{ github.sha }}
-            gcr.io/amplication/app-node:${{ github.sha }}
       - name: "Build and push amplication/scheduler Docker image"
         uses: docker/build-push-action@v2
         with:
@@ -141,7 +128,6 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           TF_VAR_image_id: gcr.io/amplication/amplication:${{ github.sha }}
-          TF_VAR_generated_app_base_image_id: gcr.io/amplication/app-node:${{ github.sha }}
         working-directory: terraform/envs/dev
       - uses: mattes/gce-cloudsql-proxy-action@v1
         with:

@@ -11,7 +11,6 @@
 # - SERVICE_JWT_SECRET - Server secret for creating JWT tokens for services
 # - BCRYPT_SALT_OR_ROUNDS - Server salt for hashing passwords in the database
 # - LOCAL_DISK_ROOT - Server parameter where to save artifacts (e.g. generated code) to
-# - GENERATED_APP_BASE_IMAGE - Server parameter which base image
 
 version: "3"
 services:
@@ -42,7 +41,6 @@ services:
       DEFAULT_DISK: local
       LOCAL_DISK_ROOT: /artifacts
       CONTAINER_BUILDER_DEFAULT: docker
-      GENERATED_APP_BASE_IMAGE: amplication/app-node:6bc72e5dd42d480ec1d3cb6fa02ac1390685c38b
   migrate:
     image: amplication/amplication
     environment:

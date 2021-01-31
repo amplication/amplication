@@ -45,7 +45,6 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 import { GithubService } from '../github/github.service';
 
 export const HOST_VAR = 'HOST';
-export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
@@ -143,8 +142,6 @@ const CONTAINER_STATUS_UPDATE_INTERVAL_SEC = 10;
 
 @Injectable()
 export class BuildService {
-  generatedAppBaseImage: string;
-
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
@@ -162,10 +159,6 @@ export class BuildService {
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
-
-    this.generatedAppBaseImage = this.configService.get(
-      GENERATED_APP_BASE_IMAGE_VAR
-    );
   }
 
   async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
@@ -429,7 +422,7 @@ export class BuildService {
         );
         const result = await this.containerBuilderService.build({
           tags: [tag, latestTag],
-          cacheFrom: [this.generatedAppBaseImage, latestImageId],
+          cacheFrom: [latestImageId],
           url: tarballURL
         });
         await this.handleContainerBuilderResult(build, step, result);
@@ -565,9 +558,7 @@ export class BuildService {
         `${commit.message} (Amplication build ${truncateBuildId})`) ||
       `Amplication build ${truncateBuildId}`;
 
-    const host = (this.generatedAppBaseImage = this.configService.get(
-      HOST_VAR
-    ));
+    const host = this.configService.get(HOST_VAR);
 
     const url = `${host}/${build.appId}/builds/${build.id}`;
 
