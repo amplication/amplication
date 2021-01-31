@@ -6,6 +6,11 @@
     @include label;
   }
 
+  &__menu-list {
+    background-color: var(--white);
+    padding: 0;
+  }
+
   .select-field__container {
     font-size: var(--normal-font-size);
   }
