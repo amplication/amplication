@@ -22,7 +22,8 @@ $title-font-size: 30px;
   &__stripe {
     box-sizing: border-box;
     height: $stripe-top-height-small;
-    background-color: var(--black100);
+
+    background-color: var(--welcome-page-stripe-background);
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -30,6 +31,9 @@ $title-font-size: 30px;
     justify-content: space-between;
     padding: var(--double-spacing);
 
+    &__logo svg {
+      width: 150px;
+    }
     &__open-source-message {
       display: none;
     }
@@ -39,7 +43,7 @@ $title-font-size: 30px;
       display: none;
       font-size: $title-font-size;
       @include semiBold;
-      color: var(--white);
+      color: var(--welcome-page-stripe-color);
       padding-top: calc(var(--default-spacing) * 3);
       padding-bottom: var(--double-spacing);
     }
@@ -53,7 +57,7 @@ $title-font-size: 30px;
   }
 
   .open-source-message {
-    color: var(--black30);
+    color: var(--black80);
 
     a {
       color: var(--secondary);
@@ -73,11 +77,12 @@ $title-font-size: 30px;
     max-width: $form-mobile-max-width;
 
     &__open-source-message {
-      display: none;
+      display: block;
     }
   }
 
   &__panel {
+    //background-color: var(--welcome-page-stripe-background);
     box-sizing: border-box;
     text-align: center;
     padding: $panel-padding !important;
@@ -132,6 +137,7 @@ $title-font-size: 30px;
     }
     &__form {
       min-width: $form-min-width;
+      margin-top: auto;
 
       &__open-source-message {
         display: none;
