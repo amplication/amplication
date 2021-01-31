@@ -63,6 +63,7 @@ module "deploy" {
   database_instance                  = module.env.database_instance
   github_client_secret_id            = var.github_client_secret_id
   image                              = var.image
+  app_base_image                     = var.app_base_image
   google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
   google_cloudbuild_trigger_name     = var.google_cloudbuild_trigger_name
   github_owner                       = var.github_owner
