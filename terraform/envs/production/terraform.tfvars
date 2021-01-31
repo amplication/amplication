@@ -19,7 +19,7 @@ database_tier = "db-custom-4-8192"
 # Cloud Run
 bcrypt_salt_or_rounds = 10
 host = "https://app.amplication.com"
-server_database_connection_limit = 41
+server_database_connection_limit = 40
 server_min_scale = 2
 server_max_scale = 9
 
