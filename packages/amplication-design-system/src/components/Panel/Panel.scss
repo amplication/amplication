@@ -35,7 +35,6 @@ $expandable-transition-duration: 0.1s;
     cursor: pointer;
     &:hover {
       background: var(--panel-hover-background);
-      box-shadow: var(--hover-box-shadow);
     }
   }
 

@@ -26,10 +26,6 @@
     &:focus {
       @include textField--active;
       color: var(--black100);
-
-      + i {
-        color: var(--primary);
-      }
     }
   }
 
