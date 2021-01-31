@@ -342,8 +342,8 @@ const EXAMPLE_LOCAL_DISK = {
 
 const localDiskServiceGetDiskMock = jest.fn(() => EXAMPLE_LOCAL_DISK);
 
-const EXAMPLED_GENERATED_BASE_IMAGE = 'EXAMPLED_GENERATED_BASE_IMAGE';
-const configServiceGetMock = jest.fn(() => EXAMPLED_GENERATED_BASE_IMAGE);
+const EXAMPLED_HOST = 'http://localhost/';
+const configServiceGetMock = jest.fn(() => EXAMPLED_HOST);
 
 const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
@@ -636,10 +636,7 @@ describe('BuildService', () => {
         `${EXAMPLE_BUILD.appId}:${EXAMPLE_BUILD.id}`,
         `${EXAMPLE_BUILD.appId}:latest`
       ],
-      cacheFrom: [
-        EXAMPLED_GENERATED_BASE_IMAGE,
-        `${EXAMPLE_BUILD.appId}:latest`
-      ],
+      cacheFrom: [`${EXAMPLE_BUILD.appId}:latest`],
       url: EXAMPLE_URL
     });
     expect(prismaBuildUpdateMock).toBeCalledTimes(1);

@@ -38,7 +38,6 @@ bucket_location = "US"
 
 # Cloud Build
 image = "gcr.io/amplication/amplication"
-app_base_image = "gcr.io/amplication/app-node"
 google_cloudbuild_trigger_filename = "production.cloudbuild.yaml"
 google_cloudbuild_trigger_name = "version-manual-deploy"
 github_owner = "amplication"

@@ -33,7 +33,6 @@ module "env" {
   amplitude_api_key                = var.amplitude_api_key
   database_tier                    = var.database_tier
   image_id                         = var.image_id
-  generated_app_base_image_id      = var.generated_app_base_image_id
   bcrypt_salt_or_rounds            = var.bcrypt_salt_or_rounds
   github_client_secret_id          = var.github_client_secret_id
   feature_flags                    = var.feature_flags

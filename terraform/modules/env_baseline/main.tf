@@ -233,10 +233,6 @@ resource "google_cloud_run_service" "default" {
           value = var.container_builder_default
         }
         env {
-          name  = "GENERATED_APP_BASE_IMAGE"
-          value = var.generated_app_base_image_id
-        }
-        env {
           name  = "DEPLOYER_DEFAULT"
           value = var.deployer_default
         }
