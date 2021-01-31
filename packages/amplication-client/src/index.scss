@@ -37,3 +37,17 @@ div[tabindex="-1"]:focus {
     min-width: calc(900px - var(--menu-width));
   }
 }
+
+::-webkit-scrollbar {
+  width: var(--default-spacing);
+}
+::-webkit-scrollbar-button {
+  background-color: var(--black10);
+}
+::-webkit-scrollbar-track {
+  background-color: var(--black5);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--black40);
+}
