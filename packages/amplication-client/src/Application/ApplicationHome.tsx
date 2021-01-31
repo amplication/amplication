@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route, match } from "react-router-dom";
+import { Switch, Route, match, useLocation } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -27,6 +27,7 @@ const NAVIGATION_KEY = "APP_HOME";
 
 function ApplicationHome({ match }: Props) {
   const applicationId = match.params.application;
+  const location = useLocation();
 
   const { data, error } = useQuery<{
     app: models.App;
@@ -35,7 +36,7 @@ function ApplicationHome({ match }: Props) {
       id: applicationId,
     },
   });
-  useNavigationTabs(NAVIGATION_KEY, match.url, data?.app.name);
+  useNavigationTabs(NAVIGATION_KEY, location.pathname, data?.app.name);
 
   const errorMessage = formatError(error);
 
