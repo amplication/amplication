@@ -12,6 +12,7 @@ $input-translate: -22px;
 @mixin state($thumb, $track) {
   .mdc-switch__track {
     background-color: $track;
+    opacity: 1;
   }
   .mdc-switch__thumb {
     background-color: $thumb;
@@ -33,12 +34,6 @@ $input-translate: -22px;
 
     .input-label-value {
       margin-left: var(--default-spacing);
-    }
-  }
-
-  &:hover {
-    label {
-      color: var(--primary);
     }
   }
 
