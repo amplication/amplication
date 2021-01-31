@@ -29,7 +29,9 @@ const RolesPage = ({ match }: Props) => {
   return (
     <PageContent
       className="roles"
-      sideContent={<RoleList applicationId={application} />}
+      sideContent={
+        <RoleList applicationId={application} selectFirst={null === roleId} />
+      }
     >
       {!isEmpty(roleId) && <Role />}
     </PageContent>
