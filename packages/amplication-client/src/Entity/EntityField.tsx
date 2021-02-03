@@ -107,6 +107,7 @@ const EntityField = () => {
       {!loading && (
         <>
           <div className={`${CLASS_NAME}__header`}>
+            <h3>Field Settings</h3>
             {entity && entityField && (
               <DeleteEntityField
                 entityId={entity}

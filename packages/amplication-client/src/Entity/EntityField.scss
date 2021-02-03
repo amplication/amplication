@@ -3,7 +3,6 @@
 .entity-field {
   &__header {
     @include flexFullRowWithSpacing;
-    justify-content: flex-end;
     margin-bottom: var(--default-spacing);
   }
 }

@@ -80,6 +80,12 @@ $split-icon-font-size: 20px;
       border-color: none !important;
       color: var(--black100);
     }
+
+    &[disabled] {
+      color: var(--black20);
+      background-color: transparent;
+      border: none;
+    }
   }
 
   &.amp-button--clear {
