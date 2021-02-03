@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useContext } from "react";
-import { useRouteMatch } from "react-router-dom";
+import React, { useCallback, useMemo, useContext, useState } from "react";
+import { useRouteMatch, useHistory } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
@@ -12,6 +12,8 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 import { useTracking } from "../util/analytics";
 import { SYSTEM_DATA_TYPES } from "./constants";
+import { DeleteEntityField } from "./DeleteEntityField";
+import "./EntityField.scss";
 
 type TData = {
   entity: models.Entity;
@@ -21,9 +23,13 @@ type UpdateData = {
   updateEntityField: models.EntityField;
 };
 
+const CLASS_NAME = "entity-field";
+
 const EntityField = () => {
   const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
+  const history = useHistory();
+  const [error, setError] = useState<Error>();
 
   const match = useRouteMatch<{
     application: string;
@@ -37,12 +43,15 @@ const EntityField = () => {
     throw new Error("application parameters is required in the query string");
   }
 
-  const { data, error, loading } = useQuery<TData>(GET_ENTITY_FIELD, {
-    variables: {
-      entity,
-      field,
-    },
-  });
+  const { data, error: loadingError, loading } = useQuery<TData>(
+    GET_ENTITY_FIELD,
+    {
+      variables: {
+        entity,
+        field,
+      },
+    }
+  );
 
   const entityField = data?.entity.fields?.[0];
 
@@ -60,6 +69,10 @@ const EntityField = () => {
     }
   );
 
+  const handleDeleteField = useCallback(() => {
+    history.push(`/${application}/entities/${entity}/fields/`);
+  }, [history, application, entity]);
+
   const handleSubmit = useCallback(
     (data) => {
       const { id, ...rest } = data;
@@ -75,8 +88,10 @@ const EntityField = () => {
     [updateEntityField, field]
   );
 
-  const hasError = Boolean(error) || Boolean(updateError);
-  const errorMessage = formatError(error) || formatError(updateError);
+  const hasError =
+    Boolean(error) || Boolean(updateError) || Boolean(loadingError);
+  const errorMessage =
+    formatError(error) || formatError(updateError) || formatError(loadingError);
 
   const defaultValues = useMemo(
     () =>
@@ -88,19 +103,33 @@ const EntityField = () => {
   );
 
   return (
-    <>
+    <div className={CLASS_NAME}>
       {!loading && (
-        <EntityFieldForm
-          isDisabled={
-            defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
-          }
-          onSubmit={handleSubmit}
-          defaultValues={defaultValues}
-          applicationId={application}
-        />
+        <>
+          <div className={`${CLASS_NAME}__header`}>
+            <h3>Field Settings</h3>
+            {entity && entityField && (
+              <DeleteEntityField
+                entityId={entity}
+                entityField={entityField}
+                showLabel
+                onDelete={handleDeleteField}
+                onError={setError}
+              />
+            )}
+          </div>
+          <EntityFieldForm
+            isDisabled={
+              defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
+            }
+            onSubmit={handleSubmit}
+            defaultValues={defaultValues}
+            applicationId={application}
+          />
+        </>
       )}
       <Snackbar open={hasError} message={errorMessage} />
-    </>
+    </div>
   );
 };
 
