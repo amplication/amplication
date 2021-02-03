@@ -3,11 +3,14 @@
 $stripe-top-height: 120px;
 $stripe-top-height-small: 90px;
 $stripe-side-width: 550px;
-$stripe-side-padding: 100px;
+$stripe-side-padding: 60px;
 $form-min-width: 550px;
+$form-mobile-max-width: 400px;
 $panel-min-width: 400px;
 $panel-padding: 64px 48px;
 $button-padding: 24px;
+
+$title-font-size: 30px;
 
 .welcome-page {
   width: 100%;
@@ -19,34 +22,45 @@ $button-padding: 24px;
   &__stripe {
     box-sizing: border-box;
     height: $stripe-top-height-small;
-    background-image: url("../assets/images/signin-top-stripe.svg");
-    background-position: top right;
-    background-size: cover;
+
+    background-color: var(--welcome-page-stripe-background);
     width: 100%;
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    padding: var(--double-spacing);
 
+    &__logo svg {
+      width: 150px;
+    }
     &__open-source-message {
       display: none;
     }
 
-    &__title {
+    &__title,
+    &__subtitle {
       display: none;
-      @include pageTitle;
+      font-size: $title-font-size;
       @include semiBold;
-      color: var(--black100);
+      color: var(--welcome-page-stripe-color);
       padding-top: calc(var(--default-spacing) * 3);
       padding-bottom: var(--double-spacing);
-      span {
-        color: var(--primary);
-      }
+    }
+
+    &__subtitle {
+      @include fontMono;
+      color: var(--secondary);
+      padding-top: 0;
+      padding-bottom: calc(var(--default-spacing) * 3);
     }
   }
 
   .open-source-message {
+    color: var(--black80);
+
     a {
-      color: var(--primary);
+      color: var(--secondary);
       text-decoration: underline;
     }
   }
@@ -58,19 +72,20 @@ $button-padding: 24px;
     justify-content: center;
     flex-direction: column;
     flex: 1;
-    margin: var(--default-spacing);
+    margin: auto;
     margin-top: var(--triple-spacing);
+    max-width: $form-mobile-max-width;
 
     &__open-source-message {
-      max-width: $panel-min-width;
-      text-align: center;
+      display: block;
     }
   }
 
   &__panel {
+    //background-color: var(--welcome-page-stripe-background);
     box-sizing: border-box;
     text-align: center;
-    padding: var(--double-spacing);
+    padding: $panel-padding !important;
 
     label {
       text-align: left;
@@ -94,7 +109,6 @@ $button-padding: 24px;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background-image: url("../assets/images/signin-bg.svg");
     background-repeat: no-repeat;
     background-size: contain;
     background-position-y: top;
@@ -102,16 +116,18 @@ $button-padding: 24px;
 
     &__stripe {
       width: $stripe-side-width;
-      background-image: url("../assets/images/signin-stripe.svg");
       background-position: bottom left;
       height: 100vh;
-      padding: 0 $stripe-side-padding;
+      padding: $stripe-side-padding;
+      flex-direction: column;
+      align-items: flex-start;
 
       &__open-source-message {
         display: block;
       }
 
-      &__title {
+      &__title,
+      &__subtitle {
         display: block;
       }
 
@@ -121,6 +137,7 @@ $button-padding: 24px;
     }
     &__form {
       min-width: $form-min-width;
+      margin-top: auto;
 
       &__open-source-message {
         display: none;
@@ -129,7 +146,7 @@ $button-padding: 24px;
 
     &__panel {
       width: $panel-min-width;
-      padding: $panel-padding;
+      padding: $panel-padding !important;
     }
   }
 }

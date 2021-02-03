@@ -1,14 +1,15 @@
 import React, { useCallback, useMemo } from "react";
 import download from "downloadjs";
+import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
-import { CircularProgress } from "@rmwc/circular-progress";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
+import { Panel, EnumPanelStyle } from "@amplication/design-system";
 
-import { STEP_STATUS_TO_ICON } from "./constants";
+import { BuildStepsStatus } from "./BuildStepsStatus";
 
 import "./BuildSteps.scss";
 
@@ -25,6 +26,7 @@ export const EMPTY_STEP: models.ActionStep = {
 export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
 export const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
   build: models.Build;
@@ -70,6 +72,32 @@ const BuildSteps = ({ build, onError }: Props) => {
     );
   }, [data.build.action]);
 
+  const stepGithub = useMemo(() => {
+    if (!data.build.action?.steps?.length) {
+      return null;
+    }
+    return (
+      data.build.action.steps.find(
+        (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+      ) || null
+    );
+  }, [data.build.action]);
+
+  const githubUrl = useMemo(() => {
+    if (!data.build.action?.steps?.length) {
+      return null;
+    }
+    const stepGithub = data.build.action.steps.find(
+      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+    );
+
+    const log = stepGithub?.logs?.find(
+      (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
+    );
+
+    return log?.meta?.githubUrl || null;
+  }, [data.build.action]);
+
   const deployment =
     data.build.deployments &&
     data.build.deployments.length &&
@@ -77,10 +105,13 @@ const BuildSteps = ({ build, onError }: Props) => {
 
   return (
     <div>
-      <div className={`${CLASS_NAME}__step`}>
-        <BuildStepsStatus status={stepGenerateCode.status} />
+      <Panel
+        className={`${CLASS_NAME}__step`}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <Icon icon="code1" />
         <span>Generate Code</span>
+        <BuildStepsStatus status={stepGenerateCode.status} />
         <span className="spacer" />
         <Button
           buttonStyle={EnumButtonStyle.Clear}
@@ -94,11 +125,41 @@ const BuildSteps = ({ build, onError }: Props) => {
             versionNumber: data.build.version,
           }}
         />
-      </div>
-      <div className={`${CLASS_NAME}__step`}>
-        <BuildStepsStatus status={stepBuildDocker.status} />
+      </Panel>
+      {stepGithub && (
+        <Panel
+          className={`${CLASS_NAME}__step`}
+          panelStyle={EnumPanelStyle.Bordered}
+        >
+          <Icon icon="github" />
+          <span>Push Changes to GitHub</span>
+          <BuildStepsStatus status={stepGithub.status} />
+          <span className="spacer" />
+          {githubUrl && (
+            <a href={githubUrl} target="github">
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                icon="external_link"
+                disabled={
+                  stepGenerateCode.status !==
+                  models.EnumActionStepStatus.Success
+                }
+                eventData={{
+                  eventName: "openGithubPullRequest",
+                }}
+              />
+            </a>
+          )}
+        </Panel>
+      )}
+
+      <Panel
+        className={`${CLASS_NAME}__step`}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <Icon icon="docker" />
         <span>Build Container</span>
+        <BuildStepsStatus status={stepBuildDocker.status} />
         <span className="spacer" />
 
         {/*@todo: add missing endpoint to download container and remove className */}
@@ -113,54 +174,37 @@ const BuildSteps = ({ build, onError }: Props) => {
             versionNumber: data.build.version,
           }}
         />
-      </div>
-      <div className={`${CLASS_NAME}__step`}>
-        <BuildStepsStatus status={stepDeploy.status} />
+      </Panel>
+      <Panel
+        className={`${CLASS_NAME}__step`}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
         <Icon icon="publish" />
-        <span>Preview App</span>
+        <span>Publish App to Sandbox</span>
+        <BuildStepsStatus status={stepDeploy.status} />
         <span className="spacer" />
 
         {deployment &&
-        stepDeploy.status === models.EnumActionStepStatus.Success ? (
-          <a href={deployment.environment.address} target="app">
-            <Button
-              buttonStyle={EnumButtonStyle.Clear}
-              icon="link_2"
-              eventData={{
-                eventName: "openPreviewApp",
-                versionNumber: data.build.version,
-              }}
-            />
-          </a>
-        ) : (
-          <Button buttonStyle={EnumButtonStyle.Clear} icon="link_2" disabled />
-        )}
-      </div>
+          stepDeploy.status === models.EnumActionStepStatus.Success && (
+            <a href={deployment.environment.address} target="app">
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                icon="link_2"
+                eventData={{
+                  eventName: "openPreviewApp",
+                  versionNumber: data.build.version,
+                }}
+              />
+            </a>
+          )}
+      </Panel>
     </div>
   );
 };
 
 export default BuildSteps;
 
-type BuildStepsStatusProps = {
-  status: models.EnumActionStepStatus;
-};
-
-export const BuildStepsStatus = ({ status }: BuildStepsStatusProps) => {
-  return (
-    <span
-      className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${status.toLowerCase()}`}
-    >
-      {status === models.EnumActionStepStatus.Running ? (
-        <CircularProgress size={"xsmall"} />
-      ) : (
-        <Icon icon={STEP_STATUS_TO_ICON[status]} />
-      )}
-    </span>
-  );
-};
-
-async function downloadArchive(uri: string): Promise<void> {
+export async function downloadArchive(uri: string): Promise<void> {
   const res = await fetch(uri);
   const url = new URL(res.url);
   switch (res.status) {

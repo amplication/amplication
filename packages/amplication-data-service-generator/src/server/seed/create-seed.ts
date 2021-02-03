@@ -94,7 +94,7 @@ export function createUserObjectCustomProperties(
     .filter((field) => field.required)
     .map((field): [EntityField, namedTypes.Expression | null] => [
       field,
-      createDefaultValue(field),
+      createDefaultValue(field, userEntity),
     ])
     .filter(([field, value]) => !AUTH_FIELD_NAMES.has(field.name) && value)
     .map(([field, value]) =>
@@ -107,7 +107,8 @@ export function createUserObjectCustomProperties(
 }
 
 export function createDefaultValue(
-  field: EntityField
+  field: EntityField,
+  entity: Entity
 ): namedTypes.Expression | null {
   switch (field.dataType) {
     case EnumDataType.SingleLineText:
@@ -132,9 +133,10 @@ export function createDefaultValue(
     case EnumDataType.OptionSet: {
       const { options } = field.properties as types.OptionSet;
       const [firstOption] = options;
-      return memberExpression`${createEnumName(field)}.${createEnumMemberName(
-        firstOption.label
-      )}`;
+      return memberExpression`${createEnumName(
+        field,
+        entity
+      )}.${createEnumMemberName(firstOption.label)}`;
     }
     case EnumDataType.Boolean: {
       return DEFAULT_BOOLEAN_LITERAL;

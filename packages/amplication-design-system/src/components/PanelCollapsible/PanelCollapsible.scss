@@ -2,24 +2,19 @@
 
 $expandable-bottom-max-height: 200px;
 $expandable-transition-duration: 0.1s;
-$header-box-shadow: 0px 4px 6px rgba(85, 73, 119, 0.04);
-$shadow-hover: 0px 0px 10px rgba(63, 37, 135, 0.1);
 
 .amp-panel-collapsible {
-  background-color: var(--black2);
-  border: $border-black10;
-  padding: 0;
+  &.amp-panel {
+    background-color: var(--white);
+    border: $border-black10;
+    padding: 0;
+  }
 
   &--open {
     .amp-panel-collapsible__header {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
       border-bottom: $border-black10;
-      box-shadow: $header-box-shadow;
-
-      &:hover {
-        box-shadow: $shadow-hover;
-      }
 
       &__collapse {
         transform: rotate(180deg);
@@ -31,14 +26,10 @@ $shadow-hover: 0px 0px 10px rgba(63, 37, 135, 0.1);
     justify-content: stretch;
 
     padding: var(--default-spacing);
-    background-color: var(--white);
+    background-color: var(--black5);
     margin-bottom: 0;
     border-radius: var(--default-border-radius);
     cursor: pointer;
-
-    &:hover {
-      box-shadow: $shadow-hover;
-    }
 
     &__collapse {
       transform: rotate(0);

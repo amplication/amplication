@@ -48,15 +48,12 @@ const MenuItem = ({
       {children ? (
         children
       ) : (
-        <>
-          <Icon
-            icon={{
-              icon: icon,
-              size: ICON_SIZE,
-            }}
-          />
-          <span className="amp-menu-item__title">{title}</span>
-        </>
+        <Icon
+          icon={{
+            icon: icon,
+            size: ICON_SIZE,
+          }}
+        />
       )}
     </Button>
   );

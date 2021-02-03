@@ -1,0 +1,21 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "ActionLog",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[stepId]"
+            }
+          ]
+        },
+        "directive": "index"
+      }
+    }
+  ]
+}

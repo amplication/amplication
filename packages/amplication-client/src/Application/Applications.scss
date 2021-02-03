@@ -8,6 +8,11 @@ $list-padding-bottom: 200px;
 $background-size: 60%;
 
 .applications {
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow: auto;
+  padding-top: var(--triple-spacing);
+
   & &__header {
     display: flex;
     flex-direction: row;
@@ -18,14 +23,6 @@ $background-size: 60%;
       margin: 0;
       @include pageTitle;
     }
-  }
-
-  &__bg {
-    background-image: url("../assets/images/my-apps-bg.svg");
-    background-position: bottom center;
-    background-repeat: no-repeat;
-    background-size: $background-size;
-    min-height: calc(100% + var(--default-page-padding));
   }
 
   main {
@@ -55,7 +52,8 @@ $background-size: 60%;
 
   &__new-app {
     @include applicationCard;
-    border: $border-black30;
+    background-color: var(--black2);
+    border: $border-black10;
     align-items: center;
     justify-content: center;
     @include sectionTitle;

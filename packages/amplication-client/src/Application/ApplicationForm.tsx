@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { match } from "react-router-dom";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { validate } from "../util/formikValidateJsonSchema";
 import { Icon } from "@rmwc/icon";
@@ -12,9 +13,12 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { TextField } from "@amplication/design-system";
 import { COLORS } from "./constants";
 import { ColorSelectButton } from "../Components/ColorSelectButton";
+import { useTracking } from "../util/analytics";
+import { GET_APPLICATION } from "./ApplicationHome";
+import "./ApplicationForm.scss";
 
 type Props = {
-  app: models.App;
+  match: match<{ application: string }>;
 };
 
 type TData = {
@@ -34,14 +38,29 @@ const FORM_SCHEMA = {
   },
 };
 
-function ApplicationForm({ app }: Props) {
-  const applicationId = app.id;
+const CLASS_NAME = "application-form";
 
-  const [updateApp, { error }] = useMutation<TData>(UPDATE_APP);
+function ApplicationForm({ match }: Props) {
+  const applicationId = match.params.application;
+
+  const { data, error } = useQuery<{
+    app: models.App;
+  }>(GET_APPLICATION, {
+    variables: {
+      id: applicationId,
+    },
+  });
+
+  const { trackEvent } = useTracking();
+
+  const [updateApp, { error: updateError }] = useMutation<TData>(UPDATE_APP);
 
   const handleSubmit = useCallback(
     (data) => {
       const { name, description, color } = data;
+      trackEvent({
+        eventName: "updateAppInfo",
+      });
       updateApp({
         variables: {
           data: {
@@ -53,11 +72,14 @@ function ApplicationForm({ app }: Props) {
         },
       }).catch(console.error);
     },
-    [updateApp, applicationId]
+    [updateApp, applicationId, trackEvent]
   );
 
   const handleColorChange = useCallback(
     (color: string) => {
+      trackEvent({
+        eventName: "updateAppColor",
+      });
       updateApp({
         variables: {
           data: {
@@ -67,51 +89,52 @@ function ApplicationForm({ app }: Props) {
         },
       }).catch(console.error);
     },
-    [updateApp, applicationId]
+    [updateApp, applicationId, trackEvent]
   );
 
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(error || updateError);
   return (
-    <>
-      <Formik
-        initialValues={app}
-        validate={(values: models.App) => validate(values, FORM_SCHEMA)}
-        enableReinitialize
-        onSubmit={handleSubmit}
-      >
-        {(formik) => {
-          return (
-            <Form>
-              <FormikAutoSave debounceMS={1000} />
-              <TextField name="name" label="Application Name" />
-              <TextField
-                autoComplete="off"
-                textarea
-                rows={3}
-                name="description"
-                label="Description"
-              />
-              <div>
-                <hr />
-                <h2>
-                  <Icon icon="color" />
-                  App Color
-                </h2>
-                {COLORS.map((color) => (
-                  <ColorSelectButton
-                    color={color}
-                    key={color.value}
-                    onColorSelected={handleColorChange}
-                  />
-                ))}
-              </div>
-            </Form>
-          );
-        }}
-      </Formik>
-
+    <div className={CLASS_NAME}>
+      {data?.app && (
+        <Formik
+          initialValues={data.app}
+          validate={(values: models.App) => validate(values, FORM_SCHEMA)}
+          enableReinitialize
+          onSubmit={handleSubmit}
+        >
+          {(formik) => {
+            return (
+              <Form>
+                <FormikAutoSave debounceMS={1000} />
+                <TextField name="name" label="Application Name" />
+                <TextField
+                  autoComplete="off"
+                  textarea
+                  rows={3}
+                  name="description"
+                  label="Description"
+                />
+                <div>
+                  <hr />
+                  <h2>
+                    <Icon icon="color" />
+                    App Color
+                  </h2>
+                  {COLORS.map((color) => (
+                    <ColorSelectButton
+                      color={color}
+                      key={color.value}
+                      onColorSelected={handleColorChange}
+                    />
+                  ))}
+                </div>
+              </Form>
+            );
+          }}
+        </Formik>
+      )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 }
 

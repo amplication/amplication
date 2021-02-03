@@ -26,10 +26,11 @@
     }
   }
 
-  .circle-icon {
+  &__invalid {
+    color: var(--negative);
     position: absolute;
     right: 8px;
-    bottom: 8px;
+    bottom: 10px;
   }
 
   &__error {
@@ -43,6 +44,8 @@
   input,
   textarea {
     @include textField;
+    max-width: var(--form-field-long);
+    display: block;
 
     &:active,
     &:hover,
@@ -57,6 +60,7 @@
 
   textarea {
     width: 100%;
+    max-width: none;
     box-sizing: border-box;
     height: var(--textarea-height);
     resize: none;

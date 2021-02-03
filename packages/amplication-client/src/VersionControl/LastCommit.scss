@@ -1,11 +1,23 @@
 @import "../style/index.scss";
 
-$panel-height: 318px;
-
 .last-commit {
-  min-height: $panel-height;
+  @include flexFullRowWithSpacing;
+  height: var(--app-footer-height);
+  white-space: nowrap;
+  padding: 0 var(--default-spacing);
+
+  .clickable-id {
+    color: var(--black80);
+    a {
+      color: var(--black100);
+    }
+  }
+
+  .build-header {
+    margin-left: var(--double-spacing);
+  }
+
   &__message {
-    margin: var(--default-spacing) 0;
     color: var(--black60);
   }
 

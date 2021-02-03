@@ -13,8 +13,8 @@ import { generatePluralDisplayName } from "../Components/PluralDisplayNameField"
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
-import { ReactComponent as ImageEntities } from "../assets/images/tile-entities.svg";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./NewEntity.scss";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
@@ -126,7 +126,7 @@ const NewEntity = ({ applicationId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <ImageEntities />
+      <SvgThemeImage image={EnumImages.Entities} />
       <div className={`${CLASS_NAME}__instructions`}>
         Give your new entity a descriptive name. <br />
         For example: Customer, Support Ticket, Purchase Order...

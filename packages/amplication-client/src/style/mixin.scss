@@ -1,3 +1,6 @@
+@mixin fontMono {
+  font-family: "DM Mono", monospace;
+}
 @mixin pageTitle {
   font-weight: normal;
   font-size: 24px;
@@ -46,14 +49,6 @@
   color: var(--black80);
 }
 
-@mixin columnHeader {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--black40);
-}
-
 @mixin errorMessage {
   color: var(--negative);
   font-size: 10px;
@@ -65,13 +60,6 @@
 
 @mixin semiBold {
   font-weight: 500;
-}
-
-@mixin label {
-  display: block;
-  font-size: var(--text-field-label-font-size);
-  margin-bottom: var(--default-spacing-small);
-  color: var(--black40);
 }
 
 @mixin textField {
@@ -102,51 +90,6 @@
 
 $bullet-size: 6px;
 
-@mixin bulletList {
-  margin: 0;
-  padding: 0;
-  color: var(--black60);
-
-  li {
-    list-style: none;
-    margin: 0;
-    margin-top: var(--default-spacing);
-    margin-left: var(--default-spacing);
-    position: relative;
-    font-weight: normal;
-    &:before {
-      content: "";
-      position: absolute;
-      left: calc(var(--default-spacing) * -1);
-      width: $bullet-size;
-      height: $bullet-size;
-      top: calc(50% - #{$bullet-size / 2});
-      background-color: var(--secondary-turquoise);
-      border-radius: $bullet-size / 2;
-      display: block;
-    }
-  }
-}
-
-@mixin counterBadge {
-  font-weight: 500;
-  font-size: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  position: absolute;
-  top: -8px;
-  left: calc(100% - 14px);
-  height: 16px;
-  min-width: 16px;
-  background-color: var(--primary);
-  color: var(--white);
-  border-radius: 8px;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
 @mixin flexFullRow {
   display: flex;
   flex-direction: row;
@@ -167,42 +110,9 @@ $bullet-size: 6px;
   }
 }
 
-@mixin whiteListItem {
-  background: var(--white);
-  border-radius: var(--default-border-radius);
-  border: none;
-  box-sizing: border-box;
-  padding: var(--default-spacing) var(--large-spacing);
-  margin-bottom: var(--default-spacing);
-  height: var(--grid-row-height);
-}
-
-@mixin tag {
-  background-color: var(--white);
-  height: var(--medium-button-height);
-  border-radius: var(--medium-button-radius);
-  border: 1px solid var(--black10);
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: calc(var(--default-spacing-small) / 2) var(--default-spacing);
-  color: var(--black80);
-  box-sizing: border-box;
-  white-space: nowrap;
-  width: auto;
-  margin-right: var(--default-spacing-small);
-  margin-bottom: var(--default-spacing-small);
-  min-width: calc(var(--default-spacing) * 4);
-
-  i {
-    font-size: 20px;
-  }
-}
-
 @mixin applicationCard {
   box-sizing: border-box;
-  background: var(--white);
+  background: var(--black2);
   border-radius: var(--default-border-radius);
   border: none;
 
@@ -219,6 +129,7 @@ $bullet-size: 6px;
 
   &:hover {
     box-shadow: var(--hover-box-shadow);
+    background: var(--black5);
   }
 }
 
@@ -233,6 +144,11 @@ $bullet-size: 6px;
     height: $size;
   }
 
+  &::-webkit-scrollbar-button {
+    background-color: transparent;
+    height: 0;
+  }
+
   &::-webkit-scrollbar-thumb {
     background: $foreground-color;
     border-radius: $size / 2;
@@ -241,7 +157,7 @@ $bullet-size: 6px;
   &::-webkit-scrollbar-track {
     background: $background-color;
     border-radius: $size / 2;
-    margin: 10px;
+    margin: 5px;
   }
 
   // For Internet Explorer
@@ -251,21 +167,10 @@ $bullet-size: 6px;
   }
 }
 
-@mixin stickRight($page-content-max-width) {
-  position: fixed;
-  right: calc(
-    (100vw - #{$page-content-max-width}) / 2 - var(--default-page-padding)
-  );
-
-  @media only screen and (max-width: #{$page-content-max-width}) {
-    right: calc(var(--default-page-padding) + var(--default-spacing-small));
-  }
-}
-
 @mixin homePageTile {
   padding: var(--double-spacing);
   position: relative;
-  height: 220px;
+  min-height: 170px;
 
   & &__title {
     margin-top: var(--default-spacing);
@@ -276,21 +181,31 @@ $bullet-size: 6px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: stretch;
     height: 100%;
 
     &__details {
-      height: 100%;
+      min-height: 100%;
+      max-width: 600px;
+      min-width: 200px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       justify-content: space-between;
       flex: 1;
-      margin-bottom: var(--double-spacing);
-      color: var(--black60);
-    }
-    &__action {
-      margin-top: auto;
+      color: var(--black80);
+      &__summary {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: auto;
+        color: var(--black100);
+
+        .amp-icon {
+          color: var(--black80);
+          margin-right: var(--default-spacing-small);
+        }
+      }
     }
   }
 }
@@ -323,16 +238,3 @@ $bullet-size: 6px;
 }
 
 $active-indicator-width: 4px;
-
-@mixin activeItemIndicator {
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: $active-indicator-width * -0.5;
-  width: $active-indicator-width * 1.5;
-  pointer-events: none;
-  border-top-right-radius: $active-indicator-width * 2;
-  border-bottom-right-radius: $active-indicator-width * 2;
-  background-color: var(--primary) !important;
-  content: "";
-}

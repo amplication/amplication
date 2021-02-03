@@ -7,6 +7,18 @@ export {
   EnumDataType,
 } from "./models";
 
+export type WorkerResult = {
+  done: boolean;
+  message?: string;
+  modules?: Module[];
+};
+
+export type WorkerParam = {
+  entities: Entity[];
+  roles: Role[];
+  appInfo: AppInfo;
+};
+
 export type AppInfo = {
   name: string;
   description: string;

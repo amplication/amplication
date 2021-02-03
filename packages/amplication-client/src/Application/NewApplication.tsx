@@ -16,8 +16,8 @@ import { validate } from "../util/formikValidateJsonSchema";
 
 import { TextField } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { ReactComponent as ImageNewApp } from "../assets/images/new-app.svg";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./NewApplication.scss";
 
 type Values = {
@@ -97,7 +97,8 @@ const NewApplication = () => {
 
   return (
     <div className={CLASS_NAME}>
-      <ImageNewApp />
+      <SvgThemeImage image={EnumImages.Entities} />
+
       <div className={`${CLASS_NAME}__instructions`}>
         Give your new app a descriptive name. <br />
       </div>
@@ -120,13 +121,7 @@ const NewApplication = () => {
                 autoComplete="off"
                 disabled={loading}
               />
-              <TextField
-                name="description"
-                label="Description"
-                autoComplete="off"
-                textarea
-                disabled={loading}
-              />
+              
               <Button
                 buttonStyle={EnumButtonStyle.Primary}
                 disabled={!formik.isValid || loading}
@@ -134,7 +129,11 @@ const NewApplication = () => {
               >
                 Create App
               </Button>
-              {loading && <CircularProgress />}
+              {loading && (
+                <div className={`${CLASS_NAME}__loader`}>
+                  <CircularProgress />
+                </div>
+              )}
               <Snackbar open={Boolean(error)} message={errorMessage} />
             </Form>
           );

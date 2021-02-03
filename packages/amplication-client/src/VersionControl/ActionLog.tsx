@@ -102,22 +102,22 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
             <h3>
               {title} <span>{versionNumber}</span>
             </h3>
-            <div className={`${CLASS_NAME}__header__info`}>
-              <div className={`${CLASS_NAME}__header__info__status`}>
-                <CircleIcon
-                  size={EnumCircleIconSize.Small}
-                  {...STEP_STATUS_TO_STYLE[actionStatus]}
-                />
-                {actionStatus}
-              </div>
-              <div className={`${CLASS_NAME}__header__info__time`}>
-                Total duration{" "}
-                <Timer
-                  startTime={action.createdAt}
-                  runTimer
-                  endTime={lastStepCompletedAt}
-                />
-              </div>
+
+            <div className={`${CLASS_NAME}__header__info__status`}>
+              <CircleIcon
+                size={EnumCircleIconSize.Small}
+                {...STEP_STATUS_TO_STYLE[actionStatus]}
+              />
+              {actionStatus}
+            </div>
+            <div className="spacer" />
+            <div className={`${CLASS_NAME}__header__info__time`}>
+              Total duration{" "}
+              <Timer
+                startTime={action.createdAt}
+                runTimer
+                endTime={lastStepCompletedAt}
+              />
             </div>
           </>
         )}

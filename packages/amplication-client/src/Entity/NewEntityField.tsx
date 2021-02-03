@@ -1,6 +1,7 @@
-import React, { useCallback, useRef, useContext } from "react";
+import React, { useCallback, useRef, useContext, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
+import classNames from "classnames";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { TextField } from "@amplication/design-system";
@@ -8,6 +9,8 @@ import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
+import { Button, EnumButtonStyle } from "../Components/Button";
+import "./NewEntityField.scss";
 
 type Values = {
   displayName: string;
@@ -26,11 +29,15 @@ const INITIAL_VALUES = {
   displayName: "",
 };
 
+const CLASS_NAME = "new-entity-field";
+
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
   const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const [autoFocus, setAutoFocus] = useState<boolean>(false);
 
   const [createEntityField, { error, loading }] = useMutation<TData>(
     CREATE_ENTITY_FIELD,
@@ -76,6 +83,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
 
   const handleSubmit = useCallback(
     (data, actions) => {
+      setAutoFocus(true);
       createEntityField({
         variables: {
           data: {
@@ -99,29 +107,39 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <>
+    <div className={CLASS_NAME}>
       <Formik
         initialValues={INITIAL_VALUES}
         validateOnBlur={false}
         onSubmit={handleSubmit}
       >
-        <Form>
-          <TextField
-            required
-            name="displayName"
-            label="New Field Name"
-            disabled={loading}
-            inputRef={inputRef}
-            autoFocus
-            trailingButton={{ title: "Add field" }}
-            hideLabel
-            placeholder="Type field name and press Enter"
-            autoComplete="off"
-          />
-        </Form>
+        {(formik) => (
+          <Form className={`${CLASS_NAME}__add-field`}>
+            <TextField
+              required
+              name="displayName"
+              label="New Field Name"
+              disabled={loading}
+              inputRef={inputRef}
+              placeholder="Add field"
+              autoComplete="off"
+              autoFocus={autoFocus}
+              hideLabel
+              className={`${CLASS_NAME}__add-field__text`}
+            />
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              icon="plus"
+              className={classNames(`${CLASS_NAME}__add-field__button`, {
+                [`${CLASS_NAME}__add-field__button--show`]:
+                  formik.values.displayName.length > 0,
+              })}
+            />
+          </Form>
+        )}
       </Formik>
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 };
 

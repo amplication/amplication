@@ -26,6 +26,14 @@ variable "github_redirect_uri" {
   type = string
 }
 
+variable "github_app_auth_scope" {
+  type = string
+}
+
+variable "github_app_auth_redirect_uri" {
+  type = string
+}
+
 # Amplitude
 
 variable "amplitude_api_key" {
@@ -43,16 +51,12 @@ variable "image_id" {
   type = string
 }
 
-variable "generated_app_base_image_id" {
-  type = string
-}
-
 variable "bcrypt_salt_or_rounds" {
   type = string
 }
 
 variable "feature_flags" {
-  type = map
+  type = map(any)
 }
 
 variable "host" {
@@ -97,6 +101,10 @@ variable "apps_project" {
   type = string
 }
 
+variable "apps_project_2" {
+  type = string
+}
+
 variable "container_builder_default" {
   type = string
 }
@@ -115,6 +123,10 @@ variable "apps_terraform_state_bucket" {
   type = string
 }
 
+
+variable "apps_terraform_state_bucket_2" {
+  type = string
+}
 variable "apps_domain" {
   type = string
 }

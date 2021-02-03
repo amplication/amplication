@@ -1,6 +1,7 @@
 :root {
   --fixed-menu-panel-width: 350px;
   --fixed-menu-panel-max-width: 350px;
+  --app-footer-height: 50px;
 
   --theme-yellow: #f5b82e;
   --theme-red: #ff6e6e;
@@ -10,4 +11,6 @@
   --theme-blue: #20a4f3;
 
   --negative-light: #f85b6e;
+
+  --negative-bg: #f8eaec;
 }

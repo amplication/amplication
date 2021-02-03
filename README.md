@@ -20,12 +20,13 @@
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
 </p>
 
-An open-source dev tool for building fully functional server-side Node.js apps with React clients...blazing fast!
+Amplication is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
 
+Amplication auto-generates fully functional apps based on TypeScript and Node.js.
 ## [Getting Started](https://docs.amplication.com/docs/getting-started)
 
-Try amplication immediately on [amplication.com](http://amplication.com/)
-or [follow the instructions](#development) to run it locally
+Try amplication immediately on [app.amplication.com](http://app.amplication.com/)
+or [follow the instructions](#development) to run a local instance.
 
 ## Features
 
@@ -36,7 +37,14 @@ Build business applications with:
 - Node.js server built with Nest.js and Passport with REST API and GraphQL
 - Admin UI built with React
 - Role-based access control
-- OOB Docker and docker-compose integration
+- Docker and docker-compose integration
+- Automatic push of the generated code to your GitHub repo
+
+See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
+
+[Watch this video](https://youtu.be/tKGeLXoPr94) for a quick reacap of everything you get with Amplication.
+
+
 
 ## Development
 
@@ -56,7 +64,7 @@ The client is based on React, Apollo client, Primer components, React Material W
 
 ### [Amplication Data Service Generator](./packages/amplication-data-service-generator/README.md)
 
-Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with Amplication. This package is used internally by Amplication server.
+Amplication Data Service Generator is the component that generates the server-side code of apps built with Amplication. It generates the models, Prisma client, REST API, GraphQL, authentication and authorization filters, and more. This package is used internally by Amplication server.
 
 To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
 
@@ -70,11 +78,11 @@ Please note that Amplication is currently in alpha version. <b>This means that a
 
 You can ask questions, and participate in discussions about Amplication-related topics in the `Amplication` Discord channel.
 
-<a href="https://discord.gg/b8MrjU6"><img src="https://amplication.com/assets/images/discord_banner.png" /></a>
+<a href="https://discord.gg/b8MrjU6"><img src="https://amplication.com/assets/images/discord_banner_purple.svg" /></a>
 
 ### Create a bug report
 
-If you see an error message or run into an issue, please create a bug report, this effort is valued and it will help all. 
+If you see an error message or run into an issue, please create a bug report, this effort is valued and it will help all.
 
 [**Create bug report**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=)
 

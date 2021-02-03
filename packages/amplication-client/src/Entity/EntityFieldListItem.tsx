@@ -1,18 +1,17 @@
 import React, { useCallback, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
+import { isEmpty } from "lodash";
 import * as models from "../models";
 import {
-  DataGridRow,
-  DataGridCell,
-  CircleIcon,
+  Panel,
   ConfirmationDialog,
+  EnumPanelStyle,
 } from "@amplication/design-system";
-
 import { Link, useHistory } from "react-router-dom";
 import { Icon } from "@rmwc/icon";
-
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { DATA_TYPE_TO_LABEL_AND_ICON, SYSTEM_DATA_TYPES } from "./constants";
+import "./EntityFieldListItem.scss";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -29,6 +28,8 @@ type Props = {
   onDelete?: () => void;
   onError: (error: Error) => void;
 };
+
+const CLASS_NAME = "entity-field-list-item";
 
 export const EntityFieldListItem = ({
   entityField,
@@ -119,50 +120,69 @@ export const EntityFieldListItem = ({
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
-      <DataGridRow onClick={handleRowClick} key={entityField.id}>
-        <DataGridCell>
+
+      <Panel
+        className={CLASS_NAME}
+        clickable
+        onClick={handleRowClick}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
+        <div className={`${CLASS_NAME}__row`}>
           <Link
-            className="amp-data-grid-item--navigate"
+            className={`${CLASS_NAME}__title`}
             title={entityField.displayName}
             to={fieldUrl}
           >
-            <span className="text-medium">{entityField.displayName}</span>
+            {entityField.displayName}
           </Link>
-        </DataGridCell>
-        <DataGridCell>{entityField.name}</DataGridCell>
-        <DataGridCell>
-          <Icon
-            className="amp-data-grid-item__icon"
-            icon={{
-              icon: DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].icon,
-              size: "xsmall",
-            }}
-          />
-
-          {entityField.dataType === models.EnumDataType.Lookup &&
-          entityIdToName ? (
-            <Link
-              className="amp-data-grid-item--link"
-              title={DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label}
-              to={`/${applicationId}/entities/${entityField.properties.relatedEntityId}`}
-              onClick={handleNavigateToRelatedEntity}
-            >
-              {entityIdToName[entityField.properties.relatedEntityId]}{" "}
-              <Icon icon="external_link" />
-            </Link>
-          ) : (
-            DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label
+          <span className={`${CLASS_NAME}__description`}>
+            {entityField.name}
+          </span>
+          <span className="spacer" />
+        </div>
+        {!isEmpty(entityField.description) && (
+          <div className={`${CLASS_NAME}__row`}>
+            <span className={`${CLASS_NAME}__description`}>
+              {entityField.description}
+            </span>
+          </div>
+        )}
+        <div className={`${CLASS_NAME}__row`}>
+          <span className={`${CLASS_NAME}__highlight`}>
+            <Icon
+              className="amp-data-grid-item__icon"
+              icon={{
+                icon: DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].icon,
+                size: "xsmall",
+              }}
+            />
+            {entityField.dataType === models.EnumDataType.Lookup &&
+            entityIdToName ? (
+              <Link
+                title={DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label}
+                to={`/${applicationId}/entities/${entityField.properties.relatedEntityId}`}
+                onClick={handleNavigateToRelatedEntity}
+              >
+                {entityIdToName[entityField.properties.relatedEntityId]}{" "}
+                <Icon icon="external_link" />
+              </Link>
+            ) : (
+              DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label
+            )}
+          </span>
+          {entityField.required && (
+            <span className={`${CLASS_NAME}__property`}>
+              <Icon icon="check" />
+              Required
+            </span>
           )}
-        </DataGridCell>
-
-        <DataGridCell alignMiddle>
-          {entityField.required && <CircleIcon icon="check" />}
-        </DataGridCell>
-        <DataGridCell alignMiddle>
-          {entityField.searchable && <CircleIcon icon="check" />}
-        </DataGridCell>
-        <DataGridCell>{entityField.description}</DataGridCell>
-        <DataGridCell alignEnd>
+          {entityField.searchable && (
+            <span className={`${CLASS_NAME}__property`}>
+              <Icon icon="check" />
+              Searchable
+            </span>
+          )}
+          <span className="spacer" />
           {!deleteLoading && !SYSTEM_DATA_TYPES.has(entityField.dataType) && (
             <Button
               buttonStyle={EnumButtonStyle.Clear}
@@ -170,8 +190,8 @@ export const EntityFieldListItem = ({
               onClick={handleDelete}
             />
           )}
-        </DataGridCell>
-      </DataGridRow>
+        </div>
+      </Panel>
     </>
   );
 };

@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+$icon-font-size-xlarge: 32px;
+
+.dark-mode-toggle {
+  &--active {
+    i {
+      color: var(--primary);
+    }
+  }
+}

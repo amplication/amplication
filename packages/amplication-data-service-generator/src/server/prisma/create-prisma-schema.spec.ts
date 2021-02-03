@@ -268,7 +268,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createObjectField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        `Enum${EXAMPLE_ENTITY_FIELD_NAME}`,
+        `Enum${EXAMPLE_ENTITY_NAME}${EXAMPLE_ENTITY_FIELD_NAME}`,
         true,
         true
       ),
@@ -279,7 +279,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createObjectField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        `Enum${EXAMPLE_ENTITY_FIELD_NAME}`,
+        `Enum${EXAMPLE_ENTITY_NAME}${EXAMPLE_ENTITY_FIELD_NAME}`,
         false,
         true
       ),

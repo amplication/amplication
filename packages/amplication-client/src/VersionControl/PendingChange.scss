@@ -6,26 +6,23 @@
   margin-bottom: var(--default-spacing);
   @include flexFullRow;
 
-  > * {
-    margin: 0 var(--default-spacing);
-
-    &:first-child {
-      margin-left: 0;
-    }
-  }
   &__spacer {
     flex: 1;
   }
   &__action {
-    height: var(--medium-button-height);
-    width: var(--medium-button-height);
-    min-width: var(--medium-button-height);
+    height: var(--double-spacing);
+    width: var(--double-spacing);
+    min-width: var(--double-spacing);
+    min-height: var(--double-spacing);
     border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--white);
+    color: var(--static-white);
     margin-bottom: 0;
+    margin-left: var(--double-spacing);
+    margin-right: var(--default-spacing);
+
     &.update {
       background-color: var(--secondary-light-blue);
     }

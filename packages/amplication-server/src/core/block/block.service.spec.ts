@@ -14,7 +14,8 @@ const EXAMPLE_APP: App = {
   createdAt: NOW,
   updatedAt: NOW,
   name: 'Example App',
-  description: 'Example App Description'
+  description: 'Example App Description',
+  githubSyncEnabled: false
 };
 
 const EXAMPLE_BLOCK: Block = {

@@ -4,14 +4,15 @@ import { Switch, Route, match } from "react-router-dom";
 import { CommitList } from "./CommitList";
 import CommitPage from "./CommitPage";
 
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 type Props = {
   match: match;
 };
+const NAVIGATION_KEY = "ENTITIES";
 
 function Entities({ match }: Props) {
-  useBreadcrumbs(match.url, "Commits");
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Commits");
 
   return (
     <Switch>

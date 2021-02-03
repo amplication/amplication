@@ -15,14 +15,11 @@ If you need help or have a question, go to our [Discord channel](https://discord
 - [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
-Install the dependencies of the monorepo (execute in the **root** directory of the repository, You should **not** execute `npm install` in the `client` directory):
+#### One time server setup
 
-```
-npm install
-npm run bootstrap
-```
+Before starting the client you need to setup the server and database. You can follow the [instructions here](https://github.com/amplication/amplication/blob/master/packages/amplication-server/README.md#one-time-set-up).
 
-Build dependencies of the client:
+After that you have to build dependencies of the client:
 
 ```
 npm run build -- --scope @amplication/client --include-dependencies
@@ -30,12 +27,12 @@ npm run build -- --scope @amplication/client --include-dependencies
 
 ## Available Scripts
 
-In the project directory, you can run:
+In the project directory, after you setup the server and client dependencies, you can run:
 
 ### `npm start`
 
 Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
 
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.

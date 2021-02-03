@@ -1,28 +1,11 @@
 @import "../style/index.scss";
 
 .role-list {
-  .amp-data-grid__toolbar {
-    h2 {
-      margin-bottom: 0;
-    }
-    .text-input--with-trailing-button {
-      margin-bottom: 0;
-
-      input {
-        transition: width 0.2s ease-in;
-        width: var(--form-field-normal);
-      }
-
-      @media only screen and (min-width: $breakpoint-large-desktop) {
-        input {
-          width: var(--form-field-long);
-        }
-      }
-
-      .amp-button,
-      label {
-        margin-bottom: 0;
-      }
-    }
+  .search-field {
+    margin-left: 0;
+    margin-bottom: var(--default-spacing);
+  }
+  &__header {
+    margin-bottom: var(--default-spacing);
   }
 }

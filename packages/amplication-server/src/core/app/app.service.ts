@@ -20,11 +20,16 @@ import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
-  PendingChange
+  PendingChange,
+  FindAvailableGithubReposArgs,
+  AppEnableSyncWithGithubRepoArgs
 } from './dto';
+import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
 import { EnvironmentService } from '../environment/environment.service';
 import { InvalidColorError } from './InvalidColorError';
+import { GithubService } from '../github/github.service';
+import { GithubRepo } from '../github/dto/githubRepo';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -45,7 +50,8 @@ export class AppService {
     private readonly prisma: PrismaService,
     private entityService: EntityService,
     private environmentService: EnvironmentService,
-    private buildService: BuildService
+    private buildService: BuildService,
+    private readonly githubService: GithubService
   ) {}
 
   /**
@@ -76,21 +82,24 @@ export class AppService {
 
     await this.environmentService.createDefaultEnvironment(app.id);
 
-    await this.commit({
-      data: {
-        app: {
-          connect: {
-            id: app.id
-          }
-        },
-        message: INITIAL_COMMIT_MESSAGE,
-        user: {
-          connect: {
-            id: user.id
+    await this.commit(
+      {
+        data: {
+          app: {
+            connect: {
+              id: app.id
+            }
+          },
+          message: INITIAL_COMMIT_MESSAGE,
+          user: {
+            connect: {
+              id: user.id
+            }
           }
         }
-      }
-    });
+      },
+      true
+    );
 
     return app;
   }
@@ -190,7 +199,10 @@ export class AppService {
     return this.entityService.getChangedEntities(appId, user.id);
   }
 
-  async commit(args: CreateCommitArgs): Promise<Commit | null> {
+  async commit(
+    args: CreateCommitArgs,
+    skipPublish?: boolean
+  ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const appId = args.data.app.connect.id;
 
@@ -258,26 +270,29 @@ export class AppService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    await this.buildService.create({
-      data: {
-        app: {
-          connect: {
-            id: appId
-          }
-        },
-        commit: {
-          connect: {
-            id: commit.id
-          }
-        },
-        createdBy: {
-          connect: {
-            id: userId
-          }
-        },
-        message: args.data.message
-      }
-    });
+    await this.buildService.create(
+      {
+        data: {
+          app: {
+            connect: {
+              id: appId
+            }
+          },
+          commit: {
+            connect: {
+              id: commit.id
+            }
+          },
+          createdBy: {
+            connect: {
+              id: userId
+            }
+          },
+          message: args.data.message
+        }
+      },
+      skipPublish
+    );
 
     return commit;
   }
@@ -330,5 +345,137 @@ export class AppService {
     //await this.prisma.$transaction(allPromises);
 
     return true;
+  }
+
+  async startAuthorizeAppWithGithub(appId: string) {
+    return this.githubService.getOAuthAppAuthorizationUrl(appId);
+  }
+
+  async completeAuthorizeAppWithGithub(
+    args: CompleteAuthorizeAppWithGithubArgs
+  ): Promise<App> {
+    const token = await this.githubService.createOAuthAppAuthorizationToken(
+      args.data.state,
+      args.data.code
+    );
+
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    return this.prisma.app.update({
+      where: args.where,
+      data: {
+        githubToken: token,
+        githubTokenCreatedDate: new Date()
+      }
+    });
+  }
+
+  async removeAuthorizeAppWithGithub(args: FindOneArgs): Promise<App> {
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (isEmpty(app.githubToken)) {
+      throw new Error(`This app is not authorized with any GitHub repo.`);
+    }
+
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    return this.prisma.app.update({
+      where: args.where,
+      data: {
+        githubToken: null,
+        githubTokenCreatedDate: null,
+        githubSyncEnabled: false,
+        githubRepo: null,
+        githubBranch: null
+      }
+    });
+  }
+
+  async findAvailableGithubRepos(
+    args: FindAvailableGithubReposArgs
+  ): Promise<GithubRepo[]> {
+    const app = await this.app({
+      where: {
+        id: args.where.app.id
+      }
+    });
+
+    if (isEmpty(app.githubToken)) {
+      throw new Error(
+        `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
+      );
+    }
+
+    return await this.githubService.listRepoForAuthenticatedUser(
+      app.githubToken
+    );
+  }
+
+  async enableSyncWithGithubRepo(
+    args: AppEnableSyncWithGithubRepoArgs
+  ): Promise<App> {
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (app.githubSyncEnabled) {
+      throw new Error(
+        `Sync is already enabled for this app. To change the sync settings, first disable the sync and re-enable it with the new settings`
+      );
+    }
+
+    if (isEmpty(app.githubToken)) {
+      throw new Error(
+        `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
+      );
+    }
+
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    return this.prisma.app.update({
+      where: args.where,
+      data: {
+        ...args.data,
+        githubSyncEnabled: true
+      }
+    });
+  }
+
+  async disableSyncWithGithubRepo(args: FindOneArgs): Promise<App> {
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (!app.githubSyncEnabled) {
+      throw new Error(`Sync is not enabled for this app`);
+    }
+
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    return this.prisma.app.update({
+      where: args.where,
+      data: {
+        githubRepo: null, //reset the repo and branch to allow the user to set another branch when needed
+        githubBranch: null,
+        githubSyncEnabled: false
+      }
+    });
+  }
+
+  async reportSyncMessage(appId: string, message: string): Promise<App> {
+    //directly update with prisma since we don't want to expose these fields for regular updates
+    return this.prisma.app.update({
+      where: {
+        id: appId
+      },
+      data: {
+        githubLastMessage: message,
+        githubLastSync: new Date()
+      }
+    });
   }
 }

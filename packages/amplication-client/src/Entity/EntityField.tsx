@@ -1,16 +1,16 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useContext } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { types } from "@amplication/data";
-import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
+
 import { useTracking } from "../util/analytics";
-import SidebarHeader from "../Layout/SidebarHeader";
 import { SYSTEM_DATA_TYPES } from "./constants";
 import EntityFieldForm, { Values } from "./EntityFieldForm";
 import {
@@ -31,6 +31,7 @@ const EntityField = () => {
   const [lookupPendingData, setLookupPendingData] = useState<Values | null>(
     null
   );
+  const pendingChangesContext = useContext(PendingChangesContext);
 
   const match = useRouteMatch<{
     application: string;
@@ -57,6 +58,7 @@ const EntityField = () => {
     UPDATE_ENTITY_FIELD,
     {
       onCompleted: (data) => {
+        pendingChangesContext.addEntity(entity);
         trackEvent({
           eventName: "updateEntityField",
           entityFieldName: data.updateEntityField.displayName,
@@ -137,22 +139,15 @@ const EntityField = () => {
 
   return (
     <>
-      <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
-        {loading
-          ? "Loading..."
-          : `${data?.entity.displayName} | ${entityField?.displayName}`}
-      </SidebarHeader>
       {!loading && (
-        <DrawerContent>
-          <EntityFieldForm
-            isDisabled={
-              defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
-            }
-            onSubmit={handleSubmit}
-            defaultValues={defaultValues}
-            applicationId={application}
-          />
-        </DrawerContent>
+        <EntityFieldForm
+          isDisabled={
+            defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
+          }
+          onSubmit={handleSubmit}
+          defaultValues={defaultValues}
+          applicationId={application}
+        />
       )}
       {data && (
         <RelatedFieldDialog

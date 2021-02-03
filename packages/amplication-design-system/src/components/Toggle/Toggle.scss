@@ -12,6 +12,7 @@ $input-translate: -22px;
 @mixin state($thumb, $track) {
   .mdc-switch__track {
     background-color: $track;
+    opacity: 1;
   }
   .mdc-switch__thumb {
     background-color: $thumb;
@@ -36,17 +37,11 @@ $input-translate: -22px;
     }
   }
 
-  &:hover {
-    label {
-      color: var(--primary);
-    }
-  }
-
   .mdc-switch {
     width: $track-width;
 
     &.mdc-switch--checked {
-      @include state(var(--white), var(--primary));
+      @include state(var(--static-white), var(--primary));
       .mdc-switch__thumb-underlay {
         transform: translateX(0);
       }
@@ -56,7 +51,7 @@ $input-translate: -22px;
     }
 
     &:not(.mdc-switch--checked) {
-      @include state(var(--white), var(--black20));
+      @include state(var(--static-white), var(--black20));
       .mdc-switch__thumb-underlay {
         transform: translateX(-$thumb-translate);
       }

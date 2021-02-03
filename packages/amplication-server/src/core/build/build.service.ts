@@ -42,7 +42,9 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 
-export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
+import { GithubService } from '../github/github.service';
+
+export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
@@ -53,7 +55,15 @@ export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = 'Build Docker failed';
 export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
   'Waiting for Docker image...';
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
-  'Starting to build Docker image. It should take around 2 minutes.';
+  'Starting to build Docker image. It should take a few minutes.';
+
+export const PUSH_TO_GITHUB_STEP_NAME = 'PUSH_TO_GITHUB';
+export const PUSH_TO_GITHUB_STEP_MESSAGE = 'Push changes to GitHub';
+export const PUSH_TO_GITHUB_STEP_START_LOG =
+  'Starting to push changes to GitHub.';
+export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
+  'Successfully pushed changes to GitHub';
+export const PUSH_TO_GITHUB_STEP_FAILED_LOG = 'Push changes to GitHub failed';
 
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
 export const ACTION_JOB_DONE_LOG = 'Build job done';
@@ -132,8 +142,6 @@ const CONTAINER_STATUS_UPDATE_INTERVAL_SEC = 10;
 
 @Injectable()
 export class BuildService {
-  generatedAppBaseImage: string;
-
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
@@ -144,19 +152,16 @@ export class BuildService {
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
+    private readonly githubService: GithubService,
     @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
-
-    this.generatedAppBaseImage = this.configService.get(
-      GENERATED_APP_BASE_IMAGE_VAR
-    );
   }
 
-  async create(args: CreateBuildArgs): Promise<Build> {
+  async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
     const appId = args.data.app.connect.id;
 
     /**@todo: set version based on release when applicable */
@@ -187,6 +192,10 @@ export class BuildService {
             }
           } //create action record
         }
+      },
+      include: {
+        commit: true,
+        app: true
       }
     });
 
@@ -195,7 +204,9 @@ export class BuildService {
     });
     logger.info(JOB_STARTED_LOG);
     const tarballURL = await this.generate(build);
-    await this.buildDockerImage(build, tarballURL);
+    if (!skipPublish) {
+      await this.buildDockerImage(build, tarballURL);
+    }
     logger.info(JOB_DONE_LOG);
 
     return build;
@@ -377,6 +388,8 @@ export class BuildService {
 
         const tarballURL = await this.save(build, modules);
 
+        await this.saveToGitHub(build, modules);
+
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
         return tarballURL;
@@ -409,7 +422,7 @@ export class BuildService {
         );
         const result = await this.containerBuilderService.build({
           tags: [tag, latestTag],
-          cacheFrom: [this.generatedAppBaseImage, latestImageId],
+          cacheFrom: [latestImageId],
           url: tarballURL
         });
         await this.handleContainerBuilderResult(build, step, result);
@@ -530,6 +543,83 @@ export class BuildService {
       )
     ]);
     return this.getFileURL(disk, tarFilePath);
+  }
+
+  private async saveToGitHub(
+    build: Build,
+    modules: DataServiceGenerator.Module[]
+  ) {
+    const app = build.app;
+    const commit = build.commit;
+    const truncateBuildId = build.id.slice(build.id.length - 8);
+
+    const commitMessage =
+      (commit.message &&
+        `${commit.message} (Amplication build ${truncateBuildId})`) ||
+      `Amplication build ${truncateBuildId}`;
+
+    const host = this.configService.get(HOST_VAR);
+
+    const url = `${host}/${build.appId}/builds/${build.id}`;
+
+    if (app.githubSyncEnabled) {
+      const [userName, repoName] = app.githubRepo.split('/');
+
+      return this.actionService.run(
+        build.actionId,
+        PUSH_TO_GITHUB_STEP_NAME,
+        PUSH_TO_GITHUB_STEP_MESSAGE,
+        async step => {
+          await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
+          try {
+            const prUrl = await this.githubService.createPullRequest(
+              userName,
+              repoName,
+              modules,
+              `amplication-build-${build.id}`,
+              commitMessage,
+              `Amplication build # ${build.id}.
+Commit message: ${commit.message}
+
+${url}
+`,
+              app.githubBranch,
+              app.githubToken
+            );
+
+            await this.appService.reportSyncMessage(
+              build.appId,
+              'Sync Completed Successfully'
+            );
+            await this.actionService.logInfo(step, prUrl, { githubUrl: prUrl });
+            await this.actionService.logInfo(
+              step,
+              PUSH_TO_GITHUB_STEP_FINISH_LOG
+            );
+
+            await this.actionService.complete(
+              step,
+              EnumActionStepStatus.Success
+            );
+          } catch (error) {
+            await this.actionService.logInfo(
+              step,
+              PUSH_TO_GITHUB_STEP_FAILED_LOG
+            );
+            await this.actionService.logInfo(step, error);
+            await this.actionService.complete(
+              step,
+              EnumActionStepStatus.Failed
+            );
+            await this.appService.reportSyncMessage(
+              build.appId,
+              `Error: ${error}`
+            );
+          }
+        },
+        true
+      );
+    }
   }
 
   /** @todo move */

@@ -1,13 +1,11 @@
 @import "../style/index.scss";
 
 $button-height: 40px;
-$button-radius: $button-height / 2;
 $icon-font-size: 24px;
 
 .github-login-button {
   .amp-button {
     height: $button-height;
-    border-radius: $button-radius !important;
     i {
       font-size: $icon-font-size;
       margin-right: var(--default-spacing);

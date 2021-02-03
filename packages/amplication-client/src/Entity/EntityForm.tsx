@@ -1,22 +1,15 @@
-import React, { useMemo, useCallback } from "react";
-import { Formik, Form } from "formik";
-import { useHistory } from "react-router-dom";
+import React, { useMemo } from "react";
+import { Formik } from "formik";
 
 import omitDeep from "deepdash-es/omitDeep";
 
 import * as models from "../models";
-import {
-  TextField,
-  Panel,
-  PanelHeader,
-  EnumPanelStyle,
-} from "@amplication/design-system";
-import EditableTitleField from "../Components/EditableTitleField";
+import { TextField } from "@amplication/design-system";
+import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
+import { Form } from "../Components/Form";
 import FormikAutoSave from "../util/formikAutoSave";
-import PermissionsPreview from "../Permissions/PermissionsPreview";
-import { ENTITY_ACTIONS, USER_ENTITY } from "./constants";
-import { Button, EnumButtonStyle } from "../Components/Button";
+import { USER_ENTITY } from "./constants";
 import { validate } from "../util/formikValidateJsonSchema";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
@@ -57,6 +50,8 @@ const FORM_SCHEMA = {
   },
 };
 
+const CLASS_NAME = "entity-form";
+
 const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
@@ -67,14 +62,9 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
     );
     return sanitizedDefaultValues as EntityInput;
   }, [entity]);
-  const history = useHistory();
-
-  const handlePermissionsClick = useCallback(() => {
-    history.push(`/${applicationId}/entities/${entity?.id}/permissions`);
-  }, [history, applicationId, entity]);
 
   return (
-    <div className="entity-form">
+    <div className={CLASS_NAME}>
       <Formik
         initialValues={initialValues}
         validate={(values: EntityInput) => validate(values, FORM_SCHEMA)}
@@ -83,56 +73,28 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
       >
         {(formik) => {
           return (
-            <Form>
+            <Form childrenAsBlocks>
               <>
                 <FormikAutoSave debounceMS={1000} />
-                <div className="form__header">
-                  <EditableTitleField name="displayName" label="Display Name" />
-                  <EditableTitleField
-                    secondary
-                    name="description"
-                    label="Description"
-                  />
-                </div>
-                <div className="form__body">
-                  <Panel
-                    className="form__body__general"
-                    panelStyle={EnumPanelStyle.Bordered}
-                  >
-                    <PanelHeader>General</PanelHeader>
-                    <div className="form__body__general__fields">
-                      <NameField
-                        name="name"
-                        disabled={USER_ENTITY === entity?.name}
-                        capitalized
-                      />
-                      <TextField
-                        name="pluralDisplayName"
-                        label="Plural Display Name"
-                      />
-                    </div>
-                  </Panel>
-                  <Panel
-                    className="form__body__permissions"
-                    panelStyle={EnumPanelStyle.Bordered}
-                  >
-                    <PanelHeader>
-                      <h2>Permissions</h2>
-                      <Button
-                        buttonStyle={EnumButtonStyle.Clear}
-                        icon="edit"
-                        type="button"
-                        onClick={handlePermissionsClick}
-                      />
-                    </PanelHeader>
 
-                    <PermissionsPreview
-                      entityId={entity?.id}
-                      availableActions={ENTITY_ACTIONS}
-                      entityDisplayName={entity?.pluralDisplayName || ""}
-                    />
-                  </Panel>
-                </div>
+                <DisplayNameField name="displayName" label="Display Name" />
+
+                <NameField
+                  name="name"
+                  disabled={USER_ENTITY === entity?.name}
+                  capitalized
+                />
+                <TextField
+                  name="pluralDisplayName"
+                  label="Plural Display Name"
+                />
+                <TextField
+                  autoComplete="off"
+                  textarea
+                  rows={3}
+                  name="description"
+                  label="Description"
+                />
               </>
             </Form>
           );

@@ -4,12 +4,14 @@ import {
   UseGuards,
   Get,
   Res,
-  Req
+  Req,
+  UseFilters
 } from '@nestjs/common';
 import { MorganInterceptor } from 'nest-morgan';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 import { AuthService, AuthUser } from './auth.service';
+import { GithubAuthExceptionFilter } from 'src/filters/github-auth-exception.filter';
 
 @Controller('/')
 export class AuthController {
@@ -23,6 +25,7 @@ export class AuthController {
   }
 
   @UseInterceptors(MorganInterceptor('combined'))
+  @UseFilters(GithubAuthExceptionFilter)
   @Get('/github/callback')
   @UseGuards(AuthGuard('github'))
   async githubCallback(@Req() request: Request, @Res() response: Response) {

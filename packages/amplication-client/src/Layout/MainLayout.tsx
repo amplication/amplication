@@ -17,21 +17,25 @@ import { MenuFixedPanel } from "../util/teleporter";
 import { Popover } from "@amplication/design-system";
 import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
+import DarkModeToggle from "./DarkModeToggle";
 import "./MainLayout.scss";
 
 type Props = {
   children: React.ReactNode;
+  footer?: React.ReactNode;
   className?: string;
 };
+const CLASS_NAME = "main-layout";
 
-function MainLayout({ children, className }: Props) {
+function MainLayout({ children, footer, className }: Props) {
   return (
     <div
-      className={classNames("main-layout", className, {
-        "main-layout--mobile": isMobileOnly,
+      className={classNames(CLASS_NAME, className, {
+        [`${CLASS_NAME}--mobile`]: isMobileOnly,
       })}
     >
-      {children}
+      <div className={`${CLASS_NAME}__wrapper`}>{children}</div>
+      {footer && <div className={`${CLASS_NAME}__footer`}>{footer}</div>}
     </div>
   );
 }
@@ -86,7 +90,9 @@ const Menu = ({ children }: MenuProps) => {
             {children}
           </div>
           <div className="bottom-menu-container">
+            <DarkModeToggle />
             <Popover
+              className="main-layout__side__popover"
               content={<SupportMenu />}
               open={supportMenuOpen}
               align={"right"}

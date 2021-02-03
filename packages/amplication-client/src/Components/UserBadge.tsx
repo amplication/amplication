@@ -15,7 +15,7 @@ type TData = {
     account: models.Account;
   };
 };
-const TOOLTIP_DIRECTION = "s";
+const TOOLTIP_DIRECTION = "e";
 
 function UserBadge() {
   const authenticated = useAuthenticated();

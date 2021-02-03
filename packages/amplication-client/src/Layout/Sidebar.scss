@@ -15,6 +15,7 @@
     overflow: hidden;
     height: 100%;
     z-index: $side-bar-z-index;
+    background-color: var(--surface);
 
     &--large {
       width: var(--side-bar-large-width);

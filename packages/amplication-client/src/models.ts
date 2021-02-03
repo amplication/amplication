@@ -65,6 +65,12 @@ export type App = {
   entities: Array<Entity>;
   environments: Array<Environment>;
   builds: Array<Build>;
+  githubTokenCreatedDate: Scalars["DateTime"];
+  githubSyncEnabled: Scalars["Boolean"];
+  githubRepo: Scalars["String"];
+  githubBranch: Scalars["String"];
+  githubLastSync: Scalars["DateTime"];
+  githubLastMessage: Scalars["String"];
 };
 
 export type AppEntitiesArgs = {
@@ -85,6 +91,13 @@ export type AppCreateInput = {
   name: Scalars["String"];
   description: Scalars["String"];
   color?: Maybe<Scalars["String"]>;
+};
+
+export type AppEnableSyncWithGithubRepoInput = {
+  /** The full name of the repo in the format org-name/repo-name */
+  githubRepo: Scalars["String"];
+  /** optional: defaults to default branch */
+  githubBranch?: Maybe<Scalars["String"]>;
 };
 
 export type AppOrderByInput = {
@@ -155,6 +168,15 @@ export type Auth = {
   __typename?: "Auth";
   /** JWT Bearer token */
   token: Scalars["String"];
+};
+
+export type AuthorizeAppWithGithubResult = {
+  __typename?: "AuthorizeAppWithGithubResult";
+  url: Scalars["String"];
+};
+
+export type AvailableGithubReposFindInput = {
+  app: WhereUniqueInput;
 };
 
 export type Block = {
@@ -348,6 +370,11 @@ export type CommitWhereInput = {
 
 export type CommitWhereUniqueInput = {
   id?: Maybe<Scalars["String"]>;
+};
+
+export type CompleteAuthorizeAppWithGithubInput = {
+  code: Scalars["String"];
+  state: Scalars["String"];
 };
 
 export type ConnectorRestApi = IBlock & {
@@ -982,6 +1009,15 @@ export type Environment = {
   address: Scalars["String"];
 };
 
+export type GithubRepo = {
+  __typename?: "GithubRepo";
+  name: Scalars["String"];
+  url: Scalars["String"];
+  private: Scalars["String"];
+  fullName: Scalars["String"];
+  admin: Scalars["String"];
+};
+
 export type HttpBasicAuthenticationSettings = {
   __typename?: "HttpBasicAuthenticationSettings";
   username: Scalars["String"];
@@ -1060,6 +1096,9 @@ export type Mutation = {
   updateApp?: Maybe<App>;
   commit?: Maybe<Commit>;
   discardPendingChanges?: Maybe<Scalars["Boolean"]>;
+  startAuthorizeAppWithGithub: AuthorizeAppWithGithubResult;
+  completeAuthorizeAppWithGithub: Scalars["Boolean"];
+  appEnableSyncWithGithubRepo: App;
   signup: Auth;
   login: Auth;
   changePassword: Account;
@@ -1191,6 +1230,20 @@ export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
 };
 
+export type MutationStartAuthorizeAppWithGithubArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationCompleteAuthorizeAppWithGithubArgs = {
+  data: CompleteAuthorizeAppWithGithubInput;
+  where: WhereUniqueInput;
+};
+
+export type MutationAppEnableSyncWithGithubRepoArgs = {
+  data: AppEnableSyncWithGithubRepoInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationSignupArgs = {
   data: SignupInput;
 };
@@ -1315,6 +1368,7 @@ export type Query = {
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
+  appAvailableGithubRepos: Array<GithubRepo>;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
   me: User;
@@ -1394,6 +1448,10 @@ export type QueryAppsArgs = {
 
 export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
+};
+
+export type QueryAppAvailableGithubReposArgs = {
+  where: AvailableGithubReposFindInput;
 };
 
 export type QueryCommitArgs = {

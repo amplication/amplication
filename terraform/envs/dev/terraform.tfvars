@@ -8,6 +8,10 @@ github_client_id    = "2e4a744d73ea633fd615"
 github_scope        = "user:email"
 github_redirect_uri = "https://staging.amplication.com/github/callback"
 
+github_app_auth_scope       = "user:email,repo,read:org"
+github_app_auth_redirect_uri = "https://staging.amplication.com/github-auth-app/callback/{appId}"
+
+
 # Amplitude
 amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"
 
@@ -36,10 +40,12 @@ default_disk = "gcs"
 
 # Container Builder
 apps_project = "amplication-apps"
+apps_project_2 = "amplication-apps-2"
 container_builder_default = "cloud-build"
 
 # Deployer
 deployer_default = "gcp"
 apps_region = "us-east1"
 apps_terraform_state_bucket = "amplication-apps-state-bucket"
+apps_terraform_state_bucket_2 = "amplication-apps-state-bucket_2"
 apps_domain = "staging.amplication.app"

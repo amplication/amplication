@@ -34,14 +34,18 @@ import {
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { FIELD_ID } from "./nestjs-graphql.util";
 
+const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
+const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
+
 const EXAMPLE_ENTITY: Entity = {
-  id: "EXAMPLE_ENTITY_ID",
-  name: "ExampleEntity",
+  id: EXAMPLE_ENTITY_ID,
+  name: EXAMPLE_ENTITY_NAME,
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
-  fields: [],
+  fields: [EXAMPLE_ID_FIELD],
   permissions: [],
 };
+
 const EXAMPLE_OPTIONAL_ENTITY_FIELD: EntityField = {
   id: "EXAMPLE_OPTIONAL_ENTITY_FIELD_ID",
   name: "exampleOptionalEntityField",

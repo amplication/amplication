@@ -1,64 +1,7 @@
 @import "../style/index.scss";
 
-.entity {
-  & .form__header {
-    margin-bottom: var(--default-spacing);
-  }
-
-  & .form__body {
-    @include flexFullRow;
-    margin: 0 calc(var(--default-spacing) * -1);
-    align-items: stretch;
-
-    &__general,
-    &__permissions {
-      flex: 1;
-    }
-
-    &__general {
-      &__fields {
-        @include flexFullRow;
-
-        > * {
-          flex: 1;
-          margin: var(--default-spacing);
-
-          &:first-child {
-            margin-left: 0;
-          }
-
-          &:last-child {
-            margin-right: 0;
-          }
-        }
-      }
-    }
-  }
-
-  .entity-field-list {
-    .amp-data-grid__toolbar {
-      h2 {
-        margin-bottom: 0;
-      }
-      .text-input--with-trailing-button {
-        margin-bottom: 0;
-
-        input {
-          transition: width 0.2s ease-in;
-          width: var(--form-field-normal);
-        }
-
-        @media only screen and (min-width: $breakpoint-large-desktop) {
-          input {
-            width: var(--form-field-long);
-          }
-        }
-
-        .amp-button,
-        label {
-          margin-bottom: 0;
-        }
-      }
-    }
+.entity-form {
+  &__permissions {
+    margin: 0;
   }
 }

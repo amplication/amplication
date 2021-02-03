@@ -3,15 +3,15 @@ import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
+import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
-import { EnumPanelStyle, Panel } from "@amplication/design-system";
+import { Panel, EnumPanelStyle } from "@amplication/design-system";
 
 import { GET_ROLES } from "../Roles/RoleList";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import imageRoles from "../assets/images/tile-roles.svg";
 import "./RolesTile.scss";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 type Props = {
   applicationId: string;
@@ -46,31 +46,27 @@ function RolesTile({ applicationId }: Props) {
   return (
     <Panel
       className={`${CLASS_NAME}`}
-      panelStyle={EnumPanelStyle.Bordered}
       clickable
       onClick={handleClick}
+      panelStyle={EnumPanelStyle.Bordered}
     >
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
           <h2>Roles</h2>
+          Create roles and granularly set permissions per entity or specific
+          fields.
           {loading ? (
             <CircularProgress />
-          ) : !data?.appRoles.length ? (
-            <>There are no roles</>
           ) : (
-            <>
-              You have {data?.appRoles.length}
+            <span className={`${CLASS_NAME}__content__details__summary`}>
+              <Icon icon={{ icon: "lock", size: "medium" }} />
+
+              {data?.appRoles.length}
               {data?.appRoles.length > 1 ? " roles" : " role"}
-            </>
+            </span>
           )}
-          <Button
-            className={`${CLASS_NAME}__content__action`}
-            buttonStyle={EnumButtonStyle.Secondary}
-          >
-            Create Roles
-          </Button>
         </div>
-        <img src={imageRoles} alt="roles" />
+        <SvgThemeImage image={EnumImages.Roles} />
       </div>
     </Panel>
   );

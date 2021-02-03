@@ -1,6 +1,7 @@
 :root {
-  --surface: #f4f4f7;
-  --white: #ffffff;
+  --surface: #ffffff; //solid white on the background
+  --white: #ffffff; //main white
+  --static-white: #ffffff; //static white stays white on dark mode, to be used on button and other color elements
 
   --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
     "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
@@ -43,6 +44,9 @@
 
   --modal-background: rgba(12, 11, 14, 0.48);
 
+  --panel-background: var(--white);
+  --panel-hover-background: var(--black5);
+
   --form-horizontal-width: 700px;
   --form-horizontal-label-width: 300px;
   --title1-font-size: 15px;
@@ -78,10 +82,14 @@
   --menu-item-height: var(--menu-item-width);
   --menu-expand-animation-duration: 0.2s;
 
+  --menu-item-color: #b7bac7;
+  --menu-item-active-background: #373d57;
+  --menu-item-active-color: #ffffff;
+
   --application-card-width: 390px;
   --application-card-height: 210px;
 
-  --default-border-radius: 4px;
+  --default-border-radius: 8px;
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
@@ -90,10 +98,10 @@
   --side-bar-min-width: 30vw;
 
   --default-button-height: 32px;
-  --default-button-radius: calc(var(--default-button-height) / 2);
+  --default-button-radius: 4px;
 
   --medium-button-height: 28px;
-  --medium-button-radius: calc(var(--medium-button-height) / 2);
+  --medium-button-radius: var(--default-button-radius);
 
   --time-since-height: 24px;
 

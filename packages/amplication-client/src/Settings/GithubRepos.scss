@@ -1,0 +1,42 @@
+@import "../style/index.scss";
+
+$max-height: 80vh;
+.github-repos {
+  overflow: auto;
+
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+  }
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+    @include body2;
+    margin-right: auto;
+  }
+  &__body {
+    @include flexFullRowWithSpacing;
+    align-items: center;
+
+    &__name {
+      @include title1;
+      padding-bottom: var(--default-spacing-small);
+    }
+  }
+}
+
+.amp-dialog.select-repo-dialog {
+  margin-top: 10vh !important;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  min-width: 700px;
+
+  .amp-dialog__body {
+    flex: 1;
+    overflow: auto;
+    @include scrollbars($default-scroll-width, var(--black60), transparent);
+  }
+}

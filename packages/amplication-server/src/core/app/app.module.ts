@@ -8,6 +8,7 @@ import { EnvironmentModule } from '../environment/environment.module';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
 import { CommitModule } from '../commit/commit.module';
+import { GithubModule } from '../github/github.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { CommitModule } from '../commit/commit.module';
     EntityModule,
     forwardRef(() => BuildModule),
     EnvironmentModule,
-    CommitModule
+    CommitModule,
+    GithubModule
   ],
   providers: [AppService, AppResolver],
   exports: [AppService, AppResolver]

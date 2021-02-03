@@ -5,15 +5,12 @@ import { EntityList } from "./EntityList";
 import "./Entities.scss";
 
 import Entity from "../Entity/Entity";
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 type Props = {
   match: match;
 };
 
 function Entities({ match }: Props) {
-  useBreadcrumbs(match.url, "Entities");
-
   return (
     <Switch>
       <Route exact path="/:application/entities/" component={EntityList} />

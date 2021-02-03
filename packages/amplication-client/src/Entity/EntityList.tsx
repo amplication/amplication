@@ -2,50 +2,19 @@ import React, { useState, useCallback, useEffect } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
+import { CircularProgress } from "@rmwc/circular-progress";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import {
-  DataGrid,
-  DataField,
-  EnumTitleType,
-  SortData,
-  Dialog,
-} from "@amplication/design-system";
+import { Dialog, SearchField } from "@amplication/design-system";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
-
-const fields: DataField[] = [
-  {
-    name: "lockedByUserId",
-    title: "",
-    icon: "pending_changes",
-    minWidth: true,
-  },
-  {
-    name: "displayName",
-    title: "Name",
-    sortable: true,
-  },
-  {
-    name: "description",
-    title: "Description",
-    sortable: true,
-  },
-  {
-    name: "lastCommitAt",
-    title: "Last Commit",
-  },
-  {
-    name: "commands",
-    title: "",
-  },
-];
+import "./EntityList.scss";
 
 type TData = {
   entities: models.Entity[];
@@ -56,29 +25,19 @@ type Props = {
 };
 
 const NAME_FIELD = "displayName";
+const CLASS_NAME = "entity-list";
+const NAVIGATION_KEY = "ENTITY_LIST";
 
-const INITIAL_SORT_DATA = {
-  field: null,
-  order: null,
-};
 const POLL_INTERVAL = 2000;
 
 export const EntityList = ({ match }: Props) => {
+  useNavigationTabs(NAVIGATION_KEY, match.url, "Entities");
   const [error, setError] = useState<Error>();
 
   const { application } = match.params;
-  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
-
-  const handleSortChange = (sortData: SortData) => {
-    setSortDir(sortData);
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearchPhrase(value);
-  };
 
   const handleNewEntityClick = useCallback(() => {
     setNewEntity(!newEntity);
@@ -95,8 +54,7 @@ export const EntityList = ({ match }: Props) => {
     variables: {
       id: application,
       orderBy: {
-        [sortDir.field || NAME_FIELD]:
-          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
+        [NAME_FIELD]: models.SortOrder.Asc,
       },
       whereName:
         searchPhrase !== ""
@@ -104,6 +62,13 @@ export const EntityList = ({ match }: Props) => {
           : undefined,
     },
   });
+
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
 
   //start polling with cleanup
   useEffect(() => {
@@ -118,51 +83,45 @@ export const EntityList = ({ match }: Props) => {
     formatError(errorLoading) || (error && formatError(error));
 
   return (
-    <PageContent className="pages" withFloatingBar>
-      <main>
-        <FloatingToolbar />
-
-        <Dialog
-          className="new-entity-dialog"
-          isOpen={newEntity}
-          onDismiss={handleNewEntityClick}
-          title="New Entity"
-        >
-          <NewEntity applicationId={application} />
-        </Dialog>
-        <DataGrid
-          showSearch
-          fields={fields}
-          title="Entities"
-          titleType={EnumTitleType.PageTitle}
-          loading={loading}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onSearchChange={handleSearchChange}
-          toolbarContentEnd={
-            <Button
-              buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleNewEntityClick}
-            >
-              Create New
-            </Button>
-          }
-        >
-          {data?.entities.map((entity) => (
-            <EntityListItem
-              key={entity.id}
-              entity={entity}
-              applicationId={application}
-              onError={setError}
-            />
-          ))}
-        </DataGrid>
-
-        <Snackbar
-          open={Boolean(error || errorLoading)}
-          message={errorMessage}
+    <PageContent className={CLASS_NAME}>
+      <Dialog
+        className="new-entity-dialog"
+        isOpen={newEntity}
+        onDismiss={handleNewEntityClick}
+        title="New Entity"
+      >
+        <NewEntity applicationId={application} />
+      </Dialog>
+      <div className={`${CLASS_NAME}__header`}>
+        <SearchField
+          label="search"
+          placeholder="search"
+          onChange={handleSearchChange}
         />
-      </main>
+        <Button
+          className={`${CLASS_NAME}__add-button`}
+          buttonStyle={EnumButtonStyle.Primary}
+          onClick={handleNewEntityClick}
+          icon="plus"
+        >
+          Add entity
+        </Button>
+      </div>
+      <div className={`${CLASS_NAME}__title`}>
+        {data?.entities.length} Entities
+      </div>
+      {loading && <CircularProgress />}
+
+      {data?.entities.map((entity) => (
+        <EntityListItem
+          key={entity.id}
+          entity={entity}
+          applicationId={application}
+          onError={setError}
+        />
+      ))}
+
+      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </PageContent>
   );
   /**@todo: move error message to hosting page  */

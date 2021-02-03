@@ -21,10 +21,9 @@ export function createFieldInput(
   const createDataTypeFieldInput = DATA_TYPE_TO_FIELD_INPUT[field.dataType];
 
   if (!createDataTypeFieldInput) {
-    throw new Error(
-      `Can not display field ${field.name} with data type ${field.dataType}`
-    );
+    return jsxElement`<div/>`;
   }
+
   return jsxElement`<div>${createDataTypeFieldInput(
     field,
     entityToSelectComponent

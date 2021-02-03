@@ -68,19 +68,26 @@ model UserRole {
 }
 
 model App {
-  id             String       @id @default(cuid())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String
-  name           String
-  description    String
-  color          String       @default("#20A4F3")
-  entities       Entity[]
-  blocks         Block[]
-  roles          AppRole[]
-  commits        Commit[]
-  builds         Build[]
+  id                     String       @id @default(cuid())
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  organization           Organization @relation(fields: [organizationId], references: [id])
+  organizationId         String
+  name                   String
+  description            String
+  color                  String       @default("#20A4F3")
+  githubToken            String?
+  githubTokenCreatedDate DateTime?
+  githubSyncEnabled      Boolean      @default(false)
+  githubRepo             String?
+  githubBranch           String?
+  githubLastSync         DateTime?
+  githubLastMessage      String?
+  entities               Entity[]
+  blocks                 Block[]
+  roles                  AppRole[]
+  commits                Commit[]
+  builds                 Build[]
 
   environments Environment[]
   @@unique([organizationId, name])
@@ -325,6 +332,8 @@ model ActionStep {
   logs        ActionLog[]
   action      Action           @relation(fields: [actionId], references: [id])
   actionId    String
+
+  @@index([actionId])
 }
 
 enum EnumLogLevel {
@@ -342,6 +351,8 @@ model ActionLog {
   level     EnumLogLevel
   step      ActionStep   @relation(fields: [stepId], references: [id])
   stepId    String
+
+  @@index([stepId])
 }
 
 model Build {

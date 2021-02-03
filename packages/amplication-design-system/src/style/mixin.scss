@@ -71,7 +71,7 @@
   display: block;
   font-size: var(--text-field-label-font-size);
   margin-bottom: var(--default-spacing-small);
-  color: var(--black40);
+  color: var(--black60);
 }
 
 @mixin labelHorizontal {
@@ -146,7 +146,7 @@
 }
 
 @mixin tag {
-  background-color: var(--white);
+  background-color: var(--black10);
   height: var(--medium-button-height);
   border-radius: var(--medium-button-radius);
   border: 1px solid var(--black10);

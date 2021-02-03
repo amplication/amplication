@@ -39,7 +39,10 @@ export async function createPrismaSchema(entities: Entity[]): Promise<string> {
     createPrismaModel(entity, fieldNamesCount)
   );
 
-  const enums = entities.flatMap(getEnumFields).map(createPrismaEnum);
+  const enums = entities.flatMap((entity) => {
+    const enumFields = getEnumFields(entity);
+    return enumFields.map((field) => createPrismaEnum(field, entity));
+  });
 
   const schema = PrismaSchemaDSL.createSchema(models, enums, DATA_SOURCE, [
     CLIENT_GENERATOR,
@@ -48,16 +51,19 @@ export async function createPrismaSchema(entities: Entity[]): Promise<string> {
   return PrismaSchemaDSL.print(schema);
 }
 
-export function createPrismaEnum(field: EntityField): PrismaSchemaDSL.Enum {
+export function createPrismaEnum(
+  field: EntityField,
+  entity: Entity
+): PrismaSchemaDSL.Enum {
   const { options } = field.properties as types.OptionSet;
   return PrismaSchemaDSL.createEnum(
-    createEnumName(field),
+    createEnumName(field, entity),
     options.map((option) => option.value)
   );
 }
 
-export function createEnumName(field: EntityField): string {
-  return `Enum${pascalCase(field.name)}`;
+export function createEnumName(field: EntityField, entity: Entity): string {
+  return `Enum${pascalCase(entity.name)}${pascalCase(field.name)}`;
 }
 
 export function createPrismaModel(
@@ -71,7 +77,6 @@ export function createPrismaModel(
     )
   );
 }
-
 export function createPrismaFields(
   field: EntityField,
   entity: Entity,
@@ -222,7 +227,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createObjectField(
           name,
-          createEnumName(field),
+          createEnumName(field, entity),
           true,
           true
         ),
@@ -232,7 +237,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createObjectField(
           name,
-          createEnumName(field),
+          createEnumName(field, entity),
           false,
           field.required
         ),

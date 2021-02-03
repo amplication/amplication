@@ -31,7 +31,7 @@ $split-icon-font-size: 20px;
 
   &.amp-button--primary {
     background-color: var(--primary);
-    color: var(--white);
+    color: var(--static-white);
     border: $border-primary;
 
     &:hover,
@@ -69,22 +69,22 @@ $split-icon-font-size: 20px;
   }
 
   &.amp-button--secondary {
-    background-color: var(--white);
-    color: var(--primary);
-    border: $border-primary;
+    background-color: transparent;
+    color: var(--black100);
+    border: none;
 
     &:hover,
     &:active,
     &:focus {
-      background-color: var(--black5);
-      border-color: var(--primary) !important;
-      color: var(--primary);
+      background-color: var(--black10);
+      border-color: none !important;
+      color: var(--black100);
     }
   }
 
   &.amp-button--clear {
     background-color: transparent;
-    color: var(--black80);
+    color: var(--black60);
     border: none;
     min-width: var(--default-button-height);
     height: var(--default-button-height);
@@ -96,7 +96,7 @@ $split-icon-font-size: 20px;
     &:hover,
     &:active,
     &:focus {
-      color: var(--primary);
+      color: var(--black100);
       background-color: transparent;
     }
 

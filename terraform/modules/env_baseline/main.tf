@@ -209,6 +209,14 @@ resource "google_cloud_run_service" "default" {
           value = var.github_redirect_uri
         }
         env {
+          name  = "GITHUB_APP_AUTH_SCOPE"
+          value = var.github_app_auth_scope
+        }
+        env {
+          name  = "GITHUB_APP_AUTH_REDIRECT_URI"
+          value = var.github_app_auth_redirect_uri
+        }
+        env {
           name  = "DEFAULT_DISK"
           value = var.default_disk
         }
@@ -218,15 +226,11 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GCP_APPS_PROJECT_ID"
-          value = var.apps_project
+          value = var.apps_project_2
         }
         env {
           name  = "CONTAINER_BUILDER_DEFAULT"
           value = var.container_builder_default
-        }
-        env {
-          name  = "GENERATED_APP_BASE_IMAGE"
-          value = var.generated_app_base_image_id
         }
         env {
           name  = "DEPLOYER_DEFAULT"
@@ -238,7 +242,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GCP_APPS_TERRAFORM_STATE_BUCKET"
-          value = var.apps_terraform_state_bucket
+          value = var.apps_terraform_state_bucket_2
         }
         env {
           name  = "GCP_APPS_DATABASE_INSTANCE"
@@ -271,8 +275,9 @@ resource "google_cloud_run_service" "default" {
           }
         }
       }
-      # 15 minutes
-      timeout_seconds = 900
+      container_concurrency = 10
+      # 2 minutes
+      timeout_seconds = 120
     }
 
     metadata {

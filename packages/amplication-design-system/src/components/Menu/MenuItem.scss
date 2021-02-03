@@ -33,6 +33,7 @@ $inverted-border-radius: 6px;
   &__badge {
     @include counterBadge;
     background-color: var(--negative-light);
+    color: var(--static-white);
   }
 
   &:hover {
@@ -46,7 +47,13 @@ $inverted-border-radius: 6px;
     background-size: contain;
     transition: all var(--menu-expand-animation-duration) ease-in;
     box-sizing: border-box;
-    color: var(--white);
+    color: var(--menu-item-color);
+  }
+
+  &--active {
+    i {
+      color: var(--menu-item-active-color);
+    }
   }
 
   &--active:before,
@@ -54,7 +61,7 @@ $inverted-border-radius: 6px;
     width: $select-item-width;
     height: $select-item-width;
     border-radius: var(--default-border-radius);
-    background-color: var(--black80);
+    background-color: var(--menu-item-active-background);
     content: "";
     position: absolute;
     left: calc(50% - #{$select-item-width/2});
@@ -73,7 +80,7 @@ $inverted-border-radius: 6px;
       position: absolute;
       right: 0;
       left: auto;
-      transition: all 0.3s ease-in-out;
+      transition: width 0.3s ease-in-out;
     }
 
     &--active {

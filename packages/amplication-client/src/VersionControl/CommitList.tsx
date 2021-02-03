@@ -1,55 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
+import { CircularProgress } from "@rmwc/circular-progress";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import {
-  DataGrid,
-  DataField,
-  EnumTitleType,
-  SortData,
-} from "@amplication/design-system";
+
+import { SearchField } from "@amplication/design-system";
 
 import { CommitListItem } from "./CommitListItem";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
-
-import { Button, EnumButtonStyle } from "../Components/Button";
-
-const fields: DataField[] = [
-  {
-    name: "id",
-    title: "ID",
-  },
-  {
-    name: "createdAt",
-    title: "Created",
-    sortable: true,
-  },
-  {
-    name: "message",
-    title: "Commit Message",
-    sortable: true,
-  },
-  {
-    name: "buildId",
-    title: "Build ID",
-  },
-  {
-    name: "generated",
-    title: "",
-    icon: "code1",
-    minWidth: true,
-  },
-  {
-    name: "container",
-    title: "",
-    icon: "docker",
-    minWidth: true,
-  },
-];
+import "./CommitList.scss";
 
 type TData = {
   commits: models.Commit[];
@@ -61,25 +23,20 @@ type Props = {
 
 const CREATED_AT_FIELD = "createdAt";
 
-const INITIAL_SORT_DATA = {
-  field: CREATED_AT_FIELD,
-  order: 1,
-};
 const POLL_INTERVAL = 10000;
+const CLASS_NAME = "commit-list";
 
 export const CommitList = ({ match }: Props) => {
   const { application } = match.params;
-  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
-  const handleSortChange = (sortData: SortData) => {
-    setSortDir(sortData);
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearchPhrase(value);
-  };
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
 
   const { data, loading, error, refetch, stopPolling, startPolling } = useQuery<
     TData
@@ -87,8 +44,7 @@ export const CommitList = ({ match }: Props) => {
     variables: {
       appId: application,
       orderBy: {
-        [sortDir.field || CREATED_AT_FIELD]:
-          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
+        [CREATED_AT_FIELD]: models.SortOrder.Desc,
       },
       whereMessage:
         searchPhrase !== ""
@@ -109,36 +65,26 @@ export const CommitList = ({ match }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className="pages" withFloatingBar>
-      <main>
-        <FloatingToolbar />
-
-        <DataGrid
-          showSearch
-          fields={fields}
-          title="Commits"
-          titleType={EnumTitleType.PageTitle}
-          loading={loading}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onSearchChange={handleSearchChange}
-          toolbarContentEnd={
-            <Button buttonStyle={EnumButtonStyle.Primary} onClick={() => {}}>
-              Create New
-            </Button>
-          }
-        >
-          {data?.commits.map((commit) => (
-            <CommitListItem
-              key={commit.id}
-              commit={commit}
-              applicationId={application}
-            />
-          ))}
-        </DataGrid>
-
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </main>
+    <PageContent className={CLASS_NAME}>
+      <div className={`${CLASS_NAME}__header`}>
+        <SearchField
+          label="search"
+          placeholder="search"
+          onChange={handleSearchChange}
+        />
+      </div>
+      <div className={`${CLASS_NAME}__title`}>
+        {data?.commits?.length} Commits
+      </div>
+      {loading && <CircularProgress />}
+      {data?.commits.map((commit) => (
+        <CommitListItem
+          key={commit.id}
+          commit={commit}
+          applicationId={application}
+        />
+      ))}
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
   );
 };

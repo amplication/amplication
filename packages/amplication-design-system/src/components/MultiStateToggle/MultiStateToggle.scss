@@ -19,10 +19,10 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      color: var(--black60);
+      color: var(--black80);
       height: var(--default-button-height);
       padding: 0;
-      background-color: var(--white);
+      background-color: var(--black20);
       border: $border-black10;
       outline: none;
       cursor: pointer;
@@ -48,7 +48,7 @@
       &--selected,
       &--selected:hover {
         background-color: var(--primary);
-        color: var(--white);
+        color: var(--static-white);
         border-color: var(--primary);
       }
     }

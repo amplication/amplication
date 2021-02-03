@@ -47,12 +47,26 @@ type App {
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   environments: [Environment!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  githubTokenCreatedDate: DateTime
+  githubSyncEnabled: Boolean!
+  githubRepo: String
+  githubBranch: String
+  githubLastSync: DateTime
+  githubLastMessage: String
 }
 
 input AppCreateInput {
   name: String!
   description: String!
   color: String
+}
+
+input AppEnableSyncWithGithubRepoInput {
+  """The full name of the repo in the format org-name/repo-name"""
+  githubRepo: String!
+
+  """optional: defaults to default branch"""
+  githubBranch: String
 }
 
 input AppOrderByInput {
@@ -121,6 +135,14 @@ input AppWhereInput {
 type Auth {
   """JWT Bearer token"""
   token: String!
+}
+
+type AuthorizeAppWithGithubResult {
+  url: String!
+}
+
+input AvailableGithubReposFindInput {
+  app: WhereUniqueInput!
 }
 
 type Block {
@@ -295,6 +317,11 @@ input CommitWhereInput {
 
 input CommitWhereUniqueInput {
   id: String
+}
+
+input CompleteAuthorizeAppWithGithubInput {
+  code: String!
+  state: String!
 }
 
 type ConnectorRestApi implements IBlock {
@@ -898,6 +925,14 @@ type Environment {
   address: String!
 }
 
+type GithubRepo {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
+}
+
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -979,6 +1014,11 @@ type Mutation {
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
+  startAuthorizeAppWithGithub(where: WhereUniqueInput!): AuthorizeAppWithGithubResult!
+  completeAuthorizeAppWithGithub(data: CompleteAuthorizeAppWithGithubInput!, where: WhereUniqueInput!): App!
+  removeAuthorizeAppWithGithub(where: WhereUniqueInput!): App!
+  appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
+  appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   changePassword(data: ChangePasswordInput!): Account!
@@ -1064,6 +1104,7 @@ type Query {
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  appAvailableGithubRepos(where: AvailableGithubReposFindInput!): [GithubRepo!]!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   me: User!

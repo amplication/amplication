@@ -1,11 +1,12 @@
 {
   "name": "@amplication/container-builder",
   "version": "0.2.0",
-  "description": "",
+  "description": "Multi-provider library for building Docker containers",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "npm run build"
   },
   "jest": {
     "preset": "ts-jest",

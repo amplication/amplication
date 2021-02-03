@@ -1,0 +1,10 @@
+@import "../style/index.scss";
+
+.sync-with-github-tile {
+  @include homePageTile;
+
+  &__repo-name {
+    @include body1;
+    margin-left: var(--default-spacing-small);
+  }
+}

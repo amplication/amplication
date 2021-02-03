@@ -5,16 +5,11 @@ import classNames from "classnames";
 export type Props = {
   children: React.ReactNode;
   className?: string;
-  withFloatingBar?: boolean;
 };
 
-function Page({ children, className, withFloatingBar = false }: Props) {
+function Page({ children, className }: Props) {
   return (
-    <div
-      className={classNames("amp-page", className, {
-        "amp-page--with-floating-bar": withFloatingBar,
-      })}
-    >
+    <div className={classNames("amp-page", className)}>
       <main>{children}</main>
     </div>
   );

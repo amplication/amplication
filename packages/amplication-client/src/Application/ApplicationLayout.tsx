@@ -18,16 +18,17 @@ import * as models from "../models";
 import MenuItem from "../Layout/MenuItem";
 import MainLayout from "../Layout/MainLayout";
 import { CircleBadge } from "@amplication/design-system";
+import LastCommit from "../VersionControl/LastCommit";
 
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
-import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
 import Commits from "../VersionControl/Commits";
+import NavigationTabs from "../Layout/NavigationTabs";
 
 enum EnumFixedPanelKeys {
   None = "None",
@@ -59,7 +60,7 @@ function ApplicationLayout({ match }: Props) {
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
 
   const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
-    EnumFixedPanelKeys.None
+    EnumFixedPanelKeys.PendingChanges
   );
 
   const handleMenuItemWithFixedPanelClicked = useCallback(
@@ -87,8 +88,6 @@ function ApplicationLayout({ match }: Props) {
     },
   });
 
-  useBreadcrumbs(match.url, applicationData?.app.name);
-
   useEffect(() => {
     setPendingChanges(
       pendingChangesData ? pendingChangesData.pendingChanges : []
@@ -106,17 +105,18 @@ function ApplicationLayout({ match }: Props) {
           changeItem.resourceType === resourceType
       );
       if (existingChange) {
-        return;
+        //reassign pending changes to trigger refresh
+        setPendingChanges([...pendingChanges]);
+      } else {
+        setPendingChanges(
+          pendingChanges.concat([
+            {
+              resourceId,
+              resourceType,
+            },
+          ])
+        );
       }
-
-      setPendingChanges(
-        pendingChanges.concat([
-          {
-            resourceId,
-            resourceType,
-          },
-        ])
-      );
     },
     [pendingChanges, setPendingChanges]
   );
@@ -173,7 +173,10 @@ function ApplicationLayout({ match }: Props) {
 
   return (
     <PendingChangesContext.Provider value={pendingChangesContextValue}>
-      <MainLayout className={CLASS_NAME}>
+      <MainLayout
+        className={CLASS_NAME}
+        footer={<LastCommit applicationId={application} />}
+      >
         <MainLayout.Menu>
           <MenuItem
             className={`${CLASS_NAME}__app-icon`}
@@ -184,9 +187,6 @@ function ApplicationLayout({ match }: Props) {
               name={applicationData?.app.name || ""}
               color={applicationData?.app.color}
             />
-            <span className="amp-menu-item__title">
-              {applicationData?.app.name}
-            </span>
           </MenuItem>
           <PendingChangesMenuItem
             applicationId={application}
@@ -216,33 +216,40 @@ function ApplicationLayout({ match }: Props) {
           />
         </MainLayout.Menu>
         <MainLayout.Content>
-          <Switch>
-            <Route exact path="/:application/" component={ApplicationHome} />
-            <Route
-              path="/:application/pending-changes"
-              component={PendingChangesPage}
-            />
+          <div className={`${CLASS_NAME}__app-container`}>
+            <NavigationTabs defaultTabUrl={`/${application}/`} />
 
-            <Route path="/:application/entities/" component={Entities} />
+            <Switch>
+              <Route
+                path="/:application/pending-changes"
+                component={PendingChangesPage}
+              />
 
-            {SHOW_UI_ELEMENTS && (
-              <>
-                <Route path="/:application/pages/" component={Pages} />
-                <Route
-                  path="/:application/entity-pages/new"
-                  component={NewEntityPage}
-                />
-                <Route
-                  path="/:application/entity-pages/:entityPageId"
-                  component={EntityPage}
-                />
-              </>
-            )}
-            <Route path="/:application/builds/:buildId" component={BuildPage} />
+              <Route path="/:application/entities/" component={Entities} />
 
-            <Route path="/:application/roles" component={RolesPage} />
-            <Route path="/:application/commits" component={Commits} />
-          </Switch>
+              {SHOW_UI_ELEMENTS && (
+                <>
+                  <Route path="/:application/pages/" component={Pages} />
+                  <Route
+                    path="/:application/entity-pages/new"
+                    component={NewEntityPage}
+                  />
+                  <Route
+                    path="/:application/entity-pages/:entityPageId"
+                    component={EntityPage}
+                  />
+                </>
+              )}
+              <Route
+                path="/:application/builds/:buildId"
+                component={BuildPage}
+              />
+
+              <Route path="/:application/roles" component={RolesPage} />
+              <Route path="/:application/commits" component={Commits} />
+              <Route path="/:application/" component={ApplicationHome} />
+            </Switch>
+          </div>
         </MainLayout.Content>
         <ScreenResolutionMessage />
       </MainLayout>

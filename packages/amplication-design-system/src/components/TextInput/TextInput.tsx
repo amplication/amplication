@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import CircleIcon, { EnumCircleIconStyle } from "../CircleIcon/CircleIcon";
+import { Icon } from "@rmwc/icon";
 import { Button } from "../Button/Button";
 import "./TextInput.scss";
 
@@ -48,7 +48,10 @@ export function TextInput({
             <input {...rest} ref={inputRef as React.Ref<HTMLInputElement>} />
           )}
           {hasError && (
-            <CircleIcon icon="info_i" style={EnumCircleIconStyle.Negative} />
+            <Icon
+              icon={{ icon: "info_circle", size: "small" }}
+              className={`${CLASS_NAME}__invalid`}
+            />
           )}
         </label>
         {trailingButton && (

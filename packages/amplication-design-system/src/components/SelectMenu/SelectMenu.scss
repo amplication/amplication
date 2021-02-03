@@ -2,11 +2,11 @@
 
 .select-menu {
   margin-left: var(--default-spacing);
-  color: var(--black80);
 
   & &__item {
-    border-bottom: $border-black10;
+    border-bottom: none;
     color: var(--black80);
+    background-color: var(--black2);
 
     &--selected,
     &[aria-checked="true"] {

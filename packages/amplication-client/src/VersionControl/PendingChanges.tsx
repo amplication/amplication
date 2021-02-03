@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import { gql, useQuery } from "@apollo/client";
+import { Tooltip } from "@primer/components";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
 import { Link } from "react-router-dom";
 
-import imageNoChanges from "../assets/images/no-changes.svg";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChange from "./PendingChange";
@@ -13,11 +13,12 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { Dialog } from "@amplication/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import "./PendingChanges.scss";
 
 const CLASS_NAME = "pending-changes";
-const POLL_INTERVAL = 1000;
 
 type TData = {
   pendingChanges: models.PendingChange[];
@@ -29,23 +30,21 @@ type Props = {
 
 const PendingChanges = ({ applicationId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
+  const pendingChangesContext = useContext(PendingChangesContext);
 
-  const { data, loading, error, stopPolling, startPolling, refetch } = useQuery<
-    TData
-  >(GET_PENDING_CHANGES, {
-    variables: {
-      applicationId,
-    },
-  });
+  const { data, loading, error, refetch } = useQuery<TData>(
+    GET_PENDING_CHANGES,
+    {
+      variables: {
+        applicationId,
+      },
+    }
+  );
 
-  //start polling with cleanup
+  //refetch when pending changes object change
   useEffect(() => {
     refetch().catch(console.error);
-    startPolling(POLL_INTERVAL);
-    return () => {
-      stopPolling();
-    };
-  }, [refetch, stopPolling, startPolling]);
+  }, [refetch, pendingChangesContext.pendingChanges]);
 
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
@@ -57,33 +56,48 @@ const PendingChanges = ({ applicationId }: Props) => {
 
   const errorMessage = formatError(error);
 
+  const noChanges = isEmpty(data?.pendingChanges);
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
-        <h3>Pending Changes {data?.pendingChanges.length}</h3>
+        <h3>Pending Changes</h3>
         <div className="spacer" />
-        {!loading && (
+      </div>
+      <Commit applicationId={applicationId} disabled={noChanges} />
+      <div className={`${CLASS_NAME}__changes-header`}>
+        <span>Changes</span>
+        <span className={`${CLASS_NAME}__changes-count`}>
+          {data?.pendingChanges.length}
+        </span>
+        <div className="spacer" />
+        <Tooltip aria-label={"Compare Changes"} direction="sw">
+          <Link to={`/${applicationId}/pending-changes`}>
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              disabled={loading || noChanges}
+              icon="compare"
+            />
+          </Link>
+        </Tooltip>
+        <Tooltip aria-label={"Discard Pending Changes"} direction="sw">
           <Button
             buttonStyle={EnumButtonStyle.Clear}
             onClick={handleToggleDiscardDialog}
-          >
-            Discard
-          </Button>
-        )}
+            disabled={loading || noChanges}
+            icon="trash_2"
+          />
+        </Tooltip>
       </div>
-
       {isEmpty(data?.pendingChanges) && !loading ? (
         <div className={`${CLASS_NAME}__empty-state`}>
-          <img src={imageNoChanges} alt="no changes" />
-
+          <SvgThemeImage image={EnumImages.NoChanges} />
           <div className={`${CLASS_NAME}__empty-state__title`}>
-            No pending changes! keep working and come back later
+            No pending changes! keep working.
           </div>
         </div>
       ) : (
         <>
-          <Commit applicationId={applicationId} />
-
           <Dialog
             className="discard-dialog"
             isOpen={discardDialogOpen}
@@ -101,14 +115,13 @@ const PendingChanges = ({ applicationId }: Props) => {
             <span>Loading...</span>
           ) : (
             <div className={`${CLASS_NAME}__changes`}>
-              <Link
-                className={`${CLASS_NAME}__changes__view-details`}
-                to={`/${applicationId}/pending-changes`}
-              >
-                Compare Changes
-              </Link>
               {data?.pendingChanges.map((change) => (
-                <PendingChange key={change.resourceId} change={change} />
+                <PendingChange
+                  key={change.resourceId}
+                  change={change}
+                  applicationId={applicationId}
+                  linkToResource
+                />
               ))}
             </div>
           )}

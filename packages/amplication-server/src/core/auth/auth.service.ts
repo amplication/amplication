@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserWhereInput } from '@prisma/client';
-import { Profile as GitHubProfile } from 'passport-github';
+import { Profile as GitHubProfile } from 'passport-github2';
 import { PrismaService } from 'nestjs-prisma';
 import { Account, User, UserRole, Organization } from 'src/models';
 import { AccountService } from '../account/account.service';

@@ -123,7 +123,6 @@ const EntityFieldForm = ({
               label="Description"
               disabled={isDisabled}
             />
-            <hr />
             <div>
               <ToggleField
                 name="required"

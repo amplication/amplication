@@ -1,5 +1,12 @@
 @import "./style/css-variables.css";
+@import "./style/light-css-variables.css";
+@import "./style/dark-css-variables.css";
+@import "./style/css-variables.css";
 @import "./style/index.scss";
+
+body {
+  color: var(--black100);
+}
 
 #root {
   height: 100vh;
@@ -8,11 +15,6 @@
 
 .text-medium {
   font-weight: 500;
-}
-
-.text-muted {
-  color: var(--black80);
-  font-size: 10px;
 }
 
 //disable outline on react-hotkeys wrapper
@@ -34,4 +36,18 @@ div[tabindex="-1"]:focus {
   .amp-page main {
     min-width: calc(900px - var(--menu-width));
   }
+}
+
+::-webkit-scrollbar {
+  width: var(--default-spacing);
+}
+::-webkit-scrollbar-button {
+  background-color: var(--black10);
+}
+::-webkit-scrollbar-track {
+  background-color: var(--black5);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--black40);
 }

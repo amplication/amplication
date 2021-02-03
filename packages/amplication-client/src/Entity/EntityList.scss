@@ -1,0 +1,16 @@
+@import "../style/index.scss";
+
+.entity-list {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--large-spacing);
+
+    .search-field {
+      width: var(--form-field-long);
+    }
+  }
+  &__title {
+    @include body2;
+    margin-bottom: var(--large-spacing);
+  }
+}

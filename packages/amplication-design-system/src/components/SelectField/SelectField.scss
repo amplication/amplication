@@ -1,8 +1,14 @@
 @import "../../style/index.scss";
 
 .select-field {
+  max-width: var(--form-field-long);
   label {
     @include label;
+  }
+
+  &__menu-list {
+    background-color: var(--white);
+    padding: 0;
   }
 
   .select-field__container {
