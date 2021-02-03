@@ -49,14 +49,6 @@
   color: var(--black80);
 }
 
-@mixin columnHeader {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--black40);
-}
-
 @mixin errorMessage {
   color: var(--negative);
   font-size: 10px;
@@ -68,13 +60,6 @@
 
 @mixin semiBold {
   font-weight: 500;
-}
-
-@mixin label {
-  display: block;
-  font-size: var(--text-field-label-font-size);
-  margin-bottom: var(--default-spacing-small);
-  color: var(--black60);
 }
 
 @mixin textField {
@@ -105,51 +90,6 @@
 
 $bullet-size: 6px;
 
-@mixin bulletList {
-  margin: 0;
-  padding: 0;
-  color: var(--black60);
-
-  li {
-    list-style: none;
-    margin: 0;
-    margin-top: var(--default-spacing);
-    margin-left: var(--default-spacing);
-    position: relative;
-    font-weight: normal;
-    &:before {
-      content: "";
-      position: absolute;
-      left: calc(var(--default-spacing) * -1);
-      width: $bullet-size;
-      height: $bullet-size;
-      top: calc(50% - #{$bullet-size / 2});
-      background-color: var(--secondary-turquoise);
-      border-radius: $bullet-size / 2;
-      display: block;
-    }
-  }
-}
-
-@mixin counterBadge {
-  font-weight: 500;
-  font-size: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  position: absolute;
-  top: -8px;
-  left: calc(100% - 14px);
-  height: 16px;
-  min-width: 16px;
-  background-color: var(--primary);
-  color: var(--white);
-  border-radius: 8px;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
 @mixin flexFullRow {
   display: flex;
   flex-direction: row;
@@ -168,16 +108,6 @@ $bullet-size: 6px;
       margin-left: 0;
     }
   }
-}
-
-@mixin whiteListItem {
-  background: var(--white);
-  border-radius: var(--default-border-radius);
-  border: none;
-  box-sizing: border-box;
-  padding: var(--default-spacing) var(--large-spacing);
-  margin-bottom: var(--default-spacing);
-  height: var(--grid-row-height);
 }
 
 @mixin applicationCard {
@@ -234,17 +164,6 @@ $bullet-size: 6px;
   & {
     scrollbar-face-color: $foreground-color;
     scrollbar-track-color: $background-color;
-  }
-}
-
-@mixin stickRight($page-content-max-width) {
-  position: fixed;
-  right: calc(
-    (100vw - #{$page-content-max-width}) / 2 - var(--default-page-padding)
-  );
-
-  @media only screen and (max-width: #{$page-content-max-width}) {
-    right: calc(var(--default-page-padding) + var(--default-spacing-small));
   }
 }
 
@@ -319,16 +238,3 @@ $bullet-size: 6px;
 }
 
 $active-indicator-width: 4px;
-
-@mixin activeItemIndicator {
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: $active-indicator-width * -0.5;
-  width: $active-indicator-width * 1.5;
-  pointer-events: none;
-  border-top-right-radius: $active-indicator-width * 2;
-  border-bottom-right-radius: $active-indicator-width * 2;
-  background-color: var(--primary) !important;
-  content: "";
-}
