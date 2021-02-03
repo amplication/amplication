@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
+import { MDCSwitchFoundation } from "@material/switch";
 import { Icon } from "@rmwc/icon";
 import { isEmpty } from "lodash";
 import { Snackbar } from "@rmwc/snackbar";
@@ -90,10 +91,16 @@ function AuthAppWithGithub({ app, onDone }: Props) {
     [authWithGithub, app, trackEvent]
   );
 
+  const MDCSwitchRef = useRef<MDCSwitchFoundation>(null);
   const handleDismissRemove = useCallback(() => {
     setConfirmRemove(false);
-  }, [setConfirmRemove]);
-
+    // `handleAuthWithGithubClick -> setConfirmRemove` is triggered by `Toggle.onValueChange`.
+    // Behind the scenes, a `MDCSwitchFoundation.setChecked(false)` was triggered.
+    // now that the toggle is cancelled, should explicitly call `MDCSwitchFoundation.setChecked(true)`. 
+    MDCSwitchRef.current?.setChecked(true);
+  }, [setConfirmRemove,MDCSwitchRef]);
+  
+  
   const handleConfirmRemoveAuth = useCallback(() => {
     trackEvent({
       eventName: "removeAuthAppWithGitHub",
@@ -139,6 +146,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
         <Toggle
           label="Sync with GitHub"
           title="Sync with Github"
+          foundationRef={MDCSwitchRef}
           onValueChange={handleAuthWithGithubClick}
           checked={isAuthenticatedWithGithub}
           disabled={loading || removeLoading || isEmpty(app)}
