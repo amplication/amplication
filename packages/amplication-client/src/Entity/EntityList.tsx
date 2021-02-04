@@ -31,10 +31,10 @@ const NAVIGATION_KEY = "ENTITY_LIST";
 const POLL_INTERVAL = 2000;
 
 export const EntityList = ({ match }: Props) => {
-  useNavigationTabs(NAVIGATION_KEY, match.url, "Entities");
+  const { application } = match.params;
   const [error, setError] = useState<Error>();
 
-  const { application } = match.params;
+  useNavigationTabs(application, NAVIGATION_KEY, match.url, "Entities");
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);

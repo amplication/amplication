@@ -26,7 +26,7 @@ const NAVIGATION_KEY = "PAGES";
 
 function Pages({ match }: Props) {
   const { application } = match.params;
-  useNavigationTabs(NAVIGATION_KEY, match.url, "Pages");
+  useNavigationTabs(application, NAVIGATION_KEY, match.url, "Pages");
   return (
     <PageContent className="pages">
       <BlockList

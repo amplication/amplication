@@ -47,6 +47,7 @@ const CommitPage = ({ match }: Props) => {
   }, [commitId]);
 
   useNavigationTabs(
+    application,
     `${NAVIGATION_KEY}_${commitId}`,
     match.url,
     `Commit ${truncatedId}`
