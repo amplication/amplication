@@ -97,10 +97,6 @@ variable "image" {
   type = string
 }
 
-variable "app_base_image" {
-  type = string
-}
-
 variable "google_cloudbuild_trigger_filename" {
   type = string
 }
