@@ -45,8 +45,10 @@ export function getEntityTitleField(entity: Entity): string {
   );
   if (nameField) return nameField.name;
 
-  const titleField = entity.fields.find((field) =>
-    field.displayName.toLowerCase().includes("title")
+  const titleField = entity.fields.find(
+    (field) =>
+      field.displayName.toLowerCase().includes("title") &&
+      field.dataType !== EnumDataType.Lookup
   );
   if (titleField) return titleField.name;
 
