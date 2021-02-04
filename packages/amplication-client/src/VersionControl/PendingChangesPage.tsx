@@ -35,8 +35,9 @@ const OPTIONS = [
 
 const PendingChangesPage = ({ match }: Props) => {
   const { application } = match.params;
-  useNavigationTabs(NAVIGATION_KEY, match.url, "Pending Changes");
   const [splitView, setSplitView] = useState<boolean>(false);
+
+  useNavigationTabs(application, NAVIGATION_KEY, match.url, "Pending Changes");
 
   const handleChangeType = useCallback(
     (type: string) => {

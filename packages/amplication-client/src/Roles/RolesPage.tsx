@@ -15,7 +15,7 @@ const NAVIGATION_KEY = "ROLE";
 const RolesPage = ({ match }: Props) => {
   const { application } = match.params;
 
-  useNavigationTabs(NAVIGATION_KEY, match.url, "Roles");
+  useNavigationTabs(application, NAVIGATION_KEY, match.url, "Roles");
 
   const roleMatch = useRouteMatch<{ roleId: string }>(
     "/:application/roles/:roleId"

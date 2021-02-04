@@ -37,6 +37,7 @@ const BuildPage = ({ match }: Props) => {
   }, [buildId]);
 
   useNavigationTabs(
+    application,
     `${NAVIGATION_KEY}_${buildId}`,
     match.url,
     `Build ${truncatedId}`

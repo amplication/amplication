@@ -9,12 +9,19 @@ type Props = {
 };
 
 function NavigationTabsProvider({ children }: Props) {
+  const [currentApplication, setCurrentApplication] = useState<string>("");
+
   const [navigationTabItems, setNavigationTabItems] = useState<
     NavigationTabItem[]
   >([]);
 
   const registerNavigationTabItem = useCallback(
     (addItem: NavigationTabItem) => {
+      if (addItem.applicationId !== currentApplication) {
+        setCurrentApplication(addItem.applicationId);
+        setNavigationTabItems([]);
+      }
+
       setNavigationTabItems((items) => {
         let exist = false;
         const next = items.map((item) => {
@@ -37,7 +44,7 @@ function NavigationTabsProvider({ children }: Props) {
         return next;
       });
     },
-    [setNavigationTabItems]
+    [setNavigationTabItems, setCurrentApplication, currentApplication]
   );
 
   const unregisterNavigationTabItem = useCallback(
