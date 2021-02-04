@@ -76,7 +76,6 @@ resource "google_cloudbuild_trigger" "trigger" {
     _POSTGRESQL_DB       = var.database_name
     _DB_INSTANCE         = var.database_instance
     _IMAGE               = var.image
-    _APP_BASE_IMAGE      = var.app_base_image
     _REGION              = var.region
   }
   filename = var.google_cloudbuild_trigger_filename
