@@ -11,6 +11,7 @@ export type WorkerResult = {
   done: boolean;
   message?: string;
   modules?: Module[];
+  error?: any;
 };
 
 export type WorkerParam = {
