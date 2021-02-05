@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+.related-entity-field-field {
+  label {
+    display: block;
+    font-size: var(--text-field-label-font-size);
+    color: var(--black60);
+
+    margin-bottom: 0;
+  }
+}

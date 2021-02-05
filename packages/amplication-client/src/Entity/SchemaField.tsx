@@ -3,6 +3,7 @@ import { capitalCase } from "capital-case";
 import { ToggleField, TextField } from "@amplication/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
 import EnumSelectField from "../Components/EnumSelectField";
+import RelatedEntityFieldField from "../Components/RelatedEntityFieldField";
 import { Schema } from "@amplication/data";
 import OptionSet from "../Entity/OptionSet";
 
@@ -89,7 +90,8 @@ export const SchemaField = ({
         }
         // Hide entity field ID properties
         case "#/definitions/EntityFieldId": {
-          return null;
+          return <RelatedEntityFieldField />;
+          //return null;
         }
       }
 
