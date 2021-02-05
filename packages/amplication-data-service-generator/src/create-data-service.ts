@@ -28,6 +28,9 @@ export async function createDataService(
         if (data.message) {
           logger.info(data.message);
         }
+        if (data.error) {
+          reject(data.error);
+        }
         if (data.done && data.modules) {
           resolve(data.modules);
         }
