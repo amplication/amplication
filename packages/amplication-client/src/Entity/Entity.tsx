@@ -45,6 +45,7 @@ const Entity = ({ match }: Props) => {
   });
 
   useNavigationTabs(
+    application,
     `${NAVIGATION_KEY}_${entityId}`,
     location.pathname,
     data?.entity.displayName

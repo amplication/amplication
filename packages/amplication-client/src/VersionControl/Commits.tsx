@@ -7,12 +7,14 @@ import CommitPage from "./CommitPage";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 type Props = {
-  match: match;
+  match: match<{ application: string }>;
 };
 const NAVIGATION_KEY = "ENTITIES";
 
 function Entities({ match }: Props) {
-  useNavigationTabs(NAVIGATION_KEY, match.url, "Commits");
+  const { application } = match.params;
+
+  useNavigationTabs(application, NAVIGATION_KEY, match.url, "Commits");
 
   return (
     <Switch>

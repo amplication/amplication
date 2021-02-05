@@ -36,7 +36,12 @@ function ApplicationHome({ match }: Props) {
       id: applicationId,
     },
   });
-  useNavigationTabs(NAVIGATION_KEY, location.pathname, data?.app.name);
+  useNavigationTabs(
+    applicationId,
+    NAVIGATION_KEY,
+    location.pathname,
+    data?.app.name
+  );
 
   const errorMessage = formatError(error);
 
