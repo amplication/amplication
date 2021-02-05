@@ -47,6 +47,13 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
 
         const newEntityField = data.createEntityFieldByDisplayName;
 
+        if (newEntityField.dataType === models.EnumDataType.Lookup) {
+          const relatedEntityId = newEntityField.properties.relatedEntityId;
+          cache.evict({
+            id: cache.identify({ id: relatedEntityId, __typename: "Entity" }),
+          });
+        }
+
         cache.modify({
           id: cache.identify(entity),
           fields: {
