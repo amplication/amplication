@@ -79,10 +79,9 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
       ...entity,
       fields: entity.fields.map((field) => {
         if (field.dataType === EnumDataType.Lookup) {
-          const {
-            relatedEntityId,
-            relatedFieldId,
-          } = field.properties as types.Lookup;
+          const fieldProperties = field.properties as types.Lookup;
+
+          const { relatedEntityId, relatedFieldId } = fieldProperties;
           if (!relatedEntityId) {
             throw new Error(
               `Lookup entity field ${field.name} must have a relatedEntityId property with a valid entity ID`
@@ -105,10 +104,24 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
               `Could not find entity field with the ID ${relatedFieldId} referenced in entity field ${field.name}`
             );
           }
+
+          const relatedFieldProperties = relatedField.properties as types.Lookup;
+
+          const isOneToOne =
+            !fieldProperties.allowMultipleSelection &&
+            !relatedFieldProperties.allowMultipleSelection;
+
+          //**@todo: in one-to-one relation, only one side should have a foreign key.
+          //We currently decide randomly based on sorting the permanent ID
+          //instead we should let the user decide which side holds the foreign key  */
+          const isOneToOneWithoutForeignKey =
+            isOneToOne && field.permanentId > relatedField.permanentId;
+
           const properties: LookupResolvedProperties = {
             ...field.properties,
             relatedEntity,
             relatedField,
+            isOneToOneWithoutForeignKey,
           };
           return {
             ...field,

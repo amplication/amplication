@@ -172,6 +172,7 @@ export function createPrismaFields(
         relatedEntity,
         relatedField,
         allowMultipleSelection,
+        isOneToOneWithoutForeignKey,
       } = properties as LookupResolvedProperties;
       const hasAnotherRelation = entity.fields.some(
         (entityField) =>
@@ -191,12 +192,12 @@ export function createPrismaFields(
             fieldNamesCount[relatedField.name] === 1
           );
 
-      if (allowMultipleSelection) {
+      if (allowMultipleSelection || isOneToOneWithoutForeignKey) {
         return [
           PrismaSchemaDSL.createObjectField(
             name,
             relatedEntity.name,
-            true,
+            !isOneToOneWithoutForeignKey,
             true,
             relationName
           ),

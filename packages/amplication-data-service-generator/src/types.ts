@@ -82,6 +82,7 @@ export type EntityField = Omit<
 export type LookupResolvedProperties = types.Lookup & {
   relatedEntity: Entity;
   relatedField: EntityField;
+  isOneToOneWithoutForeignKey?: boolean; //in one-to-one only one side should have a foreign key
 };
 
 export type EntityLookupField = Omit<EntityField, "properties"> & {
