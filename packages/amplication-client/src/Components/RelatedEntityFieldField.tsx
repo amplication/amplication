@@ -29,7 +29,7 @@ const RelatedEntityFieldField = () => {
   return (
     (data && data.entity && data.entity.fields && (
       <div className={CLASS_NAME}>
-        <label>Related Field</label>
+        <label>Opposite Relation Field</label>
 
         <Link
           to={`/${data.entity.appId}/entities/${data.entity.id}/fields/${data.entity.fields[0].id}`}
