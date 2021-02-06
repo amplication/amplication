@@ -26,5 +26,13 @@ parentPort?.once("message", (params: WorkerParam) => {
       parentPort?.postMessage(results);
       parentPort?.close();
     })
-    .catch(console.error);
+    .catch((error) => {
+      const results: WorkerResult = {
+        error: error,
+        done: false,
+      };
+
+      parentPort?.postMessage(results);
+      parentPort?.close();
+    });
 });

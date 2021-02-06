@@ -42,7 +42,7 @@ const FORM_SCHEMA = {
     },
     name: {
       type: "string",
-      minLength: 2,
+      minLength: 1,
     },
   },
 };
