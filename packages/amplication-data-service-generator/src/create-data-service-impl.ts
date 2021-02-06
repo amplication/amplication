@@ -71,7 +71,7 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
   for (const entity of entities) {
     entityIdToEntity[entity.id] = entity;
     for (const field of entity.fields) {
-      fieldIdToField[field.id] = field;
+      fieldIdToField[field.permanentId] = field;
     }
   }
   return entities.map((entity) => {

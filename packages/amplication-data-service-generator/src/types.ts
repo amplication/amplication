@@ -74,12 +74,7 @@ export type EntityPermission = Omit<
 
 export type EntityField = Omit<
   models.EntityField,
-  | "__typename"
-  | "permanentId"
-  | "createdAt"
-  | "updatedAt"
-  | "position"
-  | "dataType"
+  "__typename" | "createdAt" | "updatedAt" | "position" | "dataType"
 > & {
   dataType: models.EnumDataType;
 };

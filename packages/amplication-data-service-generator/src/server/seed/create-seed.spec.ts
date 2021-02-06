@@ -19,9 +19,10 @@ import { memberExpression } from "../../util/ast";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityField";
 const EXAMPLE_FIELD_BASE: Pick<
   EntityField,
-  "id" | "name" | "displayName" | "required" | "searchable"
+  "id" | "name" | "displayName" | "required" | "searchable" | "permanentId"
 > = {
   id: "exampleEntityFieldId",
+  permanentId: "exampleEntityFieldPermanentId",
   name: EXAMPLE_ENTITY_FIELD_NAME,
   displayName: "Example Entity Field",
   required: true,

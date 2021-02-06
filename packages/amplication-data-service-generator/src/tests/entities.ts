@@ -15,6 +15,7 @@ const ORGANIZATION_USERS_FIELD_ID = "3c5f6e76-a124-4f9a-a944-c75f55495859";
 const ORGANIZATION_CUSTOMERS_FIELD_ID = "8d84e22b-ced7-46d7-8ffb-78b74477553a";
 const ORGANIZATION_VIP_CUSTOMERS_FIELD_ID =
   "e0c1e5c4-71ae-4584-9e8b-fd1ac8c3b577";
+
 const ORDER_CUSTOMER_FIELD_ID = "77c79b5e-b298-44b2-9648-d417c92a282b";
 const USER_ORGANIZATION_FIELD_ID = "ae21f2fb-9174-49de-9576-632d859a5dd1";
 
@@ -26,6 +27,7 @@ const USER: Entity = {
   fields: [
     {
       id: "053e75d0-9f02-4182-8f61-46fbdbaa71bd",
+      permanentId: "053e75d0-9f02-4182-8f61-46fbdbaa71b1",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -35,6 +37,7 @@ const USER: Entity = {
     },
     {
       id: "a4e0c058-5768-4481-9da9-e48c73ab224d",
+      permanentId: "a4e0c058-5768-4481-9da9-e48c73ab2241",
       name: "name",
       displayName: "Name",
       required: true,
@@ -43,6 +46,7 @@ const USER: Entity = {
     },
     {
       id: "e3fa6ddd-ad36-48ce-8042-9c0aa576e5a9",
+      permanentId: "e3fa6ddd-ad36-48ce-8042-9c0aa576e5a1",
       name: "bio",
       displayName: "Bio",
       required: true,
@@ -51,6 +55,7 @@ const USER: Entity = {
     },
     {
       id: "8c5c4130-94b0-4ce4-a4cb-4e42bf7a9b37",
+      permanentId: "8c5c4130-94b0-4ce4-a4cb-4e42bf7a9b31",
       name: "email",
       displayName: "Email",
       required: true,
@@ -59,6 +64,7 @@ const USER: Entity = {
     },
     {
       id: "71ba3f5e-7324-4ace-af95-d4bcea8f8368",
+      permanentId: "71ba3f5e-7324-4ace-af95-d4bcea8f8361",
       name: "age",
       displayName: "Age",
       required: true,
@@ -67,6 +73,7 @@ const USER: Entity = {
     },
     {
       id: "b491038d-f588-45e3-b97f-9074f3ed8c83",
+      permanentId: "b491038d-f588-45e3-b97f-9074f3ed8c81",
       name: "birthDate",
       displayName: "Birth Date",
       required: true,
@@ -76,6 +83,7 @@ const USER: Entity = {
     },
     {
       id: "9fa9604e-f9ab-45fb-b8bd-557ae10eda8c",
+      permanentId: "9fa9604e-f9ab-45fb-b8bd-557ae10eda81",
       name: "score",
       displayName: "Score",
       required: true,
@@ -83,7 +91,8 @@ const USER: Entity = {
       dataType: EnumDataType.DecimalNumber,
     },
     {
-      id: USER_ORGANIZATION_FIELD_ID,
+      id: "9fa9604e-f9ab-45fb-b8bd-557ae1011111",
+      permanentId: USER_ORGANIZATION_FIELD_ID,
       name: "organization",
       displayName: "Organization",
       required: false,
@@ -97,6 +106,7 @@ const USER: Entity = {
     },
     {
       id: "1a34cc0e-91dd-4ef2-b8eb-df5a44154a21",
+      permanentId: "1a34cc0e-91dd-4ef2-b8eb-df5a44154a22",
       name: "interests",
       displayName: "Interests",
       required: true,
@@ -111,6 +121,7 @@ const USER: Entity = {
     },
     {
       id: "daa757a6-4e15-4afc-a6e3-d4366d64367a",
+      permanentId: "daa757a6-4e15-4afc-a6e3-d4366d643671",
       name: "priority",
       displayName: "Priority",
       required: true,
@@ -126,6 +137,7 @@ const USER: Entity = {
     },
     {
       id: "e88e745f-e4a0-414a-b43d-99d7728d1207",
+      permanentId: "e88e745f-e4a0-414a-b43d-99d7728d1201",
       name: "isCurious",
       displayName: "Is Curious",
       required: true,
@@ -134,6 +146,7 @@ const USER: Entity = {
     },
     {
       id: "e8b7aca3-e761-4d0c-9196-b983d63ae80d",
+      permanentId: "e8b7aca3-e761-4d0c-9196-b983d63ae801",
       name: "location",
       displayName: "Location",
       required: true,
@@ -183,6 +196,7 @@ const ORDER: Entity = {
   fields: [
     {
       id: "77f9b90c-d304-4d2f-a4de-82d9d08ab291",
+      permanentId: "77f9b90c-d304-4d2f-a4de-82d9d08ab292",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -192,6 +206,7 @@ const ORDER: Entity = {
     },
     {
       id: "67063f41-e123-4c19-9707-5df92df469a4",
+      permanentId: "67063f41-e123-4c19-9707-5df92df469a1",
       name: "createdAt",
       displayName: "Created At",
       dataType: EnumDataType.CreatedAt,
@@ -201,6 +216,7 @@ const ORDER: Entity = {
     },
     {
       id: "b77e5adf-71ce-4b22-b37b-f8641e277032",
+      permanentId: "b77e5adf-71ce-4b22-b37b-f8641e277031",
       name: "updatedAt",
       displayName: "Updated At",
       dataType: EnumDataType.UpdatedAt,
@@ -210,6 +226,7 @@ const ORDER: Entity = {
     },
     {
       id: "77c79b5e-b298-44b2-9648-d417c92a282b",
+      permanentId: ORDER_CUSTOMER_FIELD_ID,
       name: "customer",
       displayName: "Customer",
       dataType: EnumDataType.Lookup,
@@ -222,6 +239,7 @@ const ORDER: Entity = {
     },
     {
       id: "474eda0e-4ad1-4ab6-9cd5-bfde089a833c",
+      permanentId: "474eda0e-4ad1-4ab6-9cd5-bfde089a8331",
       name: "status",
       displayName: "Status",
       dataType: EnumDataType.OptionSet,
@@ -246,6 +264,7 @@ const ORDER: Entity = {
     },
     {
       id: "8ee1d632-078e-4932-8fbd-1470df109821",
+      permanentId: "8ee1d632-078e-4932-8fbd-1470df109822",
       name: "label",
       displayName: "Label",
       dataType: EnumDataType.OptionSet,
@@ -303,6 +322,7 @@ const ORGANIZATION: Entity = {
   fields: [
     {
       id: "afcc24cf-e302-46f7-9457-843a0ec7a9d5",
+      permanentId: "afcc24cf-e302-46f7-9457-843a0ec7a9d1",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -312,6 +332,7 @@ const ORGANIZATION: Entity = {
     },
     {
       id: "4c22d45e-997c-4c9a-8bb8-c7b69c273da1",
+      permanentId: "4c22d45e-997c-4c9a-8bb8-c7b69c273da2",
       name: "createdAt",
       displayName: "Created At",
       dataType: EnumDataType.CreatedAt,
@@ -321,6 +342,7 @@ const ORGANIZATION: Entity = {
     },
     {
       id: "3f34a87a-f392-47bf-bfab-2eb23cdbffd4",
+      permanentId: "3f34a87a-f392-47bf-bfab-2eb23cdbffd1",
       name: "updatedAt",
       displayName: "Updated At",
       dataType: EnumDataType.UpdatedAt,
@@ -330,6 +352,7 @@ const ORGANIZATION: Entity = {
     },
     {
       id: "22c4a27a-6490-4fb8-b951-7f42ded681bc",
+      permanentId: "22c4a27a-6490-4fb8-b951-7f42ded681b1",
       name: "name",
       displayName: "Name",
       dataType: EnumDataType.SingleLineText,
@@ -338,7 +361,8 @@ const ORGANIZATION: Entity = {
       searchable: false,
     },
     {
-      id: ORGANIZATION_USERS_FIELD_ID,
+      id: "22c4a27a-6490-4fb8-b951-7f42ded6a766",
+      permanentId: ORGANIZATION_USERS_FIELD_ID,
       name: "users",
       displayName: "Users",
       dataType: EnumDataType.Lookup,
@@ -351,7 +375,8 @@ const ORGANIZATION: Entity = {
       searchable: false,
     },
     {
-      id: ORGANIZATION_CUSTOMERS_FIELD_ID,
+      id: "22c4a27a-6490-4fb8-b951-7f42ded68b99",
+      permanentId: ORGANIZATION_CUSTOMERS_FIELD_ID,
       name: "customers",
       displayName: "Customers",
       dataType: EnumDataType.Lookup,
@@ -365,7 +390,8 @@ const ORGANIZATION: Entity = {
     },
     // Additional lookup field to the same entity
     {
-      id: ORGANIZATION_VIP_CUSTOMERS_FIELD_ID,
+      id: "22c4a27a-6490-4fb8-b951-7f42d77a7b99",
+      permanentId: ORGANIZATION_VIP_CUSTOMERS_FIELD_ID,
       name: "vipCustomers",
       displayName: "VIP Customers",
       dataType: EnumDataType.Lookup,
@@ -420,6 +446,7 @@ const CUSTOMER: Entity = {
   fields: [
     {
       id: "492ba140-5dde-419a-a087-199ddb8b2dc0",
+      permanentId: "492ba140-5dde-419a-a087-199ddb8b2dc1",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -429,6 +456,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "d4d95cff-e8f4-4bd4-b102-fd10c93d5dea",
+      permanentId: "d4d95cff-e8f4-4bd4-b102-fd10c93d5de1",
       name: "createdAt",
       displayName: "Created At",
       dataType: EnumDataType.CreatedAt,
@@ -438,6 +466,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "68435ba2-711c-4a86-aa8f-af3b693c4433",
+      permanentId: "68435ba2-711c-4a86-aa8f-af3b693c4431",
       name: "updatedAt",
       displayName: "Updated At",
       dataType: EnumDataType.UpdatedAt,
@@ -447,6 +476,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "15ca8761-2b26-4893-9306-a6fd384efdce",
+      permanentId: "15ca8761-2b26-4893-9306-a6fd384efdc1",
       name: "email",
       displayName: "Email",
       dataType: EnumDataType.Email,
@@ -456,6 +486,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "ad93150b-615a-4b95-837e-3b3ab4d378eb",
+      permanentId: "ad93150b-615a-4b95-837e-3b3ab4d378e1",
       name: "firstName",
       displayName: "First Name",
       dataType: EnumDataType.SingleLineText,
@@ -465,6 +496,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "6a12fcaa-9e0f-4d4a-b2ce-67d7d896f438",
+      permanentId: "6a12fcaa-9e0f-4d4a-b2ce-67d7d896f431",
       name: "lastName",
       displayName: "Last Name",
       dataType: EnumDataType.SingleLineText,
@@ -474,6 +506,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "9f1681d5-59ac-4d6a-9fe5-d90832cd32fe",
+      permanentId: "9f1681d5-59ac-4d6a-9fe5-d90832cd32f1",
       name: "isVip",
       displayName: "VIP",
       dataType: EnumDataType.Boolean,
@@ -483,6 +516,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "02242b3d-7f0b-489b-ae83-b772975dea06",
+      permanentId: "02242b3d-7f0b-489b-ae83-b772975dea01",
       name: "birthData",
       displayName: "Birth Data",
       dataType: EnumDataType.DateTime,
@@ -495,6 +529,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "fa359cdb-60b1-4a8c-a59b-d70a2370fbd6",
+      permanentId: "fa359cdb-60b1-4a8c-a59b-d70a2370fbd1",
       name: "averageSale",
       displayName: "Average Sale (-1500.00 - 1500.00)",
       dataType: EnumDataType.DecimalNumber,
@@ -508,6 +543,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "88931847-cfff-4345-8faf-82a762160340",
+      permanentId: "88931847-cfff-4345-8faf-82a762160341",
       name: "favoriteNumber",
       displayName: "Favorite Number (1 - 20)",
       dataType: EnumDataType.WholeNumber,
@@ -520,6 +556,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "75f4b8c8-a1e7-4b83-aef2-b3b0b0c5d0bc",
+      permanentId: "75f4b8c8-a1e7-4b83-aef2-b3b0b0c5d0b1",
       name: "geoLocation",
       displayName: "Geographic Location",
       dataType: EnumDataType.GeographicLocation,
@@ -529,6 +566,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "ecd8dbca-3524-4e38-985e-cc72c28f0b99",
+      permanentId: "ecd8dbca-3524-4e38-985e-cc72c28f0b91",
       name: "comments",
       displayName: "Comments (up to 500 characters)",
       dataType: EnumDataType.MultiLineText,
@@ -540,6 +578,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "e0d70a60-6a1c-47be-8687-2d07f3e93b0b",
+      permanentId: "e0d70a60-6a1c-47be-8687-2d07f3e93b01",
       name: "favoriteColors",
       displayName: "Favorite Colors (multi-select)",
       dataType: EnumDataType.MultiSelectOptionSet,
@@ -568,6 +607,7 @@ const CUSTOMER: Entity = {
     },
     {
       id: "b227bd7a-2fe5-47f8-8f3e-29a2c26104a8",
+      permanentId: "b227bd7a-2fe5-47f8-8f3e-29a2c26104a1",
       name: "customerType",
       displayName: "Customer Type",
       dataType: EnumDataType.OptionSet,
@@ -595,7 +635,8 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
-      id: CUSTOMER_ORGANIZATION_FIELD_ID,
+      id: "b227bd7a-2fe5-47f8-8f3e-29a2c26111b7",
+      permanentId: CUSTOMER_ORGANIZATION_FIELD_ID,
       name: "organization",
       displayName: "Organization",
       dataType: EnumDataType.Lookup,
@@ -608,7 +649,8 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
-      id: CUSTOMER_VIP_ORGANIZATION_FIELD_ID,
+      id: "b227bd7a-2fe5-47f8-8f3e-29a2c26113a2",
+      permanentId: CUSTOMER_VIP_ORGANIZATION_FIELD_ID,
       name: "vipOrganization",
       displayName: "VIP Organization",
       dataType: EnumDataType.Lookup,
@@ -621,7 +663,8 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
-      id: CUSTOMER_ORDERS_FIELD_ID,
+      id: "e0d70a60-6a1c-47be-8687-2d07f3e9399a",
+      permanentId: CUSTOMER_ORDERS_FIELD_ID,
       name: "orders",
       displayName: "Orders",
       dataType: EnumDataType.Lookup,
@@ -676,6 +719,7 @@ const EMPTY: Entity = {
   fields: [
     {
       id: "d5e8346e-5382-41cb-bcf7-563678709bea",
+      permanentId: "d5e8346e-5382-41cb-bcf7-563678709be1",
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
@@ -685,6 +729,7 @@ const EMPTY: Entity = {
     },
     {
       id: "26273293-4cd3-4765-b316-07d68ca99d44",
+      permanentId: "26273293-4cd3-4765-b316-07d68ca99d41",
       name: "createdAt",
       displayName: "Created At",
       dataType: EnumDataType.CreatedAt,
@@ -694,6 +739,7 @@ const EMPTY: Entity = {
     },
     {
       id: "97c4cded-8b11-4907-8079-861b2d83125f",
+      permanentId: "97c4cded-8b11-4907-8079-861b2d831251",
       name: "updatedAt",
       displayName: "Updated At",
       dataType: EnumDataType.UpdatedAt,
