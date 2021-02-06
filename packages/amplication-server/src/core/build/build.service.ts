@@ -204,9 +204,9 @@ export class BuildService {
     });
     logger.info(JOB_STARTED_LOG);
     const tarballURL = await this.generate(build);
-    // if (!skipPublish) {
-    //   await this.buildDockerImage(build, tarballURL);
-    // }
+    if (!skipPublish) {
+      await this.buildDockerImage(build, tarballURL);
+    }
     logger.info(JOB_DONE_LOG);
 
     return build;
