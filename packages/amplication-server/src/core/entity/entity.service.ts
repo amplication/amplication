@@ -1818,6 +1818,8 @@ export class EntityService {
     // In case related field should be deleted or changed, delete the existing related field
     if (shouldDeleteRelated || shouldChangeRelated) {
       const properties = (field.properties as unknown) as types.Lookup;
+
+      /**@todo: when the field should be changed and we delete it, we loose the permanent ID and links to previous versions  */
       await this.deleteRelatedField(
         properties.relatedFieldId,
         properties.relatedEntityId,
@@ -1831,18 +1833,18 @@ export class EntityService {
       const properties = (args.data.properties as unknown) as types.Lookup;
 
       // Create related field only if it is not for the same entity
-      if (properties.relatedEntityId !== entity.id) {
-        await this.createRelatedField(
-          properties.relatedFieldId,
-          args.relatedFieldName,
-          args.relatedFieldDisplayName,
-          !properties.allowMultipleSelection,
-          properties.relatedEntityId,
-          entity.id,
-          field.permanentId,
-          user
-        );
-      }
+      //if (properties.relatedEntityId !== entity.id) {
+      await this.createRelatedField(
+        properties.relatedFieldId,
+        args.relatedFieldName,
+        args.relatedFieldDisplayName,
+        !properties.allowMultipleSelection,
+        properties.relatedEntityId,
+        entity.id,
+        field.permanentId,
+        user
+      );
+      //}
     }
 
     return this.prisma.entityField.update(
@@ -1879,11 +1881,20 @@ export class EntityService {
     if (field.dataType === EnumDataType.Lookup) {
       // Cast the field properties as Lookup properties
       const properties = (field.properties as unknown) as types.Lookup;
-      await this.deleteRelatedField(
-        properties.relatedFieldId,
-        properties.relatedEntityId,
-        user
-      );
+      try {
+        await this.deleteRelatedField(
+          properties.relatedFieldId,
+          properties.relatedEntityId,
+          user
+        );
+      } catch (error) {
+        //continue to delete the field even if the deletion of the related field failed.
+        //This is done in order to allow the user to workaround issues in any case when a related field is missing
+        console.log(
+          'Continue with FieldDelete even though the related field could not be deleted or was not found ',
+          error
+        );
+      }
     }
 
     return this.prisma.entityField.delete(args);

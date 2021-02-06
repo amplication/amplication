@@ -86,10 +86,8 @@ const EntityField = () => {
       if (data.dataType === models.EnumDataType.Lookup) {
         const properties = data.properties as types.Lookup;
         if (
-          (entityField?.dataType !== models.EnumDataType.Lookup ||
-            properties.relatedEntityId !==
-              entityField?.properties.relatedEntityId) &&
-          properties.relatedEntityId !== entity
+          entityField?.dataType !== models.EnumDataType.Lookup ||
+          properties.relatedEntityId !== entityField?.properties.relatedEntityId
         ) {
           setLookupPendingData(data);
           return;
