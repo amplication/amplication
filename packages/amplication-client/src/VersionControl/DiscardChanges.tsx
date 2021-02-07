@@ -20,6 +20,19 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      //remove entities from cache to reflect discarded changes
+      for (var change of pendingChangesContext.pendingChanges) {
+        cache.evict({
+          id: cache.identify({
+            id: change.resourceId,
+            __typename: "Entity",
+          }),
+        });
+      }
+    },
     onCompleted: (data) => {
       pendingChangesContext.reset();
       onComplete();
