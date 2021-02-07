@@ -26,20 +26,27 @@ const RelatedEntityFieldField = () => {
     }
   );
 
-  return (
-    (data && data.entity && data.entity.fields && (
-      <div className={CLASS_NAME}>
-        <label>Opposite Relation Field</label>
+  const relatedField =
+    data &&
+    data.entity &&
+    data.entity.fields &&
+    data.entity.fields.length &&
+    data.entity.fields[0];
 
-        <Link
-          to={`/${data.entity.appId}/entities/${data.entity.id}/fields/${data.entity.fields[0].id}`}
-        >
-          {data.entity.fields[0].displayName}
-        </Link>
-      </div>
-    )) ||
-    null
-  );
+  return formik.values.properties.relatedFieldId
+    ? (data && relatedField && (
+        <div className={CLASS_NAME}>
+          <label>Opposite Relation Field</label>
+
+          <Link
+            to={`/${data.entity.appId}/entities/${data.entity.id}/fields/${relatedField.id}`}
+          >
+            {relatedField.displayName}
+          </Link>
+        </div>
+      )) ||
+        null
+    : "Can't find Opposite Relation Field";
 };
 
 export default RelatedEntityFieldField;
