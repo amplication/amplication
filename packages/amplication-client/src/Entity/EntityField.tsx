@@ -66,6 +66,22 @@ const EntityField = () => {
   const [updateEntityField, { error: updateError }] = useMutation<UpdateData>(
     UPDATE_ENTITY_FIELD,
     {
+      update(cache, { data }) {
+        if (!data) return;
+
+        const updatedField = data.updateEntityField;
+
+        if (updatedField.dataType === models.EnumDataType.Lookup) {
+          const relatedEntityId = updatedField.properties.relatedEntityId;
+          //remove the related entity from cache so it will be updated with the new relation field
+          cache.evict({
+            id: cache.identify({
+              id: relatedEntityId,
+              __typename: "Entity",
+            }),
+          });
+        }
+      },
       onCompleted: (data) => {
         pendingChangesContext.addEntity(entity);
         trackEvent({
