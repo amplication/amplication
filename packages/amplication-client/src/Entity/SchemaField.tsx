@@ -4,6 +4,7 @@ import { ToggleField, TextField } from "@amplication/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
 import EnumSelectField from "../Components/EnumSelectField";
 import RelatedEntityFieldField from "../Components/RelatedEntityFieldField";
+import RelationAllowMultipleField from "../Components/RelationAllowMultipleField";
 import { Schema } from "@amplication/data";
 import OptionSet from "../Entity/OptionSet";
 
@@ -12,11 +13,13 @@ export const SchemaField = ({
   propertySchema,
   isDisabled,
   applicationId,
+  entityDisplayName,
 }: {
   propertyName: string;
   propertySchema: Schema;
   isDisabled?: boolean;
   applicationId: string;
+  entityDisplayName: string;
 }) => {
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
@@ -88,10 +91,17 @@ export const SchemaField = ({
             />
           );
         }
-        // Hide entity field ID properties
         case "#/definitions/EntityFieldId": {
           return <RelatedEntityFieldField />;
-          //return null;
+        }
+        case "#/definitions/RelationAllowMultiple": {
+          return (
+            <RelationAllowMultipleField
+              fieldName={fieldName}
+              isDisabled={isDisabled}
+              entityDisplayName={entityDisplayName}
+            />
+          );
         }
       }
 

@@ -62,6 +62,7 @@ const EntityField = () => {
   );
 
   const entityField = data?.entity.fields?.[0];
+  const entityDisplayName = data?.entity.displayName;
 
   const [updateEntityField, { error: updateError }] = useMutation<UpdateData>(
     UPDATE_ENTITY_FIELD,
@@ -189,6 +190,7 @@ const EntityField = () => {
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
             applicationId={application}
+            entityDisplayName={entityDisplayName || ""}
           />
         </>
       )}

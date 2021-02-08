@@ -31,6 +31,7 @@ type Props = {
   isDisabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
   applicationId: string;
+  entityDisplayName: string;
 };
 
 const FORM_SCHEMA = {
@@ -65,6 +66,7 @@ const EntityFieldForm = ({
   defaultValues = {},
   isDisabled,
   applicationId,
+  entityDisplayName,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -144,6 +146,7 @@ const EntityFieldForm = ({
               schema={schema}
               isDisabled={isDisabled}
               applicationId={applicationId}
+              entityDisplayName={entityDisplayName}
             />
           </Form>
         );
