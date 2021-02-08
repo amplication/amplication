@@ -33,20 +33,28 @@ const RelatedEntityFieldField = () => {
     data.entity.fields.length &&
     data.entity.fields[0];
 
-  return formik.values.properties.relatedFieldId
-    ? (data && relatedField && (
-        <div className={CLASS_NAME}>
-          <label>Opposite Relation Field</label>
-
-          <Link
-            to={`/${data.entity.appId}/entities/${data.entity.id}/fields/${relatedField.id}`}
-          >
+  return formik.values.properties.relatedFieldId ? (
+    (data && relatedField && (
+      <div className={CLASS_NAME}>
+        <Link
+          to={`/${data.entity.appId}/entities/${data.entity.id}/fields/${relatedField.id}`}
+        >
+          This field is related to field
+          <span className={`${CLASS_NAME}__highlight`}>
+            {" "}
             {relatedField.displayName}
-          </Link>
-        </div>
-      )) ||
-        null
-    : "Can't find Opposite Relation Field";
+          </span>{" "}
+          on entity{" "}
+          <span className={`${CLASS_NAME}__highlight`}>
+            {data.entity.displayName}
+          </span>
+        </Link>
+      </div>
+    )) ||
+      null
+  ) : (
+    <span>"Can't find Opposite Relation Field"</span>
+  );
 };
 
 export default RelatedEntityFieldField;
@@ -58,6 +66,7 @@ export const GET_ENTITY_FIELD_BY_PERMANENT_ID = gql`
   ) {
     entity(where: { id: $entityId }) {
       id
+      displayName
       appId
       fields(where: { permanentId: { equals: $fieldPermanentId } }) {
         id
