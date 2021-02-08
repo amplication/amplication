@@ -1,0 +1,53 @@
+@import "../../style/index.scss";
+:root {
+  --checkbox-field-size: 16px;
+}
+
+.amp-radio-field {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  &.mdc-form-field {
+    display: flex;
+  }
+
+  label {
+    font-size: var(--normal-font-size);
+    color: var(--black100);
+    padding-left: var(--default-spacing-small);
+  }
+
+  .mdc-radio--disabled + label {
+    color: var(--black40);
+  }
+
+  .mdc-radio__native-control {
+    &:enabled:not(:checked) + .mdc-radio__background {
+      .mdc-radio__outer-circle {
+        border-color: var(--black20) !important;
+        background-color: var(--black20) !important;
+      }
+    }
+
+    &:checked + .mdc-radio__background {
+      .mdc-radio__inner-circle {
+        border-color: var(--static-white) !important;
+      }
+      .mdc-radio__outer-circle {
+        border-color: var(--primary) !important;
+        background-color: var(--primary) !important;
+      }
+    }
+
+    &:disabled + .mdc-radio__background {
+      .mdc-radio__inner-circle {
+        border-color: var(--black40) !important;
+      }
+      .mdc-radio__outer-circle {
+        border-color: var(--black20) !important;
+        background-color: var(--black20) !important;
+      }
+    }
+  }
+}
