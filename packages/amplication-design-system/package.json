@@ -17,6 +17,7 @@
     "@rmwc/data-table": "^6.1.4",
     "@rmwc/drawer": "^6.1.4",
     "@rmwc/icon": "^6.1.4",
+    "@rmwc/radio": "^6.1.4",
     "@rmwc/snackbar": "^6.1.4",
     "@rmwc/tooltip": "^6.1.4",
     "@types/lodash": "^4.14.162",
