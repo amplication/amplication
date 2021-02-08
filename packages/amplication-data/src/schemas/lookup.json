@@ -11,14 +11,14 @@
       "$ref": "#/definitions/EntityId",
       "default": null
     },
+    "allowMultipleSelection": {
+      "$ref": "#/definitions/RelationAllowMultiple",
+      "default": false
+    },
     "relatedFieldId": {
       "title": "Related Field",
       "$ref": "#/definitions/EntityFieldId",
       "default": null
-    },
-    "allowMultipleSelection": {
-      "type": "boolean",
-      "default": false
     }
   },
   "definitions": {
@@ -27,6 +27,9 @@
     },
     "EntityFieldId": {
       "type": "string"
+    },
+    "RelationAllowMultiple": {
+      "type": "boolean"
     }
   }
 }
