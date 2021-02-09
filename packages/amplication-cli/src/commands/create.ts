@@ -1,6 +1,8 @@
 import cli from 'cli-ux';
 import { ConfiguredCommand } from '../configured-command';
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client/core';
+
+import * as models from '../models';
 
 const CREATE_APP = gql`
   mutation createApp($data: AppCreateInput!) {
@@ -14,22 +16,12 @@ const CREATE_APP = gql`
 
 export default class Login extends ConfiguredCommand {
   async command() {
-    const token = this.getConfig('token');
-    if (!token) {
-      this.error('Unauthorized');
-      this.exit(1);
-    }
     const name = await cli.prompt('name', { required: true });
     const description = await cli.prompt('description', { required: true });
 
     if (name && description) {
       try {
-        await this.client.mutate({
-          context: {
-            headers: {
-              authorization: `Bearer ${this.getConfig('token')}`,
-            },
-          },
+        const data = await this.client.mutate<{ createApp: models.App }>({
           mutation: CREATE_APP,
           variables: {
             data: {
@@ -38,6 +30,9 @@ export default class Login extends ConfiguredCommand {
             },
           },
         });
+
+        this.log(`successfully created app '${name}'`);
+        this.log(`App ID  ${data.data?.createApp.id}`);
       } catch (error) {
         this.error('Could not authorize user');
       }

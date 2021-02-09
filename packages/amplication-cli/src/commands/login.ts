@@ -1,6 +1,6 @@
 import cli from 'cli-ux';
 import { ConfiguredCommand } from '../configured-command';
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client/core';
 
 const DO_LOGIN = gql`
   mutation login($data: LoginInput!) {
@@ -20,8 +20,6 @@ export default class Login extends ConfiguredCommand {
       type: 'hide',
     });
 
-    this.log(this.getConfig('token'));
-
     if (email && password) {
       try {
         const tokenData = await this.client.mutate({
@@ -33,9 +31,12 @@ export default class Login extends ConfiguredCommand {
             },
           },
         });
+        this.debug('tokenData:', tokenData);
         if (tokenData.data.login.token)
           this.setConfig('token', tokenData.data.login.token);
+        this.log(`successfully logged in to Amplication with ${email}`);
       } catch (error) {
+        this.error(error);
         this.error('Could not authorize user');
       }
     }

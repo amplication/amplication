@@ -1,0 +1,1 @@
+{"version":"0.0.1","commands":{"create":{"id":"create","pluginName":"@amplication/cli","pluginType":"core","aliases":[],"flags":{},"args":[]},"login":{"id":"login","pluginName":"@amplication/cli","pluginType":"core","aliases":[],"flags":{},"args":[]}}}

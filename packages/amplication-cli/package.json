@@ -28,7 +28,7 @@
   "main": "dist/index.js",
   "oclif": {
     "commands": "./lib/commands",
-    "bin": "amp-oc",
+    "bin": "amplication",
     "plugins": [
       "@oclif/plugin-help"
     ]
@@ -44,18 +44,18 @@
   },
   "types": "lib/index.d.ts",
   "dependencies": {
+    "@apollo/client": "^3.3.8",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
-    "apollo-boost": "^0.4.9",
     "cli-ux": "^5.5.1",
-    "isomorphic-fetch": "^3.0.0",
+    "cross-fetch": "^3.0.6",
+    "graphql": "^15.5.0",
     "tslib": "^1.14.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
     "@oclif/test": "^1.2.8",
-    "@types/isomorphic-fetch": "^0.0.35",
     "@types/node": "^10.17.51",
     "@typescript-eslint/eslint-plugin": "2.21.0",
     "@typescript-eslint/parser": "2.21.0",

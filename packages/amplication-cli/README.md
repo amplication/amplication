@@ -13,8 +13,23 @@ Amplication CLI
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 # Usage
 <!-- usage -->
+```sh-session
+$ npm install -g @amplication/cli
+$ amplication COMMAND
+running command...
+$ amplication (-v|--version|version)
+@amplication/cli/0.0.1 win32-x64 node-v12.16.1
+$ amplication --help [COMMAND]
+USAGE
+  $ amplication COMMAND
+...
+```
+<!-- usagestop -->
 ```sh-session
 $ npm install -g @amplication/cli
 $ amp-oc COMMAND
@@ -29,6 +44,41 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`amplication create`](#amplication-create)
+* [`amplication help [COMMAND]`](#amplication-help-command)
+* [`amplication login`](#amplication-login)
+
+## `amplication create`
+
+```
+USAGE
+  $ amplication create
+```
+
+## `amplication help [COMMAND]`
+
+display help for amplication
+
+```
+USAGE
+  $ amplication help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
+
+## `amplication login`
+
+```
+USAGE
+  $ amplication login
+```
+<!-- commandsstop -->
 * [`amp-oc hello [FILE]`](#amp-oc-hello-file)
 * [`amp-oc help [COMMAND]`](#amp-oc-help-command)
 
