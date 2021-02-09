@@ -1,0 +1,71 @@
+{
+  "name": "@amplication/cli",
+  "description": "Amplication CLI",
+  "version": "0.0.1",
+  "private": "true",
+  "bin": {
+    "amp-oc": "./bin/run"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "jest": {
+    "preset": "ts-jest",
+    "testPathIgnorePatterns": [
+      "dist/"
+    ]
+  },
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "amp-oc",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "scripts": {
+    "build": "tsc",
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepare": "npm run build",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts",
+  "dependencies": {
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/plugin-help": "^3.2.2",
+    "apollo-boost": "^0.4.9",
+    "cli-ux": "^5.5.1",
+    "isomorphic-fetch": "^3.0.0",
+    "tslib": "^1.14.1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.26.0",
+    "@oclif/test": "^1.2.8",
+    "@types/isomorphic-fetch": "^0.0.35",
+    "@types/node": "^10.17.51",
+    "@typescript-eslint/eslint-plugin": "2.21.0",
+    "@typescript-eslint/parser": "2.21.0",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.1.0",
+    "eslint-import-resolver-lerna": "^1.1.0",
+    "eslint-plugin-import": "^2.22.0",
+    "nyc": "^14.1.1",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  }
+}
