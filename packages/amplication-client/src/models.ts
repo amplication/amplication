@@ -65,12 +65,12 @@ export type App = {
   entities: Array<Entity>;
   environments: Array<Environment>;
   builds: Array<Build>;
-  githubTokenCreatedDate: Scalars["DateTime"];
+  githubTokenCreatedDate?: Maybe<Scalars["DateTime"]>;
   githubSyncEnabled: Scalars["Boolean"];
-  githubRepo: Scalars["String"];
-  githubBranch: Scalars["String"];
-  githubLastSync: Scalars["DateTime"];
-  githubLastMessage: Scalars["String"];
+  githubRepo?: Maybe<Scalars["String"]>;
+  githubBranch?: Maybe<Scalars["String"]>;
+  githubLastSync?: Maybe<Scalars["DateTime"]>;
+  githubLastMessage?: Maybe<Scalars["String"]>;
 };
 
 export type AppEntitiesArgs = {
@@ -1013,9 +1013,9 @@ export type GithubRepo = {
   __typename?: "GithubRepo";
   name: Scalars["String"];
   url: Scalars["String"];
-  private: Scalars["String"];
+  private: Scalars["Boolean"];
   fullName: Scalars["String"];
-  admin: Scalars["String"];
+  admin: Scalars["Boolean"];
 };
 
 export type HttpBasicAuthenticationSettings = {
@@ -1097,8 +1097,10 @@ export type Mutation = {
   commit?: Maybe<Commit>;
   discardPendingChanges?: Maybe<Scalars["Boolean"]>;
   startAuthorizeAppWithGithub: AuthorizeAppWithGithubResult;
-  completeAuthorizeAppWithGithub: Scalars["Boolean"];
+  completeAuthorizeAppWithGithub: App;
+  removeAuthorizeAppWithGithub: App;
   appEnableSyncWithGithubRepo: App;
+  appDisableSyncWithGithubRepo: App;
   signup: Auth;
   login: Auth;
   changePassword: Account;
@@ -1239,8 +1241,16 @@ export type MutationCompleteAuthorizeAppWithGithubArgs = {
   where: WhereUniqueInput;
 };
 
+export type MutationRemoveAuthorizeAppWithGithubArgs = {
+  where: WhereUniqueInput;
+};
+
 export type MutationAppEnableSyncWithGithubRepoArgs = {
   data: AppEnableSyncWithGithubRepoInput;
+  where: WhereUniqueInput;
+};
+
+export type MutationAppDisableSyncWithGithubRepoArgs = {
   where: WhereUniqueInput;
 };
 
