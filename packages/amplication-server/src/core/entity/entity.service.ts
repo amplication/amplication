@@ -17,7 +17,8 @@ import {
   QueryMode,
   FindFirstEntityFieldArgs,
   FindManyEntityFieldArgs,
-  EntityWhereInput
+  EntityWhereInput,
+  InputJsonValue
 } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
@@ -64,6 +65,7 @@ import {
   CreateOneEntityFieldArgs,
   CreateOneEntityFieldByDisplayNameArgs,
   UpdateOneEntityFieldArgs,
+  CreateDefaultRelatedFieldArgs,
   EntityFieldCreateInput,
   EntityFieldUpdateInput,
   CreateOneEntityArgs,
@@ -1698,6 +1700,84 @@ export class EntityService {
     });
   }
 
+  /** 2021-02-10
+   * This method is used to fix previous versions of lookup fields
+   * that are missing the property.relatedEntityField value The function will
+   * throw an exception if the provided field already have a related entity
+   * field, or it is a field of a different type other the Lookup
+   */
+  async createDefaultRelatedField(
+    args: CreateDefaultRelatedFieldArgs,
+    user: User
+  ): Promise<EntityField> {
+    // Get field to update
+    const field = await this.getField({
+      where: args.where,
+      include: { entityVersion: true }
+    });
+
+    if (field.dataType != EnumDataType.Lookup) {
+      throw new ConflictException(
+        `Cannot created default related field, because the provided field is not of a relation field`
+      );
+    }
+
+    if (
+      !isEmpty(((field.properties as unknown) as types.Lookup).relatedFieldId)
+    ) {
+      throw new ConflictException(
+        `Cannot created default related field, because the provided field is already related to another field`
+      );
+    }
+
+    // Get the field's entity
+    const entity = await this.acquireLock(
+      { where: { id: field.entityVersion.entityId } },
+      user
+    );
+
+    // Validate args
+    this.validateFieldMutationArgs(
+      {
+        ...args,
+        data: {
+          properties: field.properties as JsonObject,
+          dataType: field.dataType
+        }
+      },
+      entity
+    );
+
+    const relatedFieldId = cuid();
+
+    // Cast the received properties as Lookup properties
+    const properties = (field.properties as unknown) as types.Lookup;
+
+    //create the related field
+    await this.createRelatedField(
+      relatedFieldId,
+      args.relatedFieldName,
+      args.relatedFieldDisplayName,
+      !properties.allowMultipleSelection,
+      properties.relatedEntityId,
+      entity.id,
+      field.permanentId,
+      user
+    );
+
+    properties.relatedFieldId = relatedFieldId;
+
+    //Update the field with the ID of the related field
+    return this.prisma.entityField.update({
+      where: {
+        id: field.id
+      },
+      data: {
+        properties: (properties as unknown) as InputJsonValue
+      }
+    });
+  }
+
   private async createRelatedField(
     id: string,
     name: string,
@@ -1832,8 +1912,6 @@ export class EntityService {
       // Cast the received properties as Lookup properties
       const properties = (args.data.properties as unknown) as types.Lookup;
 
-      // Create related field only if it is not for the same entity
-      //if (properties.relatedEntityId !== entity.id) {
       await this.createRelatedField(
         properties.relatedFieldId,
         args.relatedFieldName,
@@ -1844,7 +1922,6 @@ export class EntityService {
         field.permanentId,
         user
       );
-      //}
     }
 
     return this.prisma.entityField.update(
