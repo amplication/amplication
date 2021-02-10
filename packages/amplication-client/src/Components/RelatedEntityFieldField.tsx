@@ -1,6 +1,7 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import { useFormikContext } from "formik";
+import { Icon } from "@rmwc/icon";
 import { Link } from "react-router-dom";
 import * as models from "../models";
 import "./RelatedEntityFieldField.scss";
@@ -33,27 +34,35 @@ const RelatedEntityFieldField = () => {
     data.entity.fields.length &&
     data.entity.fields[0];
 
-  return formik.values.properties.relatedFieldId ? (
-    (data && relatedField && (
-      <div className={CLASS_NAME}>
-        <Link
-          to={`/${data.entity.appId}/entities/${data.entity.id}/fields/${relatedField.id}`}
-        >
-          This field is related to field
-          <span className={`${CLASS_NAME}__highlight`}>
-            {" "}
-            {relatedField.displayName}
-          </span>{" "}
-          on entity{" "}
-          <span className={`${CLASS_NAME}__highlight`}>
-            {data.entity.displayName}
-          </span>
-        </Link>
-      </div>
-    )) ||
-      null
-  ) : (
-    <span>"Can't find Opposite Relation Field"</span>
+  return (
+    <div className={CLASS_NAME}>
+      {formik.values.properties.relatedFieldId ? (
+        data &&
+        relatedField && (
+          <Link
+            to={`/${data.entity.appId}/entities/${data.entity.id}/fields/${relatedField.id}`}
+          >
+            This field is related to field
+            <span className={`${CLASS_NAME}__highlight`}>
+              {" "}
+              {relatedField.displayName}
+            </span>{" "}
+            on entity{" "}
+            <span className={`${CLASS_NAME}__highlight`}>
+              {data.entity.displayName}
+            </span>
+          </Link>
+        )
+      ) : (
+        <div className={`${CLASS_NAME}__error`}>
+          <Icon icon="info_circle" />
+          <span>This field is missing the opposite related field </span>
+          <Link to={`/${data?.entity?.appId}/fix-related-entities`}>
+            You can fix it here
+          </Link>
+        </div>
+      )}
+    </div>
   );
 };
 

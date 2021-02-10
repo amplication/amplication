@@ -1,0 +1,24 @@
+@import "../style/index.scss";
+
+.related-fields-migration-fix {
+  &__entity {
+    margin-bottom: var(--default-spacing);
+
+    &__field {
+      padding-left: var(--default-spacing);
+    }
+    &__field {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      .amp-icon {
+        margin-right: var(--default-spacing);
+        color: var(--positive-default);
+      }
+      &__error.amp-icon {
+        color: var(--negative);
+      }
+    }
+  }
+}

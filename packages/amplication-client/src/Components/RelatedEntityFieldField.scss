@@ -12,4 +12,17 @@
   &__highlight {
     color: var(--black100);
   }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    .amp-icon {
+      color: var(--negative);
+    }
+
+    > * {
+      margin-right: var(--default-spacing);
+    }
+  }
 }

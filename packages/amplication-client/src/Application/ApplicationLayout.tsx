@@ -4,6 +4,7 @@ import { gql, useQuery } from "@apollo/client";
 
 import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
+import { RelatedFieldsMigrationFix } from "../Entity/RelatedFieldsMigrationFix";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import BuildPage from "../VersionControl/BuildPage";
@@ -247,6 +248,10 @@ function ApplicationLayout({ match }: Props) {
 
               <Route path="/:application/roles" component={RolesPage} />
               <Route path="/:application/commits" component={Commits} />
+              <Route
+                path="/:application/fix-related-entities"
+                component={RelatedFieldsMigrationFix}
+              />
               <Route path="/:application/" component={ApplicationHome} />
             </Switch>
           </div>
