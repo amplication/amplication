@@ -179,7 +179,7 @@ async function createToOneRelationMethods(
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
-    FIND_ONE: builders.identifier(camelCase(relatedEntity.name)),
+    FIND_ONE: builders.identifier(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findOneArgs.id,
   });
 
@@ -204,7 +204,7 @@ async function createToManyRelationMethods(
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
-    FIND_MANY: builders.identifier(camelCase(relatedEntity.pluralDisplayName)),
+    FIND_MANY: builders.identifier(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findManyArgs.id,
   });
 
