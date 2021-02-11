@@ -1,22 +1,17 @@
+import { Panel, PanelHeader } from "@amplication/design-system";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { CircularProgress } from "@rmwc/circular-progress";
+import { Snackbar } from "@rmwc/snackbar";
+import { camelCase } from "camel-case";
+import { keyBy } from "lodash";
 import React, { useCallback, useContext, useMemo } from "react";
 import { match } from "react-router-dom";
-import { gql, useQuery, useMutation } from "@apollo/client";
-import { camelCase } from "camel-case";
-import classNames from "classnames";
-import { Formik } from "formik";
-import { Form } from "../Components/Form";
-import { Icon } from "@rmwc/icon";
-import { keyBy, Dictionary, isEmpty } from "lodash";
-import { Snackbar } from "@rmwc/snackbar";
-import { CircularProgress } from "@rmwc/circular-progress";
-import { DisplayNameField } from "../Components/DisplayNameField";
-import { formatError } from "../util/error";
-import * as models from "../models";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { Panel, PanelHeader } from "@amplication/design-system";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
-import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PageContent from "../Layout/PageContent";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { EntityRelationFields, FormValues } from "./EntityRelationFields";
 import "./RelatedFieldsMigrationFix.scss";
 
 type TData = {
@@ -118,11 +113,17 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
           <div className={`${CLASS_NAME}__entity__fields`}>
             {entity.fields && entity.fields.length
               ? entity.fields?.map((field) => (
-                  <RelatedFieldsMigrationFixField
-                    entity={entity}
+                  <EntityRelationFields
+                    entity={entity.displayName}
                     field={field}
-                    entityDictionary={entityDictionary}
-                    fieldDictionary={fieldDictionary}
+                    relatedEntityName={
+                      entityDictionary[field.properties.relatedEntityId]
+                        .displayName
+                    }
+                    relatedFieldName={
+                      fieldDictionary[field.properties.relatedFieldId]
+                        ?.displayName
+                    }
                     onSubmit={handleRelatedFieldFormSubmit}
                   />
                 ))
@@ -135,93 +136,6 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
         message={errorMessage}
       />
     </PageContent>
-  );
-};
-
-type FormValues = {
-  fieldId: string;
-  relatedFieldDisplayName: string;
-};
-
-const RelatedFieldsMigrationFixField = ({
-  entity,
-  field,
-  entityDictionary,
-  fieldDictionary,
-  onSubmit,
-}: {
-  entity: models.Entity;
-  field: models.EntityField;
-  entityDictionary: Dictionary<models.Entity>;
-  fieldDictionary: Dictionary<models.EntityField>;
-  onSubmit: (data: FormValues) => void;
-}) => {
-  const initialValues: FormValues = {
-    relatedFieldDisplayName: "",
-    fieldId: field.id,
-  };
-
-  const relatedFieldIsMissing = isEmpty(field.properties.relatedFieldId);
-
-  return (
-    <Formik
-      onSubmit={onSubmit}
-      initialValues={initialValues}
-      enableReinitialize
-    >
-      <Form>
-        <div
-          className={classNames(`${CLASS_NAME}__relation`, {
-            [`${CLASS_NAME}__relation--missing`]: relatedFieldIsMissing,
-          })}
-          key={field.id}
-        >
-          <div className={`${CLASS_NAME}__relation__entity`}>
-            <Icon icon="entity_outline" />
-            {entity.displayName}
-          </div>
-          <div className={`${CLASS_NAME}__relation__field`}>
-            {field.displayName}
-          </div>
-          <div className={`${CLASS_NAME}__relation__status`}>
-            {relatedFieldIsMissing ? (
-              <Icon icon="info_circle" />
-            ) : (
-              <Icon icon="check_circle" />
-            )}
-          </div>
-          <div className={`${CLASS_NAME}__relation__entity`}>
-            <Icon icon="entity_outline" />
-            {entityDictionary[field.properties.relatedEntityId].displayName}
-          </div>
-          <div
-            className={`${CLASS_NAME}__relation__field ${CLASS_NAME}__relation__field--target`}
-          >
-            {relatedFieldIsMissing ? (
-              <DisplayNameField
-                className={`${CLASS_NAME}__relation__field__textbox`}
-                name="relatedFieldDisplayName"
-                placeholder="Display name for the new field"
-                required
-              />
-            ) : (
-              fieldDictionary[field.properties.relatedFieldId]?.displayName
-            )}
-          </div>
-          <Button
-            className={`${CLASS_NAME}__relation__fix`}
-            buttonStyle={EnumButtonStyle.Secondary}
-            type="submit"
-            eventData={{
-              eventName: "fixRelatedEntity",
-              fieldId: field.id,
-            }}
-          >
-            Fix Relation
-          </Button>
-        </div>
-      </Form>
-    </Formik>
   );
 };
 
