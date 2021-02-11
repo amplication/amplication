@@ -38,7 +38,7 @@ const RelationAllowMultiple = ({
         name="relationAllowMultiple-field"
         value="true"
         checked={formik.values.properties.allowMultipleSelection}
-        label={`${entityDisplayName} can be linked to multiple ${formik.values.displayName}`}
+        label={`One '${entityDisplayName}' can be related to many '${formik.values.displayName}'`}
         onChange={handleChange}
       />
       <RadioButtonField
@@ -46,7 +46,7 @@ const RelationAllowMultiple = ({
         name="relationAllowMultiple-field"
         value="false"
         checked={!formik.values.properties.allowMultipleSelection}
-        label={`${entityDisplayName} can be linked to one ${formik.values.displayName}`}
+        label={`One '${entityDisplayName}' can be related to one '${formik.values.displayName}'`}
         onChange={handleChange}
       />
     </>
