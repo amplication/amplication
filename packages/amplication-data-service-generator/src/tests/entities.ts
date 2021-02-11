@@ -11,6 +11,7 @@ const CUSTOMER_ORGANIZATION_FIELD_ID = "e4ea7c84-e998-482e-8bd2-34657a3ff23c";
 const CUSTOMER_VIP_ORGANIZATION_FIELD_ID =
   "3e64e7d1-b1d2-4c5a-a546-b4f493dc4f57";
 const ORGANIZATION_ID = "3426e3f7-c316-416e-b7a1-d2a1bce17a4";
+const USER_ID = "aed41776-99ca-4674-b26d-0458fd440875";
 const ORGANIZATION_USERS_FIELD_ID = "3c5f6e76-a124-4f9a-a944-c75f55495859";
 const ORGANIZATION_CUSTOMERS_FIELD_ID = "8d84e22b-ced7-46d7-8ffb-78b74477553a";
 const ORGANIZATION_VIP_CUSTOMERS_FIELD_ID =
@@ -19,8 +20,11 @@ const ORGANIZATION_VIP_CUSTOMERS_FIELD_ID =
 const ORDER_CUSTOMER_FIELD_ID = "77c79b5e-b298-44b2-9648-d417c92a282b";
 const USER_ORGANIZATION_FIELD_ID = "ae21f2fb-9174-49de-9576-632d859a5dd1";
 
+const USER_MANAGER_FIELD_ID = "9bb55fcc-1c3a-4b99-8bcf-6ea85d052c3d";
+const USER_EMPLOYEES_FIELD_ID = "7bb3d5c1-f5b9-4fa4-8087-87f0c549d5f2";
+
 const USER: Entity = {
-  id: "075c5413-42c3-4445-af6a-d8e5b8cbf53b",
+  id: USER_ID,
   name: "User",
   displayName: "User",
   pluralDisplayName: "Users",
@@ -89,6 +93,35 @@ const USER: Entity = {
       required: true,
       searchable: false,
       dataType: EnumDataType.DecimalNumber,
+    },
+    //self referencing one-to-many (manager-employees)
+    {
+      id: "a7b32c49-e73d-4b6f-9efb-fcb77e60b303",
+      permanentId: USER_MANAGER_FIELD_ID,
+      name: "manager",
+      displayName: "Manager",
+      required: false,
+      searchable: false,
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: USER_ID,
+        relatedFieldId: USER_EMPLOYEES_FIELD_ID,
+        allowMultipleSelection: false,
+      },
+    },
+    {
+      id: "3787591a-333b-45c5-9e9d-362d9697bb38",
+      permanentId: USER_EMPLOYEES_FIELD_ID,
+      name: "employees",
+      displayName: "Employees",
+      required: false,
+      searchable: false,
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: USER_ID,
+        relatedFieldId: USER_MANAGER_FIELD_ID,
+        allowMultipleSelection: true,
+      },
     },
     {
       id: "9fa9604e-f9ab-45fb-b8bd-557ae1011111",
