@@ -2,7 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import { useFormikContext } from "formik";
 import React from "react";
 import * as models from "../models";
-import { EntityRelationFields } from "./EntityRelationFields";
+import { EntityRelationFieldsChart } from "./EntityRelationFieldsChart";
 import "./RelatedEntityFieldField.scss";
 
 const CLASS_NAME = "related-entity-field-field";
@@ -34,11 +34,14 @@ const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
   return (
     <div className={CLASS_NAME}>
       {data && relatedField && (
-        <EntityRelationFields
+        <EntityRelationFieldsChart
+          fixInPlace={false}
+          applicationId={data.entity.appId}
+          entityId={data.entity.id}
           field={formik.values}
           entityName={entityDisplayName}
+          relatedField={relatedField}
           relatedEntityName={data.entity.displayName}
-          relatedFieldName={relatedField.displayName}
           onSubmit={() => {}}
         />
       )}

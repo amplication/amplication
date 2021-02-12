@@ -1,8 +1,9 @@
 @import "../style/index.scss";
 
 $field-container-height: 40px;
+$many-element-size: 16px;
 
-.entity-relation-fields {
+.entity-relation-fields-chart {
   display: flex;
   align-items: center;
   justify-content: stretch;
@@ -30,11 +31,22 @@ $field-container-height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 
     border: $border-black30;
     flex: 1;
     padding: var(--default-spacing);
     height: $field-container-height;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        color: var(--black100);
+      }
+    }
   }
 
   &__entity {
@@ -86,11 +98,35 @@ $field-container-height: 40px;
       left: 0;
       width: calc(50% - 8px);
       top: 50%;
-      border-top: 2px solid var(--black80);
+      border-top: 1px solid var(--black80);
     }
     &:after {
       left: auto;
       right: 0;
+    }
+
+    &__cardinality {
+      &--many {
+        width: $many-element-size;
+        height: $many-element-size;
+        border: 1px solid var(--black80);
+        border-top: none;
+        border-right: none;
+        transform: rotate(45deg);
+        position: absolute;
+        right: #{- ($many-element-size / 2)};
+        border-top: none;
+        border-right: none;
+        top: calc(50% - #{($many-element-size / 2)});
+      }
+      &--source {
+        transform: rotate(-135deg);
+        left: #{- ($many-element-size / 2)};
+        right: auto;
+      }
+      &--one {
+        display: none;
+      }
     }
   }
 }

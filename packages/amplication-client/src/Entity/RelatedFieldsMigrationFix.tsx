@@ -11,7 +11,10 @@ import useNavigationTabs from "../Layout/UseNavigationTabs";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
-import { EntityRelationFields, FormValues } from "./EntityRelationFields";
+import {
+  EntityRelationFieldsChart,
+  FormValues,
+} from "./EntityRelationFieldsChart";
 import "./RelatedFieldsMigrationFix.scss";
 
 type TData = {
@@ -113,16 +116,18 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
           <div className={`${CLASS_NAME}__entity__fields`}>
             {entity.fields && entity.fields.length
               ? entity.fields?.map((field) => (
-                  <EntityRelationFields
-                    entity={entity.displayName}
+                  <EntityRelationFieldsChart
+                    fixInPlace
+                    applicationId={applicationId}
+                    entityId={entity.id}
+                    entityName={entity.displayName}
                     field={field}
+                    relatedField={
+                      fieldDictionary[field.properties.relatedFieldId]
+                    }
                     relatedEntityName={
                       entityDictionary[field.properties.relatedEntityId]
                         .displayName
-                    }
-                    relatedFieldName={
-                      fieldDictionary[field.properties.relatedFieldId]
-                        ?.displayName
                     }
                     onSubmit={handleRelatedFieldFormSubmit}
                   />
