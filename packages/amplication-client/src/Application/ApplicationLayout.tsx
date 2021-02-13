@@ -196,7 +196,6 @@ function ApplicationLayout({ match }: Props) {
             panelKey={EnumFixedPanelKeys.PendingChanges}
             badgeValue={pendingChangesBadge}
           />
-          <div className={`${CLASS_NAME}__menu-group`} />
           <MenuItem
             title="Entities"
             to={`/${application}/entities`}

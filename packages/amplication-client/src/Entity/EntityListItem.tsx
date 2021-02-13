@@ -118,7 +118,9 @@ export const EntityListItem = ({
           >
             {entity.displayName}
           </Link>
-          {Boolean(entity.lockedByUser) && <LockStatusIcon enabled />}
+          {Boolean(entity.lockedByUser) && (
+            <LockStatusIcon lockedByUser={entity.lockedByUser} />
+          )}
 
           <span className="spacer" />
           <span className={`${CLASS_NAME}__description`}>
