@@ -74,18 +74,15 @@ export type EntityPermission = Omit<
 
 export type EntityField = Omit<
   models.EntityField,
-  | "__typename"
-  | "permanentId"
-  | "createdAt"
-  | "updatedAt"
-  | "position"
-  | "dataType"
+  "__typename" | "createdAt" | "updatedAt" | "position" | "dataType"
 > & {
   dataType: models.EnumDataType;
 };
 
 export type LookupResolvedProperties = types.Lookup & {
   relatedEntity: Entity;
+  relatedField: EntityField;
+  isOneToOneWithoutForeignKey?: boolean; //in one-to-one only one side should have a foreign key
 };
 
 export type EntityLookupField = Omit<EntityField, "properties"> & {

@@ -9,9 +9,9 @@ export function createCreateInput(entity: Entity): NamedClassDeclaration {
   return createInput(
     createCreateInputID(entity.name),
     fields,
+    entity,
     false,
-    false,
-    entity
+    false
   );
 }
 

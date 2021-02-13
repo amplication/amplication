@@ -40,6 +40,13 @@ export const DeleteEntityField = ({
         if (!data) return;
         const deletedFieldId = data.deleteEntityField.id;
 
+        if (entityField.dataType === models.EnumDataType.Lookup) {
+          const relatedEntityId = entityField.properties.relatedEntityId;
+          cache.evict({
+            id: cache.identify({ id: relatedEntityId, __typename: "Entity" }),
+          });
+        }
+
         cache.modify({
           id: cache.identify({ id: entityId, __typename: "Entity" }),
           fields: {

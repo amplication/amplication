@@ -3,19 +3,19 @@ import { Formik, FormikErrors } from "formik";
 import omit from "lodash.omit";
 import { isEmpty } from "lodash";
 import { getSchemaForDataType } from "@amplication/data";
-import * as models from "../models";
-import { SchemaFields } from "./SchemaFields";
-import DataTypeSelectField from "./DataTypeSelectField";
 import { ToggleField } from "@amplication/design-system";
+import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
+import { Form } from "../Components/Form";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
-import { Form } from "../Components/Form";
 import { validate } from "../util/formikValidateJsonSchema";
 import { SYSTEM_DATA_TYPES } from "./constants";
+import DataTypeSelectField from "./DataTypeSelectField";
+import { SchemaFields } from "./SchemaFields";
 
-type Values = {
+export type Values = {
   id: string; //the id field is required in the form context to be used in "DataTypeSelectField"
   name: string;
   displayName: string;
@@ -31,6 +31,7 @@ type Props = {
   isDisabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
   applicationId: string;
+  entityDisplayName: string;
 };
 
 const FORM_SCHEMA = {
@@ -65,6 +66,7 @@ const EntityFieldForm = ({
   defaultValues = {},
   isDisabled,
   applicationId,
+  entityDisplayName,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -88,9 +90,17 @@ const EntityFieldForm = ({
         //validate the field dynamic properties
         const schema = getSchemaForDataType(values.dataType);
         const propertiesError = validate<Object>(values.properties, schema);
+
+        // Ignore related field ID error
+        if ("relatedFieldId" in propertiesError) {
+          // @ts-ignore
+          delete propertiesError.relatedFieldId;
+        }
+
         if (!isEmpty(propertiesError)) {
           errors.properties = propertiesError;
         }
+
         return errors;
       }}
       enableReinitialize
@@ -136,6 +146,7 @@ const EntityFieldForm = ({
               schema={schema}
               isDisabled={isDisabled}
               applicationId={applicationId}
+              entityDisplayName={entityDisplayName}
             />
           </Form>
         );

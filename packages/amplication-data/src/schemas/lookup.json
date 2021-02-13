@@ -4,7 +4,7 @@
   "title": "lookup",
   "type": "object",
   "additionalProperties": false,
-  "required": ["relatedEntityId", "allowMultipleSelection"],
+  "required": ["relatedEntityId", "relatedFieldId", "allowMultipleSelection"],
   "properties": {
     "relatedEntityId": {
       "title": "Related Entity",
@@ -12,13 +12,24 @@
       "default": null
     },
     "allowMultipleSelection": {
-      "type": "boolean",
+      "$ref": "#/definitions/RelationAllowMultiple",
       "default": false
+    },
+    "relatedFieldId": {
+      "title": "Related Field",
+      "$ref": "#/definitions/EntityFieldId",
+      "default": null
     }
   },
   "definitions": {
     "EntityId": {
       "type": "string"
+    },
+    "EntityFieldId": {
+      "type": "string"
+    },
+    "RelationAllowMultiple": {
+      "type": "boolean"
     }
   }
 }

@@ -9,7 +9,7 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { classProperty, createGenericArray } from "../../../util/ast";
-import { EntityField, EnumDataType, Entity } from "../../../types";
+import { Entity, EntityField, EnumDataType } from "../../../types";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_LOOKUP_FIELD,
@@ -48,6 +48,7 @@ const EXAMPLE_ENTITY: Entity = {
 
 const EXAMPLE_OPTIONAL_ENTITY_FIELD: EntityField = {
   id: "EXAMPLE_OPTIONAL_ENTITY_FIELD_ID",
+  permanentId: "EXAMPLE_OPTIONAL_ENTITY_PERMANENT_FIELD_ID",
   name: "exampleOptionalEntityField",
   displayName: "Example Optional Entity Field",
   description: "Example optional entity field description",
@@ -57,6 +58,7 @@ const EXAMPLE_OPTIONAL_ENTITY_FIELD: EntityField = {
 };
 const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
   id: "EXAMPLE_LIST_ENTITY_FIELD_ID",
+  permanentId: "EXAMPLE_LIST_PERMANENT_FIELD_ID",
   name: "exampleListEntityField",
   displayName: "Example List Entity Field",
   description: "Example list entity field description",
@@ -194,10 +196,10 @@ describe("createFieldClassProperty", () => {
         print(
           createFieldClassProperty(
             field,
+            EXAMPLE_ENTITY,
             optional,
             isInput,
-            isQuery,
-            EXAMPLE_ENTITY
+            isQuery
           )
         ).code
       ).toEqual(print(expected).code);

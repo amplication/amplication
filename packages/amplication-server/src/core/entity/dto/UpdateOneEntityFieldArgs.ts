@@ -9,4 +9,10 @@ export class UpdateOneEntityFieldArgs {
 
   @Field(() => WhereUniqueInput, { nullable: false })
   where!: WhereUniqueInput;
+
+  @Field(() => String, { nullable: true })
+  relatedFieldName?: string;
+
+  @Field(() => String, { nullable: true })
+  relatedFieldDisplayName?: string;
 }

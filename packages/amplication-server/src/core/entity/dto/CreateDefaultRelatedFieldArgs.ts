@@ -1,10 +1,10 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { EntityFieldCreateInput } from './EntityFieldCreateInput';
+import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()
-export class CreateOneEntityFieldArgs {
-  @Field(() => EntityFieldCreateInput, { nullable: false })
-  data!: EntityFieldCreateInput;
+export class CreateDefaultRelatedFieldArgs {
+  @Field(() => WhereUniqueInput, { nullable: false })
+  where!: WhereUniqueInput;
 
   @Field(() => String, { nullable: true })
   relatedFieldName?: string;

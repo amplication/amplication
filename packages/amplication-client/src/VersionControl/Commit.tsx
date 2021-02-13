@@ -36,6 +36,7 @@ const Commit = ({ applicationId, disabled }: Props) => {
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onError: () => {
       pendingChangesContext.setCommitRunning(false);
+      pendingChangesContext.reset();
     },
     onCompleted: () => {
       pendingChangesContext.setCommitRunning(false);

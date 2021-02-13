@@ -9,9 +9,9 @@ export function createUpdateInput(entity: Entity): NamedClassDeclaration {
   return createInput(
     createUpdateInputID(entity.name),
     fields,
+    entity,
     true,
-    false,
-    entity
+    false
   );
 }
 

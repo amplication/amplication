@@ -3,6 +3,8 @@ import { capitalCase } from "capital-case";
 import { ToggleField, TextField } from "@amplication/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
 import EnumSelectField from "../Components/EnumSelectField";
+import RelatedEntityFieldField from "./RelatedEntityFieldField";
+import RelationAllowMultipleField from "../Components/RelationAllowMultipleField";
 import { Schema } from "@amplication/data";
 import OptionSet from "../Entity/OptionSet";
 
@@ -11,11 +13,13 @@ export const SchemaField = ({
   propertySchema,
   isDisabled,
   applicationId,
+  entityDisplayName,
 }: {
   propertyName: string;
   propertySchema: Schema;
   isDisabled?: boolean;
   applicationId: string;
+  entityDisplayName: string;
 }) => {
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
@@ -76,16 +80,33 @@ export const SchemaField = ({
       }
     }
     default: {
-      if (propertySchema?.$ref === "#/definitions/EntityId") {
-        return (
-          <EntitySelectField
-            label={label}
-            name={fieldName}
-            disabled={isDisabled}
-            applicationId={applicationId}
-          />
-        );
+      switch (propertySchema?.$ref) {
+        case "#/definitions/EntityId": {
+          return (
+            <EntitySelectField
+              label={label}
+              name={fieldName}
+              disabled={isDisabled}
+              applicationId={applicationId}
+            />
+          );
+        }
+        case "#/definitions/EntityFieldId": {
+          return (
+            <RelatedEntityFieldField entityDisplayName={entityDisplayName} />
+          );
+        }
+        case "#/definitions/RelationAllowMultiple": {
+          return (
+            <RelationAllowMultipleField
+              fieldName={fieldName}
+              isDisabled={isDisabled}
+              entityDisplayName={entityDisplayName}
+            />
+          );
+        }
       }
+
       throw new Error(`Unexpected propertySchema.type: ${propertySchema.type}`);
     }
   }

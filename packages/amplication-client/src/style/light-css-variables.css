@@ -36,6 +36,7 @@
   --image-commit: url("../assets/images/mono/commit.svg");
   --image-no-changes: url("../assets/images/mono/no-changes.svg");
   --image-add-app: url("../assets/images/mono/add-app.svg");
+  --image-relations: url("../assets/images/mono/relations.svg");
 
   --diffViewerBackground: var(--white);
   --diffViewerColor: var(--black100);

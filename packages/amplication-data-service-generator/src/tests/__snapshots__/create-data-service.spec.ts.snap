@@ -288,6 +288,7 @@ export type Customer = {
   favoriteColors: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization: OrganizationWhereUniqueInput | null;
+  vipOrganization: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -305,6 +306,7 @@ export type CustomerCreateInput = {
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -322,6 +324,7 @@ export type CustomerUpdateInput = {
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerWhereInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -341,6 +344,7 @@ export type CustomerWhereInput = {
   comments?: string | null;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
@@ -619,7 +623,8 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin/src/api/user/User.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin/src/api/user/User.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type User = {
   username: string;
@@ -631,6 +636,7 @@ export type User = {
   age: number;
   birthDate: Date;
   score: number;
+  manager: UserWhereUniqueInput | null;
   organization: OrganizationWhereUniqueInput | null;
   interests: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -638,7 +644,8 @@ export type User = {
   location: string;
 };
 ",
-  "admin/src/api/user/UserCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type UserCreateInput = {
   username: string;
@@ -650,6 +657,7 @@ export type UserCreateInput = {
   age: number;
   birthDate: Date;
   score: number;
+  manager?: UserWhereUniqueInput | null;
   organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -657,7 +665,8 @@ export type UserCreateInput = {
   location: string;
 };
 ",
-  "admin/src/api/user/UserUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type UserUpdateInput = {
   username?: string;
@@ -669,6 +678,7 @@ export type UserUpdateInput = {
   age?: number;
   birthDate?: Date;
   score?: number;
+  manager?: UserWhereUniqueInput | null;
   organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -676,7 +686,8 @@ export type UserUpdateInput = {
   location?: string;
 };
 ",
-  "admin/src/api/user/UserWhereInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin/src/api/user/UserWhereInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type UserWhereInput = {
   username?: string;
@@ -687,6 +698,7 @@ export type UserWhereInput = {
   age?: number;
   birthDate?: Date;
   score?: number;
+  manager?: UserWhereUniqueInput | null;
   organization?: OrganizationWhereUniqueInput | null;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
@@ -1007,6 +1019,12 @@ export const CreateCustomer = (): React.ReactElement => {
           <div>
             <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
           </div>
+          <div>
+            <OrganizationSelect
+              label=\\"VIP Organization\\"
+              name=\\"vipOrganization.id\\"
+            />
+          </div>
         </Form>
       </Formik>
       <Snackbar open={isError} message={error?.response?.data?.message} />
@@ -1104,6 +1122,7 @@ export const Customer = (): React.ReactElement => {
         \\"favoriteColors\\",
         \\"customerType\\",
         \\"organization\\",
+        \\"vipOrganization\\",
       ]),
     [data]
   );
@@ -1208,6 +1227,12 @@ export const Customer = (): React.ReactElement => {
             </div>
             <div>
               <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
+            </div>
+            <div>
+              <OrganizationSelect
+                label=\\"VIP Organization\\"
+                name=\\"vipOrganization.id\\"
+              />
             </div>
           </Form>
         </Formik>
@@ -1343,6 +1368,11 @@ const FIELDS: DataField[] = [
     title: \\"Organization\\",
     sortable: false,
   },
+  {
+    name: \\"vipOrganization\\",
+    title: \\"VIP Organization\\",
+    sortable: false,
+  },
 ];
 
 export const CustomerList = (): React.ReactElement => {
@@ -1425,6 +1455,9 @@ export const CustomerList = (): React.ReactElement => {
                 </DataGridCell>
                 <DataGridCell>
                   <OrganizationTitle id={item.organization?.id} />
+                </DataGridCell>
+                <DataGridCell>
+                  <OrganizationTitle id={item.vipOrganization?.id} />
                 </DataGridCell>
               </DataGridRow>
             );
@@ -2742,6 +2775,7 @@ import {
 
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { UserSelect } from \\"./UserSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { User } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
@@ -2817,6 +2851,9 @@ export const CreateUser = (): React.ReactElement => {
           </div>
           <div>
             <TextField type=\\"number\\" label=\\"Score\\" name=\\"score\\" />
+          </div>
+          <div>
+            <UserSelect label=\\"Manager\\" name=\\"manager.id\\" />
           </div>
           <div>
             <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
@@ -2904,6 +2941,7 @@ import {
 
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { UserSelect } from \\"./UserSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
@@ -2971,6 +3009,7 @@ export const User = (): React.ReactElement => {
         \\"age\\",
         \\"birthDate\\",
         \\"score\\",
+        \\"manager\\",
         \\"organization\\",
         \\"interests\\",
         \\"priority\\",
@@ -3043,6 +3082,9 @@ export const User = (): React.ReactElement => {
             </div>
             <div>
               <TextField type=\\"number\\" label=\\"Score\\" name=\\"score\\" />
+            </div>
+            <div>
+              <UserSelect label=\\"Manager\\" name=\\"manager.id\\" />
             </div>
             <div>
               <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
@@ -3122,6 +3164,7 @@ import {
   EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
+import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { User } from \\"../api/user/User\\";
 
@@ -3176,6 +3219,11 @@ const FIELDS: DataField[] = [
   {
     name: \\"score\\",
     title: \\"Score\\",
+    sortable: false,
+  },
+  {
+    name: \\"manager\\",
+    title: \\"Manager\\",
     sortable: false,
   },
   {
@@ -3260,6 +3308,9 @@ export const UserList = (): React.ReactElement => {
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.score}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <UserTitle id={item.manager?.id} />
                 </DataGridCell>
                 <DataGridCell>
                   <OrganizationTitle id={item.organization?.id} />
@@ -3391,51 +3442,57 @@ model User {
   age            Int
   birthDate      DateTime
   score          Float
-  organization   Organization?       @relation(fields: [organizationId], references: [id])
+  manager        User?               @relation(name: \\"employees\\", fields: [managerId])
+  managerId      String?
+  employees      User[]              @relation(name: \\"employees\\")
+  organization   Organization?       @relation(fields: [organizationId])
+  organizationId String?
   interests      EnumUserInterests[]
   priority       EnumUserPriority
   isCurious      Boolean
   location       String
-  organizationId String?
 }
 
 model Order {
   id         String          @id @default(cuid())
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
-  customer   Customer        @relation(fields: [customerId], references: [id])
+  customer   Customer        @relation(fields: [customerId])
+  customerId String
   status     EnumOrderStatus
   label      EnumOrderLabel?
-  customerId String
 }
 
 model Organization {
-  id        String     @id @default(cuid())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  name      String
-  customers Customer[]
-  User      User[]
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  name         String
+  users        User[]
+  customers    Customer[] @relation(name: \\"CustomersOnOrganization\\")
+  vipCustomers Customer[] @relation(name: \\"vipCustomers\\")
 }
 
 model Customer {
-  id             String                       @id @default(cuid())
-  createdAt      DateTime                     @default(now())
-  updatedAt      DateTime                     @updatedAt
-  email          String
-  firstName      String?
-  lastName       String?
-  isVip          Boolean?
-  birthData      DateTime?
-  averageSale    Float?
-  favoriteNumber Int?
-  geoLocation    String?
-  comments       String?
-  favoriteColors EnumCustomerFavoriteColors[]
-  customerType   EnumCustomerCustomerType?
-  organization   Organization?                @relation(fields: [organizationId], references: [id])
-  orders         Order[]
-  organizationId String?
+  id                String                       @id @default(cuid())
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
+  email             String
+  firstName         String?
+  lastName          String?
+  isVip             Boolean?
+  birthData         DateTime?
+  averageSale       Float?
+  favoriteNumber    Int?
+  geoLocation       String?
+  comments          String?
+  favoriteColors    EnumCustomerFavoriteColors[]
+  customerType      EnumCustomerCustomerType?
+  organization      Organization?                @relation(name: \\"CustomersOnOrganization\\", fields: [organizationId])
+  organizationId    String?
+  vipOrganization   Organization?                @relation(name: \\"vipCustomers\\", fields: [vipOrganizationId])
+  vipOrganizationId String?
+  orders            Order[]
 }
 
 model Empty {
@@ -4236,6 +4293,14 @@ class Customer {
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization!: OrganizationWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  vipOrganization!: OrganizationWhereUniqueInput | null;
 }
 export { Customer };
 ",
@@ -4380,6 +4445,17 @@ class CustomerCreateInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerCreateInput };
 ",
@@ -4527,6 +4603,17 @@ class CustomerUpdateInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerUpdateInput };
 ",
@@ -4688,6 +4775,15 @@ class CustomerWhereInput {
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @Transform(JSON.parse)
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerWhereInput };
 ",
@@ -5032,6 +5128,12 @@ export class CustomerController {
               connect: data.organization,
             }
           : undefined,
+
+        vipOrganization: data.vipOrganization
+          ? {
+              connect: data.vipOrganization,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -5050,6 +5152,12 @@ export class CustomerController {
         customerType: true,
 
         organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
           select: {
             id: true,
           },
@@ -5101,6 +5209,12 @@ export class CustomerController {
             id: true,
           },
         },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     return results.map((result) => permission.filter(result));
@@ -5148,6 +5262,12 @@ export class CustomerController {
         customerType: true,
 
         organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
           select: {
             id: true,
           },
@@ -5211,6 +5331,12 @@ export class CustomerController {
                 connect: data.organization,
               }
             : undefined,
+
+          vipOrganization: data.vipOrganization
+            ? {
+                connect: data.vipOrganization,
+              }
+            : undefined,
         },
         select: {
           id: true,
@@ -5229,6 +5355,12 @@ export class CustomerController {
           customerType: true,
 
           organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          vipOrganization: {
             select: {
               id: true,
             },
@@ -5281,6 +5413,12 @@ export class CustomerController {
           customerType: true,
 
           organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          vipOrganization: {
             select: {
               id: true,
             },
@@ -5599,6 +5737,12 @@ export class CustomerResolver {
               connect: args.data.organization,
             }
           : undefined,
+
+        vipOrganization: args.data.vipOrganization
+          ? {
+              connect: args.data.vipOrganization,
+            }
+          : undefined,
       },
     });
   }
@@ -5644,6 +5788,12 @@ export class CustomerResolver {
           organization: args.data.organization
             ? {
                 connect: args.data.organization,
+              }
+            : undefined,
+
+          vipOrganization: args.data.vipOrganization
+            ? {
+                connect: args.data.vipOrganization,
               }
             : undefined,
         },
@@ -5723,6 +5873,32 @@ export class CustomerResolver {
     const result = await this.service
       .findOne({ where: { id: parent.id } })
       .organization();
+
+    if (!result) {
+      return null;
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.ResolveField(() => Organization, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async vipOrganization(
+    @graphql.Parent() parent: Customer,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const result = await this.service
+      .findOne({ where: { id: parent.id } })
+      .vipOrganization();
 
     if (!result) {
       return null;
@@ -7832,6 +8008,8 @@ import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
+import { UserWhereInput } from \\"../user/UserWhereInput\\";
+import { User } from \\"../user/User\\";
 import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
 import { Customer } from \\"../customer/Customer\\";
 
@@ -8060,6 +8238,185 @@ export class OrganizationController {
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get(\\"/:id/users\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Query() query: UserWhereInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<User[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const results = await this.service.findOne({ where: params }).users({
+      where: query,
+      select: {
+        username: true,
+        roles: true,
+        id: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Post(\\"/:id/users\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Patch(\\"/:id/users\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Delete(\\"/:id/users\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @common.Get(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8096,6 +8453,12 @@ export class OrganizationController {
         customerType: true,
 
         organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
           select: {
             id: true,
           },
@@ -8230,6 +8593,185 @@ export class OrganizationController {
       select: { id: true },
     });
   }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get(\\"/:id/vipCustomers\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Query() query: CustomerWhereInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findOne({ where: params }).vipCustomers({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Post(\\"/:id/vipCustomers\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Patch(\\"/:id/vipCustomers\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Delete(\\"/:id/vipCustomers\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
 }
 ",
   "server/src/organization/organization.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
@@ -8270,6 +8812,8 @@ import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
 import { FindManyOrganizationArgs } from \\"./FindManyOrganizationArgs\\";
 import { FindOneOrganizationArgs } from \\"./FindOneOrganizationArgs\\";
 import { Organization } from \\"./Organization\\";
+import { FindManyUserArgs } from \\"../user/FindManyUserArgs\\";
+import { User } from \\"../user/User\\";
 import { FindManyCustomerArgs } from \\"../customer/FindManyCustomerArgs\\";
 import { Customer } from \\"../customer/Customer\\";
 
@@ -8432,6 +8976,30 @@ export class OrganizationResolver {
     }
   }
 
+  @graphql.ResolveField(() => [User])
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async users(
+    @graphql.Parent() parent: Organization,
+    @graphql.Args() args: FindManyUserArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<User[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const results = await this.service
+      .findOne({ where: { id: parent.id } })
+      // @ts-ignore
+      .users(args);
+    return results.map((result) => permission.filter(result));
+  }
+
   @graphql.ResolveField(() => [Customer])
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8453,6 +9021,30 @@ export class OrganizationResolver {
       .findOne({ where: { id: parent.id } })
       // @ts-ignore
       .customers(args);
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.ResolveField(() => [Customer])
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async vipCustomers(
+    @graphql.Parent() parent: Organization,
+    @graphql.Args() args: FindManyCustomerArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service
+      .findOne({ where: { id: parent.id } })
+      // @ts-ignore
+      .vipCustomers(args);
     return results.map((result) => permission.filter(result));
   }
 }
@@ -8710,6 +9302,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
@@ -8782,6 +9375,14 @@ class User {
   score!: number;
   @ApiProperty({
     required: false,
+    type: UserWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
+  @IsOptional()
+  manager!: UserWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
@@ -8840,6 +9441,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
@@ -8912,6 +9514,17 @@ class UserCreateInput {
   score!: number;
   @ApiProperty({
     required: false,
+    type: UserWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
+  @IsOptional()
+  @Field(() => UserWhereUniqueInput, {
+    nullable: true,
+  })
+  manager?: UserWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
@@ -8973,6 +9586,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
@@ -9072,6 +9686,17 @@ class UserUpdateInput {
   score?: number;
   @ApiProperty({
     required: false,
+    type: UserWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
+  @IsOptional()
+  @Field(() => UserWhereUniqueInput, {
+    nullable: true,
+  })
+  manager?: UserWhereUniqueInput | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
@@ -9142,6 +9767,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type, Transform } from \\"class-transformer\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 @InputType()
@@ -9226,6 +9852,15 @@ class UserWhereInput {
     nullable: true,
   })
   score?: number;
+  @ApiProperty({
+    required: false,
+    type: UserWhereUniqueInput,
+  })
+  @Transform(JSON.parse)
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
+  @IsOptional()
+  manager?: UserWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -9523,6 +10158,12 @@ export class UserController {
       data: {
         ...data,
 
+        manager: data.manager
+          ? {
+              connect: data.manager,
+            }
+          : undefined,
+
         organization: data.organization
           ? {
               connect: data.organization,
@@ -9539,6 +10180,12 @@ export class UserController {
         age: true,
         birthDate: true,
         score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
 
         organization: {
           select: {
@@ -9586,6 +10233,12 @@ export class UserController {
         age: true,
         birthDate: true,
         score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
 
         organization: {
           select: {
@@ -9637,6 +10290,12 @@ export class UserController {
         age: true,
         birthDate: true,
         score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
 
         organization: {
           select: {
@@ -9702,6 +10361,12 @@ export class UserController {
         data: {
           ...data,
 
+          manager: data.manager
+            ? {
+                connect: data.manager,
+              }
+            : undefined,
+
           organization: data.organization
             ? {
                 connect: data.organization,
@@ -9718,6 +10383,12 @@ export class UserController {
           age: true,
           birthDate: true,
           score: true,
+
+          manager: {
+            select: {
+              id: true,
+            },
+          },
 
           organization: {
             select: {
@@ -9771,6 +10442,12 @@ export class UserController {
           birthDate: true,
           score: true,
 
+          manager: {
+            select: {
+              id: true,
+            },
+          },
+
           organization: {
             select: {
               id: true,
@@ -9791,6 +10468,185 @@ export class UserController {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get(\\"/:id/employees\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Query() query: UserWhereInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<User[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const results = await this.service.findOne({ where: params }).employees({
+      where: query,
+      select: {
+        username: true,
+        roles: true,
+        id: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Post(\\"/:id/employees\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      employees: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Patch(\\"/:id/employees\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      employees: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Delete(\\"/:id/employees\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      employees: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }
 ",
@@ -9923,6 +10779,12 @@ export class UserResolver {
       data: {
         ...args.data,
 
+        manager: args.data.manager
+          ? {
+              connect: args.data.manager,
+            }
+          : undefined,
+
         organization: args.data.organization
           ? {
               connect: args.data.organization,
@@ -9970,6 +10832,12 @@ export class UserResolver {
         data: {
           ...args.data,
 
+          manager: args.data.manager
+            ? {
+                connect: args.data.manager,
+              }
+            : undefined,
+
           organization: args.data.organization
             ? {
                 connect: args.data.organization,
@@ -10005,6 +10873,56 @@ export class UserResolver {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [User])
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async employees(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: FindManyUserArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<User[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const results = await this.service
+      .findOne({ where: { id: parent.id } })
+      // @ts-ignore
+      .employees(args);
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.ResolveField(() => User, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async manager(
+    @graphql.Parent() parent: User,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<User | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const result = await this.service
+      .findOne({ where: { id: parent.id } })
+      .manager();
+
+    if (!result) {
+      return null;
+    }
+    return permission.filter(result);
   }
 
   @graphql.ResolveField(() => Organization, { nullable: true })
