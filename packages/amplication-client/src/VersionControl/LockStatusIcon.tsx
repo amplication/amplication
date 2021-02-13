@@ -1,20 +1,19 @@
 import React from "react";
-import { Icon } from "@rmwc/icon";
-import classNames from "classnames";
+import { Tooltip } from "@primer/components";
+import * as models from "../models";
 import "./LockStatusIcon.scss";
 
 type Props = {
-  enabled?: boolean;
+  lockedByUser: models.User;
 };
 
-function LockStatusIcon({ enabled }: Props) {
+function LockStatusIcon({ lockedByUser }: Props) {
   return (
-    <Icon
-      className={classNames("lock-status-icon", {
-        "lock-status-icon--enabled": enabled,
-      })}
-      icon="pending_changes"
-    />
+    <Tooltip
+      aria-label={`Locked by ${lockedByUser.account?.firstName} ${lockedByUser.account?.lastName}`}
+    >
+      <span className="lock-status-icon" />
+    </Tooltip>
   );
 }
 export default LockStatusIcon;
