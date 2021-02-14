@@ -74,7 +74,9 @@ export const EntityRelationFieldsChart = ({
           <div className={`${CLASS_NAME}__status`}>
             <span
               className={`${CLASS_NAME}__status__cardinality--source ${CLASS_NAME}__status__cardinality--${
-                field.properties.allowMultipleSelection ? "many" : "one"
+                relatedField?.properties?.allowMultipleSelection
+                  ? "many"
+                  : "one"
               }`}
             />
             {relatedFieldIsMissing ? (
@@ -84,9 +86,7 @@ export const EntityRelationFieldsChart = ({
             )}
             <span
               className={`${CLASS_NAME}__status__cardinality--target ${CLASS_NAME}__status__cardinality--${
-                relatedField?.properties?.allowMultipleSelection
-                  ? "many"
-                  : "one"
+                field.properties.allowMultipleSelection ? "many" : "one"
               }`}
             />
           </div>
