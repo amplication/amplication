@@ -100,7 +100,7 @@ const BuildSteps = ({ build, onError }: Props) => {
 
   const deployment =
     data.build.deployments &&
-    data.build.deployments.length &&
+    data.build.deployments.length > 0 &&
     data.build.deployments[0];
 
   return (
