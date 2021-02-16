@@ -1,5 +1,5 @@
 import { print } from "recast";
-import { builders, namedTypes } from "ast-types";
+import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import { Entity, EntityLookupField, Module } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
@@ -32,21 +32,20 @@ import { createDataMapping } from "../controller/create-data-mapping";
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
 const templatePath = require.resolve("./resolver.template.ts");
+const templateBasePath = require.resolve("./resolver.base.template.ts");
 const toOneTemplatePath = require.resolve("./to-one.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
-export async function createResolverModule(
+export async function createResolverModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
   dtos: DTOs
-): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.resolver.ts`;
-  const file = await readFile(templatePath);
-
+): Promise<Module[]> {
   const serviceId = createServiceId(entityType);
-  const id = createResolverId(entityType);
+  const resolverId = createResolverId(entityType);
+  const resolverBaseId = createResolverBaseId(entityType);
   const entityDTOs = dtos[entity.name];
   const {
     entity: entityDTO,
@@ -64,8 +63,9 @@ export async function createResolverModule(
     camelCase(entity.pluralDisplayName)
   );
 
-  interpolate(file, {
-    RESOLVER: id,
+  const mapping = {
+    RESOLVER: resolverId,
+    RESOLVER_BASE: resolverBaseId,
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
@@ -89,62 +89,138 @@ export async function createResolverModule(
       entityDTOs.updateInput,
       DATA_MEMBER_EXPRESSION
     ),
-  });
+  };
 
-  const classDeclaration = getClassDeclarationById(file, id);
-  const toManyRelationFields = entity.fields.filter(isToManyRelationField);
-  const toManyRelationMethods = (
-    await Promise.all(
-      toManyRelationFields.map((field) =>
-        createToManyRelationMethods(
-          field,
-          entityDTO,
-          entityType,
-          dtos,
-          serviceId
+  return [
+    await createResolverModule(
+      templatePath,
+      entityName,
+      entityType,
+      entityServiceModule,
+      entity,
+      dtos,
+      entityDTO,
+      serviceId,
+      resolverBaseId,
+      createArgs,
+      updateArgs,
+      createMutationId,
+      updateMutationId,
+      mapping,
+      false
+    ),
+    await createResolverModule(
+      templateBasePath,
+      entityName,
+      entityType,
+      entityServiceModule,
+      entity,
+      dtos,
+      entityDTO,
+      serviceId,
+      resolverBaseId,
+      createArgs,
+      updateArgs,
+      createMutationId,
+      updateMutationId,
+      mapping,
+      true
+    ),
+  ];
+}
+
+async function createResolverModule(
+  templateFilePath: string,
+  entityName: string,
+  entityType: string,
+  entityServiceModule: string,
+  entity: Entity,
+  dtos: DTOs,
+  entityDTO: NamedClassDeclaration,
+  serviceId: namedTypes.Identifier,
+  resolverBaseId: namedTypes.Identifier,
+  createArgs: NamedClassDeclaration | undefined,
+  updateArgs: NamedClassDeclaration | undefined,
+  createMutationId: namedTypes.Identifier,
+  updateMutationId: namedTypes.Identifier,
+  mapping: { [key: string]: ASTNode | undefined },
+  isBaseClass: boolean
+): Promise<Module> {
+  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.resolver.ts`;
+  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.resolver.base.ts`;
+  const file = await readFile(templateFilePath);
+
+  interpolate(file, mapping);
+
+  if (isBaseClass) {
+    const classDeclaration = getClassDeclarationById(file, resolverBaseId);
+    const toManyRelationFields = entity.fields.filter(isToManyRelationField);
+    const toManyRelationMethods = (
+      await Promise.all(
+        toManyRelationFields.map((field) =>
+          createToManyRelationMethods(
+            field,
+            entityDTO,
+            entityType,
+            dtos,
+            serviceId
+          )
         )
       )
-    )
-  ).flat();
-  const toOneRelationFields = entity.fields.filter(isOneToOneRelationField);
-  const toOneRelationMethods = (
-    await Promise.all(
-      toOneRelationFields.map((field) =>
-        createToOneRelationMethods(
-          field,
-          entityDTO,
-          entityType,
-          dtos,
-          serviceId
+    ).flat();
+    const toOneRelationFields = entity.fields.filter(isOneToOneRelationField);
+    const toOneRelationMethods = (
+      await Promise.all(
+        toOneRelationFields.map((field) =>
+          createToOneRelationMethods(
+            field,
+            entityDTO,
+            entityType,
+            dtos,
+            serviceId
+          )
         )
       )
-    )
-  ).flat();
+    ).flat();
 
-  classDeclaration.body.body.push(
-    ...toManyRelationMethods,
-    ...toOneRelationMethods
-  );
+    classDeclaration.body.body.push(
+      ...toManyRelationMethods,
+      ...toOneRelationMethods
+    );
 
-  if (!createArgs) {
-    deleteClassMemberByKey(classDeclaration, createMutationId);
+    if (!createArgs) {
+      deleteClassMemberByKey(classDeclaration, createMutationId);
+    }
+    if (!updateArgs) {
+      deleteClassMemberByKey(classDeclaration, updateMutationId);
+    }
   }
-  if (!updateArgs) {
-    deleteClassMemberByKey(classDeclaration, updateMutationId);
-  }
 
-  const serviceImport = importNames(
-    [serviceId],
-    relativeImportPath(modulePath, entityServiceModule)
-  );
+  if (!isBaseClass) {
+    addImports(file, [
+      importNames(
+        [resolverBaseId],
+        relativeImportPath(modulePath, moduleBasePath)
+      ),
+    ]);
+  }
 
   const dtoNameToPath = getDTONameToPath(dtos);
   const dtoImports = importContainedIdentifiers(
     file,
-    getImportableDTOs(modulePath, dtoNameToPath)
+    getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)
+  );
+  addImports(file, [...dtoImports]);
+
+  const serviceImport = importNames(
+    [serviceId],
+    relativeImportPath(
+      isBaseClass ? moduleBasePath : modulePath,
+      entityServiceModule
+    )
   );
 
-  addImports(file, [serviceImport, ...dtoImports]);
+  addImports(file, [serviceImport]);
   removeImportsTSIgnoreComments(file);
   removeESLintComments(file);
   removeTSVariableDeclares(file);
@@ -152,13 +228,18 @@ export async function createResolverModule(
   removeTSClassDeclares(file);
 
   return {
-    path: modulePath,
+    path: isBaseClass ? moduleBasePath : modulePath,
     code: print(file).code,
   };
 }
 
 export function createResolverId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Resolver`);
+}
+export function createResolverBaseId(
+  entityType: string
+): namedTypes.Identifier {
+  return builders.identifier(`${entityType}ResolverBase`);
 }
 
 async function createToOneRelationMethods(
