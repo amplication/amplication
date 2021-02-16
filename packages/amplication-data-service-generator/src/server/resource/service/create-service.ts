@@ -8,6 +8,7 @@ import {
   removeTSVariableDeclares,
   removeTSInterfaceDeclares,
   addImports,
+  removeTSClassDeclares,
   importNames,
   getClassDeclarationById,
   removeESLintComments,
@@ -30,21 +31,50 @@ const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
 );
 const PRISMA_UTIL_MODULE_PATH = `${SRC_DIRECTORY}/prisma.util.ts`;
 const serviceTemplatePath = require.resolve("./service.template.ts");
+const serviceBaseTemplatePath = require.resolve("./service.base.template.ts");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
 
-export async function createServiceModule(
+export async function createServiceModules(
   entityName: string,
   entityType: string,
   entity: Entity
+): Promise<Module[]> {
+  return [
+    await createServiceModule(
+      serviceTemplatePath,
+      entityName,
+      entityType,
+      entity,
+      false
+    ),
+    await createServiceModule(
+      serviceBaseTemplatePath,
+      entityName,
+      entityType,
+      entity,
+      true
+    ),
+  ];
+}
+
+async function createServiceModule(
+  templateFilePath: string,
+  entityName: string,
+  entityType: string,
+  entity: Entity,
+  isBaseClass: boolean
 ): Promise<Module> {
   const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.service.ts`;
-  const file = await readFile(serviceTemplatePath);
+  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.service.base.ts`;
+  const file = await readFile(templateFilePath);
   const serviceId = createServiceId(entityType);
+  const serviceBaseId = createServiceBaseId(entityType);
   const passwordFields = entity.fields.filter(isPasswordField);
   const delegateId = builders.identifier(entityName);
 
   interpolate(file, {
     SERVICE: serviceId,
+    SERVICE_BASE: serviceBaseId,
     ENTITY: builders.identifier(entityType),
     FIND_MANY_ARGS: builders.identifier(`FindMany${entityType}Args`),
     FIND_ONE_ARGS: builders.identifier(`FindOne${entityType}Args`),
@@ -75,9 +105,19 @@ export async function createServiceModule(
       })
     ),
   });
+  removeTSClassDeclares(file);
 
-  if (passwordFields.length) {
-    const classDeclaration = getClassDeclarationById(file, serviceId);
+  if (!isBaseClass) {
+    addImports(file, [
+      importNames(
+        [serviceBaseId],
+        relativeImportPath(modulePath, moduleBasePath)
+      ),
+    ]);
+  }
+
+  if (passwordFields.length && isBaseClass) {
+    const classDeclaration = getClassDeclarationById(file, serviceBaseId);
 
     addInjectableDependency(
       classDeclaration,
@@ -113,7 +153,7 @@ export async function createServiceModule(
   removeTSInterfaceDeclares(file);
 
   return {
-    path: modulePath,
+    path: isBaseClass ? moduleBasePath : modulePath,
     code: print(file).code,
   };
 }
@@ -138,4 +178,8 @@ function createMutationDataMapping(
 
 export function createServiceId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Service`);
+}
+
+export function createServiceBaseId(entityType: string): namedTypes.Identifier {
+  return builders.identifier(`${entityType}ServiceBase`);
 }

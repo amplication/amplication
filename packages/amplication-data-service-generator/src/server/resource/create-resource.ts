@@ -6,7 +6,7 @@ import * as winston from "winston";
 import { Entity, Module } from "../../types";
 import { validateEntityName } from "../../util/entity";
 import { DTOs } from "./create-dtos";
-import { createServiceModule } from "./service/create-service";
+import { createServiceModules } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createModule } from "./module/create-module";
 import { createControllerSpecModule } from "./test/create-controller-spec";
@@ -37,11 +37,13 @@ async function createResourceModules(
   const entityName = camelCase(entityType);
   const resource = paramCase(plural(entityName));
 
-  const serviceModule = await createServiceModule(
+  const serviceModules = await createServiceModules(
     entityName,
     entityType,
     entity
   );
+
+  const [serviceModule] = serviceModules;
 
   const controllerModule = await createControllerModule(
     resource,
@@ -77,7 +79,7 @@ async function createResourceModules(
   );
 
   return [
-    serviceModule,
+    ...serviceModules,
     controllerModule,
     resolverModule,
     resourceModule,
