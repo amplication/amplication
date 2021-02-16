@@ -133,7 +133,10 @@ async function createControllerModule(
 
   const serviceImport = importNames(
     [serviceId],
-    relativeImportPath(modulePath, entityServiceModule)
+    relativeImportPath(
+      isBaseClass ? moduleBasePath : modulePath,
+      entityServiceModule
+    )
   );
 
   if (isBaseClass) {
@@ -158,7 +161,7 @@ async function createControllerModule(
     const dtoNameToPath = getDTONameToPath(dtos);
     const dtoImports = importContainedIdentifiers(
       file,
-      getImportableDTOs(modulePath, dtoNameToPath)
+      getImportableDTOs(moduleBasePath, dtoNameToPath)
     );
     addImports(file, [serviceImport, ...dtoImports]);
   }

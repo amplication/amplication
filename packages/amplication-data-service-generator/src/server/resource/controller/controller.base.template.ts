@@ -3,13 +3,13 @@ import * as swagger from "@nestjs/swagger";
 import * as nestMorgan from "nest-morgan";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
-import * as basicAuthGuard from "../auth/basicAuth.guard";
+import * as basicAuthGuard from "../../auth/basicAuth.guard";
 // @ts-ignore
-import * as abacUtil from "../auth/abac.util";
+import * as abacUtil from "../../auth/abac.util";
 // @ts-ignore
-import { isRecordNotFoundError } from "../prisma.util";
+import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
-import * as errors from "../errors";
+import * as errors from "../../errors";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
