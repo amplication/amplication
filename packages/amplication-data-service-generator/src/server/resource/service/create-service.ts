@@ -1,6 +1,6 @@
 import { print } from "recast";
-import { builders, namedTypes } from "ast-types";
-import { Module, Entity } from "../../../types";
+import { ASTNode, builders, namedTypes } from "ast-types";
+import { Module, Entity, EntityField } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
   interpolate,
@@ -39,40 +39,12 @@ export async function createServiceModules(
   entityType: string,
   entity: Entity
 ): Promise<Module[]> {
-  return [
-    await createServiceModule(
-      serviceTemplatePath,
-      entityName,
-      entityType,
-      entity,
-      false
-    ),
-    await createServiceModule(
-      serviceBaseTemplatePath,
-      entityName,
-      entityType,
-      entity,
-      true
-    ),
-  ];
-}
-
-async function createServiceModule(
-  templateFilePath: string,
-  entityName: string,
-  entityType: string,
-  entity: Entity,
-  isBaseClass: boolean
-): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.service.ts`;
-  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.service.base.ts`;
-  const file = await readFile(templateFilePath);
   const serviceId = createServiceId(entityType);
   const serviceBaseId = createServiceBaseId(entityType);
-  const passwordFields = entity.fields.filter(isPasswordField);
   const delegateId = builders.identifier(entityName);
+  const passwordFields = entity.fields.filter(isPasswordField);
 
-  interpolate(file, {
+  const mapping = {
     SERVICE: serviceId,
     SERVICE_BASE: serviceBaseId,
     ENTITY: builders.identifier(entityType),
@@ -104,7 +76,40 @@ async function createServiceModule(
         );
       })
     ),
-  });
+  };
+  return [
+    await createServiceModule(
+      serviceTemplatePath,
+      entityName,
+      mapping,
+      passwordFields,
+      serviceBaseId,
+      false
+    ),
+    await createServiceModule(
+      serviceBaseTemplatePath,
+      entityName,
+      mapping,
+      passwordFields,
+      serviceBaseId,
+      true
+    ),
+  ];
+}
+
+async function createServiceModule(
+  templateFilePath: string,
+  entityName: string,
+  mapping: { [key: string]: ASTNode | undefined },
+  passwordFields: EntityField[],
+  serviceBaseId: namedTypes.Identifier,
+  isBaseClass: boolean
+): Promise<Module> {
+  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.service.ts`;
+  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.service.base.ts`;
+  const file = await readFile(templateFilePath);
+
+  interpolate(file, mapping);
   removeTSClassDeclares(file);
 
   if (!isBaseClass) {
