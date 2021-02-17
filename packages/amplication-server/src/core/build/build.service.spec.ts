@@ -5,6 +5,7 @@ import * as winston from 'winston';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { orderBy } from 'lodash';
 import { SortOrder } from '@prisma/client';
 import {
   ACTION_JOB_DONE_LOG,
@@ -38,7 +39,7 @@ import {
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { App, Commit } from 'src/models';
+import { App, Commit, Entity } from 'src/models';
 import {
   ActionStep,
   EnumActionLogLevel,
@@ -281,7 +282,29 @@ const entityServiceGetLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
 
-const EXAMPLE_ENTITIES = [];
+const EXAMPLE_FIRST_ENTITY_NAME = 'AA First Entity';
+const EXAMPLE_SECOND_ENTITY_NAME = 'BB second Entity';
+
+const EXAMPLE_ENTITIES: Entity[] = [
+  {
+    id: 'EXAMPLE_SECOND_ID',
+    createdAt: new Date('2020-02-17 18:20:20'),
+    updatedAt: new Date(),
+    appId: 'exampleAppId',
+    name: EXAMPLE_SECOND_ENTITY_NAME,
+    displayName: 'Second entity',
+    pluralDisplayName: 'Second entity plural display name'
+  },
+  {
+    id: 'EXAMPLE_FIRST_ID',
+    createdAt: new Date('2020-02-10 18:20:20'), //created first
+    updatedAt: new Date(),
+    appId: 'exampleAppId',
+    name: EXAMPLE_FIRST_ENTITY_NAME,
+    displayName: 'First entity',
+    pluralDisplayName: 'First entity plural display name'
+  }
+];
 
 const entityServiceGetEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
 
@@ -590,7 +613,7 @@ describe('BuildService', () => {
     });
     expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
     expect(DataServiceGenerator.createDataService).toBeCalledWith(
-      EXAMPLE_ENTITIES,
+      orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
       EXAMPLE_APP_ROLES,
       {
         name: EXAMPLE_APP.name,
