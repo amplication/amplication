@@ -14,7 +14,8 @@ import { findConstructor } from "./ast";
 export function addInjectableDependency(
   classDeclaration: namedTypes.ClassDeclaration,
   name: string,
-  typeId: namedTypes.Identifier
+  typeId: namedTypes.Identifier,
+  accessibility: "public" | "private" | "protected"
 ): void {
   const constructor = findConstructor(classDeclaration);
 
@@ -24,7 +25,7 @@ export function addInjectableDependency(
 
   constructor.params.push(
     builders.tsParameterProperty.from({
-      accessibility: "private",
+      accessibility: accessibility,
       readonly: true,
       parameter: builders.identifier.from({
         name: name,
