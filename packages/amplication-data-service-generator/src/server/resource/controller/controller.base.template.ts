@@ -195,6 +195,7 @@ export class CONTROLLER_BASE {
       );
     }
     try {
+      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
