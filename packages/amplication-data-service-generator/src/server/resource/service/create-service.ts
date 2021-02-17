@@ -15,6 +15,7 @@ import {
   memberExpression,
   awaitExpression,
   logicalExpression,
+  addIdentifierToConstructorSuperCall,
 } from "../../../util/ast";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import { isPasswordField } from "../../../util/field";
@@ -79,55 +80,107 @@ export async function createServiceModules(
   };
   return [
     await createServiceModule(
-      serviceTemplatePath,
       entityName,
       mapping,
       passwordFields,
-      serviceBaseId,
-      false
+      serviceId,
+      serviceBaseId
     ),
-    await createServiceModule(
-      serviceBaseTemplatePath,
+    await createServiceBaseModule(
       entityName,
       mapping,
       passwordFields,
-      serviceBaseId,
-      true
+      serviceId,
+      serviceBaseId
     ),
   ];
 }
 
 async function createServiceModule(
-  templateFilePath: string,
   entityName: string,
   mapping: { [key: string]: ASTNode | undefined },
   passwordFields: EntityField[],
-  serviceBaseId: namedTypes.Identifier,
-  isBaseClass: boolean
+  serviceId: namedTypes.Identifier,
+  serviceBaseId: namedTypes.Identifier
 ): Promise<Module> {
   const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.service.ts`;
   const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.service.base.ts`;
-  const file = await readFile(templateFilePath);
+  const file = await readFile(serviceTemplatePath);
 
   interpolate(file, mapping);
   removeTSClassDeclares(file);
 
-  if (!isBaseClass) {
+  //add import to base class
+  addImports(file, [
+    importNames(
+      [serviceBaseId],
+      relativeImportPath(modulePath, moduleBasePath)
+    ),
+  ]);
+
+  //if there are any password fields, add imports, injection, and pass service to super
+  if (passwordFields.length) {
+    const classDeclaration = getClassDeclarationById(file, serviceId);
+
+    addInjectableDependency(
+      classDeclaration,
+      PASSWORD_SERVICE_MEMBER_ID.name,
+      PASSWORD_SERVICE_ID,
+      "protected"
+    );
+
+    addIdentifierToConstructorSuperCall(file, PASSWORD_SERVICE_MEMBER_ID);
+
+    for (const member of classDeclaration.body.body) {
+      if (
+        namedTypes.ClassMethod.check(member) &&
+        namedTypes.Identifier.check(member.key) &&
+        PASSWORD_FIELD_ASYNC_METHODS.has(member.key.name)
+      ) {
+        member.async = true;
+      }
+    }
+    //add the password service
     addImports(file, [
       importNames(
-        [serviceBaseId],
-        relativeImportPath(modulePath, moduleBasePath)
+        [PASSWORD_SERVICE_ID],
+        relativeImportPath(modulePath, PASSWORD_SERVICE_MODULE_PATH)
       ),
     ]);
   }
 
-  if (passwordFields.length && isBaseClass) {
+  removeTSIgnoreComments(file);
+  removeESLintComments(file);
+  removeTSVariableDeclares(file);
+  removeTSInterfaceDeclares(file);
+
+  return {
+    path: modulePath,
+    code: print(file).code,
+  };
+}
+
+async function createServiceBaseModule(
+  entityName: string,
+  mapping: { [key: string]: ASTNode | undefined },
+  passwordFields: EntityField[],
+  serviceId: namedTypes.Identifier,
+  serviceBaseId: namedTypes.Identifier
+): Promise<Module> {
+  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.service.base.ts`;
+  const file = await readFile(serviceBaseTemplatePath);
+
+  interpolate(file, mapping);
+  removeTSClassDeclares(file);
+
+  if (passwordFields.length) {
     const classDeclaration = getClassDeclarationById(file, serviceBaseId);
 
     addInjectableDependency(
       classDeclaration,
       PASSWORD_SERVICE_MEMBER_ID.name,
-      PASSWORD_SERVICE_ID
+      PASSWORD_SERVICE_ID,
+      "protected"
     );
 
     for (const member of classDeclaration.body.body) {
@@ -139,15 +192,18 @@ async function createServiceModule(
         member.async = true;
       }
     }
-
+    //add the password service
     addImports(file, [
       importNames(
         [PASSWORD_SERVICE_ID],
-        relativeImportPath(modulePath, PASSWORD_SERVICE_MODULE_PATH)
+        relativeImportPath(moduleBasePath, PASSWORD_SERVICE_MODULE_PATH)
       ),
+    ]);
+
+    addImports(file, [
       importNames(
         [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
-        relativeImportPath(modulePath, PRISMA_UTIL_MODULE_PATH)
+        relativeImportPath(moduleBasePath, PRISMA_UTIL_MODULE_PATH)
       ),
     ]);
   }
@@ -158,7 +214,7 @@ async function createServiceModule(
   removeTSInterfaceDeclares(file);
 
   return {
-    path: isBaseClass ? moduleBasePath : modulePath,
+    path: moduleBasePath,
     code: print(file).code,
   };
 }
