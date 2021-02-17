@@ -9,7 +9,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
-import { groupBy, omit } from 'lodash';
+import { groupBy, omit, orderBy } from 'lodash';
 import path from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
@@ -361,7 +361,7 @@ export class BuildService {
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       async step => {
-        const entities = await this.getEntities(build.id);
+        const entities = await this.getOrderedEntities(build.id);
         const roles = await this.getAppRoles(build);
         const app = await this.appService.app({ where: { id: build.appId } });
         const [
@@ -646,7 +646,8 @@ ${url}
     await this.actionService.log(step, level, message, meta);
   }
 
-  private async getEntities(
+  //this function must always return the entities in the same order to prevent unintended code changes
+  private async getOrderedEntities(
     buildId: string
   ): Promise<DataServiceGenerator.Entity[]> {
     const entities = await this.entityService.getEntitiesByVersions({
@@ -659,6 +660,9 @@ ${url}
       },
       include: ENTITIES_INCLUDE
     });
-    return entities as DataServiceGenerator.Entity[];
+    return orderBy(
+      entities,
+      entity => entity.createdAt
+    ) as DataServiceGenerator.Entity[];
   }
 }
