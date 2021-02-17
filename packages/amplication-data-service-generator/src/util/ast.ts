@@ -611,22 +611,20 @@ export function findConstructor(
 }
 
 /**
- * Add and identifier to the super() call in the constructor
+ * Add an identifier to the super() call in the constructor
  * @param classDeclaration
  */
-export function addIdentifierToSuperCall(
+export function addIdentifierToConstructorSuperCall(
   ast: ASTNode,
   identifier: namedTypes.Identifier
 ): void {
   recast.visit(ast, {
     visitClassMethod(path) {
       const classMethodNode = path.node;
-      console.log("constructor node", classMethodNode);
       if (isConstructor(classMethodNode)) {
         recast.visit(classMethodNode, {
           visitCallExpression(path) {
             const callExpressionNode = path.node;
-            console.log("visitCallExpression", callExpressionNode);
 
             if (callExpressionNode.callee.type === "Super") {
               callExpressionNode.arguments.push(identifier);
@@ -639,8 +637,6 @@ export function addIdentifierToSuperCall(
       this.traverse(path);
     },
   });
-
-  return undefined;
 }
 
 export function getMethods(
