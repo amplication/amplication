@@ -5415,6 +5415,24 @@ export class CustomerControllerBase {
   }
 }
 ",
+  "server/src/customer/base/customer.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
+
+@Module({
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+})
+export class CustomerModuleBase {}
+",
   "server/src/customer/base/customer.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
@@ -5930,22 +5948,14 @@ export class CustomerController extends CustomerControllerBase {
   }
 }
 ",
-  "server/src/customer/customer.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
+  "server/src/customer/customer.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { CustomerModuleBase } from \\"./base/customer.module.base\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerController } from \\"./customer.controller\\";
 import { CustomerResolver } from \\"./customer.resolver\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [CustomerModuleBase],
   controllers: [CustomerController],
   providers: [CustomerService, CustomerResolver],
   exports: [CustomerService],
@@ -6337,6 +6347,24 @@ export class EmptyControllerBase {
   }
 }
 ",
+  "server/src/empty/base/empty.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
+
+@Module({
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+})
+export class EmptyModuleBase {}
+",
   "server/src/empty/base/empty.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
@@ -6617,22 +6645,14 @@ export class EmptyController extends EmptyControllerBase {
   }
 }
 ",
-  "server/src/empty/empty.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
+  "server/src/empty/empty.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { EmptyModuleBase } from \\"./base/empty.module.base\\";
 import { EmptyService } from \\"./empty.service\\";
 import { EmptyController } from \\"./empty.controller\\";
 import { EmptyResolver } from \\"./empty.resolver\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [EmptyModuleBase],
   controllers: [EmptyController],
   providers: [EmptyService, EmptyResolver],
   exports: [EmptyService],
@@ -7327,6 +7347,24 @@ export class OrderControllerBase {
   }
 }
 ",
+  "server/src/order/base/order.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
+
+@Module({
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+})
+export class OrderModuleBase {}
+",
   "server/src/order/base/order.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
@@ -7733,22 +7771,14 @@ export class OrderController extends OrderControllerBase {
   }
 }
 ",
-  "server/src/order/order.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
+  "server/src/order/order.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { OrderModuleBase } from \\"./base/order.module.base\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderController } from \\"./order.controller\\";
 import { OrderResolver } from \\"./order.resolver\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [OrderModuleBase],
   controllers: [OrderController],
   providers: [OrderService, OrderResolver],
   exports: [OrderService],
@@ -8755,6 +8785,24 @@ export class OrganizationControllerBase {
   }
 }
 ",
+  "server/src/organization/base/organization.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
+
+@Module({
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+})
+export class OrganizationModuleBase {}
+",
   "server/src/organization/base/organization.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
@@ -9212,22 +9260,14 @@ export class OrganizationController extends OrganizationControllerBase {
   }
 }
 ",
-  "server/src/organization/organization.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
+  "server/src/organization/organization.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { OrganizationModuleBase } from \\"./base/organization.module.base\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationController } from \\"./organization.controller\\";
 import { OrganizationResolver } from \\"./organization.resolver\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [OrganizationModuleBase],
   controllers: [OrganizationController],
   providers: [OrganizationService, OrganizationResolver],
   exports: [OrganizationService],
@@ -10646,6 +10686,24 @@ export class UserControllerBase {
   }
 }
 ",
+  "server/src/user/base/user.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
+
+@Module({
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+})
+export class UserModuleBase {}
+",
   "server/src/user/base/user.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
@@ -11176,22 +11234,14 @@ export class UserController extends UserControllerBase {
   }
 }
 ",
-  "server/src/user/user.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
+  "server/src/user/user.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { UserModuleBase } from \\"./base/user.module.base\\";
 import { UserService } from \\"./user.service\\";
 import { UserController } from \\"./user.controller\\";
 import { UserResolver } from \\"./user.resolver\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [UserModuleBase],
   controllers: [UserController],
   providers: [UserService, UserResolver],
   exports: [UserService],

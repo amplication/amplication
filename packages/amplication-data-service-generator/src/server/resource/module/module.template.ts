@@ -1,4 +1,4 @@
-import { Module, forwardRef } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 
 declare class CONTROLLER {}
 declare class SERVICE {}
