@@ -59,8 +59,30 @@ export class GithubService {
       auth: TOKEN
     });
 
+    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service].ts'
+    const doNotOverride = [
+      /^server\/src\/[^\/]+\/.+\.controller.ts$/,
+      /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
+      /^server\/src\/[^\/]+\/.+\.service.ts$/,
+      /^server\/src\/[^\/]+\/.+\.module.ts$/
+    ];
+
     const files = Object.fromEntries(
-      modules.map(module => [module.path, module.code])
+      modules.map(module => {
+        if (doNotOverride.some(rx => rx.test(module.path))) {
+          return [
+            module.path,
+            ({ exists }) => {
+              // do not create the file if it already exist
+              if (exists) return null;
+
+              return module.code;
+            }
+          ];
+        }
+
+        return [module.path, module.code];
+      })
     );
 
     //console.log(files);
