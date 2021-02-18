@@ -92,7 +92,7 @@ describe("createDTOModulePath", () => {
   test("creates path", () => {
     const dtoName = createCreateInputID(EXAMPLE_ENTITY_NAME).name;
     expect(createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dtoName)).toEqual(
-      `${SRC_DIRECTORY}/${EXAMPLE_ENTITY_NAME_DIRECTORY}/${dtoName}.ts`
+      `${SRC_DIRECTORY}/${EXAMPLE_ENTITY_NAME_DIRECTORY}/base/${dtoName}.ts`
     );
   });
 });
