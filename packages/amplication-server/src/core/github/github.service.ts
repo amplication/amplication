@@ -59,7 +59,7 @@ export class GithubService {
       auth: TOKEN
     });
 
-    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service].ts'
+    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
     const doNotOverride = [
       /^server\/src\/[^\/]+\/.+\.controller.ts$/,
       /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
@@ -84,8 +84,6 @@ export class GithubService {
         return [module.path, module.code];
       })
     );
-
-    //console.log(files);
 
     //todo: delete files that are no longer part of the app
 
