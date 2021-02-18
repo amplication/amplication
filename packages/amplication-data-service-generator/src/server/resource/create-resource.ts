@@ -8,7 +8,7 @@ import { validateEntityName } from "../../util/entity";
 import { DTOs } from "./create-dtos";
 import { createServiceModules } from "./service/create-service";
 import { createControllerModules } from "./controller/create-controller";
-import { createModule } from "./module/create-module";
+import { createModules } from "./module/create-module";
 import { createControllerSpecModule } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 
@@ -65,7 +65,7 @@ async function createResourceModules(
   );
   const [resolverModule] = resolverModules;
 
-  const resourceModule = await createModule(
+  const resourceModules = await createModules(
     entityName,
     entityType,
     serviceModule.path,
@@ -85,7 +85,7 @@ async function createResourceModules(
     ...serviceModules,
     ...controllerModules,
     ...resolverModules,
-    resourceModule,
+    ...resourceModules,
     testModule,
   ];
 }
