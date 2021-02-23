@@ -16,6 +16,7 @@ import {
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
 import { createServerModules } from "./server/create-server";
+import { createRootModules } from "./create-root-modules";
 import { readStaticModules } from "./read-static-modules";
 import { types } from "@amplication/data";
 
@@ -53,6 +54,7 @@ export async function createDataServiceImpl(
         logger
       ),
       createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
+      createRootModules(logger),
     ])
   ).flat();
 
