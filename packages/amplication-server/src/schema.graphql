@@ -124,6 +124,18 @@ input AppUpdateInput {
   color: String
 }
 
+enum AppValidationErrorTypes {
+  CannotMergeCodeToGitHubBreakingChanges
+  CannotMergeCodeToGitHubInvalidAppId
+  DataServiceGeneratorVersionMissing
+  DataServiceGeneratorVersionInvalid
+}
+
+type AppValidationResult {
+  isValid: Boolean!
+  messages: [AppValidationErrorTypes!]!
+}
+
 input AppWhereInput {
   id: String
   createdAt: DateTimeFilter
@@ -1106,6 +1118,7 @@ type Query {
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   appAvailableGithubRepos(where: AvailableGithubReposFindInput!): [GithubRepo!]!
+  appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   me: User!
