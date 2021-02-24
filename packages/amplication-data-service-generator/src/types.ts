@@ -24,6 +24,8 @@ export type AppInfo = {
   name: string;
   description: string;
   version: string;
+  id: string;
+  url: string;
 };
 
 export type Role = Omit<
@@ -125,4 +127,5 @@ export type Module = {
 
 export type AppGenerationConfig = {
   dataServiceGeneratorVersion: string;
+  appInfo: AppInfo;
 };

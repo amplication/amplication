@@ -1,23 +1,26 @@
 import winston from "winston";
-import { Module, AppGenerationConfig } from "./types";
+import { Module, AppGenerationConfig, AppInfo } from "./types";
 import { version } from "./version";
 import { formatJson } from "./util/module";
 
 const AMP_CONFIG_FILE_NAME = "ampconfig.json";
 
 export async function createRootModules(
+  appInfo: AppInfo,
   logger: winston.Logger
 ): Promise<Module[]> {
-  return createAmplicationConfigurationFile(logger);
+  return createAmplicationConfigurationFile(appInfo, logger);
 }
 
 async function createAmplicationConfigurationFile(
+  appInfo: AppInfo,
   logger: winston.Logger
 ): Promise<Module[]> {
   logger.info(`Creating Amplication configuration file ${version}...`);
 
   const config: AppGenerationConfig = {
     dataServiceGeneratorVersion: version,
+    appInfo,
   };
 
   return [

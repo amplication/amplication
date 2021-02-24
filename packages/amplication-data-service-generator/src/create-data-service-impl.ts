@@ -54,7 +54,7 @@ export async function createDataServiceImpl(
         logger
       ),
       createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
-      createRootModules(logger),
+      createRootModules(appInfo, logger),
     ])
   ).flat();
 
