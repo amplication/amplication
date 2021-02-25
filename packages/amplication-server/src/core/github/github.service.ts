@@ -2,11 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Octokit } from '@octokit/rest';
 import { GithubRepo } from './dto/githubRepo';
+import { GithubFile } from './dto/githubFile';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { OAuthApp } from '@octokit/oauth-app';
 
 export const GCS_BUCKET_VAR = 'GCS_BUCKET';
+const GITHUB_FILE_TYPE = 'file';
+const GITHUB_FILE_ENCODING = 'base64';
 
 export const GITHUB_CLIENT_ID_VAR = 'GITHUB_CLIENT_ID';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -14,6 +17,7 @@ export const GITHUB_SECRET_SECRET_NAME_VAR = 'GITHUB_SECRET_SECRET_NAME';
 export const GITHUB_APP_AUTH_REDIRECT_URI_VAR = 'GITHUB_APP_AUTH_REDIRECT_URI';
 export const GITHUB_APP_AUTH_SCOPE_VAR = 'GITHUB_APP_AUTH_SCOPE';
 export const MISSING_CLIENT_SECRET_ERROR = `Must provide either ${GITHUB_CLIENT_SECRET_VAR} or ${GITHUB_SECRET_SECRET_NAME_VAR}`;
+export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encoding received`;
 
 @Injectable()
 export class GithubService {
@@ -42,6 +46,52 @@ export class GithubService {
     }));
   }
 
+  /**
+   * Gets a file from GitHub - Currently only returns the content of a single file and only if it is base64 encoded . Otherwise, returns null
+   * @param userName
+   * @param repoName
+   * @param path
+   * @param baseBranchName
+   * @param token
+   */
+  async getFile(
+    userName: string,
+    repoName: string,
+    path: string,
+    baseBranchName: string,
+    token: string
+  ): Promise<GithubFile> {
+    const octokit = new Octokit({
+      auth: token
+    });
+
+    const content = await octokit.repos.getContent({
+      owner: userName,
+      repo: repoName,
+      path,
+      ref: baseBranchName ? baseBranchName : undefined
+    });
+
+    if (
+      content.data.encoding === GITHUB_FILE_ENCODING &&
+      content.data.type === GITHUB_FILE_TYPE
+    ) {
+      // Convert base64 results to UTF-8 string
+      const buff = Buffer.from(content.data.content, 'base64');
+
+      const file: GithubFile = {
+        content: buff.toString('utf-8'),
+        htmlUrl: content.data.html_url,
+        name: content.data.name,
+        path: content.data.path
+      };
+
+      return file;
+    }
+
+    throw new Error(UNEXPECTED_FILE_TYPE_OR_ENCODING);
+  }
+
   async createPullRequest(
     userName: string,
     repoName: string,
@@ -59,11 +109,31 @@ export class GithubService {
       auth: TOKEN
     });
 
-    const files = Object.fromEntries(
-      modules.map(module => [module.path, module.code])
-    );
+    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
+    const doNotOverride = [
+      /^server\/src\/[^\/]+\/.+\.controller.ts$/,
+      /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
+      /^server\/src\/[^\/]+\/.+\.service.ts$/,
+      /^server\/src\/[^\/]+\/.+\.module.ts$/
+    ];
 
-    //console.log(files);
+    const files = Object.fromEntries(
+      modules.map(module => {
+        if (doNotOverride.some(rx => rx.test(module.path))) {
+          return [
+            module.path,
+            ({ exists }) => {
+              // do not create the file if it already exist
+              if (exists) return null;
+
+              return module.code;
+            }
+          ];
+        }
+
+        return [module.path, module.code];
+      })
+    );
 
     //todo: delete files that are no longer part of the app
 

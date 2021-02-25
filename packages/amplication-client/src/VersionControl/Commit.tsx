@@ -10,6 +10,7 @@ import { GET_LAST_COMMIT } from "./LastCommit";
 import { TextField } from "@amplication/design-system";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import CommitValidation from "./CommitValidation";
 import "./Commit.scss";
 
 type TCommit = {
@@ -76,9 +77,7 @@ const Commit = ({ applicationId, disabled }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      {/* {loading ? (
-        <CircularProgress />
-      ) : ( */}
+      <CommitValidation applicationId={applicationId} />
       <Formik
         initialValues={INITIAL_VALUES}
         onSubmit={handleSubmit}
@@ -91,7 +90,9 @@ const Commit = ({ applicationId, disabled }: Props) => {
 
           return (
             <Form>
-              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              {!disabled && (
+                <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              )}
               <TextField
                 rows={3}
                 textarea
@@ -117,7 +118,7 @@ const Commit = ({ applicationId, disabled }: Props) => {
           );
         }}
       </Formik>
-      {/* )} */}
+
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

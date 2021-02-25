@@ -6,11 +6,11 @@ import * as winston from "winston";
 import { Entity, Module } from "../../types";
 import { validateEntityName } from "../../util/entity";
 import { DTOs } from "./create-dtos";
-import { createServiceModule } from "./service/create-service";
-import { createControllerModule } from "./controller/create-controller";
-import { createModule } from "./module/create-module";
+import { createServiceModules } from "./service/create-service";
+import { createControllerModules } from "./controller/create-controller";
+import { createModules } from "./module/create-module";
 import { createControllerSpecModule } from "./test/create-controller-spec";
-import { createResolverModule } from "./resolver/create-resolver";
+import { createResolverModules } from "./resolver/create-resolver";
 
 export async function createResourcesModules(
   entities: Entity[],
@@ -37,13 +37,15 @@ async function createResourceModules(
   const entityName = camelCase(entityType);
   const resource = paramCase(plural(entityName));
 
-  const serviceModule = await createServiceModule(
+  const serviceModules = await createServiceModules(
     entityName,
     entityType,
     entity
   );
 
-  const controllerModule = await createControllerModule(
+  const [serviceModule] = serviceModules;
+
+  const controllerModules = await createControllerModules(
     resource,
     entityName,
     entityType,
@@ -52,15 +54,18 @@ async function createResourceModules(
     dtos
   );
 
-  const resolverModule = await createResolverModule(
+  const [controllerModule] = controllerModules;
+
+  const resolverModules = await createResolverModules(
     entityName,
     entityType,
     serviceModule.path,
     entity,
     dtos
   );
+  const [resolverModule] = resolverModules;
 
-  const resourceModule = await createModule(
+  const resourceModules = await createModules(
     entityName,
     entityType,
     serviceModule.path,
@@ -77,10 +82,10 @@ async function createResourceModules(
   );
 
   return [
-    serviceModule,
-    controllerModule,
-    resolverModule,
-    resourceModule,
+    ...serviceModules,
+    ...controllerModules,
+    ...resolverModules,
+    ...resourceModules,
     testModule,
   ];
 }

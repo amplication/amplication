@@ -16,15 +16,40 @@ import { createServiceId } from "../service/create-service";
 import { createResolverId } from "../resolver/create-resolver";
 
 const moduleTemplatePath = require.resolve("./module.template.ts");
+const moduleBaseTemplatePath = require.resolve("./module.base.template.ts");
 
-export async function createModule(
+export async function createModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
   entityControllerModule: string,
   entityResolverModule: string
+): Promise<Module[]> {
+  const moduleBaseId = createBaseModuleId(entityType);
+
+  return [
+    await createModule(
+      entityName,
+      entityType,
+      entityServiceModule,
+      entityControllerModule,
+      entityResolverModule,
+      moduleBaseId
+    ),
+    await createBaseModule(entityName, moduleBaseId),
+  ];
+}
+
+async function createModule(
+  entityName: string,
+  entityType: string,
+  entityServiceModule: string,
+  entityControllerModule: string,
+  entityResolverModule: string,
+  moduleBaseId: namedTypes.Identifier
 ): Promise<Module> {
   const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.module.ts`;
+  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleTemplatePath);
   const controllerId = createControllerId(entityType);
   const serviceId = createServiceId(entityType);
@@ -37,7 +62,12 @@ export async function createModule(
     CONTROLLER: controllerId,
     RESOLVER: resolverId,
     MODULE: moduleId,
+    MODULE_BASE: moduleBaseId,
   });
+  const moduleBaseImport = importNames(
+    [moduleBaseId],
+    relativeImportPath(modulePath, moduleBasePath)
+  );
 
   const serviceImport = importNames(
     [serviceId],
@@ -54,7 +84,33 @@ export async function createModule(
     relativeImportPath(modulePath, entityResolverModule)
   );
 
-  addImports(file, [serviceImport, controllerImport, resolverImport]);
+  addImports(file, [
+    moduleBaseImport,
+    serviceImport,
+    controllerImport,
+    resolverImport,
+  ]);
+
+  removeTSIgnoreComments(file);
+  removeESLintComments(file);
+  removeTSClassDeclares(file);
+
+  return {
+    path: modulePath,
+    code: print(file).code,
+  };
+}
+
+async function createBaseModule(
+  entityName: string,
+  moduleBaseId: namedTypes.Identifier
+): Promise<Module> {
+  const modulePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.module.base.ts`;
+  const file = await readFile(moduleBaseTemplatePath);
+
+  interpolate(file, {
+    MODULE_BASE: moduleBaseId,
+  });
 
   removeTSIgnoreComments(file);
   removeESLintComments(file);
@@ -68,4 +124,8 @@ export async function createModule(
 
 function createModuleId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Module`);
+}
+
+function createBaseModuleId(entityType: string): namedTypes.Identifier {
+  return builders.identifier(`${entityType}ModuleBase`);
 }

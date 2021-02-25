@@ -72,7 +72,7 @@ const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
-const EXAMPLE_APP_ID = 'ExampleAppId';
+const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_DATE = new Date('2020-01-01');
 
 const JOB_STARTED_LOG = 'Build job started';
@@ -365,7 +365,7 @@ const EXAMPLE_LOCAL_DISK = {
 
 const localDiskServiceGetDiskMock = jest.fn(() => EXAMPLE_LOCAL_DISK);
 
-const EXAMPLED_HOST = 'http://localhost/';
+const EXAMPLED_HOST = 'http://localhost';
 const configServiceGetMock = jest.fn(() => EXAMPLED_HOST);
 
 const loggerErrorMock = jest.fn(error => {
@@ -618,7 +618,9 @@ describe('BuildService', () => {
       {
         name: EXAMPLE_APP.name,
         description: EXAMPLE_APP.description,
-        version: EXAMPLE_BUILD.version
+        version: EXAMPLE_BUILD.version,
+        id: EXAMPLE_APP.id,
+        url: `${EXAMPLED_HOST}/${EXAMPLE_APP.id}`
       },
       MOCK_LOGGER
     );

@@ -156,6 +156,19 @@ export type AppUpdateInput = {
   color?: Maybe<Scalars["String"]>;
 };
 
+export enum AppValidationErrorTypes {
+  CannotMergeCodeToGitHubBreakingChanges = "CannotMergeCodeToGitHubBreakingChanges",
+  CannotMergeCodeToGitHubInvalidAppId = "CannotMergeCodeToGitHubInvalidAppId",
+  DataServiceGeneratorVersionMissing = "DataServiceGeneratorVersionMissing",
+  DataServiceGeneratorVersionInvalid = "DataServiceGeneratorVersionInvalid",
+}
+
+export type AppValidationResult = {
+  __typename?: "AppValidationResult";
+  isValid: Scalars["Boolean"];
+  messages: Array<AppValidationErrorTypes>;
+};
+
 export type AppWhereInput = {
   id?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<DateTimeFilter>;
@@ -1086,6 +1099,7 @@ export type Mutation = {
   createEntityFieldByDisplayName: EntityField;
   deleteEntityField: EntityField;
   updateEntityField: EntityField;
+  createDefaultRelatedField: EntityField;
   createAppRole: AppRole;
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
@@ -1185,6 +1199,12 @@ export type MutationDeleteEntityFieldArgs = {
 
 export type MutationUpdateEntityFieldArgs = {
   data: EntityFieldUpdateInput;
+  where: WhereUniqueInput;
+  relatedFieldName?: Maybe<Scalars["String"]>;
+  relatedFieldDisplayName?: Maybe<Scalars["String"]>;
+};
+
+export type MutationCreateDefaultRelatedFieldArgs = {
   where: WhereUniqueInput;
   relatedFieldName?: Maybe<Scalars["String"]>;
   relatedFieldDisplayName?: Maybe<Scalars["String"]>;
@@ -1379,6 +1399,7 @@ export type Query = {
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
   appAvailableGithubRepos: Array<GithubRepo>;
+  appValidateBeforeCommit: AppValidationResult;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
   me: User;
@@ -1462,6 +1483,10 @@ export type QueryPendingChangesArgs = {
 
 export type QueryAppAvailableGithubReposArgs = {
   where: AvailableGithubReposFindInput;
+};
+
+export type QueryAppValidateBeforeCommitArgs = {
+  where: WhereUniqueInput;
 };
 
 export type QueryCommitArgs = {

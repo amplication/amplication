@@ -1,5 +1,5 @@
 import { print } from "recast";
-import { builders, namedTypes } from "ast-types";
+import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import { Entity, EntityLookupField, Module } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
@@ -29,27 +29,30 @@ const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
 
 const controllerTemplatePath = require.resolve("./controller.template.ts");
+const controllerBaseTemplatePath = require.resolve(
+  "./controller.base.template.ts"
+);
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
-export async function createControllerModule(
+export async function createControllerModules(
   resource: string,
   entityName: string,
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
   dtos: DTOs
-): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.controller.ts`;
-  const file = await readFile(controllerTemplatePath);
-
-  const serviceId = createServiceId(entityType);
-  const controllerId = createControllerId(entityType);
+): Promise<Module[]> {
   const entityDTOs = dtos[entity.name];
   const entityDTO = entityDTOs.entity;
 
-  interpolate(file, {
+  const controllerId = createControllerId(entityType);
+  const controllerBaseId = createControllerBaseId(entityType);
+  const serviceId = createServiceId(entityType);
+
+  const mapping = {
     RESOURCE: builders.stringLiteral(resource),
     CONTROLLER: controllerId,
+    CONTROLLER_BASE: controllerBaseId,
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
@@ -79,38 +82,100 @@ export async function createControllerModule(
     /** @todo replace */
     FIND_ONE_QUERY: builders.tsTypeLiteral([]),
     WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
-  });
+  };
+  return [
+    await createControllerModule(
+      controllerTemplatePath,
+      entityName,
+      entityType,
+      entityServiceModule,
+      entity,
+      dtos,
+      mapping,
+      controllerBaseId,
+      serviceId,
+      false
+    ),
+    await createControllerModule(
+      controllerBaseTemplatePath,
+      entityName,
+      entityType,
+      entityServiceModule,
+      entity,
+      dtos,
+      mapping,
+      controllerBaseId,
+      serviceId,
+      true
+    ),
+  ];
+}
 
-  const classDeclaration = getClassDeclarationById(file, controllerId);
-  const toManyRelationFields = entity.fields.filter(isToManyRelationField);
-  const toManyRelationMethods = (
-    await Promise.all(
-      toManyRelationFields.map((field) =>
-        createToManyRelationMethods(
-          field,
-          entityType,
-          entityDTOs.whereUniqueInput,
-          dtos,
-          serviceId
-        )
-      )
-    )
-  ).flat();
+async function createControllerModule(
+  templatePath: string,
+  entityName: string,
+  entityType: string,
+  entityServiceModule: string,
+  entity: Entity,
+  dtos: DTOs,
+  mapping: { [key: string]: ASTNode | undefined },
+  controllerBaseId: namedTypes.Identifier,
+  serviceId: namedTypes.Identifier,
+  isBaseClass: boolean
+): Promise<Module> {
+  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.controller.ts`;
+  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.controller.base.ts`;
+  const file = await readFile(templatePath);
 
-  classDeclaration.body.body.push(...toManyRelationMethods);
+  const entityDTOs = dtos[entity.name];
+
+  interpolate(file, mapping);
 
   const serviceImport = importNames(
     [serviceId],
-    relativeImportPath(modulePath, entityServiceModule)
+    relativeImportPath(
+      isBaseClass ? moduleBasePath : modulePath,
+      entityServiceModule
+    )
   );
 
-  const dtoNameToPath = getDTONameToPath(dtos);
-  const dtoImports = importContainedIdentifiers(
-    file,
-    getImportableDTOs(modulePath, dtoNameToPath)
-  );
+  if (isBaseClass) {
+    const classDeclaration = getClassDeclarationById(file, controllerBaseId);
+    const toManyRelationFields = entity.fields.filter(isToManyRelationField);
+    const toManyRelationMethods = (
+      await Promise.all(
+        toManyRelationFields.map((field) =>
+          createToManyRelationMethods(
+            field,
+            entityType,
+            entityDTOs.whereUniqueInput,
+            dtos,
+            serviceId
+          )
+        )
+      )
+    ).flat();
 
-  addImports(file, [serviceImport, ...dtoImports]);
+    classDeclaration.body.body.push(...toManyRelationMethods);
+
+    const dtoNameToPath = getDTONameToPath(dtos);
+    const dtoImports = importContainedIdentifiers(
+      file,
+      getImportableDTOs(moduleBasePath, dtoNameToPath)
+    );
+    addImports(file, [serviceImport, ...dtoImports]);
+  }
+
+  if (!isBaseClass) {
+    addImports(file, [
+      serviceImport,
+      importNames(
+        [controllerBaseId],
+        relativeImportPath(modulePath, moduleBasePath)
+      ),
+    ]);
+  }
+
   removeImportsTSIgnoreComments(file);
   removeESLintComments(file);
   removeTSVariableDeclares(file);
@@ -118,13 +183,19 @@ export async function createControllerModule(
   removeTSClassDeclares(file);
 
   return {
-    path: modulePath,
+    path: isBaseClass ? moduleBasePath : modulePath,
     code: print(file).code,
   };
 }
 
 export function createControllerId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Controller`);
+}
+
+export function createControllerBaseId(
+  entityType: string
+): namedTypes.Identifier {
+  return builders.identifier(`${entityType}ControllerBase`);
 }
 
 async function createToManyRelationMethods(

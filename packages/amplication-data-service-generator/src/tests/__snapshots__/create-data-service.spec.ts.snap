@@ -3597,7 +3597,7 @@ WHERE n.nspname = 'public';
 import { PrismaClient } from \\"@prisma/client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
-import { EnumUserPriority } from \\"../src/user/EnumUserPriority\\";
+import { EnumUserPriority } from \\"../src/user/base/EnumUserPriority\\";
 
 if (require.main === module) {
   dotenv.config();
@@ -4123,7 +4123,7 @@ export function parseSalt(value: string | undefined): Salt {
   return rounds;
 }
 ",
-  "server/src/customer/CreateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/CreateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 
 @ArgsType()
@@ -4134,7 +4134,7 @@ class CreateCustomerArgs {
 
 export { CreateCustomerArgs };
 ",
-  "server/src/customer/Customer.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/Customer.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -4151,7 +4151,7 @@ import {
 import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @ObjectType()
 class Customer {
   @ApiProperty({
@@ -4304,7 +4304,7 @@ class Customer {
 }
 export { Customer };
 ",
-  "server/src/customer/CustomerCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/CustomerCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -4321,7 +4321,7 @@ import {
 import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @InputType()
 class CustomerCreateInput {
   @ApiProperty({
@@ -4459,7 +4459,7 @@ class CustomerCreateInput {
 }
 export { CustomerCreateInput };
 ",
-  "server/src/customer/CustomerUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/CustomerUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -4476,7 +4476,7 @@ import {
 import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @InputType()
 class CustomerUpdateInput {
   @ApiProperty({
@@ -4617,7 +4617,7 @@ class CustomerUpdateInput {
 }
 export { CustomerUpdateInput };
 ",
-  "server/src/customer/CustomerWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/CustomerWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -4633,7 +4633,7 @@ import {
 
 import { Type, Transform } from \\"class-transformer\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @InputType()
 class CustomerWhereInput {
   @ApiProperty({
@@ -4787,7 +4787,7 @@ class CustomerWhereInput {
 }
 export { CustomerWhereInput };
 ",
-  "server/src/customer/CustomerWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/CustomerWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -4802,7 +4802,7 @@ class CustomerWhereUniqueInput {
 }
 export { CustomerWhereUniqueInput };
 ",
-  "server/src/customer/DeleteCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/DeleteCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 
 @ArgsType()
@@ -4813,7 +4813,7 @@ class DeleteCustomerArgs {
 
 export { DeleteCustomerArgs };
 ",
-  "server/src/customer/EnumCustomerCustomerType.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/EnumCustomerCustomerType.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumCustomerCustomerType {
   Platinum = \\"platinum\\",
@@ -4826,7 +4826,7 @@ registerEnumType(EnumCustomerCustomerType, {
   name: \\"EnumCustomerCustomerType\\",
 });
 ",
-  "server/src/customer/EnumCustomerFavoriteColors.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/EnumCustomerFavoriteColors.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumCustomerFavoriteColors {
   Red = \\"red\\",
@@ -4839,7 +4839,7 @@ registerEnumType(EnumCustomerFavoriteColors, {
   name: \\"EnumCustomerFavoriteColors\\",
 });
 ",
-  "server/src/customer/FindManyCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/FindManyCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 
 @ArgsType()
@@ -4850,7 +4850,7 @@ class FindManyCustomerArgs {
 
 export { FindManyCustomerArgs };
 ",
-  "server/src/customer/FindOneCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/FindOneCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 
 @ArgsType()
@@ -4861,7 +4861,7 @@ class FindOneCustomerArgs {
 
 export { FindOneCustomerArgs };
 ",
-  "server/src/customer/UpdateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/UpdateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 
@@ -4875,213 +4875,27 @@ class UpdateCustomerArgs {
 
 export { UpdateCustomerArgs };
 ",
-  "server/src/customer/customer.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { CustomerController } from \\"./customer.controller\\";
-import { CustomerService } from \\"./customer.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  email: \\"exampleEmail\\",
-  firstName: \\"exampleFirstName\\",
-  lastName: \\"exampleLastName\\",
-  isVip: \\"true\\",
-  birthData: new Date(),
-  averageSale: 42.42,
-  favoriteNumber: 42,
-  geoLocation: \\"exampleGeoLocation\\",
-  comments: \\"exampleComments\\",
-};
-const CREATE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  email: \\"exampleEmail\\",
-  firstName: \\"exampleFirstName\\",
-  lastName: \\"exampleLastName\\",
-  isVip: \\"true\\",
-  birthData: new Date(),
-  averageSale: 42.42,
-  favoriteNumber: 42,
-  geoLocation: \\"exampleGeoLocation\\",
-  comments: \\"exampleComments\\",
-};
-const FIND_MANY_RESULT = [
-  {
-    id: \\"exampleId\\",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    email: \\"exampleEmail\\",
-    firstName: \\"exampleFirstName\\",
-    lastName: \\"exampleLastName\\",
-    isVip: \\"true\\",
-    birthData: new Date(),
-    averageSale: 42.42,
-    favoriteNumber: 42,
-    geoLocation: \\"exampleGeoLocation\\",
-    comments: \\"exampleComments\\",
-  },
-];
-const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  email: \\"exampleEmail\\",
-  firstName: \\"exampleFirstName\\",
-  lastName: \\"exampleLastName\\",
-  isVip: \\"true\\",
-  birthData: new Date(),
-  averageSale: 42.42,
-  favoriteNumber: 42,
-  geoLocation: \\"exampleGeoLocation\\",
-  comments: \\"exampleComments\\",
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"Customer\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: CustomerService,
-          useValue: service,
-        },
-      ],
-      controllers: [CustomerController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /customers\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/customers\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        createdAt: CREATE_RESULT.createdAt.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-        birthData: CREATE_RESULT.birthData.toISOString(),
-      });
-  });
-
-  test(\\"GET /customers\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/customers\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
-          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
-          birthData: FIND_MANY_RESULT[0].birthData.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /customers/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/customers\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /customers/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/customers\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
-        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
-        birthData: FIND_ONE_RESULT.birthData.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
-",
-  "server/src/customer/customer.controller.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/customer/base/customer.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import * as errors from \\"../errors\\";
-import { CustomerService } from \\"./customer.service\\";
+import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import * as errors from \\"../../errors\\";
+import { CustomerService } from \\"../customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
-import { OrderWhereInput } from \\"../order/OrderWhereInput\\";
-import { Order } from \\"../order/Order\\";
+import { OrderWhereInput } from \\"../../order/base/OrderWhereInput\\";
+import { Order } from \\"../../order/base/Order\\";
 
-@swagger.ApiBasicAuth()
-@swagger.ApiTags(\\"customers\\")
-@common.Controller(\\"customers\\")
-export class CustomerController {
+export class CustomerControllerBase {
   constructor(
-    private readonly service: CustomerService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: CustomerService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -5601,14 +5415,11 @@ export class CustomerController {
   }
 }
 ",
-  "server/src/customer/customer.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+  "server/src/customer/base/customer.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
-import { CustomerService } from \\"./customer.service\\";
-import { CustomerController } from \\"./customer.controller\\";
-import { CustomerResolver } from \\"./customer.resolver\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
   imports: [
@@ -5617,39 +5428,37 @@ import { CustomerResolver } from \\"./customer.resolver\\";
     MorganModule,
     PrismaModule,
   ],
-  controllers: [CustomerController],
-  providers: [CustomerService, CustomerResolver],
-  exports: [CustomerService],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
 })
-export class CustomerModule {}
+export class CustomerModuleBase {}
 ",
-  "server/src/customer/customer.resolver.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/customer/base/customer.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import { CustomerService } from \\"./customer.service\\";
+import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
 import { FindManyCustomerArgs } from \\"./FindManyCustomerArgs\\";
 import { FindOneCustomerArgs } from \\"./FindOneCustomerArgs\\";
 import { Customer } from \\"./Customer\\";
-import { FindManyOrderArgs } from \\"../order/FindManyOrderArgs\\";
-import { Order } from \\"../order/Order\\";
-import { Organization } from \\"../organization/Organization\\";
+import { FindManyOrderArgs } from \\"../../order/base/FindManyOrderArgs\\";
+import { Order } from \\"../../order/base/Order\\";
+import { Organization } from \\"../../organization/base/Organization\\";
+import { CustomerService } from \\"../customer.service\\";
 
 @graphql.Resolver(() => Customer)
 @common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
-export class CustomerResolver {
+export class CustomerResolverBase {
   constructor(
-    private readonly service: CustomerService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: CustomerService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => [Customer])
@@ -5907,8 +5716,7 @@ export class CustomerResolver {
   }
 }
 ",
-  "server/src/customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+  "server/src/customer/base/customer.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
 import {
   FindOneCustomerArgs,
   FindManyCustomerArgs,
@@ -5918,9 +5726,8 @@ import {
   Subset,
 } from \\"@prisma/client\\";
 
-@Injectable()
-export class CustomerService {
-  constructor(private readonly prisma: PrismaService) {}
+export class CustomerServiceBase {
+  constructor(protected readonly prisma: PrismaService) {}
   findMany<T extends FindManyCustomerArgs>(
     args: Subset<T, FindManyCustomerArgs>
   ) {
@@ -5940,7 +5747,254 @@ export class CustomerService {
   }
 }
 ",
-  "server/src/empty/DeleteEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/customer/customer.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { CustomerController } from \\"./customer.controller\\";
+import { CustomerService } from \\"./customer.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: \\"exampleEmail\\",
+  firstName: \\"exampleFirstName\\",
+  lastName: \\"exampleLastName\\",
+  isVip: \\"true\\",
+  birthData: new Date(),
+  averageSale: 42.42,
+  favoriteNumber: 42,
+  geoLocation: \\"exampleGeoLocation\\",
+  comments: \\"exampleComments\\",
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: \\"exampleEmail\\",
+  firstName: \\"exampleFirstName\\",
+  lastName: \\"exampleLastName\\",
+  isVip: \\"true\\",
+  birthData: new Date(),
+  averageSale: 42.42,
+  favoriteNumber: 42,
+  geoLocation: \\"exampleGeoLocation\\",
+  comments: \\"exampleComments\\",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    email: \\"exampleEmail\\",
+    firstName: \\"exampleFirstName\\",
+    lastName: \\"exampleLastName\\",
+    isVip: \\"true\\",
+    birthData: new Date(),
+    averageSale: 42.42,
+    favoriteNumber: 42,
+    geoLocation: \\"exampleGeoLocation\\",
+    comments: \\"exampleComments\\",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: \\"exampleEmail\\",
+  firstName: \\"exampleFirstName\\",
+  lastName: \\"exampleLastName\\",
+  isVip: \\"true\\",
+  birthData: new Date(),
+  averageSale: 42.42,
+  favoriteNumber: 42,
+  geoLocation: \\"exampleGeoLocation\\",
+  comments: \\"exampleComments\\",
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Customer\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: CustomerService,
+          useValue: service,
+        },
+      ],
+      controllers: [CustomerController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /customers\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/customers\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        birthData: CREATE_RESULT.birthData.toISOString(),
+      });
+  });
+
+  test(\\"GET /customers\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/customers\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+          birthData: FIND_MANY_RESULT[0].birthData.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /customers/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/customers\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /customers/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/customers\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+        birthData: FIND_ONE_RESULT.birthData.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/customer/customer.controller.ts": "import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { CustomerService } from \\"./customer.service\\";
+import { CustomerControllerBase } from \\"./base/customer.controller.base\\";
+
+@swagger.ApiBasicAuth()
+@swagger.ApiTags(\\"customers\\")
+@common.Controller(\\"customers\\")
+export class CustomerController extends CustomerControllerBase {
+  constructor(
+    protected readonly service: CustomerService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/customer/customer.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { CustomerModuleBase } from \\"./base/customer.module.base\\";
+import { CustomerService } from \\"./customer.service\\";
+import { CustomerController } from \\"./customer.controller\\";
+import { CustomerResolver } from \\"./customer.resolver\\";
+
+@Module({
+  imports: [CustomerModuleBase],
+  controllers: [CustomerController],
+  providers: [CustomerService, CustomerResolver],
+  exports: [CustomerService],
+})
+export class CustomerModule {}
+",
+  "server/src/customer/customer.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import { CustomerResolverBase } from \\"./base/customer.resolver.base\\";
+import { Customer } from \\"./base/Customer\\";
+import { CustomerService } from \\"./customer.service\\";
+
+@graphql.Resolver(() => Customer)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+export class CustomerResolver extends CustomerResolverBase {
+  constructor(
+    protected readonly service: CustomerService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { CustomerServiceBase } from \\"./base/customer.service.base\\";
+
+@Injectable()
+export class CustomerService extends CustomerServiceBase {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
+  }
+}
+",
+  "server/src/empty/base/DeleteEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 
 @ArgsType()
@@ -5951,7 +6005,7 @@ class DeleteEmptyArgs {
 
 export { DeleteEmptyArgs };
 ",
-  "server/src/empty/Empty.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/Empty.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsDate } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
@@ -5981,13 +6035,13 @@ class Empty {
 }
 export { Empty };
 ",
-  "server/src/empty/EmptyCreateInput.ts": "class EmptyCreateInput {}
+  "server/src/empty/base/EmptyCreateInput.ts": "class EmptyCreateInput {}
 export { EmptyCreateInput };
 ",
-  "server/src/empty/EmptyUpdateInput.ts": "class EmptyUpdateInput {}
+  "server/src/empty/base/EmptyUpdateInput.ts": "class EmptyUpdateInput {}
 export { EmptyUpdateInput };
 ",
-  "server/src/empty/EmptyWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/EmptyWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
@@ -6026,7 +6080,7 @@ class EmptyWhereInput {
 }
 export { EmptyWhereInput };
 ",
-  "server/src/empty/EmptyWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/EmptyWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -6041,7 +6095,7 @@ class EmptyWhereUniqueInput {
 }
 export { EmptyWhereUniqueInput };
 ",
-  "server/src/empty/FindManyEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/FindManyEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 
 @ArgsType()
@@ -6052,7 +6106,7 @@ class FindManyEmptyArgs {
 
 export { FindManyEmptyArgs };
 ",
-  "server/src/empty/FindOneEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/FindOneEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 
 @ArgsType()
@@ -6063,172 +6117,25 @@ class FindOneEmptyArgs {
 
 export { FindOneEmptyArgs };
 ",
-  "server/src/empty/empty.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { EmptyController } from \\"./empty.controller\\";
-import { EmptyService } from \\"./empty.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-const CREATE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-const FIND_MANY_RESULT = [
-  {
-    id: \\"exampleId\\",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"Empty\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: EmptyService,
-          useValue: service,
-        },
-      ],
-      controllers: [EmptyController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /empties\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/empties\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        createdAt: CREATE_RESULT.createdAt.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  test(\\"GET /empties\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/empties\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
-          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /empties/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/empties\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /empties/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/empties\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
-        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
-",
-  "server/src/empty/empty.controller.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/empty/base/empty.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import * as errors from \\"../errors\\";
-import { EmptyService } from \\"./empty.service\\";
+import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import * as errors from \\"../../errors\\";
+import { EmptyService } from \\"../empty.service\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
 
-@swagger.ApiBasicAuth()
-@swagger.ApiTags(\\"empties\\")
-@common.Controller(\\"empties\\")
-export class EmptyController {
+export class EmptyControllerBase {
   constructor(
-    private readonly service: EmptyService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: EmptyService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -6440,14 +6347,11 @@ export class EmptyController {
   }
 }
 ",
-  "server/src/empty/empty.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+  "server/src/empty/base/empty.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
-import { EmptyService } from \\"./empty.service\\";
-import { EmptyController } from \\"./empty.controller\\";
-import { EmptyResolver } from \\"./empty.resolver\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
   imports: [
@@ -6456,34 +6360,32 @@ import { EmptyResolver } from \\"./empty.resolver\\";
     MorganModule,
     PrismaModule,
   ],
-  controllers: [EmptyController],
-  providers: [EmptyService, EmptyResolver],
-  exports: [EmptyService],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
 })
-export class EmptyModule {}
+export class EmptyModuleBase {}
 ",
-  "server/src/empty/empty.resolver.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/empty/base/empty.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import { EmptyService } from \\"./empty.service\\";
+import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
 import { FindManyEmptyArgs } from \\"./FindManyEmptyArgs\\";
 import { FindOneEmptyArgs } from \\"./FindOneEmptyArgs\\";
 import { Empty } from \\"./Empty\\";
+import { EmptyService } from \\"../empty.service\\";
 
 @graphql.Resolver(() => Empty)
 @common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
-export class EmptyResolver {
+export class EmptyResolverBase {
   constructor(
-    private readonly service: EmptyService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: EmptyService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => [Empty])
@@ -6552,8 +6454,7 @@ export class EmptyResolver {
   }
 }
 ",
-  "server/src/empty/empty.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+  "server/src/empty/base/empty.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
 import {
   FindOneEmptyArgs,
   FindManyEmptyArgs,
@@ -6563,9 +6464,8 @@ import {
   Subset,
 } from \\"@prisma/client\\";
 
-@Injectable()
-export class EmptyService {
-  constructor(private readonly prisma: PrismaService) {}
+export class EmptyServiceBase {
+  constructor(protected readonly prisma: PrismaService) {}
   findMany<T extends FindManyEmptyArgs>(args: Subset<T, FindManyEmptyArgs>) {
     return this.prisma.empty.findMany(args);
   }
@@ -6580,6 +6480,214 @@ export class EmptyService {
   }
   delete<T extends EmptyDeleteArgs>(args: Subset<T, EmptyDeleteArgs>) {
     return this.prisma.empty.delete(args);
+  }
+}
+",
+  "server/src/empty/empty.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { EmptyController } from \\"./empty.controller\\";
+import { EmptyService } from \\"./empty.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Empty\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: EmptyService,
+          useValue: service,
+        },
+      ],
+      controllers: [EmptyController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /empties\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/empties\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"GET /empties\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/empties\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /empties/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/empties\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /empties/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/empties\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/empty/empty.controller.ts": "import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { EmptyService } from \\"./empty.service\\";
+import { EmptyControllerBase } from \\"./base/empty.controller.base\\";
+
+@swagger.ApiBasicAuth()
+@swagger.ApiTags(\\"empties\\")
+@common.Controller(\\"empties\\")
+export class EmptyController extends EmptyControllerBase {
+  constructor(
+    protected readonly service: EmptyService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/empty/empty.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { EmptyModuleBase } from \\"./base/empty.module.base\\";
+import { EmptyService } from \\"./empty.service\\";
+import { EmptyController } from \\"./empty.controller\\";
+import { EmptyResolver } from \\"./empty.resolver\\";
+
+@Module({
+  imports: [EmptyModuleBase],
+  controllers: [EmptyController],
+  providers: [EmptyService, EmptyResolver],
+  exports: [EmptyService],
+})
+export class EmptyModule {}
+",
+  "server/src/empty/empty.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import { EmptyResolverBase } from \\"./base/empty.resolver.base\\";
+import { Empty } from \\"./base/Empty\\";
+import { EmptyService } from \\"./empty.service\\";
+
+@graphql.Resolver(() => Empty)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+export class EmptyResolver extends EmptyResolverBase {
+  constructor(
+    protected readonly service: EmptyService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/empty/empty.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { EmptyServiceBase } from \\"./base/empty.service.base\\";
+
+@Injectable()
+export class EmptyService extends EmptyServiceBase {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
   }
 }
 ",
@@ -6637,7 +6745,7 @@ async function main() {
 
 module.exports = main();
 ",
-  "server/src/order/CreateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/CreateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 
 @ArgsType()
@@ -6648,7 +6756,7 @@ class CreateOrderArgs {
 
 export { CreateOrderArgs };
 ",
-  "server/src/order/DeleteOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/DeleteOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 
 @ArgsType()
@@ -6659,7 +6767,7 @@ class DeleteOrderArgs {
 
 export { DeleteOrderArgs };
 ",
-  "server/src/order/EnumOrderLabel.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/order/base/EnumOrderLabel.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumOrderLabel {
   Fragile = \\"fragile\\",
@@ -6669,7 +6777,7 @@ registerEnumType(EnumOrderLabel, {
   name: \\"EnumOrderLabel\\",
 });
 ",
-  "server/src/order/EnumOrderStatus.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/order/base/EnumOrderStatus.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumOrderStatus {
   Pending = \\"pending\\",
@@ -6681,7 +6789,7 @@ registerEnumType(EnumOrderStatus, {
   name: \\"EnumOrderStatus\\",
 });
 ",
-  "server/src/order/FindManyOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/FindManyOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 
 @ArgsType()
@@ -6692,7 +6800,7 @@ class FindManyOrderArgs {
 
 export { FindManyOrderArgs };
 ",
-  "server/src/order/FindOneOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/FindOneOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 
 @ArgsType()
@@ -6703,7 +6811,7 @@ class FindOneOrderArgs {
 
 export { FindOneOrderArgs };
 ",
-  "server/src/order/Order.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/Order.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
@@ -6713,7 +6821,7 @@ import {
   IsOptional,
 } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @ObjectType()
@@ -6766,9 +6874,9 @@ class Order {
 }
 export { Order };
 ",
-  "server/src/order/OrderCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/OrderCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
@@ -6803,9 +6911,9 @@ class OrderCreateInput {
 }
 export { OrderCreateInput };
 ",
-  "server/src/order/OrderUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/OrderUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
@@ -6846,7 +6954,7 @@ class OrderUpdateInput {
 }
 export { OrderUpdateInput };
 ",
-  "server/src/order/OrderWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/OrderWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
@@ -6856,7 +6964,7 @@ import {
   IsEnum,
 } from \\"class-validator\\";
 import { Type, Transform } from \\"class-transformer\\";
-import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
@@ -6923,7 +7031,7 @@ class OrderWhereInput {
 }
 export { OrderWhereInput };
 ",
-  "server/src/order/OrderWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/OrderWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -6938,7 +7046,7 @@ class OrderWhereUniqueInput {
 }
 export { OrderWhereUniqueInput };
 ",
-  "server/src/order/UpdateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/UpdateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 
@@ -6952,172 +7060,25 @@ class UpdateOrderArgs {
 
 export { UpdateOrderArgs };
 ",
-  "server/src/order/order.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { OrderController } from \\"./order.controller\\";
-import { OrderService } from \\"./order.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-const CREATE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-const FIND_MANY_RESULT = [
-  {
-    id: \\"exampleId\\",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"Order\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: OrderService,
-          useValue: service,
-        },
-      ],
-      controllers: [OrderController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /orders\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/orders\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        createdAt: CREATE_RESULT.createdAt.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  test(\\"GET /orders\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/orders\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
-          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /orders/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/orders\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /orders/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/orders\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
-        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
-",
-  "server/src/order/order.controller.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/order/base/order.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import * as errors from \\"../errors\\";
-import { OrderService } from \\"./order.service\\";
+import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import * as errors from \\"../../errors\\";
+import { OrderService } from \\"../order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
 
-@swagger.ApiBasicAuth()
-@swagger.ApiTags(\\"orders\\")
-@common.Controller(\\"orders\\")
-export class OrderController {
+export class OrderControllerBase {
   constructor(
-    private readonly service: OrderService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: OrderService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -7386,14 +7347,11 @@ export class OrderController {
   }
 }
 ",
-  "server/src/order/order.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+  "server/src/order/base/order.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
-import { OrderService } from \\"./order.service\\";
-import { OrderController } from \\"./order.controller\\";
-import { OrderResolver } from \\"./order.resolver\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
   imports: [
@@ -7402,37 +7360,35 @@ import { OrderResolver } from \\"./order.resolver\\";
     MorganModule,
     PrismaModule,
   ],
-  controllers: [OrderController],
-  providers: [OrderService, OrderResolver],
-  exports: [OrderService],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
 })
-export class OrderModule {}
+export class OrderModuleBase {}
 ",
-  "server/src/order/order.resolver.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/order/base/order.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import { OrderService } from \\"./order.service\\";
+import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
 import { FindManyOrderArgs } from \\"./FindManyOrderArgs\\";
 import { FindOneOrderArgs } from \\"./FindOneOrderArgs\\";
 import { Order } from \\"./Order\\";
-import { Customer } from \\"../customer/Customer\\";
+import { Customer } from \\"../../customer/base/Customer\\";
+import { OrderService } from \\"../order.service\\";
 
 @graphql.Resolver(() => Order)
 @common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
-export class OrderResolver {
+export class OrderResolverBase {
   constructor(
-    private readonly service: OrderService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: OrderService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => [Order])
@@ -7624,8 +7580,7 @@ export class OrderResolver {
   }
 }
 ",
-  "server/src/order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+  "server/src/order/base/order.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
 import {
   FindOneOrderArgs,
   FindManyOrderArgs,
@@ -7635,9 +7590,8 @@ import {
   Subset,
 } from \\"@prisma/client\\";
 
-@Injectable()
-export class OrderService {
-  constructor(private readonly prisma: PrismaService) {}
+export class OrderServiceBase {
+  constructor(protected readonly prisma: PrismaService) {}
   findMany<T extends FindManyOrderArgs>(args: Subset<T, FindManyOrderArgs>) {
     return this.prisma.order.findMany(args);
   }
@@ -7655,7 +7609,215 @@ export class OrderService {
   }
 }
 ",
-  "server/src/organization/CreateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/order.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { OrderController } from \\"./order.controller\\";
+import { OrderService } from \\"./order.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Order\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: OrderService,
+          useValue: service,
+        },
+      ],
+      controllers: [OrderController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /orders\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/orders\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"GET /orders\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/orders\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /orders/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/orders\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /orders/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/orders\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/order/order.controller.ts": "import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { OrderService } from \\"./order.service\\";
+import { OrderControllerBase } from \\"./base/order.controller.base\\";
+
+@swagger.ApiBasicAuth()
+@swagger.ApiTags(\\"orders\\")
+@common.Controller(\\"orders\\")
+export class OrderController extends OrderControllerBase {
+  constructor(
+    protected readonly service: OrderService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/order/order.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { OrderModuleBase } from \\"./base/order.module.base\\";
+import { OrderService } from \\"./order.service\\";
+import { OrderController } from \\"./order.controller\\";
+import { OrderResolver } from \\"./order.resolver\\";
+
+@Module({
+  imports: [OrderModuleBase],
+  controllers: [OrderController],
+  providers: [OrderService, OrderResolver],
+  exports: [OrderService],
+})
+export class OrderModule {}
+",
+  "server/src/order/order.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import { OrderResolverBase } from \\"./base/order.resolver.base\\";
+import { Order } from \\"./base/Order\\";
+import { OrderService } from \\"./order.service\\";
+
+@graphql.Resolver(() => Order)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+export class OrderResolver extends OrderResolverBase {
+  constructor(
+    protected readonly service: OrderService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { OrderServiceBase } from \\"./base/order.service.base\\";
+
+@Injectable()
+export class OrderService extends OrderServiceBase {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
+  }
+}
+",
+  "server/src/organization/base/CreateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 
 @ArgsType()
@@ -7666,7 +7828,7 @@ class CreateOrganizationArgs {
 
 export { CreateOrganizationArgs };
 ",
-  "server/src/organization/DeleteOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/DeleteOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
 @ArgsType()
@@ -7677,7 +7839,7 @@ class DeleteOrganizationArgs {
 
 export { DeleteOrganizationArgs };
 ",
-  "server/src/organization/FindManyOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/FindManyOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 
 @ArgsType()
@@ -7688,7 +7850,7 @@ class FindManyOrganizationArgs {
 
 export { FindManyOrganizationArgs };
 ",
-  "server/src/organization/FindOneOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/FindOneOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
 @ArgsType()
@@ -7699,7 +7861,7 @@ class FindOneOrganizationArgs {
 
 export { FindOneOrganizationArgs };
 ",
-  "server/src/organization/Organization.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/Organization.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsDate } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
@@ -7736,7 +7898,7 @@ class Organization {
 }
 export { Organization };
 ",
-  "server/src/organization/OrganizationCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/OrganizationCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -7751,7 +7913,7 @@ class OrganizationCreateInput {
 }
 export { OrganizationCreateInput };
 ",
-  "server/src/organization/OrganizationUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/OrganizationUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsOptional } from \\"class-validator\\";
 @InputType()
@@ -7769,7 +7931,7 @@ class OrganizationUpdateInput {
 }
 export { OrganizationUpdateInput };
 ",
-  "server/src/organization/OrganizationWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/OrganizationWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
@@ -7818,7 +7980,7 @@ class OrganizationWhereInput {
 }
 export { OrganizationWhereInput };
 ",
-  "server/src/organization/OrganizationWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/OrganizationWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -7833,7 +7995,7 @@ class OrganizationWhereUniqueInput {
 }
 export { OrganizationWhereUniqueInput };
 ",
-  "server/src/organization/UpdateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/UpdateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 
@@ -7847,180 +8009,29 @@ class UpdateOrganizationArgs {
 
 export { UpdateOrganizationArgs };
 ",
-  "server/src/organization/organization.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { OrganizationController } from \\"./organization.controller\\";
-import { OrganizationService } from \\"./organization.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: \\"exampleName\\",
-};
-const CREATE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: \\"exampleName\\",
-};
-const FIND_MANY_RESULT = [
-  {
-    id: \\"exampleId\\",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    name: \\"exampleName\\",
-  },
-];
-const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: \\"exampleName\\",
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"Organization\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: OrganizationService,
-          useValue: service,
-        },
-      ],
-      controllers: [OrganizationController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /organizations\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/organizations\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        createdAt: CREATE_RESULT.createdAt.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  test(\\"GET /organizations\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/organizations\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
-          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /organizations/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/organizations\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /organizations/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/organizations\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
-        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
-",
-  "server/src/organization/organization.controller.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/organization/base/organization.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import * as errors from \\"../errors\\";
-import { OrganizationService } from \\"./organization.service\\";
+import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import * as errors from \\"../../errors\\";
+import { OrganizationService } from \\"../organization.service\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
-import { UserWhereInput } from \\"../user/UserWhereInput\\";
-import { User } from \\"../user/User\\";
-import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
-import { Customer } from \\"../customer/Customer\\";
+import { UserWhereInput } from \\"../../user/base/UserWhereInput\\";
+import { User } from \\"../../user/base/User\\";
+import { CustomerWhereInput } from \\"../../customer/base/CustomerWhereInput\\";
+import { Customer } from \\"../../customer/base/Customer\\";
 
-@swagger.ApiBasicAuth()
-@swagger.ApiTags(\\"organizations\\")
-@common.Controller(\\"organizations\\")
-export class OrganizationController {
+export class OrganizationControllerBase {
   constructor(
-    private readonly service: OrganizationService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: OrganizationService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -8774,14 +8785,11 @@ export class OrganizationController {
   }
 }
 ",
-  "server/src/organization/organization.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+  "server/src/organization/base/organization.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
-import { OrganizationService } from \\"./organization.service\\";
-import { OrganizationController } from \\"./organization.controller\\";
-import { OrganizationResolver } from \\"./organization.resolver\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
   imports: [
@@ -8790,40 +8798,38 @@ import { OrganizationResolver } from \\"./organization.resolver\\";
     MorganModule,
     PrismaModule,
   ],
-  controllers: [OrganizationController],
-  providers: [OrganizationService, OrganizationResolver],
-  exports: [OrganizationService],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
 })
-export class OrganizationModule {}
+export class OrganizationModuleBase {}
 ",
-  "server/src/organization/organization.resolver.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/organization/base/organization.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import { OrganizationService } from \\"./organization.service\\";
+import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
 import { FindManyOrganizationArgs } from \\"./FindManyOrganizationArgs\\";
 import { FindOneOrganizationArgs } from \\"./FindOneOrganizationArgs\\";
 import { Organization } from \\"./Organization\\";
-import { FindManyUserArgs } from \\"../user/FindManyUserArgs\\";
-import { User } from \\"../user/User\\";
-import { FindManyCustomerArgs } from \\"../customer/FindManyCustomerArgs\\";
-import { Customer } from \\"../customer/Customer\\";
+import { FindManyUserArgs } from \\"../../user/base/FindManyUserArgs\\";
+import { User } from \\"../../user/base/User\\";
+import { FindManyCustomerArgs } from \\"../../customer/base/FindManyCustomerArgs\\";
+import { Customer } from \\"../../customer/base/Customer\\";
+import { OrganizationService } from \\"../organization.service\\";
 
 @graphql.Resolver(() => Organization)
 @common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
-export class OrganizationResolver {
+export class OrganizationResolverBase {
   constructor(
-    private readonly service: OrganizationService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: OrganizationService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => [Organization])
@@ -9049,8 +9055,7 @@ export class OrganizationResolver {
   }
 }
 ",
-  "server/src/organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+  "server/src/organization/base/organization.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
 import {
   FindOneOrganizationArgs,
   FindManyOrganizationArgs,
@@ -9060,9 +9065,8 @@ import {
   Subset,
 } from \\"@prisma/client\\";
 
-@Injectable()
-export class OrganizationService {
-  constructor(private readonly prisma: PrismaService) {}
+export class OrganizationServiceBase {
+  constructor(protected readonly prisma: PrismaService) {}
   findMany<T extends FindManyOrganizationArgs>(
     args: Subset<T, FindManyOrganizationArgs>
   ) {
@@ -9087,6 +9091,218 @@ export class OrganizationService {
     args: Subset<T, OrganizationDeleteArgs>
   ) {
     return this.prisma.organization.delete(args);
+  }
+}
+",
+  "server/src/organization/organization.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { OrganizationController } from \\"./organization.controller\\";
+import { OrganizationService } from \\"./organization.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: \\"exampleName\\",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Organization\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: OrganizationService,
+          useValue: service,
+        },
+      ],
+      controllers: [OrganizationController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /organizations\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/organizations\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"GET /organizations\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/organizations\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /organizations/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/organizations\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /organizations/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/organizations\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/organization/organization.controller.ts": "import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { OrganizationService } from \\"./organization.service\\";
+import { OrganizationControllerBase } from \\"./base/organization.controller.base\\";
+
+@swagger.ApiBasicAuth()
+@swagger.ApiTags(\\"organizations\\")
+@common.Controller(\\"organizations\\")
+export class OrganizationController extends OrganizationControllerBase {
+  constructor(
+    protected readonly service: OrganizationService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/organization/organization.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { OrganizationModuleBase } from \\"./base/organization.module.base\\";
+import { OrganizationService } from \\"./organization.service\\";
+import { OrganizationController } from \\"./organization.controller\\";
+import { OrganizationResolver } from \\"./organization.resolver\\";
+
+@Module({
+  imports: [OrganizationModuleBase],
+  controllers: [OrganizationController],
+  providers: [OrganizationService, OrganizationResolver],
+  exports: [OrganizationService],
+})
+export class OrganizationModule {}
+",
+  "server/src/organization/organization.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import { OrganizationResolverBase } from \\"./base/organization.resolver.base\\";
+import { Organization } from \\"./base/Organization\\";
+import { OrganizationService } from \\"./organization.service\\";
+
+@graphql.Resolver(() => Organization)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+export class OrganizationResolver extends OrganizationResolverBase {
+  constructor(
+    protected readonly service: OrganizationService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { OrganizationServiceBase } from \\"./base/organization.service.base\\";
+
+@Injectable()
+export class OrganizationService extends OrganizationServiceBase {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
   }
 }
 ",
@@ -9206,7 +9422,7 @@ export const swaggerSetupOptions = {
   customSiteTitle: \\"Sample Application\\",
 };
 ",
-  "server/src/user/CreateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/CreateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 
 @ArgsType()
@@ -9217,7 +9433,7 @@ class CreateUserArgs {
 
 export { CreateUserArgs };
 ",
-  "server/src/user/DeleteUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/DeleteUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 
 @ArgsType()
@@ -9228,7 +9444,7 @@ class DeleteUserArgs {
 
 export { DeleteUserArgs };
 ",
-  "server/src/user/EnumUserInterests.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/user/base/EnumUserInterests.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumUserInterests {
   Programming = \\"programming\\",
@@ -9239,7 +9455,7 @@ registerEnumType(EnumUserInterests, {
   name: \\"EnumUserInterests\\",
 });
 ",
-  "server/src/user/EnumUserPriority.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/user/base/EnumUserPriority.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumUserPriority {
   High = \\"high\\",
@@ -9251,7 +9467,7 @@ registerEnumType(EnumUserPriority, {
   name: \\"EnumUserPriority\\",
 });
 ",
-  "server/src/user/FindManyUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/FindManyUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 
 @ArgsType()
@@ -9262,7 +9478,7 @@ class FindManyUserArgs {
 
 export { FindManyUserArgs };
 ",
-  "server/src/user/FindOneUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/FindOneUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 
 @ArgsType()
@@ -9273,7 +9489,7 @@ class FindOneUserArgs {
 
 export { FindOneUserArgs };
 ",
-  "server/src/user/UpdateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/UpdateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 
@@ -9287,7 +9503,7 @@ class UpdateUserArgs {
 
 export { UpdateUserArgs };
 ",
-  "server/src/user/User.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/User.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -9303,7 +9519,7 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 @ObjectType()
@@ -9426,7 +9642,7 @@ class User {
 }
 export { User };
 ",
-  "server/src/user/UserCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/UserCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -9442,7 +9658,7 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 @InputType()
@@ -9571,7 +9787,7 @@ class UserCreateInput {
 }
 export { UserCreateInput };
 ",
-  "server/src/user/UserUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/UserUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -9587,7 +9803,7 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 @InputType()
@@ -9752,7 +9968,7 @@ class UserUpdateInput {
 }
 export { UserUpdateInput };
 ",
-  "server/src/user/UserWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/UserWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -9768,7 +9984,7 @@ import {
 
 import { Type, Transform } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 @InputType()
 class UserWhereInput {
@@ -9903,7 +10119,7 @@ class UserWhereInput {
 }
 export { UserWhereInput };
 ",
-  "server/src/user/UserWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/UserWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -9918,205 +10134,25 @@ class UserWhereUniqueInput {
 }
 export { UserWhereUniqueInput };
 ",
-  "server/src/user/user.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { UserController } from \\"./user.controller\\";
-import { UserService } from \\"./user.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
-  roles: [\\"exampleRoles\\"],
-  id: \\"exampleId\\",
-  name: \\"exampleName\\",
-  bio: \\"exampleBio\\",
-  email: \\"exampleEmail\\",
-  age: 42,
-  birthDate: new Date(),
-  score: 42.42,
-  isCurious: \\"true\\",
-  location: \\"exampleLocation\\",
-};
-const CREATE_RESULT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
-  roles: [\\"exampleRoles\\"],
-  id: \\"exampleId\\",
-  name: \\"exampleName\\",
-  bio: \\"exampleBio\\",
-  email: \\"exampleEmail\\",
-  age: 42,
-  birthDate: new Date(),
-  score: 42.42,
-  isCurious: \\"true\\",
-  location: \\"exampleLocation\\",
-};
-const FIND_MANY_RESULT = [
-  {
-    username: \\"exampleUsername\\",
-    password: \\"examplePassword\\",
-    roles: [\\"exampleRoles\\"],
-    id: \\"exampleId\\",
-    name: \\"exampleName\\",
-    bio: \\"exampleBio\\",
-    email: \\"exampleEmail\\",
-    age: 42,
-    birthDate: new Date(),
-    score: 42.42,
-    isCurious: \\"true\\",
-    location: \\"exampleLocation\\",
-  },
-];
-const FIND_ONE_RESULT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
-  roles: [\\"exampleRoles\\"],
-  id: \\"exampleId\\",
-  name: \\"exampleName\\",
-  bio: \\"exampleBio\\",
-  email: \\"exampleEmail\\",
-  age: 42,
-  birthDate: new Date(),
-  score: 42.42,
-  isCurious: \\"true\\",
-  location: \\"exampleLocation\\",
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"User\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: UserService,
-          useValue: service,
-        },
-      ],
-      controllers: [UserController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /users\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/users\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        birthDate: CREATE_RESULT.birthDate.toISOString(),
-      });
-  });
-
-  test(\\"GET /users\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/users\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          birthDate: FIND_MANY_RESULT[0].birthDate.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /users/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/users\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /users/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/users\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        birthDate: FIND_ONE_RESULT.birthDate.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
-",
-  "server/src/user/user.controller.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/user/base/user.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import * as errors from \\"../errors\\";
-import { UserService } from \\"./user.service\\";
+import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import * as errors from \\"../../errors\\";
+import { UserService } from \\"../user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
 
-@swagger.ApiBasicAuth()
-@swagger.ApiTags(\\"users\\")
-@common.Controller(\\"users\\")
-export class UserController {
+export class UserControllerBase {
   constructor(
-    private readonly service: UserService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: UserService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -10650,14 +10686,11 @@ export class UserController {
   }
 }
 ",
-  "server/src/user/user.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+  "server/src/user/base/user.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { AuthModule } from \\"../auth/auth.module\\";
-import { UserService } from \\"./user.service\\";
-import { UserController } from \\"./user.controller\\";
-import { UserResolver } from \\"./user.resolver\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
   imports: [
@@ -10666,37 +10699,35 @@ import { UserResolver } from \\"./user.resolver\\";
     MorganModule,
     PrismaModule,
   ],
-  controllers: [UserController],
-  providers: [UserService, UserResolver],
-  exports: [UserService],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
 })
-export class UserModule {}
+export class UserModuleBase {}
 ",
-  "server/src/user/user.resolver.ts": "import * as common from \\"@nestjs/common\\";
+  "server/src/user/base/user.resolver.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { isRecordNotFoundError } from \\"../prisma.util\\";
-import { UserService } from \\"./user.service\\";
+import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
+import * as abacUtil from \\"../../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
 import { FindManyUserArgs } from \\"./FindManyUserArgs\\";
 import { FindOneUserArgs } from \\"./FindOneUserArgs\\";
 import { User } from \\"./User\\";
-import { Organization } from \\"../organization/Organization\\";
+import { Organization } from \\"../../organization/base/Organization\\";
+import { UserService } from \\"../user.service\\";
 
 @graphql.Resolver(() => User)
 @common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
-export class UserResolver {
+export class UserResolverBase {
   constructor(
-    private readonly service: UserService,
-    @nestAccessControl.InjectRolesBuilder()
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly service: UserService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => [User])
@@ -10952,8 +10983,7 @@ export class UserResolver {
   }
 }
 ",
-  "server/src/user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+  "server/src/user/base/user.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
 
 import {
   FindOneUserArgs,
@@ -10964,14 +10994,13 @@ import {
   Subset,
 } from \\"@prisma/client\\";
 
-import { PasswordService } from \\"../auth/password.service\\";
-import { transformStringFieldUpdateInput } from \\"../prisma.util\\";
+import { PasswordService } from \\"../../auth/password.service\\";
+import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
-@Injectable()
-export class UserService {
+export class UserServiceBase {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly passwordService: PasswordService
+    protected readonly prisma: PrismaService,
+    protected readonly passwordService: PasswordService
   ) {}
   findMany<T extends FindManyUserArgs>(args: Subset<T, FindManyUserArgs>) {
     return this.prisma.user.findMany(args);
@@ -11007,6 +11036,251 @@ export class UserService {
   }
   delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
     return this.prisma.user.delete(args);
+  }
+}
+",
+  "server/src/user/user.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { UserController } from \\"./user.controller\\";
+import { UserService } from \\"./user.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
+  roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
+  name: \\"exampleName\\",
+  bio: \\"exampleBio\\",
+  email: \\"exampleEmail\\",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  isCurious: \\"true\\",
+  location: \\"exampleLocation\\",
+};
+const CREATE_RESULT = {
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
+  roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
+  name: \\"exampleName\\",
+  bio: \\"exampleBio\\",
+  email: \\"exampleEmail\\",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  isCurious: \\"true\\",
+  location: \\"exampleLocation\\",
+};
+const FIND_MANY_RESULT = [
+  {
+    username: \\"exampleUsername\\",
+    password: \\"examplePassword\\",
+    roles: [\\"exampleRoles\\"],
+    id: \\"exampleId\\",
+    name: \\"exampleName\\",
+    bio: \\"exampleBio\\",
+    email: \\"exampleEmail\\",
+    age: 42,
+    birthDate: new Date(),
+    score: 42.42,
+    isCurious: \\"true\\",
+    location: \\"exampleLocation\\",
+  },
+];
+const FIND_ONE_RESULT = {
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
+  roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
+  name: \\"exampleName\\",
+  bio: \\"exampleBio\\",
+  email: \\"exampleEmail\\",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  isCurious: \\"true\\",
+  location: \\"exampleLocation\\",
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"User\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: UserService,
+          useValue: service,
+        },
+      ],
+      controllers: [UserController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /users\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/users\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        birthDate: CREATE_RESULT.birthDate.toISOString(),
+      });
+  });
+
+  test(\\"GET /users\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/users\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          birthDate: FIND_MANY_RESULT[0].birthDate.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /users/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/users\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /users/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/users\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        birthDate: FIND_ONE_RESULT.birthDate.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/user/user.controller.ts": "import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { UserService } from \\"./user.service\\";
+import { UserControllerBase } from \\"./base/user.controller.base\\";
+
+@swagger.ApiBasicAuth()
+@swagger.ApiTags(\\"users\\")
+@common.Controller(\\"users\\")
+export class UserController extends UserControllerBase {
+  constructor(
+    protected readonly service: UserService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/user/user.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { UserModuleBase } from \\"./base/user.module.base\\";
+import { UserService } from \\"./user.service\\";
+import { UserController } from \\"./user.controller\\";
+import { UserResolver } from \\"./user.resolver\\";
+
+@Module({
+  imports: [UserModuleBase],
+  controllers: [UserController],
+  providers: [UserService, UserResolver],
+  exports: [UserService],
+})
+export class UserModule {}
+",
+  "server/src/user/user.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import { UserResolverBase } from \\"./base/user.resolver.base\\";
+import { User } from \\"./base/User\\";
+import { UserService } from \\"./user.service\\";
+
+@graphql.Resolver(() => User)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+export class UserResolver extends UserResolverBase {
+  constructor(
+    protected readonly service: UserService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { UserServiceBase } from \\"./base/user.service.base\\";
+import { PasswordService } from \\"../auth/password.service\\";
+
+@Injectable()
+export class UserService extends UserServiceBase {
+  constructor(
+    protected readonly prisma: PrismaService,
+    protected readonly passwordService: PasswordService
+  ) {
+    super(prisma, passwordService);
   }
 }
 ",
