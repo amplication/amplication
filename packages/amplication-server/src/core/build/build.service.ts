@@ -369,13 +369,19 @@ export class BuildService {
           logPromises
         ] = this.createDataServiceLogger(build, step);
 
+        const host = this.configService.get(HOST_VAR);
+
+        const url = `${host}/${build.appId}`;
+
         const modules = await DataServiceGenerator.createDataService(
           entities,
           roles,
           {
             name: app.name,
             description: app.description,
-            version: build.version
+            version: build.version,
+            id: build.appId,
+            url
           },
           dataServiceGeneratorLogger
         );
