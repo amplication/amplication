@@ -2,6 +2,7 @@ import path from "path";
 import colors from "colors/safe";
 import fs from "fs";
 import { version } from "../package.json";
+import * as prettier from "prettier";
 
 if (require.main === module) {
   void updateVersion().catch((error) => {
@@ -15,9 +16,10 @@ async function updateVersion(): Promise<void> {
 
   const versionFilePath = path.join(__dirname + "/../src/version.ts");
 
-  const src = `export const version = '${version}';`;
+  const src = prettier.format(`export const version = '${version}';`, {
+    parser: "typescript",
+  });
 
-  // ensure version module pulls value from package.json
   fs.writeFile(versionFilePath, src, { flag: "w" }, function (error) {
     console.error(error);
   });
