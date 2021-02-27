@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "private": true,
   "dependencies": {
-    "@amplication/design-system": "^0.4.0",
+    "@amplication/design-system": "^0.2.0",
     "@primer/components": "^20.3.0",
     "@rmwc/provider": "^6.1.4",
     "@testing-library/jest-dom": "^5.11.4",
