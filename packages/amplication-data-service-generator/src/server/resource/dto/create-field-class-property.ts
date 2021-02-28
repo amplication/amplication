@@ -105,7 +105,8 @@ export function createFieldClassProperty(
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;
   }
-  const optionalProperty = optional && isInput;
+  const optionalProperty =
+    optional && (isInput || prismaField.kind === FieldKind.Object);
   const definitive = !optionalProperty;
 
   if (prismaField.kind === FieldKind.Scalar) {
