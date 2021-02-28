@@ -285,10 +285,10 @@ export type Customer = {
   favoriteNumber: number | null;
   geoLocation: string | null;
   comments: string | null;
-  favoriteColors: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
-  customerType: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization: OrganizationWhereUniqueInput | null;
-  vipOrganization: OrganizationWhereUniqueInput | null;
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+  organization: OrganizationWhereUniqueInput;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -305,7 +305,7 @@ export type CustomerCreateInput = {
   comments?: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization?: OrganizationWhereUniqueInput | null;
+  organization: OrganizationWhereUniqueInput;
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -323,7 +323,7 @@ export type CustomerUpdateInput = {
   comments?: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization?: OrganizationWhereUniqueInput | null;
+  organization?: OrganizationWhereUniqueInput;
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -343,7 +343,7 @@ export type CustomerWhereInput = {
   geoLocation?: string | null;
   comments?: string | null;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization?: OrganizationWhereUniqueInput | null;
+  organization?: OrganizationWhereUniqueInput;
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -480,7 +480,7 @@ export type Order = {
   updatedAt: Date;
   customer: CustomerWhereUniqueInput;
   status: \\"pending\\" | \\"inProgress\\" | \\"done\\";
-  label: \\"fragile\\" | null;
+  label?: \\"fragile\\" | null;
 };
 ",
   "admin/src/api/order/OrderCreateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
@@ -636,9 +636,9 @@ export type User = {
   age: number;
   birthDate: Date;
   score: number;
-  manager: UserWhereUniqueInput | null;
-  organization: OrganizationWhereUniqueInput | null;
-  interests: Array<\\"programming\\" | \\"design\\">;
+  manager?: UserWhereUniqueInput | null;
+  organization?: OrganizationWhereUniqueInput | null;
+  interests?: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
@@ -3488,8 +3488,8 @@ model Customer {
   comments          String?
   favoriteColors    EnumCustomerFavoriteColors[]
   customerType      EnumCustomerCustomerType?
-  organization      Organization?                @relation(name: \\"CustomersOnOrganization\\", fields: [organizationId])
-  organizationId    String?
+  organization      Organization                 @relation(name: \\"CustomersOnOrganization\\", fields: [organizationId])
+  organizationId    String
   vipOrganization   Organization?                @relation(name: \\"vipCustomers\\", fields: [vipOrganizationId])
   vipOrganizationId String?
   orders            Order[]
@@ -4274,7 +4274,7 @@ class Customer {
   @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
-  favoriteColors!: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
     required: false,
     enum: EnumCustomerCustomerType,
@@ -4284,7 +4284,14 @@ class Customer {
   @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
-  customerType!: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+  @ApiProperty({
+    required: true,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  organization!: OrganizationWhereUniqueInput;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4292,15 +4299,7 @@ class Customer {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization!: OrganizationWhereUniqueInput | null;
-  @ApiProperty({
-    required: false,
-    type: OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  vipOrganization!: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
 }
 export { Customer };
 ",
@@ -4435,16 +4434,13 @@ class CustomerCreateInput {
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   @ApiProperty({
-    required: false,
+    required: true,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  organization?: OrganizationWhereUniqueInput | null;
+  @Field(() => OrganizationWhereUniqueInput)
+  organization!: OrganizationWhereUniqueInput;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4602,7 +4598,7 @@ class CustomerUpdateInput {
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
   })
-  organization?: OrganizationWhereUniqueInput | null;
+  organization?: OrganizationWhereUniqueInput;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4774,7 +4770,7 @@ class CustomerWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput | null;
+  organization?: OrganizationWhereUniqueInput;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4937,11 +4933,9 @@ export class CustomerControllerBase {
       data: {
         ...data,
 
-        organization: data.organization
-          ? {
-              connect: data.organization,
-            }
-          : undefined,
+        organization: {
+          connect: data.organization,
+        },
 
         vipOrganization: data.vipOrganization
           ? {
@@ -5140,11 +5134,9 @@ export class CustomerControllerBase {
         data: {
           ...data,
 
-          organization: data.organization
-            ? {
-                connect: data.organization,
-              }
-            : undefined,
+          organization: {
+            connect: data.organization,
+          },
 
           vipOrganization: data.vipOrganization
             ? {
@@ -5541,11 +5533,9 @@ export class CustomerResolverBase {
       data: {
         ...args.data,
 
-        organization: args.data.organization
-          ? {
-              connect: args.data.organization,
-            }
-          : undefined,
+        organization: {
+          connect: args.data.organization,
+        },
 
         vipOrganization: args.data.vipOrganization
           ? {
@@ -5594,11 +5584,9 @@ export class CustomerResolverBase {
         data: {
           ...args.data,
 
-          organization: args.data.organization
-            ? {
-                connect: args.data.organization,
-              }
-            : undefined,
+          organization: {
+            connect: args.data.organization,
+          },
 
           vipOrganization: args.data.vipOrganization
             ? {
@@ -6870,7 +6858,7 @@ class Order {
   @Field(() => EnumOrderLabel, {
     nullable: true,
   })
-  label!: \\"fragile\\" | null;
+  label?: \\"fragile\\" | null;
 }
 export { Order };
 ",
@@ -9596,7 +9584,7 @@ class User {
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
-  manager!: UserWhereUniqueInput | null;
+  manager?: UserWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -9604,7 +9592,7 @@ class User {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization!: OrganizationWhereUniqueInput | null;
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: true,
     enum: EnumUserInterests,
@@ -9617,7 +9605,7 @@ class User {
   @Field(() => [EnumUserInterests], {
     nullable: true,
   })
-  interests!: Array<\\"programming\\" | \\"design\\">;
+  interests?: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
     required: true,
     enum: EnumUserPriority,
