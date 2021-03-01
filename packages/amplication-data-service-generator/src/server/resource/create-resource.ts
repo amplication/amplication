@@ -54,7 +54,7 @@ async function createResourceModules(
     dtos
   );
 
-  const [controllerModule] = controllerModules;
+  const [controllerModule, controllerBaseModule] = controllerModules;
 
   const resolverModules = await createResolverModules(
     entityName,
@@ -78,7 +78,8 @@ async function createResourceModules(
     entity,
     entityType,
     serviceModule.path,
-    controllerModule.path
+    controllerModule.path,
+    controllerBaseModule.path
   );
 
   return [

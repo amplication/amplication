@@ -4875,6 +4875,188 @@ class UpdateCustomerArgs {
 
 export { UpdateCustomerArgs };
 ",
+  "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { CustomerController } from \\"../customer.controller\\";
+import { CustomerService } from \\"../customer.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: \\"exampleEmail\\",
+  firstName: \\"exampleFirstName\\",
+  lastName: \\"exampleLastName\\",
+  isVip: \\"true\\",
+  birthData: new Date(),
+  averageSale: 42.42,
+  favoriteNumber: 42,
+  geoLocation: \\"exampleGeoLocation\\",
+  comments: \\"exampleComments\\",
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: \\"exampleEmail\\",
+  firstName: \\"exampleFirstName\\",
+  lastName: \\"exampleLastName\\",
+  isVip: \\"true\\",
+  birthData: new Date(),
+  averageSale: 42.42,
+  favoriteNumber: 42,
+  geoLocation: \\"exampleGeoLocation\\",
+  comments: \\"exampleComments\\",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    email: \\"exampleEmail\\",
+    firstName: \\"exampleFirstName\\",
+    lastName: \\"exampleLastName\\",
+    isVip: \\"true\\",
+    birthData: new Date(),
+    averageSale: 42.42,
+    favoriteNumber: 42,
+    geoLocation: \\"exampleGeoLocation\\",
+    comments: \\"exampleComments\\",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: \\"exampleEmail\\",
+  firstName: \\"exampleFirstName\\",
+  lastName: \\"exampleLastName\\",
+  isVip: \\"true\\",
+  birthData: new Date(),
+  averageSale: 42.42,
+  favoriteNumber: 42,
+  geoLocation: \\"exampleGeoLocation\\",
+  comments: \\"exampleComments\\",
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Customer\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: CustomerService,
+          useValue: service,
+        },
+      ],
+      controllers: [CustomerController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /customers\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/customers\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        birthData: CREATE_RESULT.birthData.toISOString(),
+      });
+  });
+
+  test(\\"GET /customers\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/customers\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+          birthData: FIND_MANY_RESULT[0].birthData.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /customers/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/customers\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /customers/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/customers\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+        birthData: FIND_ONE_RESULT.birthData.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
   "server/src/customer/base/customer.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
@@ -5747,188 +5929,6 @@ export class CustomerServiceBase {
   }
 }
 ",
-  "server/src/customer/customer.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { CustomerController } from \\"./customer.controller\\";
-import { CustomerService } from \\"./customer.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  email: \\"exampleEmail\\",
-  firstName: \\"exampleFirstName\\",
-  lastName: \\"exampleLastName\\",
-  isVip: \\"true\\",
-  birthData: new Date(),
-  averageSale: 42.42,
-  favoriteNumber: 42,
-  geoLocation: \\"exampleGeoLocation\\",
-  comments: \\"exampleComments\\",
-};
-const CREATE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  email: \\"exampleEmail\\",
-  firstName: \\"exampleFirstName\\",
-  lastName: \\"exampleLastName\\",
-  isVip: \\"true\\",
-  birthData: new Date(),
-  averageSale: 42.42,
-  favoriteNumber: 42,
-  geoLocation: \\"exampleGeoLocation\\",
-  comments: \\"exampleComments\\",
-};
-const FIND_MANY_RESULT = [
-  {
-    id: \\"exampleId\\",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    email: \\"exampleEmail\\",
-    firstName: \\"exampleFirstName\\",
-    lastName: \\"exampleLastName\\",
-    isVip: \\"true\\",
-    birthData: new Date(),
-    averageSale: 42.42,
-    favoriteNumber: 42,
-    geoLocation: \\"exampleGeoLocation\\",
-    comments: \\"exampleComments\\",
-  },
-];
-const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  email: \\"exampleEmail\\",
-  firstName: \\"exampleFirstName\\",
-  lastName: \\"exampleLastName\\",
-  isVip: \\"true\\",
-  birthData: new Date(),
-  averageSale: 42.42,
-  favoriteNumber: 42,
-  geoLocation: \\"exampleGeoLocation\\",
-  comments: \\"exampleComments\\",
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"Customer\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: CustomerService,
-          useValue: service,
-        },
-      ],
-      controllers: [CustomerController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /customers\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/customers\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        createdAt: CREATE_RESULT.createdAt.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-        birthData: CREATE_RESULT.birthData.toISOString(),
-      });
-  });
-
-  test(\\"GET /customers\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/customers\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
-          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
-          birthData: FIND_MANY_RESULT[0].birthData.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /customers/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/customers\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /customers/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/customers\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
-        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
-        birthData: FIND_ONE_RESULT.birthData.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
-",
   "server/src/customer/customer.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
@@ -6116,6 +6116,149 @@ class FindOneEmptyArgs {
 }
 
 export { FindOneEmptyArgs };
+",
+  "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { EmptyController } from \\"../empty.controller\\";
+import { EmptyService } from \\"../empty.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Empty\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: EmptyService,
+          useValue: service,
+        },
+      ],
+      controllers: [EmptyController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /empties\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/empties\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"GET /empties\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/empties\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /empties/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/empties\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /empties/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/empties\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
 ",
   "server/src/empty/base/empty.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
@@ -6482,149 +6625,6 @@ export class EmptyServiceBase {
     return this.prisma.empty.delete(args);
   }
 }
-",
-  "server/src/empty/empty.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { EmptyController } from \\"./empty.controller\\";
-import { EmptyService } from \\"./empty.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-const CREATE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-const FIND_MANY_RESULT = [
-  {
-    id: \\"exampleId\\",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"Empty\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: EmptyService,
-          useValue: service,
-        },
-      ],
-      controllers: [EmptyController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /empties\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/empties\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        createdAt: CREATE_RESULT.createdAt.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  test(\\"GET /empties\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/empties\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
-          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /empties/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/empties\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /empties/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/empties\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
-        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
 ",
   "server/src/empty/empty.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
@@ -7059,6 +7059,149 @@ class UpdateOrderArgs {
 }
 
 export { UpdateOrderArgs };
+",
+  "server/src/order/base/order.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { OrderController } from \\"../order.controller\\";
+import { OrderService } from \\"../order.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Order\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: OrderService,
+          useValue: service,
+        },
+      ],
+      controllers: [OrderController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /orders\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/orders\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"GET /orders\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/orders\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /orders/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/orders\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /orders/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/orders\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
 ",
   "server/src/order/base/order.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
@@ -7609,149 +7752,6 @@ export class OrderServiceBase {
   }
 }
 ",
-  "server/src/order/order.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { OrderController } from \\"./order.controller\\";
-import { OrderService } from \\"./order.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-const CREATE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-const FIND_MANY_RESULT = [
-  {
-    id: \\"exampleId\\",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"Order\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: OrderService,
-          useValue: service,
-        },
-      ],
-      controllers: [OrderController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /orders\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/orders\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        createdAt: CREATE_RESULT.createdAt.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  test(\\"GET /orders\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/orders\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
-          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /orders/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/orders\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /orders/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/orders\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
-        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
-",
   "server/src/order/order.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
@@ -8008,6 +8008,153 @@ class UpdateOrganizationArgs {
 }
 
 export { UpdateOrganizationArgs };
+",
+  "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { OrganizationController } from \\"../organization.controller\\";
+import { OrganizationService } from \\"../organization.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: \\"exampleName\\",
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Organization\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: OrganizationService,
+          useValue: service,
+        },
+      ],
+      controllers: [OrganizationController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /organizations\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/organizations\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"GET /organizations\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/organizations\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /organizations/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/organizations\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /organizations/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/organizations\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
 ",
   "server/src/organization/base/organization.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
@@ -9094,153 +9241,6 @@ export class OrganizationServiceBase {
   }
 }
 ",
-  "server/src/organization/organization.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { OrganizationController } from \\"./organization.controller\\";
-import { OrganizationService } from \\"./organization.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: \\"exampleName\\",
-};
-const CREATE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: \\"exampleName\\",
-};
-const FIND_MANY_RESULT = [
-  {
-    id: \\"exampleId\\",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    name: \\"exampleName\\",
-  },
-];
-const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: \\"exampleName\\",
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"Organization\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: OrganizationService,
-          useValue: service,
-        },
-      ],
-      controllers: [OrganizationController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /organizations\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/organizations\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        createdAt: CREATE_RESULT.createdAt.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  test(\\"GET /organizations\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/organizations\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
-          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /organizations/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/organizations\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /organizations/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/organizations\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
-        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
-",
   "server/src/organization/organization.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
@@ -10133,6 +10133,182 @@ class UserWhereUniqueInput {
   id!: string;
 }
 export { UserWhereUniqueInput };
+",
+  "server/src/user/base/user.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { UserController } from \\"../user.controller\\";
+import { UserService } from \\"../user.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
+  roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
+  name: \\"exampleName\\",
+  bio: \\"exampleBio\\",
+  email: \\"exampleEmail\\",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  isCurious: \\"true\\",
+  location: \\"exampleLocation\\",
+};
+const CREATE_RESULT = {
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
+  roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
+  name: \\"exampleName\\",
+  bio: \\"exampleBio\\",
+  email: \\"exampleEmail\\",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  isCurious: \\"true\\",
+  location: \\"exampleLocation\\",
+};
+const FIND_MANY_RESULT = [
+  {
+    username: \\"exampleUsername\\",
+    password: \\"examplePassword\\",
+    roles: [\\"exampleRoles\\"],
+    id: \\"exampleId\\",
+    name: \\"exampleName\\",
+    bio: \\"exampleBio\\",
+    email: \\"exampleEmail\\",
+    age: 42,
+    birthDate: new Date(),
+    score: 42.42,
+    isCurious: \\"true\\",
+    location: \\"exampleLocation\\",
+  },
+];
+const FIND_ONE_RESULT = {
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
+  roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
+  name: \\"exampleName\\",
+  bio: \\"exampleBio\\",
+  email: \\"exampleEmail\\",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  isCurious: \\"true\\",
+  location: \\"exampleLocation\\",
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"User\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: UserService,
+          useValue: service,
+        },
+      ],
+      controllers: [UserController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /users\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/users\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        birthDate: CREATE_RESULT.birthDate.toISOString(),
+      });
+  });
+
+  test(\\"GET /users\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/users\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          birthDate: FIND_MANY_RESULT[0].birthDate.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /users/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/users\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /users/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`\${\\"/users\\"}/\${existingId}\`)
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        birthDate: FIND_ONE_RESULT.birthDate.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
 ",
   "server/src/user/base/user.controller.base.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
@@ -11038,182 +11214,6 @@ export class UserServiceBase {
     return this.prisma.user.delete(args);
   }
 }
-",
-  "server/src/user/user.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
-import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
-import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
-import { ACLModule } from \\"../auth/acl.module\\";
-import { UserController } from \\"./user.controller\\";
-import { UserService } from \\"./user.service\\";
-
-const nonExistingId = \\"nonExistingId\\";
-const existingId = \\"existingId\\";
-const CREATE_INPUT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
-  roles: [\\"exampleRoles\\"],
-  id: \\"exampleId\\",
-  name: \\"exampleName\\",
-  bio: \\"exampleBio\\",
-  email: \\"exampleEmail\\",
-  age: 42,
-  birthDate: new Date(),
-  score: 42.42,
-  isCurious: \\"true\\",
-  location: \\"exampleLocation\\",
-};
-const CREATE_RESULT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
-  roles: [\\"exampleRoles\\"],
-  id: \\"exampleId\\",
-  name: \\"exampleName\\",
-  bio: \\"exampleBio\\",
-  email: \\"exampleEmail\\",
-  age: 42,
-  birthDate: new Date(),
-  score: 42.42,
-  isCurious: \\"true\\",
-  location: \\"exampleLocation\\",
-};
-const FIND_MANY_RESULT = [
-  {
-    username: \\"exampleUsername\\",
-    password: \\"examplePassword\\",
-    roles: [\\"exampleRoles\\"],
-    id: \\"exampleId\\",
-    name: \\"exampleName\\",
-    bio: \\"exampleBio\\",
-    email: \\"exampleEmail\\",
-    age: 42,
-    birthDate: new Date(),
-    score: 42.42,
-    isCurious: \\"true\\",
-    location: \\"exampleLocation\\",
-  },
-];
-const FIND_ONE_RESULT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
-  roles: [\\"exampleRoles\\"],
-  id: \\"exampleId\\",
-  name: \\"exampleName\\",
-  bio: \\"exampleBio\\",
-  email: \\"exampleEmail\\",
-  age: 42,
-  birthDate: new Date(),
-  score: 42.42,
-  isCurious: \\"true\\",
-  location: \\"exampleLocation\\",
-};
-
-const service = {
-  create() {
-    return CREATE_RESULT;
-  },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
-    switch (where.id) {
-      case existingId:
-        return FIND_ONE_RESULT;
-      case nonExistingId:
-        return null;
-    }
-  },
-};
-
-const basicAuthGuard = {
-  canActivate: (context: ExecutionContext) => {
-    const argumentHost = context.switchToHttp();
-    const request = argumentHost.getRequest();
-    request.user = {
-      roles: [\\"user\\"],
-    };
-    return true;
-  },
-};
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-describe(\\"User\\", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      providers: [
-        {
-          provide: UserService,
-          useValue: service,
-        },
-      ],
-      controllers: [UserController],
-      imports: [MorganModule.forRoot(), ACLModule],
-    })
-      .overrideGuard(BasicAuthGuard)
-      .useValue(basicAuthGuard)
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-  });
-
-  test(\\"POST /users\\", async () => {
-    await request(app.getHttpServer())
-      .post(\\"/users\\")
-      .send(CREATE_INPUT)
-      .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT,
-        birthDate: CREATE_RESULT.birthDate.toISOString(),
-      });
-  });
-
-  test(\\"GET /users\\", async () => {
-    await request(app.getHttpServer())
-      .get(\\"/users\\")
-      .expect(HttpStatus.OK)
-      .expect([
-        {
-          ...FIND_MANY_RESULT[0],
-          birthDate: FIND_MANY_RESULT[0].birthDate.toISOString(),
-        },
-      ]);
-  });
-
-  test(\\"GET /users/:id non existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/users\\"}/\${nonExistingId}\`)
-      .expect(404)
-      .expect({
-        statusCode: 404,
-        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
-        error: \\"Not Found\\",
-      });
-  });
-
-  test(\\"GET /users/:id existing\\", async () => {
-    await request(app.getHttpServer())
-      .get(\`\${\\"/users\\"}/\${existingId}\`)
-      .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT,
-        birthDate: FIND_ONE_RESULT.birthDate.toISOString(),
-      });
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-});
 ",
   "server/src/user/user.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
