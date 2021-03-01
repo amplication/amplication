@@ -31,7 +31,7 @@ async function createResourceModules(
 ): Promise<Module[]> {
   const entityType = entity.name;
 
-  validateEntityName(entityType);
+  validateEntityName(entity);
 
   logger.info(`Creating ${entityType}...`);
   const entityName = camelCase(entityType);
