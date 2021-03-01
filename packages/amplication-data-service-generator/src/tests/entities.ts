@@ -678,7 +678,7 @@ const CUSTOMER: Entity = {
         relatedFieldId: ORGANIZATION_CUSTOMERS_FIELD_ID,
         allowMultipleSelection: false,
       },
-      required: true,
+      required: false,
       searchable: false,
     },
     {

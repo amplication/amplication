@@ -287,7 +287,7 @@ export type Customer = {
   comments: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -305,7 +305,7 @@ export type CustomerCreateInput = {
   comments?: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -323,7 +323,7 @@ export type CustomerUpdateInput = {
   comments?: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -343,7 +343,7 @@ export type CustomerWhereInput = {
   geoLocation?: string | null;
   comments?: string | null;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -3488,8 +3488,8 @@ model Customer {
   comments          String?
   favoriteColors    EnumCustomerFavoriteColors[]
   customerType      EnumCustomerCustomerType?
-  organization      Organization                 @relation(name: \\"CustomersOnOrganization\\", fields: [organizationId])
-  organizationId    String
+  organization      Organization?                @relation(name: \\"CustomersOnOrganization\\", fields: [organizationId])
+  organizationId    String?
   vipOrganization   Organization?                @relation(name: \\"vipCustomers\\", fields: [vipOrganizationId])
   vipOrganizationId String?
   orders            Order[]
@@ -4286,12 +4286,13 @@ class Customer {
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   @ApiProperty({
-    required: true,
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
-  organization!: OrganizationWhereUniqueInput;
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4434,13 +4435,16 @@ class CustomerCreateInput {
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   @ApiProperty({
-    required: true,
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
-  @Field(() => OrganizationWhereUniqueInput)
-  organization!: OrganizationWhereUniqueInput;
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4598,7 +4602,7 @@ class CustomerUpdateInput {
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
   })
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4770,7 +4774,7 @@ class CustomerWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4933,9 +4937,11 @@ export class CustomerControllerBase {
       data: {
         ...data,
 
-        organization: {
-          connect: data.organization,
-        },
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
 
         vipOrganization: data.vipOrganization
           ? {
@@ -5134,9 +5140,11 @@ export class CustomerControllerBase {
         data: {
           ...data,
 
-          organization: {
-            connect: data.organization,
-          },
+          organization: data.organization
+            ? {
+                connect: data.organization,
+              }
+            : undefined,
 
           vipOrganization: data.vipOrganization
             ? {
@@ -5533,9 +5541,11 @@ export class CustomerResolverBase {
       data: {
         ...args.data,
 
-        organization: {
-          connect: args.data.organization,
-        },
+        organization: args.data.organization
+          ? {
+              connect: args.data.organization,
+            }
+          : undefined,
 
         vipOrganization: args.data.vipOrganization
           ? {
@@ -5584,9 +5594,11 @@ export class CustomerResolverBase {
         data: {
           ...args.data,
 
-          organization: {
-            connect: args.data.organization,
-          },
+          organization: args.data.organization
+            ? {
+                connect: args.data.organization,
+              }
+            : undefined,
 
           vipOrganization: args.data.vipOrganization
             ? {
