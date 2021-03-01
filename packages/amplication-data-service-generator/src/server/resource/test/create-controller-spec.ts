@@ -32,9 +32,10 @@ export async function createControllerSpecModule(
   entity: Entity,
   entityType: string,
   entityServiceModule: string,
-  entityControllerModule: string
+  entityControllerModule: string,
+  entityControllerBaseModule: string
 ): Promise<Module> {
-  const modulePath = replaceExt(entityControllerModule, ".spec.ts");
+  const modulePath = replaceExt(entityControllerBaseModule, ".spec.ts");
   const file = await readFile(testTemplatePath);
   const serviceId = createServiceId(entityType);
   const controllerId = createControllerId(entityType);

@@ -8,9 +8,9 @@ import request from "supertest";
 import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 // @ts-ignore
-import { BasicAuthGuard } from "../auth/basicAuth.guard";
+import { BasicAuthGuard } from "../../auth/basicAuth.guard";
 // @ts-ignore
-import { ACLModule } from "../auth/acl.module";
+import { ACLModule } from "../../auth/acl.module";
 
 // declare class MODULE {}
 declare class CONTROLLER {}
