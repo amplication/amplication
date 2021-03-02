@@ -13,14 +13,17 @@ import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
-import { SignupInput } from './dto';
+import { SignupInput, ApiToken, CreateApiTokenArgs } from './dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
+import { FindOneArgs } from 'src/dto';
 
 export type AuthUser = User & {
   account: Account;
   organization: Organization;
   userRoles: UserRole[];
 };
+
+const TOKEN_PREVIEW_LENGTH = 8;
 
 const ORGANIZATION_DEFAULT_VALUES = {
   address: '',
@@ -38,6 +41,11 @@ const ORGANIZATION_INCLUDE = {
     include: AUTH_USER_INCLUDE
   }
 };
+
+enum EnumTokenType {
+  User = 'User',
+  ApiToken = 'ApiToken'
+}
 
 @Injectable()
 export class AuthService {
@@ -183,6 +191,57 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
+  async createApiToken(args: CreateApiTokenArgs): Promise<ApiToken> {
+    const user = await this.prismaService.user.findOne({
+      where: {
+        id: args.data.user.connect.id
+      },
+      include: { organization: true, userRoles: true, account: true }
+    });
+
+    if (!user) {
+      throw new AmplicationError(
+        `No user found with ID: ${args.data.user.connect.id}`
+      );
+    }
+
+    const token = await this.prepareApiToken(user);
+    const previewChars = token.substr(-TOKEN_PREVIEW_LENGTH);
+    const hashedToken = await this.passwordService.hashPassword(token);
+
+    const apiToken = await this.prismaService.apiToken.create({
+      data: {
+        ...args.data,
+        lastAccessAt: new Date(),
+        previewChars,
+        token: hashedToken
+      }
+    });
+
+    apiToken.token = token;
+
+    return apiToken;
+  }
+
+  async getUserApiTokens(args: FindOneArgs): Promise<ApiToken[]> {
+    const apiTokens = await this.prismaService.apiToken.findMany({
+      where: {
+        userId: args.where.id
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+        previewChars: true,
+        lastAccessAt: true,
+        userId: true
+      }
+    });
+
+    return apiTokens;
+  }
+
   async changePassword(
     account: Account,
     oldPassword: string,
@@ -213,7 +272,24 @@ export class AuthService {
       accountId: user.account.id,
       userId: user.id,
       roles,
-      organizationId: user.organization.id
+      organizationId: user.organization.id,
+      type: EnumTokenType.User
+    });
+  }
+
+  /**
+   * Creates an API token from given user
+   * @param user to create token for
+   * @returns new JWT token
+   */
+  async prepareApiToken(user: AuthUser): Promise<string> {
+    const roles = user.userRoles.map(role => role.role);
+    return this.jwtService.sign({
+      accountId: user.account.id,
+      userId: user.id,
+      roles,
+      organizationId: user.organization.id,
+      type: EnumTokenType.ApiToken
     });
   }
 

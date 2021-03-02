@@ -6,3 +6,5 @@ export { JwtDto } from './jwt.dto';
 export { ChangePasswordInput } from './change-password.input';
 export { ChangePasswordArgs } from './ChangePasswordArgs';
 export { SetCurrentOrganizationArgs } from './SetCurrentOrganizationArgs';
+export { CreateApiTokenArgs } from './CreateApiTokenArgs';
+export { ApiToken } from './ApiToken';

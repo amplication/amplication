@@ -5,7 +5,9 @@ import {
   LoginArgs,
   SignupArgs,
   ChangePasswordArgs,
-  SetCurrentOrganizationArgs
+  SetCurrentOrganizationArgs,
+  CreateApiTokenArgs,
+  ApiToken
 } from './dto';
 
 import { AuthService } from './auth.service';
@@ -37,6 +39,26 @@ export class AuthResolver {
     const { email, password } = args.data;
     const token = await this.authService.login(email.toLowerCase(), password);
     return { token };
+  }
+
+  @Mutation(() => ApiToken)
+  @UseGuards(GqlAuthGuard)
+  async createApiToken(
+    @UserEntity() user: User,
+    @Args() args: CreateApiTokenArgs
+  ): Promise<ApiToken> {
+    args.data.user = {
+      connect: {
+        id: user.id
+      }
+    };
+    return this.authService.createApiToken(args);
+  }
+
+  @Query(() => [ApiToken])
+  @UseGuards(GqlAuthGuard)
+  async userApiTokens(@UserEntity() user: User): Promise<ApiToken[]> {
+    return this.authService.getUserApiTokens({ where: { id: user.id } });
   }
 
   @Mutation(() => Account)

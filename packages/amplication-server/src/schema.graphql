@@ -37,6 +37,21 @@ type ActionStep {
   logs: [ActionLog!]
 }
 
+type ApiToken {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  userId: String!
+  token: String
+  previewChars: String!
+  lastAccessAt: DateTime!
+}
+
+input ApiTokenCreateInput {
+  name: String!
+}
+
 type App {
   id: String!
   createdAt: DateTime!
@@ -1034,6 +1049,7 @@ type Mutation {
   appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
+  createApiToken(data: ApiTokenCreateInput!): ApiToken!
   changePassword(data: ChangePasswordInput!): Account!
   setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
@@ -1122,6 +1138,7 @@ type Query {
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   me: User!
+  userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
