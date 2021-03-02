@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'nestjs-prisma';
+import * as semver from 'semver';
 import { isEmpty } from 'lodash';
 import { validateHTMLColorHex } from 'validate-color';
 import { App, User, Commit } from 'src/models';
@@ -22,9 +23,13 @@ import {
   FindPendingChangesArgs,
   PendingChange,
   FindAvailableGithubReposArgs,
-  AppEnableSyncWithGithubRepoArgs
+  AppEnableSyncWithGithubRepoArgs,
+  AppValidationResult,
+  AppValidationErrorTypes
 } from './dto';
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
+
+import { AppGenerationConfig } from '@amplication/data-service-generator';
 
 import { EnvironmentService } from '../environment/environment.service';
 import { InvalidColorError } from './InvalidColorError';
@@ -43,6 +48,8 @@ export const DEFAULT_APP_COLOR = '#20A4F3';
 export const DEFAULT_APP_DATA = {
   color: DEFAULT_APP_COLOR
 };
+
+const APP_CONFIG_FILE_PATH = 'ampconfig.json';
 
 @Injectable()
 export class AppService {
@@ -121,9 +128,18 @@ export class AppService {
       select: { id: true }
     });
 
-    const entities = createSampleAppEntities(userEntity.id);
+    const sampleAppData = createSampleAppEntities(userEntity.id);
 
-    await this.entityService.bulkCreateEntities(app.id, user, entities);
+    await this.entityService.bulkCreateEntities(
+      app.id,
+      user,
+      sampleAppData.entities
+    );
+    await this.entityService.bulkCreateFields(
+      user,
+      userEntity.id,
+      sampleAppData.userEntityFields
+    );
 
     await this.commit({
       data: {
@@ -404,6 +420,110 @@ export class AppService {
     );
   }
 
+  /**
+   * Runs validations on the app and returns a list of warnings.
+   * When the validation fails, a commit can still be executed and it is up to the user/client to decide how to handle the warnings.
+   * @todo: Add mechanism to run validation on the server before commit and prevent commit with errors
+   *
+   */
+  async validateBeforeCommit(args: FindOneArgs): Promise<AppValidationResult> {
+    const messages = [];
+    let isValid = true;
+
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (!app.githubSyncEnabled) return { isValid, messages };
+    if (!app.githubLastSync) return { isValid, messages }; //if the repo was never synced before, skip the below validation as they are all related to GitHub sync
+
+    const config = await this.getAppGenerationConfigFromGitHub(args);
+
+    if (!config) {
+      isValid = false;
+      messages.push(AppValidationErrorTypes.DataServiceGeneratorVersionMissing);
+      //since the config is empty, return immediately
+      return { isValid, messages };
+    }
+
+    if (!config.dataServiceGeneratorVersion) {
+      isValid = false;
+      messages.push(AppValidationErrorTypes.DataServiceGeneratorVersionMissing);
+    }
+
+    if (
+      config.dataServiceGeneratorVersion &&
+      !semver.valid(config.dataServiceGeneratorVersion)
+    ) {
+      isValid = false;
+      messages.push(AppValidationErrorTypes.DataServiceGeneratorVersionInvalid);
+    }
+
+    if (
+      semver.valid(config.dataServiceGeneratorVersion) &&
+      semver.lt(config.dataServiceGeneratorVersion, '0.4.0')
+    ) {
+      isValid = false;
+      messages.push(
+        AppValidationErrorTypes.CannotMergeCodeToGitHubBreakingChanges
+      );
+    }
+
+    if (config?.appInfo?.id != app.id) {
+      isValid = false;
+      messages.push(
+        AppValidationErrorTypes.CannotMergeCodeToGitHubInvalidAppId
+      );
+    }
+
+    return {
+      isValid,
+      messages
+    };
+  }
+
+  async getAppGenerationConfigFromGitHub(
+    args: FindOneArgs
+  ): Promise<AppGenerationConfig | null> {
+    const app = await this.app({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    if (isEmpty(app.githubToken)) {
+      throw new Error(`This app is not authorized with any GitHub repo`);
+    }
+    const [userName, repoName] = app.githubRepo.split('/');
+    let configFile;
+
+    try {
+      configFile = await this.githubService.getFile(
+        userName,
+        repoName,
+        APP_CONFIG_FILE_PATH,
+        app.githubBranch,
+        app.githubToken
+      );
+    } catch (error) {
+      //in case the file was not found on GitHub, return null
+      return null;
+    }
+
+    let config;
+    try {
+      config = JSON.parse(configFile.content);
+    } catch (error) {
+      throw new Error(
+        `Unexpected config file format in the linked GitHub repo. The file must be a valid JSON object`
+      );
+    }
+
+    return config;
+  }
+
   async enableSyncWithGithubRepo(
     args: AppEnableSyncWithGithubRepoArgs
   ): Promise<App> {
@@ -452,7 +572,8 @@ export class AppService {
       data: {
         githubRepo: null, //reset the repo and branch to allow the user to set another branch when needed
         githubBranch: null,
-        githubSyncEnabled: false
+        githubSyncEnabled: false,
+        githubLastSync: null
       }
     });
   }

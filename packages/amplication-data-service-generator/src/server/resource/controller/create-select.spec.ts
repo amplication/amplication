@@ -23,6 +23,7 @@ const EXAMPLE_ENTITY: Entity = {
 };
 const EXAMPLE_LOOKUP_FIELD: EntityField = {
   id: "EXAMPLE_LOOKUP_FIELD_ID",
+  permanentId: "EXAMPLE_LOOKUP_PERMANENT_FIELD_ID",
   dataType: EnumDataType.Lookup,
   required: true,
   searchable: false,

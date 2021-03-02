@@ -168,6 +168,8 @@ const USER_ENTITY_MOCK = {
 const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
+const entityServiceBulkCreateFields = jest.fn();
+
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
 const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
@@ -219,7 +221,8 @@ describe('AppService', () => {
             createDefaultEntities: entityServiceCreateDefaultEntitiesMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock,
             findFirst: entityServiceFindFirstMock,
-            bulkCreateEntities: entityServiceBulkCreateEntities
+            bulkCreateEntities: entityServiceBulkCreateEntities,
+            bulkCreateFields: entityServiceBulkCreateFields
           }))
         },
         {
@@ -422,7 +425,12 @@ describe('AppService', () => {
     expect(entityServiceBulkCreateEntities).toBeCalledWith(
       EXAMPLE_APP_ID,
       EXAMPLE_USER,
-      createSampleAppEntities(USER_ENTITY_MOCK.id)
+      createSampleAppEntities(USER_ENTITY_MOCK.id).entities
+    );
+    expect(entityServiceBulkCreateFields).toBeCalledWith(
+      EXAMPLE_USER,
+      USER_ENTITY_MOCK.id,
+      createSampleAppEntities(USER_ENTITY_MOCK.id).userEntityFields
     );
     expect(prismaAppFindManyMock).toBeCalledTimes(2);
     expect(prismaAppFindManyMock.mock.calls).toEqual([

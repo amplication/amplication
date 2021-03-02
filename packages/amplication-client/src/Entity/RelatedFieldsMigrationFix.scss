@@ -1,0 +1,116 @@
+@import "../style/index.scss";
+
+$field-container-height: 40px;
+
+.related-fields-migration-fix {
+  &__message {
+    @include body2;
+    max-width: 700px;
+    margin-bottom: var(--double-spacing);
+    color: var(--black80);
+  }
+  &__highlight {
+    color: var(--black100);
+  }
+
+  &__entity {
+    margin-bottom: var(--double-spacing);
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  &__relation {
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+    margin-bottom: var(--default-spacing);
+
+    &--missing &__status {
+      color: var(--negative);
+    }
+
+    &--missing &__field--target {
+      border-color: var(--negative);
+
+      &:hover {
+        border-color: var(--black100);
+      }
+    }
+
+    &:not(&--missing) &__fix {
+      visibility: hidden;
+    }
+
+    &__entity,
+    &__field {
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: $border-black30;
+      flex: 1;
+      padding: var(--default-spacing);
+      height: $field-container-height;
+    }
+
+    &__entity {
+      border-radius: var(--default-border-radius) 0 0
+        var(--default-border-radius);
+      border-right: none;
+      background: var(--black10);
+      .amp-icon {
+        margin-right: var(--default-spacing);
+      }
+    }
+
+    &__field {
+      border-radius: 0 var(--default-border-radius) var(--default-border-radius)
+        0;
+
+      &__textbox {
+        width: 100%;
+        margin: 0;
+        label {
+          margin: 0;
+        }
+
+        input,
+        input:hover,
+        input:active,
+        input:focus {
+          border: none;
+          background: none;
+        }
+      }
+    }
+
+    &__fix {
+      margin-left: var(--default-spacing);
+    }
+
+    &__status {
+      height: $field-container-height;
+      width: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: var(--positive-default);
+
+      &:before,
+      &:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: calc(50% - 8px);
+        top: 50%;
+        border-top: 2px solid var(--black80);
+      }
+      &:after {
+        left: auto;
+        right: 0;
+      }
+    }
+  }
+}

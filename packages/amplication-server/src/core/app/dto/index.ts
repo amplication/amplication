@@ -17,3 +17,7 @@ export { EnumPendingChangeAction } from './EnumPendingChangeAction';
 export { FindManyCommitsArgs } from './FindManyCommitsArgs';
 export { FindAvailableGithubReposArgs } from './FindAvailableGithubReposArgs';
 export { AppEnableSyncWithGithubRepoArgs } from './AppEnableSyncWithGithubRepoArgs';
+export {
+  AppValidationResult,
+  AppValidationErrorTypes
+} from './AppValidationResult';

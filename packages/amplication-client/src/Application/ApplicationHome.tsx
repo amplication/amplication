@@ -13,6 +13,7 @@ import SyncWithGithubPage from "../Settings/SyncWithGithubPage";
 import "./ApplicationHome.scss";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 import EntitiesTile from "./EntitiesTile";
+import NewVersionTile from "./NewVersionTile";
 import RolesTile from "./RolesTile";
 import { COLOR_TO_NAME } from "./constants";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
@@ -92,6 +93,7 @@ function ApplicationHome({ match }: Props) {
                   path="/:application/"
                   component={() => (
                     <div className={`${CLASS_NAME}__tiles`}>
+                      <NewVersionTile applicationId={applicationId} />
                       <EntitiesTile applicationId={applicationId} />
                       <RolesTile applicationId={applicationId} />
                       <SyncWithGithubTile applicationId={applicationId} />

@@ -1,6 +1,6 @@
 {
   "name": "@amplication/scheduler",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "Simple HTTP cron job scheduler",
   "main": "./dist/index.js",
   "bin": {

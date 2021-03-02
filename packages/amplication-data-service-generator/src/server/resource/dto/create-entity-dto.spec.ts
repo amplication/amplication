@@ -27,10 +27,10 @@ describe("createEntityDTO", () => {
           builders.classBody([
             createFieldClassProperty(
               EXAMPLE_ID_FIELD,
+              EXAMPLE_ENTITY,
               !EXAMPLE_ID_FIELD.required,
               false,
-              false,
-              EXAMPLE_ENTITY
+              false
             ),
           ]),
           null,

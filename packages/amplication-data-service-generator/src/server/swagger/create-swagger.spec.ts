@@ -10,6 +10,8 @@ const EXAMPLE_APP_INFO: AppInfo = {
   name: "EXAMPLE_NAME",
   version: "EXAMPLE_VERSION",
   description: EXAMPLE_DESCRIPTION,
+  id: "EXAMPLE_ID",
+  url: "EXAMPLE_URL",
 };
 
 describe("createDescription", () => {

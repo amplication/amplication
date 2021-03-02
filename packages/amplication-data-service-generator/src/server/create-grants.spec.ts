@@ -54,6 +54,7 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: EntityPermission = {
 };
 const EXAMPLE_FIELD: EntityField = {
   id: "EXAMPLE_FIELD_ID",
+  permanentId: "EXAMPLE_PERMANENT_FIELD_ID",
   dataType: EnumDataType.Id,
   displayName: "Example Field",
   name: "exampleField",

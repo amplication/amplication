@@ -10,6 +10,7 @@ export const USER_ENTITY_NAME = "User";
 
 export const USER_NAME_FIELD: EntityField = {
   id: "USER_NAME_FIELD",
+  permanentId: "USER_NAME_FIELD_PERMANENT_ID",
   name: "username",
   displayName: "Username",
   dataType: EnumDataType.Username,
@@ -19,6 +20,7 @@ export const USER_NAME_FIELD: EntityField = {
 
 export const USER_PASSWORD_FIELD: EntityField = {
   id: "USER_PASSWORD_FIELD",
+  permanentId: "USER_PASSWORD_FIELD_PERMANENT_ID",
   name: "password",
   displayName: "Password",
   dataType: EnumDataType.Password,
@@ -28,6 +30,7 @@ export const USER_PASSWORD_FIELD: EntityField = {
 
 export const USER_ROLES_FIELD: EntityField = {
   id: "USER_ROLES_FIELD",
+  permanentId: "USER_ROLES_FIELD_PERMANENT_ID",
   name: "roles",
   displayName: "Roles",
   dataType: EnumDataType.Roles,
@@ -36,8 +39,9 @@ export const USER_ROLES_FIELD: EntityField = {
   properties: {},
 };
 
-const USER_ID_FIELD = {
+const USER_ID_FIELD: EntityField = {
   id: "USER_ID_FIELD",
+  permanentId: "USER_ID_FIELD_PERMANENT_ID",
   name: "id",
   displayName: "Id",
   dataType: EnumDataType.Id,

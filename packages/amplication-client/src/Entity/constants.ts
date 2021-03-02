@@ -70,7 +70,7 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
     icon: "calendar",
   },
   [models.EnumDataType.Lookup]: {
-    label: "Relation to another Entity",
+    label: "Relation to Entity",
     icon: "lookup",
   },
   [models.EnumDataType.Boolean]: {

@@ -30,6 +30,12 @@ Make sure you have Node.js 14, npm, and Docker installed.
 npm install
 ```
 
+- Generate Prisma client
+
+```
+npm run prisma:generate
+```
+
 - Start database in Docker
 
 ```

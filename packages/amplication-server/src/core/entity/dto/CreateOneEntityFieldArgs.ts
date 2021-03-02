@@ -5,4 +5,10 @@ import { EntityFieldCreateInput } from './EntityFieldCreateInput';
 export class CreateOneEntityFieldArgs {
   @Field(() => EntityFieldCreateInput, { nullable: false })
   data!: EntityFieldCreateInput;
+
+  @Field(() => String, { nullable: true })
+  relatedFieldName?: string;
+
+  @Field(() => String, { nullable: true })
+  relatedFieldDisplayName?: string;
 }

@@ -1,22 +1,12 @@
-import { Module, forwardRef } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
-import { PrismaModule } from "nestjs-prisma";
-// @ts-ignore
-import { ACLModule } from "../auth/acl.module";
-// @ts-ignore
-import { AuthModule } from "../auth/auth.module";
+import { Module } from "@nestjs/common";
 
 declare class CONTROLLER {}
 declare class SERVICE {}
 declare class RESOLVER {}
+declare class MODULE_BASE {}
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [MODULE_BASE],
   controllers: [CONTROLLER],
   providers: [SERVICE, RESOLVER],
   exports: [SERVICE],

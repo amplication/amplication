@@ -9,6 +9,7 @@ export enum EnumImages {
   Commit = "--image-commit",
   NoChanges = "--image-no-changes",
   AddApp = "--image-add-app",
+  Relations = "--image-relations",
 }
 
 type Props = {

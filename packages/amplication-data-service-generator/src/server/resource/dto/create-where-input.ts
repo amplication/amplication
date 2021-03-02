@@ -14,9 +14,9 @@ export function createWhereInput(entity: Entity): NamedClassDeclaration {
   return createInput(
     createWhereInputID(entity.name),
     fields,
+    entity,
     true,
-    true,
-    entity
+    true
   );
 }
 

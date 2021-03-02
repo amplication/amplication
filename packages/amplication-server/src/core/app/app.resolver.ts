@@ -15,7 +15,8 @@ import {
   FindPendingChangesArgs,
   FindAvailableGithubReposArgs,
   PendingChange,
-  AppEnableSyncWithGithubRepoArgs
+  AppEnableSyncWithGithubRepoArgs,
+  AppValidationResult
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { App, Entity, User, Commit } from 'src/models';
@@ -232,5 +233,15 @@ export class AppResolver {
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async appDisableSyncWithGithubRepo(@Args() args: FindOneArgs): Promise<App> {
     return this.appService.disableSyncWithGithubRepo(args);
+  }
+
+  @Query(() => AppValidationResult, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async appValidateBeforeCommit(
+    @Args() args: FindOneArgs
+  ): Promise<AppValidationResult> {
+    return this.appService.validateBeforeCommit(args);
   }
 }

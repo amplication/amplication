@@ -97,7 +97,7 @@ const NewApplication = () => {
 
   return (
     <div className={CLASS_NAME}>
-      <SvgThemeImage image={EnumImages.Entities} />
+      <SvgThemeImage image={EnumImages.AddApp} />
 
       <div className={`${CLASS_NAME}__instructions`}>
         Give your new app a descriptive name. <br />
@@ -121,7 +121,7 @@ const NewApplication = () => {
                 autoComplete="off"
                 disabled={loading}
               />
-              
+
               <Button
                 buttonStyle={EnumButtonStyle.Primary}
                 disabled={!formik.isValid || loading}

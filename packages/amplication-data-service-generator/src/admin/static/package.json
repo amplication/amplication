@@ -1,6 +1,6 @@
 {
   "name": "admin-template",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "private": true,
   "dependencies": {
     "@amplication/design-system": "^0.2.0",
@@ -10,7 +10,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@types/react-router-dom": "^5.1.6",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "formik": "^2.2.5",
     "lodash.pick": "^4.4.0",
     "react": "^16.14.0",
