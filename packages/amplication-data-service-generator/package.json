@@ -57,7 +57,7 @@
     "@types/replace-ext": "^2.0.0",
     "@types/semver": "^7.3.4",
     "apollo-server-express": "^2.19.0",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "camel-case": "^4.1.1",
     "class-validator": "^0.12.2",
