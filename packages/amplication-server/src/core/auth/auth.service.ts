@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { subDays } from 'date-fns';
 
-import { UserWhereInput } from '@prisma/client';
+import { SortOrder, UserWhereInput } from '@prisma/client';
 import { Profile as GitHubProfile } from 'passport-github2';
 import { PrismaService } from 'nestjs-prisma';
 import { Account, User, UserRole, Organization } from 'src/models';
@@ -286,6 +286,9 @@ export class AuthService {
         previewChars: true,
         lastAccessAt: true,
         userId: true
+      },
+      orderBy: {
+        createdAt: SortOrder.desc
       }
     });
 
