@@ -1,0 +1,19 @@
+@import "../style/index.scss";
+
+.api-token-list {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--large-spacing);
+  }
+
+  &__add-button {
+    min-width: 0;
+  }
+  &__new-token {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    margin: 0;
+    margin-bottom: var(--default-spacing);
+    background-color: rgba(49, 197, 135, 0.09);
+  }
+}

@@ -18,6 +18,7 @@ import RolesTile from "./RolesTile";
 import { COLOR_TO_NAME } from "./constants";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import InnerTabLink from "../Layout/InnerTabLink";
+import { ApiTokenList } from "../Settings/ApiTokenList";
 
 type Props = {
   match: match<{ application: string }>;
@@ -66,10 +67,16 @@ function ApplicationHome({ match }: Props) {
               Sync with GitHub
             </InnerTabLink>
           </div>
+          <div>
+            <InnerTabLink to={`/${applicationId}/api-tokens`} icon="id">
+              API Tokens
+            </InnerTabLink>
+          </div>
         </>
       }
     >
       <Switch>
+        <Route path="/:application/api-tokens" component={ApiTokenList} />
         <Route path="/:application/github" component={SyncWithGithubPage} />
         <Route
           path="/:application/"
