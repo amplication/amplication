@@ -1,4 +1,4 @@
-import { JwtDto } from './dto/jwt.dto';
+import { JwtDto, EnumTokenType } from './dto/jwt.dto';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -13,11 +13,24 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      passReqToCallback: true,
       secretOrKey: configService.get('JWT_SECRET')
     });
   }
 
-  async validate(payload: JwtDto): Promise<AuthUser> {
+  async validate(req, payload: JwtDto): Promise<AuthUser> {
+    if (payload.type === EnumTokenType.ApiToken) {
+      const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+
+      const isValid = this.authService.validateApiToken({
+        userId: payload.userId,
+        token: jwt
+      });
+      if (!isValid) {
+        throw new UnauthorizedException();
+      }
+    }
+
     const user = await this.authService.getAuthUser({
       id: payload.userId
     });

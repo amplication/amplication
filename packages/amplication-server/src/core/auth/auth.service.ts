@@ -5,6 +5,8 @@ import {
   Inject
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { subDays } from 'date-fns';
+
 import { UserWhereInput } from '@prisma/client';
 import { Profile as GitHubProfile } from 'passport-github2';
 import { PrismaService } from 'nestjs-prisma';
@@ -13,7 +15,13 @@ import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
-import { SignupInput, ApiToken, CreateApiTokenArgs } from './dto';
+import {
+  SignupInput,
+  ApiToken,
+  CreateApiTokenArgs,
+  JwtDto,
+  EnumTokenType
+} from './dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { FindOneArgs } from 'src/dto';
 
@@ -24,6 +32,7 @@ export type AuthUser = User & {
 };
 
 const TOKEN_PREVIEW_LENGTH = 8;
+const TOKEN_EXPIRY_DAYS = 30;
 
 const ORGANIZATION_DEFAULT_VALUES = {
   address: '',
@@ -41,11 +50,6 @@ const ORGANIZATION_INCLUDE = {
     include: AUTH_USER_INCLUDE
   }
 };
-
-enum EnumTokenType {
-  User = 'User',
-  ApiToken = 'ApiToken'
-}
 
 @Injectable()
 export class AuthService {
@@ -222,6 +226,35 @@ export class AuthService {
 
     return apiToken;
   }
+  /**
+   * Validate that the provided token of the provided user exist and not expired.
+   * In case it is valid, it updates the "LastAccessAt" with current date and time
+   */
+  async validateApiToken(args: {
+    userId: string;
+    token: string;
+  }): Promise<boolean> {
+    const hashedToken = await this.passwordService.hashPassword(args.token);
+
+    const lastAccessThreshold = subDays(new Date(), TOKEN_EXPIRY_DAYS);
+
+    const apiToken = await this.prismaService.apiToken.updateMany({
+      where: {
+        userId: args.userId,
+        token: hashedToken,
+        lastAccessAt: {
+          lt: lastAccessThreshold
+        }
+      },
+      data: {
+        lastAccessAt: new Date()
+      }
+    });
+
+    if (apiToken.count === 1) {
+      return true;
+    }
+  }
 
   async getUserApiTokens(args: FindOneArgs): Promise<ApiToken[]> {
     const apiTokens = await this.prismaService.apiToken.findMany({
@@ -268,13 +301,15 @@ export class AuthService {
    */
   async prepareToken(user: AuthUser): Promise<string> {
     const roles = user.userRoles.map(role => role.role);
-    return this.jwtService.sign({
+
+    const payload: JwtDto = {
       accountId: user.account.id,
       userId: user.id,
       roles,
       organizationId: user.organization.id,
       type: EnumTokenType.User
-    });
+    };
+    return this.jwtService.sign(payload);
   }
 
   /**
@@ -284,13 +319,16 @@ export class AuthService {
    */
   async prepareApiToken(user: AuthUser): Promise<string> {
     const roles = user.userRoles.map(role => role.role);
-    return this.jwtService.sign({
+
+    const payload: JwtDto = {
       accountId: user.account.id,
       userId: user.id,
       roles,
       organizationId: user.organization.id,
       type: EnumTokenType.ApiToken
-    });
+    };
+
+    return this.jwtService.sign(payload);
   }
 
   async getAuthUser(where: UserWhereInput): Promise<AuthUser | null> {
