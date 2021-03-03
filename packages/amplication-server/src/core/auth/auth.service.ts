@@ -227,7 +227,7 @@ export class AuthService {
     return apiToken;
   }
   /**
-   * Validate that the provided token of the provided user exist and not expired.
+   * Validates that the provided token of the provided user exist and not expired.
    * In case it is valid, it updates the "LastAccessAt" with current date and time
    */
   async validateApiToken(args: {
@@ -254,6 +254,23 @@ export class AuthService {
     if (apiToken.count === 1) {
       return true;
     }
+  }
+
+  async deleteApiToken(args: FindOneArgs): Promise<ApiToken> {
+    return this.prismaService.apiToken.delete({
+      where: {
+        id: args.where.id
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+        previewChars: true,
+        lastAccessAt: true,
+        userId: true
+      }
+    });
   }
 
   async getUserApiTokens(args: FindOneArgs): Promise<ApiToken[]> {

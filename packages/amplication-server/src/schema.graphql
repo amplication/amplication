@@ -1051,6 +1051,7 @@ type Mutation {
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   changePassword(data: ChangePasswordInput!): Account!
+  deleteApiToken(where: WhereUniqueInput!): ApiToken!
   setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!

@@ -14,7 +14,9 @@ import { AuthService } from './auth.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-
+import { FindOneArgs } from 'src/dto';
+import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
@@ -72,6 +74,16 @@ export class AuthResolver {
       args.data.oldPassword,
       args.data.newPassword
     );
+  }
+
+  @Mutation(() => ApiToken)
+  @UseGuards(GqlAuthGuard)
+  @AuthorizeContext(AuthorizableResourceParameter.ApiTokenId, 'where.id')
+  async deleteApiToken(
+    @UserEntity() user: User,
+    @Args() args: FindOneArgs
+  ): Promise<ApiToken> {
+    return this.authService.deleteApiToken(args);
   }
 
   @Mutation(() => Auth)
