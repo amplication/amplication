@@ -36,23 +36,22 @@ USAGE
 
 <!-- commands -->
 
+- [`amp apps:create NAME [DESCRIPTION]`](#amp-appscreate-name-description)
 - [`amp auth TOKEN`](#amp-auth-token)
-- [`amp create`](#amp-create)
 - [`amp help [COMMAND]`](#amp-help-command)
-- [`amp login`](#amp-login)
+
+## `amp apps:create NAME [DESCRIPTION]`
+
+```
+USAGE
+  $ amp apps:create NAME [DESCRIPTION]
+```
 
 ## `amp auth TOKEN`
 
 ```
 USAGE
   $ amp auth TOKEN
-```
-
-## `amp create`
-
-```
-USAGE
-  $ amp create
 ```
 
 ## `amp help [COMMAND]`
@@ -71,12 +70,5 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
-
-## `amp login`
-
-```
-USAGE
-  $ amp login
-```
 
 <!-- commandsstop -->
