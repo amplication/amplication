@@ -4,6 +4,13 @@
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
+    h2 {
+      margin: 0;
+    }
+  }
+
+  &__message {
+    margin-bottom: var(--double-spacing);
   }
 
   &__add-button {
@@ -14,6 +21,7 @@
     overflow-wrap: break-word;
     margin: 0;
     margin-bottom: var(--default-spacing);
-    background-color: rgba(49, 197, 135, 0.09);
+    background-color: var(--theme-turquoise-transparent);
+    border: 1px solid var(--theme-turquoise);
   }
 }

@@ -1,5 +1,5 @@
 import { TextField } from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, Reference } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
@@ -10,7 +10,6 @@ import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
-import { GET_API_TOKENS } from "./ApiTokenList";
 import "./NewApiToken.scss";
 
 type DType = {
@@ -49,11 +48,37 @@ const NewApiToken = ({ onCompleted }: Props) => {
       onCompleted: (data) => {
         trackEvent({
           eventName: "createApiToken",
-          entityName: data.createApiToken.name,
+          tokenName: data.createApiToken.name,
         });
         onCompleted(data.createApiToken);
       },
-      refetchQueries: [{ query: GET_API_TOKENS }],
+      update(cache, { data }) {
+        if (!data) return;
+
+        const newToken = data.createApiToken;
+
+        cache.modify({
+          fields: {
+            userApiTokens(existingTokenRefs = [], { readField }) {
+              const newTokenRef = cache.writeFragment({
+                data: newToken,
+                fragment: NEW_API_TOKEN_FRAGMENT,
+              });
+
+              if (
+                existingTokenRefs.some(
+                  (TokenRef: Reference) =>
+                    readField("id", TokenRef) === newToken.id
+                )
+              ) {
+                return existingTokenRefs;
+              }
+
+              return [newTokenRef, ...existingTokenRefs];
+            },
+          },
+        });
+      },
     }
   );
 
@@ -129,5 +154,18 @@ const CREATE_API_TOKEN = gql`
       previewChars
       lastAccessAt
     }
+  }
+`;
+
+const NEW_API_TOKEN_FRAGMENT = gql`
+  fragment NewUserApiToken on userApiToken {
+    id
+    createdAt
+    updatedAt
+    name
+    userId
+    token
+    previewChars
+    lastAccessAt
   }
 `;

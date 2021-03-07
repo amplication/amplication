@@ -51,7 +51,7 @@ export const ApiTokenList = React.memo(() => {
         <NewApiToken onCompleted={handleNewTokenCompleted} />
       </Dialog>
       <div className={`${CLASS_NAME}__header`}>
-        <span>{data?.userApiTokens.length} Tokens</span>
+        <h2>API Tokens</h2>
         <Button
           className={`${CLASS_NAME}__add-button`}
           buttonStyle={EnumButtonStyle.Primary}
@@ -61,6 +61,13 @@ export const ApiTokenList = React.memo(() => {
           Create API Token
         </Button>
       </div>
+      <div className={`${CLASS_NAME}__message`}>
+        API tokens are used to authenticate requests to Amplication API,
+        specifically it is required to use Amplication CLI.
+        <br />
+        Tokens are valid for 30 days from creation or last use, so that the 30
+        day expiration automatically refreshes with each API call.
+      </div>
 
       {newToken && (
         <Panel
@@ -68,10 +75,7 @@ export const ApiTokenList = React.memo(() => {
           panelStyle={EnumPanelStyle.Bordered}
         >
           Make sure to copy your new API token now. You won't be able to see it
-          again. <br />
-          {newToken.name}
-          <br />
-          {newToken.token}
+          again.
         </Panel>
       )}
 
