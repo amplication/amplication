@@ -22,11 +22,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (payload.type === EnumTokenType.ApiToken) {
       const jwt = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 
-      const isValid = this.authService.validateApiToken({
+      const isValid = await this.authService.validateApiToken({
         userId: payload.userId,
         token: jwt
       });
-      if (!isValid) {
+      if (!isValid === true) {
         throw new UnauthorizedException();
       }
     }

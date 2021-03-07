@@ -254,6 +254,7 @@ export class AuthService {
     if (apiToken.count === 1) {
       return true;
     }
+    return false;
   }
 
   async deleteApiToken(args: FindOneArgs): Promise<ApiToken> {
