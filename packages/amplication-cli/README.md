@@ -9,6 +9,7 @@ Amplication CLI
 
 <!-- toc -->
 
+- [@amplication/cli](#amplicationcli)
 - [Usage](#usage)
 - [Commands](#commands)
 <!-- tocstop -->
@@ -35,9 +36,17 @@ USAGE
 
 <!-- commands -->
 
+- [`amp auth TOKEN`](#amp-auth-token)
 - [`amp create`](#amp-create)
 - [`amp help [COMMAND]`](#amp-help-command)
 - [`amp login`](#amp-login)
+
+## `amp auth TOKEN`
+
+```
+USAGE
+  $ amp auth TOKEN
+```
 
 ## `amp create`
 
