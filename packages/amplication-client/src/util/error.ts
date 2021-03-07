@@ -1,4 +1,4 @@
-import { ApolloError } from "apollo-boost";
+import { ApolloError } from "@apollo/client";
 
 export function formatError(error: Error | undefined): string | undefined {
   if (error === undefined) {
