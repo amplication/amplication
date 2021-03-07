@@ -3,7 +3,7 @@ import { ConfiguredCommand } from '../../configured-command';
 import chalk from 'chalk';
 import { createApp } from '../../api';
 
-export default class Login extends ConfiguredCommand {
+export default class AppsCreate extends ConfiguredCommand {
   static args = [
     {
       name: 'name',
@@ -18,14 +18,14 @@ export default class Login extends ConfiguredCommand {
   ];
 
   async command() {
-    const { args } = this.parse(Login);
+    const { args } = this.parse(AppsCreate);
 
     const name = args.name;
     const description = args.description;
 
     cli.action.start(`Creating new app ${chalk.green.bold(name)} `);
 
-    const data = await createApp(this.client, name, description);
+    const data = await createApp(this.client, name, description || '');
 
     cli.action.stop();
     cli.styledJSON(data);
