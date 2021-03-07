@@ -22,13 +22,15 @@
     ]
   },
   "keywords": [
-    "oclif"
+    "amplication",
+    "amplication cli",
+    "amp cli"
   ],
   "license": "MIT",
   "main": "dist/index.js",
   "oclif": {
     "commands": "./lib/commands",
-    "bin": "amplication",
+    "bin": "amp",
     "plugins": [
       "@oclif/plugin-help"
     ]
