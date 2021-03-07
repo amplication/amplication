@@ -9,4 +9,5 @@ export interface JwtDto {
   organizationId?: string | null;
   roles?: string[] | null;
   type?: EnumTokenType;
+  tokenId?: string;
 }

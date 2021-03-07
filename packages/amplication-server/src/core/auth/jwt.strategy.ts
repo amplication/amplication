@@ -24,6 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       const isValid = await this.authService.validateApiToken({
         userId: payload.userId,
+        tokenId: payload.tokenId,
         token: jwt
       });
       if (!isValid === true) {

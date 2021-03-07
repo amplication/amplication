@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { subDays } from 'date-fns';
+import cuid from 'cuid';
 
 import { SortOrder, UserWhereInput } from '@prisma/client';
 import { Profile as GitHubProfile } from 'passport-github2';
@@ -209,13 +210,15 @@ export class AuthService {
       );
     }
 
-    const token = await this.prepareApiToken(user);
+    const tokenId = cuid();
+    const token = await this.prepareApiToken(user, tokenId);
     const previewChars = token.substr(-TOKEN_PREVIEW_LENGTH);
     const hashedToken = await this.passwordService.hashPassword(token);
 
     const apiToken = await this.prismaService.apiToken.create({
       data: {
         ...args.data,
+        id: tokenId,
         lastAccessAt: new Date(),
         previewChars,
         token: hashedToken
@@ -232,18 +235,17 @@ export class AuthService {
    */
   async validateApiToken(args: {
     userId: string;
+    tokenId: string;
     token: string;
   }): Promise<boolean> {
-    const hashedToken = await this.passwordService.hashPassword(args.token);
-
     const lastAccessThreshold = subDays(new Date(), TOKEN_EXPIRY_DAYS);
 
     const apiToken = await this.prismaService.apiToken.updateMany({
       where: {
         userId: args.userId,
-        token: hashedToken,
+        id: args.tokenId,
         lastAccessAt: {
-          lt: lastAccessThreshold
+          gt: lastAccessThreshold
         }
       },
       data: {
@@ -338,7 +340,7 @@ export class AuthService {
    * @param user to create token for
    * @returns new JWT token
    */
-  async prepareApiToken(user: AuthUser): Promise<string> {
+  async prepareApiToken(user: AuthUser, tokenId: string): Promise<string> {
     const roles = user.userRoles.map(role => role.role);
 
     const payload: JwtDto = {
@@ -346,7 +348,8 @@ export class AuthService {
       userId: user.id,
       roles,
       organizationId: user.organization.id,
-      type: EnumTokenType.ApiToken
+      type: EnumTokenType.ApiToken,
+      tokenId: tokenId
     };
 
     return this.jwtService.sign(payload);
