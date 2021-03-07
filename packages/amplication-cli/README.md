@@ -8,16 +8,14 @@ Amplication CLI
 [![License](https://img.shields.io/npm/l/@amplication/cli.svg)](https://github.com/noctifer20/cli/blob/master/package.json)
 
 <!-- toc -->
-
-- [@amplication/cli](#amplicationcli)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@amplication/cli](#amplicationcli)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @amplication/cli
 $ amp COMMAND
@@ -29,22 +27,54 @@ USAGE
   $ amp COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
+* [`amp apps`](#amp-apps)
+* [`amp apps:create NAME [DESCRIPTION]`](#amp-appscreate-name-description)
+* [`amp apps:current`](#amp-appscurrent)
+* [`amp apps:info`](#amp-appsinfo)
+* [`amp auth TOKEN`](#amp-auth-token)
+* [`amp help [COMMAND]`](#amp-help-command)
 
-- [`amp apps:create NAME [DESCRIPTION]`](#amp-appscreate-name-description)
-- [`amp auth TOKEN`](#amp-auth-token)
-- [`amp help [COMMAND]`](#amp-help-command)
+## `amp apps`
+
+```
+USAGE
+  $ amp apps
+```
 
 ## `amp apps:create NAME [DESCRIPTION]`
 
 ```
 USAGE
   $ amp apps:create NAME [DESCRIPTION]
+
+ARGUMENTS
+  NAME         name of app to create
+  DESCRIPTION  description of app to create
+```
+
+## `amp apps:current`
+
+```
+USAGE
+  $ amp apps:current
+
+OPTIONS
+  -a, --app=app  (required) ID of the app
+```
+
+## `amp apps:info`
+
+```
+USAGE
+  $ amp apps:info
+
+OPTIONS
+  -a, --app=app  (required) app to run command against
 ```
 
 ## `amp auth TOKEN`
@@ -70,5 +100,4 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
-
 <!-- commandsstop -->
