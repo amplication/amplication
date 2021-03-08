@@ -53,7 +53,8 @@
     "cli-ux": "^5.5.1",
     "cross-fetch": "^3.0.6",
     "graphql": "^15.5.0",
-    "tslib": "^1.14.1"
+    "tslib": "^1.14.1",
+    "url-join": "^4.0.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",

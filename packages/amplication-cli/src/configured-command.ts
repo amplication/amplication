@@ -2,17 +2,26 @@ import fetch from 'cross-fetch';
 import { Command } from '@oclif/command';
 import * as fs from 'fs';
 import * as path from 'path';
+import urlJoin from 'url-join';
+
 import {
   ApolloClient,
   InMemoryCache,
   createHttpLink,
 } from '@apollo/client/core';
 import { setContext } from '@apollo/client/link/context';
+import { AMP_SERVER_URL, DEFAULT_SERVER_URL } from './properties';
 
 export abstract class ConfiguredCommand extends Command {
   client = new ApolloClient({
     cache: new InMemoryCache(),
   });
+
+  configJSON: Record<string, any> = {};
+
+  configChanged = false;
+
+  configFilePath = path.join(this.config.configDir, 'config.json');
 
   constructor(...args: [any, any]) {
     super(...args);
@@ -23,8 +32,16 @@ export abstract class ConfiguredCommand extends Command {
     if (fs.existsSync(this.configFilePath))
       this.configJSON = require(this.configFilePath);
 
+    let serverUrl = this.configJSON[AMP_SERVER_URL];
+    if (!serverUrl) {
+      serverUrl = DEFAULT_SERVER_URL;
+      this.setConfig(AMP_SERVER_URL, DEFAULT_SERVER_URL);
+    }
+
+    serverUrl = urlJoin(serverUrl, 'graphql');
+    console.log(serverUrl);
     const httpLink = createHttpLink({
-      uri: 'http://localhost:3000/graphql',
+      uri: serverUrl,
       fetch,
     });
 
@@ -42,14 +59,6 @@ export abstract class ConfiguredCommand extends Command {
 
     this.client.setLink(authLink.concat(httpLink));
   }
-
-  configJSON: Record<string, any> = {
-    asd: 'dsa',
-  };
-
-  configChanged = false;
-
-  configFilePath = path.join(this.config.configDir, 'config.json');
 
   setConfig(key: string, value: any) {
     this.configChanged = true;

@@ -37,6 +37,10 @@ USAGE
 * [`amp apps:current`](#amp-appscurrent)
 * [`amp apps:info`](#amp-appsinfo)
 * [`amp auth TOKEN`](#amp-auth-token)
+* [`amp config`](#amp-config)
+* [`amp config:get PROPERTY`](#amp-configget-property)
+* [`amp config:set PROPERTY VALUE`](#amp-configset-property-value)
+* [`amp config:unset PROPERTY`](#amp-configunset-property)
 * [`amp help [COMMAND]`](#amp-help-command)
 
 ## `amp apps`
@@ -74,7 +78,7 @@ USAGE
   $ amp apps:info
 
 OPTIONS
-  -a, --app=app  (required) app to run command against
+  -a, --app=app  app to run command against
 ```
 
 ## `amp auth TOKEN`
@@ -82,6 +86,44 @@ OPTIONS
 ```
 USAGE
   $ amp auth TOKEN
+```
+
+## `amp config`
+
+```
+USAGE
+  $ amp config
+```
+
+## `amp config:get PROPERTY`
+
+```
+USAGE
+  $ amp config:get PROPERTY
+
+ARGUMENTS
+  PROPERTY  name of property
+```
+
+## `amp config:set PROPERTY VALUE`
+
+```
+USAGE
+  $ amp config:set PROPERTY VALUE
+
+ARGUMENTS
+  PROPERTY  name of property
+  VALUE     value of property
+```
+
+## `amp config:unset PROPERTY`
+
+```
+USAGE
+  $ amp config:unset PROPERTY
+
+ARGUMENTS
+  PROPERTY  name of property
 ```
 
 ## `amp help [COMMAND]`

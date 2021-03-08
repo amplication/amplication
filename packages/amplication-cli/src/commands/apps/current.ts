@@ -2,6 +2,7 @@ import cli from 'cli-ux';
 import { ConfiguredCommand } from '../../configured-command';
 import { getApp } from '../../api';
 import { flags } from '@oclif/command';
+import { AMP_CURRENT_APP } from '../../properties';
 
 export default class AppsCurrent extends ConfiguredCommand {
   static flags = {
@@ -16,10 +17,10 @@ export default class AppsCurrent extends ConfiguredCommand {
     const { flags } = this.parse(AppsCurrent);
 
     const appId = flags.app;
-    this.setConfig('AMP_CURRENT_APP', appId);
+    this.setConfig(AMP_CURRENT_APP, appId);
 
     const data = await getApp(this.client, appId);
-    this.log(`Updated property [AMP_CURRENT_APP]`);
+    this.log(`Updated property ${AMP_CURRENT_APP}`);
     cli.styledJSON(data);
   }
 }
