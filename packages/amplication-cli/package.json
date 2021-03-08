@@ -50,6 +50,7 @@
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
+    "@types/url-join": "^4.0.0",
     "cli-ux": "^5.5.1",
     "cross-fetch": "^3.0.6",
     "graphql": "^15.5.0",

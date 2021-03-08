@@ -41,6 +41,9 @@ USAGE
 * [`amp config:get PROPERTY`](#amp-configget-property)
 * [`amp config:set PROPERTY VALUE`](#amp-configset-property-value)
 * [`amp config:unset PROPERTY`](#amp-configunset-property)
+* [`amp entities`](#amp-entities)
+* [`amp entities:fields`](#amp-entitiesfields)
+* [`amp entities:info`](#amp-entitiesinfo)
 * [`amp help [COMMAND]`](#amp-help-command)
 
 ## `amp apps`
@@ -124,6 +127,36 @@ USAGE
 
 ARGUMENTS
   PROPERTY  name of property
+```
+
+## `amp entities`
+
+```
+USAGE
+  $ amp entities
+
+OPTIONS
+  -a, --app=app  app to run command against
+```
+
+## `amp entities:fields`
+
+```
+USAGE
+  $ amp entities:fields
+
+OPTIONS
+  -e, --entity=entity  ID of the entity
+```
+
+## `amp entities:info`
+
+```
+USAGE
+  $ amp entities:info
+
+OPTIONS
+  -e, --entity=entity  ID of the entity
 ```
 
 ## `amp help [COMMAND]`

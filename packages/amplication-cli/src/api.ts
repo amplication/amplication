@@ -103,3 +103,155 @@ export async function getApp(
 
   return data.app;
 }
+
+const GET_ENTITIES = gql`
+  query getEntities(
+    $appId: String!
+    $orderBy: EntityOrderByInput
+    $whereName: StringFilter
+  ) {
+    entities(
+      where: { app: { id: $appId }, displayName: $whereName }
+      orderBy: $orderBy
+    ) {
+      id
+      name
+      displayName
+      description
+      lockedByUserId
+      lockedAt
+      lockedByUser {
+        account {
+          firstName
+          lastName
+        }
+      }
+      versions(take: 1, orderBy: { versionNumber: Desc }) {
+        versionNumber
+        commit {
+          userId
+          message
+          createdAt
+          user {
+            id
+            account {
+              firstName
+              lastName
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function getEntities(
+  client: ApolloClient<NormalizedCacheObject>,
+  appId: string,
+  orderBy: string | undefined,
+  whereName: string | undefined
+): Promise<models.Entity[]> {
+  const { data } = await client.query<{ entities: models.Entity[] }>({
+    query: GET_ENTITIES,
+    variables: {
+      appId,
+      orderBy,
+      whereName,
+    },
+  });
+
+  return data.entities;
+}
+
+const GET_ENTITY = gql`
+  query getEntity($id: String!) {
+    entity(where: { id: $id }) {
+      id
+      name
+      displayName
+      description
+      lockedByUserId
+      lockedAt
+      lockedByUser {
+        account {
+          firstName
+          lastName
+        }
+      }
+      versions(take: 1, orderBy: { versionNumber: Desc }) {
+        versionNumber
+        commit {
+          userId
+          message
+          createdAt
+          user {
+            id
+            account {
+              firstName
+              lastName
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function getEntity(
+  client: ApolloClient<NormalizedCacheObject>,
+  id: string
+): Promise<models.Entity> {
+  const { data } = await client.query<{
+    entity: models.Entity;
+  }>({
+    query: GET_ENTITY,
+    variables: {
+      id,
+    },
+  });
+
+  return data.entity;
+}
+
+const GET_FIELDS = gql`
+  query getEntityFields(
+    $entityId: String!
+    $orderBy: EntityFieldOrderByInput
+    $whereName: StringFilter
+  ) {
+    entity(where: { id: $entityId }) {
+      id
+      appId
+      fields(where: { displayName: $whereName }, orderBy: $orderBy) {
+        id
+        displayName
+        name
+        dataType
+        required
+        searchable
+        description
+        properties
+      }
+    }
+  }
+`;
+
+export async function getFields(
+  client: ApolloClient<NormalizedCacheObject>,
+  entityId: string,
+  orderBy: string | undefined,
+  whereName: string | undefined
+): Promise<models.EntityField[]> {
+  const { data } = await client.query<{
+    entity: models.Entity;
+  }>({
+    query: GET_FIELDS,
+    variables: {
+      entityId,
+      orderBy,
+      whereName,
+    },
+  });
+
+  return data.entity.fields || [];
+}
