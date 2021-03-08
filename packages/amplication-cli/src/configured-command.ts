@@ -39,7 +39,6 @@ export abstract class ConfiguredCommand extends Command {
     }
 
     serverUrl = urlJoin(serverUrl, 'graphql');
-    console.log(serverUrl);
     const httpLink = createHttpLink({
       uri: serverUrl,
       fetch,

@@ -42,6 +42,38 @@ export async function createApp(
   return data.createApp;
 }
 
+const UPDATE_APP = gql`
+  mutation updateApp($data: AppUpdateInput!, $appId: String!) {
+    updateApp(data: $data, where: { id: $appId }) {
+      id
+      createdAt
+      updatedAt
+      name
+      description
+      color
+    }
+  }
+`;
+export async function updateApp(
+  client: ApolloClient<NormalizedCacheObject>,
+  appId: string,
+  data: models.AppUpdateInput
+): Promise<models.App> {
+  const { data: appData } = await client.mutate<{ updateApp: models.App }>({
+    mutation: UPDATE_APP,
+    variables: {
+      appId,
+      data,
+    },
+  });
+
+  if (!appData) {
+    throw new Error('no data');
+  }
+
+  return appData.updateApp;
+}
+
 const GET_APPS = gql`
   query apps {
     apps {
@@ -254,4 +286,58 @@ export async function getFields(
   });
 
   return data.entity.fields || [];
+}
+
+const CREATE_ENTITY = gql`
+  mutation createEntity($data: EntityCreateInput!) {
+    createOneEntity(data: $data) {
+      id
+      name
+      displayName
+      description
+      lockedByUserId
+      lockedAt
+      lockedByUser {
+        account {
+          firstName
+          lastName
+        }
+      }
+      versions(take: 1, orderBy: { versionNumber: Desc }) {
+        versionNumber
+        commit {
+          userId
+          message
+          createdAt
+          user {
+            id
+            account {
+              firstName
+              lastName
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function createEntity(
+  client: ApolloClient<NormalizedCacheObject>,
+  data: models.EntityCreateInput
+): Promise<models.Entity> {
+  const { data: entityData } = await client.mutate<{
+    createOneEntity: models.Entity;
+  }>({
+    mutation: CREATE_ENTITY,
+    variables: {
+      data,
+    },
+  });
+
+  if (!entityData) {
+    throw new Error('no data');
+  }
+
+  return entityData?.createOneEntity;
 }

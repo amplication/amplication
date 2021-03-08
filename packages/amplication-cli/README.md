@@ -36,14 +36,16 @@ USAGE
 * [`amp apps:create NAME [DESCRIPTION]`](#amp-appscreate-name-description)
 * [`amp apps:current`](#amp-appscurrent)
 * [`amp apps:info`](#amp-appsinfo)
+* [`amp apps:update`](#amp-appsupdate)
 * [`amp auth TOKEN`](#amp-auth-token)
 * [`amp config`](#amp-config)
 * [`amp config:get PROPERTY`](#amp-configget-property)
 * [`amp config:set PROPERTY VALUE`](#amp-configset-property-value)
 * [`amp config:unset PROPERTY`](#amp-configunset-property)
 * [`amp entities`](#amp-entities)
+* [`amp entities:create DISPLAYNAME`](#amp-entitiescreate-displayname)
 * [`amp entities:fields`](#amp-entitiesfields)
-* [`amp entities:info`](#amp-entitiesinfo)
+* [`amp entities:info ENTITY`](#amp-entitiesinfo-entity)
 * [`amp help [COMMAND]`](#amp-help-command)
 
 ## `amp apps`
@@ -82,6 +84,18 @@ USAGE
 
 OPTIONS
   -a, --app=app  app to run command against
+```
+
+## `amp apps:update`
+
+```
+USAGE
+  $ amp apps:update
+
+OPTIONS
+  -a, --app=app              app to run command against
+  --description=description  (required) description of the app
+  --name=name                name of the app
 ```
 
 ## `amp auth TOKEN`
@@ -139,6 +153,22 @@ OPTIONS
   -a, --app=app  app to run command against
 ```
 
+## `amp entities:create DISPLAYNAME`
+
+```
+USAGE
+  $ amp entities:create DISPLAYNAME
+
+ARGUMENTS
+  DISPLAYNAME  display name of entity to create
+
+OPTIONS
+  -a, --app=app                          app to run command against
+  --description=description              (required) description of the entity
+  --name=name                            name of the entity
+  --pluralDisplayName=pluralDisplayName  plural display name of the entity
+```
+
 ## `amp entities:fields`
 
 ```
@@ -149,14 +179,14 @@ OPTIONS
   -e, --entity=entity  ID of the entity
 ```
 
-## `amp entities:info`
+## `amp entities:info ENTITY`
 
 ```
 USAGE
-  $ amp entities:info
+  $ amp entities:info ENTITY
 
-OPTIONS
-  -e, --entity=entity  ID of the entity
+ARGUMENTS
+  ENTITY  id of entity
 ```
 
 ## `amp help [COMMAND]`
