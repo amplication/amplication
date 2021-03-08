@@ -3,7 +3,7 @@ import { flags } from '@oclif/command';
 import { ConfiguredCommand } from '../../configured-command';
 import chalk from 'chalk';
 import { updateApp } from '../../api';
-import { app } from '../../flags';
+import { app } from '../../flags/app-flag';
 
 export default class AppsUpdate extends ConfiguredCommand {
   static flags = {

@@ -1,3 +1,4 @@
+import cli, { Table } from 'cli-ux';
 import fetch from 'cross-fetch';
 import { Command } from '@oclif/command';
 import * as fs from 'fs';
@@ -11,6 +12,11 @@ import {
 } from '@apollo/client/core';
 import { setContext } from '@apollo/client/link/context';
 import { AMP_SERVER_URL, DEFAULT_SERVER_URL } from './properties';
+
+import {
+  OUTPUT_FORMAT_STYLED_JSON,
+  OUTPUT_FORMAT_TABLE,
+} from './flags/format-flag';
 
 export abstract class ConfiguredCommand extends Command {
   client = new ApolloClient({
@@ -81,5 +87,23 @@ export abstract class ConfiguredCommand extends Command {
   async postRun() {
     if (this.configChanged)
       fs.writeFileSync(this.configFilePath, JSON.stringify(this.configJSON));
+  }
+
+  output(data: any, flags: any, tableColumns: Table.table.Columns<any>) {
+    switch (flags.format) {
+      case OUTPUT_FORMAT_STYLED_JSON:
+        cli.styledJSON(data);
+        break;
+      case OUTPUT_FORMAT_TABLE:
+        cli.table(Array.isArray(data) ? data : [data], tableColumns || {}, {
+          printLine: this.log,
+          ...flags, // parsed flags
+        });
+        break;
+
+      default:
+        this.log(JSON.stringify(data));
+        break;
+    }
   }
 }

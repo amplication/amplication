@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import pluralize from 'pluralize';
 import { pascalCase } from 'pascal-case';
 import { createEntity } from '../../api';
-import { app } from '../../flags';
+import { app } from '../../flags/app-flag';
 
 export default class EntitiesCreate extends ConfiguredCommand {
   static flags = {

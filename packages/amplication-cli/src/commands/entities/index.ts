@@ -1,7 +1,7 @@
 import cli from 'cli-ux';
 import { ConfiguredCommand } from '../../configured-command';
 import { getEntities } from '../../api';
-import { app } from '../../flags';
+import { app } from '../../flags/app-flag';
 
 export default class EntitiesIndex extends ConfiguredCommand {
   static flags = {
