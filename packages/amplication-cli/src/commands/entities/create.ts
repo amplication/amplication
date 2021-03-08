@@ -5,10 +5,14 @@ import chalk from 'chalk';
 import pluralize from 'pluralize';
 import { pascalCase } from 'pascal-case';
 import { createEntity } from '../../api';
+import { format } from '../../flags/format-flag';
 import { app } from '../../flags/app-flag';
+import { ENTITY_COLUMNS } from './index';
 
 export default class EntitiesCreate extends ConfiguredCommand {
   static flags = {
+    ...cli.table.flags(),
+    format: format(),
     app: app(),
     name: flags.string({
       required: false,
@@ -59,7 +63,7 @@ export default class EntitiesCreate extends ConfiguredCommand {
       });
 
       cli.action.stop();
-      cli.styledJSON(data);
+      this.output(data, flags, ENTITY_COLUMNS);
     }
   }
 }

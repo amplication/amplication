@@ -1,7 +1,34 @@
-import cli from 'cli-ux';
+import cli, { Table } from 'cli-ux';
 import { ConfiguredCommand } from '../../configured-command';
 import { getApps } from '../../api';
 import { format as formatFlag } from '../../flags/format-flag';
+
+export const APP_COLUMNS: Table.table.Columns<any> = {
+  id: {},
+  name: {},
+  description: {},
+  color: {},
+  githubSyncEnabled: {
+    extended: true,
+  },
+  githubRepo: {
+    extended: true,
+  },
+  githubBranch: {
+    extended: true,
+  },
+  githubLastSync: {
+    extended: true,
+  },
+  githubLastMessage: {
+    extended: true,
+  },
+  githubTokenCreatedDate: {
+    extended: true,
+  },
+  createdAt: {},
+  updatedAt: {},
+};
 
 export default class AppsIndex extends ConfiguredCommand {
   static flags = {
@@ -16,6 +43,6 @@ export default class AppsIndex extends ConfiguredCommand {
 
     const data = await getApps(this.client);
 
-    this.output(data, flags, { id: {}, name: {}, description: {} });
+    this.output(data, flags, APP_COLUMNS);
   }
 }

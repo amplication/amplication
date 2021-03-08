@@ -53,6 +53,17 @@ USAGE
 ```
 USAGE
   $ amp apps
+
+OPTIONS
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
 ```
 
 ## `amp apps:create NAME [DESCRIPTION]`
@@ -83,7 +94,16 @@ USAGE
   $ amp apps:info
 
 OPTIONS
-  -a, --app=app  app to run command against
+  -a, --app=app                       app to run command against
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
 ```
 
 ## `amp apps:update`
@@ -164,7 +184,7 @@ ARGUMENTS
 
 OPTIONS
   -a, --app=app                          app to run command against
-  --description=description              (required) description of the entity
+  --description=description              description of the entity
   --name=name                            name of the entity
   --pluralDisplayName=pluralDisplayName  plural display name of the entity
 ```

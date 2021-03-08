@@ -3,9 +3,11 @@ import { ConfiguredCommand } from '../../configured-command';
 import { getApp } from '../../api';
 import { app } from '../../flags/app-flag';
 import { format } from '../../flags/format-flag';
+import { APP_COLUMNS } from './index';
 
 export default class AppInfo extends ConfiguredCommand {
   static flags = {
+    ...cli.table.flags(),
     app: app(),
     format: format(),
   };
@@ -21,6 +23,6 @@ export default class AppInfo extends ConfiguredCommand {
     }
 
     const data = await getApp(this.client, appIdFlag || appId);
-    this.output(data, flags, { id: {}, name: {}, description: {} });
+    this.output(data, flags, APP_COLUMNS);
   }
 }

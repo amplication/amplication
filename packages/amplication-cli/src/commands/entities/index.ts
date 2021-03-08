@@ -1,10 +1,29 @@
-import cli from 'cli-ux';
+import cli, { Table } from 'cli-ux';
+
 import { ConfiguredCommand } from '../../configured-command';
 import { getEntities } from '../../api';
 import { app } from '../../flags/app-flag';
+import { format } from '../../flags/format-flag';
+
+export const ENTITY_COLUMNS: Table.table.Columns<any> = {
+  id: {},
+  name: {},
+  description: {},
+  displayName: {},
+  lockedByUserId: {},
+  lockedAt: {},
+  lockedBy: {
+    get: (row) =>
+      `${row.lockedByUser?.account?.firstName} ${row.lockedByUser?.account?.lastName}`,
+  },
+  createdAt: {},
+  updatedAt: {},
+};
 
 export default class EntitiesIndex extends ConfiguredCommand {
   static flags = {
+    ...cli.table.flags(),
+    format: format(),
     app: app(),
   };
 
@@ -24,6 +43,6 @@ export default class EntitiesIndex extends ConfiguredCommand {
       undefined,
       undefined
     );
-    cli.styledJSON(data);
+    this.output(data, flags, ENTITY_COLUMNS);
   }
 }

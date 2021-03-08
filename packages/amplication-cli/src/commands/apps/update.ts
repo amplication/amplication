@@ -3,11 +3,16 @@ import { flags } from '@oclif/command';
 import { ConfiguredCommand } from '../../configured-command';
 import chalk from 'chalk';
 import { updateApp } from '../../api';
+import { format } from '../../flags/format-flag';
 import { app } from '../../flags/app-flag';
+import { APP_COLUMNS } from './index';
 
 export default class AppsUpdate extends ConfiguredCommand {
   static flags = {
+    ...cli.table.flags(),
+    format: format(),
     app: app(),
+
     name: flags.string({
       required: false,
       description: 'name of the app',
@@ -36,7 +41,7 @@ export default class AppsUpdate extends ConfiguredCommand {
       });
 
       cli.action.stop();
-      cli.styledJSON(data);
+      this.output(data, flags, APP_COLUMNS);
     }
   }
 }

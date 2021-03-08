@@ -2,8 +2,15 @@ import cli from 'cli-ux';
 import { ConfiguredCommand } from '../../configured-command';
 import chalk from 'chalk';
 import { createApp } from '../../api';
+import { format } from '../../flags/format-flag';
+import { APP_COLUMNS } from './index';
 
 export default class AppsCreate extends ConfiguredCommand {
+  static flags = {
+    ...cli.table.flags(),
+    format: format(),
+  };
+
   static args = [
     {
       name: 'name',
@@ -18,7 +25,7 @@ export default class AppsCreate extends ConfiguredCommand {
   ];
 
   async command() {
-    const { args } = this.parse(AppsCreate);
+    const { args, flags } = this.parse(AppsCreate);
 
     const name = args.name;
     const description = args.description;
@@ -28,6 +35,6 @@ export default class AppsCreate extends ConfiguredCommand {
     const data = await createApp(this.client, name, description || '');
 
     cli.action.stop();
-    cli.styledJSON(data);
+    this.output(data, flags, APP_COLUMNS);
   }
 }
