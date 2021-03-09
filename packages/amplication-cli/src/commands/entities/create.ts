@@ -8,6 +8,7 @@ import { createEntity } from '../../api';
 import { format } from '../../flags/format-flag';
 import { app } from '../../flags/app-flag';
 import { ENTITY_COLUMNS } from './index';
+import { AMP_CURRENT_ENTITY } from '../../properties';
 
 export default class EntitiesCreate extends ConfiguredCommand {
   static flags = {
@@ -25,6 +26,10 @@ export default class EntitiesCreate extends ConfiguredCommand {
     description: flags.string({
       required: false,
       description: 'description of the entity',
+    }),
+    ['set-current']: flags.boolean({
+      default: false,
+      description: 'set the newly created entity as the current entity',
     }),
   };
 
@@ -61,6 +66,11 @@ export default class EntitiesCreate extends ConfiguredCommand {
         pluralDisplayName: finalPluralDisplayName,
         description,
       });
+
+      if (flags['set-current'] === true) {
+        this.setConfig(AMP_CURRENT_ENTITY, data.id);
+        this.log(`Property updated - ${AMP_CURRENT_ENTITY}=${data.id}`);
+      }
 
       cli.action.stop();
       this.output(data, flags, ENTITY_COLUMNS);

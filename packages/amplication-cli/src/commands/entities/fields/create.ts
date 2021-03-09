@@ -1,10 +1,12 @@
 import cli from 'cli-ux';
 import { ConfiguredCommand } from '../../../configured-command';
+import { flags } from '@oclif/command';
 import chalk from 'chalk';
 import { createFieldByDisplayName } from '../../../api';
 import { format } from '../../../flags/format-flag';
 import { entity } from '../../../flags/entity-flag';
 import { FIELD_COLUMNS } from './index';
+import { AMP_CURRENT_FIELD } from '../../../properties';
 
 export default class FieldsCreate extends ConfiguredCommand {
   static flags = {
@@ -12,6 +14,10 @@ export default class FieldsCreate extends ConfiguredCommand {
     format: format(),
     entity: entity({
       required: true,
+    }),
+    ['set-current']: flags.boolean({
+      default: false,
+      description: 'set the newly created field as the current field',
     }),
   };
 
@@ -39,6 +45,11 @@ export default class FieldsCreate extends ConfiguredCommand {
         },
       },
     });
+
+    if (flags['set-current'] === true) {
+      this.setConfig(AMP_CURRENT_FIELD, data.id);
+      this.log(`Property updated - ${AMP_CURRENT_FIELD}=${data.id}`);
+    }
 
     cli.action.stop();
     this.output(data, flags, FIELD_COLUMNS);
