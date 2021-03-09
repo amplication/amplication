@@ -75,6 +75,17 @@ USAGE
 ARGUMENTS
   NAME         name of app to create
   DESCRIPTION  description of app to create
+
+OPTIONS
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
 ```
 
 ## `amp apps:current`
@@ -84,7 +95,16 @@ USAGE
   $ amp apps:current
 
 OPTIONS
-  -a, --app=app  (required) ID of the app
+  -a, --app=app                       (required) ID of the app
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
 ```
 
 ## `amp apps:info`
@@ -113,9 +133,18 @@ USAGE
   $ amp apps:update
 
 OPTIONS
-  -a, --app=app              app to run command against
-  --description=description  (required) description of the app
-  --name=name                name of the app
+  -a, --app=app                       app to run command against
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --description=description           (required) description of the app
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --name=name                         name of the app
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
 ```
 
 ## `amp auth TOKEN`
@@ -170,7 +199,16 @@ USAGE
   $ amp entities
 
 OPTIONS
-  -a, --app=app  app to run command against
+  -a, --app=app                       app to run command against
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
 ```
 
 ## `amp entities:create DISPLAYNAME`
@@ -184,9 +222,18 @@ ARGUMENTS
 
 OPTIONS
   -a, --app=app                          app to run command against
+  -f, --format=JSON|styledJSON|table     [default: JSON] The format in which to render the output
+  -x, --extended                         show extra columns
+  --columns=columns                      only show provided columns (comma-separated)
+  --csv                                  output is csv format [alias: --output=csv]
   --description=description              description of the entity
+  --filter=filter                        filter property by partial string matching, ex: name=foo
   --name=name                            name of the entity
+  --no-header                            hide table header from output
+  --no-truncate                          do not truncate output to fit screen
+  --output=csv|json|yaml                 output in a more machine friendly format
   --pluralDisplayName=pluralDisplayName  plural display name of the entity
+  --sort=sort                            property to sort by (prepend '-' for descending)
 ```
 
 ## `amp entities:fields`
@@ -196,7 +243,16 @@ USAGE
   $ amp entities:fields
 
 OPTIONS
-  -e, --entity=entity  ID of the entity
+  -e, --entity=entity                 ID of the entity
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
 ```
 
 ## `amp entities:info ENTITY`
@@ -207,6 +263,17 @@ USAGE
 
 ARGUMENTS
   ENTITY  id of entity
+
+OPTIONS
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
 ```
 
 ## `amp help [COMMAND]`
