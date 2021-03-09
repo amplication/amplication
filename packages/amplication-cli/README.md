@@ -47,6 +47,7 @@ USAGE
 * [`amp entities:create DISPLAYNAME`](#amp-entitiescreate-displayname)
 * [`amp entities:fields`](#amp-entitiesfields)
 * [`amp entities:info ENTITY`](#amp-entitiesinfo-entity)
+* [`amp entities:update`](#amp-entitiesupdate)
 * [`amp help [COMMAND]`](#amp-help-command)
 
 ## `amp apps`
@@ -295,6 +296,29 @@ OPTIONS
   --no-truncate                       do not truncate output to fit screen
   --output=csv|json|yaml              output in a more machine friendly format
   --sort=sort                         property to sort by (prepend '-' for descending)
+```
+
+## `amp entities:update`
+
+```
+USAGE
+  $ amp entities:update
+
+OPTIONS
+  -e, --entity=entity                    (required) ID of the entity
+  -f, --format=JSON|styledJSON|table     [default: JSON] The format in which to render the output
+  -x, --extended                         show extra columns
+  --columns=columns                      only show provided columns (comma-separated)
+  --csv                                  output is csv format [alias: --output=csv]
+  --description=description              description of the entity
+  --displayName=displayName              display name of the entity
+  --filter=filter                        filter property by partial string matching, ex: name=foo
+  --name=name                            name of the entity
+  --no-header                            hide table header from output
+  --no-truncate                          do not truncate output to fit screen
+  --output=csv|json|yaml                 output in a more machine friendly format
+  --pluralDisplayName=pluralDisplayName  plural display name of the entity
+  --sort=sort                            property to sort by (prepend '-' for descending)
 ```
 
 ## `amp help [COMMAND]`
