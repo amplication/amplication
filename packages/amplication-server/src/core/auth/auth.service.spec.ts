@@ -8,7 +8,7 @@ import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AuthService, AuthUser } from './auth.service';
 import { OrganizationService } from '../organization/organization.service';
-
+import { EnumTokenType } from './dto';
 const EXAMPLE_TOKEN = 'EXAMPLE TOKEN';
 
 const EXAMPLE_ACCOUNT: Account = {
@@ -255,7 +255,8 @@ describe('AuthService', () => {
       accountId: EXAMPLE_ACCOUNT.id,
       organizationId: EXAMPLE_ORGANIZATION.id,
       roles: [EXAMPLE_USER_ROLE.role],
-      userId: EXAMPLE_USER.id
+      userId: EXAMPLE_USER.id,
+      type: EnumTokenType.User
     });
   });
 
@@ -286,7 +287,8 @@ describe('AuthService', () => {
       accountId: EXAMPLE_ACCOUNT.id,
       organizationId: EXAMPLE_ORGANIZATION.id,
       roles: [EXAMPLE_USER_ROLE.role],
-      userId: EXAMPLE_USER.id
+      userId: EXAMPLE_USER.id,
+      type: EnumTokenType.User
     });
   });
 
@@ -323,7 +325,8 @@ describe('AuthService', () => {
       accountId: EXAMPLE_ACCOUNT.id,
       organizationId: EXAMPLE_OTHER_ORGANIZATION.id,
       roles: [EXAMPLE_USER_ROLE.role],
-      userId: EXAMPLE_OTHER_AUTH_USER.id
+      userId: EXAMPLE_OTHER_AUTH_USER.id,
+      type: EnumTokenType.User
     });
   });
 
