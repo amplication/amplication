@@ -14,6 +14,8 @@ const GET_FIELDS = gql`
       fields(where: { displayName: $whereName }, orderBy: $orderBy) {
         id
         displayName
+        createdAt
+        updatedAt
         name
         dataType
         required

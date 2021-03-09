@@ -11,3 +11,4 @@ export { updateEntity } from './entities-update';
 
 export { getFields } from './fields-list';
 export { createFieldByDisplayName } from './fields-create-by-display-name';
+export { updateField } from './fields-update';

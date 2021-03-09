@@ -1,7 +1,7 @@
 import cli, { Table } from 'cli-ux';
 import { ConfiguredCommand } from '../../../configured-command';
 import { getFields } from '../../../api';
-import { flags } from '@oclif/command';
+import { entity } from '../../../flags/entity-flag';
 import { format } from '../../../flags/format-flag';
 
 export const FIELD_COLUMNS: Table.table.Columns<any> = {
@@ -19,9 +19,8 @@ export default class FieldsIndex extends ConfiguredCommand {
   static flags = {
     ...cli.table.flags(),
     format: format(),
-    entity: flags.string({
-      char: 'e',
-      description: 'ID of the entity',
+    entity: entity({
+      required: true,
     }),
   };
 

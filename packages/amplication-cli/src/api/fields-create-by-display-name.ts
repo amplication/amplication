@@ -9,6 +9,8 @@ const CREATE_ENTITY_FIELD = gql`
     createEntityFieldByDisplayName(data: $data) {
       id
       displayName
+      createdAt
+      updatedAt
       name
       dataType
       required
