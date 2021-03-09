@@ -15,6 +15,7 @@ type TData = {
 };
 
 const DATE_CREATED_FIELD = "createdAt";
+const CLASS_NAME = "entity-field-list";
 
 type Props = {
   entityId: string;
@@ -23,8 +24,6 @@ type Props = {
 export const EntityFieldList = React.memo(({ entityId }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
-
-  const CLASS_NAME = "entity-field-list";
 
   const { data, loading, error: errorLoading } = useQuery<TData>(GET_FIELDS, {
     variables: {

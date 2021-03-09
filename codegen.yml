@@ -6,6 +6,8 @@ generates:
     - typescript
   packages/amplication-data/src/models.ts:
     - typescript
+  packages/amplication-cli/src/models.ts:
+    - typescript
 hooks:
   afterAllFileWrite:
     - prettier --write

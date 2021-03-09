@@ -1625,16 +1625,18 @@ export class EntityService {
       }
     }
 
-    // Validate the field's properties
-    const validationResults = await this.validateFieldProperties(
-      EnumDataType[data.dataType],
-      data.properties
-    );
-
-    if (!validationResults.isValid) {
-      throw new ConflictException(
-        `Cannot validate the Entity Field Properties. ${validationResults.errorText}`
+    // Validate the field's properties (if both are undefined skip the test)
+    if (!(undefined === data.dataType && undefined === data.properties)) {
+      const validationResults = await this.validateFieldProperties(
+        EnumDataType[data.dataType],
+        data.properties
       );
+
+      if (!validationResults.isValid) {
+        throw new ConflictException(
+          `Cannot validate the Entity Field Properties. ${validationResults.errorText}`
+        );
+      }
     }
   }
 
@@ -1869,7 +1871,7 @@ export class EntityService {
     const shouldChangeRelated =
       !shouldCreateRelated &&
       !shouldDeleteRelated &&
-      args.data.properties.relatedEntityId !==
+      args.data.properties?.relatedEntityId !==
         ((field.properties as unknown) as types.Lookup)?.relatedEntityId;
 
     // Get the field's entity

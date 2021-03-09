@@ -5,14 +5,18 @@ import {
   LoginArgs,
   SignupArgs,
   ChangePasswordArgs,
-  SetCurrentOrganizationArgs
+  SetCurrentOrganizationArgs,
+  CreateApiTokenArgs,
+  ApiToken
 } from './dto';
 
 import { AuthService } from './auth.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-
+import { FindOneArgs } from 'src/dto';
+import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
@@ -39,6 +43,26 @@ export class AuthResolver {
     return { token };
   }
 
+  @Mutation(() => ApiToken)
+  @UseGuards(GqlAuthGuard)
+  async createApiToken(
+    @UserEntity() user: User,
+    @Args() args: CreateApiTokenArgs
+  ): Promise<ApiToken> {
+    args.data.user = {
+      connect: {
+        id: user.id
+      }
+    };
+    return this.authService.createApiToken(args);
+  }
+
+  @Query(() => [ApiToken])
+  @UseGuards(GqlAuthGuard)
+  async userApiTokens(@UserEntity() user: User): Promise<ApiToken[]> {
+    return this.authService.getUserApiTokens({ where: { id: user.id } });
+  }
+
   @Mutation(() => Account)
   @UseGuards(GqlAuthGuard)
   async changePassword(
@@ -50,6 +74,16 @@ export class AuthResolver {
       args.data.oldPassword,
       args.data.newPassword
     );
+  }
+
+  @Mutation(() => ApiToken)
+  @UseGuards(GqlAuthGuard)
+  @AuthorizeContext(AuthorizableResourceParameter.ApiTokenId, 'where.id')
+  async deleteApiToken(
+    @UserEntity() user: User,
+    @Args() args: FindOneArgs
+  ): Promise<ApiToken> {
+    return this.authService.deleteApiToken(args);
   }
 
   @Mutation(() => Auth)

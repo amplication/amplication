@@ -1,0 +1,14 @@
+0 silly argv {
+0 silly argv   _: [ 'add' ],
+0 silly argv   scope: '@amplication/cli',
+0 silly argv   globs: [],
+0 silly argv   lernaVersion: '3.22.1',
+0 silly argv   '$0': 'node_modules\\lerna\\cli.js',
+0 silly argv   pkg: 'types/pluralize'
+0 silly argv }
+1 notice cli v3.22.1
+2 verbose rootPath C:\projects\amplication.git\amplication
+3 error Error: exited with error code: 128
+3 error     at ChildProcess.<anonymous> (C:\projects\amplication.git\amplication\node_modules\@evocateur\pacote\lib\util\finished.js:12:19)
+3 error     at ChildProcess.emit (events.js:311:20)
+3 error     at maybeClose (internal/child_process.js:1021:16)
