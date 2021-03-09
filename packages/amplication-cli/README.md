@@ -21,7 +21,7 @@ $ npm install -g @amplication/cli
 $ amp COMMAND
 running command...
 $ amp (-v|--version|version)
-@amplication/cli/0.0.1 win32-x64 node-v12.16.1
+@amplication/cli/0.0.2 win32-x64 node-v12.16.1
 $ amp --help [COMMAND]
 USAGE
   $ amp COMMAND
@@ -269,7 +269,7 @@ USAGE
   $ amp entities:fields
 
 OPTIONS
-  -e, --entity=entity                 ID of the entity
+  -e, --entity=entity                 (required) ID of the entity
   -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
   -x, --extended                      show extra columns
   --columns=columns                   only show provided columns (comma-separated)
