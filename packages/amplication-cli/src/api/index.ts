@@ -10,3 +10,4 @@ export { createEntity } from './entities-create';
 export { updateEntity } from './entities-update';
 
 export { getFields } from './fields-list';
+export { createFieldByDisplayName } from './fields-create-by-display-name';
