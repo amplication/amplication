@@ -23,6 +23,7 @@
 Amplication is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
 
 Amplication auto-generates fully functional apps based on TypeScript and Node.js.
+
 ## [Getting Started](https://docs.amplication.com/docs/getting-started)
 
 Try amplication immediately on [app.amplication.com](http://app.amplication.com/)
@@ -32,9 +33,10 @@ or [follow the instructions](#development) to run a local instance.
 
 Build business applications with:
 
-- Visually managed data models
+- Manage data models visually or through CLI
 - Auto-generated human-editable source code
 - Node.js server built with Nest.js and Passport with REST API and GraphQL
+- Custom code generated app
 - Admin UI built with React
 - Role-based access control
 - Docker and docker-compose integration
@@ -43,8 +45,6 @@ Build business applications with:
 See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
 
 [Watch this video](https://youtu.be/tKGeLXoPr94) for a quick reacap of everything you get with Amplication.
-
-
 
 ## Development
 
@@ -59,6 +59,10 @@ The server exposes a GraphQL API for all actions. The server is built with the f
 
 Amplication Client is the front end of the platform that provides you with an easy to drive UI for building your next low-code application.
 The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
+
+### [Amplication CLI](./packages/amplication-cli/README.md)
+
+Define your data model and generate apps faster using Amplication Command Line Interface (CLI). Execute pre-defined scripts to create your app instantly.
 
 ## Other packages
 
