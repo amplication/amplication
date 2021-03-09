@@ -8,14 +8,16 @@ Amplication CLI
 [![License](https://img.shields.io/npm/l/@amplication/cli.svg)](https://github.com/noctifer20/cli/blob/master/package.json)
 
 <!-- toc -->
-* [@amplication/cli](#amplicationcli)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [@amplication/cli](#amplicationcli)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @amplication/cli
 $ amp COMMAND
@@ -27,30 +29,53 @@ USAGE
   $ amp COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
+# Setup
+
+## Authentication
+
+Generate a token on Amplication server UI and use the token with the following command:
+
+```sh-session
+$ amp auth TOKEN
+
+```
+
+## Changing Amplication server url
+
+By default, Amplication CLI works with the hosted version on https://app.amplication.com.
+In case you want to use the CLI with another Amplication version, you can use the config:set command
+
+```sh-session
+$ amp config:set AMP_SERVER_URL http://localhost:3000
+
+```
 
 # Commands
 
 <!-- commands -->
-* [`amp apps`](#amp-apps)
-* [`amp apps:commit`](#amp-appscommit)
-* [`amp apps:create NAME [DESCRIPTION]`](#amp-appscreate-name-description)
-* [`amp apps:current`](#amp-appscurrent)
-* [`amp apps:info`](#amp-appsinfo)
-* [`amp apps:update`](#amp-appsupdate)
-* [`amp auth TOKEN`](#amp-auth-token)
-* [`amp config`](#amp-config)
-* [`amp config:get PROPERTY`](#amp-configget-property)
-* [`amp config:set PROPERTY VALUE`](#amp-configset-property-value)
-* [`amp config:unset PROPERTY`](#amp-configunset-property)
-* [`amp entities`](#amp-entities)
-* [`amp entities:create DISPLAYNAME`](#amp-entitiescreate-displayname)
-* [`amp entities:fields`](#amp-entitiesfields)
-* [`amp entities:fields:create DISPLAYNAME`](#amp-entitiesfieldscreate-displayname)
-* [`amp entities:fields:update`](#amp-entitiesfieldsupdate)
-* [`amp entities:info ENTITY`](#amp-entitiesinfo-entity)
-* [`amp entities:update`](#amp-entitiesupdate)
-* [`amp help [COMMAND]`](#amp-help-command)
+
+- [`amp apps`](#amp-apps)
+- [`amp apps:commit`](#amp-appscommit)
+- [`amp apps:create NAME [DESCRIPTION]`](#amp-appscreate-name-description)
+- [`amp apps:current`](#amp-appscurrent)
+- [`amp apps:info`](#amp-appsinfo)
+- [`amp apps:update`](#amp-appsupdate)
+- [`amp auth TOKEN`](#amp-auth-token)
+- [`amp config`](#amp-config)
+- [`amp config:get PROPERTY`](#amp-configget-property)
+- [`amp config:set PROPERTY VALUE`](#amp-configset-property-value)
+- [`amp config:unset PROPERTY`](#amp-configunset-property)
+- [`amp entities`](#amp-entities)
+- [`amp entities:create DISPLAYNAME`](#amp-entitiescreate-displayname)
+- [`amp entities:fields`](#amp-entitiesfields)
+- [`amp entities:fields:create DISPLAYNAME`](#amp-entitiesfieldscreate-displayname)
+- [`amp entities:fields:update`](#amp-entitiesfieldsupdate)
+- [`amp entities:info ENTITY`](#amp-entitiesinfo-entity)
+- [`amp entities:update`](#amp-entitiesupdate)
+- [`amp help [COMMAND]`](#amp-help-command)
 
 ## `amp apps`
 
@@ -388,4 +413,5 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
+
 <!-- commandsstop -->

@@ -1,10 +1,9 @@
 {
   "name": "@amplication/cli",
   "description": "Amplication CLI",
-  "version": "0.0.1",
-  "private": "true",
+  "version": "0.0.2",
   "bin": {
-    "amp-oc": "./bin/run"
+    "amp": "bin/run"
   },
   "engines": {
     "node": ">=8.0.0"
