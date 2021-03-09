@@ -54,6 +54,22 @@ export type ActionStep = {
   logs?: Maybe<Array<ActionLog>>;
 };
 
+export type ApiToken = {
+  __typename?: "ApiToken";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  name: Scalars["String"];
+  userId: Scalars["String"];
+  token?: Maybe<Scalars["String"]>;
+  previewChars: Scalars["String"];
+  lastAccessAt: Scalars["DateTime"];
+};
+
+export type ApiTokenCreateInput = {
+  name: Scalars["String"];
+};
+
 export type App = {
   __typename?: "App";
   id: Scalars["String"];
@@ -1117,7 +1133,9 @@ export type Mutation = {
   appDisableSyncWithGithubRepo: App;
   signup: Auth;
   login: Auth;
+  createApiToken: ApiToken;
   changePassword: Account;
+  deleteApiToken: ApiToken;
   setCurrentOrganization: Auth;
   createConnectorRestApi: ConnectorRestApi;
   updateConnectorRestApi: ConnectorRestApi;
@@ -1282,8 +1300,16 @@ export type MutationLoginArgs = {
   data: LoginInput;
 };
 
+export type MutationCreateApiTokenArgs = {
+  data: ApiTokenCreateInput;
+};
+
 export type MutationChangePasswordArgs = {
   data: ChangePasswordInput;
+};
+
+export type MutationDeleteApiTokenArgs = {
+  where: WhereUniqueInput;
 };
 
 export type MutationSetCurrentOrganizationArgs = {
@@ -1403,6 +1429,7 @@ export type Query = {
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
   me: User;
+  userApiTokens: Array<ApiToken>;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
   ConnectorRestApis: Array<ConnectorRestApi>;
   blockVersions: Array<BlockVersion>;

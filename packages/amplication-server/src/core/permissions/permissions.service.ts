@@ -40,6 +40,15 @@ export class PermissionsService {
       });
       return matching === 1;
     }
+    if (resourceType === AuthorizableResourceParameter.ApiTokenId) {
+      const matching = await this.prisma.apiToken.count({
+        where: {
+          id: resourceId,
+          userId: user.id
+        }
+      });
+      return matching === 1;
+    }
     if (resourceType === AuthorizableResourceParameter.ActionId) {
       const matching = await this.prisma.action.count({
         where: {

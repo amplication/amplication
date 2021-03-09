@@ -5,7 +5,10 @@ import {
   Inject
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserWhereInput } from '@prisma/client';
+import { subDays } from 'date-fns';
+import cuid from 'cuid';
+
+import { SortOrder, UserWhereInput } from '@prisma/client';
 import { Profile as GitHubProfile } from 'passport-github2';
 import { PrismaService } from 'nestjs-prisma';
 import { Account, User, UserRole, Organization } from 'src/models';
@@ -13,14 +16,24 @@ import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
-import { SignupInput } from './dto';
+import {
+  SignupInput,
+  ApiToken,
+  CreateApiTokenArgs,
+  JwtDto,
+  EnumTokenType
+} from './dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
+import { FindOneArgs } from 'src/dto';
 
 export type AuthUser = User & {
   account: Account;
   organization: Organization;
   userRoles: UserRole[];
 };
+
+const TOKEN_PREVIEW_LENGTH = 8;
+const TOKEN_EXPIRY_DAYS = 30;
 
 const ORGANIZATION_DEFAULT_VALUES = {
   address: '',
@@ -183,6 +196,108 @@ export class AuthService {
     return this.prepareToken(user);
   }
 
+  async createApiToken(args: CreateApiTokenArgs): Promise<ApiToken> {
+    const user = await this.prismaService.user.findOne({
+      where: {
+        id: args.data.user.connect.id
+      },
+      include: { organization: true, userRoles: true, account: true }
+    });
+
+    if (!user) {
+      throw new AmplicationError(
+        `No user found with ID: ${args.data.user.connect.id}`
+      );
+    }
+
+    const tokenId = cuid();
+    const token = await this.prepareApiToken(user, tokenId);
+    const previewChars = token.substr(-TOKEN_PREVIEW_LENGTH);
+    const hashedToken = await this.passwordService.hashPassword(token);
+
+    const apiToken = await this.prismaService.apiToken.create({
+      data: {
+        ...args.data,
+        id: tokenId,
+        lastAccessAt: new Date(),
+        previewChars,
+        token: hashedToken
+      }
+    });
+
+    apiToken.token = token;
+
+    return apiToken;
+  }
+  /**
+   * Validates that the provided token of the provided user exist and not expired.
+   * In case it is valid, it updates the "LastAccessAt" with current date and time
+   */
+  async validateApiToken(args: {
+    userId: string;
+    tokenId: string;
+    token: string;
+  }): Promise<boolean> {
+    const lastAccessThreshold = subDays(new Date(), TOKEN_EXPIRY_DAYS);
+
+    const apiToken = await this.prismaService.apiToken.updateMany({
+      where: {
+        userId: args.userId,
+        id: args.tokenId,
+        lastAccessAt: {
+          gt: lastAccessThreshold
+        }
+      },
+      data: {
+        lastAccessAt: new Date()
+      }
+    });
+
+    if (apiToken.count === 1) {
+      return true;
+    }
+    return false;
+  }
+
+  async deleteApiToken(args: FindOneArgs): Promise<ApiToken> {
+    return this.prismaService.apiToken.delete({
+      where: {
+        id: args.where.id
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+        previewChars: true,
+        lastAccessAt: true,
+        userId: true
+      }
+    });
+  }
+
+  async getUserApiTokens(args: FindOneArgs): Promise<ApiToken[]> {
+    const apiTokens = await this.prismaService.apiToken.findMany({
+      where: {
+        userId: args.where.id
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+        previewChars: true,
+        lastAccessAt: true,
+        userId: true
+      },
+      orderBy: {
+        createdAt: SortOrder.desc
+      }
+    });
+
+    return apiTokens;
+  }
+
   async changePassword(
     account: Account,
     oldPassword: string,
@@ -209,12 +324,35 @@ export class AuthService {
    */
   async prepareToken(user: AuthUser): Promise<string> {
     const roles = user.userRoles.map(role => role.role);
-    return this.jwtService.sign({
+
+    const payload: JwtDto = {
       accountId: user.account.id,
       userId: user.id,
       roles,
-      organizationId: user.organization.id
-    });
+      organizationId: user.organization.id,
+      type: EnumTokenType.User
+    };
+    return this.jwtService.sign(payload);
+  }
+
+  /**
+   * Creates an API token from given user
+   * @param user to create token for
+   * @returns new JWT token
+   */
+  async prepareApiToken(user: AuthUser, tokenId: string): Promise<string> {
+    const roles = user.userRoles.map(role => role.role);
+
+    const payload: JwtDto = {
+      accountId: user.account.id,
+      userId: user.id,
+      roles,
+      organizationId: user.organization.id,
+      type: EnumTokenType.ApiToken,
+      tokenId: tokenId
+    };
+
+    return this.jwtService.sign(payload);
   }
 
   async getAuthUser(where: UserWhereInput): Promise<AuthUser | null> {

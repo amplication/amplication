@@ -10,7 +10,10 @@
   --theme-green: #8dd9b9;
   --theme-blue: #20a4f3;
 
+  --theme-turquoise-transparent: rgba(65, 202, 221, 0.1);
+
   --negative-light: #f85b6e;
+  --negative-light-transparent: rgba(248, 91, 110, 0.1);
 
   --negative-bg: #f8eaec;
 }

@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { Icon } from "@rmwc/icon";
 import { Tooltip } from "@primer/components";
 import classNames from "classnames";
 import { formatDistanceToNow } from "date-fns";
@@ -27,6 +28,9 @@ export function TimeSince({ time, size = EnumTimeSinceSize.Default }: Props) {
         className={`${CLASS_NAME}__tooltip`}
         aria-label={formattedTime || ""}
       >
+        <span className={`${CLASS_NAME}__icon`}>
+          <Icon icon="calendar" />
+        </span>
         <span className={`${CLASS_NAME}__time`}>{formattedTime}</span>
       </Tooltip>
     </span>

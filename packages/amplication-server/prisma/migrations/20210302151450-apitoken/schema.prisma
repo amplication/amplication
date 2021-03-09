@@ -1,0 +1,441 @@
+datasource db {
+  provider = "postgresql"
+  url = "***"
+}
+
+generator client {
+  provider = "prisma-client-js"
+
+}
+
+// generator typegraphql {
+//   provider = "node ./node_modules/typegraphql-prisma/generator.js"
+//   output   = "./dal"
+// }
+
+model Account {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  email         String   @unique
+  firstName     String
+  lastName      String
+  password      String
+  users         User[]   @relation("AccountOnUser")
+  currentUser   User?    @relation(fields: [currentUserId], references: [id])
+  currentUserId String?
+  githubId      String?
+}
+
+model Organization {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  name            String   @unique
+  defaultTimeZone String
+  address         String
+  apps            App[]
+  users           User[]
+}
+
+model User {
+  id                String       @id @default(cuid())
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  account           Account      @relation("AccountOnUser", fields: [accountId], references: [id])
+  accountId         String
+  organization      Organization @relation(fields: [organizationId], references: [id])
+  organizationId    String
+  userRoles         UserRole[]
+  assignedCurrentTo Account?
+
+  commits       Commit[]
+  lockedEntitis Entity[]
+  builds        Build[]
+  deployments   Deployment[]
+  apiTokens     ApiToken[]
+  @@unique([accountId, organizationId])
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  role      String
+
+  @@unique([userId, role])
+}
+
+model ApiToken {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+  token        String
+  previewChars String
+  lastAccessAt DateTime
+}
+
+model App {
+  id                     String       @id @default(cuid())
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  organization           Organization @relation(fields: [organizationId], references: [id])
+  organizationId         String
+  name                   String
+  description            String
+  color                  String       @default("#20A4F3")
+  githubToken            String?
+  githubTokenCreatedDate DateTime?
+  githubSyncEnabled      Boolean      @default(false)
+  githubRepo             String?
+  githubBranch           String?
+  githubLastSync         DateTime?
+  githubLastMessage      String?
+  entities               Entity[]
+  blocks                 Block[]
+  roles                  AppRole[]
+  commits                Commit[]
+  builds                 Build[]
+
+  environments Environment[]
+  @@unique([organizationId, name])
+}
+
+model AppRole {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  app         App      @relation(fields: [appId], references: [id])
+  appId       String
+  name        String
+  displayName String
+  description String?
+
+  entityPermissionRoles EntityPermissionRole[]
+  @@unique([appId, name])
+  @@unique([appId, displayName])
+}
+
+model Commit {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  app       App      @relation(fields: [appId], references: [id])
+  appId     String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  message   String
+
+  entityVersions EntityVersion[]
+  builds         Build[]
+  releases       Release[]
+}
+
+model Entity {
+  id                String          @id @default(cuid())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  app               App             @relation(fields: [appId], references: [id])
+  appId             String
+  name              String
+  displayName       String
+  pluralDisplayName String
+  description       String?
+  versions          EntityVersion[]
+  lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
+  lockedByUserId    String?
+  lockedAt          DateTime?
+  deletedAt         DateTime?
+
+  @@unique([appId, name])
+  @@unique([appId, pluralDisplayName])
+  @@unique([appId, displayName])
+}
+
+model EntityVersion {
+  id                String             @id @default(cuid())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  entity            Entity             @relation(fields: [entityId], references: [id])
+  entityId          String
+  versionNumber     Int
+  name              String
+  displayName       String
+  pluralDisplayName String
+  description       String?
+  fields            EntityField[]
+  commit            Commit?            @relation(fields: [commitId], references: [id])
+  commitId          String?
+  permissions       EntityPermission[]
+  builds            Build[]            @relation(references: [id])
+  deleted           Boolean?
+
+
+  @@unique([entityId, versionNumber])
+}
+
+enum EnumEntityAction {
+  View
+  Create
+  Update
+  Delete
+  Search
+}
+
+enum EnumEntityPermissionType {
+  AllRoles
+  Granular
+  Disabled
+}
+
+model EntityPermission {
+  id               String                   @id @default(cuid())
+  entityVersion    EntityVersion            @relation(fields: [entityVersionId], references: [id])
+  entityVersionId  String
+  action           EnumEntityAction
+  type             EnumEntityPermissionType
+  permissionRoles  EntityPermissionRole[]
+  permissionFields EntityPermissionField[]
+
+  @@unique([entityVersionId, action])
+}
+
+model EntityPermissionRole {
+  id               String                  @id @default(cuid())
+  permission       EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action])
+  entityVersionId  String
+  action           EnumEntityAction
+  appRole          AppRole                 @relation(fields: [appRoleId], references: [id])
+  appRoleId        String
+  permissionFields EntityPermissionField[]
+
+  @@unique([entityVersionId, action, appRoleId])
+}
+
+model EntityPermissionField {
+  id               String                 @id @default(cuid())
+  permission       EntityPermission       @relation(fields: [permissionId], references: [id])
+  permissionId     String
+  field            EntityField            @relation(fields: [fieldPermanentId, entityVersionId], references: [permanentId, entityVersionId])
+  fieldPermanentId String
+  entityVersionId  String
+  permissionRoles  EntityPermissionRole[]
+
+  @@unique([permissionId, fieldPermanentId])
+}
+
+model EntityField {
+  id              String        @id @default(cuid())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  entityVersion   EntityVersion @relation(fields: [entityVersionId], references: [id])
+  entityVersionId String
+  permanentId     String        @default(cuid())
+  name            String
+  displayName     String
+  dataType        EnumDataType
+  properties      Json
+  required        Boolean
+  // TBD
+  searchable      Boolean
+  description     String
+  position        Int?
+
+  permissionField EntityPermissionField[]
+  @@unique([entityVersionId, permanentId])
+  @@unique([entityVersionId, name])
+  @@unique([entityVersionId, displayName])
+}
+
+enum EnumDataType {
+  SingleLineText
+  MultiLineText
+  Email
+  WholeNumber
+  DateTime
+  DecimalNumber
+  Lookup
+  MultiSelectOptionSet
+  OptionSet
+  Boolean
+  GeographicLocation
+  Id
+  CreatedAt
+  UpdatedAt
+  Roles
+  Username
+  Password
+}
+
+model Block {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  app           App            @relation(fields: [appId], references: [id])
+  appId         String
+  parentBlock   Block?         @relation(fields: [parentBlockId], references: [id])
+  parentBlockId String?
+  blockType     EnumBlockType
+  displayName   String
+  description   String?
+  versions      BlockVersion[]
+
+  blocks Block[] @relation("BlockToBlock")
+  @@unique([appId, displayName])
+}
+
+enum EnumBlockType {
+  AppSettings
+  Flow
+  ConnectorRestApi
+  ConnectorRestApiCall
+  ConnectorSoapApi
+  ConnectorFile
+  EntityApi
+  EntityApiEndpoint
+  FlowApi
+  Layout
+  CanvasPage
+  EntityPage
+  Document
+}
+
+model BlockVersion {
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  block            Block    @relation(fields: [blockId], references: [id])
+  blockId          String
+  versionNumber    Int
+  label            String
+  inputParameters  Json? //JSON
+  outputParameters Json? //JSON
+  settings         Json //JSON
+  builds           Build[]  @relation(references: [id])
+
+  @@unique([blockId, versionNumber])
+}
+
+enum ActionStepStatus {
+  Waiting
+  Running
+  Failed
+  Success
+}
+
+model Action {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  steps       ActionStep[]
+  builds      Build[]
+  deployments Deployment[]
+}
+
+model ActionStep {
+  id          String           @id @default(cuid())
+  createdAt   DateTime         @default(now())
+  name        String           @default("")
+  message     String
+  status      ActionStepStatus
+  completedAt DateTime?
+  logs        ActionLog[]
+  action      Action           @relation(fields: [actionId], references: [id])
+  actionId    String
+
+  @@index([actionId])
+}
+
+enum EnumLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+model ActionLog {
+  id        String       @id @default(cuid())
+  createdAt DateTime     @default(now())
+  message   String
+  meta      Json
+  level     EnumLogLevel
+  step      ActionStep   @relation(fields: [stepId], references: [id])
+  stepId    String
+
+  @@index([stepId])
+}
+
+model Build {
+  id                       String          @id @default(cuid())
+  createdAt                DateTime        @default(now())
+  createdBy                User            @relation(fields: [userId], references: [id])
+  app                      App             @relation(fields: [appId], references: [id])
+  appId                    String
+  userId                   String
+  blockVersions            BlockVersion[]  @relation(references: [id])
+  entityVersions           EntityVersion[] @relation(references: [id])
+  version                  String
+  message                  String?
+  action                   Action          @relation(fields: [actionId], references: [id])
+  actionId                 String
+  images                   String[]
+  containerStatusQuery     Json?
+  containerStatusUpdatedAt DateTime?
+  commit                   Commit?         @relation(fields: [commitId], references: [id])
+  commitId                 String?
+
+  deployments Deployment[]
+  @@unique([appId, version])
+}
+
+model Release {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  version     String
+  description String?
+  commit      Commit   @relation(fields: [commitId], references: [id])
+  commitId    String
+
+}
+
+model Environment {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  app         App      @relation(fields: [appId], references: [id])
+  appId       String
+  name        String
+  description String?
+  address     String
+
+  deployments Deployment[]
+  @@unique([appId, name])
+}
+
+enum EnumDeploymentStatus {
+  Waiting
+  Completed
+  Failed
+  Removed
+}
+
+model Deployment {
+  id              String               @id @default(cuid())
+  createdAt       DateTime             @default(now())
+  createdBy       User                 @relation(fields: [userId], references: [id])
+  userId          String
+  build           Build                @relation(fields: [buildId], references: [id])
+  buildId         String
+  environment     Environment          @relation(fields: [environmentId], references: [id])
+  environmentId   String
+  status          EnumDeploymentStatus
+  message         String?
+  action          Action               @relation(fields: [actionId], references: [id])
+  actionId        String
+  statusQuery     Json?
+  statusUpdatedAt DateTime?
+
+}

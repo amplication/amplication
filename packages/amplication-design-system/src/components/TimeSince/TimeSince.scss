@@ -1,6 +1,8 @@
 @import "../../style/index.scss";
 
 $width-short: 100px;
+$user-border-width: 2px;
+$letter-spacing: 1px;
 
 .time-since {
   @include body2;
@@ -11,7 +13,7 @@ $width-short: 100px;
   margin: 0;
   white-space: nowrap;
   padding-right: var(--default-spacing);
-  padding-left: var(--default-spacing);
+  padding-left: 0;
   position: relative;
   background-color: var(--black10);
   display: inline-flex;
@@ -25,8 +27,29 @@ $width-short: 100px;
 
   &__tooltip {
     width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
   }
 
+  &__icon {
+    box-sizing: border-box;
+    background-color: var(--primary);
+    border-radius: 50%;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: calc(var(--time-since-height) + #{$user-border-width});
+    width: calc(var(--time-since-height) + #{$user-border-width});
+    min-width: calc(var(--time-since-height) + #{$user-border-width});
+    text-align: center;
+    color: var(--static-white);
+    text-transform: capitalize;
+    border: $user-border-width solid var(--black5);
+    margin-right: var(--default-spacing-small);
+    letter-spacing: $letter-spacing;
+  }
   &__time {
     white-space: nowrap;
     overflow: hidden;

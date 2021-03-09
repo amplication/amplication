@@ -53,6 +53,7 @@ model User {
   lockedEntitis Entity[]
   builds        Build[]
   deployments   Deployment[]
+  apiTokens     ApiToken[]
   @@unique([accountId, organizationId])
 }
 
@@ -65,6 +66,20 @@ model UserRole {
   role      String
 
   @@unique([userId, role])
+}
+
+model ApiToken {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+  token        String
+  previewChars String
+  lastAccessAt DateTime
+
+  @@unique([userId, name])
 }
 
 model App {
