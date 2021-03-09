@@ -14,6 +14,7 @@ const GET_ENTITIES = gql`
     ) {
       id
       name
+      appId
       displayName
       description
       lockedByUserId

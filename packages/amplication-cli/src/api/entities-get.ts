@@ -7,6 +7,7 @@ const GET_ENTITY = gql`
     entity(where: { id: $id }) {
       id
       name
+      appId
       displayName
       description
       lockedByUserId

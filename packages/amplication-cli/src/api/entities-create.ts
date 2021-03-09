@@ -7,6 +7,7 @@ const CREATE_ENTITY = gql`
     createOneEntity(data: $data) {
       id
       name
+      appId
       displayName
       description
       lockedByUserId
