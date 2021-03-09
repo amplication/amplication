@@ -9,28 +9,16 @@ const UPDATE_ENTITY = gql`
       name
       appId
       displayName
+      pluralDisplayName
       description
       lockedByUserId
       lockedAt
+      createdAt
+      updatedAt
       lockedByUser {
         account {
           firstName
           lastName
-        }
-      }
-      versions(take: 1, orderBy: { versionNumber: Desc }) {
-        versionNumber
-        commit {
-          userId
-          message
-          createdAt
-          user {
-            id
-            account {
-              firstName
-              lastName
-            }
-          }
         }
       }
     }

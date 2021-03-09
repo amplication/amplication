@@ -9,6 +9,14 @@ import { FIELD_COLUMNS } from './index';
 import { AMP_CURRENT_FIELD } from '../../../properties';
 
 export default class FieldsCreate extends ConfiguredCommand {
+  static description = 'create a field';
+
+  static examples = [
+    'amp entities:fields:create "Start Date" --set-current',
+    'amp entities:fields:create "Start Date" -e ckm1wl4ru58969go3n3mt2zkg2',
+    'amp entities:fields:create "Start Date"',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),

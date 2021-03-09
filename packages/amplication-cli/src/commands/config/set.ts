@@ -2,6 +2,14 @@ import { ConfiguredCommand } from '../../configured-command';
 import { allowedProperties } from '../../properties';
 
 export default class ConfigSet extends ConfiguredCommand {
+  static description = 'set a property value';
+
+  static examples = [
+    'amp config:set AMP_CURRENT_APP ckm1w4vy857869go3nsw4mk2ay',
+    'amp config:set AMP_SERVER_URL https://app.amplication.com',
+    'amp config:set AMP_OUTPUT_FORMAT styledJSON',
+  ];
+
   static args = [
     {
       name: 'property',

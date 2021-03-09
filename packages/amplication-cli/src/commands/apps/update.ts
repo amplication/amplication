@@ -8,6 +8,14 @@ import { app } from '../../flags/app-flag';
 import { APP_COLUMNS } from './index';
 
 export default class AppsUpdate extends ConfiguredCommand {
+  static description = 'update an app';
+
+  static examples = [
+    'amp apps:update --name="my new name"',
+    'amp apps:update -a ckm1w4vy857869go3nsw4mk2ay --name "my new name"',
+    'amp apps:update --name "my new name" --description "my new description"',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),

@@ -31,6 +31,14 @@ export const APP_COLUMNS: Table.table.Columns<any> = {
 };
 
 export default class AppsIndex extends ConfiguredCommand {
+  static description = 'list all apps';
+
+  static examples = [
+    'amp apps',
+    'amp apps --format=table',
+    'amp apps --format=table --columns=id,name',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     format: formatFlag(),

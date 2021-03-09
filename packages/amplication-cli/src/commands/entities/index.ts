@@ -21,6 +21,14 @@ export const ENTITY_COLUMNS: Table.table.Columns<any> = {
 };
 
 export default class EntitiesIndex extends ConfiguredCommand {
+  static description = 'list entities for an app';
+
+  static examples = [
+    'amp entities',
+    'amp entities -a ckm1w4vy857869go3nsw4mk2ay',
+    'amp entities --format=table',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),

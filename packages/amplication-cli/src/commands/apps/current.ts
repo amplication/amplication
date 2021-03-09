@@ -7,6 +7,10 @@ import { AMP_CURRENT_APP } from '../../properties';
 import { APP_COLUMNS } from './index';
 
 export default class AppsCurrent extends ConfiguredCommand {
+  static description = 'set the current app';
+
+  static examples = ['amp apps:current -a ckm1w4vy857869go3nsw4mk2ay'];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),

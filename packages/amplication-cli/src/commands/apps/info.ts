@@ -6,6 +6,13 @@ import { format } from '../../flags/format-flag';
 import { APP_COLUMNS } from './index';
 
 export default class AppInfo extends ConfiguredCommand {
+  static description = 'show detailed information for an app';
+
+  static examples = [
+    'amp apps:info',
+    'amp apps:info -a ckm1w4vy857869go3nsw4mk2ay',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     app: app(),

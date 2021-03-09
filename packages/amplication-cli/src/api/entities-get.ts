@@ -9,6 +9,7 @@ const GET_ENTITY = gql`
       name
       appId
       displayName
+      pluralDisplayName
       description
       lockedByUserId
       lockedAt

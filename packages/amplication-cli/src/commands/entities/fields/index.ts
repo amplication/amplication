@@ -16,6 +16,14 @@ export const FIELD_COLUMNS: Table.table.Columns<any> = {
 };
 
 export default class FieldsIndex extends ConfiguredCommand {
+  static description = 'list fields for an entity';
+
+  static examples = [
+    'amp entities:fields',
+    'amp entities:fields -e ckm1wl4ru58969go3n3mt2zkg2',
+    'amp entities:fields --format=table',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),

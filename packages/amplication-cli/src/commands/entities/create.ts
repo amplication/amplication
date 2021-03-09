@@ -11,6 +11,14 @@ import { ENTITY_COLUMNS } from './index';
 import { AMP_CURRENT_ENTITY } from '../../properties';
 
 export default class EntitiesCreate extends ConfiguredCommand {
+  static description = 'create an entity';
+
+  static examples = [
+    'amp entities:create Customer --set-current',
+    'amp entities:create Customer -a ckm1w4vy857869go3nsw4mk2ay',
+    'amp entities:create Customer ',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),

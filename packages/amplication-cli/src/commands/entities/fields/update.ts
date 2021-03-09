@@ -8,6 +8,15 @@ import { field } from '../../../flags/field-flag';
 import { FIELD_COLUMNS } from './index';
 
 export default class FieldsUpdate extends ConfiguredCommand {
+  static description = 'update a field';
+
+  static examples = [
+    'amp entities:fields:update --name="my new field name"',
+    'amp entities:fields:update -f ckm1xt4mm63197go3nt8n2py80 --name "my new field name"',
+    'amp entities:fields:update --required',
+    'amp entities:fields:update --no-required',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),
@@ -15,23 +24,25 @@ export default class FieldsUpdate extends ConfiguredCommand {
 
     name: flags.string({
       required: false,
-      description: 'name of the field',
+      description: 'set the name of the field',
     }),
     displayName: flags.string({
       required: false,
-      description: 'display name of the field',
+      description: 'set the display name of the field',
     }),
     required: flags.boolean({
       required: false,
-      description: 'set the field as required',
+      description: 'set the field as required, or not',
+      allowNo: true,
     }),
     searchable: flags.boolean({
       required: false,
-      description: 'set the field as searchable',
+      description: 'set the field as searchable, or not',
+      allowNo: true,
     }),
     description: flags.string({
       required: false,
-      description: 'description of the field',
+      description: 'set the description of the field',
     }),
   };
 

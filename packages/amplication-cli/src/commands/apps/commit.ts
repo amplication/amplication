@@ -19,6 +19,10 @@ export const COMMIT_COLUMNS: Table.table.Columns<models.Commit> = {
 };
 
 export default class AppsCommit extends ConfiguredCommand {
+  static description = 'commit the pending changes in the app';
+
+  static examples = ['amp apps:commit --message "adding customer entity"'];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),
@@ -40,7 +44,6 @@ export default class AppsCommit extends ConfiguredCommand {
       const message = flags.message;
 
       cli.action.start(`Committing changes`);
-      console.log({ appId, message });
       const data = await commitChanges(this.client, appId, message);
 
       cli.action.stop();

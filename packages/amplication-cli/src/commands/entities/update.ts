@@ -4,15 +4,21 @@ import { ConfiguredCommand } from '../../configured-command';
 import chalk from 'chalk';
 import { updateEntity } from '../../api';
 import { format } from '../../flags/format-flag';
+import { entity } from '../../flags/entity-flag';
 import { ENTITY_COLUMNS } from './index';
 
 export default class EntitiesUpdate extends ConfiguredCommand {
+  static description = 'update an entity';
+
+  static examples = [
+    'amp entities:update --name="my new entity name"',
+    'amp entities:update -e ckm1wl4ru58969go3n3mt2zkg2 --name "my new entity name" --description "my new entity description"',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),
-    entity: flags.string({
-      char: 'e',
-      description: 'ID of the entity',
+    entity: entity({
       required: true,
     }),
 

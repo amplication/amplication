@@ -8,6 +8,12 @@ import { APP_COLUMNS } from './index';
 import { AMP_CURRENT_APP } from '../../properties';
 
 export default class AppsCreate extends ConfiguredCommand {
+  static description = 'create a new app';
+
+  static examples = [
+    'amp apps:create "my cool app" "my app description" --set-current',
+  ];
+
   static flags = {
     ...cli.table.flags(),
     format: format(),
