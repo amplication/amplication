@@ -18,7 +18,7 @@ export default class AppsUpdate extends ConfiguredCommand {
       description: 'name of the app',
     }),
     description: flags.string({
-      required: true,
+      required: false,
       description: 'description of the app',
     }),
   };
