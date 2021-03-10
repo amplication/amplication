@@ -23,7 +23,7 @@ $ npm install -g @amplication/cli
 $ amp COMMAND
 running command...
 $ amp (-v|--version|version)
-@amplication/cli/0.1.2 win32-x64 node-v12.16.1
+@amplication/cli/0.1.4 win32-x64 node-v12.16.1
 $ amp --help [COMMAND]
 USAGE
   $ amp COMMAND
