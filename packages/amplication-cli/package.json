@@ -1,7 +1,12 @@
 {
   "name": "@amplication/cli",
   "description": "Amplication CLI",
-  "version": "0.1.0",
+  "version": "0.1.2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amplication/amplication/packages/amplication-cli"
+  },
+  "homepage": "https://amplication.com",
   "bin": {
     "amp": "bin/run"
   },
@@ -25,7 +30,7 @@
     "amplication cli",
     "amp cli"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "main": "dist/index.js",
   "oclif": {
     "commands": "./lib/commands",
