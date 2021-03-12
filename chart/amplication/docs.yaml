@@ -1,0 +1,16 @@
+project:
+  name: Amplication
+  url: https://amplication.com
+  description: Amplication is an open‑source development tool. It helps you develop quality Node.js applications without spending time on repetitive coding tasks.
+repository:
+  url: https://github.com/amplication/amplication
+  name: amplication
+chart:
+  name: amplication
+  values: "-- generate from values file --"
+  valuesExample: "-- generate from values file --"
+prerequisites:
+- "Kubernetes v1.16+"
+release:
+  name: amplication
+  namespace: amplication

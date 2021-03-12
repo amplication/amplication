@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "amplication.app.name" . }}
+  labels:
+    {{- include "amplication.app.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.app.autoscaling.enabled }}
+  replicas: {{ .Values.app.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "amplication.app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.app.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "amplication.app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ include "amplication.app.name" . }}
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag | default .Chart.AppVersion }}"
+          envFrom:
+          - configMapRef:
+              name: {{ include "amplication.app.name" . }}
+          ports:
+            - name: "{{ .Values.app.name }}-http"
+              containerPort: {{ .Values.app.service.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: {{ .Values.app.volume.name }}
+              mountPath: {{ .Values.app.volume.path }}
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+      volumes:
+        - name: {{ .Values.app.volume.name }}
+          persistentVolumeClaim:
+              claimName: {{ .Values.app.volume.name }}

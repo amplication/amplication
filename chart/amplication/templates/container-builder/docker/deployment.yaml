@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "amplication.containerbuilder.docker.name" . }}
+  labels:
+    {{- include "amplication.containerbuilder.docker.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.containerbuilder.docker.autoscaling.enabled }}
+  replicas: {{ .Values.containerbuilder.docker.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "amplication.containerbuilder.docker.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.containerbuilder.docker.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "amplication.containerbuilder.docker.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ include "amplication.containerbuilder.docker.name" . }}
+          imagePullPolicy: {{ .Values.containerbuilder.docker.image.pullPolicy }}
+          image: "{{ .Values.containerbuilder.docker.image.repository }}:{{ .Values.containerbuilder.docker.image.tag }}"
+          env:
+              # Makes it so server starts on 2375.
+            - name: DOCKER_TLS_CERTDIR
+              value: ""
+          securityContext:
+              privileged: true
+          volumeMounts:
+            - name: {{ .Values.containerbuilder.registry.volume.name }}
+              mountPath: {{ .Values.containerbuilder.registry.volume.path }}
+          ports:
+            - name: "{{ .Values.containerbuilder.docker.name }}-tcp"
+              containerPort: {{ .Values.containerbuilder.docker.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.containerbuilder.docker.resources | nindent 12 }}
+      volumes:
+        - name: {{ .Values.containerbuilder.registry.volume.name }}
+          persistentVolumeClaim:
+              claimName: {{ .Values.containerbuilder.registry.volume.name }}

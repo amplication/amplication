@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "amplication.app.name" . }}-migrate"
+spec:
+  template:
+    metadata:
+      name: "{{ include "amplication.app.name" . }}-migrate"
+    spec:
+      restartPolicy: Never
+      initContainers:
+      {{ include "waitfor.postgres.connection" . | indent 6 }}
+      containers:
+      - name: "{{ include "amplication.app.name" . }}-migrate"
+        image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag | default .Chart.AppVersion }}"
+        command: ["/bin/bash"]
+        args: ["-c", "npm run migrate:up"]
+        env:
+        - name: POSTGRESQL_URL
+          value: {{ .Values.app.config.env.POSTGRESQL_URL | default (printf "postgres://%s:%s@%s:%v" .Values.postgres.postgresqlUsername .Values.postgres.postgresqlPassword .Values.postgres.fullnameOverride .Values.postgres.servicePort ) }}

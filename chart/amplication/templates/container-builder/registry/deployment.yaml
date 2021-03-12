@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "amplication.containerbuilder.registry.name" . }}
+  labels:
+    {{- include "amplication.containerbuilder.registry.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.containerbuilder.registry.autoscaling.enabled }}
+  replicas: {{ .Values.containerbuilder.registry.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "amplication.containerbuilder.registry.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.containerbuilder.registry.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "amplication.containerbuilder.registry.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ include "amplication.containerbuilder.registry.name" . }}
+          imagePullPolicy: {{ .Values.containerbuilder.registry.image.pullPolicy }}
+          image: "{{ .Values.containerbuilder.registry.image.repository }}:{{ .Values.containerbuilder.registry.image.tag }}"
+          volumeMounts:
+            - name: {{ .Values.containerbuilder.registry.volume.name }}
+              mountPath: {{ .Values.containerbuilder.registry.volume.path }}
+          ports:
+            - name: "{{ .Values.containerbuilder.registry.name }}-tcp"
+              containerPort: {{ .Values.containerbuilder.registry.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.containerbuilder.registry.resources | nindent 12 }}
+      volumes:
+        - name: {{ .Values.containerbuilder.registry.volume.name }}
+          persistentVolumeClaim:
+              claimName: {{ .Values.containerbuilder.registry.volume.name }}
