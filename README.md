@@ -82,7 +82,7 @@ Please note that Amplication is currently in alpha version. <b>This means that a
 
 You can ask questions, and participate in discussions about Amplication-related topics in the `Amplication` Discord channel.
 
-<a href="https://discord.gg/b8MrjU6"><img src="https://amplication.com/assets/images/discord_banner_purple.svg" /></a>
+<a href="https://discord.gg/KSJCZ24vj2"><img src="https://amplication.com/assets/images/discord_banner_purple.svg" /></a>
 
 ### Create a bug report
 
