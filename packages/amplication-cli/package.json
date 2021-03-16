@@ -51,7 +51,7 @@
     "@types/pluralize": "^0.0.29",
     "@types/url-join": "^4.0.0",
     "cli-ux": "^5.5.1",
-    "cross-fetch": "^3.0.6",
+    "cross-fetch": "3.0.6",
     "graphql": "^15.5.0",
     "pascal-case": "^3.1.2",
     "pluralize": "^8.0.0",
