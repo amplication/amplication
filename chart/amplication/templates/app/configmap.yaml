@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "amplication.app.name" . }}
+data:
+  POSTGRESQL_URL: {{ .Values.app.config.env.POSTGRESQL_URL | default (printf "postgres://%s:%s@%s:%v" .Values.postgres.postgresqlUsername .Values.postgres.postgresqlPassword .Values.postgres.fullnameOverride .Values.postgres.servicePort ) }}
+  JWT_SECRET: {{ .Values.app.config.env.JWT_SECRET }}
+  SERVICE_JWT_SECRET: {{ .Values.app.config.env.SERVICE_JWT_SECRET }}
+  BCRYPT_SALT_OR_ROUNDS: {{ .Values.app.config.env.BCRYPT_SALT_OR_ROUNDS | quote }}
+  NODE_ENV: {{ .Values.app.config.env.NODE_ENV }}
+  CORS_ENABLE: {{ .Values.app.config.env.CORS_ENABLE | quote }}
+  PORT: {{ .Values.app.config.env.PORT | default .Values.app.service.port | quote }}
+  HOST: {{ .Values.app.config.env.HOST | default (printf "http://%s:%v" (include "amplication.app.name" .) .Values.app.service.port ) }}
+  DEFAULT_DISK: {{ .Values.app.config.env.DEFAULT_DISK }}
+  LOCAL_DISK_ROOT: {{ .Values.app.config.env.LOCAL_DISK_ROOT }}
+  CONTAINER_BUILDER_DEFAULT: {{ .Values.app.config.env.CONTAINER_BUILDER_DEFAULT }}
+  DOCKER_HOST: {{ .Values.app.config.env.DOCKER_HOST | default (printf "tcp://%s:%v" (include "amplication.containerbuilder.docker.name" .) .Values.containerbuilder.docker.service.port ) }}

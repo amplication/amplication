@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "amplication.scheduler.name" . }}
+  labels:
+    {{- include "amplication.scheduler.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.scheduler.autoscaling.enabled }}
+  replicas: {{ .Values.scheduler.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "amplication.scheduler.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.scheduler.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "amplication.scheduler.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ include "amplication.scheduler.name" . }}
+          imagePullPolicy: {{ .Values.scheduler.image.pullPolicy }}
+          image: "{{ .Values.scheduler.image.repository }}:{{ .Values.scheduler.image.tag | default .Chart.AppVersion }}"
+          command: ["/bin/sh", "-c"]
+          args:
+            - "./scheduler --request.url {{ (printf "http://%s:%v/system/update-statuses" (include "amplication.app.name" .) .Values.app.service.port ) }} --request.method POST --schedule '* * * * *'"
+          envFrom:
+          - configMapRef:
+              name: {{ include "amplication.scheduler.name" . }}
+          resources:
+            {{- toYaml .Values.scheduler.resources | nindent 12 }}

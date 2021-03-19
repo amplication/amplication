@@ -1,0 +1,163 @@
+# Default values for amplication.
+# This is a YAML-formatted file.
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+scheduler:
+  name: scheduler
+  replicaCount: 1
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  podAnnotations: {}
+  
+  image:
+    pullPolicy: Always
+    repository: amplication/scheduler
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: latest
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  
+  config:
+    env:
+      POSTGRESQL_URL: # default managed by computed values
+
+containerbuilder:
+  docker:
+    name: docker
+    replicaCount: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 100
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
+
+    podAnnotations: {}
+
+    image:
+      pullPolicy: Always
+      repository: docker
+      tag: dind
+    
+    service:
+      type: ClusterIP
+      port: 2375
+
+    resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+  registry:
+    name: registry
+    replicaCount: 1
+    volume:
+      name: registry-data
+      path: /var/lib/registry
+      storageLimit: 20Gi
+      storageRequest: 2Gi
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 100
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
+
+    podAnnotations: {}
+    
+    image:
+      pullPolicy: Always
+      repository: registry
+      tag: 2
+    
+    service:
+      type: ClusterIP
+      port: 5000
+
+    resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+app:
+  name: app
+  replicaCount: 1
+  volume:
+    name: app-artifacts-data
+    path: /artifacts
+    storageLimit: 5Gi
+    storageRequest: 1Gi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  podAnnotations: {}
+  
+  image:
+    pullPolicy: Always
+    repository: amplication/amplication
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: latest
+  
+  service:
+    type: ClusterIP
+    port: 3000
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  config:
+    env:
+      POSTGRESQL_URL: # default managed by computed values
+      JWT_SECRET: jwt-secret
+      SERVICE_JWT_SECRET: service-jwt-secret
+      BCRYPT_SALT_OR_ROUNDS: "10"
+      NODE_ENV: production
+      CORS_ENABLE: "1"
+      PORT: # default managed by computed values
+      HOST: # default managed by computed values
+      DEFAULT_DISK: local
+      LOCAL_DISK_ROOT: /artifacts
+      CONTAINER_BUILDER_DEFAULT: docker
+
+
+# Postgresql Server
+postgres:
+  # Setting "install" to true will install third-party helm chart (bitnami/postgres)
+  # https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+  install: true
+  postgresqlDatabase: postgres
+  postgresqlUsername: postgres
+  postgresqlPassword: Fd7zZXWvCY3bdgLHz
+  servicePort: 5432
+  primary:
+    podLabels: { name: "localpostgres" }
+  fullnameOverride: "localpostgres"
