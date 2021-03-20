@@ -13,6 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Fetch master
@@ -67,10 +68,10 @@ jobs:
         run: npm run test:e2e -- --scope @amplication/data-service-generator
         if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
   deploy:
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 120
-    if: github.ref == 'refs/heads/master' || contains('ci', github.ref)
+    # if: github.ref == 'refs/heads/master' || contains('ci', github.ref)
     steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-buildx-action@v1
@@ -134,6 +135,10 @@ jobs:
           creds: ${{ secrets.GOOGLE_CREDENTIALS }}
           instance: ${{ secrets.STAGING_DB_INSTANCE_NAME }}
       - run: |
+          (while true; do 
+          df -h
+          sleep 15
+          done) &
           set -e;
           docker run \
             --network host \
