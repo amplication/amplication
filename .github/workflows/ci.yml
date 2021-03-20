@@ -88,13 +88,13 @@ jobs:
           registry: gcr.io
           username: _json_key
           password: ${{ secrets.GOOGLE_CREDENTIALS }}
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+      # - name: Cache Docker layers
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: /tmp/.buildx-cache
+      #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-buildx-
       - name: "Build and push amplication/amplication Docker image"
         uses: docker/build-push-action@v2
         with:
