@@ -3442,10 +3442,10 @@ model User {
   age            Int
   birthDate      DateTime
   score          Float
-  manager        User?               @relation(name: \\"employees\\", fields: [managerId])
+  manager        User?               @relation(name: \\"employees\\", fields: [managerId], references: [id])
   managerId      String?
   employees      User[]              @relation(name: \\"employees\\")
-  organization   Organization?       @relation(fields: [organizationId])
+  organization   Organization?       @relation(fields: [organizationId], references: [id])
   organizationId String?
   interests      EnumUserInterests[]
   priority       EnumUserPriority
@@ -3457,7 +3457,7 @@ model Order {
   id         String          @id @default(cuid())
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
-  customer   Customer        @relation(fields: [customerId])
+  customer   Customer        @relation(fields: [customerId], references: [id])
   customerId String
   status     EnumOrderStatus
   label      EnumOrderLabel?
@@ -3488,9 +3488,9 @@ model Customer {
   comments          String?
   favoriteColors    EnumCustomerFavoriteColors[]
   customerType      EnumCustomerCustomerType?
-  organization      Organization?                @relation(name: \\"CustomersOnOrganization\\", fields: [organizationId])
+  organization      Organization?                @relation(name: \\"CustomersOnOrganization\\", fields: [organizationId], references: [id])
   organizationId    String?
-  vipOrganization   Organization?                @relation(name: \\"vipCustomers\\", fields: [vipOrganizationId])
+  vipOrganization   Organization?                @relation(name: \\"vipCustomers\\", fields: [vipOrganizationId], references: [id])
   vipOrganizationId String?
   orders            Order[]
 }
