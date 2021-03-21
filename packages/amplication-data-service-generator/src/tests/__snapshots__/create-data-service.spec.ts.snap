@@ -5910,21 +5910,29 @@ import {
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
-  findMany<T extends FindManyCustomerArgs>(
+  async findMany<T extends FindManyCustomerArgs>(
     args: Subset<T, FindManyCustomerArgs>
   ) {
     return this.prisma.customer.findMany(args);
   }
-  findOne<T extends FindOneCustomerArgs>(args: Subset<T, FindOneCustomerArgs>) {
+  async findOne<T extends FindOneCustomerArgs>(
+    args: Subset<T, FindOneCustomerArgs>
+  ) {
     return this.prisma.customer.findOne(args);
   }
-  create<T extends CustomerCreateArgs>(args: Subset<T, CustomerCreateArgs>) {
+  async create<T extends CustomerCreateArgs>(
+    args: Subset<T, CustomerCreateArgs>
+  ) {
     return this.prisma.customer.create<T>(args);
   }
-  update<T extends CustomerUpdateArgs>(args: Subset<T, CustomerUpdateArgs>) {
+  async update<T extends CustomerUpdateArgs>(
+    args: Subset<T, CustomerUpdateArgs>
+  ) {
     return this.prisma.customer.update<T>(args);
   }
-  delete<T extends CustomerDeleteArgs>(args: Subset<T, CustomerDeleteArgs>) {
+  async delete<T extends CustomerDeleteArgs>(
+    args: Subset<T, CustomerDeleteArgs>
+  ) {
     return this.prisma.customer.delete(args);
   }
 }
@@ -6609,19 +6617,21 @@ import {
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
-  findMany<T extends FindManyEmptyArgs>(args: Subset<T, FindManyEmptyArgs>) {
+  async findMany<T extends FindManyEmptyArgs>(
+    args: Subset<T, FindManyEmptyArgs>
+  ) {
     return this.prisma.empty.findMany(args);
   }
-  findOne<T extends FindOneEmptyArgs>(args: Subset<T, FindOneEmptyArgs>) {
+  async findOne<T extends FindOneEmptyArgs>(args: Subset<T, FindOneEmptyArgs>) {
     return this.prisma.empty.findOne(args);
   }
-  create<T extends EmptyCreateArgs>(args: Subset<T, EmptyCreateArgs>) {
+  async create<T extends EmptyCreateArgs>(args: Subset<T, EmptyCreateArgs>) {
     return this.prisma.empty.create<T>(args);
   }
-  update<T extends EmptyUpdateArgs>(args: Subset<T, EmptyUpdateArgs>) {
+  async update<T extends EmptyUpdateArgs>(args: Subset<T, EmptyUpdateArgs>) {
     return this.prisma.empty.update<T>(args);
   }
-  delete<T extends EmptyDeleteArgs>(args: Subset<T, EmptyDeleteArgs>) {
+  async delete<T extends EmptyDeleteArgs>(args: Subset<T, EmptyDeleteArgs>) {
     return this.prisma.empty.delete(args);
   }
 }
@@ -7735,19 +7745,21 @@ import {
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
-  findMany<T extends FindManyOrderArgs>(args: Subset<T, FindManyOrderArgs>) {
+  async findMany<T extends FindManyOrderArgs>(
+    args: Subset<T, FindManyOrderArgs>
+  ) {
     return this.prisma.order.findMany(args);
   }
-  findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
+  async findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
     return this.prisma.order.findOne(args);
   }
-  create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
+  async create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
     return this.prisma.order.create<T>(args);
   }
-  update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
+  async update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
     return this.prisma.order.update<T>(args);
   }
-  delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
+  async delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
     return this.prisma.order.delete(args);
   }
 }
@@ -9214,27 +9226,27 @@ import {
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
-  findMany<T extends FindManyOrganizationArgs>(
+  async findMany<T extends FindManyOrganizationArgs>(
     args: Subset<T, FindManyOrganizationArgs>
   ) {
     return this.prisma.organization.findMany(args);
   }
-  findOne<T extends FindOneOrganizationArgs>(
+  async findOne<T extends FindOneOrganizationArgs>(
     args: Subset<T, FindOneOrganizationArgs>
   ) {
     return this.prisma.organization.findOne(args);
   }
-  create<T extends OrganizationCreateArgs>(
+  async create<T extends OrganizationCreateArgs>(
     args: Subset<T, OrganizationCreateArgs>
   ) {
     return this.prisma.organization.create<T>(args);
   }
-  update<T extends OrganizationUpdateArgs>(
+  async update<T extends OrganizationUpdateArgs>(
     args: Subset<T, OrganizationUpdateArgs>
   ) {
     return this.prisma.organization.update<T>(args);
   }
-  delete<T extends OrganizationDeleteArgs>(
+  async delete<T extends OrganizationDeleteArgs>(
     args: Subset<T, OrganizationDeleteArgs>
   ) {
     return this.prisma.organization.delete(args);
@@ -11178,10 +11190,12 @@ export class UserServiceBase {
     protected readonly prisma: PrismaService,
     protected readonly passwordService: PasswordService
   ) {}
-  findMany<T extends FindManyUserArgs>(args: Subset<T, FindManyUserArgs>) {
+  async findMany<T extends FindManyUserArgs>(
+    args: Subset<T, FindManyUserArgs>
+  ) {
     return this.prisma.user.findMany(args);
   }
-  findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
+  async findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
     return this.prisma.user.findOne(args);
   }
   async create<T extends UserCreateArgs>(args: Subset<T, UserCreateArgs>) {
@@ -11210,7 +11224,7 @@ export class UserServiceBase {
       },
     });
   }
-  delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
+  async delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
     return this.prisma.user.delete(args);
   }
 }
