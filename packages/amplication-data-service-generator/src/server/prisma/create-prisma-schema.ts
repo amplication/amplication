@@ -213,7 +213,10 @@ export function createPrismaFields(
           false,
           field.required,
           relationName,
-          [scalarRelationFieldName]
+          [scalarRelationFieldName],
+          [
+            "id",
+          ] /**@todo: calculate the referenced field on the related entity (currently it is always 'id') */
         ),
         // Prisma Scalar Relation Field
         PrismaSchemaDSL.createScalarField(
