@@ -141,7 +141,7 @@ model ${EXAMPLE_ENTITY_NAME} {
 }
 
 model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
-  ${EXAMPLE_LOOKUP_FIELD_NAME}   ${EXAMPLE_ENTITY_NAME} @relation(fields: [${EXAMPLE_LOOKUP_FIELD_NAME}Id])
+  ${EXAMPLE_LOOKUP_FIELD_NAME}   ${EXAMPLE_ENTITY_NAME} @relation(fields: [${EXAMPLE_LOOKUP_FIELD_NAME}Id], references: [id])
   ${EXAMPLE_LOOKUP_FIELD_NAME}Id String
 }`,
     ],
@@ -261,7 +261,8 @@ describe("createPrismaFields", () => {
         false,
         true,
         null,
-        [`${EXAMPLE_ENTITY_FIELD_NAME}Id`]
+        [`${EXAMPLE_ENTITY_FIELD_NAME}Id`],
+        [`id`]
       ),
     ],
     [
