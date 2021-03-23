@@ -3,20 +3,13 @@ import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as gqlUserRoles from "../auth/gqlUserRoles.decorator";
 
-declare interface WHERE_UNIQUE_INPUT {}
-declare interface RELATED_ENTITY_WHERE_INPUT {}
-
 declare interface ENTITY {
   id: string;
 }
 declare class RELATED_ENTITY {}
 
 declare interface SERVICE {
-  findOne(args: {
-    where: WHERE_UNIQUE_INPUT;
-  }): {
-    PROPERTY(): Promise<RELATED_ENTITY>;
-  };
+  GET_PROPERTY(parentId: string): Promise<RELATED_ENTITY>;
 }
 
 declare const ENTITY_NAME: string;
@@ -44,9 +37,7 @@ export class Mixin {
       possession: "any",
       resource: RELATED_ENTITY_NAME,
     });
-    const result = await this.service
-      .findOne({ where: { id: parent.id } })
-      .PROPERTY();
+    const result = await this.service.GET_PROPERTY(parent.id);
 
     if (!result) {
       return null;

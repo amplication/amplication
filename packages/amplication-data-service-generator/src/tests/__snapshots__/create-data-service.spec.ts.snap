@@ -5450,7 +5450,7 @@ export class CustomerControllerBase {
       possession: \\"any\\",
       resource: \\"Order\\",
     });
-    const results = await this.service.findOne({ where: params }).orders({
+    const results = await this.service.findOrders(params.id, {
       where: query,
       select: {
         id: true,
@@ -5838,10 +5838,7 @@ export class CustomerResolverBase {
       possession: \\"any\\",
       resource: \\"Order\\",
     });
-    const results = await this.service
-      .findOne({ where: { id: parent.id } })
-      // @ts-ignore
-      .orders(args);
+    const results = await this.service.findOrders(parent.id, args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -5861,9 +5858,7 @@ export class CustomerResolverBase {
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
-    const result = await this.service
-      .findOne({ where: { id: parent.id } })
-      .organization();
+    const result = await this.service.getOrganization(parent.id);
 
     if (!result) {
       return null;
@@ -5887,9 +5882,7 @@ export class CustomerResolverBase {
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
-    const result = await this.service
-      .findOne({ where: { id: parent.id } })
-      .vipOrganization();
+    const result = await this.service.getVipOrganization(parent.id);
 
     if (!result) {
       return null;
@@ -5899,6 +5892,7 @@ export class CustomerResolverBase {
 }
 ",
   "server/src/customer/base/customer.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
+
 import {
   FindOneCustomerArgs,
   FindManyCustomerArgs,
@@ -5906,26 +5900,66 @@ import {
   CustomerUpdateArgs,
   CustomerDeleteArgs,
   Subset,
+  Customer,
+  FindManyOrderArgs,
+  Order,
+  Organization,
 } from \\"@prisma/client\\";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
-  findMany<T extends FindManyCustomerArgs>(
+
+  async findMany<T extends FindManyCustomerArgs>(
     args: Subset<T, FindManyCustomerArgs>
-  ) {
+  ): Promise<Customer[]> {
     return this.prisma.customer.findMany(args);
   }
-  findOne<T extends FindOneCustomerArgs>(args: Subset<T, FindOneCustomerArgs>) {
+  async findOne<T extends FindOneCustomerArgs>(
+    args: Subset<T, FindOneCustomerArgs>
+  ): Promise<Customer | null> {
     return this.prisma.customer.findOne(args);
   }
-  create<T extends CustomerCreateArgs>(args: Subset<T, CustomerCreateArgs>) {
+  async create<T extends CustomerCreateArgs>(
+    args: Subset<T, CustomerCreateArgs>
+  ): Promise<Customer> {
     return this.prisma.customer.create<T>(args);
   }
-  update<T extends CustomerUpdateArgs>(args: Subset<T, CustomerUpdateArgs>) {
+  async update<T extends CustomerUpdateArgs>(
+    args: Subset<T, CustomerUpdateArgs>
+  ): Promise<Customer> {
     return this.prisma.customer.update<T>(args);
   }
-  delete<T extends CustomerDeleteArgs>(args: Subset<T, CustomerDeleteArgs>) {
+  async delete<T extends CustomerDeleteArgs>(
+    args: Subset<T, CustomerDeleteArgs>
+  ): Promise<Customer> {
     return this.prisma.customer.delete(args);
+  }
+
+  async findOrders(
+    parentId: string,
+    args: FindManyOrderArgs
+  ): Promise<Order[]> {
+    return this.prisma.customer
+      .findOne({
+        where: { id: parentId },
+      })
+      .orders(args);
+  }
+
+  async getOrganization(parentId: string): Promise<Organization | null> {
+    return this.prisma.customer
+      .findOne({
+        where: { id: parentId },
+      })
+      .organization();
+  }
+
+  async getVipOrganization(parentId: string): Promise<Organization | null> {
+    return this.prisma.customer
+      .findOne({
+        where: { id: parentId },
+      })
+      .vipOrganization();
   }
 }
 ",
@@ -6598,6 +6632,7 @@ export class EmptyResolverBase {
 }
 ",
   "server/src/empty/base/empty.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
+
 import {
   FindOneEmptyArgs,
   FindManyEmptyArgs,
@@ -6605,23 +6640,35 @@ import {
   EmptyUpdateArgs,
   EmptyDeleteArgs,
   Subset,
+  Empty,
 } from \\"@prisma/client\\";
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
-  findMany<T extends FindManyEmptyArgs>(args: Subset<T, FindManyEmptyArgs>) {
+
+  async findMany<T extends FindManyEmptyArgs>(
+    args: Subset<T, FindManyEmptyArgs>
+  ): Promise<Empty[]> {
     return this.prisma.empty.findMany(args);
   }
-  findOne<T extends FindOneEmptyArgs>(args: Subset<T, FindOneEmptyArgs>) {
+  async findOne<T extends FindOneEmptyArgs>(
+    args: Subset<T, FindOneEmptyArgs>
+  ): Promise<Empty | null> {
     return this.prisma.empty.findOne(args);
   }
-  create<T extends EmptyCreateArgs>(args: Subset<T, EmptyCreateArgs>) {
+  async create<T extends EmptyCreateArgs>(
+    args: Subset<T, EmptyCreateArgs>
+  ): Promise<Empty> {
     return this.prisma.empty.create<T>(args);
   }
-  update<T extends EmptyUpdateArgs>(args: Subset<T, EmptyUpdateArgs>) {
+  async update<T extends EmptyUpdateArgs>(
+    args: Subset<T, EmptyUpdateArgs>
+  ): Promise<Empty> {
     return this.prisma.empty.update<T>(args);
   }
-  delete<T extends EmptyDeleteArgs>(args: Subset<T, EmptyDeleteArgs>) {
+  async delete<T extends EmptyDeleteArgs>(
+    args: Subset<T, EmptyDeleteArgs>
+  ): Promise<Empty> {
     return this.prisma.empty.delete(args);
   }
 }
@@ -7712,9 +7759,7 @@ export class OrderResolverBase {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
-    const result = await this.service
-      .findOne({ where: { id: parent.id } })
-      .customer();
+    const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
       return null;
@@ -7724,6 +7769,7 @@ export class OrderResolverBase {
 }
 ",
   "server/src/order/base/order.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
+
 import {
   FindOneOrderArgs,
   FindManyOrderArgs,
@@ -7731,24 +7777,45 @@ import {
   OrderUpdateArgs,
   OrderDeleteArgs,
   Subset,
+  Order,
+  Customer,
 } from \\"@prisma/client\\";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
-  findMany<T extends FindManyOrderArgs>(args: Subset<T, FindManyOrderArgs>) {
+
+  async findMany<T extends FindManyOrderArgs>(
+    args: Subset<T, FindManyOrderArgs>
+  ): Promise<Order[]> {
     return this.prisma.order.findMany(args);
   }
-  findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
+  async findOne<T extends FindOneOrderArgs>(
+    args: Subset<T, FindOneOrderArgs>
+  ): Promise<Order | null> {
     return this.prisma.order.findOne(args);
   }
-  create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
+  async create<T extends OrderCreateArgs>(
+    args: Subset<T, OrderCreateArgs>
+  ): Promise<Order> {
     return this.prisma.order.create<T>(args);
   }
-  update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
+  async update<T extends OrderUpdateArgs>(
+    args: Subset<T, OrderUpdateArgs>
+  ): Promise<Order> {
     return this.prisma.order.update<T>(args);
   }
-  delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
+  async delete<T extends OrderDeleteArgs>(
+    args: Subset<T, OrderDeleteArgs>
+  ): Promise<Order> {
     return this.prisma.order.delete(args);
+  }
+
+  async getCustomer(parentId: string): Promise<Customer | null> {
+    return this.prisma.order
+      .findOne({
+        where: { id: parentId },
+      })
+      .customer();
   }
 }
 ",
@@ -8413,7 +8480,7 @@ export class OrganizationControllerBase {
       possession: \\"any\\",
       resource: \\"User\\",
     });
-    const results = await this.service.findOne({ where: params }).users({
+    const results = await this.service.findUsers(params.id, {
       where: query,
       select: {
         username: true,
@@ -8592,7 +8659,7 @@ export class OrganizationControllerBase {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
-    const results = await this.service.findOne({ where: params }).customers({
+    const results = await this.service.findCustomers(params.id, {
       where: query,
       select: {
         id: true,
@@ -8771,7 +8838,7 @@ export class OrganizationControllerBase {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
-    const results = await this.service.findOne({ where: params }).vipCustomers({
+    const results = await this.service.findVipCustomers(params.id, {
       where: query,
       select: {
         id: true,
@@ -9146,10 +9213,7 @@ export class OrganizationResolverBase {
       possession: \\"any\\",
       resource: \\"User\\",
     });
-    const results = await this.service
-      .findOne({ where: { id: parent.id } })
-      // @ts-ignore
-      .users(args);
+    const results = await this.service.findUsers(parent.id, args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -9170,10 +9234,7 @@ export class OrganizationResolverBase {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
-    const results = await this.service
-      .findOne({ where: { id: parent.id } })
-      // @ts-ignore
-      .customers(args);
+    const results = await this.service.findCustomers(parent.id, args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -9194,15 +9255,13 @@ export class OrganizationResolverBase {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
-    const results = await this.service
-      .findOne({ where: { id: parent.id } })
-      // @ts-ignore
-      .vipCustomers(args);
+    const results = await this.service.findVipCustomers(parent.id, args);
     return results.map((result) => permission.filter(result));
   }
 }
 ",
   "server/src/organization/base/organization.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
+
 import {
   FindOneOrganizationArgs,
   FindManyOrganizationArgs,
@@ -9210,34 +9269,70 @@ import {
   OrganizationUpdateArgs,
   OrganizationDeleteArgs,
   Subset,
+  Organization,
+  FindManyUserArgs,
+  User,
+  FindManyCustomerArgs,
+  Customer,
 } from \\"@prisma/client\\";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
-  findMany<T extends FindManyOrganizationArgs>(
+
+  async findMany<T extends FindManyOrganizationArgs>(
     args: Subset<T, FindManyOrganizationArgs>
-  ) {
+  ): Promise<Organization[]> {
     return this.prisma.organization.findMany(args);
   }
-  findOne<T extends FindOneOrganizationArgs>(
+  async findOne<T extends FindOneOrganizationArgs>(
     args: Subset<T, FindOneOrganizationArgs>
-  ) {
+  ): Promise<Organization | null> {
     return this.prisma.organization.findOne(args);
   }
-  create<T extends OrganizationCreateArgs>(
+  async create<T extends OrganizationCreateArgs>(
     args: Subset<T, OrganizationCreateArgs>
-  ) {
+  ): Promise<Organization> {
     return this.prisma.organization.create<T>(args);
   }
-  update<T extends OrganizationUpdateArgs>(
+  async update<T extends OrganizationUpdateArgs>(
     args: Subset<T, OrganizationUpdateArgs>
-  ) {
+  ): Promise<Organization> {
     return this.prisma.organization.update<T>(args);
   }
-  delete<T extends OrganizationDeleteArgs>(
+  async delete<T extends OrganizationDeleteArgs>(
     args: Subset<T, OrganizationDeleteArgs>
-  ) {
+  ): Promise<Organization> {
     return this.prisma.organization.delete(args);
+  }
+
+  async findUsers(parentId: string, args: FindManyUserArgs): Promise<User[]> {
+    return this.prisma.organization
+      .findOne({
+        where: { id: parentId },
+      })
+      .users(args);
+  }
+
+  async findCustomers(
+    parentId: string,
+    args: FindManyCustomerArgs
+  ): Promise<Customer[]> {
+    return this.prisma.organization
+      .findOne({
+        where: { id: parentId },
+      })
+      .customers(args);
+  }
+
+  async findVipCustomers(
+    parentId: string,
+    args: FindManyCustomerArgs
+  ): Promise<Customer[]> {
+    return this.prisma.organization
+      .findOne({
+        where: { id: parentId },
+      })
+      .vipCustomers(args);
   }
 }
 ",
@@ -10701,7 +10796,7 @@ export class UserControllerBase {
       possession: \\"any\\",
       resource: \\"User\\",
     });
-    const results = await this.service.findOne({ where: params }).employees({
+    const results = await this.service.findEmployees(params.id, {
       where: query,
       select: {
         username: true,
@@ -11099,10 +11194,7 @@ export class UserResolverBase {
       possession: \\"any\\",
       resource: \\"User\\",
     });
-    const results = await this.service
-      .findOne({ where: { id: parent.id } })
-      // @ts-ignore
-      .employees(args);
+    const results = await this.service.findEmployees(parent.id, args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -11122,9 +11214,7 @@ export class UserResolverBase {
       possession: \\"any\\",
       resource: \\"User\\",
     });
-    const result = await this.service
-      .findOne({ where: { id: parent.id } })
-      .manager();
+    const result = await this.service.getManager(parent.id);
 
     if (!result) {
       return null;
@@ -11148,9 +11238,7 @@ export class UserResolverBase {
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
-    const result = await this.service
-      .findOne({ where: { id: parent.id } })
-      .organization();
+    const result = await this.service.getOrganization(parent.id);
 
     if (!result) {
       return null;
@@ -11168,6 +11256,8 @@ import {
   UserUpdateArgs,
   UserDeleteArgs,
   Subset,
+  User,
+  Organization,
 } from \\"@prisma/client\\";
 
 import { PasswordService } from \\"../../auth/password.service\\";
@@ -11178,13 +11268,20 @@ export class UserServiceBase {
     protected readonly prisma: PrismaService,
     protected readonly passwordService: PasswordService
   ) {}
-  findMany<T extends FindManyUserArgs>(args: Subset<T, FindManyUserArgs>) {
+
+  async findMany<T extends FindManyUserArgs>(
+    args: Subset<T, FindManyUserArgs>
+  ): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
-  findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
+  async findOne<T extends FindOneUserArgs>(
+    args: Subset<T, FindOneUserArgs>
+  ): Promise<User | null> {
     return this.prisma.user.findOne(args);
   }
-  async create<T extends UserCreateArgs>(args: Subset<T, UserCreateArgs>) {
+  async create<T extends UserCreateArgs>(
+    args: Subset<T, UserCreateArgs>
+  ): Promise<User> {
     return this.prisma.user.create<T>({
       ...args,
 
@@ -11194,7 +11291,9 @@ export class UserServiceBase {
       },
     });
   }
-  async update<T extends UserUpdateArgs>(args: Subset<T, UserUpdateArgs>) {
+  async update<T extends UserUpdateArgs>(
+    args: Subset<T, UserUpdateArgs>
+  ): Promise<User> {
     return this.prisma.user.update<T>({
       ...args,
 
@@ -11210,8 +11309,37 @@ export class UserServiceBase {
       },
     });
   }
-  delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
+  async delete<T extends UserDeleteArgs>(
+    args: Subset<T, UserDeleteArgs>
+  ): Promise<User> {
     return this.prisma.user.delete(args);
+  }
+
+  async findEmployees(
+    parentId: string,
+    args: FindManyUserArgs
+  ): Promise<User[]> {
+    return this.prisma.user
+      .findOne({
+        where: { id: parentId },
+      })
+      .employees(args);
+  }
+
+  async getManager(parentId: string): Promise<User | null> {
+    return this.prisma.user
+      .findOne({
+        where: { id: parentId },
+      })
+      .manager();
+  }
+
+  async getOrganization(parentId: string): Promise<Organization | null> {
+    return this.prisma.user
+      .findOne({
+        where: { id: parentId },
+      })
+      .organization();
   }
 }
 ",
