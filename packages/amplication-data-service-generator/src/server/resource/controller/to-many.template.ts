@@ -6,7 +6,9 @@ import * as basicAuthGuard from "../auth/basicAuth.guard";
 // @ts-ignore
 import * as abacUtil from "../auth/abac.util";
 
-declare interface WHERE_UNIQUE_INPUT {}
+declare interface WHERE_UNIQUE_INPUT {
+  id: string;
+}
 declare interface RELATED_ENTITY_WHERE_UNIQUE_INPUT {}
 declare interface RELATED_ENTITY_WHERE_INPUT {}
 declare interface Select {}
@@ -14,14 +16,11 @@ declare interface Select {}
 declare interface RELATED_ENTITY {}
 
 declare interface SERVICE {
-  findOne(args: {
-    where: WHERE_UNIQUE_INPUT;
-  }): {
-    PROPERTY(args: {
-      where: RELATED_ENTITY_WHERE_INPUT;
-      select: Select;
-    }): Promise<RELATED_ENTITY[]>;
-  };
+  FIND_PROPERTY(
+    parentId: string,
+    args: RELATED_ENTITY_WHERE_INPUT
+  ): Promise<RELATED_ENTITY[]>;
+
   update(args: {
     where: WHERE_UNIQUE_INPUT;
     data: {
@@ -68,9 +67,10 @@ export class Mixin {
       possession: "any",
       resource: RELATED_ENTITY_NAME,
     });
-    const results = await this.service
-      .findOne({ where: params })
-      .PROPERTY({ where: query, select: SELECT });
+    const results = await this.service.FIND_PROPERTY(params.id, {
+      where: query,
+      select: SELECT,
+    });
     return results.map((result) => permission.filter(result));
   }
 

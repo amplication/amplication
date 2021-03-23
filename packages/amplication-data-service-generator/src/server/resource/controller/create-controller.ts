@@ -1,4 +1,5 @@
 import { print } from "recast";
+import { pascalCase } from "pascal-case";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import { Entity, EntityLookupField, Module } from "../../../types";
@@ -217,6 +218,7 @@ async function createToManyRelationMethods(
     WHERE_UNIQUE_INPUT: whereUniqueInput.id,
     SERVICE: serviceId,
     ENTITY_NAME: builders.stringLiteral(entityType),
+    FIND_PROPERTY: builders.identifier(`find${pascalCase(field.name)}`),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: builders.identifier(camelCase(`findMany ${field.name}`)),
     FIND_MANY_PATH: builders.stringLiteral(`/:id/${field.name}`),
