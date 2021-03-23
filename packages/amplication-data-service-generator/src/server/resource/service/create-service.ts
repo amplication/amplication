@@ -22,7 +22,7 @@ import {
 } from "../../../util/ast";
 import {
   isPasswordField,
-  //isOneToOneRelationField,
+  isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
@@ -44,7 +44,7 @@ const PRISMA_UTIL_MODULE_PATH = `${SRC_DIRECTORY}/prisma.util.ts`;
 const serviceTemplatePath = require.resolve("./service.template.ts");
 const serviceBaseTemplatePath = require.resolve("./service.base.template.ts");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
-//const toOneTemplatePath = require.resolve("./to-one.template.ts");
+const toOneTemplatePath = require.resolve("./to-one.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createServiceModules(
@@ -218,29 +218,43 @@ async function createServiceBaseModule(
       })
     )
   ).flat();
-  // const toOneRelationFields = entity.fields.filter(isOneToOneRelationField);
-  // const toOneRelationMethods = (
-  //   await Promise.all(
-  //     toOneRelationFields.map((field) =>
-  //       createToOneRelationMethods(
-  //         field,
-  //         entityDTO,
-  //         entityType,
-  //         dtos,
-  //         serviceId
-  //       )
-  //     )
-  //   )
-  // ).flat();
+
+  const toOneRelationFields = entity.fields.filter(isOneToOneRelationField);
+  const toOneRelations = (
+    await Promise.all(
+      toOneRelationFields.map(async (field) => {
+        const toOneFile = await createToOneRelationFile(
+          field,
+          entityDTO,
+          dtos,
+          delegateId
+        );
+
+        const imports = extractImportDeclarations(toOneFile);
+        const methods = getMethods(
+          getClassDeclarationById(toOneFile, MIXIN_ID)
+        );
+        return {
+          methods,
+          imports,
+        };
+      })
+    )
+  ).flat();
 
   classDeclaration.body.body.push(
-    ...toManyRelations.flatMap((relation) => relation.methods)
-    //...toOneRelationMethods
+    ...toManyRelations.flatMap((relation) => relation.methods),
+    ...toOneRelations.flatMap((relation) => relation.methods)
+    //...
   );
 
   addImports(
     file,
     toManyRelations.flatMap((relation) => relation.imports)
+  );
+  addImports(
+    file,
+    toOneRelations.flatMap((relation) => relation.imports)
   );
 
   removeTSClassDeclares(file);
@@ -317,30 +331,28 @@ export function createServiceBaseId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}ServiceBase`);
 }
 
-// async function createToOneRelationMethods(
-//   field: EntityLookupField,
-//   entityDTO: NamedClassDeclaration,
-//   entityType: string,
-//   dtos: DTOs,
-//   serviceId: namedTypes.Identifier
-// ) {
-//   const toOneFile = await readFile(toOneTemplatePath);
-//   const { relatedEntity } = field.properties;
-//   const relatedEntityDTOs = dtos[relatedEntity.name];
+async function createToOneRelationFile(
+  field: EntityLookupField,
+  entityDTO: NamedClassDeclaration,
+  dtos: DTOs,
+  delegateId: namedTypes.Identifier
+) {
+  const toOneFile = await readFile(toOneTemplatePath);
+  const { relatedEntity } = field.properties;
+  const relatedEntityDTOs = dtos[relatedEntity.name];
 
-//   interpolate(toOneFile, {
-//     SERVICE: serviceId,
-//     ENTITY: entityDTO.id,
-//     ENTITY_NAME: builders.stringLiteral(entityType),
-//     RELATED_ENTITY: builders.identifier(relatedEntity.name),
-//     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
-//     PROPERTY: builders.identifier(field.name),
-//     FIND_ONE: builders.identifier(camelCase(field.name)),
-//     ARGS: relatedEntityDTOs.findOneArgs.id,
-//   });
+  interpolate(toOneFile, {
+    ENTITY: entityDTO.id,
+    DELEGATE: delegateId,
+    RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
+    PROPERTY: builders.identifier(field.name),
+    FIND_ONE: builders.identifier(`get${pascalCase(field.name)}`),
+    ARGS: relatedEntityDTOs.findOneArgs.id,
+  });
 
-//   return getMethods(getClassDeclarationById(toOneFile, MIXIN_ID));
-// }
+  return toOneFile;
+}
 
 async function createToManyRelationFile(
   field: EntityLookupField,
