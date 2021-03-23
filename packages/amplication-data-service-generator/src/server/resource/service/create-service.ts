@@ -223,12 +223,7 @@ async function createServiceBaseModule(
   const toOneRelations = (
     await Promise.all(
       toOneRelationFields.map(async (field) => {
-        const toOneFile = await createToOneRelationFile(
-          field,
-          entityDTO,
-          dtos,
-          delegateId
-        );
+        const toOneFile = await createToOneRelationFile(field, delegateId);
 
         const imports = extractImportDeclarations(toOneFile);
         const methods = getMethods(
@@ -333,22 +328,16 @@ export function createServiceBaseId(entityType: string): namedTypes.Identifier {
 
 async function createToOneRelationFile(
   field: EntityLookupField,
-  entityDTO: NamedClassDeclaration,
-  dtos: DTOs,
   delegateId: namedTypes.Identifier
 ) {
   const toOneFile = await readFile(toOneTemplatePath);
   const { relatedEntity } = field.properties;
-  const relatedEntityDTOs = dtos[relatedEntity.name];
 
   interpolate(toOneFile, {
-    ENTITY: entityDTO.id,
     DELEGATE: delegateId,
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
-    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: builders.identifier(`get${pascalCase(field.name)}`),
-    ARGS: relatedEntityDTOs.findOneArgs.id,
   });
 
   return toOneFile;
@@ -365,10 +354,8 @@ async function createToManyRelationFile(
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
   interpolate(toManyFile, {
-    ENTITY: entityDTO.id,
     DELEGATE: delegateId,
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
-    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: builders.identifier(`find${pascalCase(field.name)}`),
     ARGS: relatedEntityDTOs.findManyArgs.id,
