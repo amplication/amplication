@@ -1,26 +1,36 @@
-import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
-import { Module, Entity, EntityField } from "../../../types";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { pascalCase } from "pascal-case";
+import { print } from "recast";
+import { Entity, EntityField, EntityLookupField, Module } from "../../../types";
 import {
-  interpolate,
-  removeTSIgnoreComments,
-  removeTSVariableDeclares,
-  removeTSInterfaceDeclares,
-  addImports,
-  removeTSClassDeclares,
-  importNames,
-  getClassDeclarationById,
-  removeESLintComments,
-  memberExpression,
-  awaitExpression,
-  logicalExpression,
   addIdentifierToConstructorSuperCall,
+  addImports,
+  awaitExpression,
+  extractImportDeclarations,
+  getClassDeclarationById,
+  getMethods,
+  importNames,
+  interpolate,
+  logicalExpression,
+  memberExpression,
+  NamedClassDeclaration,
+  removeESLintComments,
+  removeTSClassDeclares,
+  removeTSIgnoreComments,
+  removeTSInterfaceDeclares,
+  removeTSVariableDeclares,
 } from "../../../util/ast";
+import {
+  isPasswordField,
+  //isOneToOneRelationField,
+  isToManyRelationField,
+} from "../../../util/field";
+import { readFile, relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
-import { isPasswordField } from "../../../util/field";
 import { SRC_DIRECTORY } from "../../constants";
+import { DTOs } from "../create-dtos";
 
+const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
 const DATA_ID = builders.identifier("data");
 const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
@@ -34,16 +44,21 @@ const PRISMA_UTIL_MODULE_PATH = `${SRC_DIRECTORY}/prisma.util.ts`;
 const serviceTemplatePath = require.resolve("./service.template.ts");
 const serviceBaseTemplatePath = require.resolve("./service.base.template.ts");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
+//const toOneTemplatePath = require.resolve("./to-one.template.ts");
+const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createServiceModules(
   entityName: string,
   entityType: string,
-  entity: Entity
+  entity: Entity,
+  dtos: DTOs
 ): Promise<Module[]> {
   const serviceId = createServiceId(entityType);
   const serviceBaseId = createServiceBaseId(entityType);
   const delegateId = builders.identifier(entityName);
   const passwordFields = entity.fields.filter(isPasswordField);
+  const entityDTOs = dtos[entity.name];
+  const { entity: entityDTO } = entityDTOs;
 
   const mapping = {
     SERVICE: serviceId,
@@ -88,10 +103,14 @@ export async function createServiceModules(
     ),
     await createServiceBaseModule(
       entityName,
+      entity,
+      entityDTO,
       mapping,
       passwordFields,
       serviceId,
-      serviceBaseId
+      serviceBaseId,
+      dtos,
+      delegateId
     ),
   ];
 }
@@ -162,15 +181,68 @@ async function createServiceModule(
 
 async function createServiceBaseModule(
   entityName: string,
+  entity: Entity,
+  entityDTO: NamedClassDeclaration,
   mapping: { [key: string]: ASTNode | undefined },
   passwordFields: EntityField[],
   serviceId: namedTypes.Identifier,
-  serviceBaseId: namedTypes.Identifier
+  serviceBaseId: namedTypes.Identifier,
+  dtos: DTOs,
+  delegateId: namedTypes.Identifier
 ): Promise<Module> {
   const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.service.base.ts`;
   const file = await readFile(serviceBaseTemplatePath);
 
   interpolate(file, mapping);
+
+  const classDeclaration = getClassDeclarationById(file, serviceBaseId);
+  const toManyRelationFields = entity.fields.filter(isToManyRelationField);
+  const toManyRelations = (
+    await Promise.all(
+      toManyRelationFields.map(async (field) => {
+        const toManyFile = await createToManyRelationFile(
+          field,
+          entityDTO,
+          dtos,
+          delegateId
+        );
+
+        const imports = extractImportDeclarations(toManyFile);
+        const methods = getMethods(
+          getClassDeclarationById(toManyFile, MIXIN_ID)
+        );
+        return {
+          methods,
+          imports,
+        };
+      })
+    )
+  ).flat();
+  // const toOneRelationFields = entity.fields.filter(isOneToOneRelationField);
+  // const toOneRelationMethods = (
+  //   await Promise.all(
+  //     toOneRelationFields.map((field) =>
+  //       createToOneRelationMethods(
+  //         field,
+  //         entityDTO,
+  //         entityType,
+  //         dtos,
+  //         serviceId
+  //       )
+  //     )
+  //   )
+  // ).flat();
+
+  classDeclaration.body.body.push(
+    ...toManyRelations.flatMap((relation) => relation.methods)
+    //...toOneRelationMethods
+  );
+
+  addImports(
+    file,
+    toManyRelations.flatMap((relation) => relation.imports)
+  );
+
   removeTSClassDeclares(file);
 
   if (passwordFields.length) {
@@ -243,4 +315,52 @@ export function createServiceId(entityType: string): namedTypes.Identifier {
 
 export function createServiceBaseId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}ServiceBase`);
+}
+
+// async function createToOneRelationMethods(
+//   field: EntityLookupField,
+//   entityDTO: NamedClassDeclaration,
+//   entityType: string,
+//   dtos: DTOs,
+//   serviceId: namedTypes.Identifier
+// ) {
+//   const toOneFile = await readFile(toOneTemplatePath);
+//   const { relatedEntity } = field.properties;
+//   const relatedEntityDTOs = dtos[relatedEntity.name];
+
+//   interpolate(toOneFile, {
+//     SERVICE: serviceId,
+//     ENTITY: entityDTO.id,
+//     ENTITY_NAME: builders.stringLiteral(entityType),
+//     RELATED_ENTITY: builders.identifier(relatedEntity.name),
+//     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
+//     PROPERTY: builders.identifier(field.name),
+//     FIND_ONE: builders.identifier(camelCase(field.name)),
+//     ARGS: relatedEntityDTOs.findOneArgs.id,
+//   });
+
+//   return getMethods(getClassDeclarationById(toOneFile, MIXIN_ID));
+// }
+
+async function createToManyRelationFile(
+  field: EntityLookupField,
+  entityDTO: NamedClassDeclaration,
+  dtos: DTOs,
+  delegateId: namedTypes.Identifier
+) {
+  const toManyFile = await readFile(toManyTemplatePath);
+  const { relatedEntity } = field.properties;
+  const relatedEntityDTOs = dtos[relatedEntity.name];
+
+  interpolate(toManyFile, {
+    ENTITY: entityDTO.id,
+    DELEGATE: delegateId,
+    RELATED_ENTITY: builders.identifier(relatedEntity.name),
+    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
+    PROPERTY: builders.identifier(field.name),
+    FIND_MANY: builders.identifier(`find${pascalCase(field.name)}`),
+    ARGS: relatedEntityDTOs.findManyArgs.id,
+  });
+
+  return toManyFile;
 }

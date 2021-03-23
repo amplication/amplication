@@ -116,7 +116,7 @@ function consolidateImports(
  * @param file file AST representation
  * @returns array of import declarations ast nodes
  */
-function extractImportDeclarations(
+export function extractImportDeclarations(
   file: namedTypes.File
 ): namedTypes.ImportDeclaration[] {
   const newBody = [];
