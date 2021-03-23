@@ -332,6 +332,12 @@ export function createFieldFindManyFunctionId(
   return builders.identifier(`find${pascalCase(fieldName)}`);
 }
 
+export function createFieldFindOneFunctionId(
+  fieldName: string
+): namedTypes.Identifier {
+  return builders.identifier(`get${pascalCase(fieldName)}`);
+}
+
 async function createToOneRelationFile(
   field: EntityLookupField,
   delegateId: namedTypes.Identifier
@@ -343,7 +349,7 @@ async function createToOneRelationFile(
     DELEGATE: delegateId,
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
-    FIND_ONE: builders.identifier(`get${pascalCase(field.name)}`),
+    FIND_ONE: createFieldFindOneFunctionId(field.name),
   });
 
   return toOneFile;

@@ -29,6 +29,7 @@ import { getImportableDTOs } from "../dto/create-dto-module";
 import {
   createServiceId,
   createFieldFindManyFunctionId,
+  createFieldFindOneFunctionId,
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
 
@@ -262,7 +263,7 @@ async function createToOneRelationMethods(
     ENTITY_NAME: builders.stringLiteral(entityType),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
-    PROPERTY: builders.identifier(field.name),
+    GET_PROPERTY: createFieldFindOneFunctionId(field.name),
     FIND_ONE: builders.identifier(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findOneArgs.id,
   });
