@@ -1,5 +1,4 @@
 import { print } from "recast";
-import { pascalCase } from "pascal-case";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import { Entity, EntityLookupField, Module } from "../../../types";
@@ -22,7 +21,10 @@ import { isToManyRelationField } from "../../../util/field";
 import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
-import { createServiceId } from "../service/create-service";
+import {
+  createServiceId,
+  createFieldFindManyFunctionId,
+} from "../service/create-service";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 
@@ -218,7 +220,7 @@ async function createToManyRelationMethods(
     WHERE_UNIQUE_INPUT: whereUniqueInput.id,
     SERVICE: serviceId,
     ENTITY_NAME: builders.stringLiteral(entityType),
-    FIND_PROPERTY: builders.identifier(`find${pascalCase(field.name)}`),
+    FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: builders.identifier(camelCase(`findMany ${field.name}`)),
     FIND_MANY_PATH: builders.stringLiteral(`/:id/${field.name}`),

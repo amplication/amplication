@@ -326,6 +326,12 @@ export function createServiceBaseId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}ServiceBase`);
 }
 
+export function createFieldFindManyFunctionId(
+  fieldName: string
+): namedTypes.Identifier {
+  return builders.identifier(`find${pascalCase(fieldName)}`);
+}
+
 async function createToOneRelationFile(
   field: EntityLookupField,
   delegateId: namedTypes.Identifier
@@ -357,7 +363,7 @@ async function createToManyRelationFile(
     DELEGATE: delegateId,
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
-    FIND_MANY: builders.identifier(`find${pascalCase(field.name)}`),
+    FIND_MANY: createFieldFindManyFunctionId(field.name),
     ARGS: relatedEntityDTOs.findManyArgs.id,
   });
 

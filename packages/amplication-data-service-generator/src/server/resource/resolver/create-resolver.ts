@@ -26,7 +26,10 @@ import {
 import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
-import { createServiceId } from "../service/create-service";
+import {
+  createServiceId,
+  createFieldFindManyFunctionId,
+} from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
 
 const MIXIN_ID = builders.identifier("Mixin");
@@ -284,7 +287,7 @@ async function createToManyRelationMethods(
     ENTITY_NAME: builders.stringLiteral(entityType),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
-    PROPERTY: builders.identifier(field.name),
+    FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     FIND_MANY: builders.identifier(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findManyArgs.id,
   });
