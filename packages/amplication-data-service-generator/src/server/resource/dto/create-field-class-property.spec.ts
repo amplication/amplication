@@ -161,8 +161,8 @@ describe("createFieldClassProperty", () => {
             createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
           )
         ),
-        true,
         false,
+        true,
         null,
         [
           builders.decorator(

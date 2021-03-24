@@ -478,8 +478,8 @@ export type Order = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  customer: CustomerWhereUniqueInput;
-  status: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  customer?: CustomerWhereUniqueInput;
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   label?: \\"fragile\\" | null;
 };
 ",
@@ -639,7 +639,7 @@ export type User = {
   manager?: UserWhereUniqueInput | null;
   organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
-  priority: \\"high\\" | \\"medium\\" | \\"low\\";
+  priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
 };
@@ -6900,14 +6900,14 @@ class Order {
   })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
-  customer!: CustomerWhereUniqueInput;
+  customer?: CustomerWhereUniqueInput;
   @ApiProperty({
     required: true,
     enum: EnumOrderStatus,
   })
   @IsEnum(EnumOrderStatus)
   @Field(() => EnumOrderStatus)
-  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumOrderLabel,
@@ -9719,7 +9719,7 @@ class User {
   })
   @IsEnum(EnumUserPriority)
   @Field(() => EnumUserPriority)
-  priority!: \\"high\\" | \\"medium\\" | \\"low\\";
+  priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
     required: true,
     type: Boolean,
