@@ -9,7 +9,7 @@ import { formatError } from "../util/error";
 import * as models from "../models";
 import { TextField } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { generatePluralDisplayName } from "../Components/PluralDisplayNameField";
+import { generatePluralDisplayName, generateSingularDisplayName } from "../Components/PluralDisplayNameField";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
@@ -101,13 +101,17 @@ const NewEntity = ({ applicationId }: Props) => {
   const handleSubmit = useCallback(
     (data: CreateEntityType) => {
       const displayName = data.displayName.trim();
+      const pluralDisplayName = generatePluralDisplayName(displayName);
+      const singularDisplayName = generateSingularDisplayName(displayName);
+      const name = pascalCase(singularDisplayName);
+      
       createEntity({
         variables: {
           data: {
             ...data,
             displayName,
-            name: pascalCase(displayName),
-            pluralDisplayName: generatePluralDisplayName(displayName),
+            name,
+            pluralDisplayName,
             app: { connect: { id: applicationId } },
           },
         },
