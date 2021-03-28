@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { DataConflictError } from 'src/errors/DataConflictError';
 import { Prisma } from '@prisma/client';
+import { AmplicationError } from 'src/errors/AmplicationError';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -207,6 +208,13 @@ export class EntityService {
     args: CreateOneEntityArgs,
     user: User
   ): Promise<Entity> {
+
+    if (args.data?.name?.toLowerCase() === args.data?.pluralDisplayName?.toLowerCase()) { 
+      throw new AmplicationError(
+        `The entity name must be in the singular form.`
+      );
+    } 
+
     const newEntity = await this.prisma.entity.create({
       data: {
         ...args.data,
@@ -526,6 +534,12 @@ export class EntityService {
     /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
 
     const entity = await this.acquireLock(args, user);
+
+    if (args.data.name?.toLowerCase() === args.data.pluralDisplayName?.toLowerCase()) {
+      throw new AmplicationError(
+        `The entity name must be in the singular form.`
+      );
+    } 
 
     if (entity.name === USER_ENTITY_NAME) {
       if (args.data.name && args.data.name !== USER_ENTITY_NAME) {
