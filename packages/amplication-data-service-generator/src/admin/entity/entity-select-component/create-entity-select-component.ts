@@ -24,17 +24,21 @@ export async function createEntitySelectComponent(
   const resource = entityToResource[entity.name];
   const entityDTO = dtos[entity.name].entity;
 
+  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
+
   interpolate(file, {
-    ENTITY: builders.identifier(entity.name),
+    ENTITY: localEntityDTOId,
     ENTITY_SELECT: builders.identifier(name),
     RESOURCE: builders.stringLiteral(resource),
     ENTITY_TITLE_FIELD: builders.identifier(getEntityTitleField(entity)),
   });
 
   addImports(file, [
-    importNames(
-      [entityDTO.id],
-      relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+    builders.importDeclaration(
+      [builders.importSpecifier(entityDTO.id, localEntityDTOId)],
+      builders.stringLiteral(
+        relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+      )
     ),
   ]);
 

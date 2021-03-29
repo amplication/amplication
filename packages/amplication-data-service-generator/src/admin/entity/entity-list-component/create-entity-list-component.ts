@@ -61,9 +61,10 @@ export async function createEntityListComponent(
   const relationFields = nonIdFields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
+  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
 
   interpolate(file, {
-    ENTITY: builders.identifier(entity.name),
+    ENTITY: localEntityDTOId,
     ENTITY_LIST: builders.identifier(name),
     ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
       entity.pluralDisplayName
@@ -117,9 +118,11 @@ export async function createEntityListComponent(
   );
 
   addImports(file, [
-    importNames(
-      [entityDTO.id],
-      relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+    builders.importDeclaration(
+      [builders.importSpecifier(entityDTO.id, localEntityDTOId)],
+      builders.stringLiteral(
+        relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+      )
     ),
     ...importContainedIdentifiers(file, IMPORTABLE_IDS),
   ]);

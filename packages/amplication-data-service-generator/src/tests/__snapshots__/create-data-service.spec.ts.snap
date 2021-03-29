@@ -908,7 +908,7 @@ import {
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
-import { Customer } from \\"../api/customer/Customer\\";
+import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
 
 const INITIAL_VALUES = {} as CustomerCreateInput;
@@ -918,7 +918,7 @@ export const CreateCustomer = (): React.ReactElement => {
   const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
-    Customer,
+    TCustomer,
     AxiosError,
     CustomerCreateInput
   >(
@@ -1032,7 +1032,300 @@ export const CreateCustomer = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/customer/Customer.tsx": "import * as React from \\"react\\";
+  "admin/src/customer/CustomerIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { CustomerList } from \\"./CustomerList\\";
+import { CreateCustomer } from \\"./CreateCustomer\\";
+import { ViewCustomer } from \\"./ViewCustomer\\";
+
+export const CustomerIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/customers/\\", \\"Customers\\");
+
+  return (
+    <Switch>
+      <PrivateRoute exact path={\\"/customers/\\"} component={CustomerList} />
+      <PrivateRoute path={\\"/customers/new\\"} component={CreateCustomer} />
+      <PrivateRoute path={\\"/customers/:id\\"} component={ViewCustomer} />
+    </Switch>
+  );
+};
+",
+  "admin/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  Button,
+  Snackbar,
+  TimeSince,
+  CircleIcon,
+  EnumCircleIconStyle,
+} from \\"@amplication/design-system\\";
+
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { Customer as TCustomer } from \\"../api/customer/Customer\\";
+
+type Data = TCustomer[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
+
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+  {
+    name: \\"email\\",
+    title: \\"Email\\",
+    sortable: false,
+  },
+  {
+    name: \\"firstName\\",
+    title: \\"First Name\\",
+    sortable: false,
+  },
+  {
+    name: \\"lastName\\",
+    title: \\"Last Name\\",
+    sortable: false,
+  },
+  {
+    name: \\"isVip\\",
+    title: \\"VIP\\",
+    sortable: false,
+  },
+  {
+    name: \\"birthData\\",
+    title: \\"Birth Data\\",
+    sortable: false,
+  },
+  {
+    name: \\"averageSale\\",
+    title: \\"Average Sale (-1500.00 - 1500.00)\\",
+    sortable: false,
+  },
+  {
+    name: \\"favoriteNumber\\",
+    title: \\"Favorite Number (1 - 20)\\",
+    sortable: false,
+  },
+  {
+    name: \\"geoLocation\\",
+    title: \\"Geographic Location\\",
+    sortable: false,
+  },
+  {
+    name: \\"comments\\",
+    title: \\"Comments (up to 500 characters)\\",
+    sortable: false,
+  },
+  {
+    name: \\"favoriteColors\\",
+    title: \\"Favorite Colors (multi-select)\\",
+    sortable: false,
+  },
+  {
+    name: \\"customerType\\",
+    title: \\"Customer Type\\",
+    sortable: false,
+  },
+  {
+    name: \\"organization\\",
+    title: \\"Organization\\",
+    sortable: false,
+  },
+  {
+    name: \\"vipOrganization\\",
+    title: \\"VIP Organization\\",
+    sortable: false,
+  },
+];
+
+export const CustomerList = (): React.ReactElement => {
+  const { data, error, isError } = useQuery<Data, AxiosError>(
+    \\"list-/api/customers\\",
+    async () => {
+      const response = await api.get(\\"/api/customers\\");
+      return response.data;
+    }
+  );
+
+  return (
+    <>
+      <DataGrid
+        fields={FIELDS}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Customers\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/customers/new\\"}>
+            <Button>Create Customer </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: TCustomer) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
+                  <Link className=\\"entity-id\\" to={\`\${\\"/customers\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.createdAt} />
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.updatedAt} />
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.email}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.firstName}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.lastName}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    {item.isVip && (
+                      <CircleIcon
+                        icon=\\"check\\"
+                        style={EnumCircleIconStyle.positive}
+                      />
+                    )}
+                  </>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.birthData}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.averageSale}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.favoriteNumber}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.geoLocation}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.comments}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.favoriteColors}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.customerType}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <OrganizationTitle id={item.organization?.id} />
+                </DataGridCell>
+                <DataGridCell>
+                  <OrganizationTitle id={item.vipOrganization?.id} />
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+      <Snackbar open={isError} message={error?.response?.data?.message} />
+    </>
+  );
+};
+",
+  "admin/src/customer/CustomerSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Customer as TCustomer } from \\"../api/customer/Customer\\";
+
+type Data = TCustomer[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const CustomerSelect = (props: Props) => {
+  const { data } = useQuery<Data, AxiosError>(
+    \\"select-/api/customers\\",
+    async () => {
+      const response = await api.get(\\"/api/customers\\");
+      return response.data;
+    }
+  );
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          label:
+            item.firstName && item.firstName.length ? item.firstName : item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/customer/CustomerTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Customer as TCustomer } from \\"../api/customer/Customer\\";
+
+type Props = { id: string };
+
+export const CustomerTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    TCustomer,
+    AxiosError,
+    [string, string]
+  >([\\"get-/api/customers\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/customers\\"}/\${id}\`);
+    return response.data;
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
+
+  return (
+    <Link to={\`\${\\"/api/customers\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.firstName && data?.firstName.length ? data.firstName : data?.id}
+    </Link>
+  );
+};
+",
+  "admin/src/customer/ViewCustomer.tsx": "import * as React from \\"react\\";
 import { useRouteMatch, useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
@@ -1057,7 +1350,7 @@ import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 
-export const Customer = (): React.ReactElement => {
+export const ViewCustomer = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
@@ -1242,299 +1535,6 @@ export const Customer = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/customer/CustomerIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { CustomerList } from \\"./CustomerList\\";
-import { CreateCustomer } from \\"./CreateCustomer\\";
-import { Customer } from \\"./Customer\\";
-
-export const CustomerIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/customers/\\", \\"Customers\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/customers/\\"} component={CustomerList} />
-      <PrivateRoute path={\\"/customers/new\\"} component={CreateCustomer} />
-      <PrivateRoute path={\\"/customers/:id\\"} component={Customer} />
-    </Switch>
-  );
-};
-",
-  "admin/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-
-import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-  CircleIcon,
-  EnumCircleIconStyle,
-} from \\"@amplication/design-system\\";
-
-import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
-import { Customer } from \\"../api/customer/Customer\\";
-
-type Data = Customer[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-  {
-    name: \\"email\\",
-    title: \\"Email\\",
-    sortable: false,
-  },
-  {
-    name: \\"firstName\\",
-    title: \\"First Name\\",
-    sortable: false,
-  },
-  {
-    name: \\"lastName\\",
-    title: \\"Last Name\\",
-    sortable: false,
-  },
-  {
-    name: \\"isVip\\",
-    title: \\"VIP\\",
-    sortable: false,
-  },
-  {
-    name: \\"birthData\\",
-    title: \\"Birth Data\\",
-    sortable: false,
-  },
-  {
-    name: \\"averageSale\\",
-    title: \\"Average Sale (-1500.00 - 1500.00)\\",
-    sortable: false,
-  },
-  {
-    name: \\"favoriteNumber\\",
-    title: \\"Favorite Number (1 - 20)\\",
-    sortable: false,
-  },
-  {
-    name: \\"geoLocation\\",
-    title: \\"Geographic Location\\",
-    sortable: false,
-  },
-  {
-    name: \\"comments\\",
-    title: \\"Comments (up to 500 characters)\\",
-    sortable: false,
-  },
-  {
-    name: \\"favoriteColors\\",
-    title: \\"Favorite Colors (multi-select)\\",
-    sortable: false,
-  },
-  {
-    name: \\"customerType\\",
-    title: \\"Customer Type\\",
-    sortable: false,
-  },
-  {
-    name: \\"organization\\",
-    title: \\"Organization\\",
-    sortable: false,
-  },
-  {
-    name: \\"vipOrganization\\",
-    title: \\"VIP Organization\\",
-    sortable: false,
-  },
-];
-
-export const CustomerList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/customers\\",
-    async () => {
-      const response = await api.get(\\"/api/customers\\");
-      return response.data;
-    }
-  );
-
-  return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Customers\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/customers/new\\"}>
-            <Button>Create Customer </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: Customer) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/customers\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.email}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.firstName}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.lastName}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>
-                    {item.isVip && (
-                      <CircleIcon
-                        icon=\\"check\\"
-                        style={EnumCircleIconStyle.positive}
-                      />
-                    )}
-                  </>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.birthData}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.averageSale}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.favoriteNumber}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.geoLocation}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.comments}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.favoriteColors}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.customerType}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <OrganizationTitle id={item.organization?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <OrganizationTitle id={item.vipOrganization?.id} />
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/customer/CustomerSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Customer } from \\"../api/customer/Customer\\";
-
-type Data = Customer[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const CustomerSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/customers\\",
-    async () => {
-      const response = await api.get(\\"/api/customers\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label:
-            item.firstName && item.firstName.length ? item.firstName : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
-  "admin/src/customer/CustomerTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { Customer } from \\"../api/customer/Customer\\";
-
-type Props = { id: string };
-
-export const CustomerTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    Customer,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/customers\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/customers\\"}/\${id}\`);
-    return response.data;
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
-
-  return (
-    <Link to={\`\${\\"/api/customers\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.firstName && data?.firstName.length ? data.firstName : data?.id}
-    </Link>
-  );
-};
-",
   "admin/src/empty/CreateEmpty.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { useHistory } from \\"react-router-dom\\";
@@ -1549,7 +1549,7 @@ import {
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Empty } from \\"../api/empty/Empty\\";
+import { Empty as TEmpty } from \\"../api/empty/Empty\\";
 import { EmptyCreateInput } from \\"../api/empty/EmptyCreateInput\\";
 
 const INITIAL_VALUES = {} as EmptyCreateInput;
@@ -1559,7 +1559,7 @@ export const CreateEmpty = (): React.ReactElement => {
   const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
-    Empty,
+    TEmpty,
     AxiosError,
     EmptyCreateInput
   >(
@@ -1598,7 +1598,185 @@ export const CreateEmpty = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/empty/Empty.tsx": "import * as React from \\"react\\";
+  "admin/src/empty/EmptyIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { EmptyList } from \\"./EmptyList\\";
+import { CreateEmpty } from \\"./CreateEmpty\\";
+import { ViewEmpty } from \\"./ViewEmpty\\";
+
+export const EmptyIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/empties/\\", \\"Empties\\");
+
+  return (
+    <Switch>
+      <PrivateRoute exact path={\\"/empties/\\"} component={EmptyList} />
+      <PrivateRoute path={\\"/empties/new\\"} component={CreateEmpty} />
+      <PrivateRoute path={\\"/empties/:id\\"} component={ViewEmpty} />
+    </Switch>
+  );
+};
+",
+  "admin/src/empty/EmptyList.tsx": "import * as React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  Button,
+  Snackbar,
+  TimeSince,
+} from \\"@amplication/design-system\\";
+
+import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+
+type Data = TEmpty[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
+
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+];
+
+export const EmptyList = (): React.ReactElement => {
+  const { data, error, isError } = useQuery<Data, AxiosError>(
+    \\"list-/api/empties\\",
+    async () => {
+      const response = await api.get(\\"/api/empties\\");
+      return response.data;
+    }
+  );
+
+  return (
+    <>
+      <DataGrid
+        fields={FIELDS}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Empties\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/empties/new\\"}>
+            <Button>Create Empty </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: TEmpty) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
+                  <Link className=\\"entity-id\\" to={\`\${\\"/empties\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.createdAt} />
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.updatedAt} />
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+      <Snackbar open={isError} message={error?.response?.data?.message} />
+    </>
+  );
+};
+",
+  "admin/src/empty/EmptySelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+
+type Data = TEmpty[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const EmptySelect = (props: Props) => {
+  const { data } = useQuery<Data, AxiosError>(
+    \\"select-/api/empties\\",
+    async () => {
+      const response = await api.get(\\"/api/empties\\");
+      return response.data;
+    }
+  );
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          label: item.id && item.id.length ? item.id : item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/empty/EmptyTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+
+type Props = { id: string };
+
+export const EmptyTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    TEmpty,
+    AxiosError,
+    [string, string]
+  >([\\"get-/api/empties\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/empties\\"}/\${id}\`);
+    return response.data;
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
+
+  return (
+    <Link to={\`\${\\"/api/empties\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.id && data?.id.length ? data.id : data?.id}
+    </Link>
+  );
+};
+",
+  "admin/src/empty/ViewEmpty.tsx": "import * as React from \\"react\\";
 import { useRouteMatch, useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
@@ -1617,7 +1795,7 @@ import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { Empty as TEmpty } from \\"../api/empty/Empty\\";
 import { EmptyUpdateInput } from \\"../api/empty/EmptyUpdateInput\\";
 
-export const Empty = (): React.ReactElement => {
+export const ViewEmpty = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/empties/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
@@ -1707,184 +1885,6 @@ export const Empty = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/empty/EmptyIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { EmptyList } from \\"./EmptyList\\";
-import { CreateEmpty } from \\"./CreateEmpty\\";
-import { Empty } from \\"./Empty\\";
-
-export const EmptyIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/empties/\\", \\"Empties\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/empties/\\"} component={EmptyList} />
-      <PrivateRoute path={\\"/empties/new\\"} component={CreateEmpty} />
-      <PrivateRoute path={\\"/empties/:id\\"} component={Empty} />
-    </Switch>
-  );
-};
-",
-  "admin/src/empty/EmptyList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-
-import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-} from \\"@amplication/design-system\\";
-
-import { Empty } from \\"../api/empty/Empty\\";
-
-type Data = Empty[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-];
-
-export const EmptyList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/empties\\",
-    async () => {
-      const response = await api.get(\\"/api/empties\\");
-      return response.data;
-    }
-  );
-
-  return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Empties\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/empties/new\\"}>
-            <Button>Create Empty </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: Empty) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/empties\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/empty/EmptySelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Empty } from \\"../api/empty/Empty\\";
-
-type Data = Empty[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const EmptySelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/empties\\",
-    async () => {
-      const response = await api.get(\\"/api/empties\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label: item.id && item.id.length ? item.id : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
-  "admin/src/empty/EmptyTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { Empty } from \\"../api/empty/Empty\\";
-
-type Props = { id: string };
-
-export const EmptyTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    Empty,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/empties\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/empties\\"}/\${id}\`);
-    return response.data;
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
-
-  return (
-    <Link to={\`\${\\"/api/empties\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.id && data?.id.length ? data.id : data?.id}
-    </Link>
-  );
-};
-",
   "admin/src/index.tsx": "import React from \\"react\\";
 import ReactDOM from \\"react-dom\\";
 import { BrowserRouter as Router } from \\"react-router-dom\\";
@@ -1927,7 +1927,7 @@ import {
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
-import { Order } from \\"../api/order/Order\\";
+import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
 
 const INITIAL_VALUES = {} as OrderCreateInput;
@@ -1937,7 +1937,7 @@ export const CreateOrder = (): React.ReactElement => {
   const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
-    Order,
+    TOrder,
     AxiosError,
     OrderCreateInput
   >(
@@ -1998,7 +1998,210 @@ export const CreateOrder = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/order/Order.tsx": "import * as React from \\"react\\";
+  "admin/src/order/OrderIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { OrderList } from \\"./OrderList\\";
+import { CreateOrder } from \\"./CreateOrder\\";
+import { ViewOrder } from \\"./ViewOrder\\";
+
+export const OrderIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/orders/\\", \\"Orders\\");
+
+  return (
+    <Switch>
+      <PrivateRoute exact path={\\"/orders/\\"} component={OrderList} />
+      <PrivateRoute path={\\"/orders/new\\"} component={CreateOrder} />
+      <PrivateRoute path={\\"/orders/:id\\"} component={ViewOrder} />
+    </Switch>
+  );
+};
+",
+  "admin/src/order/OrderList.tsx": "import * as React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  Button,
+  Snackbar,
+  TimeSince,
+} from \\"@amplication/design-system\\";
+
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
+import { Order as TOrder } from \\"../api/order/Order\\";
+
+type Data = TOrder[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
+
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+  {
+    name: \\"customer\\",
+    title: \\"Customer\\",
+    sortable: false,
+  },
+  {
+    name: \\"status\\",
+    title: \\"Status\\",
+    sortable: false,
+  },
+  {
+    name: \\"label\\",
+    title: \\"Label\\",
+    sortable: false,
+  },
+];
+
+export const OrderList = (): React.ReactElement => {
+  const { data, error, isError } = useQuery<Data, AxiosError>(
+    \\"list-/api/orders\\",
+    async () => {
+      const response = await api.get(\\"/api/orders\\");
+      return response.data;
+    }
+  );
+
+  return (
+    <>
+      <DataGrid
+        fields={FIELDS}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Orders\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/orders/new\\"}>
+            <Button>Create Order </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: TOrder) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
+                  <Link className=\\"entity-id\\" to={\`\${\\"/orders\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.createdAt} />
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.updatedAt} />
+                </DataGridCell>
+                <DataGridCell>
+                  <CustomerTitle id={item.customer?.id} />
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.status}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.label}</>
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+      <Snackbar open={isError} message={error?.response?.data?.message} />
+    </>
+  );
+};
+",
+  "admin/src/order/OrderSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Order as TOrder } from \\"../api/order/Order\\";
+
+type Data = TOrder[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const OrderSelect = (props: Props) => {
+  const { data } = useQuery<Data, AxiosError>(
+    \\"select-/api/orders\\",
+    async () => {
+      const response = await api.get(\\"/api/orders\\");
+      return response.data;
+    }
+  );
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          label: item.id && item.id.length ? item.id : item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/order/OrderTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Order as TOrder } from \\"../api/order/Order\\";
+
+type Props = { id: string };
+
+export const OrderTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    TOrder,
+    AxiosError,
+    [string, string]
+  >([\\"get-/api/orders\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/orders\\"}/\${id}\`);
+    return response.data;
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
+
+  return (
+    <Link to={\`\${\\"/api/orders\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.id && data?.id.length ? data.id : data?.id}
+    </Link>
+  );
+};
+",
+  "admin/src/order/ViewOrder.tsx": "import * as React from \\"react\\";
 import { useRouteMatch, useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
@@ -2021,7 +2224,7 @@ import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 
-export const Order = (): React.ReactElement => {
+export const ViewOrder = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
@@ -2136,209 +2339,6 @@ export const Order = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/order/OrderIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrderList } from \\"./OrderList\\";
-import { CreateOrder } from \\"./CreateOrder\\";
-import { Order } from \\"./Order\\";
-
-export const OrderIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/orders/\\", \\"Orders\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/orders/\\"} component={OrderList} />
-      <PrivateRoute path={\\"/orders/new\\"} component={CreateOrder} />
-      <PrivateRoute path={\\"/orders/:id\\"} component={Order} />
-    </Switch>
-  );
-};
-",
-  "admin/src/order/OrderList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-
-import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-} from \\"@amplication/design-system\\";
-
-import { CustomerTitle } from \\"../customer/CustomerTitle\\";
-import { Order } from \\"../api/order/Order\\";
-
-type Data = Order[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-  {
-    name: \\"customer\\",
-    title: \\"Customer\\",
-    sortable: false,
-  },
-  {
-    name: \\"status\\",
-    title: \\"Status\\",
-    sortable: false,
-  },
-  {
-    name: \\"label\\",
-    title: \\"Label\\",
-    sortable: false,
-  },
-];
-
-export const OrderList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/orders\\",
-    async () => {
-      const response = await api.get(\\"/api/orders\\");
-      return response.data;
-    }
-  );
-
-  return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Orders\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/orders/new\\"}>
-            <Button>Create Order </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: Order) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/orders\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <CustomerTitle id={item.customer?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.status}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.label}</>
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/order/OrderSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Order } from \\"../api/order/Order\\";
-
-type Data = Order[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const OrderSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/orders\\",
-    async () => {
-      const response = await api.get(\\"/api/orders\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label: item.id && item.id.length ? item.id : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
-  "admin/src/order/OrderTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { Order } from \\"../api/order/Order\\";
-
-type Props = { id: string };
-
-export const OrderTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    Order,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/orders\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/orders\\"}/\${id}\`);
-    return response.data;
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
-
-  return (
-    <Link to={\`\${\\"/api/orders\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.id && data?.id.length ? data.id : data?.id}
-    </Link>
-  );
-};
-",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { useHistory } from \\"react-router-dom\\";
@@ -2354,7 +2354,7 @@ import {
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Organization } from \\"../api/organization/Organization\\";
+import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
 
 const INITIAL_VALUES = {} as OrganizationCreateInput;
@@ -2364,7 +2364,7 @@ export const CreateOrganization = (): React.ReactElement => {
   const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
-    Organization,
+    TOrganization,
     AxiosError,
     OrganizationCreateInput
   >(
@@ -2407,7 +2407,203 @@ export const CreateOrganization = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/organization/Organization.tsx": "import * as React from \\"react\\";
+  "admin/src/organization/OrganizationIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { OrganizationList } from \\"./OrganizationList\\";
+import { CreateOrganization } from \\"./CreateOrganization\\";
+import { ViewOrganization } from \\"./ViewOrganization\\";
+
+export const OrganizationIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/organizations/\\", \\"Organizations\\");
+
+  return (
+    <Switch>
+      <PrivateRoute
+        exact
+        path={\\"/organizations/\\"}
+        component={OrganizationList}
+      />
+      <PrivateRoute
+        path={\\"/organizations/new\\"}
+        component={CreateOrganization}
+      />
+      <PrivateRoute path={\\"/organizations/:id\\"} component={ViewOrganization} />
+    </Switch>
+  );
+};
+",
+  "admin/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  Button,
+  Snackbar,
+  TimeSince,
+} from \\"@amplication/design-system\\";
+
+import { Organization as TOrganization } from \\"../api/organization/Organization\\";
+
+type Data = TOrganization[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
+
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+  {
+    name: \\"name\\",
+    title: \\"Name\\",
+    sortable: false,
+  },
+];
+
+export const OrganizationList = (): React.ReactElement => {
+  const { data, error, isError } = useQuery<Data, AxiosError>(
+    \\"list-/api/organizations\\",
+    async () => {
+      const response = await api.get(\\"/api/organizations\\");
+      return response.data;
+    }
+  );
+
+  return (
+    <>
+      <DataGrid
+        fields={FIELDS}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Organizations\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/organizations/new\\"}>
+            <Button>Create Organization </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: TOrganization) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
+                  <Link
+                    className=\\"entity-id\\"
+                    to={\`\${\\"/organizations\\"}/\${item.id}\`}
+                  >
+                    {item.id}
+                  </Link>
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.createdAt} />
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.updatedAt} />
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.name}</>
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+      <Snackbar open={isError} message={error?.response?.data?.message} />
+    </>
+  );
+};
+",
+  "admin/src/organization/OrganizationSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Organization as TOrganization } from \\"../api/organization/Organization\\";
+
+type Data = TOrganization[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const OrganizationSelect = (props: Props) => {
+  const { data } = useQuery<Data, AxiosError>(
+    \\"select-/api/organizations\\",
+    async () => {
+      const response = await api.get(\\"/api/organizations\\");
+      return response.data;
+    }
+  );
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          label: item.name && item.name.length ? item.name : item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/organization/OrganizationTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Organization as TOrganization } from \\"../api/organization/Organization\\";
+
+type Props = { id: string };
+
+export const OrganizationTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    TOrganization,
+    AxiosError,
+    [string, string]
+  >([\\"get-/api/organizations\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/organizations\\"}/\${id}\`);
+    return response.data;
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
+
+  return (
+    <Link to={\`\${\\"/api/organizations\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.name && data?.name.length ? data.name : data?.id}
+    </Link>
+  );
+};
+",
+  "admin/src/organization/ViewOrganization.tsx": "import * as React from \\"react\\";
 import { useRouteMatch, useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
@@ -2429,7 +2625,7 @@ import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
-export const Organization = (): React.ReactElement => {
+export const ViewOrganization = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
@@ -2525,202 +2721,6 @@ export const Organization = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/organization/OrganizationIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrganizationList } from \\"./OrganizationList\\";
-import { CreateOrganization } from \\"./CreateOrganization\\";
-import { Organization } from \\"./Organization\\";
-
-export const OrganizationIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/organizations/\\", \\"Organizations\\");
-
-  return (
-    <Switch>
-      <PrivateRoute
-        exact
-        path={\\"/organizations/\\"}
-        component={OrganizationList}
-      />
-      <PrivateRoute
-        path={\\"/organizations/new\\"}
-        component={CreateOrganization}
-      />
-      <PrivateRoute path={\\"/organizations/:id\\"} component={Organization} />
-    </Switch>
-  );
-};
-",
-  "admin/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-
-import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-} from \\"@amplication/design-system\\";
-
-import { Organization } from \\"../api/organization/Organization\\";
-
-type Data = Organization[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-  {
-    name: \\"name\\",
-    title: \\"Name\\",
-    sortable: false,
-  },
-];
-
-export const OrganizationList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/organizations\\",
-    async () => {
-      const response = await api.get(\\"/api/organizations\\");
-      return response.data;
-    }
-  );
-
-  return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Organizations\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/organizations/new\\"}>
-            <Button>Create Organization </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: Organization) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link
-                    className=\\"entity-id\\"
-                    to={\`\${\\"/organizations\\"}/\${item.id}\`}
-                  >
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.name}</>
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/organization/OrganizationSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Organization } from \\"../api/organization/Organization\\";
-
-type Data = Organization[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const OrganizationSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/organizations\\",
-    async () => {
-      const response = await api.get(\\"/api/organizations\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label: item.name && item.name.length ? item.name : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
-  "admin/src/organization/OrganizationTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { Organization } from \\"../api/organization/Organization\\";
-
-type Props = { id: string };
-
-export const OrganizationTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    Organization,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/organizations\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/organizations\\"}/\${id}\`);
-    return response.data;
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
-
-  return (
-    <Link to={\`\${\\"/api/organizations\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.name && data?.name.length ? data.name : data?.id}
-    </Link>
-  );
-};
-",
   "admin/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 
 const reportWebVitals = (onPerfEntry?: ReportHandler) => {
@@ -2777,7 +2777,7 @@ import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { UserSelect } from \\"./UserSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
-import { User } from \\"../api/user/User\\";
+import { User as TUser } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
 import { RoleSelect } from \\"../user/RoleSelect\\";
 
@@ -2788,7 +2788,7 @@ export const CreateUser = (): React.ReactElement => {
   const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
-    User,
+    TUser,
     AxiosError,
     UserCreateInput
   >(
@@ -2920,7 +2920,289 @@ export const RoleSelect = (props: Props) => {
   return <SelectField {...props} options={OPTIONS} />;
 };
 ",
-  "admin/src/user/User.tsx": "import * as React from \\"react\\";
+  "admin/src/user/UserIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { UserList } from \\"./UserList\\";
+import { CreateUser } from \\"./CreateUser\\";
+import { ViewUser } from \\"./ViewUser\\";
+
+export const UserIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/users/\\", \\"Users\\");
+
+  return (
+    <Switch>
+      <PrivateRoute exact path={\\"/users/\\"} component={UserList} />
+      <PrivateRoute path={\\"/users/new\\"} component={CreateUser} />
+      <PrivateRoute path={\\"/users/:id\\"} component={ViewUser} />
+    </Switch>
+  );
+};
+",
+  "admin/src/user/UserList.tsx": "import * as React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  Button,
+  Snackbar,
+  CircleIcon,
+  EnumCircleIconStyle,
+} from \\"@amplication/design-system\\";
+
+import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { User as TUser } from \\"../api/user/User\\";
+
+type Data = TUser[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
+
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"username\\",
+    title: \\"Username\\",
+    sortable: false,
+  },
+  {
+    name: \\"roles\\",
+    title: \\"Roles\\",
+    sortable: false,
+  },
+  {
+    name: \\"name\\",
+    title: \\"Name\\",
+    sortable: false,
+  },
+  {
+    name: \\"bio\\",
+    title: \\"Bio\\",
+    sortable: false,
+  },
+  {
+    name: \\"email\\",
+    title: \\"Email\\",
+    sortable: false,
+  },
+  {
+    name: \\"age\\",
+    title: \\"Age\\",
+    sortable: false,
+  },
+  {
+    name: \\"birthDate\\",
+    title: \\"Birth Date\\",
+    sortable: false,
+  },
+  {
+    name: \\"score\\",
+    title: \\"Score\\",
+    sortable: false,
+  },
+  {
+    name: \\"manager\\",
+    title: \\"Manager\\",
+    sortable: false,
+  },
+  {
+    name: \\"organization\\",
+    title: \\"Organization\\",
+    sortable: false,
+  },
+  {
+    name: \\"interests\\",
+    title: \\"Interests\\",
+    sortable: false,
+  },
+  {
+    name: \\"priority\\",
+    title: \\"Priority\\",
+    sortable: false,
+  },
+  {
+    name: \\"isCurious\\",
+    title: \\"Is Curious\\",
+    sortable: false,
+  },
+  {
+    name: \\"location\\",
+    title: \\"Location\\",
+    sortable: false,
+  },
+];
+
+export const UserList = (): React.ReactElement => {
+  const { data, error, isError } = useQuery<Data, AxiosError>(
+    \\"list-/api/users\\",
+    async () => {
+      const response = await api.get(\\"/api/users\\");
+      return response.data;
+    }
+  );
+
+  return (
+    <>
+      <DataGrid
+        fields={FIELDS}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Users\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/users/new\\"}>
+            <Button>Create User </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: TUser) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
+                  <Link className=\\"entity-id\\" to={\`\${\\"/users\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.username}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.roles}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.name}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.bio}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.email}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.age}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.birthDate}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.score}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <UserTitle id={item.manager?.id} />
+                </DataGridCell>
+                <DataGridCell>
+                  <OrganizationTitle id={item.organization?.id} />
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.interests}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.priority}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    {item.isCurious && (
+                      <CircleIcon
+                        icon=\\"check\\"
+                        style={EnumCircleIconStyle.positive}
+                      />
+                    )}
+                  </>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.location}</>
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+      <Snackbar open={isError} message={error?.response?.data?.message} />
+    </>
+  );
+};
+",
+  "admin/src/user/UserSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { User as TUser } from \\"../api/user/User\\";
+
+type Data = TUser[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const UserSelect = (props: Props) => {
+  const { data } = useQuery<Data, AxiosError>(\\"select-/api/users\\", async () => {
+    const response = await api.get(\\"/api/users\\");
+    return response.data;
+  });
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          label:
+            item.username && item.username.length ? item.username : item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/user/UserTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { User as TUser } from \\"../api/user/User\\";
+
+type Props = { id: string };
+
+export const UserTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    TUser,
+    AxiosError,
+    [string, string]
+  >([\\"get-/api/users\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/users\\"}/\${id}\`);
+    return response.data;
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
+
+  return (
+    <Link to={\`\${\\"/api/users\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.username && data?.username.length ? data.username : data?.id}
+    </Link>
+  );
+};
+",
+  "admin/src/user/ViewUser.tsx": "import * as React from \\"react\\";
 import { useRouteMatch, useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
@@ -2947,7 +3229,7 @@ import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 import { RoleSelect } from \\"../user/RoleSelect\\";
 
-export const User = (): React.ReactElement => {
+export const ViewUser = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
@@ -3122,288 +3404,6 @@ export const User = (): React.ReactElement => {
       )}
       <Snackbar open={isError || updateIsError} message={errorMessage} />
     </>
-  );
-};
-",
-  "admin/src/user/UserIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { UserList } from \\"./UserList\\";
-import { CreateUser } from \\"./CreateUser\\";
-import { User } from \\"./User\\";
-
-export const UserIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/users/\\", \\"Users\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/users/\\"} component={UserList} />
-      <PrivateRoute path={\\"/users/new\\"} component={CreateUser} />
-      <PrivateRoute path={\\"/users/:id\\"} component={User} />
-    </Switch>
-  );
-};
-",
-  "admin/src/user/UserList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-
-import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  CircleIcon,
-  EnumCircleIconStyle,
-} from \\"@amplication/design-system\\";
-
-import { UserTitle } from \\"./UserTitle\\";
-import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
-import { User } from \\"../api/user/User\\";
-
-type Data = User[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"username\\",
-    title: \\"Username\\",
-    sortable: false,
-  },
-  {
-    name: \\"roles\\",
-    title: \\"Roles\\",
-    sortable: false,
-  },
-  {
-    name: \\"name\\",
-    title: \\"Name\\",
-    sortable: false,
-  },
-  {
-    name: \\"bio\\",
-    title: \\"Bio\\",
-    sortable: false,
-  },
-  {
-    name: \\"email\\",
-    title: \\"Email\\",
-    sortable: false,
-  },
-  {
-    name: \\"age\\",
-    title: \\"Age\\",
-    sortable: false,
-  },
-  {
-    name: \\"birthDate\\",
-    title: \\"Birth Date\\",
-    sortable: false,
-  },
-  {
-    name: \\"score\\",
-    title: \\"Score\\",
-    sortable: false,
-  },
-  {
-    name: \\"manager\\",
-    title: \\"Manager\\",
-    sortable: false,
-  },
-  {
-    name: \\"organization\\",
-    title: \\"Organization\\",
-    sortable: false,
-  },
-  {
-    name: \\"interests\\",
-    title: \\"Interests\\",
-    sortable: false,
-  },
-  {
-    name: \\"priority\\",
-    title: \\"Priority\\",
-    sortable: false,
-  },
-  {
-    name: \\"isCurious\\",
-    title: \\"Is Curious\\",
-    sortable: false,
-  },
-  {
-    name: \\"location\\",
-    title: \\"Location\\",
-    sortable: false,
-  },
-];
-
-export const UserList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/users\\",
-    async () => {
-      const response = await api.get(\\"/api/users\\");
-      return response.data;
-    }
-  );
-
-  return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Users\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/users/new\\"}>
-            <Button>Create User </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: User) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/users\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.username}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.roles}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.name}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.bio}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.email}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.age}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.birthDate}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.score}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <UserTitle id={item.manager?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <OrganizationTitle id={item.organization?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.interests}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.priority}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>
-                    {item.isCurious && (
-                      <CircleIcon
-                        icon=\\"check\\"
-                        style={EnumCircleIconStyle.positive}
-                      />
-                    )}
-                  </>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.location}</>
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/user/UserSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { User } from \\"../api/user/User\\";
-
-type Data = User[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const UserSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(\\"select-/api/users\\", async () => {
-    const response = await api.get(\\"/api/users\\");
-    return response.data;
-  });
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label:
-            item.username && item.username.length ? item.username : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
-  "admin/src/user/UserTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { User } from \\"../api/user/User\\";
-
-type Props = { id: string };
-
-export const UserTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    User,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/users\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/users\\"}/\${id}\`);
-    return response.data;
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
-
-  return (
-    <Link to={\`\${\\"/api/users\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.username && data?.username.length ? data.username : data?.id}
-    </Link>
   );
 };
 ",

@@ -56,13 +56,14 @@ export async function createNewEntityComponent(
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
+  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
 
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
     PATH: builders.stringLiteral(path),
     RESOURCE: builders.stringLiteral(resource),
-    ENTITY: entityDTO.id,
+    ENTITY: localEntityDTOId,
     CREATE_INPUT: dto.id,
     INPUTS: jsxFragment`<>${fields.map((field) => {
       return createFieldInput(field, entityToSelectComponent);
@@ -84,9 +85,11 @@ export async function createNewEntityComponent(
   );
 
   addImports(file, [
-    importNames(
-      [entityDTO.id],
-      relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+    builders.importDeclaration(
+      [builders.importSpecifier(entityDTO.id, localEntityDTOId)],
+      builders.stringLiteral(
+        relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+      )
     ),
     importNames(
       [dto.id],
