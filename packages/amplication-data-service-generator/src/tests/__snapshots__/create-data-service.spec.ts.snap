@@ -4774,6 +4774,9 @@ class CustomerWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
@@ -4783,6 +4786,9 @@ class CustomerWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   vipOrganization?: OrganizationWhereUniqueInput | null;
 }
 export { CustomerWhereInput };
@@ -7054,6 +7060,9 @@ class OrderWhereInput {
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
+  @Field(() => CustomerWhereUniqueInput, {
+    nullable: true,
+  })
   customer?: CustomerWhereUniqueInput;
   @ApiProperty({
     required: false,
@@ -10171,6 +10180,9 @@ class UserWhereInput {
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
+  @Field(() => UserWhereUniqueInput, {
+    nullable: true,
+  })
   manager?: UserWhereUniqueInput | null;
   @ApiProperty({
     required: false,
@@ -10180,6 +10192,9 @@ class UserWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,

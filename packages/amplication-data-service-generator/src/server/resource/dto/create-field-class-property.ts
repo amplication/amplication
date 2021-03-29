@@ -199,7 +199,7 @@ export function createFieldClassProperty(
   if (
     prismaField.kind !== FieldKind.Object ||
     isEnum ||
-    (isInput && !isQuery && isOneToOneRelationField(field))
+    (isInput && isOneToOneRelationField(field))
   ) {
     decorators.push(
       createGraphQLFieldDecorator(prismaField, isEnum, field, optional, entity)
