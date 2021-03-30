@@ -44,7 +44,7 @@ export class InjectContextInterceptor implements NestInterceptor {
 
     return next.handle();
   }
-
+  /* eslint-disable-next-line @typescript-eslint/ban-types */
   private getInjectContextValueParameters(handler: Function) {
     return this.reflector.get<InjectContextValueParameters>(
       INJECT_CONTEXT_VALUE,

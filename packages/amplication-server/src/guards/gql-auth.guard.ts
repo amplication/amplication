@@ -56,10 +56,12 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     return ctx.getContext().req;
   }
 
+  /* eslint-disable-next-line @typescript-eslint/ban-types */
   private getExpectedRoles(handler: Function): string[] {
     return this.reflector.get<string[]>('roles', handler);
   }
 
+  /* eslint-disable-next-line @typescript-eslint/ban-types */
   canActivateRoles(handler: Function, currentUser: User): boolean {
     const expectedRoles = this.getExpectedRoles(handler);
 
@@ -71,6 +73,7 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     return true;
   }
 
+  /* eslint-disable-next-line @typescript-eslint/ban-types */
   private getAuthorizeContextParameters(handler: Function) {
     return this.reflector.get<AuthorizeContextParameters>(
       AUTHORIZE_CONTEXT,
@@ -78,7 +81,8 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     );
   }
 
-  async authorizeContext(
+  authorizeContext(
+    /* eslint-disable-next-line @typescript-eslint/ban-types */
     handler: Function,
     requestArgs: any,
     user: User

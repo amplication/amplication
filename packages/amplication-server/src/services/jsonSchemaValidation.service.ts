@@ -3,7 +3,7 @@ import Ajv from 'ajv';
 
 export class JsonSchemaValidationService {
   public async validateSchema(
-    schema: object,
+    schema: Record<string, unknown>,
     data: any
   ): Promise<SchemaValidationResult> {
     try {

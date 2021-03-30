@@ -778,7 +778,7 @@ describe('DeploymentService', () => {
   });
 
   it('should try to deploy but throw a Not Implemented Error', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     configServiceGetMock.mockImplementation(() => DeployerProvider.Docker);
     prismaDeploymentFindOneMock.mockImplementation(
@@ -790,7 +790,9 @@ describe('DeploymentService', () => {
     );
     expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
     expect(prismaDeploymentFindOneMock).toBeCalledWith({
-      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      where: {
+        id: EXAMPLE_DEPLOYMENT_ID
+      },
       include: DEPLOY_DEPLOYMENT_INCLUDE
     });
     expect(actionServiceRunMock).toBeCalledTimes(1);
@@ -808,7 +810,7 @@ describe('DeploymentService', () => {
   it('should try to deploy but throw an Unknown Deployment Provider Error', async () => {
     const EXAMPLE_UNKNOWN_PROVIDER = 'unknownProvider';
     const EXAMPLE_ERROR = `Unknown deployment provider ${EXAMPLE_UNKNOWN_PROVIDER}`;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     configServiceGetMock.mockImplementation(() => EXAMPLE_UNKNOWN_PROVIDER);
     prismaDeploymentFindOneMock.mockImplementation(
@@ -820,7 +822,9 @@ describe('DeploymentService', () => {
     );
     expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
     expect(prismaDeploymentFindOneMock).toBeCalledWith({
-      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      where: {
+        id: EXAMPLE_DEPLOYMENT_ID
+      },
       include: DEPLOY_DEPLOYMENT_INCLUDE
     });
     expect(actionServiceRunMock).toBeCalledTimes(1);
