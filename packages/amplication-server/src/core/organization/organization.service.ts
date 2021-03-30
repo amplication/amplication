@@ -48,7 +48,10 @@ export class OrganizationService {
    * @param args arguments to pass to organization creations
    * @returns the created organization
    */
-  async createOrganization(accountId: string, args: Prisma.OrganizationCreateArgs) {
+  async createOrganization(
+    accountId: string,
+    args: Prisma.OrganizationCreateArgs
+  ) {
     // Create organization
     // Create a new user and link it to the account
     // Assign the user an "ORGANIZATION_ADMIN" role

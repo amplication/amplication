@@ -23,6 +23,16 @@ jobs:
           node-version: 14.x
       - name: Update npm
         run: npm i -g npm@7.3.0
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            */*/node_modules
+          key: ${{ runner.os }}-node-1-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-1-
       - run: npm ci
       - name: Install packages' dependencies
         run: npm run bootstrap -- --loglevel verbose
