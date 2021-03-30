@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.containerbuilder.registry.volume.name }}
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    limits:
+      storage: {{ .Values.containerbuilder.registry.volume.storageLimit }}
+    requests:
+      storage: {{ .Values.containerbuilder.registry.volume.storageRequest }}

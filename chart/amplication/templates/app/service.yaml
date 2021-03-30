@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "amplication.app.name" . }}
+  labels:
+    {{- include "amplication.app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.app.service.type }}
+  ports:
+    - name: "{{ .Values.app.name }}-http"
+      port: {{ .Values.app.service.port }}
+  selector:
+    {{- include "amplication.app.selectorLabels" . | nindent 4 }}
