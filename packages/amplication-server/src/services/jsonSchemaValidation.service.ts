@@ -3,7 +3,9 @@ import Ajv from 'ajv';
 
 export class JsonSchemaValidationService {
   public async validateSchema(
-    schema: Record<string, unknown>,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    schema: object,
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     data: any
   ): Promise<SchemaValidationResult> {
     try {

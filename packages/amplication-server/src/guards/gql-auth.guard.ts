@@ -90,7 +90,7 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     const parameters = this.getAuthorizeContextParameters(handler);
 
     if (!parameters) {
-      return true;
+      return Promise.resolve(true);
     }
 
     const { parameterType, parameterPath } = parameters;
@@ -98,7 +98,7 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     const parameterValue = get(requestArgs, parameterPath);
 
     if (!parameterValue) {
-      return false;
+      return Promise.resolve(false);
     }
 
     return this.permissionsService.validateAccess(
