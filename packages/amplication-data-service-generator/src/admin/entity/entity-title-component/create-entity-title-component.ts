@@ -1,7 +1,7 @@
 import * as path from "path";
 import { builders } from "ast-types";
 import { Entity, EnumDataType } from "../../../types";
-import { addImports, importNames, interpolate } from "../../../util/ast";
+import { addImports, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
@@ -20,18 +20,21 @@ export async function createEntityTitleComponent(
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   const entityDTO = dtos[entity.name].entity;
   const resource = entityToResource[entity.name];
+  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
 
   interpolate(file, {
-    ENTITY: builders.identifier(entity.name),
+    ENTITY: localEntityDTOId,
     ENTITY_TITLE: builders.identifier(name),
     ENTITY_TITLE_FIELD: builders.identifier(getEntityTitleField(entity)),
     RESOURCE: builders.stringLiteral(resource),
   });
 
   addImports(file, [
-    importNames(
-      [entityDTO.id],
-      relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+    builders.importDeclaration(
+      [builders.importSpecifier(entityDTO.id, localEntityDTOId)],
+      builders.stringLiteral(
+        relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+      )
     ),
   ]);
 

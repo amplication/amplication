@@ -39,7 +39,7 @@ export async function createEntityComponent(
   dtoNameToPath: Record<string, string>,
   entityToSelectComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
-  const name = entity.name;
+  const name = `View${entity.name}`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   const resource = entityToResource[entity.name];
   const path = entityToPath[entity.name];
