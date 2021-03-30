@@ -49,7 +49,7 @@ describe('ActionService', () => {
           provide: PrismaService,
           useValue: {
             action: {
-              findOne: prismaActionFindOneMock
+              findUnique: prismaActionFindOneMock
             },
             actionStep: {
               findMany: prismaActionStepFindManyMock,

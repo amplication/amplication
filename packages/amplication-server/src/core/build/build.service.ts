@@ -4,7 +4,7 @@ import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { subSeconds } from 'date-fns';
-import { SortOrder } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
@@ -217,7 +217,7 @@ export class BuildService {
   }
 
   async findOne(args: FindOneBuildArgs): Promise<Build | null> {
-    return this.prisma.build.findOne(args);
+    return this.prisma.build.findUnique(args);
   }
 
   /**
@@ -251,7 +251,7 @@ export class BuildService {
         }
       },
       orderBy: {
-        createdAt: SortOrder.asc
+        createdAt: Prisma.SortOrder.asc
       },
       include: ACTION_INCLUDE
     });
@@ -290,7 +290,7 @@ export class BuildService {
     buildId: string
   ): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
-      .findOne({
+      .findUnique({
         where: {
           id: buildId
         }
@@ -306,7 +306,7 @@ export class BuildService {
   }
 
   async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
-    const build = await this.prisma.build.findOne({
+    const build = await this.prisma.build.findUnique({
       where: {
         id: buildId
       },

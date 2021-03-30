@@ -4,7 +4,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { JsonValue } from 'type-fest';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { SortOrder } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import {
   Action,
   ActionStep,
@@ -24,7 +24,7 @@ export class ActionService {
   ) {}
 
   async findOne(args: FindOneActionArgs): Promise<Action | null> {
-    return this.prisma.action.findOne(args);
+    return this.prisma.action.findUnique(args);
   }
 
   /**
@@ -38,12 +38,12 @@ export class ActionService {
         actionId: actionId
       },
       orderBy: {
-        createdAt: SortOrder.asc
+        createdAt: Prisma.SortOrder.asc
       },
       include: {
         logs: {
           orderBy: {
-            createdAt: SortOrder.asc
+            createdAt: Prisma.SortOrder.asc
           }
         }
       }

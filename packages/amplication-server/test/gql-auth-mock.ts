@@ -12,6 +12,7 @@ import set from 'lodash.set';
  *  id: "exampleUserId"
  * }))
  */
+/* eslint-disable @typescript-eslint/ban-types */
 export const mockGqlAuthGuardCanActivate = (user: object) => (
   executionContext: ExecutionContext
 ): boolean => {

@@ -1,11 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  FindOneEntityFieldArgs,
-  SortOrder,
-  FindOneEntityVersionArgs,
-  EntityVersionCreateArgs,
-  EnumEntityAction
-} from '@prisma/client';
+import { Prisma, EnumEntityAction } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import { pick, omit } from 'lodash';
 import {
@@ -200,7 +194,7 @@ const prismaEntityUpdateMock = jest.fn(() => {
 });
 
 const prismaEntityVersionFindOneMock = jest.fn(
-  (args: FindOneEntityVersionArgs) => {
+  (args: Prisma.EntityVersionFindUniqueArgs) => {
     const entityVersionList = [
       EXAMPLE_CURRENT_ENTITY_VERSION,
       EXAMPLE_LAST_ENTITY_VERSION
@@ -229,7 +223,7 @@ const prismaEntityVersionFindOneMock = jest.fn(
 );
 
 const prismaEntityVersionFindManyMock = jest.fn(
-  (args: FindOneEntityVersionArgs) => {
+  (args: Prisma.EntityVersionFindUniqueArgs) => {
     if (args.include?.entity) {
       return [
         { ...EXAMPLE_CURRENT_ENTITY_VERSION, entity: EXAMPLE_LOCKED_ENTITY },
@@ -242,7 +236,7 @@ const prismaEntityVersionFindManyMock = jest.fn(
 );
 
 const prismaEntityVersionCreateMock = jest.fn(
-  (args: EntityVersionCreateArgs) => {
+  (args: Prisma.EntityVersionCreateArgs) => {
     return {
       ...EXAMPLE_LAST_ENTITY_VERSION,
       versionNumber: args.data.versionNumber
@@ -258,7 +252,7 @@ const prismaEntityFieldFindManyMock = jest.fn(() => {
 });
 
 const prismaEntityFieldFindFirstMock = jest.fn(
-  (args: FindOneEntityFieldArgs) => {
+  (args: Prisma.EntityFieldFindUniqueArgs) => {
     if (args?.include?.entityVersion) {
       return {
         ...EXAMPLE_ENTITY_FIELD,
@@ -301,7 +295,7 @@ describe('EntityService', () => {
               findMany: prismaEntityVersionFindManyMock,
               create: prismaEntityVersionCreateMock,
               update: prismaEntityVersionUpdateMock,
-              findOne: prismaEntityVersionFindOneMock
+              findUnique: prismaEntityVersionFindOneMock
             },
             entityField: {
               findFirst: prismaEntityFieldFindFirstMock,
@@ -532,7 +526,7 @@ describe('EntityService', () => {
         versions: {
           update: {
             where: {
-              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              // eslint-disable-next-line  @typescript-eslint/naming-convention
               entityId_versionNumber: {
                 entityId: updateArgs.args.where.id,
                 versionNumber: CURRENT_VERSION_NUMBER
@@ -585,7 +579,7 @@ describe('EntityService', () => {
         entity: { id: EXAMPLE_ENTITY_ID }
       },
       orderBy: {
-        versionNumber: SortOrder.asc
+        versionNumber: Prisma.SortOrder.asc
       }
     };
 
@@ -702,7 +696,7 @@ describe('EntityService', () => {
         entity: { id: EXAMPLE_ENTITY_ID }
       },
       orderBy: {
-        versionNumber: SortOrder.asc
+        versionNumber: Prisma.SortOrder.asc
       },
       include: {
         entity: true

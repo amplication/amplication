@@ -190,7 +190,7 @@ describe('AuthService', () => {
           provide: PrismaService,
           useClass: jest.fn(() => ({
             account: {
-              findOne: prismaAccountFindOneMock
+              findUnique: prismaAccountFindOneMock
             }
           }))
         },

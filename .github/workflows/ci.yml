@@ -30,9 +30,9 @@ jobs:
             ~/.npm
             node_modules
             */*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-1-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-node-1-
       - run: npm ci
       - name: Install packages' dependencies
         run: npm run bootstrap -- --loglevel verbose

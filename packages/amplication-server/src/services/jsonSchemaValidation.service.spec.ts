@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Test, TestingModule } from '@nestjs/testing';
 import Ajv from 'ajv';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';

@@ -161,7 +161,7 @@ export class AppService {
   }
 
   async app(args: FindOneArgs): Promise<App | null> {
-    return this.prisma.app.findOne(args);
+    return this.prisma.app.findUnique(args);
   }
 
   async apps(args: FindManyAppArgs): Promise<App[]> {

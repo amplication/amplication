@@ -7,25 +7,24 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 export class PermissionsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Resource parameters that are directly related to app and can be validated
-   * by access of user to app.
-   */
-  checkByAppParameters = {
-    [AuthorizableResourceParameter.EntityId]: this.prisma.entity,
-    [AuthorizableResourceParameter.BlockId]: this.prisma.block,
-    [AuthorizableResourceParameter.BuildId]: this.prisma.build,
-    [AuthorizableResourceParameter.AppRoleId]: this.prisma.appRole,
-    [AuthorizableResourceParameter.EnvironmentId]: this.prisma.environment,
-    [AuthorizableResourceParameter.CommitId]: this.prisma.commit
-  };
-
   async validateAccess(
     user: User,
     resourceType: AuthorizableResourceParameter,
     resourceId: string
   ): Promise<boolean> {
     const { organization } = user;
+
+    const checkByAppParameters = {
+      where: {
+        id: resourceId,
+        app: {
+          organization: {
+            id: organization.id
+          }
+        }
+      }
+    };
+
     if (resourceType === AuthorizableResourceParameter.OrganizationId) {
       return resourceId === organization.id;
     }
@@ -128,20 +127,33 @@ export class PermissionsService {
       });
       return matching === 1;
     }
-    if (resourceType in this.checkByAppParameters) {
-      const delegate = this.checkByAppParameters[resourceType];
-      const matching = await delegate.count({
-        where: {
-          id: resourceId,
-          app: {
-            organization: {
-              id: organization.id
-            }
-          }
-        }
-      });
+    if (resourceType === AuthorizableResourceParameter.EntityId) {
+      const matching = await this.prisma.entity.count(checkByAppParameters);
       return matching === 1;
     }
+    if (resourceType === AuthorizableResourceParameter.BlockId) {
+      const matching = await this.prisma.block.count(checkByAppParameters);
+      return matching === 1;
+    }
+    if (resourceType === AuthorizableResourceParameter.BuildId) {
+      const matching = await this.prisma.build.count(checkByAppParameters);
+      return matching === 1;
+    }
+    if (resourceType === AuthorizableResourceParameter.AppRoleId) {
+      const matching = await this.prisma.appRole.count(checkByAppParameters);
+      return matching === 1;
+    }
+    if (resourceType === AuthorizableResourceParameter.EnvironmentId) {
+      const matching = await this.prisma.environment.count(
+        checkByAppParameters
+      );
+      return matching === 1;
+    }
+    if (resourceType === AuthorizableResourceParameter.CommitId) {
+      const matching = await this.prisma.commit.count(checkByAppParameters);
+      return matching === 1;
+    }
+
     throw new Error(`Unexpected resource type ${resourceType}`);
   }
 }

@@ -49,7 +49,7 @@ export class EnvironmentService {
   }
 
   async findOne(args: FindOneArgs): Promise<Environment | null> {
-    return this.prisma.environment.findOne(args);
+    return this.prisma.environment.findUnique(args);
   }
 
   async findMany(args: FindManyEnvironmentArgs): Promise<Environment[]> {

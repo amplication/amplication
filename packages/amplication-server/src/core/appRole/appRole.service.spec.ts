@@ -45,7 +45,7 @@ describe('AppRoleService', () => {
           useClass: jest.fn(() => ({
             appRole: {
               create: prismaAppRoleCreateMock,
-              findOne: prismaAppRoleFindOneMock,
+              findUnique: prismaAppRoleFindOneMock,
               findMany: prismaAppRoleFindManyMock,
               delete: prismaAppRoleDeleteMock,
               update: prismaAppRoleUpdateMock
