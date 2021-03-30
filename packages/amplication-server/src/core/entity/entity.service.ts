@@ -211,7 +211,7 @@ export class EntityService {
 
     if (args.data?.name?.toLowerCase() === args.data?.pluralDisplayName?.toLowerCase()) { 
       throw new AmplicationError(
-        `The entity name must be in the singular form.`
+        `The entity name and plural display name cannot be the same.`
       );
     } 
 
@@ -535,9 +535,13 @@ export class EntityService {
 
     const entity = await this.acquireLock(args, user);
 
-    if (args.data.name?.toLowerCase() === args.data.pluralDisplayName?.toLowerCase()) {
+    const newName = args.data.name?.toLowerCase().trim()
+    const newPluralDisplayName = args.data.pluralDisplayName?.toLowerCase().trim();
+    const currPluralDisplayName = entity?.pluralDisplayName;
+    
+    if (newName === (newPluralDisplayName || currPluralDisplayName)) {
       throw new AmplicationError(
-        `The entity name must be in the singular form.`
+        `The entity name and plural display name cannot be the same.`
       );
     } 
 
