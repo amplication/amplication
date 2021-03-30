@@ -208,12 +208,14 @@ export class EntityService {
     args: CreateOneEntityArgs,
     user: User
   ): Promise<Entity> {
-
-    if (args.data?.name?.toLowerCase() === args.data?.pluralDisplayName?.toLowerCase()) { 
+    if (
+      args.data?.name?.toLowerCase().trim() ===
+      args.data?.pluralDisplayName?.toLowerCase().trim()
+    ) {
       throw new AmplicationError(
         `The entity name and plural display name cannot be the same.`
       );
-    } 
+    }
 
     const newEntity = await this.prisma.entity.create({
       data: {
@@ -535,15 +537,17 @@ export class EntityService {
 
     const entity = await this.acquireLock(args, user);
 
-    const newName = args.data.name?.toLowerCase().trim()
-    const newPluralDisplayName = args.data.pluralDisplayName?.toLowerCase().trim();
+    const newName = args.data.name?.toLowerCase().trim();
+    const newPluralDisplayName = args.data.pluralDisplayName
+      ?.toLowerCase()
+      .trim();
     const currPluralDisplayName = entity?.pluralDisplayName;
-    
+
     if (newName === (newPluralDisplayName || currPluralDisplayName)) {
       throw new AmplicationError(
         `The entity name and plural display name cannot be the same.`
       );
-    } 
+    }
 
     if (entity.name === USER_ENTITY_NAME) {
       if (args.data.name && args.data.name !== USER_ENTITY_NAME) {
