@@ -200,7 +200,7 @@ describe('AppService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             app: {
               create: prismaAppCreateMock,
-              findOne: prismaAppFindOneMock,
+              findUnique: prismaAppFindOneMock,
               findMany: prismaAppFindManyMock,
               delete: prismaAppDeleteMock,
               update: prismaAppUpdateMock

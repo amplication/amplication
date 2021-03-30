@@ -109,13 +109,13 @@ describe('BlockService', () => {
           provide: PrismaService,
           useClass: jest.fn(() => ({
             block: {
-              findOne: prismaBlockFindOneMock,
+              findUnique: prismaBlockFindOneMock,
               findMany: prismaBlockFindManyMock
             },
             blockVersion: {
               create: prismaBlockVersionCreateMock,
               findMany: prismaBlockVersionFindManyMock,
-              findOne: prismaBlockVersionFindOneMock,
+              findUnique: prismaBlockVersionFindOneMock,
               update: prismaBlockVersionUpdateMock
             }
           }))

@@ -56,7 +56,7 @@ describe('EnvironmentService', () => {
           useClass: jest.fn(() => ({
             environment: {
               create: prismaEnvironmentCreateMock,
-              findOne: prismaEnvironmentFindOneMock,
+              findUnique: prismaEnvironmentFindOneMock,
               update: prismaEnvironmentUpdateMock,
               findMany: prismaEnvironmentFindManyMock
             }

@@ -411,7 +411,7 @@ describe('BuildService', () => {
             build: {
               create: prismaBuildCreateMock,
               findMany: prismaBuildFindManyMock,
-              findOne: prismaBuildFindOneMock,
+              findUnique: prismaBuildFindOneMock,
               update: prismaBuildUpdateMock
             }
           }

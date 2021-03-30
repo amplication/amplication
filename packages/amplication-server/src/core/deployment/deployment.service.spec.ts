@@ -232,7 +232,7 @@ describe('DeploymentService', () => {
             deployment: {
               create: prismaDeploymentCreateMock,
               findMany: prismaDeploymentFindManyMock,
-              findOne: prismaDeploymentFindOneMock,
+              findUnique: prismaDeploymentFindOneMock,
               update: prismaDeploymentUpdateMock
             },
             environment: {

@@ -47,7 +47,7 @@ describe('AccountService', () => {
           useClass: jest.fn(() => ({
             account: {
               create: prismaAccountCreateMock,
-              findOne: prismaAccountFindOneMock,
+              findUnique: prismaAccountFindOneMock,
               update: prismaAccountUpdateMock
             }
           }))

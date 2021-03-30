@@ -31,7 +31,7 @@ describe('CommitService', () => {
           provide: PrismaService,
           useClass: jest.fn(() => ({
             commit: {
-              findOne: prismaCommitFindOneMock,
+              findUnique: prismaCommitFindOneMock,
               findMany: prismaCommitFindManyMock
             }
           }))

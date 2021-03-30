@@ -105,7 +105,7 @@ describe('OrganizationService', () => {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
             organization: {
-              findOne: prismaOrganizationFindOneMock,
+              findUnique: prismaOrganizationFindOneMock,
               findMany: prismaOrganizationFindManyMock,
               delete: prismaOrganizationDeleteMock,
               update: prismaOrganizationUpdateMock,

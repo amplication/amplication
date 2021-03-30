@@ -55,12 +55,14 @@ const prismaUserRoleFindOneMock = jest.fn(() => {
   return EXAMPLE_USER_ROLE;
 });
 
-const prismaUserRoleFindManyMock = jest.fn((args: Prisma.FindManyUserRoleArgs) => {
-  if (args.where.role === EXISTING_ROLE || args.where.role === undefined) {
-    return [EXAMPLE_USER_ROLE];
+const prismaUserRoleFindManyMock = jest.fn(
+  (args: Prisma.UserRoleFindManyArgs) => {
+    if (args.where.role === EXISTING_ROLE || args.where.role === undefined) {
+      return [EXAMPLE_USER_ROLE];
+    }
+    return [];
   }
-  return [];
-});
+);
 
 const prismaUserRoleCreateMock = jest.fn(() => {
   return EXAMPLE_USER_ROLE;
@@ -82,11 +84,11 @@ describe('UserService', () => {
           provide: PrismaService,
           useClass: jest.fn(() => ({
             user: {
-              findOne: prismaUserFindOneMock,
+              findUnique: prismaUserFindOneMock,
               findMany: prismaUserFindManyMock
             },
             userRole: {
-              findOne: prismaUserRoleFindOneMock,
+              findUnique: prismaUserRoleFindOneMock,
               findMany: prismaUserRoleFindManyMock,
               create: prismaUserRoleCreateMock,
               delete: prismaUserRoleDeleteMock
@@ -127,7 +129,7 @@ describe('UserService', () => {
         id: args.where.id
       }
     };
-    const findManyRolesArgs: Prisma.FindManyUserRoleArgs = {
+    const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
       where: { user: { id: EXAMPLE_ROLE_ID }, role: args.data.role }
     };
     const roleData: Prisma.UserRoleCreateArgs = {
@@ -155,7 +157,7 @@ describe('UserService', () => {
         id: args.where.id
       }
     };
-    const findManyRolesArgs: Prisma.FindManyUserRoleArgs = {
+    const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
       where: {
         user: { id: EXAMPLE_USER_ID },
         role: args.data.role
@@ -179,7 +181,7 @@ describe('UserService', () => {
         id: args.where.id
       }
     };
-    const findManyRolesArgs: Prisma.FindManyUserRoleArgs = {
+    const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
       where: {
         user: { id: EXAMPLE_USER_ID },
         role: args.data.role
@@ -206,7 +208,7 @@ describe('UserService', () => {
         id: args.where.id
       }
     };
-    const findManyRolesArgs: Prisma.FindManyUserRoleArgs = {
+    const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
       where: {
         user: { id: EXAMPLE_USER_ID },
         role: args.data.role
@@ -221,7 +223,7 @@ describe('UserService', () => {
   });
 
   it('should find many roles', async () => {
-    const args: Prisma.FindManyUserRoleArgs = {
+    const args: Prisma.UserRoleFindManyArgs = {
       where: { user: { id: EXAMPLE_ROLE_ID } }
     };
     expect(await service.getRoles(EXAMPLE_ROLE_ID)).toEqual([
