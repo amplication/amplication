@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { subDays } from 'date-fns';
 import cuid from 'cuid';
 
-import { SortOrder, UserWhereInput } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { Profile as GitHubProfile } from 'passport-github2';
 import { PrismaService } from 'nestjs-prisma';
 import { Account, User, UserRole, Organization } from 'src/models';
@@ -135,7 +135,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<string> {
-    const account = await this.prismaService.account.findOne({
+    const account = await this.prismaService.account.findUnique({
       where: {
         email
       },
@@ -197,7 +197,7 @@ export class AuthService {
   }
 
   async createApiToken(args: CreateApiTokenArgs): Promise<ApiToken> {
-    const user = await this.prismaService.user.findOne({
+    const user = await this.prismaService.user.findUnique({
       where: {
         id: args.data.user.connect.id
       },
@@ -291,7 +291,7 @@ export class AuthService {
         userId: true
       },
       orderBy: {
-        createdAt: SortOrder.desc
+        createdAt: Prisma.SortOrder.desc
       }
     });
 
@@ -355,7 +355,7 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async getAuthUser(where: UserWhereInput): Promise<AuthUser | null> {
+  async getAuthUser(where: Prisma.UserWhereInput): Promise<AuthUser | null> {
     const matchingUsers = await this.userService.findUsers({
       where,
       include: {

@@ -3,19 +3,24 @@ import { EnumDataType } from 'src/enums/EnumDataType';
 import { EntityField, Entity } from 'src/models';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 import { EnumEntityPermissionType } from 'src/enums/EnumEntityPermissionType';
-import { EntityPermissionCreateWithoutEntityVersionInput } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 export const CURRENT_VERSION_NUMBER = 0;
 
 type EntityFieldData = Omit<
   EntityField,
-  'id' | 'createdAt' | 'updatedAt' | 'permanentId' | 'properties'
+  | 'id'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'permanentId'
+  | 'properties'
+  | 'entityVersionId'
 > & { properties: JsonObject };
 
 export const USER_ENTITY_NAME = 'User';
 export const USER_ENTITY_FIELDS = ['password', 'username'];
 
-export const DEFAULT_PERMISSIONS: EntityPermissionCreateWithoutEntityVersionInput[] = [
+export const DEFAULT_PERMISSIONS: Prisma.EntityPermissionCreateWithoutEntityVersionInput[] = [
   {
     action: EnumEntityAction.Create,
     type: EnumEntityPermissionType.AllRoles

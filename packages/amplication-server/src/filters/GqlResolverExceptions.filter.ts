@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { GqlExceptionFilter, GqlArgumentsHost } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { PrismaClientKnownRequestError } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { ApolloError } from 'apollo-server-express';
 import { Request } from 'express';
 import { AmplicationError } from '../errors/AmplicationError';
@@ -60,7 +60,7 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
     let clientError: Error;
     /**@todo: Complete the list or expected error codes */
     if (
-      exception instanceof PrismaClientKnownRequestError &&
+      exception instanceof Prisma.PrismaClientKnownRequestError &&
       exception.code === PRISMA_CODE_UNIQUE_KEY_VIOLATION
     ) {
       // Convert PrismaClientKnownRequestError to UniqueKeyException and pass the error to the client

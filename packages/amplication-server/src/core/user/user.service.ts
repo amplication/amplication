@@ -3,21 +3,17 @@ import { PrismaService } from 'nestjs-prisma';
 import { User, UserRole, Account } from 'src/models';
 import { UserRoleArgs } from './dto';
 
-import {
-  FindOneUserArgs,
-  FindManyUserArgs,
-  UserRoleCreateArgs
-} from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findUser(args: FindOneUserArgs): Promise<User> {
-    return this.prisma.user.findOne(args);
+  findUser(args: Prisma.UserFindUniqueArgs): Promise<User> {
+    return this.prisma.user.findUnique(args);
   }
 
-  findUsers(args: FindManyUserArgs): Promise<User[]> {
+  findUsers(args: Prisma.UserFindManyArgs): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
 
@@ -33,7 +29,7 @@ export class UserService {
 
     //if the role already exist do nothing and return the user
     if (!existingRole || !existingRole.length) {
-      const roleData: UserRoleCreateArgs = {
+      const roleData: Prisma.UserRoleCreateArgs = {
         data: {
           role: args.data.role,
           user: { connect: { id: args.where.id } }
@@ -43,7 +39,7 @@ export class UserService {
       await this.prisma.userRole.create(roleData);
     }
 
-    return this.prisma.user.findOne({
+    return this.prisma.user.findUnique({
       where: {
         id: args.where.id
       }
@@ -69,7 +65,7 @@ export class UserService {
       });
     }
 
-    return this.prisma.user.findOne({
+    return this.prisma.user.findUnique({
       where: {
         id: args.where.id
       }
@@ -88,7 +84,7 @@ export class UserService {
 
   async getAccount(id: string): Promise<Account> {
     return this.prisma.user
-      .findOne({
+      .findUnique({
         where: {
           id
         }

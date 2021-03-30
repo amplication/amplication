@@ -13,7 +13,7 @@ export class CommitService {
   ) {}
 
   async findOne(args: FindOneCommitArgs): Promise<Commit> {
-    return this.prisma.commit.findOne(args);
+    return this.prisma.commit.findUnique(args);
   }
 
   async findMany(args: FindManyCommitArgs): Promise<Commit[]> {

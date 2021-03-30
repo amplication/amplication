@@ -18,7 +18,7 @@ export class AppRoleService {
   }
 
   async getAppRole(args: FindOneArgs): Promise<AppRole | null> {
-    return this.prisma.appRole.findOne(args);
+    return this.prisma.appRole.findUnique(args);
   }
 
   async getAppRoles(args: FindManyAppRoleArgs): Promise<AppRole[]> {

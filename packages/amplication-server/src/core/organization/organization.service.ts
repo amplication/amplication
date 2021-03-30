@@ -1,7 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { Organization, User } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
-import { OrganizationCreateArgs } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import {
   FindManyOrganizationArgs,
   UpdateOneOrganizationArgs,
@@ -23,7 +23,7 @@ export class OrganizationService {
   ) {}
 
   async getOrganization(args: FindOneArgs): Promise<Organization | null> {
-    return this.prisma.organization.findOne(args);
+    return this.prisma.organization.findUnique(args);
   }
 
   async getOrganizations(
@@ -48,7 +48,7 @@ export class OrganizationService {
    * @param args arguments to pass to organization creations
    * @returns the created organization
    */
-  async createOrganization(accountId: string, args: OrganizationCreateArgs) {
+  async createOrganization(accountId: string, args: Prisma.OrganizationCreateArgs) {
     // Create organization
     // Create a new user and link it to the account
     // Assign the user an "ORGANIZATION_ADMIN" role

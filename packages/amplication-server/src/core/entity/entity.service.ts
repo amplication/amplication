@@ -7,19 +7,7 @@ import {
   ConflictException
 } from '@nestjs/common';
 import { DataConflictError } from 'src/errors/DataConflictError';
-import {
-  SortOrder,
-  EntityPermissionCreateManyWithoutEntityVersionInput,
-  EntityVersionInclude,
-  FindManyEntityPermissionArgs,
-  EntityVersionWhereInput,
-  FindManyEntityArgs,
-  QueryMode,
-  FindFirstEntityFieldArgs,
-  FindManyEntityFieldArgs,
-  EntityWhereInput,
-  InputJsonValue
-} from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -84,16 +72,21 @@ import {
 } from './dto';
 
 type EntityInclude = Omit<
-  EntityVersionInclude,
+  Prisma.EntityVersionInclude,
   'entityFields' | 'entityPermissions' | 'entity'
 > & {
   fields?: boolean;
-  permissions?: boolean | FindManyEntityPermissionArgs;
+  permissions?: boolean | Prisma.EntityPermissionFindManyArgs;
 };
 
 export type BulkEntityFieldData = Omit<
   EntityField,
-  'id' | 'createdAt' | 'updatedAt' | 'permanentId' | 'properties'
+  | 'id'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'permanentId'
+  | 'properties'
+  | 'entityVersionId'
 > & {
   permanentId?: string;
   properties: JsonObject;
@@ -168,7 +161,7 @@ export class EntityService {
     return entity;
   }
 
-  async entities(args: FindManyEntityArgs): Promise<Entity[]> {
+  async entities(args: Prisma.EntityFindManyArgs): Promise<Entity[]> {
     return this.prisma.entity.findMany({
       ...args,
       where: {
@@ -178,13 +171,13 @@ export class EntityService {
     });
   }
 
-  async findFirst(args: FindManyEntityArgs): Promise<Entity | null> {
+  async findFirst(args: Prisma.EntityFindManyArgs): Promise<Entity | null> {
     const [first] = await this.entities({ ...args, take: 1 });
     return first || null;
   }
 
   async getEntitiesByVersions(args: {
-    where: Omit<EntityVersionWhereInput, 'entity'>;
+    where: Omit<Prisma.EntityVersionWhereInput, 'entity'>;
     include?: EntityInclude;
   }): Promise<Entity[]> {
     const { fields, permissions, ...rest } = args.include;
@@ -239,6 +232,27 @@ export class EntityService {
             // entityFields: {
             //   create: INITIAL_ENTITY_FIELDS
             // }
+          }
+        }
+      }
+    });
+
+    await this.prisma.entityField.create({
+      data: {
+        name: 'id',
+        displayName: 'ID',
+        description: 'An automatically created unique identifier of the entity',
+        required: true,
+        searchable: true,
+        properties: {},
+        dataType: EnumDataType.Id,
+        entityVersion: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: '',
+              versionNumber: 0
+            }
           }
         }
       }
@@ -441,7 +455,7 @@ export class EntityService {
         lockedByUser: true,
         versions: {
           orderBy: {
-            versionNumber: SortOrder.desc
+            versionNumber: Prisma.SortOrder.desc
           },
           /**find the first two versions to decide whether it is an update or a create */
           take: 2
@@ -576,7 +590,7 @@ export class EntityService {
    */
   async getFields(
     entityId: string,
-    args: FindManyEntityFieldArgs
+    args: Prisma.EntityFieldFindManyArgs
   ): Promise<EntityField[]> {
     return this.getVersionFields(entityId, CURRENT_VERSION_NUMBER, args);
   }
@@ -593,7 +607,7 @@ export class EntityService {
   async getVersionFields(
     entityId: string,
     versionNumber: number,
-    args: FindManyEntityFieldArgs
+    args: Prisma.EntityFieldFindManyArgs
   ): Promise<EntityField[]> {
     return await this.prisma.entityField.findMany({
       ...args,
@@ -671,7 +685,7 @@ export class EntityService {
         entity: { id: entityId }
       },
       orderBy: {
-        versionNumber: SortOrder.asc
+        versionNumber: Prisma.SortOrder.asc
       }
     });
 
@@ -717,7 +731,7 @@ export class EntityService {
         entity: { id: entityId }
       },
       orderBy: {
-        versionNumber: SortOrder.asc
+        versionNumber: Prisma.SortOrder.asc
       },
       include: {
         entity: true
@@ -746,7 +760,7 @@ export class EntityService {
     sourceVersionId: string,
     targetVersionId: string
   ): Promise<EntityVersion> {
-    const sourceVersion = await this.prisma.entityVersion.findOne({
+    const sourceVersion = await this.prisma.entityVersion.findUnique({
       where: {
         id: sourceVersionId
       },
@@ -770,7 +784,7 @@ export class EntityService {
       throw new Error(`Can't find source (Entity Version ${sourceVersionId})`);
     }
 
-    let targetVersion = await this.prisma.entityVersion.findOne({
+    let targetVersion = await this.prisma.entityVersion.findUnique({
       where: {
         id: targetVersionId
       }
@@ -851,7 +865,7 @@ export class EntityService {
     });
 
     //prepare the permissions object
-    const createPermissionsData: EntityPermissionCreateManyWithoutEntityVersionInput = {
+    const createPermissionsData: Prisma.EntityPermissionCreateNestedManyWithoutEntityVersionInput = {
       create: sourceVersion.permissions.map(permission => {
         return {
           action: permission.action,
@@ -916,7 +930,7 @@ export class EntityService {
   }
 
   async getLatestVersions(args: {
-    where: EntityWhereInput;
+    where: Prisma.EntityWhereInput;
   }): Promise<EntityVersion[]> {
     const entities = await this.prisma.entity.findMany({
       where: {
@@ -933,7 +947,7 @@ export class EntityService {
           },
           take: 1,
           orderBy: {
-            versionNumber: SortOrder.desc
+            versionNumber: Prisma.SortOrder.desc
           }
         }
       }
@@ -945,7 +959,7 @@ export class EntityService {
   }
 
   async getVersionCommit(entityVersionId: string): Promise<Commit> {
-    const version = this.prisma.entityVersion.findOne({
+    const version = this.prisma.entityVersion.findUnique({
       where: {
         id: entityVersionId
       }
@@ -1003,7 +1017,7 @@ export class EntityService {
   ): Promise<EntityPermission> {
     await this.acquireLock(args, user);
 
-    const entityVersion = await this.prisma.entityVersion.findOne({
+    const entityVersion = await this.prisma.entityVersion.findUnique({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         entityId_versionNumber: {
@@ -1046,7 +1060,7 @@ export class EntityService {
       user
     );
 
-    const entityVersion = await this.prisma.entityVersion.findOne({
+    const entityVersion = await this.prisma.entityVersion.findUnique({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         entityId_versionNumber: {
@@ -1158,7 +1172,7 @@ export class EntityService {
         action: action
       },
       orderBy: {
-        action: SortOrder.asc
+        action: Prisma.SortOrder.asc
       },
       include: {
         permissionRoles: {
@@ -1199,7 +1213,7 @@ export class EntityService {
       );
     }
 
-    const entityVersion = await this.prisma.entityVersion.findOne({
+    const entityVersion = await this.prisma.entityVersion.findUnique({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         entityId_versionNumber: {
@@ -1278,7 +1292,7 @@ export class EntityService {
   ): Promise<EntityPermissionField> {
     const promises: Promise<any>[] = [];
 
-    const field = await this.prisma.entityPermissionField.findOne({
+    const field = await this.prisma.entityPermissionField.findUnique({
       where: {
         id: args.data.permissionField.connect.id
       },
@@ -1352,7 +1366,7 @@ export class EntityService {
     }
     await Promise.all(promises);
 
-    return this.prisma.entityPermissionField.findOne({
+    return this.prisma.entityPermissionField.findUnique({
       where: {
         id: args.data.permissionField.connect.id
       },
@@ -1775,7 +1789,7 @@ export class EntityService {
         id: field.id
       },
       data: {
-        properties: (properties as unknown) as InputJsonValue
+        properties: (properties as unknown) as Prisma.InputJsonValue
       }
     });
   }
@@ -1986,7 +2000,9 @@ export class EntityService {
    * @throws {NotFoundException} thrown if the field is not found or it relates
    * to a past entity version
    */
-  private async getField(args: FindFirstEntityFieldArgs): Promise<EntityField> {
+  private async getField(
+    args: Prisma.EntityFieldFindFirstArgs
+  ): Promise<EntityField> {
     const field = await this.prisma.entityField.findFirst({
       ...args,
       where: {
@@ -2026,7 +2042,7 @@ function isUserEntity(entity: Entity): boolean {
 export function createEntityNamesWhereInput(
   name: string,
   appId: string
-): EntityWhereInput {
+): Prisma.EntityWhereInput {
   return {
     appId,
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -2034,20 +2050,20 @@ export function createEntityNamesWhereInput(
       {
         name: {
           equals: name,
-          mode: QueryMode.insensitive
+          mode: Prisma.QueryMode.insensitive
         },
         // eslint-disable-next-line @typescript-eslint/naming-convention
         OR: [
           {
             displayName: {
               equals: name,
-              mode: QueryMode.insensitive
+              mode: Prisma.QueryMode.insensitive
             }
           },
           {
             pluralDisplayName: {
               equals: name,
-              mode: QueryMode.insensitive
+              mode: Prisma.QueryMode.insensitive
             }
           }
         ]

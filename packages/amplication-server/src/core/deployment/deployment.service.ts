@@ -6,7 +6,7 @@ import { subSeconds, differenceInSeconds } from 'date-fns';
 
 import { isEmpty } from 'lodash';
 import * as winston from 'winston';
-import { DeploymentUpdateArgs, FindManyDeploymentArgs } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { DeployResult, EnumDeployStatus } from '@amplication/deployer';
 import { DeployerService } from '@amplication/deployer/dist/nestjs';
 import { EnvironmentService } from '../environment/environment.service';
@@ -184,12 +184,12 @@ export class DeploymentService {
     return deployment;
   }
 
-  async findMany(args: FindManyDeploymentArgs): Promise<Deployment[]> {
+  async findMany(args: Prisma.DeploymentFindManyArgs): Promise<Deployment[]> {
     return this.prisma.deployment.findMany(args) as Promise<Deployment[]>;
   }
 
   async findOne(args: FindOneDeploymentArgs): Promise<Deployment | null> {
-    return this.prisma.deployment.findOne(args) as Promise<Deployment>;
+    return this.prisma.deployment.findUnique(args) as Promise<Deployment>;
   }
 
   /**
@@ -256,7 +256,7 @@ export class DeploymentService {
   }
 
   async deploy(deploymentId: string): Promise<void> {
-    const deployment = (await this.prisma.deployment.findOne({
+    const deployment = (await this.prisma.deployment.findUnique({
       where: { id: deploymentId },
       include: DEPLOY_DEPLOYMENT_INCLUDE
     })) as Deployment & { build: Build; environment: Environment };
@@ -348,7 +348,7 @@ export class DeploymentService {
     }
   }
 
-  private async update(args: DeploymentUpdateArgs): Promise<Deployment> {
+  private async update(args: Prisma.DeploymentUpdateArgs): Promise<Deployment> {
     return this.prisma.deployment.update(args) as Promise<Deployment>;
   }
 

@@ -213,7 +213,7 @@ export class BlockService {
   async findOne<T extends IBlock>(
     args: FindOneWithVersionArgs
   ): Promise<T | null> {
-    const version = await this.prisma.blockVersion.findOne({
+    const version = await this.prisma.blockVersion.findUnique({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
@@ -349,7 +349,7 @@ export class BlockService {
       return null;
     }
 
-    return this.prisma.block.findOne({
+    return this.prisma.block.findUnique({
       where: {
         id: block.parentBlockId
       }

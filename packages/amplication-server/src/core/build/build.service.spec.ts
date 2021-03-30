@@ -6,7 +6,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { orderBy } from 'lodash';
-import { SortOrder } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
@@ -888,7 +888,7 @@ describe('BuildService', () => {
         }
       },
       orderBy: {
-        createdAt: SortOrder.asc
+        createdAt: Prisma.SortOrder.asc
       },
       include: ACTION_INCLUDE
     };
@@ -941,7 +941,7 @@ describe('BuildService', () => {
         }
       },
       orderBy: {
-        createdAt: SortOrder.asc
+        createdAt: Prisma.SortOrder.asc
       },
       include: ACTION_INCLUDE
     };
