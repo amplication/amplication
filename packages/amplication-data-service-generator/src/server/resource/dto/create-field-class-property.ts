@@ -106,7 +106,9 @@ export function createFieldClassProperty(
     optional = true;
   }
   const optionalProperty =
-    optional && (isInput || prismaField.kind === FieldKind.Object);
+    //all relation fields on entity dto (not input) are optional
+    (prismaField.kind === FieldKind.Object && !isInput) ||
+    (optional && (isInput || prismaField.kind === FieldKind.Object));
   const definitive = !optionalProperty;
 
   if (prismaField.kind === FieldKind.Scalar) {
@@ -197,7 +199,7 @@ export function createFieldClassProperty(
   if (
     prismaField.kind !== FieldKind.Object ||
     isEnum ||
-    (isInput && !isQuery && isOneToOneRelationField(field))
+    (isInput && isOneToOneRelationField(field))
   ) {
     decorators.push(
       createGraphQLFieldDecorator(prismaField, isEnum, field, optional, entity)

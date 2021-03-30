@@ -21,7 +21,10 @@ import { isToManyRelationField } from "../../../util/field";
 import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
-import { createServiceId } from "../service/create-service";
+import {
+  createServiceId,
+  createFieldFindManyFunctionId,
+} from "../service/create-service";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 
@@ -217,6 +220,7 @@ async function createToManyRelationMethods(
     WHERE_UNIQUE_INPUT: whereUniqueInput.id,
     SERVICE: serviceId,
     ENTITY_NAME: builders.stringLiteral(entityType),
+    FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: builders.identifier(camelCase(`findMany ${field.name}`)),
     FIND_MANY_PATH: builders.stringLiteral(`/:id/${field.name}`),

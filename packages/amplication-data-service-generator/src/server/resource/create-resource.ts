@@ -40,7 +40,8 @@ async function createResourceModules(
   const serviceModules = await createServiceModules(
     entityName,
     entityType,
-    entity
+    entity,
+    dtos
   );
 
   const [serviceModule] = serviceModules;

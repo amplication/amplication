@@ -15,13 +15,10 @@ declare interface ARGS {
 }
 
 declare interface SERVICE {
-  findOne(args: {
-    where: WHERE_UNIQUE_INPUT;
-  }): {
-    PROPERTY(args: {
-      where: RELATED_ENTITY_WHERE_INPUT;
-    }): Promise<RELATED_ENTITY[]>;
-  };
+  FIND_PROPERTY(
+    parentId: string,
+    args: RELATED_ENTITY_WHERE_INPUT
+  ): Promise<RELATED_ENTITY[]>;
 }
 
 declare const ENTITY_NAME: string;
@@ -50,10 +47,7 @@ export class Mixin {
       possession: "any",
       resource: RELATED_ENTITY_NAME,
     });
-    const results = await this.service
-      .findOne({ where: { id: parent.id } })
-      // @ts-ignore
-      .PROPERTY(args);
+    const results = await this.service.FIND_PROPERTY(parent.id, args);
     return results.map((result) => permission.filter(result));
   }
 }
