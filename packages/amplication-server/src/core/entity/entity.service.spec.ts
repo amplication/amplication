@@ -295,7 +295,7 @@ describe('EntityService', () => {
               findMany: prismaEntityVersionFindManyMock,
               create: prismaEntityVersionCreateMock,
               update: prismaEntityVersionUpdateMock,
-              findOne: prismaEntityVersionFindOneMock
+              findUnique: prismaEntityVersionFindOneMock
             },
             entityField: {
               findFirst: prismaEntityFieldFindFirstMock,
