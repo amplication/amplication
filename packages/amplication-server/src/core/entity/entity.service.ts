@@ -239,27 +239,6 @@ export class EntityService {
 
     await this.prisma.entityField.create({
       data: {
-        name: 'id',
-        displayName: 'ID',
-        description: 'An automatically created unique identifier of the entity',
-        required: true,
-        searchable: true,
-        properties: {},
-        dataType: EnumDataType.Id,
-        entityVersion: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityId_versionNumber: {
-              entityId: '',
-              versionNumber: 0
-            }
-          }
-        }
-      }
-    });
-
-    await this.prisma.entityField.create({
-      data: {
         ...INITIAL_ENTITY_FIELDS[0],
         entityVersion: {
           connect: {
