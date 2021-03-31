@@ -537,13 +537,14 @@ export class EntityService {
 
     const entity = await this.acquireLock(args, user);
 
-    const newName = args.data.name?.toLowerCase().trim();
-    const newPluralDisplayName = args.data.pluralDisplayName
-      ?.toLowerCase()
-      .trim();
-    const currPluralDisplayName = entity?.pluralDisplayName;
+    const newName =
+      args.data.name?.toLowerCase().trim() || entity?.name.toLowerCase().trim();
 
-    if (newName === (newPluralDisplayName || currPluralDisplayName)) {
+    const newPluralDisplayName =
+      args.data.pluralDisplayName?.toLowerCase().trim() ||
+      entity?.pluralDisplayName.toLowerCase().trim();
+
+    if (newName === newPluralDisplayName) {
       throw new AmplicationError(
         `The entity name and plural display name cannot be the same.`
       );
