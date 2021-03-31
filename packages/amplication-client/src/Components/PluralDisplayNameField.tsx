@@ -23,3 +23,7 @@ export const PluralDisplayNameField = (props: TextFieldProps) => {
 export function generatePluralDisplayName(displayName: string): string {
   return pluralize(displayName);
 }
+
+export function generateSingularDisplayName(displayName: string): string {
+  return pluralize.singular(displayName);
+}

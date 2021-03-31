@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { DataConflictError } from 'src/errors/DataConflictError';
 import { Prisma } from '@prisma/client';
+import { AmplicationError } from 'src/errors/AmplicationError';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -207,6 +208,15 @@ export class EntityService {
     args: CreateOneEntityArgs,
     user: User
   ): Promise<Entity> {
+    if (
+      args.data?.name?.toLowerCase().trim() ===
+      args.data?.pluralDisplayName?.toLowerCase().trim()
+    ) {
+      throw new AmplicationError(
+        `The entity name and plural display name cannot be the same.`
+      );
+    }
+
     const newEntity = await this.prisma.entity.create({
       data: {
         ...args.data,
@@ -526,6 +536,19 @@ export class EntityService {
     /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
 
     const entity = await this.acquireLock(args, user);
+
+    const newName =
+      args.data.name?.toLowerCase().trim() || entity?.name.toLowerCase().trim();
+
+    const newPluralDisplayName =
+      args.data.pluralDisplayName?.toLowerCase().trim() ||
+      entity?.pluralDisplayName.toLowerCase().trim();
+
+    if (newName === newPluralDisplayName) {
+      throw new AmplicationError(
+        `The entity name and plural display name cannot be the same.`
+      );
+    }
 
     if (entity.name === USER_ENTITY_NAME) {
       if (args.data.name && args.data.name !== USER_ENTITY_NAME) {
