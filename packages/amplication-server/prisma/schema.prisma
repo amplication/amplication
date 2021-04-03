@@ -48,7 +48,7 @@ model User {
   lockedEntitis     Entity[]
   userRoles         UserRole[]
 
-  @@unique([accountId, organizationId], name: "User.accountId_organizationId_unique")
+  @@unique([accountId, organizationId])
 }
 
 model UserRole {
@@ -59,7 +59,7 @@ model UserRole {
   role      String
   user      User     @relation(fields: [userId], references: [id])
 
-  @@unique([userId, role], name: "UserRole.userId_role_unique")
+  @@unique([userId, role])
 }
 
 model ApiToken {
@@ -73,20 +73,20 @@ model ApiToken {
   lastAccessAt DateTime
   user         User     @relation(fields: [userId], references: [id])
 
-  @@unique([userId, name], name: "ApiToken.userId_name_unique")
+  @@unique([userId, name])
 }
 
 model App {
-  id                     String       @id @default(cuid())
-  createdAt              DateTime     @default(now())
-  updatedAt              DateTime     @updatedAt
+  id                     String        @id @default(cuid())
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
   organizationId         String
   name                   String
   description            String
-  color                  String       @default("#20A4F3")
+  color                  String        @default("#20A4F3")
   githubToken            String?
   githubTokenCreatedDate DateTime?
-  githubSyncEnabled      Boolean      @default(false)
+  githubSyncEnabled      Boolean       @default(false)
   githubRepo             String?
   githubBranch           String?
   githubLastSync         DateTime?
@@ -99,7 +99,7 @@ model App {
   entities               Entity[]
   environments           Environment[]
 
-  @@unique([organizationId, name], name: "App.organizationId_name_unique")
+  @@unique([organizationId, name])
 }
 
 model AppRole {
@@ -111,19 +111,19 @@ model AppRole {
   displayName String
   description String?
 
-  app         App       @relation(fields: [appId], references: [id])
+  app                   App                    @relation(fields: [appId], references: [id])
   entityPermissionRoles EntityPermissionRole[]
 
-  @@unique([appId, displayName], name: "AppRole.appId_displayName_unique")
-  @@unique([appId, name], name: "AppRole.appId_name_unique")
+  @@unique([appId, displayName])
+  @@unique([appId, name])
 }
 
 model Commit {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  appId     String
-  userId    String
-  message   String
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  appId          String
+  userId         String
+  message        String
   app            App             @relation(fields: [appId], references: [id])
   user           User            @relation(fields: [userId], references: [id])
   builds         Build[]
@@ -147,9 +147,9 @@ model Entity {
   lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
   versions          EntityVersion[]
 
-  @@unique([appId, displayName], name: "Entity.appId_displayName_unique")
-  @@unique([appId, name], name: "Entity.appId_name_unique")
-  @@unique([appId, pluralDisplayName], name: "Entity.appId_pluralDisplayName_unique")
+  @@unique([appId, displayName])
+  @@unique([appId, name])
+  @@unique([appId, pluralDisplayName])
 }
 
 model EntityVersion {
@@ -170,7 +170,7 @@ model EntityVersion {
   permissions       EntityPermission[]
   builds            Build[]
 
-  @@unique([entityId, versionNumber], name: "EntityVersion.entityId_versionNumber_unique")
+  @@unique([entityId, versionNumber])
 }
 
 model EntityPermission {
@@ -182,7 +182,7 @@ model EntityPermission {
   permissionFields EntityPermissionField[]
   permissionRoles  EntityPermissionRole[]
 
-  @@unique([entityVersionId, action], name: "EntityPermission.entityVersionId_action_unique")
+  @@unique([entityVersionId, action])
 }
 
 model EntityPermissionRole {
@@ -194,7 +194,7 @@ model EntityPermissionRole {
   permission       EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action])
   permissionFields EntityPermissionField[]
 
-  @@unique([entityVersionId, action, appRoleId], name: "EntityPermissionRole.entityVersionId_action_appRoleId_unique")
+  @@unique([entityVersionId, action, appRoleId])
 }
 
 model EntityPermissionField {
@@ -206,7 +206,7 @@ model EntityPermissionField {
   permission       EntityPermission       @relation(fields: [permissionId], references: [id])
   permissionRoles  EntityPermissionRole[]
 
-  @@unique([permissionId, fieldPermanentId], name: "EntityPermissionField.permissionId_fieldPermanentId_unique")
+  @@unique([permissionId, fieldPermanentId])
 }
 
 model EntityField {
@@ -226,9 +226,9 @@ model EntityField {
   entityVersion   EntityVersion           @relation(fields: [entityVersionId], references: [id])
   permissionField EntityPermissionField[]
 
-  @@unique([entityVersionId, displayName], name: "EntityField.entityVersionId_displayName_unique")
-  @@unique([entityVersionId, name], name: "EntityField.entityVersionId_name_unique")
-  @@unique([entityVersionId, permanentId], name: "EntityField.entityVersionId_permanentId_unique")
+  @@unique([entityVersionId, displayName])
+  @@unique([entityVersionId, name])
+  @@unique([entityVersionId, permanentId])
 }
 
 model Block {
@@ -245,7 +245,7 @@ model Block {
   blocks        Block[]        @relation("BlockToBlock")
   versions      BlockVersion[]
 
-  @@unique([appId, displayName], name: "Block.appId_displayName_unique")
+  @@unique([appId, displayName])
 }
 
 model BlockVersion {
@@ -261,7 +261,7 @@ model BlockVersion {
   block            Block    @relation(fields: [blockId], references: [id])
   builds           Build[]
 
-  @@unique([blockId, versionNumber], name: "BlockVersion.blockId_versionNumber_unique")
+  @@unique([blockId, versionNumber])
 }
 
 model Action {
@@ -318,7 +318,7 @@ model Build {
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
 
-  @@unique([appId, version], name: "Build.appId_version_unique")
+  @@unique([appId, version])
 }
 
 model Release {
@@ -341,7 +341,7 @@ model Environment {
   app         App          @relation(fields: [appId], references: [id])
   deployments Deployment[]
 
-  @@unique([appId, name], name: "Environment.appId_name_unique")
+  @@unique([appId, name])
 }
 
 model Deployment {
