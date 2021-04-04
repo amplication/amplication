@@ -2,7 +2,7 @@ import { PrismaService } from "nestjs-prisma";
 
 import {
   // @ts-ignore
-  ARGS,
+  Prisma,
   // @ts-ignore
   RELATED_ENTITY,
 } from "@prisma/client";
@@ -10,8 +10,11 @@ import {
 export class Mixin {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async FIND_MANY(parentId: string, args: ARGS): Promise<RELATED_ENTITY[]> {
-    return this.prisma.DELEGATE.findOne({
+  async FIND_MANY(
+    parentId: string,
+    args: Prisma.ARGS
+  ): Promise<RELATED_ENTITY[]> {
+    return this.prisma.DELEGATE.findUnique({
       where: { id: parentId },
     }).PROPERTY(args);
   }
