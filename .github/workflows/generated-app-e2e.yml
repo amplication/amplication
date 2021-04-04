@@ -23,4 +23,3 @@ jobs:
         run: npm run build -- --scope @amplication/data-service-generator
       - name: Run Data Service Generator E2E test
         run: npm run test:e2e -- --scope @amplication/data-service-generator
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
