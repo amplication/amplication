@@ -21,6 +21,10 @@ jobs:
         run: npm run bootstrap -- --loglevel verbose
       - name: Build Data Service Generator
         run: npm run build -- --scope @amplication/data-service-generator
+      - name: Generate test data service
+        run: npm run generate-test-data-service
+      - name: Install test data service's dependencies
+        working-directory: packages/amplication-data-service-generator/generated/server
+        run: npm ci && npm run prisma:generate
       - name: Run Data Service Generator E2E test
         run: npm run test:e2e -- --scope @amplication/data-service-generator
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
