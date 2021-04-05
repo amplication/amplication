@@ -309,6 +309,18 @@ export type CustomerCreateInput = {
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
+  "admin/src/api/customer/CustomerFindManyArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+
+export type CustomerFindManyArgs = {
+  where?: CustomerWhereInput;
+};
+",
+  "admin/src/api/customer/CustomerFindUniqueArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+
+export type CustomerFindUniqueArgs = {
+  where: CustomerWhereUniqueInput;
+};
+",
   "admin/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type CustomerUpdateInput = {
@@ -371,18 +383,6 @@ export type DeleteCustomerArgs = {
   Yellow = \\"yellow\\",
 }
 ",
-  "admin/src/api/customer/FindManyCustomerArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
-
-export type FindManyCustomerArgs = {
-  where?: CustomerWhereInput;
-};
-",
-  "admin/src/api/customer/FindOneCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-
-export type FindOneCustomerArgs = {
-  where: CustomerWhereUniqueInput;
-};
-",
   "admin/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 
@@ -405,6 +405,18 @@ export type DeleteEmptyArgs = {
 ",
   "admin/src/api/empty/EmptyCreateInput.ts": "export type EmptyCreateInput = {};
 ",
+  "admin/src/api/empty/EmptyFindManyArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+
+export type EmptyFindManyArgs = {
+  where?: EmptyWhereInput;
+};
+",
+  "admin/src/api/empty/EmptyFindUniqueArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+
+export type EmptyFindUniqueArgs = {
+  where: EmptyWhereUniqueInput;
+};
+",
   "admin/src/api/empty/EmptyUpdateInput.ts": "export type EmptyUpdateInput = {};
 ",
   "admin/src/api/empty/EmptyWhereInput.ts": "export type EmptyWhereInput = {
@@ -415,18 +427,6 @@ export type DeleteEmptyArgs = {
 ",
   "admin/src/api/empty/EmptyWhereUniqueInput.ts": "export type EmptyWhereUniqueInput = {
   id: string;
-};
-",
-  "admin/src/api/empty/FindManyEmptyArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
-
-export type FindManyEmptyArgs = {
-  where?: EmptyWhereInput;
-};
-",
-  "admin/src/api/empty/FindOneEmptyArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
-
-export type FindOneEmptyArgs = {
-  where: EmptyWhereUniqueInput;
 };
 ",
   "admin/src/api/http.util.ts": "export function createBasicAuthorizationHeader(
@@ -460,18 +460,6 @@ export type DeleteOrderArgs = {
   Done = \\"done\\",
 }
 ",
-  "admin/src/api/order/FindManyOrderArgs.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
-
-export type FindManyOrderArgs = {
-  where?: OrderWhereInput;
-};
-",
-  "admin/src/api/order/FindOneOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
-
-export type FindOneOrderArgs = {
-  where: OrderWhereUniqueInput;
-};
-",
   "admin/src/api/order/Order.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export type Order = {
@@ -489,6 +477,18 @@ export type OrderCreateInput = {
   customer: CustomerWhereUniqueInput;
   status: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   label?: \\"fragile\\" | null;
+};
+",
+  "admin/src/api/order/OrderFindManyArgs.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
+
+export type OrderFindManyArgs = {
+  where?: OrderWhereInput;
+};
+",
+  "admin/src/api/order/OrderFindUniqueArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+
+export type OrderFindUniqueArgs = {
+  where: OrderWhereUniqueInput;
 };
 ",
   "admin/src/api/order/OrderUpdateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
@@ -534,18 +534,6 @@ export type DeleteOrganizationArgs = {
   where: OrganizationWhereUniqueInput;
 };
 ",
-  "admin/src/api/organization/FindManyOrganizationArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
-
-export type FindManyOrganizationArgs = {
-  where?: OrganizationWhereInput;
-};
-",
-  "admin/src/api/organization/FindOneOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
-
-export type FindOneOrganizationArgs = {
-  where: OrganizationWhereUniqueInput;
-};
-",
   "admin/src/api/organization/Organization.ts": "export type Organization = {
   id: string;
   createdAt: Date;
@@ -555,6 +543,18 @@ export type FindOneOrganizationArgs = {
 ",
   "admin/src/api/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
   name: string;
+};
+",
+  "admin/src/api/organization/OrganizationFindManyArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+
+export type OrganizationFindManyArgs = {
+  where?: OrganizationWhereInput;
+};
+",
+  "admin/src/api/organization/OrganizationFindUniqueArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+
+export type OrganizationFindUniqueArgs = {
+  where: OrganizationWhereUniqueInput;
 };
 ",
   "admin/src/api/organization/OrganizationUpdateInput.ts": "export type OrganizationUpdateInput = {
@@ -602,18 +602,6 @@ export type DeleteUserArgs = {
   Medium = \\"medium\\",
   Low = \\"low\\",
 }
-",
-  "admin/src/api/user/FindManyUserArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
-
-export type FindManyUserArgs = {
-  where?: UserWhereInput;
-};
-",
-  "admin/src/api/user/FindOneUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-
-export type FindOneUserArgs = {
-  where: UserWhereUniqueInput;
-};
 ",
   "admin/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
@@ -663,6 +651,18 @@ export type UserCreateInput = {
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
+};
+",
+  "admin/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
+
+export type UserFindManyArgs = {
+  where?: UserWhereInput;
+};
+",
+  "admin/src/api/user/UserFindUniqueArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+
+export type UserFindUniqueArgs = {
+  where: UserWhereUniqueInput;
 };
 ",
   "admin/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -4459,6 +4459,28 @@ class CustomerCreateInput {
 }
 export { CustomerCreateInput };
 ",
+  "server/src/customer/base/CustomerFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+
+@ArgsType()
+class CustomerFindManyArgs {
+  @Field(() => CustomerWhereInput, { nullable: true })
+  where?: CustomerWhereInput;
+}
+
+export { CustomerFindManyArgs };
+",
+  "server/src/customer/base/CustomerFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+
+@ArgsType()
+class CustomerFindUniqueArgs {
+  @Field(() => CustomerWhereUniqueInput, { nullable: false })
+  where!: CustomerWhereUniqueInput;
+}
+
+export { CustomerFindUniqueArgs };
+",
   "server/src/customer/base/CustomerUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
@@ -4844,28 +4866,6 @@ export enum EnumCustomerFavoriteColors {
 registerEnumType(EnumCustomerFavoriteColors, {
   name: \\"EnumCustomerFavoriteColors\\",
 });
-",
-  "server/src/customer/base/FindManyCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
-
-@ArgsType()
-class FindManyCustomerArgs {
-  @Field(() => CustomerWhereInput, { nullable: true })
-  where?: CustomerWhereInput;
-}
-
-export { FindManyCustomerArgs };
-",
-  "server/src/customer/base/FindOneCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-
-@ArgsType()
-class FindOneCustomerArgs {
-  @Field(() => CustomerWhereUniqueInput, { nullable: false })
-  where!: CustomerWhereUniqueInput;
-}
-
-export { FindOneCustomerArgs };
 ",
   "server/src/customer/base/UpdateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -5633,10 +5633,10 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
-import { FindManyCustomerArgs } from \\"./FindManyCustomerArgs\\";
-import { FindOneCustomerArgs } from \\"./FindOneCustomerArgs\\";
+import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
+import { CustomerFindUniqueArgs } from \\"./CustomerFindUniqueArgs\\";
 import { Customer } from \\"./Customer\\";
-import { FindManyOrderArgs } from \\"../../order/base/FindManyOrderArgs\\";
+import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { CustomerService } from \\"../customer.service\\";
@@ -5656,7 +5656,7 @@ export class CustomerResolverBase {
     possession: \\"any\\",
   })
   async customers(
-    @graphql.Args() args: FindManyCustomerArgs,
+    @graphql.Args() args: CustomerFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
     const permission = this.rolesBuilder.permission({
@@ -5676,7 +5676,7 @@ export class CustomerResolverBase {
     possession: \\"own\\",
   })
   async customer(
-    @graphql.Args() args: FindOneCustomerArgs,
+    @graphql.Args() args: CustomerFindUniqueArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
     const permission = this.rolesBuilder.permission({
@@ -5835,7 +5835,7 @@ export class CustomerResolverBase {
   })
   async orders(
     @graphql.Parent() parent: Customer,
-    @graphql.Args() args: FindManyOrderArgs,
+    @graphql.Args() args: OrderFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order[]> {
     const permission = this.rolesBuilder.permission({
@@ -5898,55 +5898,43 @@ export class CustomerResolverBase {
 }
 ",
   "server/src/customer/base/customer.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
-
-import {
-  FindOneCustomerArgs,
-  FindManyCustomerArgs,
-  CustomerCreateArgs,
-  CustomerUpdateArgs,
-  CustomerDeleteArgs,
-  Subset,
-  Customer,
-  FindManyOrderArgs,
-  Order,
-  Organization,
-} from \\"@prisma/client\\";
+import { Prisma, Customer, Order, Organization } from \\"@prisma/client\\";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async findMany<T extends FindManyCustomerArgs>(
-    args: Subset<T, FindManyCustomerArgs>
+  async findMany<T extends Prisma.CustomerFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
   ): Promise<Customer[]> {
     return this.prisma.customer.findMany(args);
   }
-  async findOne<T extends FindOneCustomerArgs>(
-    args: Subset<T, FindOneCustomerArgs>
+  async findOne<T extends Prisma.CustomerFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
   ): Promise<Customer | null> {
-    return this.prisma.customer.findOne(args);
+    return this.prisma.customer.findUnique(args);
   }
-  async create<T extends CustomerCreateArgs>(
-    args: Subset<T, CustomerCreateArgs>
+  async create<T extends Prisma.CustomerCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.create<T>(args);
   }
-  async update<T extends CustomerUpdateArgs>(
-    args: Subset<T, CustomerUpdateArgs>
+  async update<T extends Prisma.CustomerUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.update<T>(args);
   }
-  async delete<T extends CustomerDeleteArgs>(
-    args: Subset<T, CustomerDeleteArgs>
+  async delete<T extends Prisma.CustomerDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
   ): Promise<Customer> {
     return this.prisma.customer.delete(args);
   }
 
   async findOrders(
     parentId: string,
-    args: FindManyOrderArgs
+    args: Prisma.OrderFindManyArgs
   ): Promise<Order[]> {
     return this.prisma.customer
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .orders(args);
@@ -5954,7 +5942,7 @@ export class CustomerServiceBase {
 
   async getOrganization(parentId: string): Promise<Organization | null> {
     return this.prisma.customer
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .organization();
@@ -5962,7 +5950,7 @@ export class CustomerServiceBase {
 
   async getVipOrganization(parentId: string): Promise<Organization | null> {
     return this.prisma.customer
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .vipOrganization();
@@ -6078,6 +6066,28 @@ export { Empty };
   "server/src/empty/base/EmptyCreateInput.ts": "class EmptyCreateInput {}
 export { EmptyCreateInput };
 ",
+  "server/src/empty/base/EmptyFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+
+@ArgsType()
+class EmptyFindManyArgs {
+  @Field(() => EmptyWhereInput, { nullable: true })
+  where?: EmptyWhereInput;
+}
+
+export { EmptyFindManyArgs };
+",
+  "server/src/empty/base/EmptyFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+
+@ArgsType()
+class EmptyFindUniqueArgs {
+  @Field(() => EmptyWhereUniqueInput, { nullable: false })
+  where!: EmptyWhereUniqueInput;
+}
+
+export { EmptyFindUniqueArgs };
+",
   "server/src/empty/base/EmptyUpdateInput.ts": "class EmptyUpdateInput {}
 export { EmptyUpdateInput };
 ",
@@ -6134,28 +6144,6 @@ class EmptyWhereUniqueInput {
   id!: string;
 }
 export { EmptyWhereUniqueInput };
-",
-  "server/src/empty/base/FindManyEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
-
-@ArgsType()
-class FindManyEmptyArgs {
-  @Field(() => EmptyWhereInput, { nullable: true })
-  where?: EmptyWhereInput;
-}
-
-export { FindManyEmptyArgs };
-",
-  "server/src/empty/base/FindOneEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
-
-@ArgsType()
-class FindOneEmptyArgs {
-  @Field(() => EmptyWhereUniqueInput, { nullable: false })
-  where!: EmptyWhereUniqueInput;
-}
-
-export { FindOneEmptyArgs };
 ",
   "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -6558,8 +6546,8 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
-import { FindManyEmptyArgs } from \\"./FindManyEmptyArgs\\";
-import { FindOneEmptyArgs } from \\"./FindOneEmptyArgs\\";
+import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
+import { EmptyFindUniqueArgs } from \\"./EmptyFindUniqueArgs\\";
 import { Empty } from \\"./Empty\\";
 import { EmptyService } from \\"../empty.service\\";
 
@@ -6578,7 +6566,7 @@ export class EmptyResolverBase {
     possession: \\"any\\",
   })
   async empties(
-    @graphql.Args() args: FindManyEmptyArgs,
+    @graphql.Args() args: EmptyFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Empty[]> {
     const permission = this.rolesBuilder.permission({
@@ -6598,7 +6586,7 @@ export class EmptyResolverBase {
     possession: \\"own\\",
   })
   async empty(
-    @graphql.Args() args: FindOneEmptyArgs,
+    @graphql.Args() args: EmptyFindUniqueArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Empty | null> {
     const permission = this.rolesBuilder.permission({
@@ -6638,42 +6626,33 @@ export class EmptyResolverBase {
 }
 ",
   "server/src/empty/base/empty.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
-
-import {
-  FindOneEmptyArgs,
-  FindManyEmptyArgs,
-  EmptyCreateArgs,
-  EmptyUpdateArgs,
-  EmptyDeleteArgs,
-  Subset,
-  Empty,
-} from \\"@prisma/client\\";
+import { Prisma, Empty } from \\"@prisma/client\\";
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async findMany<T extends FindManyEmptyArgs>(
-    args: Subset<T, FindManyEmptyArgs>
+  async findMany<T extends Prisma.EmptyFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
   ): Promise<Empty[]> {
     return this.prisma.empty.findMany(args);
   }
-  async findOne<T extends FindOneEmptyArgs>(
-    args: Subset<T, FindOneEmptyArgs>
+  async findOne<T extends Prisma.EmptyFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
   ): Promise<Empty | null> {
-    return this.prisma.empty.findOne(args);
+    return this.prisma.empty.findUnique(args);
   }
-  async create<T extends EmptyCreateArgs>(
-    args: Subset<T, EmptyCreateArgs>
+  async create<T extends Prisma.EmptyCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.create<T>(args);
   }
-  async update<T extends EmptyUpdateArgs>(
-    args: Subset<T, EmptyUpdateArgs>
+  async update<T extends Prisma.EmptyUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.update<T>(args);
   }
-  async delete<T extends EmptyDeleteArgs>(
-    args: Subset<T, EmptyDeleteArgs>
+  async delete<T extends Prisma.EmptyDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
   ): Promise<Empty> {
     return this.prisma.empty.delete(args);
   }
@@ -6842,28 +6821,6 @@ registerEnumType(EnumOrderStatus, {
   name: \\"EnumOrderStatus\\",
 });
 ",
-  "server/src/order/base/FindManyOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { OrderWhereInput } from \\"./OrderWhereInput\\";
-
-@ArgsType()
-class FindManyOrderArgs {
-  @Field(() => OrderWhereInput, { nullable: true })
-  where?: OrderWhereInput;
-}
-
-export { FindManyOrderArgs };
-",
-  "server/src/order/base/FindOneOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
-
-@ArgsType()
-class FindOneOrderArgs {
-  @Field(() => OrderWhereUniqueInput, { nullable: false })
-  where!: OrderWhereUniqueInput;
-}
-
-export { FindOneOrderArgs };
-",
   "server/src/order/base/Order.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
@@ -6963,6 +6920,28 @@ class OrderCreateInput {
   label?: \\"fragile\\" | null;
 }
 export { OrderCreateInput };
+",
+  "server/src/order/base/OrderFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrderWhereInput } from \\"./OrderWhereInput\\";
+
+@ArgsType()
+class OrderFindManyArgs {
+  @Field(() => OrderWhereInput, { nullable: true })
+  where?: OrderWhereInput;
+}
+
+export { OrderFindManyArgs };
+",
+  "server/src/order/base/OrderFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+
+@ArgsType()
+class OrderFindUniqueArgs {
+  @Field(() => OrderWhereUniqueInput, { nullable: false })
+  where!: OrderWhereUniqueInput;
+}
+
+export { OrderFindUniqueArgs };
 ",
   "server/src/order/base/OrderUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -7576,8 +7555,8 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
-import { FindManyOrderArgs } from \\"./FindManyOrderArgs\\";
-import { FindOneOrderArgs } from \\"./FindOneOrderArgs\\";
+import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
+import { OrderFindUniqueArgs } from \\"./OrderFindUniqueArgs\\";
 import { Order } from \\"./Order\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 import { OrderService } from \\"../order.service\\";
@@ -7597,7 +7576,7 @@ export class OrderResolverBase {
     possession: \\"any\\",
   })
   async orders(
-    @graphql.Args() args: FindManyOrderArgs,
+    @graphql.Args() args: OrderFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order[]> {
     const permission = this.rolesBuilder.permission({
@@ -7617,7 +7596,7 @@ export class OrderResolverBase {
     possession: \\"own\\",
   })
   async order(
-    @graphql.Args() args: FindOneOrderArgs,
+    @graphql.Args() args: OrderFindUniqueArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
     const permission = this.rolesBuilder.permission({
@@ -7778,50 +7757,40 @@ export class OrderResolverBase {
 }
 ",
   "server/src/order/base/order.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
-
-import {
-  FindOneOrderArgs,
-  FindManyOrderArgs,
-  OrderCreateArgs,
-  OrderUpdateArgs,
-  OrderDeleteArgs,
-  Subset,
-  Order,
-  Customer,
-} from \\"@prisma/client\\";
+import { Prisma, Order, Customer } from \\"@prisma/client\\";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async findMany<T extends FindManyOrderArgs>(
-    args: Subset<T, FindManyOrderArgs>
+  async findMany<T extends Prisma.OrderFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
   ): Promise<Order[]> {
     return this.prisma.order.findMany(args);
   }
-  async findOne<T extends FindOneOrderArgs>(
-    args: Subset<T, FindOneOrderArgs>
+  async findOne<T extends Prisma.OrderFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
   ): Promise<Order | null> {
-    return this.prisma.order.findOne(args);
+    return this.prisma.order.findUnique(args);
   }
-  async create<T extends OrderCreateArgs>(
-    args: Subset<T, OrderCreateArgs>
+  async create<T extends Prisma.OrderCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
   ): Promise<Order> {
     return this.prisma.order.create<T>(args);
   }
-  async update<T extends OrderUpdateArgs>(
-    args: Subset<T, OrderUpdateArgs>
+  async update<T extends Prisma.OrderUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
   ): Promise<Order> {
     return this.prisma.order.update<T>(args);
   }
-  async delete<T extends OrderDeleteArgs>(
-    args: Subset<T, OrderDeleteArgs>
+  async delete<T extends Prisma.OrderDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
   ): Promise<Order> {
     return this.prisma.order.delete(args);
   }
 
   async getCustomer(parentId: string): Promise<Customer | null> {
     return this.prisma.order
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .customer();
@@ -7915,28 +7884,6 @@ class DeleteOrganizationArgs {
 
 export { DeleteOrganizationArgs };
 ",
-  "server/src/organization/base/FindManyOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
-
-@ArgsType()
-class FindManyOrganizationArgs {
-  @Field(() => OrganizationWhereInput, { nullable: true })
-  where?: OrganizationWhereInput;
-}
-
-export { FindManyOrganizationArgs };
-",
-  "server/src/organization/base/FindOneOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
-
-@ArgsType()
-class FindOneOrganizationArgs {
-  @Field(() => OrganizationWhereUniqueInput, { nullable: false })
-  where!: OrganizationWhereUniqueInput;
-}
-
-export { FindOneOrganizationArgs };
-",
   "server/src/organization/base/Organization.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsDate } from \\"class-validator\\";
@@ -7988,6 +7935,28 @@ class OrganizationCreateInput {
   name!: string;
 }
 export { OrganizationCreateInput };
+",
+  "server/src/organization/base/OrganizationFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+
+@ArgsType()
+class OrganizationFindManyArgs {
+  @Field(() => OrganizationWhereInput, { nullable: true })
+  where?: OrganizationWhereInput;
+}
+
+export { OrganizationFindManyArgs };
+",
+  "server/src/organization/base/OrganizationFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+
+@ArgsType()
+class OrganizationFindUniqueArgs {
+  @Field(() => OrganizationWhereUniqueInput, { nullable: false })
+  where!: OrganizationWhereUniqueInput;
+}
+
+export { OrganizationFindUniqueArgs };
 ",
   "server/src/organization/base/OrganizationUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -9038,12 +9007,12 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
-import { FindManyOrganizationArgs } from \\"./FindManyOrganizationArgs\\";
-import { FindOneOrganizationArgs } from \\"./FindOneOrganizationArgs\\";
+import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
+import { OrganizationFindUniqueArgs } from \\"./OrganizationFindUniqueArgs\\";
 import { Organization } from \\"./Organization\\";
-import { FindManyUserArgs } from \\"../../user/base/FindManyUserArgs\\";
+import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
 import { User } from \\"../../user/base/User\\";
-import { FindManyCustomerArgs } from \\"../../customer/base/FindManyCustomerArgs\\";
+import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 import { OrganizationService } from \\"../organization.service\\";
 
@@ -9062,7 +9031,7 @@ export class OrganizationResolverBase {
     possession: \\"any\\",
   })
   async organizations(
-    @graphql.Args() args: FindManyOrganizationArgs,
+    @graphql.Args() args: OrganizationFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization[]> {
     const permission = this.rolesBuilder.permission({
@@ -9082,7 +9051,7 @@ export class OrganizationResolverBase {
     possession: \\"own\\",
   })
   async organization(
-    @graphql.Args() args: FindOneOrganizationArgs,
+    @graphql.Args() args: OrganizationFindUniqueArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
@@ -9213,7 +9182,7 @@ export class OrganizationResolverBase {
   })
   async users(
     @graphql.Parent() parent: Organization,
-    @graphql.Args() args: FindManyUserArgs,
+    @graphql.Args() args: UserFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User[]> {
     const permission = this.rolesBuilder.permission({
@@ -9234,7 +9203,7 @@ export class OrganizationResolverBase {
   })
   async customers(
     @graphql.Parent() parent: Organization,
-    @graphql.Args() args: FindManyCustomerArgs,
+    @graphql.Args() args: CustomerFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
     const permission = this.rolesBuilder.permission({
@@ -9255,7 +9224,7 @@ export class OrganizationResolverBase {
   })
   async vipCustomers(
     @graphql.Parent() parent: Organization,
-    @graphql.Args() args: FindManyCustomerArgs,
+    @graphql.Args() args: CustomerFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
     const permission = this.rolesBuilder.permission({
@@ -9270,53 +9239,43 @@ export class OrganizationResolverBase {
 }
 ",
   "server/src/organization/base/organization.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
-
-import {
-  FindOneOrganizationArgs,
-  FindManyOrganizationArgs,
-  OrganizationCreateArgs,
-  OrganizationUpdateArgs,
-  OrganizationDeleteArgs,
-  Subset,
-  Organization,
-  FindManyUserArgs,
-  User,
-  FindManyCustomerArgs,
-  Customer,
-} from \\"@prisma/client\\";
+import { Prisma, Organization, User, Customer } from \\"@prisma/client\\";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async findMany<T extends FindManyOrganizationArgs>(
-    args: Subset<T, FindManyOrganizationArgs>
+  async findMany<T extends Prisma.OrganizationFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
   ): Promise<Organization[]> {
     return this.prisma.organization.findMany(args);
   }
-  async findOne<T extends FindOneOrganizationArgs>(
-    args: Subset<T, FindOneOrganizationArgs>
+  async findOne<T extends Prisma.OrganizationFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
   ): Promise<Organization | null> {
-    return this.prisma.organization.findOne(args);
+    return this.prisma.organization.findUnique(args);
   }
-  async create<T extends OrganizationCreateArgs>(
-    args: Subset<T, OrganizationCreateArgs>
+  async create<T extends Prisma.OrganizationCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.create<T>(args);
   }
-  async update<T extends OrganizationUpdateArgs>(
-    args: Subset<T, OrganizationUpdateArgs>
+  async update<T extends Prisma.OrganizationUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.update<T>(args);
   }
-  async delete<T extends OrganizationDeleteArgs>(
-    args: Subset<T, OrganizationDeleteArgs>
+  async delete<T extends Prisma.OrganizationDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
   ): Promise<Organization> {
     return this.prisma.organization.delete(args);
   }
 
-  async findUsers(parentId: string, args: FindManyUserArgs): Promise<User[]> {
+  async findUsers(
+    parentId: string,
+    args: Prisma.UserFindManyArgs
+  ): Promise<User[]> {
     return this.prisma.organization
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .users(args);
@@ -9324,10 +9283,10 @@ export class OrganizationServiceBase {
 
   async findCustomers(
     parentId: string,
-    args: FindManyCustomerArgs
+    args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .customers(args);
@@ -9335,10 +9294,10 @@ export class OrganizationServiceBase {
 
   async findVipCustomers(
     parentId: string,
-    args: FindManyCustomerArgs
+    args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .vipCustomers(args);
@@ -9513,7 +9472,7 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .setDescription(
     'Sample application for testing\\\\n\\\\n## Congratulations! Your application is ready.\\\\n\\\\nPlease note that all endpoints are secured with HTTP basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
   )
-  .setVersion(\\"0.1.1\\")
+  .setVersion(\\"0.1.3\\")
   .addBasicAuth()
   .build();
 
@@ -9570,28 +9529,6 @@ export enum EnumUserPriority {
 registerEnumType(EnumUserPriority, {
   name: \\"EnumUserPriority\\",
 });
-",
-  "server/src/user/base/FindManyUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { UserWhereInput } from \\"./UserWhereInput\\";
-
-@ArgsType()
-class FindManyUserArgs {
-  @Field(() => UserWhereInput, { nullable: true })
-  where?: UserWhereInput;
-}
-
-export { FindManyUserArgs };
-",
-  "server/src/user/base/FindOneUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-
-@ArgsType()
-class FindOneUserArgs {
-  @Field(() => UserWhereUniqueInput, { nullable: false })
-  where!: UserWhereUniqueInput;
-}
-
-export { FindOneUserArgs };
 ",
   "server/src/user/base/UpdateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -9890,6 +9827,28 @@ class UserCreateInput {
   location!: string;
 }
 export { UserCreateInput };
+",
+  "server/src/user/base/UserFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereInput } from \\"./UserWhereInput\\";
+
+@ArgsType()
+class UserFindManyArgs {
+  @Field(() => UserWhereInput, { nullable: true })
+  where?: UserWhereInput;
+}
+
+export { UserFindManyArgs };
+",
+  "server/src/user/base/UserFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+
+@ArgsType()
+class UserFindUniqueArgs {
+  @Field(() => UserWhereUniqueInput, { nullable: false })
+  where!: UserWhereUniqueInput;
+}
+
+export { UserFindUniqueArgs };
 ",
   "server/src/user/base/UserUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -11002,8 +10961,8 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
-import { FindManyUserArgs } from \\"./FindManyUserArgs\\";
-import { FindOneUserArgs } from \\"./FindOneUserArgs\\";
+import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
+import { UserFindUniqueArgs } from \\"./UserFindUniqueArgs\\";
 import { User } from \\"./User\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { UserService } from \\"../user.service\\";
@@ -11023,7 +10982,7 @@ export class UserResolverBase {
     possession: \\"any\\",
   })
   async users(
-    @graphql.Args() args: FindManyUserArgs,
+    @graphql.Args() args: UserFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User[]> {
     const permission = this.rolesBuilder.permission({
@@ -11043,7 +11002,7 @@ export class UserResolverBase {
     possession: \\"own\\",
   })
   async user(
-    @graphql.Args() args: FindOneUserArgs,
+    @graphql.Args() args: UserFindUniqueArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User | null> {
     const permission = this.rolesBuilder.permission({
@@ -11200,7 +11159,7 @@ export class UserResolverBase {
   })
   async employees(
     @graphql.Parent() parent: User,
-    @graphql.Args() args: FindManyUserArgs,
+    @graphql.Args() args: UserFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User[]> {
     const permission = this.rolesBuilder.permission({
@@ -11263,18 +11222,7 @@ export class UserResolverBase {
 }
 ",
   "server/src/user/base/user.service.base.ts": "import { PrismaService } from \\"nestjs-prisma\\";
-
-import {
-  FindOneUserArgs,
-  FindManyUserArgs,
-  UserCreateArgs,
-  UserUpdateArgs,
-  UserDeleteArgs,
-  Subset,
-  User,
-  Organization,
-} from \\"@prisma/client\\";
-
+import { Prisma, User, Organization } from \\"@prisma/client\\";
 import { PasswordService } from \\"../../auth/password.service\\";
 import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
@@ -11284,18 +11232,18 @@ export class UserServiceBase {
     protected readonly passwordService: PasswordService
   ) {}
 
-  async findMany<T extends FindManyUserArgs>(
-    args: Subset<T, FindManyUserArgs>
+  async findMany<T extends Prisma.UserFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
-  async findOne<T extends FindOneUserArgs>(
-    args: Subset<T, FindOneUserArgs>
+  async findOne<T extends Prisma.UserFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
   ): Promise<User | null> {
-    return this.prisma.user.findOne(args);
+    return this.prisma.user.findUnique(args);
   }
-  async create<T extends UserCreateArgs>(
-    args: Subset<T, UserCreateArgs>
+  async create<T extends Prisma.UserCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<User> {
     return this.prisma.user.create<T>({
       ...args,
@@ -11306,8 +11254,8 @@ export class UserServiceBase {
       },
     });
   }
-  async update<T extends UserUpdateArgs>(
-    args: Subset<T, UserUpdateArgs>
+  async update<T extends Prisma.UserUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
   ): Promise<User> {
     return this.prisma.user.update<T>({
       ...args,
@@ -11324,18 +11272,18 @@ export class UserServiceBase {
       },
     });
   }
-  async delete<T extends UserDeleteArgs>(
-    args: Subset<T, UserDeleteArgs>
+  async delete<T extends Prisma.UserDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
   ): Promise<User> {
     return this.prisma.user.delete(args);
   }
 
   async findEmployees(
     parentId: string,
-    args: FindManyUserArgs
+    args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     return this.prisma.user
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .employees(args);
@@ -11343,7 +11291,7 @@ export class UserServiceBase {
 
   async getManager(parentId: string): Promise<User | null> {
     return this.prisma.user
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .manager();
@@ -11351,7 +11299,7 @@ export class UserServiceBase {
 
   async getOrganization(parentId: string): Promise<Organization | null> {
     return this.prisma.user
-      .findOne({
+      .findUnique({
         where: { id: parentId },
       })
       .organization();

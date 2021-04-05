@@ -28,5 +28,5 @@ export async function createFindOneArgs(
 }
 
 export function createFindOneArgsId(entityType: string): namedTypes.Identifier {
-  return builders.identifier(`FindOne${entityType}Args`);
+  return builders.identifier(`${entityType}FindUniqueArgs`);
 }

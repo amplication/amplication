@@ -30,5 +30,5 @@ export async function createFindManyArgs(
 export function createFindManyArgsId(
   entityType: string
 ): namedTypes.Identifier {
-  return builders.identifier(`FindMany${entityType}Args`);
+  return builders.identifier(`${entityType}FindManyArgs`);
 }
