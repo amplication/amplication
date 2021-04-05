@@ -11,6 +11,7 @@ import { Form } from "../Components/Form";
 import FormikAutoSave from "../util/formikAutoSave";
 import { USER_ENTITY } from "./constants";
 import { validate } from "../util/formikValidateJsonSchema";
+import { isEqual } from "../util/customValidations";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
@@ -67,7 +68,16 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
     <div className={CLASS_NAME}>
       <Formik
         initialValues={initialValues}
-        validate={(values: EntityInput) => validate(values, FORM_SCHEMA)}
+        validate={(values: EntityInput) => {
+          if (isEqual(values.name, values.pluralDisplayName)) {
+            return {
+              pluralDisplayName:
+                "Name and plural display names cannot be equal. The ‘plural display name’ field must be in a plural form and ‘name’ field must be in a singular form",
+            };
+          }
+
+          return validate(values, FORM_SCHEMA);
+        }}
         enableReinitialize
         onSubmit={onSubmit}
       >
