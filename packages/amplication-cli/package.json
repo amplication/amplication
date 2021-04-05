@@ -1,7 +1,7 @@
 {
   "name": "@amplication/cli",
   "description": "Amplication CLI",
-  "version": "0.1.4",
+  "version": "0.5.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/amplication/amplication.git"
