@@ -10,10 +10,9 @@ import NameField from "../Components/NameField";
 import { Form } from "../Components/Form";
 import FormikAutoSave from "../util/formikAutoSave";
 import { USER_ENTITY } from "./constants";
-import { validate } from "../util/formikValidateJsonSchema";
-import { isEqual } from "../util/customValidations";
+import { validateSchemaAndEqualEntities } from "../util/customValidations";
 
-type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
+export type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
 type Props = {
   entity?: models.Entity;
@@ -33,24 +32,6 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-const FORM_SCHEMA = {
-  required: ["name", "displayName", "pluralDisplayName"],
-  properties: {
-    displayName: {
-      type: "string",
-      minLength: 2,
-    },
-    name: {
-      type: "string",
-      minLength: 2,
-    },
-    pluralDisplayName: {
-      type: "string",
-      minLength: 2,
-    },
-  },
-};
-
 const CLASS_NAME = "entity-form";
 
 const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
@@ -68,16 +49,7 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
     <div className={CLASS_NAME}>
       <Formik
         initialValues={initialValues}
-        validate={(values: EntityInput) => {
-          if (isEqual(values.name, values.pluralDisplayName)) {
-            return {
-              pluralDisplayName:
-                "Name and plural display names cannot be equal. The ‘plural display name’ field must be in a plural form and ‘name’ field must be in a singular form",
-            };
-          }
-
-          return validate(values, FORM_SCHEMA);
-        }}
+        validate={validateSchemaAndEqualEntities}
         enableReinitialize
         onSubmit={onSubmit}
       >
