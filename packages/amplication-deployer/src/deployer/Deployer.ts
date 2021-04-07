@@ -33,6 +33,20 @@ export class Deployer {
     return provider.deploy(configuration, variables, backendConfiguration);
   }
 
+  async destroy(
+    configuration: Configuration,
+    variables?: Variables,
+    backendConfiguration?: BackendConfiguration,
+    providerName?: string
+  ): Promise<DeployResult> {
+    providerName = providerName || this.options.default;
+    if (!providerName) {
+      throw new NoProviderDefinedError();
+    }
+    const provider = await this.options.providers[providerName];
+    return provider.destroy(configuration, variables, backendConfiguration);
+  }
+
   async getStatus(
     statusQuery: any,
     providerName?: string

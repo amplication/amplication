@@ -6,6 +6,7 @@ provider "google" {
 resource "google_sql_database" "database" {
   name     = "${var.app_id}_database"
   instance = var.instance
+  depends_on = [ google_sql_user.app_database_user ]
 }
 
 resource "random_password" "app_database_password" {

@@ -14,7 +14,7 @@ import {
 } from "../types";
 import { BackendConfiguration } from "../types/BackendConfiguration";
 import { defaultLogger } from "./logging";
-import { createConfig } from "./config";
+import { createConfig, createDestroyConfig } from "./config";
 import * as modules from "./modules";
 import { createHash } from "./hash.util";
 import { InvalidDeployProviderState } from "../deployer/InvalidDeployProviderState";
@@ -83,6 +83,47 @@ export class GCPProvider implements IProvider {
     };
   }
 
+  async destroy(
+    configuration: Configuration,
+    variables?: Variables,
+    backendConfiguration?: BackendConfiguration
+  ): Promise<DeployResult> {
+    const logger = this.logger.child({ variables });
+
+    logger.info("Destroying deployment...", {
+      configuration,
+      backendConfiguration,
+    });
+
+    const pack = await this.createArchive(configuration, variables);
+    const archiveFilename = await this.saveArchive(pack);
+    const [operation] = await this.cloudBuild.createBuild({
+      projectId: this.projectId,
+      build: createDestroyConfig(
+        this.bucket,
+        archiveFilename,
+        backendConfiguration,
+        variables
+      ),
+    });
+
+    const {
+      build,
+    } = (operation.metadata as unknown) as google.devtools.cloudbuild.v1.BuildOperationMetadata;
+
+    if (!build) {
+      throw new Error("Unexpected undefined build");
+    }
+
+    logger.info("Created Cloud Build", {
+      buildId: build.id,
+    });
+
+    return {
+      status: EnumDeployStatus.Running,
+      statusQuery: { id: build.id },
+    };
+  }
   /**
    * Saves provided tar archive as tar gz archive in Cloud Storage with the archive hash as filename
    * @param pack archive to save
@@ -153,7 +194,7 @@ export class GCPProvider implements IProvider {
         return {
           status: EnumDeployStatus.Completed,
           /** @todo return full output and let consumer extract url */
-          url: output.url.value,
+          url: output?.url.value,
         };
 
       default:
@@ -179,7 +220,7 @@ export class GCPProvider implements IProvider {
   }
 }
 
-function getOutput(logs: Buffer): Record<string, { value: string }> {
+function getOutput(logs: Buffer): Record<string, { value: string }> | null {
   const text = logs.toString();
 
   const outputLogs = Array.from(
@@ -191,9 +232,9 @@ function getOutput(logs: Buffer): Record<string, { value: string }> {
 
   const outputJSONMatch = outputLogs.match(/\{[\s\S]+\}/);
 
-  if (!outputJSONMatch) {
-    throw new Error("No output JSON found in logs");
+  if (outputJSONMatch) {
+    return JSON.parse(outputJSONMatch[0]);
   }
 
-  return JSON.parse(outputJSONMatch[0]);
+  return null;
 }
