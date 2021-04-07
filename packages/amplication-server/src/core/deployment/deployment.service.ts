@@ -309,10 +309,7 @@ export class DeploymentService {
           await this.actionService.logInfo(step, DESTROY_STEP_FINISH_LOG);
           await this.actionService.complete(step, EnumActionStepStatus.Success);
 
-          return this.updateStatus(
-            deployment.id,
-            EnumDeploymentStatus.Completed
-          );
+          return this.updateStatus(deployment.id, EnumDeploymentStatus.Removed);
         } else {
           await this.actionService.logInfo(step, DEPLOY_STEP_FINISH_LOG);
           await this.actionService.complete(step, EnumActionStepStatus.Success);
