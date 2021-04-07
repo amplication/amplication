@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { subSeconds, differenceInSeconds } from 'date-fns';
+import { subSeconds, differenceInSeconds, subDays } from 'date-fns';
 
 import { isEmpty } from 'lodash';
 import * as winston from 'winston';
@@ -27,6 +27,10 @@ import { Environment } from '../environment/dto';
 export const PUBLISH_APPS_PATH = '/deployments/';
 export const DEPLOY_STEP_NAME = 'DEPLOY_APP';
 export const DEPLOY_STEP_MESSAGE = 'Deploy Application';
+
+export const DESTROY_STEP_NAME = 'DESTROY_APP';
+export const DESTROY_STEP_MESSAGE = 'Removing Deployment';
+export const DESTROY_STEP_FINISH_LOG = 'The deployment removed successfully';
 
 export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
 
@@ -62,6 +66,7 @@ export const ACTION_INCLUDE = {
   }
 };
 
+const DESTROY_STALED_INTERVAL_DAYS = 30;
 const DEPLOY_STATUS_FETCH_INTERVAL_SEC = 10;
 const DEPLOY_STATUS_UPDATE_INTERVAL_SEC = 30;
 
@@ -219,7 +224,9 @@ export class DeploymentService {
       deployments.map(async deployment => {
         const steps = await this.actionService.getSteps(deployment.actionId);
         const deployStep = steps.find(step => step.name === DEPLOY_STEP_NAME);
+        const destroyStep = steps.find(step => step.name === DESTROY_STEP_NAME);
 
+        const currentStep = destroyStep || deployStep; //when destroy step exist it is the current one
         try {
           const result = await this.deployerService.getStatus(
             deployment.statusQuery
@@ -235,7 +242,7 @@ export class DeploymentService {
             );
             const updatedDeployment = await this.handleDeployResult(
               deployment,
-              deployStep,
+              currentStep,
               result
             );
             return updatedDeployment.status;
@@ -243,9 +250,9 @@ export class DeploymentService {
             return deployment.status;
           }
         } catch (error) {
-          await this.actionService.logInfo(deployStep, error);
+          await this.actionService.logInfo(currentStep, error);
           await this.actionService.complete(
-            deployStep,
+            currentStep,
             EnumActionStepStatus.Failed
           );
           const status = EnumDeploymentStatus.Failed;
@@ -298,38 +305,49 @@ export class DeploymentService {
   ): Promise<Deployment> {
     switch (result.status) {
       case EnumDeployStatus.Completed:
-        await this.actionService.logInfo(step, DEPLOY_STEP_FINISH_LOG);
-        await this.actionService.complete(step, EnumActionStepStatus.Success);
+        if (step.name === DESTROY_STEP_NAME) {
+          await this.actionService.logInfo(step, DESTROY_STEP_FINISH_LOG);
+          await this.actionService.complete(step, EnumActionStepStatus.Success);
 
-        if (isEmpty(result.url)) {
-          throw new Error(
-            `Deployment ${deployment.id} completed without a deployment URL`
+          return this.updateStatus(
+            deployment.id,
+            EnumDeploymentStatus.Completed
+          );
+        } else {
+          await this.actionService.logInfo(step, DEPLOY_STEP_FINISH_LOG);
+          await this.actionService.complete(step, EnumActionStepStatus.Success);
+
+          if (isEmpty(result.url)) {
+            throw new Error(
+              `Deployment ${deployment.id} completed without a deployment URL`
+            );
+          }
+          await this.prisma.environment.update({
+            where: {
+              id: deployment.environmentId
+            },
+            data: {
+              address: result.url
+            }
+          });
+          //mark previous deployments as removed
+          const [prevDeployment] = await this.prisma.deployment.findMany({
+            where: {
+              environmentId: deployment.environmentId
+            }
+          });
+
+          if (prevDeployment) {
+            await this.updateStatus(
+              prevDeployment.id,
+              EnumDeploymentStatus.Removed
+            );
+          }
+          return this.updateStatus(
+            deployment.id,
+            EnumDeploymentStatus.Completed
           );
         }
-
-        await this.prisma.environment.update({
-          where: {
-            id: deployment.environmentId
-          },
-          data: {
-            address: result.url
-          }
-        });
-
-        //mark previous deployments as removed
-        const [prevDeployment] = await this.prisma.deployment.findMany({
-          where: {
-            environmentId: deployment.environmentId
-          }
-        });
-
-        if (prevDeployment) {
-          await this.updateStatus(
-            prevDeployment.id,
-            EnumDeploymentStatus.Removed
-          );
-        }
-        return this.updateStatus(deployment.id, EnumDeploymentStatus.Completed);
 
       case EnumDeployStatus.Failed:
         await this.actionService.logInfo(step, DEPLOY_STEP_FAILED_LOG);
@@ -391,6 +409,119 @@ export class DeploymentService {
       [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain
     };
     return this.deployerService.deploy(
+      gcpDeployConfiguration,
+      variables,
+      backendConfiguration,
+      DeployerProvider.GCP
+    );
+  }
+
+  /**
+   * Destroy staled environments
+   * This function should be called periodically from an external scheduler
+   */
+  async destroyStaledDeployments(): Promise<void> {
+    const lastDeployThreshold = subDays(
+      new Date(),
+      DESTROY_STALED_INTERVAL_DAYS
+    );
+
+    //find all deployments that are still running
+    const deployments = await this.findMany({
+      where: {
+        createdAt: {
+          lt: lastDeployThreshold
+        },
+        status: {
+          equals: EnumDeploymentStatus.Completed
+        }
+      }
+    });
+    await Promise.all(
+      deployments.map(async deployment => {
+        return this.destroy(deployment.environmentId);
+      })
+    );
+  }
+
+  async destroy(environmentId: string): Promise<void> {
+    const deployment = (await this.prisma.deployment.findFirst({
+      where: {
+        environmentId: environmentId,
+        status: EnumDeploymentStatus.Completed
+      },
+      orderBy: {
+        createdAt: Prisma.SortOrder.desc
+      },
+      include: DEPLOY_DEPLOYMENT_INCLUDE
+    })) as Deployment & { build: Build; environment: Environment };
+
+    if (!deployment) return;
+    await this.actionService.run(
+      deployment.actionId,
+      DESTROY_STEP_NAME,
+      DESTROY_STEP_MESSAGE,
+      async step => {
+        const { build, environment } = deployment;
+        const { appId } = build;
+        const [imageId] = build.images;
+        const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
+        switch (deployerDefault) {
+          case DeployerProvider.Docker: {
+            throw new Error('Not implemented');
+          }
+          case DeployerProvider.GCP: {
+            await this.updateStatus(
+              deployment.id,
+              EnumDeploymentStatus.Waiting
+            );
+
+            const result = await this.destroyOnGCP(
+              appId,
+              imageId,
+              environment.address
+            );
+            await this.handleDeployResult(deployment, step, result);
+            return;
+          }
+          default: {
+            throw new Error(`Unknown deployment provider ${deployerDefault}`);
+          }
+        }
+      },
+      true
+    );
+  }
+
+  async destroyOnGCP(
+    appId: string,
+    imageId: string,
+    subdomain: string
+  ): Promise<DeployResult> {
+    const projectId = this.configService.get(GCP_APPS_PROJECT_ID_VAR);
+    const terraformStateBucket = this.configService.get(
+      GCP_APPS_TERRAFORM_STATE_BUCKET_VAR
+    );
+    const region = this.configService.get(GCP_APPS_REGION_VAR);
+    const databaseInstance = this.configService.get(
+      GCP_APPS_DATABASE_INSTANCE_VAR
+    );
+    const appsDomain = this.configService.get(GCP_APPS_DOMAIN_VAR);
+    const deploymentDomain = domain.join([subdomain, appsDomain]);
+
+    const backendConfiguration = {
+      bucket: terraformStateBucket,
+      prefix: appId
+    };
+    const variables = {
+      [TERRAFORM_APP_ID_VARIABLE]: appId,
+      [TERRAFORM_IMAGE_ID_VARIABLE]: imageId,
+      [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
+      [GCP_TERRAFORM_REGION_VARIABLE]: region,
+      [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance,
+      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain
+    };
+    return this.deployerService.destroy(
       gcpDeployConfiguration,
       variables,
       backendConfiguration,
