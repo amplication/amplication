@@ -155,7 +155,8 @@ const prismaDeploymentFindManyMock = jest.fn(() => {
 });
 
 const actionServiceRunMock = jest.fn(
-  (actionId, name, message, actionFunction) => actionFunction()
+  (actionId, name, message, actionFunction) =>
+    actionFunction(EXAMPLE_ACTION_STEP)
 );
 const actionServiceLogInfoMock = jest.fn();
 
@@ -627,12 +628,12 @@ describe('DeploymentService', () => {
     );
     expect(actionServiceLogInfoMock).toBeCalledTimes(1);
     expect(actionServiceLogInfoMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       DEPLOY_STEP_FAILED_LOG
     );
     expect(actionServiceCompleteMock).toBeCalledTimes(1);
     expect(actionServiceCompleteMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       EnumActionStepStatus.Failed
     );
     expect(prismaDeploymentUpdateMock).toBeCalledTimes(1);
@@ -695,7 +696,7 @@ describe('DeploymentService', () => {
     );
     expect(actionServiceLogInfoMock).toBeCalledTimes(1);
     expect(actionServiceLogInfoMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       DEPLOY_STEP_RUNNING_LOG
     );
     expect(prismaDeploymentUpdateMock).toBeCalledTimes(1);
@@ -767,12 +768,12 @@ describe('DeploymentService', () => {
     );
     expect(actionServiceLogInfoMock).toBeCalledTimes(1);
     expect(actionServiceLogInfoMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       DEPLOY_STEP_FINISH_LOG
     );
     expect(actionServiceCompleteMock).toBeCalledTimes(1);
     expect(actionServiceCompleteMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       EnumActionStepStatus.Success
     );
   });
