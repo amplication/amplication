@@ -66,6 +66,7 @@ export const ACTION_INCLUDE = {
   }
 };
 
+const MAX_DESTROY_PER_CYCLE = 2;
 const DESTROY_STALED_INTERVAL_DAYS = 30;
 const DEPLOY_STATUS_FETCH_INTERVAL_SEC = 10;
 const DEPLOY_STATUS_UPDATE_INTERVAL_SEC = 30;
@@ -327,19 +328,18 @@ export class DeploymentService {
               address: result.url
             }
           });
-          //mark previous deployments as removed
-          const [prevDeployment] = await this.prisma.deployment.findMany({
+
+          //mark previous active deployments as removed
+          await this.prisma.deployment.updateMany({
             where: {
-              environmentId: deployment.environmentId
+              environmentId: deployment.environmentId,
+              status: EnumDeploymentStatus.Completed
+            },
+            data: {
+              status: EnumDeploymentStatus.Removed
             }
           });
 
-          if (prevDeployment) {
-            await this.updateStatus(
-              prevDeployment.id,
-              EnumDeploymentStatus.Removed
-            );
-          }
           return this.updateStatus(
             deployment.id,
             EnumDeploymentStatus.Completed
@@ -423,20 +423,24 @@ export class DeploymentService {
       DESTROY_STALED_INTERVAL_DAYS
     );
 
-    //find all deployments that are still running
-    const deployments = await this.findMany({
+    const environments = await this.prisma.environment.findMany({
       where: {
-        createdAt: {
-          lt: lastDeployThreshold
-        },
-        status: {
-          equals: EnumDeploymentStatus.Completed
+        deployments: {
+          some: {
+            createdAt: {
+              lt: lastDeployThreshold
+            },
+            status: {
+              equals: EnumDeploymentStatus.Completed
+            }
+          }
         }
-      }
+      },
+      take: MAX_DESTROY_PER_CYCLE
     });
     await Promise.all(
-      deployments.map(async deployment => {
-        return this.destroy(deployment.environmentId);
+      environments.map(async environment => {
+        return this.destroy(environment.id);
       })
     );
   }
