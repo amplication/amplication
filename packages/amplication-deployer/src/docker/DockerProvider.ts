@@ -67,6 +67,19 @@ terraform apply -auto-approve;`,
     return { status: EnumDeployStatus.Completed };
   }
 
+
+  async destroy(
+    configuration: Configuration,
+    variables?: Variables,
+    backendConfiguration: BackendConfiguration = {}
+  ): Promise<DeployResult> {
+
+    //not implemented
+    return { status: EnumDeployStatus.Failed };
+
+
+  }
+
   createArchive(
     configuration: Configuration,
     variables?: Variables

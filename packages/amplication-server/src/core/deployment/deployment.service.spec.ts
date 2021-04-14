@@ -147,6 +147,7 @@ const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
 const prismaDeploymentCreateMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
 const prismaDeploymentUpdateMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
+const prismaDeploymentUpdateManyMock = jest.fn(() => [EXAMPLE_DEPLOYMENT]);
 
 const prismaDeploymentFindOneMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
@@ -155,7 +156,8 @@ const prismaDeploymentFindManyMock = jest.fn(() => {
 });
 
 const actionServiceRunMock = jest.fn(
-  (actionId, name, message, actionFunction) => actionFunction()
+  (actionId, name, message, actionFunction) =>
+    actionFunction(EXAMPLE_ACTION_STEP)
 );
 const actionServiceLogInfoMock = jest.fn();
 
@@ -233,7 +235,8 @@ describe('DeploymentService', () => {
               create: prismaDeploymentCreateMock,
               findMany: prismaDeploymentFindManyMock,
               findUnique: prismaDeploymentFindOneMock,
-              update: prismaDeploymentUpdateMock
+              update: prismaDeploymentUpdateMock,
+              updateMany: prismaDeploymentUpdateManyMock
             },
             environment: {
               update: environmentServiceUpdateMock
@@ -474,11 +477,9 @@ describe('DeploymentService', () => {
     };
     const loggerMessage = `Deployment ${EXAMPLE_DEPLOYMENT_ID}: current status ${EXAMPLE_COMPLETED_DEPLOY_RESULT.status}`;
     expect(await service.updateRunningDeploymentsStatus()).toEqual(undefined);
-    expect(prismaDeploymentFindManyMock).toBeCalledTimes(2);
+    expect(prismaDeploymentFindManyMock).toBeCalledTimes(1);
     expect(prismaDeploymentFindManyMock).toBeCalledWith(findManyArgs);
-    expect(prismaDeploymentFindManyMock).toBeCalledWith({
-      where: { environmentId: EXAMPLE_DEPLOYMENT.environmentId }
-    });
+
     expect(actionServiceGetStepsMock).toBeCalledTimes(1);
     expect(actionServiceGetStepsMock).toBeCalledWith(EXAMPLE_ACTION_ID);
     expect(deployerServiceGetStatusMock).toBeCalledTimes(1);
@@ -492,11 +493,17 @@ describe('DeploymentService', () => {
       EXAMPLE_ACTION_STEP,
       DEPLOY_STEP_FINISH_LOG
     );
-    expect(prismaDeploymentUpdateMock).toBeCalledTimes(2);
-    expect(prismaDeploymentUpdateMock).toBeCalledWith({
-      where: { id: EXAMPLE_DEPLOYMENT_ID },
-      data: { status: EnumDeploymentStatus.Removed }
+    expect(prismaDeploymentUpdateManyMock).toBeCalledTimes(1);
+    expect(prismaDeploymentUpdateManyMock).toBeCalledWith({
+      where: {
+        environmentId: EXAMPLE_DEPLOYMENT.environmentId,
+        status: EnumDeploymentStatus.Completed
+      },
+      data: {
+        status: EnumDeploymentStatus.Removed
+      }
     });
+    expect(prismaDeploymentUpdateMock).toBeCalledTimes(1);
     expect(prismaDeploymentUpdateMock).toBeCalledWith({
       where: { id: EXAMPLE_DEPLOYMENT_ID },
       data: { status: EnumDeploymentStatus.Completed }
@@ -627,12 +634,12 @@ describe('DeploymentService', () => {
     );
     expect(actionServiceLogInfoMock).toBeCalledTimes(1);
     expect(actionServiceLogInfoMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       DEPLOY_STEP_FAILED_LOG
     );
     expect(actionServiceCompleteMock).toBeCalledTimes(1);
     expect(actionServiceCompleteMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       EnumActionStepStatus.Failed
     );
     expect(prismaDeploymentUpdateMock).toBeCalledTimes(1);
@@ -695,7 +702,7 @@ describe('DeploymentService', () => {
     );
     expect(actionServiceLogInfoMock).toBeCalledTimes(1);
     expect(actionServiceLogInfoMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       DEPLOY_STEP_RUNNING_LOG
     );
     expect(prismaDeploymentUpdateMock).toBeCalledTimes(1);
@@ -767,12 +774,12 @@ describe('DeploymentService', () => {
     );
     expect(actionServiceLogInfoMock).toBeCalledTimes(1);
     expect(actionServiceLogInfoMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       DEPLOY_STEP_FINISH_LOG
     );
     expect(actionServiceCompleteMock).toBeCalledTimes(1);
     expect(actionServiceCompleteMock).toBeCalledWith(
-      undefined,
+      EXAMPLE_ACTION_STEP,
       EnumActionStepStatus.Success
     );
   });

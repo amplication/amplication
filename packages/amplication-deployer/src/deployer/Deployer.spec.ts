@@ -18,6 +18,7 @@ const EXAMPLE_RESULT: DeployResult = { status: EnumDeployStatus.Completed };
 
 const EXAMPLE_SYNC_PROVIDER = {
   deploy: jest.fn(async () => EXAMPLE_RESULT),
+  destroy: jest.fn(async () => EXAMPLE_RESULT),
   getStatus: jest.fn(async () => EXAMPLE_RESULT),
 };
 

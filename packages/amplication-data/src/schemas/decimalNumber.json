@@ -9,16 +9,12 @@
     "minimumValue": {
       "type": "integer",
       "description": "The minimum value",
-      "minimum": 0,
-      "maximum": 9999999,
       "default": 0
     },
     "maximumValue": {
       "type": "integer",
       "description": "The maximum value",
-      "minimum": 0,
-      "maximum": 9999999,
-      "default": 9999999
+      "default": 99999999999
     },
     "precision": {
       "type": "integer",

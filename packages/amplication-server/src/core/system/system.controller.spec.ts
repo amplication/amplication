@@ -8,6 +8,7 @@ import request from 'supertest';
 
 const mockUpdateRunningBuildsStatus = jest.fn();
 const mockUpdateRunningDeploymentsStatus = jest.fn();
+const mockDestroyStaledDeployments = jest.fn();
 
 describe('SystemController', () => {
   let app: INestApplication;
@@ -26,7 +27,8 @@ describe('SystemController', () => {
         {
           provide: DeploymentService,
           useClass: jest.fn(() => ({
-            updateRunningDeploymentsStatus: mockUpdateRunningDeploymentsStatus
+            updateRunningDeploymentsStatus: mockUpdateRunningDeploymentsStatus,
+            destroyStaledDeployments: mockDestroyStaledDeployments
           }))
         }
       ],

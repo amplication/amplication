@@ -46,12 +46,11 @@ github_tag = "v.+"
 
 # Apps Cloud Build
 apps_project = "amplication-production-apps"
-apps_project_2 = "amplication-production-apps-2"
+
 container_builder_default = "cloud-build"
 
 # Deployer
 deployer_default = "gcp"
 apps_region = "us-east1"
 apps_terraform_state_bucket = "amplication-production-apps-state-bucket"
-apps_terraform_state_bucket_2 = "amplication-production-apps-state-bucket_2"
 apps_domain = "amplication.app"
