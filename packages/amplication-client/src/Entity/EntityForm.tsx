@@ -13,7 +13,7 @@ import { USER_ENTITY } from "./constants";
 import { validate } from "../util/formikValidateJsonSchema";
 import { isEqual } from "../util/customValidations";
 
-export type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
+type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
 type Props = {
   entity?: models.Entity;
