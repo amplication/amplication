@@ -101,10 +101,6 @@ variable "apps_project" {
   type = string
 }
 
-variable "apps_project_2" {
-  type = string
-}
-
 variable "container_builder_default" {
   type = string
 }
@@ -123,10 +119,6 @@ variable "apps_terraform_state_bucket" {
   type = string
 }
 
-
-variable "apps_terraform_state_bucket_2" {
-  type = string
-}
 variable "apps_domain" {
   type = string
 }
