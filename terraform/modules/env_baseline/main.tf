@@ -124,6 +124,15 @@ resource "google_storage_bucket" "artifacts" {
   name          = var.bucket
   location      = var.bucket_location
   force_destroy = true
+  lifecycle_rule {
+      action {
+          type = "Delete"
+      }
+      condition {
+        age = 30 
+      }
+  }
+
 }
 
 resource "google_project_service_identity" "apps_cloud_build" {
