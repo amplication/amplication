@@ -25,4 +25,5 @@ export const DATA_TYPE_TO_SCHEMA: { [dataType in models.EnumDataType]: any } = {
   [models.EnumDataType.Password]: schemas.password,
   [models.EnumDataType.Username]: schemas.username,
   [models.EnumDataType.Roles]: schemas.roles,
+  [models.EnumDataType.Json]: schemas.json,
 };
