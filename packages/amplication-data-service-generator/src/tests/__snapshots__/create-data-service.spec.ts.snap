@@ -11445,11 +11445,14 @@ export class UserService extends UserServiceBase {
   }
 }
 ",
-  "server/src/util/JsonNullableFilter.ts": "import { JsonValue } from \\"type-fest\\";
+  "server/src/util/JsonNullableFilter.ts": "// @ts-ignore
+// eslint-disable-next-line
+import { JsonValue } from \\"type-fest\\";
 
 export type JsonNullableFilter = {
-    equals?: JsonValue | null
-    not?: JsonValue | null
-  }",
+  equals?: JsonValue | null;
+  not?: JsonValue | null;
+};
+",
 }
 `;
