@@ -694,7 +694,7 @@ export type UserUpdateInput = {
 ",
   "admin/src/api/user/UserWhereInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-import { JsonValue } from \\"type-fest\\";
+import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
 
 export type UserWhereInput = {
   username?: string;
@@ -710,7 +710,7 @@ export type UserWhereInput = {
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
-  extendedProperties?: JsonValue;
+  extendedProperties?: JsonNullableFilter;
 };
 ",
   "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
@@ -9578,7 +9578,7 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJson,
+  IsJSON,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -9708,7 +9708,7 @@ class User {
   @ApiProperty({
     required: true,
   })
-  @IsJson()
+  @IsJSON()
   @Field(() => GraphQLJSONObject)
   extendedProperties!: JsonValue;
 }
@@ -9726,7 +9726,7 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJson,
+  IsJSON,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -9862,7 +9862,7 @@ class UserCreateInput {
   @ApiProperty({
     required: true,
   })
-  @IsJson()
+  @IsJSON()
   @Field(() => GraphQLJSONObject)
   extendedProperties!: JsonValue;
 }
@@ -9902,7 +9902,7 @@ import {
   ValidateNested,
   IsEnum,
   IsBoolean,
-  IsJson,
+  IsJSON,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -10074,7 +10074,7 @@ class UserUpdateInput {
   @ApiProperty({
     required: false,
   })
-  @IsJson()
+  @IsJSON()
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
     nullable: true,
@@ -10095,7 +10095,7 @@ import {
   ValidateNested,
   IsEnum,
   IsBoolean,
-  IsJson,
+  IsJSON,
 } from \\"class-validator\\";
 
 import { Type, Transform } from \\"class-transformer\\";
@@ -10103,7 +10103,7 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
-import { JsonValue } from \\"type-fest\\";
+import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
 @InputType()
 class UserWhereInput {
   @ApiProperty({
@@ -10243,12 +10243,12 @@ class UserWhereInput {
   @ApiProperty({
     required: false,
   })
-  @IsJson()
+  @IsJSON()
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  extendedProperties?: JsonValue;
+  extendedProperties?: JsonNullableFilter;
 }
 export { UserWhereInput };
 ",
@@ -11445,5 +11445,11 @@ export class UserService extends UserServiceBase {
   }
 }
 ",
+  "server/src/util/JsonNullableFilter.ts": "import { JsonValue } from \\"type-fest\\";
+
+export type JsonNullableFilter = {
+    equals?: JsonValue | null
+    not?: JsonValue | null
+  }",
 }
 `;
