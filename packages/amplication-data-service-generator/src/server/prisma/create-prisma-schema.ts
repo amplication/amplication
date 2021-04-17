@@ -167,6 +167,16 @@ export function createPrismaFields(
         ),
       ];
     }
+    case EnumDataType.Json: {
+      return [
+        PrismaSchemaDSL.createScalarField(
+          name,
+          PrismaSchemaDSL.ScalarType.Json,
+          false,
+          field.required
+        ),
+      ];
+    }
     case EnumDataType.Lookup: {
       const {
         relatedEntity,

@@ -17,7 +17,8 @@ export enum EnumDataType {
   UpdatedAt = 'UpdatedAt',
   Roles = 'Roles',
   Username = 'Username',
-  Password = 'Password'
+  Password = 'Password',
+  Json = 'Json'
 }
 registerEnumType(EnumDataType, {
   name: 'EnumDataType',

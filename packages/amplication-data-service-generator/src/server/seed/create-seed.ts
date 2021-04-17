@@ -144,6 +144,9 @@ export function createDefaultValue(
     case EnumDataType.GeographicLocation: {
       return DEFAULT_ADDRESS_LITERAL;
     }
+    case EnumDataType.Json: {
+      return DEFAULT_BOOLEAN_LITERAL;
+    }
     case EnumDataType.Id:
     case EnumDataType.CreatedAt:
     case EnumDataType.UpdatedAt:

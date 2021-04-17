@@ -86,6 +86,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.Id]: null,
   [EnumDataType.CreatedAt]: null,
   [EnumDataType.UpdatedAt]: null,
+  [EnumDataType.Json]: null,
   [EnumDataType.Roles]: (field) =>
     jsxElement`<RoleSelect label="${field.displayName}" name="${field.name}" />`,
   [EnumDataType.Username]: (field) =>

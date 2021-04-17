@@ -77,6 +77,10 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
     label: "Boolean",
     icon: "check_square",
   },
+  [models.EnumDataType.Json]: {
+    label: "Json",
+    icon: "code1",
+  },
   [models.EnumDataType.OptionSet]: {
     label: "Option Set",
     icon: "option_set",

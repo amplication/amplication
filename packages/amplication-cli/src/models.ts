@@ -972,6 +972,7 @@ export enum EnumDataType {
   Roles = 'Roles',
   Username = 'Username',
   Password = 'Password',
+  Json = 'Json',
 }
 
 export type EnumDataTypeFilter = {

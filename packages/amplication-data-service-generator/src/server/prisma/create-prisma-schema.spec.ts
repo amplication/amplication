@@ -248,6 +248,17 @@ describe("createPrismaFields", () => {
       ),
     ],
     [
+      "Json",
+      EnumDataType.Json,
+      {},
+      PrismaSchemaDSL.createScalarField(
+        EXAMPLE_ENTITY_FIELD_NAME,
+        PrismaSchemaDSL.ScalarType.Json,
+        false,
+        true
+      ),
+    ],
+    [
       "Lookup",
       EnumDataType.Lookup,
       {

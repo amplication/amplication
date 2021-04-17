@@ -393,6 +393,7 @@ enum EnumDataType {
   Roles
   Username
   Password
+  Json
 }
 
 enum EnumBlockType {
