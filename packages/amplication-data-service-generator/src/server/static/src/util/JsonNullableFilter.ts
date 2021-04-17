@@ -1,3 +1,5 @@
+// @ts-ignore
+// eslint-disable-next-line
 import { JsonValue } from "type-fest";
 
 export type JsonNullableFilter = {
