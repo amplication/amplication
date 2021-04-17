@@ -94,6 +94,7 @@
     "replace-ext": "^2.0.0",
     "rxjs": "^6.6.0",
     "semver": "^7.3.4",
+    "type-fest": "^0.11.0",
     "typescript": "^3.9.5",
     "web-vitals": "^0.2.4",
     "winston": "^3.3.3"
