@@ -159,6 +159,14 @@ describe("createDefaultValue", () => {
       DEFAULT_ADDRESS_LITERAL,
     ],
     [
+      "Json",
+      {
+        ...EXAMPLE_FIELD_BASE,
+        dataType: EnumDataType.Json,
+      },
+      DEFAULT_BOOLEAN_LITERAL, //boolean is a valid json
+    ],
+    [
       "Id",
       {
         ...EXAMPLE_FIELD_BASE,

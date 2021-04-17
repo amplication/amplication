@@ -4,6 +4,5 @@
   "title": "json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["minimumValue", "maximumValue"],
   "properties": {}
 }

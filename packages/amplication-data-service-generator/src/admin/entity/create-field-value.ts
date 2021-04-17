@@ -44,6 +44,7 @@ export function createFieldValue(
     case EnumDataType.SingleLineText:
     case EnumDataType.Username:
     case EnumDataType.WholeNumber:
+    case EnumDataType.Json:
     default:
       return jsxFragment`<>{${value}}</>`;
   }

@@ -186,6 +186,15 @@ const USER: Entity = {
       searchable: false,
       dataType: EnumDataType.GeographicLocation,
     },
+    {
+      id: "e8b7aca3-e761-4d0c-9196-b983d63ae755",
+      permanentId: "e8b7aca3-e761-4d0c-9196-b983d63ae755",
+      name: "extendedProperties",
+      displayName: "Extended Properties",
+      required: true,
+      searchable: false,
+      dataType: EnumDataType.Json,
+    },
   ],
   permissions: [
     {

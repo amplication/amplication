@@ -38,6 +38,7 @@
     "fast-glob": "^3.2.4",
     "graphql": "^15.4.0",
     "graphql-tools": "^4.0.8",
+    "graphql-type-json": "^0.3.2",
     "nest-access-control": "^2.0.2",
     "nest-morgan": "^1.0.1",
     "nestjs-prisma": "^0.9.0",
@@ -48,11 +49,13 @@
     "reflect-metadata": "^0.1.13",
     "swagger-ui-express": "^4.1.4",
     "ts-node": "^9.0.0",
+    "type-fest": "^0.11.0",
     "typescript": "^4.2.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.1",
     "@nestjs/testing": "^7.3.2",
+    "@types/graphql-type-json": "^0.3.2",
     "@types/jest": "^26.0.5",
     "@types/normalize-path": "^3.0.0",
     "@types/supertest": "^2.0.10",

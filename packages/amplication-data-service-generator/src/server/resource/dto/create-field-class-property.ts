@@ -21,8 +21,12 @@ import {
   IS_NUMBER_ID,
   IS_OPTIONAL_ID,
   IS_STRING_ID,
+  IS_JSON_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
+import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
+import { JSON_VALUE_ID } from "./type-fest.util";
+
 import * as classTransformerUtil from "./class-transformer.util";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createEnumMembers } from "./create-enum-dto";
@@ -39,7 +43,7 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.Float]: builders.tsNumberKeyword(),
   [ScalarType.Int]: builders.tsNumberKeyword(),
   [ScalarType.String]: builders.tsStringKeyword(),
-  [ScalarType.Json]: builders.tsUnknownKeyword(),
+  [ScalarType.Json]: builders.tsTypeReference(JSON_VALUE_ID),
 };
 const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [scalar in ScalarType]: namedTypes.Identifier | null;
@@ -49,7 +53,7 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.Float]: IS_NUMBER_ID,
   [ScalarType.Int]: IS_INT_ID,
   [ScalarType.String]: IS_STRING_ID,
-  [ScalarType.Json]: null,
+  [ScalarType.Json]: IS_JSON_ID,
 };
 export const BOOLEAN_ID = builders.identifier("Boolean");
 export const NUMBER_ID = builders.identifier("Number");
@@ -270,6 +274,9 @@ function createGraphQLFieldType(
   }
   if (prismaField.type === ScalarType.String) {
     return STRING_ID;
+  }
+  if (prismaField.type === ScalarType.Json) {
+    return GRAPHQL_JSON_OBJECT_ID;
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));

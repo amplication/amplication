@@ -18,6 +18,7 @@ import {
   IS_NUMBER_ID,
   IS_OPTIONAL_ID,
   IS_STRING_ID,
+  IS_JSON_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
 import {
@@ -33,6 +34,11 @@ import {
   ARGS_TYPE_ID,
   FIELD_ID,
 } from "./nestjs-graphql.util";
+import {
+  GRAPHQL_TYPE_JSON_MODULE,
+  GRAPHQL_JSON_OBJECT_ID,
+} from "./graphql-type-json.util";
+import { TYPE_FEST_MODULE, JSON_VALUE_ID } from "./type-fest.util";
 import { SRC_DIRECTORY } from "../../constants";
 
 export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
@@ -42,12 +48,15 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     IS_NUMBER_ID,
     IS_INT_ID,
     IS_STRING_ID,
+    IS_JSON_ID,
     IS_OPTIONAL_ID,
     IS_ENUM_ID,
     VALIDATE_NESTED_ID,
   ],
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
   [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
+  [TYPE_FEST_MODULE]: [JSON_VALUE_ID],
+  [GRAPHQL_TYPE_JSON_MODULE]: [GRAPHQL_JSON_OBJECT_ID],
   [NESTJS_GRAPHQL_MODULE]: [
     OBJECT_TYPE_ID,
     INPUT_TYPE_ID,
