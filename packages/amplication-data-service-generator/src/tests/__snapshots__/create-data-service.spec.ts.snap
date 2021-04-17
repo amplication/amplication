@@ -346,17 +346,17 @@ export type CustomerWhereInput = {
   createdAt?: Date;
   updatedAt?: Date;
   email?: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  isVip?: boolean | null;
-  birthData?: Date | null;
-  averageSale?: number | null;
-  favoriteNumber?: number | null;
-  geoLocation?: string | null;
-  comments?: string | null;
-  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization?: OrganizationWhereUniqueInput | null;
-  vipOrganization?: OrganizationWhereUniqueInput | null;
+  firstName?: string;
+  lastName?: string;
+  isVip?: boolean;
+  birthData?: Date;
+  averageSale?: number;
+  favoriteNumber?: number;
+  geoLocation?: string;
+  comments?: string;
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
+  organization?: OrganizationWhereUniqueInput;
+  vipOrganization?: OrganizationWhereUniqueInput;
 };
 ",
   "admin/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
@@ -507,7 +507,7 @@ export type OrderWhereInput = {
   updatedAt?: Date;
   customer?: CustomerWhereUniqueInput;
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
-  label?: \\"fragile\\" | null;
+  label?: \\"fragile\\";
 };
 ",
   "admin/src/api/order/OrderWhereUniqueInput.ts": "export type OrderWhereUniqueInput = {
@@ -705,8 +705,8 @@ export type UserWhereInput = {
   age?: number;
   birthDate?: Date;
   score?: number;
-  manager?: UserWhereUniqueInput | null;
-  organization?: OrganizationWhereUniqueInput | null;
+  manager?: UserWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
@@ -4728,7 +4728,7 @@ class CustomerWhereInput {
   @Field(() => String, {
     nullable: true,
   })
-  firstName?: string | null;
+  firstName?: string;
   @ApiProperty({
     required: false,
     type: String,
@@ -4738,7 +4738,7 @@ class CustomerWhereInput {
   @Field(() => String, {
     nullable: true,
   })
-  lastName?: string | null;
+  lastName?: string;
   @ApiProperty({
     required: false,
     type: Boolean,
@@ -4748,7 +4748,7 @@ class CustomerWhereInput {
   @Field(() => Boolean, {
     nullable: true,
   })
-  isVip?: boolean | null;
+  isVip?: boolean;
   @ApiProperty({
     required: false,
   })
@@ -4758,7 +4758,7 @@ class CustomerWhereInput {
   @Field(() => Date, {
     nullable: true,
   })
-  birthData?: Date | null;
+  birthData?: Date;
   @ApiProperty({
     required: false,
     type: Number,
@@ -4768,7 +4768,7 @@ class CustomerWhereInput {
   @Field(() => Number, {
     nullable: true,
   })
-  averageSale?: number | null;
+  averageSale?: number;
   @ApiProperty({
     required: false,
     type: Number,
@@ -4778,7 +4778,7 @@ class CustomerWhereInput {
   @Field(() => Number, {
     nullable: true,
   })
-  favoriteNumber?: number | null;
+  favoriteNumber?: number;
   @ApiProperty({
     required: false,
     type: String,
@@ -4788,7 +4788,7 @@ class CustomerWhereInput {
   @Field(() => String, {
     nullable: true,
   })
-  geoLocation?: string | null;
+  geoLocation?: string;
   @ApiProperty({
     required: false,
     type: String,
@@ -4798,7 +4798,7 @@ class CustomerWhereInput {
   @Field(() => String, {
     nullable: true,
   })
-  comments?: string | null;
+  comments?: string;
   @ApiProperty({
     required: false,
     enum: EnumCustomerCustomerType,
@@ -4808,7 +4808,7 @@ class CustomerWhereInput {
   @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
-  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4820,7 +4820,7 @@ class CustomerWhereInput {
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
   })
-  organization?: OrganizationWhereUniqueInput | null;
+  organization?: OrganizationWhereUniqueInput;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4832,7 +4832,7 @@ class CustomerWhereInput {
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
   })
-  vipOrganization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput;
 }
 export { CustomerWhereInput };
 ",
@@ -7083,7 +7083,7 @@ class OrderWhereInput {
   @Field(() => EnumOrderLabel, {
     nullable: true,
   })
-  label?: \\"fragile\\" | null;
+  label?: \\"fragile\\";
 }
 export { OrderWhereInput };
 ",
@@ -10197,7 +10197,7 @@ class UserWhereInput {
   @Field(() => UserWhereUniqueInput, {
     nullable: true,
   })
-  manager?: UserWhereUniqueInput | null;
+  manager?: UserWhereUniqueInput;
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -10209,7 +10209,7 @@ class UserWhereInput {
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
   })
-  organization?: OrganizationWhereUniqueInput | null;
+  organization?: OrganizationWhereUniqueInput;
   @ApiProperty({
     required: false,
     enum: EnumUserPriority,

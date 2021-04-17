@@ -318,7 +318,7 @@ export function createFieldValueTypeFromPrismaField(
   isEnum: boolean,
   isQuery: boolean
 ): TSTypeKind {
-  if (!prismaField.isRequired) {
+  if (!prismaField.isRequired && !isQuery) {
     const type = createFieldValueTypeFromPrismaField(
       field,
       {
