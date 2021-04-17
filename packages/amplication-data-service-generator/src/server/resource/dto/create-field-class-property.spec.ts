@@ -306,7 +306,13 @@ describe("createFieldValueTypeFromPrismaField", () => {
     "%s",
     (name, field, prismaField, isInput, isEnum, expected) => {
       expect(
-        createFieldValueTypeFromPrismaField(field, prismaField, isInput, isEnum)
+        createFieldValueTypeFromPrismaField(
+          field,
+          prismaField,
+          isInput,
+          isEnum,
+          false
+        )
       ).toEqual(expected);
     }
   );

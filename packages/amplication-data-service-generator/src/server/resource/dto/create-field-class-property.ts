@@ -25,7 +25,7 @@ import {
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
 import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
-import { JSON_VALUE_ID } from "./type-fest.util";
+import { JSON_VALUE_ID, JSON_NULLABLE_FILTER } from "./type-fest.util";
 
 import * as classTransformerUtil from "./class-transformer.util";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
@@ -45,6 +45,18 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.String]: builders.tsStringKeyword(),
   [ScalarType.Json]: builders.tsTypeReference(JSON_VALUE_ID),
 };
+
+const PRISMA_SCALAR_TO_QUERY_TYPE: {
+  [scalar in ScalarType]: TSTypeKind;
+} = {
+  [ScalarType.Boolean]: builders.tsBooleanKeyword(),
+  [ScalarType.DateTime]: builders.tsTypeReference(DATE_ID),
+  [ScalarType.Float]: builders.tsNumberKeyword(),
+  [ScalarType.Int]: builders.tsNumberKeyword(),
+  [ScalarType.String]: builders.tsStringKeyword(),
+  [ScalarType.Json]: builders.tsTypeReference(JSON_NULLABLE_FILTER),
+};
+
 const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [scalar in ScalarType]: namedTypes.Identifier | null;
 } = {
@@ -93,7 +105,8 @@ export function createFieldClassProperty(
     field,
     prismaField,
     isInput,
-    isEnum
+    isEnum,
+    isQuery
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
   const apiPropertyOptionsObjectExpression = builders.objectExpression([
@@ -302,7 +315,8 @@ export function createFieldValueTypeFromPrismaField(
   field: EntityField,
   prismaField: ScalarField | ObjectField,
   isInput: boolean,
-  isEnum: boolean
+  isEnum: boolean,
+  isQuery: boolean
 ): TSTypeKind {
   if (!prismaField.isRequired) {
     const type = createFieldValueTypeFromPrismaField(
@@ -312,7 +326,8 @@ export function createFieldValueTypeFromPrismaField(
         isRequired: true,
       },
       isInput,
-      isEnum
+      isEnum,
+      isQuery
     );
     return builders.tsUnionType([type, builders.tsNullKeyword()]);
   }
@@ -325,12 +340,17 @@ export function createFieldValueTypeFromPrismaField(
       field,
       itemPrismaField,
       isInput,
-      isEnum
+      isEnum,
+      isQuery
     );
     return createGenericArray(itemType);
   }
   if (prismaField.kind === FieldKind.Scalar) {
-    return PRISMA_SCALAR_TO_TYPE[prismaField.type];
+    if (isQuery) {
+      return PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type];
+    } else {
+      return PRISMA_SCALAR_TO_TYPE[prismaField.type];
+    }
   }
   if (isEnum) {
     const members = createEnumMembers(field);
