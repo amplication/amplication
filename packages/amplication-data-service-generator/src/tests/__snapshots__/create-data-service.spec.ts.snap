@@ -613,6 +613,7 @@ export type UpdateUserArgs = {
 ",
   "admin/src/api/user/User.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { JsonValue } from \\"type-fest\\";
 
 export type User = {
   username: string;
@@ -630,10 +631,12 @@ export type User = {
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
+  extendedProperties: JsonValue;
 };
 ",
   "admin/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { JsonValue } from \\"type-fest\\";
 
 export type UserCreateInput = {
   username: string;
@@ -651,6 +654,7 @@ export type UserCreateInput = {
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
+  extendedProperties: JsonValue;
 };
 ",
   "admin/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -667,6 +671,7 @@ export type UserFindUniqueArgs = {
 ",
   "admin/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { JsonValue } from \\"type-fest\\";
 
 export type UserUpdateInput = {
   username?: string;
@@ -684,10 +689,12 @@ export type UserUpdateInput = {
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
+  extendedProperties?: JsonValue;
 };
 ",
   "admin/src/api/user/UserWhereInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { JsonValue } from \\"type-fest\\";
 
 export type UserWhereInput = {
   username?: string;
@@ -703,6 +710,7 @@ export type UserWhereInput = {
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
+  extendedProperties?: JsonValue;
 };
 ",
   "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
@@ -2886,6 +2894,7 @@ export const CreateUser = (): React.ReactElement => {
           <div>
             <TextField label=\\"Location\\" name=\\"location\\" />
           </div>
+          <div />
         </Form>
       </Formik>
       <Snackbar open={isError} message={error?.response?.data?.message} />
@@ -3046,6 +3055,11 @@ const FIELDS: DataField[] = [
     title: \\"Location\\",
     sortable: false,
   },
+  {
+    name: \\"extendedProperties\\",
+    title: \\"Extended Properties\\",
+    sortable: false,
+  },
 ];
 
 export const UserList = (): React.ReactElement => {
@@ -3128,6 +3142,9 @@ export const UserList = (): React.ReactElement => {
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.location}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.extendedProperties}</>
                 </DataGridCell>
               </DataGridRow>
             );
@@ -3297,6 +3314,7 @@ export const ViewUser = (): React.ReactElement => {
         \\"priority\\",
         \\"isCurious\\",
         \\"location\\",
+        \\"extendedProperties\\",
       ]),
     [data]
   );
@@ -3399,6 +3417,7 @@ export const ViewUser = (): React.ReactElement => {
             <div>
               <TextField label=\\"Location\\" name=\\"location\\" />
             </div>
+            <div />
           </Form>
         </Formik>
       )}
@@ -3432,25 +3451,26 @@ generator client {
 }
 
 model User {
-  username       String              @unique
-  password       String
-  roles          String[]
-  id             String              @id @default(cuid())
-  name           String
-  bio            String
-  email          String
-  age            Int
-  birthDate      DateTime
-  score          Float
-  manager        User?               @relation(name: \\"employees\\", fields: [managerId], references: [id])
-  managerId      String?
-  employees      User[]              @relation(name: \\"employees\\")
-  organization   Organization?       @relation(fields: [organizationId], references: [id])
-  organizationId String?
-  interests      EnumUserInterests[]
-  priority       EnumUserPriority
-  isCurious      Boolean
-  location       String
+  username           String              @unique
+  password           String
+  roles              String[]
+  id                 String              @id @default(cuid())
+  name               String
+  bio                String
+  email              String
+  age                Int
+  birthDate          DateTime
+  score              Float
+  manager            User?               @relation(name: \\"employees\\", fields: [managerId], references: [id])
+  managerId          String?
+  employees          User[]              @relation(name: \\"employees\\")
+  organization       Organization?       @relation(fields: [organizationId], references: [id])
+  organizationId     String?
+  interests          EnumUserInterests[]
+  priority           EnumUserPriority
+  isCurious          Boolean
+  location           String
+  extendedProperties Json
 }
 
 model Order {
@@ -3634,6 +3654,7 @@ async function seed(bcryptSalt: Salt) {
     priority: EnumUserPriority.High,
     isCurious: false,
     location: \\"(32.085300, 34.781769)\\",
+    extendedProperties: false,
   };
   await client.user.upsert({
     where: { username: data.username },
@@ -8487,6 +8508,7 @@ export class OrganizationControllerBase {
         priority: true,
         isCurious: true,
         location: true,
+        extendedProperties: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -9556,6 +9578,7 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
+  IsJson,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -9563,6 +9586,8 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { JsonValue } from \\"type-fest\\";
 @ObjectType()
 class User {
   @ApiProperty({
@@ -9680,6 +9705,12 @@ class User {
   @IsString()
   @Field(() => String)
   location!: string;
+  @ApiProperty({
+    required: true,
+  })
+  @IsJson()
+  @Field(() => GraphQLJSONObject)
+  extendedProperties!: JsonValue;
 }
 export { User };
 ",
@@ -9695,6 +9726,7 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
+  IsJson,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -9702,6 +9734,8 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { JsonValue } from \\"type-fest\\";
 @InputType()
 class UserCreateInput {
   @ApiProperty({
@@ -9825,6 +9859,12 @@ class UserCreateInput {
   @IsString()
   @Field(() => String)
   location!: string;
+  @ApiProperty({
+    required: true,
+  })
+  @IsJson()
+  @Field(() => GraphQLJSONObject)
+  extendedProperties!: JsonValue;
 }
 export { UserCreateInput };
 ",
@@ -9862,6 +9902,7 @@ import {
   ValidateNested,
   IsEnum,
   IsBoolean,
+  IsJson,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -9869,6 +9910,8 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { JsonValue } from \\"type-fest\\";
 @InputType()
 class UserUpdateInput {
   @ApiProperty({
@@ -10028,6 +10071,15 @@ class UserUpdateInput {
     nullable: true,
   })
   location?: string;
+  @ApiProperty({
+    required: false,
+  })
+  @IsJson()
+  @IsOptional()
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  extendedProperties?: JsonValue;
 }
 export { UserUpdateInput };
 ",
@@ -10043,12 +10095,15 @@ import {
   ValidateNested,
   IsEnum,
   IsBoolean,
+  IsJson,
 } from \\"class-validator\\";
 
 import { Type, Transform } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { JsonValue } from \\"type-fest\\";
 @InputType()
 class UserWhereInput {
   @ApiProperty({
@@ -10185,6 +10240,15 @@ class UserWhereInput {
     nullable: true,
   })
   location?: string;
+  @ApiProperty({
+    required: false,
+  })
+  @IsJson()
+  @IsOptional()
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  extendedProperties?: JsonValue;
 }
 export { UserWhereInput };
 ",
@@ -10478,6 +10542,7 @@ export class UserControllerBase {
         priority: true,
         isCurious: true,
         location: true,
+        extendedProperties: true,
       },
     });
   }
@@ -10531,6 +10596,7 @@ export class UserControllerBase {
         priority: true,
         isCurious: true,
         location: true,
+        extendedProperties: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -10588,6 +10654,7 @@ export class UserControllerBase {
         priority: true,
         isCurious: true,
         location: true,
+        extendedProperties: true,
       },
     });
     if (result === null) {
@@ -10681,6 +10748,7 @@ export class UserControllerBase {
           priority: true,
           isCurious: true,
           location: true,
+          extendedProperties: true,
         },
       });
     } catch (error) {
@@ -10739,6 +10807,7 @@ export class UserControllerBase {
           priority: true,
           isCurious: true,
           location: true,
+          extendedProperties: true,
         },
       });
     } catch (error) {
@@ -10799,6 +10868,7 @@ export class UserControllerBase {
         priority: true,
         isCurious: true,
         location: true,
+        extendedProperties: true,
       },
     });
     return results.map((result) => permission.filter(result));
