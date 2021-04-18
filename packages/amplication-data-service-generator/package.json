@@ -64,6 +64,7 @@
     "express": "^4.17.1",
     "fast-glob": "^3.2.4",
     "formik": "^2.2.5",
+    "graphql-type-json": "^0.3.2",
     "lodash.countby": "^4.6.0",
     "lodash.flatten": "^4.4.0",
     "lodash.get": "^4.4.2",
@@ -102,6 +103,7 @@
   "devDependencies": {
     "@apollo/client": "^3.3.6",
     "@types/base-64": "^0.1.3",
+    "@types/graphql-type-json": "^0.3.2",
     "@types/jest": "^26.0.13",
     "@types/normalize-path": "^3.0.0",
     "@types/supertest": "^2.0.10",

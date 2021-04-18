@@ -219,7 +219,14 @@ export function createFieldClassProperty(
     (isInput && isOneToOneRelationField(field))
   ) {
     decorators.push(
-      createGraphQLFieldDecorator(prismaField, isEnum, field, optional, entity)
+      createGraphQLFieldDecorator(
+        prismaField,
+        isEnum,
+        field,
+        optional,
+        entity,
+        isQuery
+      )
     );
   }
   return classProperty(
@@ -237,11 +244,12 @@ function createGraphQLFieldDecorator(
   isEnum: boolean,
   field: EntityField,
   optional: boolean,
-  entity: Entity
+  entity: Entity,
+  isQuery: boolean
 ): namedTypes.Decorator {
   const type = builders.arrowFunctionExpression(
     [],
-    createGraphQLFieldType(prismaField, field, isEnum, entity)
+    createGraphQLFieldType(prismaField, field, isEnum, entity, isQuery)
   );
   return builders.decorator(
     builders.callExpression(
@@ -262,14 +270,16 @@ function createGraphQLFieldType(
   prismaField: ScalarField | ObjectField,
   field: EntityField,
   isEnum: boolean,
-  entity: Entity
+  entity: Entity,
+  isQuery: boolean
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (prismaField.isList) {
     const itemType = createGraphQLFieldType(
       { ...prismaField, isList: false },
       field,
       isEnum,
-      entity
+      entity,
+      isQuery
     );
     return builders.arrayExpression([itemType]);
   }
@@ -289,7 +299,11 @@ function createGraphQLFieldType(
     return STRING_ID;
   }
   if (prismaField.type === ScalarType.Json) {
-    return GRAPHQL_JSON_OBJECT_ID;
+    if (isQuery) {
+      return JSON_NULLABLE_FILTER;
+    } else {
+      return GRAPHQL_JSON_OBJECT_ID;
+    }
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));

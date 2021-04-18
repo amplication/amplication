@@ -10102,7 +10102,6 @@ import { Type, Transform } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
 import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
 @InputType()
 class UserWhereInput {
@@ -10245,7 +10244,7 @@ class UserWhereInput {
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => JsonNullableFilter, {
     nullable: true,
   })
   extendedProperties?: JsonNullableFilter;
@@ -11448,11 +11447,24 @@ export class UserService extends UserServiceBase {
   "server/src/util/JsonNullableFilter.ts": "// @ts-ignore
 // eslint-disable-next-line
 import { JsonValue } from \\"type-fest\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { GraphQLJSONObject } from \\"graphql-type-json\\";
 
-export type JsonNullableFilter = {
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class JsonNullableFilter {
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
   equals?: JsonValue | null;
+
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
   not?: JsonValue | null;
-};
+}
 ",
 }
 `;
