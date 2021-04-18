@@ -107,7 +107,7 @@ jobs:
             amplication/amplication:${{ github.sha }}
             gcr.io/amplication/amplication:${{ github.sha }}
       - uses: hashicorp/setup-terraform@v1
-      - run: terraform init -lock-timeout=1200s
+      - run: terraform init
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         working-directory: terraform/envs/dev
