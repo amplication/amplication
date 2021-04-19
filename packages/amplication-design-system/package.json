@@ -1,6 +1,6 @@
 {
   "name": "@amplication/design-system",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "main": "dist/index.js",
   "scripts": {
     "storybook": "start-storybook -p 6006",

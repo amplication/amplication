@@ -7,29 +7,26 @@ Amplication CLI
 [![Downloads/week](https://img.shields.io/npm/dw/@amplication/cli.svg)](https://npmjs.org/package/@amplication/cli)
 
 <!-- toc -->
-
-- [@amplication/cli](#amplicationcli)
-- [Usage](#usage)
-- [Setup](#setup)
-- [Commands](#commands)
+* [@amplication/cli](#amplicationcli)
+* [Usage](#usage)
+* [Setup](#setup)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @amplication/cli
 $ amp COMMAND
 running command...
 $ amp (-v|--version|version)
-@amplication/cli/0.1.4 win32-x64 node-v12.16.1
+@amplication/cli/0.5.3 darwin-x64 node-v15.13.0
 $ amp --help [COMMAND]
 USAGE
   $ amp COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Setup
@@ -56,26 +53,25 @@ $ amp config:set AMP_SERVER_URL http://localhost:3000
 # Commands
 
 <!-- commands -->
-
-- [`amp apps`](#amp-apps)
-- [`amp apps:commit`](#amp-appscommit)
-- [`amp apps:create NAME [DESCRIPTION]`](#amp-appscreate-name-description)
-- [`amp apps:current`](#amp-appscurrent)
-- [`amp apps:info`](#amp-appsinfo)
-- [`amp apps:update`](#amp-appsupdate)
-- [`amp auth TOKEN`](#amp-auth-token)
-- [`amp config`](#amp-config)
-- [`amp config:get PROPERTY`](#amp-configget-property)
-- [`amp config:set PROPERTY VALUE`](#amp-configset-property-value)
-- [`amp config:unset PROPERTY`](#amp-configunset-property)
-- [`amp entities`](#amp-entities)
-- [`amp entities:create DISPLAYNAME`](#amp-entitiescreate-displayname)
-- [`amp entities:fields`](#amp-entitiesfields)
-- [`amp entities:fields:create DISPLAYNAME`](#amp-entitiesfieldscreate-displayname)
-- [`amp entities:fields:update`](#amp-entitiesfieldsupdate)
-- [`amp entities:info`](#amp-entitiesinfo)
-- [`amp entities:update`](#amp-entitiesupdate)
-- [`amp help [COMMAND]`](#amp-help-command)
+* [`amp apps`](#amp-apps)
+* [`amp apps:commit`](#amp-appscommit)
+* [`amp apps:create NAME [DESCRIPTION]`](#amp-appscreate-name-description)
+* [`amp apps:current`](#amp-appscurrent)
+* [`amp apps:info`](#amp-appsinfo)
+* [`amp apps:update`](#amp-appsupdate)
+* [`amp auth TOKEN`](#amp-auth-token)
+* [`amp config`](#amp-config)
+* [`amp config:get PROPERTY`](#amp-configget-property)
+* [`amp config:set PROPERTY VALUE`](#amp-configset-property-value)
+* [`amp config:unset PROPERTY`](#amp-configunset-property)
+* [`amp entities`](#amp-entities)
+* [`amp entities:create DISPLAYNAME`](#amp-entitiescreate-displayname)
+* [`amp entities:fields`](#amp-entitiesfields)
+* [`amp entities:fields:create DISPLAYNAME`](#amp-entitiesfieldscreate-displayname)
+* [`amp entities:fields:update`](#amp-entitiesfieldsupdate)
+* [`amp entities:info`](#amp-entitiesinfo)
+* [`amp entities:update`](#amp-entitiesupdate)
+* [`amp help [COMMAND]`](#amp-help-command)
 
 ## `amp apps`
 
@@ -102,6 +98,8 @@ EXAMPLES
   amp apps --format=table --columns=id,name
 ```
 
+_See code: [src/commands/apps/index.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/apps/index.ts)_
+
 ## `amp apps:commit`
 
 commit the pending changes in the app
@@ -126,6 +124,8 @@ OPTIONS
 EXAMPLE
   amp apps:commit --message "adding customer entity"
 ```
+
+_See code: [src/commands/apps/commit.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/apps/commit.ts)_
 
 ## `amp apps:create NAME [DESCRIPTION]`
 
@@ -155,6 +155,8 @@ EXAMPLE
   amp apps:create "my cool app" "my app description" --set-current
 ```
 
+_See code: [src/commands/apps/create.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/apps/create.ts)_
+
 ## `amp apps:current`
 
 set the current app
@@ -178,6 +180,8 @@ OPTIONS
 EXAMPLE
   amp apps:current -a ckm1w4vy857869go3nsw4mk2ay
 ```
+
+_See code: [src/commands/apps/current.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/apps/current.ts)_
 
 ## `amp apps:info`
 
@@ -203,6 +207,8 @@ EXAMPLES
   amp apps:info
   amp apps:info -a ckm1w4vy857869go3nsw4mk2ay
 ```
+
+_See code: [src/commands/apps/info.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/apps/info.ts)_
 
 ## `amp apps:update`
 
@@ -232,12 +238,16 @@ EXAMPLES
   amp apps:update --name "my new name" --description "my new description"
 ```
 
+_See code: [src/commands/apps/update.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/apps/update.ts)_
+
 ## `amp auth TOKEN`
 
 ```
 USAGE
   $ amp auth TOKEN
 ```
+
+_See code: [src/commands/auth.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/auth.ts)_
 
 ## `amp config`
 
@@ -250,6 +260,8 @@ USAGE
 EXAMPLE
   amp config
 ```
+
+_See code: [src/commands/config/index.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/config/index.ts)_
 
 ## `amp config:get PROPERTY`
 
@@ -267,6 +279,8 @@ EXAMPLES
   amp config:get AMP_SERVER_URL
   amp config:get AMP_OUTPUT_FORMAT
 ```
+
+_See code: [src/commands/config/get.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/config/get.ts)_
 
 ## `amp config:set PROPERTY VALUE`
 
@@ -286,6 +300,8 @@ EXAMPLES
   amp config:set AMP_OUTPUT_FORMAT styledJSON
 ```
 
+_See code: [src/commands/config/set.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/config/set.ts)_
+
 ## `amp config:unset PROPERTY`
 
 unset a property value
@@ -300,6 +316,8 @@ ARGUMENTS
 EXAMPLE
   amp config:unset AMP_CURRENT_APP
 ```
+
+_See code: [src/commands/config/unset.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/config/unset.ts)_
 
 ## `amp entities`
 
@@ -326,6 +344,8 @@ EXAMPLES
   amp entities -a ckm1w4vy857869go3nsw4mk2ay
   amp entities --format=table
 ```
+
+_See code: [src/commands/entities/index.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/entities/index.ts)_
 
 ## `amp entities:create DISPLAYNAME`
 
@@ -360,6 +380,8 @@ EXAMPLES
   amp entities:create Customer
 ```
 
+_See code: [src/commands/entities/create.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/entities/create.ts)_
+
 ## `amp entities:fields`
 
 list fields for an entity
@@ -385,6 +407,8 @@ EXAMPLES
   amp entities:fields -e ckm1wl4ru58969go3n3mt2zkg2
   amp entities:fields --format=table
 ```
+
+_See code: [src/commands/entities/fields/index.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/entities/fields/index.ts)_
 
 ## `amp entities:fields:create DISPLAYNAME`
 
@@ -415,6 +439,8 @@ EXAMPLES
   amp entities:fields:create "Start Date" -e ckm1wl4ru58969go3n3mt2zkg2
   amp entities:fields:create "Start Date"
 ```
+
+_See code: [src/commands/entities/fields/create.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/entities/fields/create.ts)_
 
 ## `amp entities:fields:update`
 
@@ -448,6 +474,8 @@ EXAMPLES
   amp entities:fields:update --no-required
 ```
 
+_See code: [src/commands/entities/fields/update.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/entities/fields/update.ts)_
+
 ## `amp entities:info`
 
 show detailed information for an entity
@@ -472,6 +500,8 @@ EXAMPLES
   amp entities:info
   amp entities:info -e ckm1wl4ru58969go3n3mt2zkg2
 ```
+
+_See code: [src/commands/entities/info.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/entities/info.ts)_
 
 ## `amp entities:update`
 
@@ -499,9 +529,11 @@ OPTIONS
 
 EXAMPLES
   amp entities:update --name="my new entity name"
-  amp entities:update -e ckm1wl4ru58969go3n3mt2zkg2 --name "my new entity name" --description "my new entity
+  amp entities:update -e ckm1wl4ru58969go3n3mt2zkg2 --name "my new entity name" --description "my new entity 
   description"
 ```
+
+_See code: [src/commands/entities/update.ts](https://github.com/amplication/amplication/blob/v0.5.3/src/commands/entities/update.ts)_
 
 ## `amp help [COMMAND]`
 
@@ -519,5 +551,4 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
-
 <!-- commandsstop -->
