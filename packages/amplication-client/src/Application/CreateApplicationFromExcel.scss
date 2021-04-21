@@ -6,4 +6,21 @@
   flex-direction: column;
   justify-content: stretch;
   align-items: stretch;
+
+  &__fields {
+    margin-left: var(--double-spacing);
+
+    &__field {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+
+      > * {
+        flex: 1;
+        max-width: 200px;
+        margin-right: var(--default-spacing);
+      }
+    }
+  }
 }

@@ -5,7 +5,7 @@ import { getSchemaForDataType } from "@amplication/data";
 import * as models from "../models";
 import { SelectField, SelectFieldProps } from "@amplication/design-system";
 
-const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL_AND_ICON)
+export const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL_AND_ICON)
   .filter(
     ([value, content]) => !SYSTEM_DATA_TYPES.has(value as models.EnumDataType)
   )
