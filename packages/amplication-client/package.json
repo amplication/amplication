@@ -58,6 +58,7 @@
     "react-device-detect": "^1.13.1",
     "react-diff-viewer": "^3.1.1",
     "react-dom": "^16.14.0",
+    "react-dropzone": "^11.3.2",
     "react-hotkeys": "^2.0.0",
     "react-lazylog": "^4.5.3",
     "react-router-dom": "^5.2.0",
@@ -71,6 +72,7 @@
     "styled-components": "^5.1.1",
     "typescript": "~3.7.2",
     "use-debounce": "^3.4.3",
+    "xlsx": "^0.16.9",
     "yaml": "^1.10.0"
   },
   "scripts": {

@@ -65,6 +65,10 @@ function Applications() {
                   <Icon icon="plus" />
                   Create New App
                 </Link>
+                <Link to="/import-from-excel" className="applications__new-app">
+                  <Icon icon="plus" />
+                  Start from Excel file
+                </Link>
 
                 {data?.apps.map((app) => {
                   return <ApplicationCard key={app.id} app={app} />;
