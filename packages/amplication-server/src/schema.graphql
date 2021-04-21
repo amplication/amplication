@@ -83,6 +83,7 @@ input AppCreateWithEntitiesEntityInput {
 
 input AppCreateWithEntitiesFieldInput {
   name: String!
+  dataType: EnumDataType
 }
 
 input AppCreateWithEntitiesInput {
@@ -560,6 +561,7 @@ type EntityField {
 
 input EntityFieldCreateByDisplayNameInput {
   displayName: String!
+  dataType: EnumDataType
   entity: WhereParentIdInput!
 }
 

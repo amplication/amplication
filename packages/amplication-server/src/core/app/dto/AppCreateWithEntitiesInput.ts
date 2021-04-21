@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { AppCreateInput } from './AppCreateInput';
+import { EnumDataType } from 'src/enums/EnumDataType';
 
 @InputType({
   isAbstract: true
@@ -9,6 +10,12 @@ export class AppCreateWithEntitiesFieldInput {
     nullable: false
   })
   name!: string;
+
+  @Field(() => EnumDataType, {
+    nullable: true,
+    description: undefined
+  })
+  dataType?: keyof typeof EnumDataType | null;
 }
 
 @InputType({

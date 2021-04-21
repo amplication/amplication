@@ -219,7 +219,8 @@ export class AppService {
                   id: newEntity.id
                 }
               },
-              displayName: entityField.name
+              displayName: entityField.name,
+              dataType: entityField.dataType
             }
           },
           user

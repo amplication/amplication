@@ -109,6 +109,22 @@ export type AppCreateInput = {
   color?: Maybe<Scalars['String']>;
 };
 
+export type AppCreateWithEntitiesEntityInput = {
+  name: Scalars['String'];
+  fields: Array<AppCreateWithEntitiesFieldInput>;
+};
+
+export type AppCreateWithEntitiesFieldInput = {
+  name: Scalars['String'];
+  dataType?: Maybe<EnumDataType>;
+};
+
+export type AppCreateWithEntitiesInput = {
+  app: AppCreateInput;
+  entities: Array<AppCreateWithEntitiesEntityInput>;
+  commitMessage: Scalars['String'];
+};
+
 export type AppEnableSyncWithGithubRepoInput = {
   /** The full name of the repo in the format org-name/repo-name */
   githubRepo: Scalars['String'];
@@ -616,6 +632,7 @@ export type EntityField = {
 
 export type EntityFieldCreateByDisplayNameInput = {
   displayName: Scalars['String'];
+  dataType?: Maybe<EnumDataType>;
   entity: WhereParentIdInput;
 };
 
@@ -1123,6 +1140,7 @@ export type Mutation = {
   createBuild: Build;
   createDeployment: Deployment;
   createApp: App;
+  createAppWithEntities: App;
   deleteApp?: Maybe<App>;
   updateApp?: Maybe<App>;
   commit?: Maybe<Commit>;
@@ -1252,6 +1270,10 @@ export type MutationCreateDeploymentArgs = {
 
 export type MutationCreateAppArgs = {
   data: AppCreateInput;
+};
+
+export type MutationCreateAppWithEntitiesArgs = {
+  data: AppCreateWithEntitiesInput;
 };
 
 export type MutationDeleteAppArgs = {
