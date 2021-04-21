@@ -72,9 +72,12 @@ Amplication Data Service Generator is the component that generates the code of a
 
 To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
 
-## Alpha version
+## Beta version
 
-Please note that Amplication is currently in alpha version. <b>This means that any app data hosted on our cloud can get reset at any time.</b> At this point if you want to use your app in a production environment, you'll need to download the app as a Docker container and deploy on your own cloud service.
+Amplication is currently in Beta version. It means that we are still working on essential features like production-ready hosting, migrations, and stability to our console.
+
+How does it affect you? Well...., it mostly doesn't.<br />
+Every app generated using Amplication platform contains popular, documented, secured, and supported production-ready open source components & packages. Your app is stable, scalable, and production-ready you can deploy and rely on. You can read more about the generated app and its stack here https://docs.amplication.com/docs/getting-started
 
 # Support
 
