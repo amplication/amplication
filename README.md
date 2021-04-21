@@ -76,7 +76,7 @@ To use this package as a library or as a CLI with other projects, follow the ins
 
 Amplication is currently in Beta version. It means that we are still working on essential features like production-ready hosting, migrations, and stability to our console.
 
-How does it effect you? Well...., it actually doesn't.<br />
+How does it affect you? Well...., it mostly doesn't.<br />
 Every app generated using Amplication platform contains popular, documented, secured, and supported production-ready open source components & packages. Your app is stable, scalable, and production-ready you can deploy and rely on.
 
 # Support
