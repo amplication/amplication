@@ -44,7 +44,7 @@ Build business applications with:
 
 See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
 
-[Watch this video](https://youtu.be/tKGeLXoPr94) for a quick reacap of everything you get with Amplication.
+[Watch this video](https://youtu.be/tKGeLXoPr94) for a quick recap of everything you get with Amplication.
 
 ## Development
 
