@@ -1,11 +1,21 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { isEmpty, forEach } from "lodash";
+import { gql, useMutation } from "@apollo/client";
 import * as XLSX from "xlsx";
+import { Icon } from "@rmwc/icon";
 import { useDropzone } from "react-dropzone";
 import * as models from "../models";
 import PageContent from "../Layout/PageContent";
 import MainLayout from "../Layout/MainLayout";
 import "./CreateApplicationFromExcel.scss";
+import { useHistory } from "react-router-dom";
+import { useTracking } from "../util/analytics";
+import { GET_APPLICATIONS } from "./Applications";
+import { formatError } from "../util/error";
+import { Snackbar } from "@rmwc/snackbar";
+import { Button, EnumButtonStyle } from "../Components/Button";
+import { CircularProgress } from "@rmwc/circular-progress";
+import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";
 
 type ColumnKey = {
   name: string;
@@ -22,12 +32,75 @@ type ImportField = {
   importable: boolean;
 };
 
+type TData = {
+  createAppWithEntities: models.App;
+};
+
 const CLASS_NAME = "create-application-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
 export function CreateApplicationFromExcel() {
   const [importList, setImportList] = React.useState<ImportField[]>([]);
   const [fileName, setFileName] = React.useState<string>("");
+
+  const { trackEvent } = useTracking();
+
+  const history = useHistory();
+  const [createAppWithEntities, { loading, data, error }] = useMutation<TData>(
+    CREATE_APP_WITH_ENTITIES,
+    {
+      onCompleted: (data) => {
+        trackEvent({
+          eventName: "createAppFromFile",
+          appName: data.createAppWithEntities.name,
+        });
+      },
+      update(cache, { data }) {
+        if (!data) return;
+        const queryData = cache.readQuery<{ apps: Array<models.App> }>({
+          query: GET_APPLICATIONS,
+        });
+        if (queryData === null) {
+          return;
+        }
+        cache.writeQuery({
+          query: GET_APPLICATIONS,
+          data: {
+            apps: queryData.apps.concat([data.createAppWithEntities]),
+          },
+        });
+      },
+    }
+  );
+
+  const handleSubmit = useCallback(() => {
+    const data: models.AppCreateWithEntitiesInput = {
+      app: {
+        name: "imported app333",
+        description: "description",
+      },
+      commitMessage: "my commit message",
+      entities: [
+        {
+          name: "excel file",
+          fields: importList.map((field) => ({
+            name: field.fieldName,
+            dataType: field.fieldType,
+          })),
+        },
+      ],
+    };
+
+    createAppWithEntities({ variables: { data } }).catch(console.error);
+  }, [createAppWithEntities, importList]);
+
+  const errorMessage = formatError(error);
+
+  useEffect(() => {
+    if (data) {
+      history.push(`/${data.createAppWithEntities.id}`);
+    }
+  }, [history, data]);
 
   const buildImportList = (
     data: WorksheetData,
@@ -83,7 +156,6 @@ export function CreateApplicationFromExcel() {
       const jsonData = XLSX.utils.sheet_to_json(ws, {
         header: 1,
         blankrows: false,
-        raw: true,
       });
 
       const [headers, ...rest] = jsonData;
@@ -116,8 +188,21 @@ export function CreateApplicationFromExcel() {
             )}
           </div>
           <h3>{fileName}</h3>
-
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            disabled={loading}
+            type="button"
+            onClick={handleSubmit}
+          >
+            Import
+          </Button>
+          {loading && (
+            <div className={`${CLASS_NAME}__loader`}>
+              <CircularProgress />
+            </div>
+          )}
           <ShowFields fields={importList} />
+          <Snackbar open={Boolean(error)} message={errorMessage} />
         </PageContent>
       </MainLayout.Content>
     </MainLayout>
@@ -129,8 +214,11 @@ function ShowFields({ fields }: { fields: ImportField[] }) {
     <div>
       {fields.map((field, index) => (
         <div key={index}>
-          <div>Field Name: {field.fieldName}</div>
-          <div>Data Type: {field.fieldType}</div>
+          <h3>
+            <Icon icon={DATA_TYPE_TO_LABEL_AND_ICON[field.fieldType].icon} />{" "}
+            {field.fieldName}
+          </h3>
+          <div>{DATA_TYPE_TO_LABEL_AND_ICON[field.fieldType].label}</div>
           <div>
             Sample Data:{" "}
             {field.sampleData.map((sampleItem) => `${sampleItem}, `)}
@@ -194,3 +282,13 @@ function getColumnSampleData(
   });
   return results;
 }
+
+const CREATE_APP_WITH_ENTITIES = gql`
+  mutation createApp($data: AppCreateWithEntitiesInput!) {
+    createAppWithEntities(data: $data) {
+      id
+      name
+      description
+    }
+  }
+`;
