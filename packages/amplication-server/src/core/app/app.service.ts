@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'nestjs-prisma';
 import * as semver from 'semver';
+import pluralize from 'pluralize';
+import { pascalCase } from 'pascal-case';
 import { isEmpty } from 'lodash';
 import { validateHTMLColorHex } from 'validate-color';
 import { App, User, Commit } from 'src/models';
@@ -25,7 +27,8 @@ import {
   FindAvailableGithubReposArgs,
   AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
-  AppValidationErrorTypes
+  AppValidationErrorTypes,
+  AppCreateWithEntitiesInput
 } from './dto';
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
@@ -35,6 +38,7 @@ import { EnvironmentService } from '../environment/environment.service';
 import { InvalidColorError } from './InvalidColorError';
 import { GithubService } from '../github/github.service';
 import { GithubRepo } from '../github/dto/githubRepo';
+import { ReservedEntityNameError } from './ReservedEntityNameError';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -149,6 +153,88 @@ export class AppService {
           }
         },
         message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
+        user: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
+
+    return app;
+  }
+
+  /**
+   * Create an app with entities and field in one transaction, based only on entities and fields names
+   * @param user the user to associate the created app with
+   */
+  async createAppWithEntities(
+    data: AppCreateWithEntitiesInput,
+    user: User
+  ): Promise<App> {
+    if (
+      data.entities.find(
+        entity => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
+      )
+    ) {
+      throw new ReservedEntityNameError(USER_ENTITY_NAME);
+    }
+
+    const app = await this.createApp(
+      {
+        data: data.app
+      },
+      user
+    );
+
+    for (const entity of data.entities) {
+      const displayName = entity.name.trim();
+
+      const pluralDisplayName = pluralize(displayName);
+      const singularDisplayName = pluralize.singular(displayName);
+      const name = pascalCase(singularDisplayName);
+
+      const newEntity = await this.entityService.createOneEntity(
+        {
+          data: {
+            app: {
+              connect: {
+                id: app.id
+              }
+            },
+            displayName: displayName,
+            name: name,
+            pluralDisplayName: pluralDisplayName
+          }
+        },
+        user
+      );
+
+      for (const entityField of entity.fields) {
+        await this.entityService.createFieldByDisplayName(
+          {
+            data: {
+              entity: {
+                connect: {
+                  id: newEntity.id
+                }
+              },
+              displayName: entityField.name
+            }
+          },
+          user
+        );
+      }
+    }
+
+    await this.commit({
+      data: {
+        app: {
+          connect: {
+            id: app.id
+          }
+        },
+        message: data.commitMessage,
         user: {
           connect: {
             id: user.id
