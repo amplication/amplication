@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { isEmpty, forEach } from "lodash";
+import { FieldArray, Formik } from "formik";
+import { Form } from "../Components/Form";
 import { gql, useMutation } from "@apollo/client";
 import * as XLSX from "xlsx";
-import { Icon } from "@rmwc/icon";
 import { useDropzone } from "react-dropzone";
 import * as models from "../models";
 import PageContent from "../Layout/PageContent";
@@ -15,7 +16,9 @@ import { formatError } from "../util/error";
 import { Snackbar } from "@rmwc/snackbar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { CircularProgress } from "@rmwc/circular-progress";
-import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";
+import { DisplayNameField } from "../Components/DisplayNameField";
+import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
+import { SelectField } from "@amplication/design-system";
 
 type ColumnKey = {
   name: string;
@@ -73,7 +76,7 @@ export function CreateApplicationFromExcel() {
     }
   );
 
-  const handleSubmit = useCallback(() => {
+  const initialValues = useMemo(() => {
     const data: models.AppCreateWithEntitiesInput = {
       app: {
         name: "imported app333",
@@ -91,8 +94,15 @@ export function CreateApplicationFromExcel() {
       ],
     };
 
-    createAppWithEntities({ variables: { data } }).catch(console.error);
-  }, [createAppWithEntities, importList]);
+    return data;
+  }, [importList]);
+
+  const handleSubmit = useCallback(
+    (data: models.AppCreateWithEntitiesInput) => {
+      createAppWithEntities({ variables: { data } }).catch(console.error);
+    },
+    [createAppWithEntities]
+  );
 
   const errorMessage = formatError(error);
 
@@ -188,45 +198,82 @@ export function CreateApplicationFromExcel() {
             )}
           </div>
           <h3>{fileName}</h3>
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            disabled={loading}
-            type="button"
-            onClick={handleSubmit}
-          >
-            Import
-          </Button>
+
           {loading && (
             <div className={`${CLASS_NAME}__loader`}>
               <CircularProgress />
             </div>
           )}
-          <ShowFields fields={importList} />
+          <Formik
+            initialValues={initialValues}
+            enableReinitialize
+            onSubmit={handleSubmit}
+            render={({ values }) => (
+              <Form>
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  disabled={loading}
+                  type="submit"
+                >
+                  Import
+                </Button>
+                <DisplayNameField
+                  name="app.name"
+                  label="Application Name"
+                  required
+                />
+
+                <FieldArray
+                  name="entities"
+                  render={(arrayHelpers) => (
+                    <div className={`${CLASS_NAME}__entities`}>
+                      {values.entities.map((entity, index) => (
+                        <div key={`entity_${index}`}>
+                          <DisplayNameField
+                            name={`entities.${index}.name`}
+                            label="Entity Name"
+                            required
+                          />
+                          <FieldArray
+                            name={`entities.${index}.fields`}
+                            render={(arrayHelpers) => (
+                              <div className={`${CLASS_NAME}__fields`}>
+                                {values.entities[index].fields.map(
+                                  (field, fieldIndex) => (
+                                    <div
+                                      key={`entity_${index}_field_${fieldIndex}`}
+                                      className={`${CLASS_NAME}__fields__field`}
+                                    >
+                                      <DisplayNameField
+                                        name={`entities.${index}.fields.${fieldIndex}.name`}
+                                        label="Field Name"
+                                        required
+                                      />
+
+                                      <SelectField
+                                        label="Data Type"
+                                        name={`entities.${index}.fields.${fieldIndex}.dataType`}
+                                        options={DATA_TYPE_OPTIONS}
+                                      />
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                />
+              </Form>
+            )}
+          />
+
           <Snackbar open={Boolean(error)} message={errorMessage} />
         </PageContent>
       </MainLayout.Content>
     </MainLayout>
-  );
-}
-
-function ShowFields({ fields }: { fields: ImportField[] }) {
-  return (
-    <div>
-      {fields.map((field, index) => (
-        <div key={index}>
-          <h3>
-            <Icon icon={DATA_TYPE_TO_LABEL_AND_ICON[field.fieldType].icon} />{" "}
-            {field.fieldName}
-          </h3>
-          <div>{DATA_TYPE_TO_LABEL_AND_ICON[field.fieldType].label}</div>
-          <div>
-            Sample Data:{" "}
-            {field.sampleData.map((sampleItem) => `${sampleItem}, `)}
-          </div>
-          <br />
-        </div>
-      ))}
-    </div>
   );
 }
 
