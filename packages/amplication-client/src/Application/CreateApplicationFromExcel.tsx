@@ -50,6 +50,40 @@ export function CreateApplicationFromExcel() {
   const { trackEvent } = useTracking();
 
   const history = useHistory();
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const reader = new FileReader();
+    const rABS = !!reader.readAsBinaryString;
+    reader.onload = () => {
+      setFileName(acceptedFiles[0].name);
+      const wb = XLSX.read(reader.result, {
+        type: rABS ? "binary" : "array",
+      });
+      /* Get first worksheet */
+      const worksheetName = wb.SheetNames[0];
+      const ws = wb.Sheets[worksheetName];
+      /* Convert array of arrays */
+      const jsonData = XLSX.utils.sheet_to_json(ws, {
+        header: 1,
+        blankrows: false,
+      });
+
+      const [headers, ...rest] = jsonData;
+
+      const columns = generateColumnKeys(ws["!ref"]);
+      buildImportList(rest as WorksheetData, headers as string[], columns);
+    };
+
+    // read file contents
+    acceptedFiles.forEach((file) => reader.readAsBinaryString(file));
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: SheetAcceptedFormats,
+    maxFiles: 1,
+    onDrop,
+  });
+
   const [createAppWithEntities, { loading, data, error }] = useMutation<TData>(
     CREATE_APP_WITH_ENTITIES,
     {
@@ -100,7 +134,7 @@ export function CreateApplicationFromExcel() {
     };
 
     return data;
-  }, [importList]);
+  }, [importList, fileName]);
 
   const handleSubmit = useCallback(
     (data: models.AppCreateWithEntitiesInput) => {
@@ -155,39 +189,6 @@ export function CreateApplicationFromExcel() {
     }
     setImportList(fields);
   };
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const reader = new FileReader();
-    const rABS = !!reader.readAsBinaryString;
-    reader.onload = () => {
-      setFileName(acceptedFiles[0].name);
-      const wb = XLSX.read(reader.result, {
-        type: rABS ? "binary" : "array",
-      });
-      /* Get first worksheet */
-      const worksheetName = wb.SheetNames[0];
-      const ws = wb.Sheets[worksheetName];
-      /* Convert array of arrays */
-      const jsonData = XLSX.utils.sheet_to_json(ws, {
-        header: 1,
-        blankrows: false,
-      });
-
-      const [headers, ...rest] = jsonData;
-
-      const columns = generateColumnKeys(ws["!ref"]);
-      buildImportList(rest as WorksheetData, headers as string[], columns);
-    };
-
-    // read file contents
-    acceptedFiles.forEach((file) => reader.readAsBinaryString(file));
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: SheetAcceptedFormats,
-    maxFiles: 1,
-    onDrop,
-  });
 
   return (
     <MainLayout>
