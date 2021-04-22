@@ -1,11 +1,47 @@
 @import "../style/index.scss";
 
+$max-width: 700px;
+$dropzone-height: 250px;
+
 .create-application-from-excel {
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: stretch;
   align-items: stretch;
+
+  &__message {
+    @include body1;
+    line-height: 1.5;
+    color: var(--black80);
+    margin-bottom: var(--triple-spacing);
+    max-width: $max-width;
+  }
+
+  &__dropzone {
+    @include body1;
+    height: $dropzone-height;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--double-spacing);
+
+    border-radius: var(--default-border-radius);
+    border: $border-black90;
+    border-style: dashed;
+    background-color: var(--black10);
+    color: var(--black80);
+    outline: none;
+    transition: border 0.1s ease-in-out;
+    cursor: pointer;
+
+    &:hover,
+    &--active {
+      border-color: var(--primary);
+    }
+  }
 
   &__fields {
     margin-left: var(--double-spacing);

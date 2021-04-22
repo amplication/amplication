@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react";
+import classNames from "classnames";
 import { isEmpty, forEach } from "lodash";
 import { FieldArray, Formik } from "formik";
 import { Form } from "../Components/Form";
@@ -44,7 +45,7 @@ const MAX_SAMPLE_DATA = 3;
 
 export function CreateApplicationFromExcel() {
   const [importList, setImportList] = React.useState<ImportField[]>([]);
-  const [fileName, setFileName] = React.useState<string>("");
+  const [fileName, setFileName] = React.useState<string | null>(null);
 
   const { trackEvent } = useTracking();
 
@@ -76,16 +77,20 @@ export function CreateApplicationFromExcel() {
     }
   );
 
+  const clearSelectedFile = useCallback(() => {
+    setFileName(null);
+  }, [setFileName]);
+
   const initialValues = useMemo(() => {
     const data: models.AppCreateWithEntitiesInput = {
       app: {
-        name: "imported app333",
-        description: "description",
+        name: fileName || "",
+        description: fileName || "",
       },
-      commitMessage: "my commit message",
+      commitMessage: `Import schema from ${fileName}`,
       entities: [
         {
-          name: "excel file",
+          name: fileName || "",
           fields: importList.map((field) => ({
             name: field.fieldName,
             dataType: field.fieldType,
@@ -189,87 +194,123 @@ export function CreateApplicationFromExcel() {
       <MainLayout.Menu />
       <MainLayout.Content>
         <PageContent className={CLASS_NAME}>
-          <div {...getRootProps()}>
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <p>Drop the files here ...</p>
-            ) : (
-              <p>Drag 'n' drop some files here, or click to select files</p>
-            )}
+          <div className={`${CLASS_NAME}__header`}>
+            <h2>Import schema from excel</h2>
+
+            <span className="spacer" />
           </div>
-          <h3>{fileName}</h3>
 
-          {loading && (
-            <div className={`${CLASS_NAME}__loader`}>
-              <CircularProgress />
-            </div>
-          )}
-          <Formik
-            initialValues={initialValues}
-            enableReinitialize
-            onSubmit={handleSubmit}
-            render={({ values }) => (
-              <Form>
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={loading}
-                  type="submit"
-                >
-                  Import
-                </Button>
-                <DisplayNameField
-                  name="app.name"
-                  label="Application Name"
-                  required
-                />
+          {isEmpty(fileName) ? (
+            <>
+              <div className={`${CLASS_NAME}__message`}>
+                Start building your application from an existing schema. Just
+                upload an excel or CSV file to import its schema, and generate
+                your node.JS application source code
+              </div>
+              <div
+                {...getRootProps()}
+                className={classNames(`${CLASS_NAME}__dropzone`, {
+                  [`${CLASS_NAME}__dropzone--active`]: isDragActive,
+                })}
+              >
+                <input {...getInputProps()} />
+                {isDragActive ? (
+                  <p>Drop the file here ...</p>
+                ) : (
+                  <p>Drag and drop a file here, or click to select a file</p>
+                )}
+              </div>
 
-                <FieldArray
-                  name="entities"
-                  render={(arrayHelpers) => (
-                    <div className={`${CLASS_NAME}__entities`}>
-                      {values.entities.map((entity, index) => (
-                        <div key={`entity_${index}`}>
-                          <DisplayNameField
-                            name={`entities.${index}.name`}
-                            label="Entity Name"
-                            required
-                          />
-                          <FieldArray
-                            name={`entities.${index}.fields`}
-                            render={(arrayHelpers) => (
-                              <div className={`${CLASS_NAME}__fields`}>
-                                {values.entities[index].fields.map(
-                                  (field, fieldIndex) => (
-                                    <div
-                                      key={`entity_${index}_field_${fieldIndex}`}
-                                      className={`${CLASS_NAME}__fields__field`}
-                                    >
-                                      <DisplayNameField
-                                        name={`entities.${index}.fields.${fieldIndex}.name`}
-                                        label="Field Name"
-                                        required
-                                      />
+              {loading && (
+                <div className={`${CLASS_NAME}__loader`}>
+                  <CircularProgress />
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                disabled={loading}
+                type="button"
+                onClick={clearSelectedFile}
+              >
+                Back
+              </Button>
+              <div className={`${CLASS_NAME}__message`}>
+                Name your application, and edit the schema if needed. You can
+                also change the settings later. Click on "Create App" when you
+                are ready.
+              </div>
+              <h3>{fileName}</h3>
 
-                                      <SelectField
-                                        label="Data Type"
-                                        name={`entities.${index}.fields.${fieldIndex}.dataType`}
-                                        options={DATA_TYPE_OPTIONS}
-                                      />
-                                    </div>
-                                  )
+              <Formik
+                initialValues={initialValues}
+                enableReinitialize
+                onSubmit={handleSubmit}
+                render={({ values }) => (
+                  <Form>
+                    <Button
+                      buttonStyle={EnumButtonStyle.Primary}
+                      disabled={loading}
+                      type="submit"
+                    >
+                      Create App
+                    </Button>
+                    <DisplayNameField
+                      name="app.name"
+                      label="Application Name"
+                      required
+                    />
+
+                    <FieldArray
+                      name="entities"
+                      render={(arrayHelpers) => (
+                        <div className={`${CLASS_NAME}__entities`}>
+                          {values.entities.map((entity, index) => (
+                            <div key={`entity_${index}`}>
+                              <DisplayNameField
+                                name={`entities.${index}.name`}
+                                label="Entity Name"
+                                required
+                              />
+                              <FieldArray
+                                name={`entities.${index}.fields`}
+                                render={(arrayHelpers) => (
+                                  <div className={`${CLASS_NAME}__fields`}>
+                                    {values.entities[index].fields.map(
+                                      (field, fieldIndex) => (
+                                        <div
+                                          key={`entity_${index}_field_${fieldIndex}`}
+                                          className={`${CLASS_NAME}__fields__field`}
+                                        >
+                                          <DisplayNameField
+                                            name={`entities.${index}.fields.${fieldIndex}.name`}
+                                            label="Field Name"
+                                            required
+                                          />
+
+                                          <SelectField
+                                            label="Data Type"
+                                            name={`entities.${index}.fields.${fieldIndex}.dataType`}
+                                            options={DATA_TYPE_OPTIONS}
+                                          />
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
                                 )}
-                              </div>
-                            )}
-                          />
+                              />
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                />
-              </Form>
-            )}
-          />
-
+                      )}
+                    />
+                  </Form>
+                )}
+              />
+            </>
+          )}
           <Snackbar open={Boolean(error)} message={errorMessage} />
         </PageContent>
       </MainLayout.Content>
