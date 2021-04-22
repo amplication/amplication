@@ -2,6 +2,7 @@
 
 $max-width: 700px;
 $dropzone-height: 250px;
+$entity-width: 200px;
 
 .create-application-from-excel {
   height: 100%;
@@ -9,6 +10,10 @@ $dropzone-height: 250px;
   flex-direction: column;
   justify-content: stretch;
   align-items: stretch;
+
+  &__header {
+    @include flexFullRowWithSpacing;
+  }
 
   &__message {
     @include body1;
@@ -43,18 +48,58 @@ $dropzone-height: 250px;
     }
   }
 
+  &__droppable {
+    height: 100%;
+    min-height: $entity-width;
+    padding: var(--default-spacing);
+    border: $border-primary;
+    border-color: transparent;
+    &--over {
+      border: $border-primary;
+    }
+  }
+
+  &__entities {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+
+    &__entity {
+      margin: var(--default-spacing);
+      background-color: var(--white);
+      overflow: hidden;
+      border: $border-black10;
+      border-radius: var(--default-border-radius);
+      width: $entity-width;
+      overflow: hidden;
+      min-height: $entity-width;
+
+      &__name {
+        padding: var(--default-spacing);
+        background-color: var(--black5);
+      }
+    }
+  }
+
   &__fields {
-    margin-left: var(--double-spacing);
+    height: 100%;
 
     &__field {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
+      padding: var(--default-spacing-small);
+      border-radius: var(--default-border-radius);
+      border: $border-black10;
+      border-color: transparent;
 
-      > * {
-        flex: 1;
-        max-width: 200px;
+      &:hover {
+        background-color: var(--black5);
+        border: $border-black10;
+      }
+
+      .amp-icon {
         margin-right: var(--default-spacing);
       }
     }

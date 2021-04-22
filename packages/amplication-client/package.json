@@ -53,6 +53,7 @@
     "pluralize": "^8.0.0",
     "react": "^16.14.0",
     "react-animate-height": "^2.0.23",
+    "react-beautiful-dnd": "^13.1.0",
     "react-command-palette": "^0.13.0-0",
     "react-compound-timer": "^1.2.0",
     "react-device-detect": "^1.13.1",
@@ -130,6 +131,7 @@
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.6",
+    "@types/react-beautiful-dnd": "^13.0.0",
     "prettier": "^2.0.5",
     "react-app-rewired": "^2.1.6"
   }

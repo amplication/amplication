@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import classNames from "classnames";
 import { isEmpty, forEach } from "lodash";
-import { FieldArray, Formik } from "formik";
+import { FieldArray, Formik, useFormikContext } from "formik";
 import { Form } from "../Components/Form";
 import { gql, useMutation } from "@apollo/client";
 import * as XLSX from "xlsx";
@@ -18,8 +18,19 @@ import { Snackbar } from "@rmwc/snackbar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { DisplayNameField } from "../Components/DisplayNameField";
-import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
-import { SelectField } from "@amplication/design-system";
+// import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
+// import { SelectField } from "@amplication/design-system";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DraggableProvidedDragHandleProps,
+  DropResult,
+} from "react-beautiful-dnd";
+import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";
+import EditableLabelField from "../Components/EditableLabelField";
+
+import { Icon } from "@rmwc/icon";
 
 type ColumnKey = {
   name: string;
@@ -190,6 +201,11 @@ export function CreateApplicationFromExcel() {
     setImportList(fields);
   };
 
+  const getListStyle = (isDraggingOver) => ({
+    height: "100%",
+    minHeight: 200,
+  });
+
   return (
     <MainLayout>
       <MainLayout.Menu />
@@ -238,12 +254,6 @@ export function CreateApplicationFromExcel() {
               >
                 Back
               </Button>
-              <div className={`${CLASS_NAME}__message`}>
-                Name your application, and edit the schema if needed. You can
-                also change the settings later. Click on "Create App" when you
-                are ready.
-              </div>
-              <h3>{fileName}</h3>
 
               <Formik
                 initialValues={initialValues}
@@ -251,13 +261,23 @@ export function CreateApplicationFromExcel() {
                 onSubmit={handleSubmit}
                 render={({ values }) => (
                   <Form>
-                    <Button
-                      buttonStyle={EnumButtonStyle.Primary}
-                      disabled={loading}
-                      type="submit"
-                    >
-                      Create App
-                    </Button>
+                    <div className={`${CLASS_NAME}__header`}>
+                      <div className={`${CLASS_NAME}__message`}>
+                        Name your application, and edit the schema if needed.
+                        You can also change the settings later. Click on "Create
+                        App" when you are ready.
+                      </div>
+                      <Button
+                        buttonStyle={EnumButtonStyle.Primary}
+                        disabled={loading}
+                        type="button"
+                      >
+                        Create App
+                      </Button>
+                    </div>
+
+                    <h3>{fileName}</h3>
+
                     <DisplayNameField
                       name="app.name"
                       label="Application Name"
@@ -267,43 +287,103 @@ export function CreateApplicationFromExcel() {
                     <FieldArray
                       name="entities"
                       render={(arrayHelpers) => (
-                        <div className={`${CLASS_NAME}__entities`}>
-                          {values.entities.map((entity, index) => (
-                            <div key={`entity_${index}`}>
-                              <DisplayNameField
-                                name={`entities.${index}.name`}
-                                label="Entity Name"
-                                required
-                              />
-                              <FieldArray
-                                name={`entities.${index}.fields`}
-                                render={(arrayHelpers) => (
-                                  <div className={`${CLASS_NAME}__fields`}>
-                                    {values.entities[index].fields.map(
-                                      (field, fieldIndex) => (
-                                        <div
-                                          key={`entity_${index}_field_${fieldIndex}`}
-                                          className={`${CLASS_NAME}__fields__field`}
-                                        >
-                                          <DisplayNameField
-                                            name={`entities.${index}.fields.${fieldIndex}.name`}
-                                            label="Field Name"
-                                            required
-                                          />
+                        <div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              arrayHelpers.push({
+                                name: "new entity",
+                                fields: [
+                                  {
+                                    name: "field1",
+                                    dataType: null,
+                                  },
+                                ],
+                              })
+                            }
+                          >
+                            +
+                          </button>
 
-                                          <SelectField
-                                            label="Data Type"
-                                            name={`entities.${index}.fields.${fieldIndex}.dataType`}
-                                            options={DATA_TYPE_OPTIONS}
-                                          />
-                                        </div>
-                                      )
-                                    )}
+                          <div className={`${CLASS_NAME}__entities`}>
+                            <DragDropFormContext>
+                              {values.entities.map((entity, index) => (
+                                <div
+                                  key={`entity_${index}`}
+                                  className={`${CLASS_NAME}__entities__entity`}
+                                >
+                                  <div
+                                    className={`${CLASS_NAME}__entities__entity__name`}
+                                  >
+                                    <EditableLabelField
+                                      name={`entities.${index}.name`}
+                                      label="Entity Name"
+                                      required
+                                    />
                                   </div>
-                                )}
-                              />
-                            </div>
-                          ))}
+
+                                  <FieldArray
+                                    name={`entities.${index}.fields`}
+                                    render={(fieldsArrayHelpers) => (
+                                      <div className={`${CLASS_NAME}__fields`}>
+                                        <Droppable
+                                          droppableId={`droppable_${index}`}
+                                        >
+                                          {(provided, snapshot) => (
+                                            <div
+                                              {...provided.droppableProps}
+                                              ref={provided.innerRef}
+                                              className={classNames(
+                                                `${CLASS_NAME}__droppable`,
+                                                {
+                                                  [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
+                                                }
+                                              )}
+                                            >
+                                              {values.entities[
+                                                index
+                                              ].fields.map(
+                                                (field, fieldIndex) => (
+                                                  <Draggable
+                                                    key={`${index}_${fieldIndex}`}
+                                                    draggableId={`${index}_${fieldIndex}`}
+                                                    index={fieldIndex}
+                                                  >
+                                                    {(provided, snapshot) => (
+                                                      <div
+                                                        ref={provided.innerRef}
+                                                        {...provided.draggableProps}
+                                                      >
+                                                        <FieldItem
+                                                          dragHandleProps={
+                                                            provided.dragHandleProps
+                                                          }
+                                                          values={values}
+                                                          key={`entity_${index}_field_${fieldIndex}`}
+                                                          entityIndex={index}
+                                                          fieldIndex={
+                                                            fieldIndex
+                                                          }
+                                                          loading={loading}
+                                                          onMoveToNewEntity={() => {}}
+                                                        />
+                                                      </div>
+                                                    )}
+                                                  </Draggable>
+                                                )
+                                              )}
+
+                                              {provided.placeholder}
+                                            </div>
+                                          )}
+                                        </Droppable>
+                                      </div>
+                                    )}
+                                  />
+                                </div>
+                              ))}
+                            </DragDropFormContext>
+                          </div>
                         </div>
                       )}
                     />
@@ -316,6 +396,107 @@ export function CreateApplicationFromExcel() {
         </PageContent>
       </MainLayout.Content>
     </MainLayout>
+  );
+}
+
+type FieldItemProps = {
+  values: models.AppCreateWithEntitiesInput;
+  entityIndex: number;
+  fieldIndex: number;
+  loading: boolean;
+  dragHandleProps: DraggableProvidedDragHandleProps | undefined;
+  onMoveToNewEntity: (entityIndex: number, fieldIndex: number) => void;
+};
+
+function FieldItem({
+  values,
+  entityIndex,
+  fieldIndex,
+  loading,
+  dragHandleProps,
+}: FieldItemProps) {
+  const dataType =
+    values.entities[entityIndex].fields[fieldIndex].dataType ||
+    models.EnumDataType.SingleLineText;
+
+  return (
+    <div className={`${CLASS_NAME}__fields__field`} {...dragHandleProps}>
+      <Icon
+        icon={{
+          icon: DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon,
+          size: "xsmall",
+        }}
+      />
+
+      {values.entities[entityIndex].fields[fieldIndex].name}
+
+      {/* <EditableLabelField
+        name={`entities.${entityIndex}.fields.${fieldIndex}.name`}
+        label="Field Name"
+        required
+      /> */}
+      {/* 
+      <SelectField
+        label="Data Type"
+        name={`entities.${entityIndex}.fields.${fieldIndex}.dataType`}
+        options={DATA_TYPE_OPTIONS}
+      />
+
+      <Button
+        buttonStyle={EnumButtonStyle.Clear}
+        onClick={handleModeToNewEntity}
+        disabled={loading}
+        type="button"
+      >
+        Move to new entity
+      </Button> */}
+    </div>
+  );
+}
+
+type DragDropFormContextProps = {
+  children: React.ReactNode;
+};
+
+function DragDropFormContext(props: DragDropFormContextProps) {
+  const { setFieldValue, values } = useFormikContext<
+    models.AppCreateWithEntitiesInput
+  >();
+
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      // dropped outside the list
+      if (!result.destination) {
+        return;
+      }
+
+      const [sourceEntityIndex, sourceFieldIndex] = result.draggableId.split(
+        "_"
+      );
+      const [, destinationEntityIndex] = result.destination.droppableId.split(
+        "_"
+      );
+      const destinationFieldIndex = result.destination.index;
+
+      const sourceFields = values.entities[Number(sourceEntityIndex)].fields;
+      const [sourceField] = sourceFields.splice(Number(sourceFieldIndex), 1);
+
+      setFieldValue(`entities${sourceEntityIndex}.fields`, [...sourceFields]);
+
+      const destinationFields =
+        values.entities[Number(destinationEntityIndex)].fields;
+
+      destinationFields.splice(destinationFieldIndex, 0, sourceField);
+
+      setFieldValue(`entities${destinationEntityIndex}.fields`, [
+        ...destinationFields,
+      ]);
+    },
+    [values, setFieldValue]
+  );
+
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>{props.children}</DragDropContext>
   );
 }
 
