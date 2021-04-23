@@ -48,6 +48,42 @@ $entity-width: 200px;
     }
   }
 
+  &__layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    align-items: stretch;
+    justify-content: stretch;
+
+    &__toolbar {
+      height: 50px;
+      border-bottom: $border-black10;
+    }
+
+    &__body {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      justify-content: stretch;
+      align-items: stretch;
+      width: 100%;
+
+      &__side {
+        order: 2;
+        width: 300px;
+        background-color: var(--black5);
+        padding: var(--default-spacing);
+      }
+
+      &__content {
+        order: 1;
+        flex: 1;
+      }
+    }
+  }
+
   &__droppable {
     height: 100%;
     min-height: $entity-width;
@@ -73,10 +109,17 @@ $entity-width: 200px;
       width: $entity-width;
       overflow: hidden;
       min-height: $entity-width;
-
+      position: relative;
       &__name {
         padding: var(--default-spacing);
         background-color: var(--black5);
+      }
+
+      &__add {
+        position: absolute;
+        background-color: var(--primary);
+        top: 50%;
+        right: -20px;
       }
     }
   }
