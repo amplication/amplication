@@ -112,6 +112,7 @@ export type AppCreateInput = {
 export type AppCreateWithEntitiesEntityInput = {
   name: Scalars["String"];
   fields: Array<AppCreateWithEntitiesFieldInput>;
+  relationsToEntityIndex?: Maybe<Array<Scalars["Int"]>>;
 };
 
 export type AppCreateWithEntitiesFieldInput = {

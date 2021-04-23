@@ -79,6 +79,7 @@ input AppCreateInput {
 input AppCreateWithEntitiesEntityInput {
   name: String!
   fields: [AppCreateWithEntitiesFieldInput!]!
+  relationsToEntityIndex: [Int!]
 }
 
 input AppCreateWithEntitiesFieldInput {

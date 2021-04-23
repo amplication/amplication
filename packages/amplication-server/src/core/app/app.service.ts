@@ -39,6 +39,7 @@ import { InvalidColorError } from './InvalidColorError';
 import { GithubService } from '../github/github.service';
 import { GithubRepo } from '../github/dto/githubRepo';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
+import { EnumDataType } from 'src/enums/EnumDataType';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -187,7 +188,14 @@ export class AppService {
       user
     );
 
-    for (const entity of data.entities) {
+    const newEntities: {
+      [index: number]: { entityId: string; name: string };
+    } = {};
+
+    for (const { entity, index } of data.entities.map((entity, index) => ({
+      index,
+      entity
+    }))) {
       const displayName = entity.name.trim();
 
       const pluralDisplayName = pluralize(displayName);
@@ -210,6 +218,11 @@ export class AppService {
         user
       );
 
+      newEntities[index] = {
+        entityId: newEntity.id,
+        name: newEntity.name
+      };
+
       for (const entityField of entity.fields) {
         await this.entityService.createFieldByDisplayName(
           {
@@ -225,6 +238,31 @@ export class AppService {
           },
           user
         );
+      }
+    }
+
+    //after all entities were created, create the relation fields
+    for (const { entity, index } of data.entities.map((entity, index) => ({
+      index,
+      entity
+    }))) {
+      if (entity.relationsToEntityIndex) {
+        for (const relationToIndex of entity.relationsToEntityIndex) {
+          await this.entityService.createFieldByDisplayName(
+            {
+              data: {
+                entity: {
+                  connect: {
+                    id: newEntities[index].entityId
+                  }
+                },
+                displayName: newEntities[relationToIndex].name,
+                dataType: EnumDataType.Lookup
+              }
+            },
+            user
+          );
+        }
       }
     }
 

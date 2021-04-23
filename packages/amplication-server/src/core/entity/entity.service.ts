@@ -1484,7 +1484,7 @@ export class EntityService {
     const lowerCaseName = displayName.toLowerCase();
     const name = camelCase(displayName);
 
-    let dataType: EnumDataType = EnumDataType.SingleLineText;
+    let dataType: EnumDataType | null = null;
 
     if (args.data.dataType) {
       dataType = args.data.dataType as EnumDataType;
@@ -1498,7 +1498,9 @@ export class EntityService {
       dataType = EnumDataType.OptionSet;
     } else if (lowerCaseName.startsWith('is')) {
       dataType = EnumDataType.Boolean;
-    } else {
+    }
+
+    if (dataType === EnumDataType.Lookup || dataType === null) {
       // Find an entity with the field's display name
       const relatedEntity = await this.findEntityByNames(name, entity.appId);
       // If found attempt to create a lookup field
@@ -1537,7 +1539,7 @@ export class EntityService {
 
     return {
       name,
-      dataType: dataType,
+      dataType: dataType || EnumDataType.SingleLineText,
       properties: DATA_TYPE_TO_DEFAULT_PROPERTIES[dataType]
     };
   }
@@ -2032,27 +2034,24 @@ export function createEntityNamesWhereInput(
   return {
     appId,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    AND: [
+    OR: [
+      {
+        displayName: {
+          equals: name,
+          mode: Prisma.QueryMode.insensitive
+        }
+      },
+      {
+        pluralDisplayName: {
+          equals: name,
+          mode: Prisma.QueryMode.insensitive
+        }
+      },
       {
         name: {
           equals: name,
           mode: Prisma.QueryMode.insensitive
-        },
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [
-          {
-            displayName: {
-              equals: name,
-              mode: Prisma.QueryMode.insensitive
-            }
-          },
-          {
-            pluralDisplayName: {
-              equals: name,
-              mode: Prisma.QueryMode.insensitive
-            }
-          }
-        ]
+        }
       }
     ]
   };

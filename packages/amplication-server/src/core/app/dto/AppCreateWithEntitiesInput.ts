@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { AppCreateInput } from './AppCreateInput';
 import { EnumDataType } from 'src/enums/EnumDataType';
 
@@ -31,6 +31,11 @@ export class AppCreateWithEntitiesEntityInput {
     nullable: false
   })
   fields!: AppCreateWithEntitiesFieldInput[];
+
+  @Field(() => [Int], {
+    nullable: true
+  })
+  relationsToEntityIndex?: number[] | null;
 }
 
 @InputType({
