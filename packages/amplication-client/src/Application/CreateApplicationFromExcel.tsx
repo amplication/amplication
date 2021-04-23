@@ -17,6 +17,8 @@ import { Snackbar } from "@rmwc/snackbar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { DisplayNameField } from "../Components/DisplayNameField";
+import { ArcherContainer, ArcherElement } from "react-archer";
+
 // import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
 // import { SelectField } from "@amplication/design-system";
 import {
@@ -273,33 +275,33 @@ export function CreateApplicationFromExcel() {
                       <Button
                         buttonStyle={EnumButtonStyle.Primary}
                         disabled={loading}
-                        type="button"
+                        type="submit"
                       >
                         Create App
                       </Button>
                     </div>
 
                     <div className={`${CLASS_NAME}__layout__body__content`}>
-                      <FieldArray
-                        name="entities"
-                        render={(arrayHelpers) => (
-                          <div>
-                            <div className={`${CLASS_NAME}__entities`}>
-                              <DragDropFormContext>
-                                {values.entities.map((entity, index) => (
-                                  <EntityItem
-                                    FormikArrayHelpers={arrayHelpers}
-                                    key={`entity_${index}`}
-                                    entityIndex={index}
-                                    values={values}
-                                    loading={loading}
-                                  />
-                                ))}
-                              </DragDropFormContext>
+                      <ArcherContainer strokeColor="red">
+                        <FieldArray
+                          name="entities"
+                          render={(arrayHelpers) => (
+                            <div>
+                              <div className={`${CLASS_NAME}__entities`}>
+                                <DragDropFormContext>
+                                  {values.entities.map((entity, index) => (
+                                    <EntityItem
+                                      key={`entity_${index}`}
+                                      entityIndex={index}
+                                      loading={loading}
+                                    />
+                                  ))}
+                                </DragDropFormContext>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      />
+                          )}
+                        />
+                      </ArcherContainer>
                     </div>
                   </Form>
                 )}
@@ -314,92 +316,114 @@ export function CreateApplicationFromExcel() {
 }
 
 type EntityItemProps = {
-  values: models.AppCreateWithEntitiesInput;
   entityIndex: number;
   loading: boolean;
-  FormikArrayHelpers: ArrayHelpers;
 };
 
-function EntityItem({
-  values,
-  entityIndex,
-  loading,
-  FormikArrayHelpers,
-}: EntityItemProps) {
+function EntityItem({ entityIndex, loading }: EntityItemProps) {
+  const { setFieldValue, values } = useFormikContext<
+    models.AppCreateWithEntitiesInput
+  >();
+
   const handleDddEntity = useCallback(() => {
-    FormikArrayHelpers.push({
-      name: "new entity",
-      fields: [],
-    });
-  }, []);
+    const entities = values.entities;
+    const currentLength = entities.length;
+
+    setFieldValue(`entities`, [
+      ...entities,
+      {
+        name: "new entity",
+        fields: [],
+      },
+    ]);
+
+    const relations = values.entities[entityIndex].relationsToEntityIndex || [];
+
+    setFieldValue(`entities.${entityIndex}.relationsToEntityIndex`, [
+      ...relations,
+      currentLength, //the length was taken before the addition of the new entity
+    ]);
+  }, [entityIndex, setFieldValue, values.entities]);
+
+  const relations = values.entities[entityIndex].relationsToEntityIndex;
+  const arrows = relations?.map((relation) => ({
+    targetId: `entity${relation}`,
+    targetAnchor: "left",
+    sourceAnchor: "right",
+    style: { strokeDasharray: "5,5" },
+  }));
+
+  console.log({ arrows });
 
   return (
-    <div className={`${CLASS_NAME}__entities__entity`}>
-      <Button
-        className={`${CLASS_NAME}__entities__entity__add`}
-        buttonStyle={EnumButtonStyle.Clear}
-        onClick={handleDddEntity}
-        disabled={loading}
-        type="button"
-      >
-        +
-      </Button>
+    <ArcherElement id={`entity${entityIndex}`} relations={arrows}>
+      <div className={`${CLASS_NAME}__entities__entity`}>
+        <Button
+          className={`${CLASS_NAME}__entities__entity__add`}
+          buttonStyle={EnumButtonStyle.Clear}
+          onClick={handleDddEntity}
+          disabled={loading}
+          type="button"
+        >
+          +
+        </Button>
 
-      <div className={`${CLASS_NAME}__entities__entity__name`}>
-        <EditableLabelField
-          name={`entities.${entityIndex}.name`}
-          label="Entity Name"
-          required
+        <div className={`${CLASS_NAME}__entities__entity__name`}>
+          <EditableLabelField
+            name={`entities.${entityIndex}.name`}
+            label="Entity Name"
+            required
+          />
+        </div>
+
+        <FieldArray
+          name={`entities.${entityIndex}.fields`}
+          render={(fieldsArrayHelpers) => (
+            <div className={`${CLASS_NAME}__fields`}>
+              <Droppable droppableId={`droppable_${entityIndex}`}>
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className={classNames(`${CLASS_NAME}__droppable`, {
+                      [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
+                    })}
+                  >
+                    {values.entities[entityIndex].fields.map(
+                      (field, fieldIndex) => (
+                        <Draggable
+                          key={`${entityIndex}_${fieldIndex}`}
+                          draggableId={`${entityIndex}_${fieldIndex}`}
+                          index={fieldIndex}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                            >
+                              <FieldItem
+                                dragHandleProps={provided.dragHandleProps}
+                                values={values}
+                                key={`entity_${entityIndex}_field_${fieldIndex}`}
+                                entityIndex={entityIndex}
+                                fieldIndex={fieldIndex}
+                                loading={loading}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      )
+                    )}
+
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          )}
         />
       </div>
-
-      <FieldArray
-        name={`entities.${entityIndex}.fields`}
-        render={(fieldsArrayHelpers) => (
-          <div className={`${CLASS_NAME}__fields`}>
-            <Droppable droppableId={`droppable_${entityIndex}`}>
-              {(provided, snapshot) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className={classNames(`${CLASS_NAME}__droppable`, {
-                    [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
-                  })}
-                >
-                  {values.entities[entityIndex].fields.map(
-                    (field, fieldIndex) => (
-                      <Draggable
-                        key={`${entityIndex}_${fieldIndex}`}
-                        draggableId={`${entityIndex}_${fieldIndex}`}
-                        index={fieldIndex}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                          >
-                            <FieldItem
-                              dragHandleProps={provided.dragHandleProps}
-                              values={values}
-                              key={`entity_${entityIndex}_field_${fieldIndex}`}
-                              entityIndex={entityIndex}
-                              fieldIndex={fieldIndex}
-                              loading={loading}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    )
-                  )}
-
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </div>
-        )}
-      />
-    </div>
+    </ArcherElement>
   );
 }
 
@@ -484,14 +508,14 @@ function DragDropFormContext(props: DragDropFormContextProps) {
       const sourceFields = values.entities[Number(sourceEntityIndex)].fields;
       const [sourceField] = sourceFields.splice(Number(sourceFieldIndex), 1);
 
-      setFieldValue(`entities${sourceEntityIndex}.fields`, [...sourceFields]);
+      setFieldValue(`entities.${sourceEntityIndex}.fields`, [...sourceFields]);
 
       const destinationFields =
         values.entities[Number(destinationEntityIndex)].fields;
 
       destinationFields.splice(destinationFieldIndex, 0, sourceField);
 
-      setFieldValue(`entities${destinationEntityIndex}.fields`, [
+      setFieldValue(`entities.${destinationEntityIndex}.fields`, [
         ...destinationFields,
       ]);
     },
@@ -557,7 +581,7 @@ function getColumnSampleData(
 }
 
 const CREATE_APP_WITH_ENTITIES = gql`
-  mutation createApp($data: AppCreateWithEntitiesInput!) {
+  mutation createAppWithEntities($data: AppCreateWithEntitiesInput!) {
     createAppWithEntities(data: $data) {
       id
       name
