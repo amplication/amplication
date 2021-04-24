@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import classNames from "classnames";
 import { isEmpty, forEach, cloneDeep } from "lodash";
+import omitDeep from "deepdash-es/omitDeep";
+
 import { FieldArray, Formik, useFormikContext } from "formik";
 import { Form } from "../Components/Form";
 import { gql, useMutation } from "@apollo/client";
@@ -159,7 +161,14 @@ export function CreateApplicationFromExcel() {
 
   const handleSubmit = useCallback(
     (data: FormData) => {
-      createAppWithEntities({ variables: { data } }).catch(console.error);
+      const sanitizedData: models.AppCreateWithEntitiesInput = omitDeep(data, [
+        "level",
+        "levelIndex",
+      ]);
+      console.log(sanitizedData);
+      createAppWithEntities({ variables: { data: sanitizedData } }).catch(
+        console.error
+      );
     },
     [createAppWithEntities]
   );
