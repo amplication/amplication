@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import classNames from "classnames";
 import { isEmpty, forEach, cloneDeep } from "lodash";
 import omitDeep from "deepdash-es/omitDeep";
@@ -32,6 +32,7 @@ import {
 } from "react-beautiful-dnd";
 import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";
 import EditableLabelField from "../Components/EditableLabelField";
+import { DraggableCore, DraggableData, DraggableEvent } from "react-draggable";
 
 import { Icon } from "@rmwc/icon";
 
@@ -361,10 +362,16 @@ function EntityRelations() {
 type EntityItemProps = {
   entityIndex: number;
   loading: boolean;
+  onDrag: () => void;
 };
 
-function EntityItem({ entityIndex, loading }: EntityItemProps) {
+function EntityItem({ entityIndex, loading, onDrag }: EntityItemProps) {
   const { setFieldValue, values } = useFormikContext<FormData>();
+
+  const [position, setPosition] = useState<{ top: number; left: number }>({
+    top: 0,
+    left: 0,
+  });
 
   const handleAddEntity = useCallback(() => {
     const entities: EntityWithViewData[] = cloneDeep(values.entities);
@@ -395,80 +402,93 @@ function EntityItem({ entityIndex, loading }: EntityItemProps) {
 
   const currentEntity = values.entities[entityIndex];
 
-  return (
-    <div
-      id={`entity${entityIndex}`}
-      className={`${CLASS_NAME}__entities__entity`}
-      style={{
-        top: (currentEntity.levelIndex || 0) * 450,
-        left: (currentEntity.level || 0) * 300,
-      }}
-    >
-      <div>
-        <Button
-          className={`${CLASS_NAME}__entities__entity__add`}
-          buttonStyle={EnumButtonStyle.Clear}
-          onClick={handleAddEntity}
-          disabled={loading}
-          type="button"
-        >
-          +
-        </Button>
+  const handleDrag = useCallback(
+    (e: DraggableEvent, data: DraggableData) => {
+      setPosition((position) => {
+        return {
+          top: position.top + data.deltaY > 0 ? position.top + data.deltaY : 0,
+          left:
+            position.left + data.deltaX > 0 ? position.left + data.deltaX : 0,
+        };
+      });
+      onDrag && onDrag();
+    },
+    [onDrag, setPosition]
+  );
 
-        <div className={`${CLASS_NAME}__entities__entity__name`}>
-          <EditableLabelField
-            name={`entities.${entityIndex}.name`}
-            label="Entity Name"
-            required
+  return (
+    <DraggableCore handle=".handle" onDrag={handleDrag} bounds="parent">
+      <div
+        id={`entity${entityIndex}`}
+        className={`${CLASS_NAME}__entities__entity`}
+        style={position}
+      >
+        <div>
+          <Button
+            className={`${CLASS_NAME}__entities__entity__add`}
+            buttonStyle={EnumButtonStyle.Clear}
+            onClick={handleAddEntity}
+            disabled={loading}
+            type="button"
+          >
+            +
+          </Button>
+
+          <div className={`${CLASS_NAME}__entities__entity__name handle`}>
+            <EditableLabelField
+              name={`entities.${entityIndex}.name`}
+              label="Entity Name"
+              required
+            />
+          </div>
+
+          <FieldArray
+            name={`entities.${entityIndex}.fields`}
+            render={(fieldsArrayHelpers) => (
+              <div className={`${CLASS_NAME}__fields`}>
+                <Droppable droppableId={`droppable_${entityIndex}`}>
+                  {(provided, snapshot) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className={classNames(`${CLASS_NAME}__droppable`, {
+                        [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
+                      })}
+                    >
+                      {currentEntity.fields.map((field, fieldIndex) => (
+                        <Draggable
+                          key={`${entityIndex}_${fieldIndex}`}
+                          draggableId={`${entityIndex}_${fieldIndex}`}
+                          index={fieldIndex}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                            >
+                              <FieldItem
+                                dragHandleProps={provided.dragHandleProps}
+                                values={values}
+                                key={`entity_${entityIndex}_field_${fieldIndex}`}
+                                entityIndex={entityIndex}
+                                fieldIndex={fieldIndex}
+                                loading={loading}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </div>
+            )}
           />
         </div>
-
-        <FieldArray
-          name={`entities.${entityIndex}.fields`}
-          render={(fieldsArrayHelpers) => (
-            <div className={`${CLASS_NAME}__fields`}>
-              <Droppable droppableId={`droppable_${entityIndex}`}>
-                {(provided, snapshot) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className={classNames(`${CLASS_NAME}__droppable`, {
-                      [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
-                    })}
-                  >
-                    {currentEntity.fields.map((field, fieldIndex) => (
-                      <Draggable
-                        key={`${entityIndex}_${fieldIndex}`}
-                        draggableId={`${entityIndex}_${fieldIndex}`}
-                        index={fieldIndex}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                          >
-                            <FieldItem
-                              dragHandleProps={provided.dragHandleProps}
-                              values={values}
-                              key={`entity_${entityIndex}_field_${fieldIndex}`}
-                              entityIndex={entityIndex}
-                              fieldIndex={fieldIndex}
-                              loading={loading}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </div>
-          )}
-        />
       </div>
-    </div>
+    </DraggableCore>
   );
 }
 
