@@ -80,6 +80,9 @@ $entity-width: 200px;
       &__content {
         order: 1;
         flex: 1;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
       }
     }
   }
@@ -99,6 +102,7 @@ $entity-width: 200px;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    position: relative;
 
     &__entity {
       margin: var(--default-spacing);
@@ -109,7 +113,10 @@ $entity-width: 200px;
       width: $entity-width;
       overflow: hidden;
       min-height: $entity-width;
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
+
       &__name {
         padding: var(--default-spacing);
         background-color: var(--black5);

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import classNames from "classnames";
-import { isEmpty, forEach } from "lodash";
-import { FieldArray, Formik, useFormikContext, ArrayHelpers } from "formik";
+import { isEmpty, forEach, cloneDeep } from "lodash";
+import { FieldArray, Formik, useFormikContext } from "formik";
 import { Form } from "../Components/Form";
 import { gql, useMutation } from "@apollo/client";
 import * as XLSX from "xlsx";
@@ -17,7 +17,7 @@ import { Snackbar } from "@rmwc/snackbar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { DisplayNameField } from "../Components/DisplayNameField";
-import { ArcherContainer, ArcherElement } from "react-archer";
+import Xarrow from "react-xarrows";
 
 // import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
 // import { SelectField } from "@amplication/design-system";
@@ -282,26 +282,25 @@ export function CreateApplicationFromExcel() {
                     </div>
 
                     <div className={`${CLASS_NAME}__layout__body__content`}>
-                      <ArcherContainer strokeColor="red">
-                        <FieldArray
-                          name="entities"
-                          render={(arrayHelpers) => (
-                            <div>
-                              <div className={`${CLASS_NAME}__entities`}>
-                                <DragDropFormContext>
-                                  {values.entities.map((entity, index) => (
-                                    <EntityItem
-                                      key={`entity_${index}`}
-                                      entityIndex={index}
-                                      loading={loading}
-                                    />
-                                  ))}
-                                </DragDropFormContext>
-                              </div>
+                      <FieldArray
+                        name="entities"
+                        render={(arrayHelpers) => (
+                          <div>
+                            <div className={`${CLASS_NAME}__entities`}>
+                              <DragDropFormContext>
+                                {values.entities.map((entity, index) => (
+                                  <EntityItem
+                                    key={`entity_${index}`}
+                                    entityIndex={index}
+                                    loading={loading}
+                                  />
+                                ))}
+                              </DragDropFormContext>
+                              <EntityRelations />
                             </div>
-                          )}
-                        />
-                      </ArcherContainer>
+                          </div>
+                        )}
+                      />
                     </div>
                   </Form>
                 )}
@@ -315,6 +314,27 @@ export function CreateApplicationFromExcel() {
   );
 }
 
+function EntityRelations() {
+  const { values } = useFormikContext<models.AppCreateWithEntitiesInput>();
+
+  const relations = values.entities.flatMap((entity, index) => {
+    if (!entity.relationsToEntityIndex) return [];
+    return entity.relationsToEntityIndex.map((relation) => ({
+      key: `${index}_${relation}`,
+      start: `entity${index}`,
+      end: `entity${relation}`,
+    }));
+  });
+
+  return (
+    <div>
+      {relations.map((relation) => (
+        <Xarrow {...relation} key={relation.key} />
+      ))}
+    </div>
+  );
+}
+
 type EntityItemProps = {
   entityIndex: number;
   loading: boolean;
@@ -325,9 +345,15 @@ function EntityItem({ entityIndex, loading }: EntityItemProps) {
     models.AppCreateWithEntitiesInput
   >();
 
-  const handleDddEntity = useCallback(() => {
-    const entities = values.entities;
+  const handleAddEntity = useCallback(() => {
+    const entities = cloneDeep(values.entities);
     const currentLength = entities.length;
+    const relations = entities[entityIndex].relationsToEntityIndex || [];
+
+    entities[entityIndex].relationsToEntityIndex = [
+      ...relations,
+      currentLength,
+    ];
 
     setFieldValue(`entities`, [
       ...entities,
@@ -336,32 +362,19 @@ function EntityItem({ entityIndex, loading }: EntityItemProps) {
         fields: [],
       },
     ]);
-
-    const relations = values.entities[entityIndex].relationsToEntityIndex || [];
-
-    setFieldValue(`entities.${entityIndex}.relationsToEntityIndex`, [
-      ...relations,
-      currentLength, //the length was taken before the addition of the new entity
-    ]);
   }, [entityIndex, setFieldValue, values.entities]);
 
-  const relations = values.entities[entityIndex].relationsToEntityIndex;
-  const arrows = relations?.map((relation) => ({
-    targetId: `entity${relation}`,
-    targetAnchor: "left",
-    sourceAnchor: "right",
-    style: { strokeDasharray: "5,5" },
-  }));
-
-  console.log({ arrows });
-
   return (
-    <ArcherElement id={`entity${entityIndex}`} relations={arrows}>
-      <div className={`${CLASS_NAME}__entities__entity`}>
+    <div
+      id={`entity${entityIndex}`}
+      className={`${CLASS_NAME}__entities__entity`}
+      style={{ top: entityIndex * 50, left: entityIndex * 300 }}
+    >
+      <div>
         <Button
           className={`${CLASS_NAME}__entities__entity__add`}
           buttonStyle={EnumButtonStyle.Clear}
-          onClick={handleDddEntity}
+          onClick={handleAddEntity}
           disabled={loading}
           type="button"
         >
@@ -423,7 +436,7 @@ function EntityItem({ entityIndex, loading }: EntityItemProps) {
           )}
         />
       </div>
-    </ArcherElement>
+    </div>
   );
 }
 
