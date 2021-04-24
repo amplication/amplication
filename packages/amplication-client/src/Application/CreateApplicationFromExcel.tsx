@@ -52,6 +52,15 @@ type TData = {
   createAppWithEntities: models.App;
 };
 
+type EntityWithViewData = models.AppCreateWithEntitiesEntityInput & {
+  level?: number;
+  levelIndex?: number;
+};
+
+type FormData = models.AppCreateWithEntitiesInput & {
+  entities: EntityWithViewData[];
+};
+
 const CLASS_NAME = "create-application-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
@@ -128,7 +137,7 @@ export function CreateApplicationFromExcel() {
   }, [setFileName]);
 
   const initialValues = useMemo(() => {
-    const data: models.AppCreateWithEntitiesInput = {
+    const data: FormData = {
       app: {
         name: fileName || "",
         description: fileName || "",
@@ -149,7 +158,7 @@ export function CreateApplicationFromExcel() {
   }, [importList, fileName]);
 
   const handleSubmit = useCallback(
-    (data: models.AppCreateWithEntitiesInput) => {
+    (data: FormData) => {
       createAppWithEntities({ variables: { data } }).catch(console.error);
     },
     [createAppWithEntities]
@@ -315,7 +324,7 @@ export function CreateApplicationFromExcel() {
 }
 
 function EntityRelations() {
-  const { values } = useFormikContext<models.AppCreateWithEntitiesInput>();
+  const { values } = useFormikContext<FormData>();
 
   const relations = values.entities.flatMap((entity, index) => {
     if (!entity.relationsToEntityIndex) return [];
@@ -329,7 +338,12 @@ function EntityRelations() {
   return (
     <div>
       {relations.map((relation) => (
-        <Xarrow {...relation} key={relation.key} />
+        <Xarrow
+          {...relation}
+          key={relation.key}
+          startAnchor="right"
+          endAnchor="left"
+        />
       ))}
     </div>
   );
@@ -341,34 +355,45 @@ type EntityItemProps = {
 };
 
 function EntityItem({ entityIndex, loading }: EntityItemProps) {
-  const { setFieldValue, values } = useFormikContext<
-    models.AppCreateWithEntitiesInput
-  >();
+  const { setFieldValue, values } = useFormikContext<FormData>();
 
   const handleAddEntity = useCallback(() => {
-    const entities = cloneDeep(values.entities);
+    const entities: EntityWithViewData[] = cloneDeep(values.entities);
     const currentLength = entities.length;
     const relations = entities[entityIndex].relationsToEntityIndex || [];
+    const currentEntity = entities[entityIndex];
 
-    entities[entityIndex].relationsToEntityIndex = [
-      ...relations,
-      currentLength,
-    ];
+    const newEntityLevel = currentEntity.level ? currentEntity.level + 1 : 1;
+
+    const levelEntities = entities.filter(
+      (entity) => entity.level === newEntityLevel
+    );
+
+    const levelIndex = levelEntities.length;
+
+    currentEntity.relationsToEntityIndex = [...relations, currentLength];
 
     setFieldValue(`entities`, [
       ...entities,
       {
         name: "new entity",
         fields: [],
+        level: newEntityLevel,
+        levelIndex: levelIndex,
       },
     ]);
   }, [entityIndex, setFieldValue, values.entities]);
+
+  const currentEntity = values.entities[entityIndex];
 
   return (
     <div
       id={`entity${entityIndex}`}
       className={`${CLASS_NAME}__entities__entity`}
-      style={{ top: entityIndex * 50, left: entityIndex * 300 }}
+      style={{
+        top: (currentEntity.levelIndex || 0) * 450,
+        left: (currentEntity.level || 0) * 300,
+      }}
     >
       <div>
         <Button
@@ -402,31 +427,29 @@ function EntityItem({ entityIndex, loading }: EntityItemProps) {
                       [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
                     })}
                   >
-                    {values.entities[entityIndex].fields.map(
-                      (field, fieldIndex) => (
-                        <Draggable
-                          key={`${entityIndex}_${fieldIndex}`}
-                          draggableId={`${entityIndex}_${fieldIndex}`}
-                          index={fieldIndex}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                            >
-                              <FieldItem
-                                dragHandleProps={provided.dragHandleProps}
-                                values={values}
-                                key={`entity_${entityIndex}_field_${fieldIndex}`}
-                                entityIndex={entityIndex}
-                                fieldIndex={fieldIndex}
-                                loading={loading}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      )
-                    )}
+                    {currentEntity.fields.map((field, fieldIndex) => (
+                      <Draggable
+                        key={`${entityIndex}_${fieldIndex}`}
+                        draggableId={`${entityIndex}_${fieldIndex}`}
+                        index={fieldIndex}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                          >
+                            <FieldItem
+                              dragHandleProps={provided.dragHandleProps}
+                              values={values}
+                              key={`entity_${entityIndex}_field_${fieldIndex}`}
+                              entityIndex={entityIndex}
+                              fieldIndex={fieldIndex}
+                              loading={loading}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
 
                     {provided.placeholder}
                   </div>
@@ -441,7 +464,7 @@ function EntityItem({ entityIndex, loading }: EntityItemProps) {
 }
 
 type FieldItemProps = {
-  values: models.AppCreateWithEntitiesInput;
+  values: FormData;
   entityIndex: number;
   fieldIndex: number;
   loading: boolean;
@@ -499,9 +522,7 @@ type DragDropFormContextProps = {
 };
 
 function DragDropFormContext(props: DragDropFormContextProps) {
-  const { setFieldValue, values } = useFormikContext<
-    models.AppCreateWithEntitiesInput
-  >();
+  const { setFieldValue, values } = useFormikContext<FormData>();
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
