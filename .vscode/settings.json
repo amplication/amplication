@@ -10,6 +10,7 @@
     "Repos",
     "Signup",
     "UNREQUIRED",
+    "Xarrow",
     "camelcase",
     "checkmark",
     "deepdash",
@@ -23,7 +24,9 @@
     "uncontained",
     "unelevated",
     "unmark",
-    "upsert"
+    "upsert",
+    "xarrows",
+    "xsmall"
   ],
   "eslint.workingDirectories": [
     {

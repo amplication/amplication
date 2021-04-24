@@ -562,6 +562,7 @@ function DragDropFormContext(props: DragDropFormContextProps) {
 }
 
 /* list of supported file types */
+// cSpell: disable
 const SheetAcceptedFormats = [
   "xlsx",
   "xlsb",
@@ -586,6 +587,7 @@ const SheetAcceptedFormats = [
 ]
   .map((x) => `.${x}`)
   .join(",");
+// cSpell: enable
 
 const generateColumnKeys = (range: string): ColumnKey[] => {
   let keys = [],
