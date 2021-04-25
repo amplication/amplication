@@ -1540,7 +1540,8 @@ export class EntityService {
     return {
       name,
       dataType: dataType || EnumDataType.SingleLineText,
-      properties: DATA_TYPE_TO_DEFAULT_PROPERTIES[dataType]
+      properties:
+        DATA_TYPE_TO_DEFAULT_PROPERTIES[dataType || EnumDataType.SingleLineText]
     };
   }
 
