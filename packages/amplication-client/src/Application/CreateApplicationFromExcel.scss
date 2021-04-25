@@ -141,14 +141,17 @@ $entity-width: 200px;
     height: 100%;
 
     &__field {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-      padding: var(--default-spacing-small);
+      @include flexFullRowWithSpacing;
+      padding: 0 var(--default-spacing-small);
       border-radius: var(--default-border-radius);
       border: $border-black10;
       border-color: transparent;
+
+      &--selected {
+        background-color: var(--black5);
+        border: $border-black10;
+        color: var(--primary);
+      }
 
       &:hover {
         background-color: var(--black5);
@@ -157,6 +160,16 @@ $entity-width: 200px;
 
       .amp-icon {
         margin-right: var(--default-spacing);
+      }
+
+      &__edit {
+        visibility: hidden;
+      }
+
+      &:hover {
+        .amp-button {
+          visibility: visible;
+        }
       }
     }
   }

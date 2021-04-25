@@ -27,8 +27,8 @@ import { CircularProgress } from "@rmwc/circular-progress";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import Xarrow from "react-xarrows";
 
-// import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
-// import { SelectField } from "@amplication/design-system";
+import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
+import { SelectField } from "@amplication/design-system";
 import {
   DragDropContext,
   Droppable,
@@ -74,6 +74,11 @@ type EntityPositionData = {
   left: number;
 };
 
+type FieldIdentifier = {
+  entityIndex: number;
+  fieldIndex: number;
+};
+
 const ARROW_PROPS = {
   color: "white",
   strokeWidth: 2,
@@ -87,6 +92,17 @@ const MAX_SAMPLE_DATA = 3;
 export function CreateApplicationFromExcel() {
   const [importList, setImportList] = React.useState<ImportField[]>([]);
   const [fileName, setFileName] = React.useState<string | null>(null);
+  const [editedField, setEditedField] = React.useState<FieldIdentifier | null>(
+    null
+  );
+
+  const handleEditField = useCallback(
+    (fieldIdentifier: FieldIdentifier | null) => {
+      console.log(fieldIdentifier);
+      setEditedField(fieldIdentifier);
+    },
+    []
+  );
 
   const { trackEvent } = useTracking();
 
@@ -296,32 +312,53 @@ export function CreateApplicationFromExcel() {
                 render={({ values }) => (
                   <Form className={`${CLASS_NAME}__layout__body`}>
                     <div className={`${CLASS_NAME}__layout__body__side`}>
-                      <div className={`${CLASS_NAME}__message`}>
-                        Name your application, and edit the schema if needed.
-                        You can also change the settings later. Click on "Create
-                        App" when you are ready.
-                      </div>
+                      {editedField ? (
+                        <div>
+                          <EditableLabelField
+                            name={`entities.${editedField.entityIndex}.fields.${editedField.fieldIndex}.name`}
+                            label="Field Name"
+                            required
+                          />
 
-                      <h3>{fileName}</h3>
+                          <SelectField
+                            label="Data Type"
+                            name={`entities.${editedField.entityIndex}.fields.${editedField.fieldIndex}.dataType`}
+                            options={DATA_TYPE_OPTIONS}
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <div className={`${CLASS_NAME}__message`}>
+                            Name your application, and edit the schema if
+                            needed. You can also change the settings later.
+                            Click on "Create App" when you are ready.
+                          </div>
 
-                      <DisplayNameField
-                        name="app.name"
-                        label="Application Name"
-                        required
-                      />
+                          <h3>{fileName}</h3>
 
-                      <Button
-                        buttonStyle={EnumButtonStyle.Primary}
-                        disabled={loading}
-                        type="submit"
-                      >
-                        Create App
-                      </Button>
+                          <DisplayNameField
+                            name="app.name"
+                            label="Application Name"
+                            required
+                          />
+
+                          <Button
+                            buttonStyle={EnumButtonStyle.Primary}
+                            disabled={loading}
+                            type="submit"
+                          >
+                            Create App
+                          </Button>
+                        </>
+                      )}
                     </div>
 
                     <div className={`${CLASS_NAME}__layout__body__content`}>
                       <div className={`${CLASS_NAME}__entities`}>
-                        <DragDropEntitiesCanvas />
+                        <DragDropEntitiesCanvas
+                          onEditField={handleEditField}
+                          editedFieldIdentifier={editedField}
+                        />
                       </div>
                     </div>
                   </Form>
@@ -361,130 +398,160 @@ function EntityRelations() {
 
 type EntityItemProps = {
   entityIndex: number;
+  editedFieldIdentifier: FieldIdentifier | null;
+
   onDrag?: (entityIndex: number, positionData: EntityPositionData) => void;
+  onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
 };
 
-const EntityItem = React.memo(({ entityIndex, onDrag }: EntityItemProps) => {
-  const { setFieldValue, values } = useFormikContext<FormData>();
+const EntityItem = React.memo(
+  ({
+    entityIndex,
+    editedFieldIdentifier,
+    onDrag,
+    onEditField,
+  }: EntityItemProps) => {
+    const { setFieldValue, values } = useFormikContext<FormData>();
 
-  const [position, setPosition] = useState<EntityPositionData>({
-    top: 0,
-    left: 0,
-  });
+    const [position, setPosition] = useState<EntityPositionData>({
+      top: 0,
+      left: 0,
+    });
 
-  const handleAddEntity = useCallback(() => {
-    const entities: EntityWithViewData[] = cloneDeep(values.entities);
-    const currentLength = entities.length;
-    const relations = entities[entityIndex].relationsToEntityIndex || [];
-    const currentEntity = entities[entityIndex];
+    const handleAddEntity = useCallback(() => {
+      const entities: EntityWithViewData[] = cloneDeep(values.entities);
+      const currentLength = entities.length;
+      const relations = entities[entityIndex].relationsToEntityIndex || [];
+      const currentEntity = entities[entityIndex];
 
-    const newEntityLevel = currentEntity.level ? currentEntity.level + 1 : 1;
+      const newEntityLevel = currentEntity.level ? currentEntity.level + 1 : 1;
 
-    const levelEntities = entities.filter(
-      (entity) => entity.level === newEntityLevel
+      const levelEntities = entities.filter(
+        (entity) => entity.level === newEntityLevel
+      );
+
+      const levelIndex = levelEntities.length;
+
+      currentEntity.relationsToEntityIndex = [...relations, currentLength];
+
+      setFieldValue(`entities`, [
+        ...entities,
+        {
+          name: "new entity",
+          fields: [],
+          level: newEntityLevel,
+          levelIndex: levelIndex,
+        },
+      ]);
+    }, [entityIndex, setFieldValue, values.entities]);
+
+    const currentEntity = values.entities[entityIndex];
+
+    const handleDrag = useCallback(
+      (e: DraggableEvent, data: DraggableData) => {
+        setPosition((position) => {
+          return {
+            top:
+              position.top + data.deltaY > 0 ? position.top + data.deltaY : 0,
+            left:
+              position.left + data.deltaX > 0 ? position.left + data.deltaX : 0,
+          };
+        });
+        onDrag && onDrag(entityIndex, position);
+      },
+      [onDrag, setPosition, entityIndex, position]
     );
 
-    const levelIndex = levelEntities.length;
+    return (
+      <DraggableCore handle=".handle" onDrag={handleDrag}>
+        <div
+          id={`entity${entityIndex}`}
+          className={`${CLASS_NAME}__entities__entity`}
+          style={position}
+        >
+          <div>
+            <div className={`${CLASS_NAME}__entities__entity__name `}>
+              <Icon icon="menu" className="handle" />
+              <EditableLabelField
+                name={`entities.${entityIndex}.name`}
+                label="Entity Name"
+                required
+              />
+              <Button
+                className={`${CLASS_NAME}__entities__entity__add`}
+                buttonStyle={EnumButtonStyle.Clear}
+                onClick={handleAddEntity}
+                type="button"
+                icon="plus"
+              />
+            </div>
 
-    currentEntity.relationsToEntityIndex = [...relations, currentLength];
+            <FieldArray
+              name={`entities.${entityIndex}.fields`}
+              render={(fieldsArrayHelpers) => (
+                <div className={`${CLASS_NAME}__fields`}>
+                  <Droppable droppableId={`droppable_${entityIndex}`}>
+                    {(provided, snapshot) => (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className={classNames(`${CLASS_NAME}__droppable`, {
+                          [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
+                        })}
+                      >
+                        {currentEntity.fields.map((field, fieldIndex) => (
+                          <FieldItem
+                            key={`${entityIndex}_${fieldIndex}`}
+                            values={values}
+                            entityIndex={entityIndex}
+                            fieldIndex={fieldIndex}
+                            onEdit={onEditField}
+                            editedFieldIdentifier={editedFieldIdentifier}
+                          />
+                        ))}
 
-    setFieldValue(`entities`, [
-      ...entities,
-      {
-        name: "new entity",
-        fields: [],
-        level: newEntityLevel,
-        levelIndex: levelIndex,
-      },
-    ]);
-  }, [entityIndex, setFieldValue, values.entities]);
-
-  const currentEntity = values.entities[entityIndex];
-
-  const handleDrag = useCallback(
-    (e: DraggableEvent, data: DraggableData) => {
-      setPosition((position) => {
-        return {
-          top: position.top + data.deltaY > 0 ? position.top + data.deltaY : 0,
-          left:
-            position.left + data.deltaX > 0 ? position.left + data.deltaX : 0,
-        };
-      });
-      onDrag && onDrag(entityIndex, position);
-    },
-    [onDrag, setPosition, entityIndex, position]
-  );
-
-  return (
-    <DraggableCore handle=".handle" onDrag={handleDrag}>
-      <div
-        id={`entity${entityIndex}`}
-        className={`${CLASS_NAME}__entities__entity`}
-        style={position}
-      >
-        <div>
-          <div className={`${CLASS_NAME}__entities__entity__name `}>
-            <Icon icon="menu" className="handle" />
-            <EditableLabelField
-              name={`entities.${entityIndex}.name`}
-              label="Entity Name"
-              required
-            />
-            <Button
-              className={`${CLASS_NAME}__entities__entity__add`}
-              buttonStyle={EnumButtonStyle.Clear}
-              onClick={handleAddEntity}
-              type="button"
-              icon="plus"
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </div>
+              )}
             />
           </div>
-
-          <FieldArray
-            name={`entities.${entityIndex}.fields`}
-            render={(fieldsArrayHelpers) => (
-              <div className={`${CLASS_NAME}__fields`}>
-                <Droppable droppableId={`droppable_${entityIndex}`}>
-                  {(provided, snapshot) => (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className={classNames(`${CLASS_NAME}__droppable`, {
-                        [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
-                      })}
-                    >
-                      {currentEntity.fields.map((field, fieldIndex) => (
-                        <FieldItem
-                          key={`${entityIndex}_${fieldIndex}`}
-                          values={values}
-                          entityIndex={entityIndex}
-                          fieldIndex={fieldIndex}
-                        />
-                      ))}
-
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </div>
-            )}
-          />
         </div>
-      </div>
-    </DraggableCore>
-  );
-});
+      </DraggableCore>
+    );
+  }
+);
 
 type FieldItemProps = {
   values: FormData;
   entityIndex: number;
   fieldIndex: number;
+  editedFieldIdentifier: FieldIdentifier | null;
+  onEdit: (fieldIdentifier: FieldIdentifier | null) => void;
 };
 
 const FieldItem = React.memo(
-  ({ values, entityIndex, fieldIndex }: FieldItemProps) => {
+  ({
+    values,
+    entityIndex,
+    fieldIndex,
+    editedFieldIdentifier,
+    onEdit,
+  }: FieldItemProps) => {
     const dataType =
       values.entities[entityIndex].fields[fieldIndex].dataType ||
       models.EnumDataType.SingleLineText;
+
+    const handleClick = useCallback(() => {
+      onEdit && onEdit({ entityIndex, fieldIndex });
+    }, [onEdit, entityIndex, fieldIndex]);
+
+    const selected =
+      editedFieldIdentifier &&
+      editedFieldIdentifier.entityIndex === entityIndex &&
+      editedFieldIdentifier.fieldIndex === fieldIndex;
 
     return (
       <Draggable
@@ -495,7 +562,9 @@ const FieldItem = React.memo(
         {(provided, snapshot) => (
           <div ref={provided.innerRef} {...provided.draggableProps}>
             <div
-              className={`${CLASS_NAME}__fields__field`}
+              className={classNames(`${CLASS_NAME}__fields__field`, {
+                [`${CLASS_NAME}__fields__field--selected`]: selected,
+              })}
               {...provided.dragHandleProps}
             >
               <Icon
@@ -505,6 +574,14 @@ const FieldItem = React.memo(
                 }}
               />
               {values.entities[entityIndex].fields[fieldIndex].name}
+              <span className="spacer" />
+              <Button
+                className={`${CLASS_NAME}__fields__field__edit`}
+                buttonStyle={EnumButtonStyle.Clear}
+                type="button"
+                onClick={handleClick}
+                icon="edit"
+              />
             </div>
           </div>
         )}
@@ -513,8 +590,21 @@ const FieldItem = React.memo(
   }
 );
 
-function DragDropEntitiesCanvas() {
+type DragDropEntitiesCanvasProps = {
+  editedFieldIdentifier: FieldIdentifier | null;
+
+  onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
+};
+
+function DragDropEntitiesCanvas({
+  editedFieldIdentifier,
+  onEditField,
+}: DragDropEntitiesCanvasProps) {
   const { setFieldValue, values } = useFormikContext<FormData>();
+
+  const onDragStart = useCallback(() => {
+    onEditField(null);
+  }, [onEditField]);
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
@@ -544,8 +634,10 @@ function DragDropEntitiesCanvas() {
       setFieldValue(`entities.${destinationEntityIndex}.fields`, [
         ...destinationFields,
       ]);
+
+      onEditField(null);
     },
-    [values, setFieldValue]
+    [values, setFieldValue, onEditField]
   );
 
   //used to force redraw the arrows (the internal lists of fields are not updated since it used  )
@@ -560,12 +652,14 @@ function DragDropEntitiesCanvas() {
 
   return (
     <>
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
         {values.entities.map((entity, index) => (
           <EntityItem
             key={`entity_${index}`}
             entityIndex={index}
             onDrag={handleEntityDrag}
+            onEditField={onEditField}
+            editedFieldIdentifier={editedFieldIdentifier}
           />
         ))}
       </DragDropContext>
