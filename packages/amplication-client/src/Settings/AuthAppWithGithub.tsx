@@ -54,9 +54,6 @@ function AuthAppWithGithub({ app, onDone }: Props) {
           "auth with github"
         );
       },
-      onError: (err) => {
-        // console.log(err);
-      },
     }
   );
 
