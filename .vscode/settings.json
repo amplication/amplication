@@ -22,7 +22,8 @@
     "uncontained",
     "unelevated",
     "unmark",
-    "upsert"
+    "upsert",
+    "xsmall"
   ],
   "eslint.workingDirectories": [
     {
