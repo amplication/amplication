@@ -111,7 +111,7 @@ $entity-width: 200px;
       border: $border-black10;
       border-radius: var(--default-border-radius);
       width: $entity-width;
-      overflow: hidden;
+      overflow: visible;
       min-height: $entity-width;
       position: absolute;
       top: 0;
@@ -122,11 +122,13 @@ $entity-width: 200px;
         background-color: var(--black5);
       }
 
-      &__add {
+      &__add.amp-button {
         position: absolute;
         background-color: var(--primary);
-        top: 50%;
-        right: -20px;
+        top: 0;
+        right: 0;
+        width: var(--double-spacing);
+        height: var(--double-spacing);
       }
     }
   }

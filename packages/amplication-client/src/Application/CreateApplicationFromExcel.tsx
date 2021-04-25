@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import classNames from "classnames";
 import { isEmpty, forEach, cloneDeep } from "lodash";
 import omitDeep from "deepdash-es/omitDeep";
@@ -27,7 +33,6 @@ import {
   DragDropContext,
   Droppable,
   Draggable,
-  DraggableProvidedDragHandleProps,
   DropResult,
 } from "react-beautiful-dnd";
 import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";
@@ -62,6 +67,11 @@ type EntityWithViewData = models.AppCreateWithEntitiesEntityInput & {
 
 type FormData = models.AppCreateWithEntitiesInput & {
   entities: EntityWithViewData[];
+};
+
+type EntityPositionData = {
+  top: number;
+  left: number;
 };
 
 const CLASS_NAME = "create-application-from-excel";
@@ -306,16 +316,7 @@ export function CreateApplicationFromExcel() {
                         render={(arrayHelpers) => (
                           <div>
                             <div className={`${CLASS_NAME}__entities`}>
-                              <DragDropFormContext>
-                                {values.entities.map((entity, index) => (
-                                  <EntityItem
-                                    key={`entity_${index}`}
-                                    entityIndex={index}
-                                    loading={loading}
-                                  />
-                                ))}
-                              </DragDropFormContext>
-                              <EntityRelations />
+                              <DragDropEntitiesCanvas />
                             </div>
                           </div>
                         )}
@@ -336,24 +337,21 @@ export function CreateApplicationFromExcel() {
 function EntityRelations() {
   const { values } = useFormikContext<FormData>();
 
-  const relations = values.entities.flatMap((entity, index) => {
-    if (!entity.relationsToEntityIndex) return [];
-    return entity.relationsToEntityIndex.map((relation) => ({
-      key: `${index}_${relation}`,
-      start: `entity${index}`,
-      end: `entity${relation}`,
-    }));
-  });
+  const relations = useMemo(() => {
+    return values.entities.flatMap((entity, index) => {
+      if (!entity.relationsToEntityIndex) return [];
+      return entity.relationsToEntityIndex.map((relation) => ({
+        key: `${index}_${relation}`,
+        start: `entity${index}`,
+        end: `entity${relation}`,
+      }));
+    });
+  }, [values.entities]);
 
   return (
     <div>
       {relations.map((relation) => (
-        <Xarrow
-          {...relation}
-          key={relation.key}
-          startAnchor="right"
-          endAnchor="left"
-        />
+        <Xarrow {...relation} key={relation.key} />
       ))}
     </div>
   );
@@ -361,14 +359,13 @@ function EntityRelations() {
 
 type EntityItemProps = {
   entityIndex: number;
-  loading: boolean;
-  onDrag: () => void;
+  onDrag?: (entityIndex: number, positionData: EntityPositionData) => void;
 };
 
-function EntityItem({ entityIndex, loading, onDrag }: EntityItemProps) {
+const EntityItem = React.memo(({ entityIndex, onDrag }: EntityItemProps) => {
   const { setFieldValue, values } = useFormikContext<FormData>();
 
-  const [position, setPosition] = useState<{ top: number; left: number }>({
+  const [position, setPosition] = useState<EntityPositionData>({
     top: 0,
     left: 0,
   });
@@ -411,34 +408,32 @@ function EntityItem({ entityIndex, loading, onDrag }: EntityItemProps) {
             position.left + data.deltaX > 0 ? position.left + data.deltaX : 0,
         };
       });
-      onDrag && onDrag();
+      onDrag && onDrag(entityIndex, position);
     },
-    [onDrag, setPosition]
+    [onDrag, setPosition, entityIndex, position]
   );
 
   return (
-    <DraggableCore handle=".handle" onDrag={handleDrag} bounds="parent">
+    <DraggableCore handle=".handle" onDrag={handleDrag}>
       <div
         id={`entity${entityIndex}`}
         className={`${CLASS_NAME}__entities__entity`}
         style={position}
       >
         <div>
-          <Button
-            className={`${CLASS_NAME}__entities__entity__add`}
-            buttonStyle={EnumButtonStyle.Clear}
-            onClick={handleAddEntity}
-            disabled={loading}
-            type="button"
-          >
-            +
-          </Button>
-
-          <div className={`${CLASS_NAME}__entities__entity__name handle`}>
+          <div className={`${CLASS_NAME}__entities__entity__name `}>
+            <Icon icon="menu" className="handle" />
             <EditableLabelField
               name={`entities.${entityIndex}.name`}
               label="Entity Name"
               required
+            />
+            <Button
+              className={`${CLASS_NAME}__entities__entity__add`}
+              buttonStyle={EnumButtonStyle.Clear}
+              onClick={handleAddEntity}
+              type="button"
+              icon="plus"
             />
           </div>
 
@@ -456,27 +451,12 @@ function EntityItem({ entityIndex, loading, onDrag }: EntityItemProps) {
                       })}
                     >
                       {currentEntity.fields.map((field, fieldIndex) => (
-                        <Draggable
+                        <FieldItem
                           key={`${entityIndex}_${fieldIndex}`}
-                          draggableId={`${entityIndex}_${fieldIndex}`}
-                          index={fieldIndex}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                            >
-                              <FieldItem
-                                dragHandleProps={provided.dragHandleProps}
-                                values={values}
-                                key={`entity_${entityIndex}_field_${fieldIndex}`}
-                                entityIndex={entityIndex}
-                                fieldIndex={fieldIndex}
-                                loading={loading}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
+                          values={values}
+                          entityIndex={entityIndex}
+                          fieldIndex={fieldIndex}
+                        />
                       ))}
 
                       {provided.placeholder}
@@ -490,67 +470,49 @@ function EntityItem({ entityIndex, loading, onDrag }: EntityItemProps) {
       </div>
     </DraggableCore>
   );
-}
+});
 
 type FieldItemProps = {
   values: FormData;
   entityIndex: number;
   fieldIndex: number;
   loading: boolean;
-  dragHandleProps: DraggableProvidedDragHandleProps | undefined;
 };
 
-function FieldItem({
-  values,
-  entityIndex,
-  fieldIndex,
-  loading,
-  dragHandleProps,
-}: FieldItemProps) {
-  const dataType =
-    values.entities[entityIndex].fields[fieldIndex].dataType ||
-    models.EnumDataType.SingleLineText;
+const FieldItem = React.memo(
+  ({ values, entityIndex, fieldIndex, loading }: FieldItemProps) => {
+    const dataType =
+      values.entities[entityIndex].fields[fieldIndex].dataType ||
+      models.EnumDataType.SingleLineText;
 
-  return (
-    <div className={`${CLASS_NAME}__fields__field`} {...dragHandleProps}>
-      <Icon
-        icon={{
-          icon: DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon,
-          size: "xsmall",
-        }}
-      />
-
-      {values.entities[entityIndex].fields[fieldIndex].name}
-
-      {/* <EditableLabelField
-        name={`entities.${entityIndex}.fields.${fieldIndex}.name`}
-        label="Field Name"
-        required
-      /> */}
-      {/* 
-      <SelectField
-        label="Data Type"
-        name={`entities.${entityIndex}.fields.${fieldIndex}.dataType`}
-        options={DATA_TYPE_OPTIONS}
-      />
-
-      <Button
-        buttonStyle={EnumButtonStyle.Clear}
-        onClick={handleModeToNewEntity}
-        disabled={loading}
-        type="button"
+    return (
+      <Draggable
+        key={`${entityIndex}_${fieldIndex}`}
+        draggableId={`${entityIndex}_${fieldIndex}`}
+        index={fieldIndex}
       >
-        Move to new entity
-      </Button> */}
-    </div>
-  );
-}
+        {(provided, snapshot) => (
+          <div ref={provided.innerRef} {...provided.draggableProps}>
+            <div
+              className={`${CLASS_NAME}__fields__field`}
+              {...provided.dragHandleProps}
+            >
+              <Icon
+                icon={{
+                  icon: DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon,
+                  size: "xsmall",
+                }}
+              />
+              {values.entities[entityIndex].fields[fieldIndex].name}
+            </div>
+          </div>
+        )}
+      </Draggable>
+    );
+  }
+);
 
-type DragDropFormContextProps = {
-  children: React.ReactNode;
-};
-
-function DragDropFormContext(props: DragDropFormContextProps) {
+function DragDropEntitiesCanvas() {
   const { setFieldValue, values } = useFormikContext<FormData>();
 
   const onDragEnd = useCallback(
@@ -585,8 +547,29 @@ function DragDropFormContext(props: DragDropFormContextProps) {
     [values, setFieldValue]
   );
 
+  //used to force redraw the arrows (the internal lists of fields are not updated since it used  )
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  const handleEntityDrag = useCallback(
+    (entityIndex: number, positionData: EntityPositionData) => {
+      forceUpdate();
+    },
+    [forceUpdate]
+  );
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>{props.children}</DragDropContext>
+    <>
+      <DragDropContext onDragEnd={onDragEnd}>
+        {values.entities.map((entity, index) => (
+          <EntityItem
+            key={`entity_${index}`}
+            entityIndex={index}
+            onDrag={handleEntityDrag}
+          />
+        ))}
+      </DragDropContext>
+      <EntityRelations />
+    </>
   );
 }
 
