@@ -178,10 +178,10 @@ export class GithubService {
 
   async getOAuthAppAuthorizationUrl(appId: string) {
     const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
-    if (!clientID) {
-      return null;
-    }
     const clientSecret = await this.getSecret();
+
+    if (!clientID || !clientSecret)
+      throw new Error(MISSING_CLIENT_SECRET_ERROR);
 
     const app = new OAuthApp({
       clientId: clientID,

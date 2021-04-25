@@ -48,10 +48,15 @@ function AuthAppWithGithub({ app, onDone }: Props) {
     START_AUTH_APP_WITH_GITHUB,
     {
       onCompleted: (data) => {
+        console.log(data);
+
         openSignInWindow(
           data.startAuthorizeAppWithGithub.url,
           "auth with github"
         );
+      },
+      onError: (err) => {
+        // console.log(err);
       },
     }
   );
