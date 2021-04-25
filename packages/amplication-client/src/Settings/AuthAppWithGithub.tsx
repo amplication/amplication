@@ -26,6 +26,7 @@ type DType = {
 
 // eslint-disable-next-line
 let triggerOnDone = () => {};
+let triggerAuthFailed = () => {};
 
 type Props = {
   app: models.App;
@@ -40,6 +41,7 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 function AuthAppWithGithub({ app, onDone }: Props) {
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
+  const [popupFailed, setPopupFailed] = useState(false);
   const { trackEvent } = useTracking();
 
   const [authWithGithub, { loading, error }] = useMutation<DType>(
@@ -96,11 +98,10 @@ function AuthAppWithGithub({ app, onDone }: Props) {
     setConfirmRemove(false);
     // `handleAuthWithGithubClick -> setConfirmRemove` is triggered by `Toggle.onValueChange`.
     // Behind the scenes, a `MDCSwitchFoundation.setChecked(false)` was triggered.
-    // now that the toggle is cancelled, should explicitly call `MDCSwitchFoundation.setChecked(true)`. 
+    // now that the toggle is cancelled, should explicitly call `MDCSwitchFoundation.setChecked(true)`.
     MDCSwitchRef.current?.setChecked(true);
-  }, [setConfirmRemove,MDCSwitchRef]);
-  
-  
+  }, [setConfirmRemove, MDCSwitchRef]);
+
   const handleConfirmRemoveAuth = useCallback(() => {
     trackEvent({
       eventName: "removeAuthAppWithGitHub",
@@ -112,9 +113,15 @@ function AuthAppWithGithub({ app, onDone }: Props) {
       },
     }).catch(console.error);
   }, [removeAuthWithGithub, app, trackEvent]);
-
+  const handlePopupFailedClose = () => {
+    MDCSwitchRef.current?.setChecked(false);
+    setPopupFailed(false);
+  };
   triggerOnDone = () => {
     onDone();
+  };
+  triggerAuthFailed = () => {
+    setPopupFailed(true);
   };
   const errorMessage = formatError(error || removeError);
 
@@ -141,6 +148,14 @@ function AuthAppWithGithub({ app, onDone }: Props) {
           applicationId={app.id}
           onCompleted={handleSelectRepoDialogDismiss}
         />
+      </Dialog>
+      <Dialog
+        className="popup-failed-dialog"
+        isOpen={popupFailed}
+        title="Popup failed to load"
+        onDismiss={handlePopupFailedClose}
+      >
+        Please make sure that you allow popup windows in the browser
       </Dialog>
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         <Toggle
@@ -263,7 +278,11 @@ const openSignInWindow = (url: string, name: string) => {
   const strWindowFeatures = `toolbar=no, menubar=no, width=${width}, height=${height}, top=${top}, left=${left}`;
 
   windowObjectReference = window.open(url, name, strWindowFeatures);
-  windowObjectReference.focus();
+  if (windowObjectReference) {
+    windowObjectReference.focus();
+  } else {
+    triggerAuthFailed();
+  }
 
   // add the listener for receiving a message from the popup
   window.addEventListener("message", (event) => receiveMessage(event), false);
