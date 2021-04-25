@@ -177,11 +177,7 @@ export class GithubService {
   }
 
   async getOAuthAppAuthorizationUrl(appId: string) {
-    const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
-    const clientSecret = await this.getSecret();
-
-    if (!clientID || !clientSecret)
-      throw new Error(MISSING_CLIENT_SECRET_ERROR);
+    const [clientID, clientSecret] = await this.getGithubIdAndSecret();
 
     const app = new OAuthApp({
       clientId: clientID,
@@ -207,11 +203,7 @@ export class GithubService {
     state: string,
     code: string
   ): Promise<string> {
-    const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
-    if (!clientID) {
-      return null;
-    }
-    const clientSecret = await this.getSecret();
+    const [clientID, clientSecret] = await this.getGithubIdAndSecret();
 
     const app = new OAuthApp({
       clientId: clientID,
@@ -225,7 +217,13 @@ export class GithubService {
 
     return token;
   }
-
+  async getGithubIdAndSecret() {
+    const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
+    const clientSecret = await this.getSecret();
+    if (!clientID || !clientSecret)
+      throw new Error(MISSING_CLIENT_SECRET_ERROR);
+    return [clientID, clientSecret];
+  }
   private async getSecret(): Promise<string> {
     const clientSecret = this.configService.get(GITHUB_CLIENT_SECRET_VAR);
     if (clientSecret) {
