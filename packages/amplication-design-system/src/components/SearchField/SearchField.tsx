@@ -29,4 +29,5 @@ const SearchField = ({ label, placeholder, onChange }: Props) => {
     </div>
   );
 };
+
 export default SearchField;
