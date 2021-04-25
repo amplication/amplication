@@ -100,7 +100,6 @@ function AuthAppWithGithub({ app, onDone }: Props) {
     // Behind the scenes, a `MDCSwitchFoundation.setChecked(false)` was triggered.
     // now that the toggle is cancelled, should explicitly call `MDCSwitchFoundation.setChecked(true)`.
     MDCSwitchRef.current?.setChecked(true);
-    setPopupFailed(false);
   }, [setConfirmRemove, MDCSwitchRef]);
 
   const handleConfirmRemoveAuth = useCallback(() => {
