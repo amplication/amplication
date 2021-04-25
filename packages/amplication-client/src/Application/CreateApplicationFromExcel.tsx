@@ -74,6 +74,13 @@ type EntityPositionData = {
   left: number;
 };
 
+const ARROW_PROPS = {
+  color: "white",
+  strokeWidth: 2,
+  headSize: 5,
+  curveness: 0.7,
+};
+
 const CLASS_NAME = "create-application-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
@@ -150,15 +157,17 @@ export function CreateApplicationFromExcel() {
   }, [setFileName]);
 
   const initialValues = useMemo(() => {
+    const fileNameWithoutExtension = fileName?.replace(/\.[^/.]+$/, "");
+
     const data: FormData = {
       app: {
-        name: fileName || "",
-        description: fileName || "",
+        name: fileNameWithoutExtension || "",
+        description: fileNameWithoutExtension || "",
       },
       commitMessage: `Import schema from ${fileName}`,
       entities: [
         {
-          name: fileName || "",
+          name: fileNameWithoutExtension || "",
           fields: importList.map((field) => ({
             name: field.fieldName,
             dataType: field.fieldType,
@@ -210,7 +219,7 @@ export function CreateApplicationFromExcel() {
 
         if (fieldName.toLowerCase().includes("date")) {
           fieldType = models.EnumDataType.DateTime;
-        } else if (sampleData.some((value) => isNaN(+value))) {
+        } else if (sampleData.some((value) => isNaN(+(value as any)))) {
           fieldType = models.EnumDataType.SingleLineText;
         } else {
           if (sampleData.every((value) => Number.isInteger(value))) {
@@ -311,16 +320,9 @@ export function CreateApplicationFromExcel() {
                     </div>
 
                     <div className={`${CLASS_NAME}__layout__body__content`}>
-                      <FieldArray
-                        name="entities"
-                        render={(arrayHelpers) => (
-                          <div>
-                            <div className={`${CLASS_NAME}__entities`}>
-                              <DragDropEntitiesCanvas />
-                            </div>
-                          </div>
-                        )}
-                      />
+                      <div className={`${CLASS_NAME}__entities`}>
+                        <DragDropEntitiesCanvas />
+                      </div>
                     </div>
                   </Form>
                 )}
@@ -351,7 +353,7 @@ function EntityRelations() {
   return (
     <div>
       {relations.map((relation) => (
-        <Xarrow {...relation} key={relation.key} />
+        <Xarrow {...relation} key={relation.key} {...ARROW_PROPS} />
       ))}
     </div>
   );
@@ -476,11 +478,10 @@ type FieldItemProps = {
   values: FormData;
   entityIndex: number;
   fieldIndex: number;
-  loading: boolean;
 };
 
 const FieldItem = React.memo(
-  ({ values, entityIndex, fieldIndex, loading }: FieldItemProps) => {
+  ({ values, entityIndex, fieldIndex }: FieldItemProps) => {
     const dataType =
       values.entities[entityIndex].fields[fieldIndex].dataType ||
       models.EnumDataType.SingleLineText;
@@ -601,7 +602,8 @@ const SheetAcceptedFormats = [
   .join(",");
 // cSpell: enable
 
-const generateColumnKeys = (range: string): ColumnKey[] => {
+const generateColumnKeys = (range: string | undefined): ColumnKey[] => {
+  if (undefined === range) return [];
   let keys = [],
     TotalColumns = XLSX.utils.decode_range(range).e.c + 1;
 

@@ -41,7 +41,7 @@ function MainLayout({ children, footer, className }: Props) {
 }
 
 type MenuProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 const Menu = ({ children }: MenuProps) => {

@@ -117,6 +117,10 @@ $entity-width: 200px;
       top: 0;
       left: 0;
 
+      .handle {
+        cursor: grab;
+      }
+
       &__name {
         padding: var(--default-spacing);
         background-color: var(--black5);
