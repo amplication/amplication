@@ -399,6 +399,7 @@ function EntityRelations() {
 }
 
 type EntityItemProps = {
+  entity: models.AppCreateWithEntitiesEntityInput;
   entityIndex: number;
   editedFieldIdentifier: FieldIdentifier | null;
 
@@ -409,14 +410,13 @@ type EntityItemProps = {
 
 const EntityItem = React.memo(
   ({
+    entity,
     entityIndex,
     editedFieldIdentifier,
     onDrag,
     onEditField,
     onAddEntity,
   }: EntityItemProps) => {
-    const { values } = useFormikContext<FormData>();
-
     const [position, setPosition] = useState<EntityPositionData>({
       top: 0,
       left: 0,
@@ -425,8 +425,6 @@ const EntityItem = React.memo(
     const handleAddEntity = useCallback(() => {
       onAddEntity && onAddEntity(entityIndex);
     }, [entityIndex, onAddEntity]);
-
-    const currentEntity = values.entities[entityIndex];
 
     const handleDrag = useCallback(
       (e: DraggableEvent, data: DraggableData) => {
@@ -483,7 +481,7 @@ const EntityItem = React.memo(
                           [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
                         })}
                       >
-                        {currentEntity.fields.map((field, fieldIndex) => (
+                        {entity.fields.map((field, fieldIndex) => (
                           <FieldItem
                             key={`${entityIndex}_${fieldIndex}`}
                             field={field}
@@ -681,6 +679,7 @@ function DragDropEntitiesCanvas({
         {values.entities.map((entity, index) => (
           <EntityItem
             key={`entity_${index}`}
+            entity={entity}
             entityIndex={index}
             onDrag={handleEntityDrag}
             onEditField={onEditField}
