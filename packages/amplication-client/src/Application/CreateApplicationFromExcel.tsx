@@ -486,7 +486,7 @@ const EntityItem = React.memo(
                         {currentEntity.fields.map((field, fieldIndex) => (
                           <FieldItem
                             key={`${entityIndex}_${fieldIndex}`}
-                            values={values}
+                            field={field}
                             entityIndex={entityIndex}
                             fieldIndex={fieldIndex}
                             onEdit={onEditField}
@@ -509,7 +509,7 @@ const EntityItem = React.memo(
 );
 
 type FieldItemProps = {
-  values: FormData;
+  field: models.AppCreateWithEntitiesFieldInput;
   entityIndex: number;
   fieldIndex: number;
   editedFieldIdentifier: FieldIdentifier | null;
@@ -518,15 +518,13 @@ type FieldItemProps = {
 
 const FieldItem = React.memo(
   ({
-    values,
+    field,
     entityIndex,
     fieldIndex,
     editedFieldIdentifier,
     onEdit,
   }: FieldItemProps) => {
-    const dataType =
-      values.entities[entityIndex].fields[fieldIndex].dataType ||
-      models.EnumDataType.SingleLineText;
+    const dataType = field.dataType || models.EnumDataType.SingleLineText;
 
     const handleClick = useCallback(() => {
       onEdit && onEdit({ entityIndex, fieldIndex });
@@ -557,7 +555,7 @@ const FieldItem = React.memo(
                   size: "xsmall",
                 }}
               />
-              {values.entities[entityIndex].fields[fieldIndex].name}
+              {field.name}
               <span className="spacer" />
               <Button
                 className={`${CLASS_NAME}__fields__field__edit`}
