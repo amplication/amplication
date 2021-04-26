@@ -1,5 +1,9 @@
 @import "../style/index.scss";
 
+$z-index-edit-area: 998;
+$z-index-entity-hover: 997;
+$z-index-entity-default: 2;
+
 $max-width: 700px;
 $dropzone-height: 250px;
 $entity-width: 200px;
@@ -93,6 +97,7 @@ $entity-width: 200px;
     padding: var(--default-spacing);
     border: $border-primary;
     border-color: transparent;
+
     &--over {
       border: $border-primary;
     }
@@ -117,6 +122,9 @@ $entity-width: 200px;
       top: 0;
       left: 0;
 
+      &:hover {
+        z-index: $z-index-entity-hover;
+      }
       .handle {
         cursor: grab;
       }
@@ -146,11 +154,11 @@ $entity-width: 200px;
       border-radius: var(--default-border-radius);
       border: $border-black10;
       border-color: transparent;
+      position: relative;
 
       &--selected {
         background-color: var(--black5);
         border: $border-black10;
-        color: var(--primary);
       }
 
       &:hover {
@@ -164,6 +172,19 @@ $entity-width: 200px;
 
       &__edit {
         visibility: hidden;
+      }
+
+      &__edit-area {
+        position: absolute;
+        left: calc(100% + var(--default-spacing-small));
+        top: 0;
+        background: var(--black5);
+        border: $border-black10;
+        border-radius: var(--default-border-radius);
+        padding: var(--default-spacing-small);
+        width: $entity-width;
+        z-index: $z-index-edit-area;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
       }
 
       &:hover {

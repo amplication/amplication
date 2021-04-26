@@ -28,7 +28,7 @@ import { DisplayNameField } from "../Components/DisplayNameField";
 import Xarrow from "react-xarrows";
 
 import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
-import { SelectField } from "@amplication/design-system";
+import { SelectField, TextField } from "@amplication/design-system";
 import {
   DragDropContext,
   Droppable,
@@ -96,16 +96,6 @@ const MAX_SAMPLE_DATA = 3;
 export function CreateApplicationFromExcel() {
   const [importList, setImportList] = React.useState<ImportField[]>([]);
   const [fileName, setFileName] = React.useState<string | null>(null);
-  const [editedField, setEditedField] = React.useState<FieldIdentifier | null>(
-    null
-  );
-
-  const handleEditField = useCallback(
-    (fieldIdentifier: FieldIdentifier | null) => {
-      setEditedField(fieldIdentifier);
-    },
-    []
-  );
 
   const { trackEvent } = useTracking();
 
@@ -314,53 +304,32 @@ export function CreateApplicationFromExcel() {
                 render={({ values }) => (
                   <Form className={`${CLASS_NAME}__layout__body`}>
                     <div className={`${CLASS_NAME}__layout__body__side`}>
-                      {editedField ? (
-                        <div>
-                          <EditableLabelField
-                            name={`entities.${editedField.entityIndex}.fields.${editedField.fieldIndex}.name`}
-                            label="Field Name"
-                            required
-                          />
+                      <div className={`${CLASS_NAME}__message`}>
+                        Name your application, and edit the schema if needed.
+                        You can also change the settings later. Click on "Create
+                        App" when you are ready.
+                      </div>
 
-                          <SelectField
-                            label="Data Type"
-                            name={`entities.${editedField.entityIndex}.fields.${editedField.fieldIndex}.dataType`}
-                            options={DATA_TYPE_OPTIONS}
-                          />
-                        </div>
-                      ) : (
-                        <>
-                          <div className={`${CLASS_NAME}__message`}>
-                            Name your application, and edit the schema if
-                            needed. You can also change the settings later.
-                            Click on "Create App" when you are ready.
-                          </div>
+                      <h3>{fileName}</h3>
 
-                          <h3>{fileName}</h3>
+                      <DisplayNameField
+                        name="app.name"
+                        label="Application Name"
+                        required
+                      />
 
-                          <DisplayNameField
-                            name="app.name"
-                            label="Application Name"
-                            required
-                          />
-
-                          <Button
-                            buttonStyle={EnumButtonStyle.Primary}
-                            disabled={loading}
-                            type="submit"
-                          >
-                            Create App
-                          </Button>
-                        </>
-                      )}
+                      <Button
+                        buttonStyle={EnumButtonStyle.Primary}
+                        disabled={loading}
+                        type="submit"
+                      >
+                        Create App
+                      </Button>
                     </div>
 
                     <div className={`${CLASS_NAME}__layout__body__content`}>
                       <div className={`${CLASS_NAME}__entities`}>
-                        <DragDropEntitiesCanvas
-                          onEditField={handleEditField}
-                          editedFieldIdentifier={editedField}
-                        />
+                        <DragDropEntitiesCanvas />
                       </div>
                     </div>
                   </Form>
@@ -549,6 +518,21 @@ const FieldItem = React.memo(
                 onClick={handleClick}
                 icon="edit"
               />
+              {selected && (
+                <div className={`${CLASS_NAME}__fields__field__edit-area`}>
+                  <TextField
+                    name={`entities.${entityIndex}.fields.${fieldIndex}.name`}
+                    label="Field Name"
+                    required
+                  />
+
+                  <SelectField
+                    label="Data Type"
+                    name={`entities.${entityIndex}.fields.${fieldIndex}.dataType`}
+                    options={DATA_TYPE_OPTIONS}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -557,21 +541,23 @@ const FieldItem = React.memo(
   }
 );
 
-type DragDropEntitiesCanvasProps = {
-  editedFieldIdentifier: FieldIdentifier | null;
-
-  onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
-};
-
-function DragDropEntitiesCanvas({
-  editedFieldIdentifier,
-  onEditField,
-}: DragDropEntitiesCanvasProps) {
+function DragDropEntitiesCanvas() {
   const { setFieldValue, values } = useFormikContext<FormData>();
 
+  const [editedField, setEditedField] = React.useState<FieldIdentifier | null>(
+    null
+  );
+
+  const handleEditField = useCallback(
+    (fieldIdentifier: FieldIdentifier | null) => {
+      setEditedField(fieldIdentifier);
+    },
+    []
+  );
+
   const onFieldDragStart = useCallback(() => {
-    onEditField(null);
-  }, [onEditField]);
+    setEditedField(null);
+  }, [setEditedField]);
 
   const onFieldDragEnd = useCallback(
     (result: DropResult) => {
@@ -602,9 +588,9 @@ function DragDropEntitiesCanvas({
         ...destinationFields,
       ]);
 
-      onEditField(null);
+      setEditedField(null);
     },
-    [values, setFieldValue, onEditField]
+    [values, setFieldValue, setEditedField]
   );
 
   const [entitiesPosition, setEntitiesPosition] = useState<
@@ -683,6 +669,7 @@ function DragDropEntitiesCanvas({
 
   return (
     <>
+      <EntityRelations entities={values.entities} />
       <DragDropContext
         onDragEnd={onFieldDragEnd}
         onDragStart={onFieldDragStart}
@@ -694,13 +681,12 @@ function DragDropEntitiesCanvas({
             entityIndex={index}
             positionData={entitiesPosition[index]}
             onDrag={handleEntityDrag}
-            onEditField={onEditField}
+            onEditField={handleEditField}
             onAddEntity={handleAddEntity}
-            editedFieldIdentifier={editedFieldIdentifier}
+            editedFieldIdentifier={editedField}
           />
         ))}
       </DragDropContext>
-      <EntityRelations entities={values.entities} />
     </>
   );
 }
