@@ -402,8 +402,8 @@ type EntityItemProps = {
   entity: models.AppCreateWithEntitiesEntityInput;
   entityIndex: number;
   editedFieldIdentifier: FieldIdentifier | null;
-
-  onDrag?: (entityIndex: number, positionData: EntityPositionData) => void;
+  positionData: EntityPositionData;
+  onDrag?: (entityIndex: number, data: DraggableData) => void;
   onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
   onAddEntity: (entityIndex: number) => void;
 };
@@ -413,43 +413,28 @@ const EntityItem = React.memo(
     entity,
     entityIndex,
     editedFieldIdentifier,
+    positionData,
     onDrag,
     onEditField,
     onAddEntity,
   }: EntityItemProps) => {
-    const [position, setPosition] = useState<EntityPositionData>({
-      top: 0,
-      left: 0,
-    });
-
     const handleAddEntity = useCallback(() => {
       onAddEntity && onAddEntity(entityIndex);
     }, [entityIndex, onAddEntity]);
 
     const handleDrag = useCallback(
       (e: DraggableEvent, data: DraggableData) => {
-        setPosition((position) => {
-          return {
-            top:
-              position.top + data.deltaY > 0 ? position.top + data.deltaY : 0,
-            left:
-              position.left + data.deltaX > 0 ? position.left + data.deltaX : 0,
-          };
-        });
+        onDrag && onDrag(entityIndex, data);
       },
-      [setPosition]
+      [onDrag, entityIndex]
     );
-
-    useEffect(() => {
-      onDrag && onDrag(entityIndex, position);
-    }, [onDrag, position, entityIndex]);
 
     return (
       <DraggableCore handle=".handle" onDrag={handleDrag}>
         <div
           id={`entity${entityIndex}`}
           className={`${CLASS_NAME}__entities__entity`}
-          style={position}
+          style={positionData}
         >
           <div>
             <div className={`${CLASS_NAME}__entities__entity__name `}>
@@ -622,15 +607,27 @@ function DragDropEntitiesCanvas({
 
   const [entitiesPosition, setEntitiesPosition] = useState<
     EntitiesPositionData
-  >([]);
+  >({ 0: { top: 0, left: 0 } });
 
   //used to force redraw the arrows (the internal lists of fields are not updated since it used  )
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const handleEntityDrag = useCallback(
-    (entityIndex: number, positionData: EntityPositionData) => {
+    (entityIndex: number, draggableData: DraggableData) => {
       setEntitiesPosition((current) => {
-        current[entityIndex] = positionData;
+        const position = current[entityIndex] || { top: 0, left: 0 };
+        const newPosition = {
+          top:
+            position.top + draggableData.deltaY > 0
+              ? position.top + draggableData.deltaY
+              : 0,
+          left:
+            position.left + draggableData.deltaX > 0
+              ? position.left + draggableData.deltaX
+              : 0,
+        };
+
+        current[entityIndex] = newPosition;
 
         return current;
       });
@@ -666,6 +663,18 @@ function DragDropEntitiesCanvas({
           levelIndex: levelIndex,
         },
       ]);
+
+      setEntitiesPosition((current) => {
+        const position = current[entityIndex];
+        const newPosition = {
+          top: position.top,
+          left: position.left + 300,
+        };
+
+        current[currentLength] = newPosition;
+
+        return current;
+      });
     },
     [setFieldValue, values.entities]
   );
@@ -681,6 +690,7 @@ function DragDropEntitiesCanvas({
             key={`entity_${index}`}
             entity={entity}
             entityIndex={index}
+            positionData={entitiesPosition[index]}
             onDrag={handleEntityDrag}
             onEditField={onEditField}
             onAddEntity={handleAddEntity}
