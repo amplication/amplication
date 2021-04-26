@@ -16,7 +16,7 @@ export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "prisma-client-js"
 );
 
-export const DATA_SOURCE = {
+export const DATA_SOURCE: PrismaSchemaDSL.DataSource = {
   name: "postgres",
   provider: PrismaSchemaDSL.DataSourceProvider.PostgreSQL,
   url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
@@ -35,11 +35,11 @@ export async function createPrismaSchema(entities: Entity[]): Promise<string> {
     entities.flatMap((entity) => entity.fields),
     "name"
   );
-  const models = entities.map((entity) =>
+  const models: PrismaSchemaDSL.Model[] = entities.map((entity) =>
     createPrismaModel(entity, fieldNamesCount)
   );
 
-  const enums = entities.flatMap((entity) => {
+  const enums: PrismaSchemaDSL.Enum[] = entities.flatMap((entity) => {
     const enumFields = getEnumFields(entity);
     return enumFields.map((field) => createPrismaEnum(field, entity));
   });
