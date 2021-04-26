@@ -375,11 +375,13 @@ export function CreateApplicationFromExcel() {
   );
 }
 
-function EntityRelations() {
-  const { values } = useFormikContext<FormData>();
+type EntityRelationsProps = {
+  entities: models.AppCreateWithEntitiesEntityInput[];
+};
 
+function EntityRelations({ entities }: EntityRelationsProps) {
   const relations = useMemo(() => {
-    return values.entities.flatMap((entity, index) => {
+    return entities.flatMap((entity, index) => {
       if (!entity.relationsToEntityIndex) return [];
       return entity.relationsToEntityIndex.map((relation) => ({
         key: `${index}_${relation}`,
@@ -387,7 +389,7 @@ function EntityRelations() {
         end: `entity${relation}`,
       }));
     });
-  }, [values.entities]);
+  }, [entities]);
 
   return (
     <div>
@@ -698,7 +700,7 @@ function DragDropEntitiesCanvas({
           />
         ))}
       </DragDropContext>
-      <EntityRelations />
+      <EntityRelations entities={values.entities} />
     </>
   );
 }
