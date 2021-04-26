@@ -74,6 +74,10 @@ type EntityPositionData = {
   left: number;
 };
 
+type EntitiesPositionData = {
+  [index: number]: EntityPositionData;
+};
+
 type FieldIdentifier = {
   entityIndex: number;
   fieldIndex: number;
@@ -98,7 +102,6 @@ export function CreateApplicationFromExcel() {
 
   const handleEditField = useCallback(
     (fieldIdentifier: FieldIdentifier | null) => {
-      console.log(fieldIdentifier);
       setEditedField(fieldIdentifier);
     },
     []
@@ -201,7 +204,6 @@ export function CreateApplicationFromExcel() {
         "level",
         "levelIndex",
       ]);
-      console.log(sanitizedData);
       createAppWithEntities({ variables: { data: sanitizedData } }).catch(
         console.error
       );
@@ -402,6 +404,7 @@ type EntityItemProps = {
 
   onDrag?: (entityIndex: number, positionData: EntityPositionData) => void;
   onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
+  onAddEntity: (entityIndex: number) => void;
 };
 
 const EntityItem = React.memo(
@@ -410,8 +413,9 @@ const EntityItem = React.memo(
     editedFieldIdentifier,
     onDrag,
     onEditField,
+    onAddEntity,
   }: EntityItemProps) => {
-    const { setFieldValue, values } = useFormikContext<FormData>();
+    const { values } = useFormikContext<FormData>();
 
     const [position, setPosition] = useState<EntityPositionData>({
       top: 0,
@@ -419,31 +423,8 @@ const EntityItem = React.memo(
     });
 
     const handleAddEntity = useCallback(() => {
-      const entities: EntityWithViewData[] = cloneDeep(values.entities);
-      const currentLength = entities.length;
-      const relations = entities[entityIndex].relationsToEntityIndex || [];
-      const currentEntity = entities[entityIndex];
-
-      const newEntityLevel = currentEntity.level ? currentEntity.level + 1 : 1;
-
-      const levelEntities = entities.filter(
-        (entity) => entity.level === newEntityLevel
-      );
-
-      const levelIndex = levelEntities.length;
-
-      currentEntity.relationsToEntityIndex = [...relations, currentLength];
-
-      setFieldValue(`entities`, [
-        ...entities,
-        {
-          name: "new entity",
-          fields: [],
-          level: newEntityLevel,
-          levelIndex: levelIndex,
-        },
-      ]);
-    }, [entityIndex, setFieldValue, values.entities]);
+      onAddEntity && onAddEntity(entityIndex);
+    }, [entityIndex, onAddEntity]);
 
     const currentEntity = values.entities[entityIndex];
 
@@ -457,10 +438,13 @@ const EntityItem = React.memo(
               position.left + data.deltaX > 0 ? position.left + data.deltaX : 0,
           };
         });
-        onDrag && onDrag(entityIndex, position);
       },
-      [onDrag, setPosition, entityIndex, position]
+      [setPosition]
     );
+
+    useEffect(() => {
+      onDrag && onDrag(entityIndex, position);
+    }, [onDrag, position, entityIndex]);
 
     return (
       <DraggableCore handle=".handle" onDrag={handleDrag}>
@@ -602,11 +586,11 @@ function DragDropEntitiesCanvas({
 }: DragDropEntitiesCanvasProps) {
   const { setFieldValue, values } = useFormikContext<FormData>();
 
-  const onDragStart = useCallback(() => {
+  const onFieldDragStart = useCallback(() => {
     onEditField(null);
   }, [onEditField]);
 
-  const onDragEnd = useCallback(
+  const onFieldDragEnd = useCallback(
     (result: DropResult) => {
       // dropped outside the list
       if (!result.destination) {
@@ -640,25 +624,69 @@ function DragDropEntitiesCanvas({
     [values, setFieldValue, onEditField]
   );
 
+  const [entitiesPosition, setEntitiesPosition] = useState<
+    EntitiesPositionData
+  >([]);
+
   //used to force redraw the arrows (the internal lists of fields are not updated since it used  )
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const handleEntityDrag = useCallback(
     (entityIndex: number, positionData: EntityPositionData) => {
+      setEntitiesPosition((current) => {
+        current[entityIndex] = positionData;
+
+        return current;
+      });
+
       forceUpdate();
     },
     [forceUpdate]
   );
 
+  const handleAddEntity = useCallback(
+    (entityIndex: number) => {
+      const entities: EntityWithViewData[] = cloneDeep(values.entities);
+      const currentLength = entities.length;
+      const relations = entities[entityIndex].relationsToEntityIndex || [];
+      const currentEntity = entities[entityIndex];
+
+      const newEntityLevel = currentEntity.level ? currentEntity.level + 1 : 1;
+
+      const levelEntities = entities.filter(
+        (entity) => entity.level === newEntityLevel
+      );
+
+      const levelIndex = levelEntities.length;
+
+      currentEntity.relationsToEntityIndex = [...relations, currentLength];
+
+      setFieldValue(`entities`, [
+        ...entities,
+        {
+          name: "new entity",
+          fields: [],
+          level: newEntityLevel,
+          levelIndex: levelIndex,
+        },
+      ]);
+    },
+    [setFieldValue, values.entities]
+  );
+
   return (
     <>
-      <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
+      <DragDropContext
+        onDragEnd={onFieldDragEnd}
+        onDragStart={onFieldDragStart}
+      >
         {values.entities.map((entity, index) => (
           <EntityItem
             key={`entity_${index}`}
             entityIndex={index}
             onDrag={handleEntityDrag}
             onEditField={onEditField}
+            onAddEntity={handleAddEntity}
             editedFieldIdentifier={editedFieldIdentifier}
           />
         ))}
