@@ -8,6 +8,7 @@ import { formatError } from "../util/error";
 import { Icon } from "@rmwc/icon";
 import classNames from "classnames";
 import { isMobileOnly } from "react-device-detect";
+import { useTracking } from "../util/analytics";
 
 import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
@@ -22,13 +23,17 @@ type TData = {
 
 function Applications() {
   const [newApp, setNewApp] = useState<boolean>(false);
+  const { trackEvent } = useTracking();
 
   const { data, error } = useQuery<TData>(GET_APPLICATIONS);
   const errorMessage = formatError(error);
 
   const handleNewAppClick = useCallback(() => {
+    trackEvent({
+      eventName: "openNewAppDialog",
+    });
     setNewApp(!newApp);
-  }, [newApp, setNewApp]);
+  }, [newApp, setNewApp, trackEvent]);
 
   if (isMobileOnly) {
     return <MobileMessage />;
@@ -40,7 +45,7 @@ function Applications() {
         className="new-app-dialog"
         isOpen={newApp}
         onDismiss={handleNewAppClick}
-        title="New App"
+        title="Create new application"
       >
         <NewApplication />
       </Dialog>
@@ -65,11 +70,6 @@ function Applications() {
                   <Icon icon="plus" />
                   Create New App
                 </Link>
-                <Link to="/import-from-excel" className="applications__new-app">
-                  <Icon icon="plus" />
-                  Start from Excel file
-                </Link>
-
                 {data?.apps.map((app) => {
                   return <ApplicationCard key={app.id} app={app} />;
                 })}

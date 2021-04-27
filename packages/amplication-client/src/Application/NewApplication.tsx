@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
+import { useHistory, Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { GlobalHotKeys } from "react-hotkeys";
@@ -52,8 +52,30 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
+const STEP_SELECT_TYPE = "step-select-type";
+const STEP_START_FROM_SCRATCH = "step-start-from-scratch";
+
 const NewApplication = () => {
   const { trackEvent } = useTracking();
+
+  const [currentStep, setCurrentStep] = useState<string>(STEP_SELECT_TYPE);
+
+  const StepStartFromScratch = useCallback(() => {
+    setCurrentStep(STEP_START_FROM_SCRATCH);
+    trackEvent({
+      eventName: "createAppStep-startFromScratch",
+    });
+  }, [setCurrentStep, trackEvent]);
+
+  const StepImportExcel = useCallback(() => {
+    trackEvent({
+      eventName: "createAppStep-importExcel",
+    });
+  }, [trackEvent]);
+
+  const StepSelectType = useCallback(() => {
+    setCurrentStep(STEP_SELECT_TYPE);
+  }, [setCurrentStep]);
 
   const history = useHistory();
   const [createApp, { loading, data, error }] = useMutation<TData>(CREATE_APP, {
@@ -97,48 +119,84 @@ const NewApplication = () => {
 
   return (
     <div className={CLASS_NAME}>
-      <SvgThemeImage image={EnumImages.AddApp} />
+      {currentStep === STEP_SELECT_TYPE ? (
+        <div className={`${CLASS_NAME}__step1`}>
+          <Link
+            onClick={StepStartFromScratch}
+            to=""
+            className={`${CLASS_NAME}__step1__option`}
+          >
+            <SvgThemeImage image={EnumImages.AddApp} />
+            <div className={`${CLASS_NAME}__step1__option__title`}>
+              Start from scratch
+            </div>
+          </Link>
+          <Link
+            to="/import-from-excel"
+            onClick={StepImportExcel}
+            className={`${CLASS_NAME}__step1__option`}
+          >
+            <SvgThemeImage image={EnumImages.ImportExcel} />
+            <div className={`${CLASS_NAME}__step1__option__title`}>
+              Import schema from Excel
+            </div>
+          </Link>
+        </div>
+      ) : (
+        <div className={`${CLASS_NAME}__step2`}>
+          <SvgThemeImage image={EnumImages.AddApp} />
 
-      <div className={`${CLASS_NAME}__instructions`}>
-        Give your new app a descriptive name. <br />
-      </div>
-      <Formik
-        initialValues={INITIAL_VALUES}
-        validate={(values: Values) => validate(values, FORM_SCHEMA)}
-        onSubmit={handleSubmit}
-        validateOnMount
-      >
-        {(formik) => {
-          const handlers = {
-            SUBMIT: formik.submitForm,
-          };
-          return (
-            <Form>
-              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-              <TextField
-                name="name"
-                label="Name"
-                autoComplete="off"
-                disabled={loading}
-              />
+          <div className={`${CLASS_NAME}__step2__form`}>
+            <div className={`${CLASS_NAME}__step2__form__title`}>
+              Start from scratch
+            </div>
+            <Formik
+              initialValues={INITIAL_VALUES}
+              validate={(values: Values) => validate(values, FORM_SCHEMA)}
+              onSubmit={handleSubmit}
+              validateOnMount
+            >
+              {(formik) => {
+                const handlers = {
+                  SUBMIT: formik.submitForm,
+                };
+                return (
+                  <Form>
+                    <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+                    <TextField
+                      name="name"
+                      label="Give your new app a descriptive name"
+                      autoComplete="off"
+                      disabled={loading}
+                    />
+                    <div className={`${CLASS_NAME}__step2__form__buttons`}>
+                      <Button
+                        buttonStyle={EnumButtonStyle.Primary}
+                        disabled={!formik.isValid || loading}
+                        type="submit"
+                      >
+                        Create App
+                      </Button>
+                      <Button
+                        buttonStyle={EnumButtonStyle.Clear}
+                        disabled={loading}
+                        onClick={StepSelectType}
+                        type="button"
+                        className={`${CLASS_NAME}__step2__form__buttons__back`}
+                      >
+                        Back
+                      </Button>
+                      {loading && <CircularProgress />}
+                    </div>
 
-              <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
-                type="submit"
-              >
-                Create App
-              </Button>
-              {loading && (
-                <div className={`${CLASS_NAME}__loader`}>
-                  <CircularProgress />
-                </div>
-              )}
-              <Snackbar open={Boolean(error)} message={errorMessage} />
-            </Form>
-          );
-        }}
-      </Formik>
+                    <Snackbar open={Boolean(error)} message={errorMessage} />
+                  </Form>
+                );
+              }}
+            </Formik>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
