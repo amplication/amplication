@@ -67,6 +67,12 @@ $dropzone-height: 250px;
     }
   }
 
+  &__entities {
+    width: 100%;
+    flex: 1;
+
+    overflow: auto;
+  }
   &__layout {
     display: flex;
     flex-direction: column;
@@ -75,11 +81,6 @@ $dropzone-height: 250px;
     align-items: stretch;
     justify-content: stretch;
     background: var(--black2);
-
-    &__toolbar {
-      height: 50px;
-      border-bottom: $border-black10;
-    }
 
     &__body {
       flex: 1;
@@ -95,14 +96,39 @@ $dropzone-height: 250px;
         width: 300px;
         background-color: var(--black5);
         padding: var(--default-spacing);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        &__message {
+          @include body2;
+        }
+
+        h3 {
+          margin: var(--double-spacing) 0;
+        }
+
+        .text-input {
+          width: 100%;
+        }
+        .amp-button {
+          margin-top: auto;
+          width: 100%;
+        }
       }
 
       &__content {
         order: 1;
         flex: 1;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+        align-items: stretch;
+
+        &__toolbar {
+          padding: var(--default-spacing);
+        }
       }
     }
   }
