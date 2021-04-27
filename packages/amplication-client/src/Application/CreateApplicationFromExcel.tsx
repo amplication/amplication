@@ -36,7 +36,6 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";
-import EditableLabelField from "../Components/EditableLabelField";
 import { DraggableCore, DraggableData, DraggableEvent } from "react-draggable";
 
 import { Icon } from "@rmwc/icon";
