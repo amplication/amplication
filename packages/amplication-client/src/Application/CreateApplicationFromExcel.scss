@@ -31,7 +31,10 @@ $entity-width: 200px;
   align-items: stretch;
 
   &__header {
-    @include flexFullRowWithSpacing;
+    margin: var(--double-spacing);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   &__message {
@@ -40,10 +43,13 @@ $entity-width: 200px;
     color: var(--black80);
     margin-bottom: var(--triple-spacing);
     max-width: $max-width;
+    text-align: center;
+    margin: var(--default-spacing);
   }
 
   &__dropzone {
     @include body1;
+    margin: var(--double-spacing);
     height: $dropzone-height;
     flex: 1;
     display: flex;
@@ -53,9 +59,9 @@ $entity-width: 200px;
     padding: var(--double-spacing);
 
     border-radius: var(--default-border-radius);
-    border: $border-black90;
+    border: $border-black10;
     border-style: dashed;
-    background-color: var(--black10);
+    background-color: var(--white);
     color: var(--black80);
     outline: none;
     transition: border 0.1s ease-in-out;
@@ -64,16 +70,18 @@ $entity-width: 200px;
     &:hover,
     &--active {
       border-color: var(--primary);
+      background-color: var(--black5);
     }
   }
 
   &__layout {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     align-items: stretch;
     justify-content: stretch;
+    background: var(--black2);
 
     &__toolbar {
       height: 50px;

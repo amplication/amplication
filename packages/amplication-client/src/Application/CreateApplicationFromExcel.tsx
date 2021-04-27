@@ -26,6 +26,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import Xarrow from "react-xarrows";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
 import { SelectField, TextField } from "@amplication/design-system";
@@ -252,50 +253,50 @@ export function CreateApplicationFromExcel() {
       <MainLayout.Menu />
       <MainLayout.Content>
         <div className={CLASS_NAME}>
-          {isEmpty(fileName) ? (
-            <>
-              <div className={`${CLASS_NAME}__header`}>
-                <h2>Import schema from excel</h2>
-
-                <span className="spacer" />
-              </div>
-              <div className={`${CLASS_NAME}__message`}>
-                Start building your application from an existing schema. Just
-                upload an excel or CSV file to import its schema, and generate
-                your node.JS application source code
-              </div>
-              <div
-                {...getRootProps()}
-                className={classNames(`${CLASS_NAME}__dropzone`, {
-                  [`${CLASS_NAME}__dropzone--active`]: isDragActive,
-                })}
+          <div className={`${CLASS_NAME}__layout`}>
+            <div className={`${CLASS_NAME}__layout__toolbar`}>
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                disabled={loading}
+                type="button"
+                onClick={clearSelectedFile}
               >
-                <input {...getInputProps()} />
-                {isDragActive ? (
-                  <p>Drop the file here ...</p>
-                ) : (
-                  <p>Drag and drop a file here, or click to select a file</p>
+                Back
+              </Button>
+            </div>
+            {isEmpty(fileName) ? (
+              <div>
+                <div className={`${CLASS_NAME}__header`}>
+                  <SvgThemeImage image={EnumImages.ImportExcel} />
+                  <h2>Import schema from excel</h2>
+                  <div className={`${CLASS_NAME}__message`}>
+                    Start building your application from an existing schema.
+                    Just upload an excel or CSV file to import its schema, and
+                    generate your node.JS application source code
+                  </div>
+                </div>
+
+                <div
+                  {...getRootProps()}
+                  className={classNames(`${CLASS_NAME}__dropzone`, {
+                    [`${CLASS_NAME}__dropzone--active`]: isDragActive,
+                  })}
+                >
+                  <input {...getInputProps()} />
+                  {isDragActive ? (
+                    <p>Drop the file here ...</p>
+                  ) : (
+                    <p>Drag and drop a file here, or click to select a file</p>
+                  )}
+                </div>
+
+                {loading && (
+                  <div className={`${CLASS_NAME}__loader`}>
+                    <CircularProgress />
+                  </div>
                 )}
               </div>
-
-              {loading && (
-                <div className={`${CLASS_NAME}__loader`}>
-                  <CircularProgress />
-                </div>
-              )}
-            </>
-          ) : (
-            <div className={`${CLASS_NAME}__layout`}>
-              <div className={`${CLASS_NAME}__layout__toolbar`}>
-                <Button
-                  buttonStyle={EnumButtonStyle.Clear}
-                  disabled={loading}
-                  type="button"
-                  onClick={clearSelectedFile}
-                >
-                  Back
-                </Button>
-              </div>
+            ) : (
               <Formik
                 initialValues={initialValues}
                 enableReinitialize
@@ -334,9 +335,9 @@ export function CreateApplicationFromExcel() {
                   </Form>
                 )}
               />
-            </div>
-          )}
-          <Snackbar open={Boolean(error)} message={errorMessage} />
+            )}
+            <Snackbar open={Boolean(error)} message={errorMessage} />
+          </div>
         </div>
       </MainLayout.Content>
     </MainLayout>
