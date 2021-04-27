@@ -222,5 +222,3 @@ export default function EntitiesDiagram() {
     </div>
   );
 }
-
-

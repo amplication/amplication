@@ -67,6 +67,35 @@ $dropzone-height: 250px;
     }
   }
 
+  &__notice {
+    text-align: left;
+    color: var(--black100);
+    margin-bottom: var(--double-spacing);
+
+    ul {
+      margin: 0;
+      padding: 0;
+      color: var(--black60);
+
+      li {
+        @include flexFullRow;
+        list-style: none;
+        margin: 0;
+        margin-top: var(--default-spacing);
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+    }
+
+    a {
+      color: var(--primary);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
   &__entities {
     width: 100%;
     flex: 1;

@@ -257,30 +257,32 @@ export function CreateApplicationFromExcel() {
                   <Form className={`${CLASS_NAME}__layout__body`}>
                     <div className={`${CLASS_NAME}__layout__body__side`}>
                       <h3>{fileName}</h3>
-                      <ul
-                        className={`${CLASS_NAME}__layout__body__side__message`}
-                      >
-                        <li>
-                          You can change the name and the data type of your
-                          fields
-                        </li>
-                        <li>
-                          You can create additional entities and move fields
-                          between entities to normalize your data model
-                        </li>
-                        <li>
-                          All relations are created as one-to-many by default.
-                          You can change that later if needed.
-                        </li>
-                        <li>
-                          You can update anything in your data models after you
-                          created the app
-                        </li>
-                        <li>
-                          Give your app a descriptive name and click on "Create
-                          App" below
-                        </li>
-                      </ul>
+                      <div className={`${CLASS_NAME}__notice`}>
+                        <ul
+                          className={`${CLASS_NAME}__layout__body__side__message`}
+                        >
+                          <li>
+                            You can change the name and the data type of your
+                            fields
+                          </li>
+                          <li>
+                            You can create additional entities and move fields
+                            between entities to normalize your data model
+                          </li>
+                          <li>
+                            All relations are created as one-to-many by default.
+                            You can change that later if needed.
+                          </li>
+                          <li>
+                            You can update anything in your data models after
+                            you created the app
+                          </li>
+                          <li>
+                            Give your app a descriptive name and click on
+                            "Create App" below
+                          </li>
+                        </ul>
+                      </div>
 
                       <DisplayNameField
                         name="app.name"
