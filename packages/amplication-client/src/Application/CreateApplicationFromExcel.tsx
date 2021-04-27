@@ -8,6 +8,7 @@ import React, {
 import classNames from "classnames";
 import { isEmpty, forEach, cloneDeep } from "lodash";
 import omitDeep from "deepdash-es/omitDeep";
+import { HotKeys } from "react-hotkeys";
 
 import { FieldArray, Formik, useFormikContext } from "formik";
 import { Form } from "../Components/Form";
@@ -92,6 +93,10 @@ const ARROW_PROPS = {
 
 const CLASS_NAME = "create-application-from-excel";
 const MAX_SAMPLE_DATA = 3;
+
+const keyMap = {
+  CLOSE_MODAL: ["enter", "esc"],
+};
 
 export function CreateApplicationFromExcel() {
   const [importList, setImportList] = React.useState<ImportField[]>([]);
@@ -301,7 +306,7 @@ export function CreateApplicationFromExcel() {
                 initialValues={initialValues}
                 enableReinitialize
                 onSubmit={handleSubmit}
-                render={({ values }) => (
+                render={({ values, handleSubmit }) => (
                   <Form className={`${CLASS_NAME}__layout__body`}>
                     <div className={`${CLASS_NAME}__layout__body__side`}>
                       <div className={`${CLASS_NAME}__message`}>
@@ -321,7 +326,8 @@ export function CreateApplicationFromExcel() {
                       <Button
                         buttonStyle={EnumButtonStyle.Primary}
                         disabled={loading}
-                        type="submit"
+                        onClick={handleSubmit}
+                        type="button"
                       >
                         Create App
                       </Button>
@@ -377,7 +383,7 @@ type EntityItemProps = {
   positionData: EntityPositionData;
   onDrag?: (entityIndex: number, data: DraggableData) => void;
   onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
-  onEditEntity: (entityIndex: number) => void;
+  onEditEntity: (entityIndex: number | null) => void;
   onAddEntity: (entityIndex: number) => void;
 };
 
@@ -410,6 +416,12 @@ const EntityItem = React.memo(
 
     const selected = entityIndex === editedEntity;
 
+    const handlers = {
+      CLOSE_MODAL: () => {
+        onEditEntity(null);
+      },
+    };
+
     return (
       <DraggableCore handle=".handle" onDrag={handleDrag}>
         <div
@@ -420,7 +432,8 @@ const EntityItem = React.memo(
           <div>
             <div className={`${CLASS_NAME}__entities__entity__name `}>
               <Icon icon="menu" className="handle" />
-              {entity.name}
+              <span>{entity.name}</span>
+              <span className="spacer" />
               <Button
                 className={`${CLASS_NAME}__entities__entity__edit`}
                 buttonStyle={EnumButtonStyle.Clear}
@@ -437,12 +450,15 @@ const EntityItem = React.memo(
               />
               {selected && (
                 <div className={`${CLASS_NAME}__entities__entity__edit-area`}>
-                  <TextField
-                    name={`entities.${entityIndex}.name`}
-                    label="
-                    Entity Name"
-                    required
-                  />
+                  <HotKeys keyMap={keyMap} handlers={handlers}>
+                    <TextField
+                      name={`entities.${entityIndex}.name`}
+                      autoFocus
+                      label="Entity Name"
+                      placeholder="Entity Name"
+                      required
+                    />
+                  </HotKeys>
                 </div>
               )}
             </div>
@@ -512,6 +528,12 @@ const FieldItem = React.memo(
       editedFieldIdentifier.entityIndex === entityIndex &&
       editedFieldIdentifier.fieldIndex === fieldIndex;
 
+    const handlers = {
+      CLOSE_MODAL: () => {
+        onEdit(null);
+      },
+    };
+
     return (
       <Draggable
         key={`${entityIndex}_${fieldIndex}`}
@@ -543,17 +565,21 @@ const FieldItem = React.memo(
               />
               {selected && (
                 <div className={`${CLASS_NAME}__fields__field__edit-area`}>
-                  <TextField
-                    name={`entities.${entityIndex}.fields.${fieldIndex}.name`}
-                    label="Field Name"
-                    required
-                  />
+                  <HotKeys keyMap={keyMap} handlers={handlers}>
+                    <TextField
+                      name={`entities.${entityIndex}.fields.${fieldIndex}.name`}
+                      autoFocus
+                      placeholder="Field Name"
+                      label="Field Name"
+                      required
+                    />
 
-                  <SelectField
-                    label="Data Type"
-                    name={`entities.${entityIndex}.fields.${fieldIndex}.dataType`}
-                    options={DATA_TYPE_OPTIONS}
-                  />
+                    <SelectField
+                      label="Data Type"
+                      name={`entities.${entityIndex}.fields.${fieldIndex}.dataType`}
+                      options={DATA_TYPE_OPTIONS}
+                    />
+                  </HotKeys>
                 </div>
               )}
             </div>
@@ -571,7 +597,7 @@ function DragDropEntitiesCanvas() {
     null
   );
 
-  const [editedEntity, setEditedEntity] = React.useState<number | null>(null);
+  const [editedEntity, setEditedEntity] = React.useState<number | null>(0);
 
   const resetEditableElements = useCallback(() => {
     setEditedEntity(null);
@@ -579,7 +605,7 @@ function DragDropEntitiesCanvas() {
   }, [setEditedEntity, setEditedField]);
 
   const handleEditEntity = useCallback(
-    (entityIndex: number) => {
+    (entityIndex: number | null) => {
       setEditedEntity(entityIndex);
       setEditedField(null);
     },
@@ -685,7 +711,7 @@ function DragDropEntitiesCanvas() {
       setFieldValue(`entities`, [
         ...entities,
         {
-          name: "new entity",
+          name: "",
           fields: [],
           level: newEntityLevel,
           levelIndex: levelIndex,
@@ -704,6 +730,7 @@ function DragDropEntitiesCanvas() {
         return current;
       });
       resetEditableElements();
+      setEditedEntity(currentLength);
     },
     [setFieldValue, values.entities, resetEditableElements]
   );
