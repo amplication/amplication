@@ -4,9 +4,24 @@ $z-index-edit-area: 998;
 $z-index-entity-hover: 997;
 $z-index-entity-default: 2;
 
+$entity-hover-margin: 50px;
+
 $max-width: 700px;
 $dropzone-height: 250px;
 $entity-width: 200px;
+
+@mixin edit-area {
+  position: absolute;
+  left: calc(100% + var(--default-spacing-small));
+  top: 0;
+  background: var(--black5);
+  border: $border-black10;
+  border-radius: var(--default-border-radius);
+  padding: var(--default-spacing-small);
+  width: $entity-width;
+  z-index: $z-index-edit-area;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
+}
 
 .create-application-from-excel {
   height: 100%;
@@ -122,14 +137,35 @@ $entity-width: 200px;
       top: 0;
       left: 0;
 
+      $g: &;
+
+      &:before {
+        content: "";
+        position: absolute;
+        background: transparent;
+        width: $entity-hover-margin;
+        right: -$entity-hover-margin;
+        height: 100%;
+      }
+
       &:hover {
         z-index: $z-index-entity-hover;
+
+        #{$g}__add.amp-button {
+          visibility: visible;
+        }
       }
       .handle {
         cursor: grab;
+        font-size: 22px;
+      }
+
+      &__edit-area {
+        @include edit-area;
       }
 
       &__name {
+        @include flexFullRowWithSpacing;
         padding: var(--default-spacing);
         background-color: var(--black5);
       }
@@ -137,10 +173,13 @@ $entity-width: 200px;
       &__add.amp-button {
         position: absolute;
         background-color: var(--primary);
-        top: 0;
-        right: 0;
+        top: calc(50% - (var(--double-spacing) / 2));
+        right: calc(var(--double-spacing) * -1);
         width: var(--double-spacing);
         height: var(--double-spacing);
+        margin-right: calc(var(--double-spacing) * -1);
+        min-width: 0;
+        visibility: hidden;
       }
     }
   }
@@ -155,19 +194,14 @@ $entity-width: 200px;
       border: $border-black10;
       border-color: transparent;
       position: relative;
+      margin-bottom: 2px;
 
       &--selected {
         background-color: var(--black5);
-        border: $border-black10;
       }
 
       &:hover {
         background-color: var(--black5);
-        border: $border-black10;
-      }
-
-      .amp-icon {
-        margin-right: var(--default-spacing);
       }
 
       &__edit {
@@ -175,16 +209,14 @@ $entity-width: 200px;
       }
 
       &__edit-area {
-        position: absolute;
-        left: calc(100% + var(--default-spacing-small));
-        top: 0;
-        background: var(--black5);
-        border: $border-black10;
-        border-radius: var(--default-border-radius);
-        padding: var(--default-spacing-small);
-        width: $entity-width;
-        z-index: $z-index-edit-area;
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
+        @include edit-area;
+      }
+
+      .amp-button {
+        min-width: 0;
+        .amp-icon {
+          margin: 0;
+        }
       }
 
       &:hover {

@@ -373,9 +373,11 @@ type EntityItemProps = {
   entity: models.AppCreateWithEntitiesEntityInput;
   entityIndex: number;
   editedFieldIdentifier: FieldIdentifier | null;
+  editedEntity: number | null;
   positionData: EntityPositionData;
   onDrag?: (entityIndex: number, data: DraggableData) => void;
   onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
+  onEditEntity: (entityIndex: number) => void;
   onAddEntity: (entityIndex: number) => void;
 };
 
@@ -384,9 +386,11 @@ const EntityItem = React.memo(
     entity,
     entityIndex,
     editedFieldIdentifier,
+    editedEntity,
     positionData,
     onDrag,
     onEditField,
+    onEditEntity,
     onAddEntity,
   }: EntityItemProps) => {
     const handleAddEntity = useCallback(() => {
@@ -400,6 +404,12 @@ const EntityItem = React.memo(
       [onDrag, entityIndex]
     );
 
+    const handleEditEntity = useCallback(() => {
+      onEditEntity && onEditEntity(entityIndex);
+    }, [onEditEntity, entityIndex]);
+
+    const selected = entityIndex === editedEntity;
+
     return (
       <DraggableCore handle=".handle" onDrag={handleDrag}>
         <div
@@ -410,18 +420,31 @@ const EntityItem = React.memo(
           <div>
             <div className={`${CLASS_NAME}__entities__entity__name `}>
               <Icon icon="menu" className="handle" />
-              <EditableLabelField
-                name={`entities.${entityIndex}.name`}
-                label="Entity Name"
-                required
+              {entity.name}
+              <Button
+                className={`${CLASS_NAME}__entities__entity__edit`}
+                buttonStyle={EnumButtonStyle.Clear}
+                type="button"
+                onClick={handleEditEntity}
+                icon="edit_2"
               />
               <Button
                 className={`${CLASS_NAME}__entities__entity__add`}
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Primary}
                 onClick={handleAddEntity}
                 type="button"
                 icon="plus"
               />
+              {selected && (
+                <div className={`${CLASS_NAME}__entities__entity__edit-area`}>
+                  <TextField
+                    name={`entities.${entityIndex}.name`}
+                    label="
+                    Entity Name"
+                    required
+                  />
+                </div>
+              )}
             </div>
 
             <FieldArray
@@ -509,14 +532,14 @@ const FieldItem = React.memo(
                   size: "xsmall",
                 }}
               />
-              {field.name}
+              <span>{field.name}</span>
               <span className="spacer" />
               <Button
                 className={`${CLASS_NAME}__fields__field__edit`}
                 buttonStyle={EnumButtonStyle.Clear}
                 type="button"
                 onClick={handleClick}
-                icon="edit"
+                icon="edit_2"
               />
               {selected && (
                 <div className={`${CLASS_NAME}__fields__field__edit-area`}>
@@ -548,16 +571,32 @@ function DragDropEntitiesCanvas() {
     null
   );
 
+  const [editedEntity, setEditedEntity] = React.useState<number | null>(null);
+
+  const resetEditableElements = useCallback(() => {
+    setEditedEntity(null);
+    setEditedField(null);
+  }, [setEditedEntity, setEditedField]);
+
+  const handleEditEntity = useCallback(
+    (entityIndex: number) => {
+      setEditedEntity(entityIndex);
+      setEditedField(null);
+    },
+    [setEditedEntity, setEditedField]
+  );
+
   const handleEditField = useCallback(
     (fieldIdentifier: FieldIdentifier | null) => {
       setEditedField(fieldIdentifier);
+      setEditedEntity(null);
     },
-    []
+    [setEditedEntity, setEditedField]
   );
 
   const onFieldDragStart = useCallback(() => {
-    setEditedField(null);
-  }, [setEditedField]);
+    resetEditableElements();
+  }, [resetEditableElements]);
 
   const onFieldDragEnd = useCallback(
     (result: DropResult) => {
@@ -588,9 +627,9 @@ function DragDropEntitiesCanvas() {
         ...destinationFields,
       ]);
 
-      setEditedField(null);
+      resetEditableElements();
     },
-    [values, setFieldValue, setEditedField]
+    [values, setFieldValue, resetEditableElements]
   );
 
   const [entitiesPosition, setEntitiesPosition] = useState<
@@ -602,6 +641,7 @@ function DragDropEntitiesCanvas() {
 
   const handleEntityDrag = useCallback(
     (entityIndex: number, draggableData: DraggableData) => {
+      resetEditableElements();
       setEntitiesPosition((current) => {
         const position = current[entityIndex] || { top: 0, left: 0 };
         const newPosition = {
@@ -622,7 +662,7 @@ function DragDropEntitiesCanvas() {
 
       forceUpdate();
     },
-    [forceUpdate]
+    [forceUpdate, resetEditableElements]
   );
 
   const handleAddEntity = useCallback(
@@ -663,8 +703,9 @@ function DragDropEntitiesCanvas() {
 
         return current;
       });
+      resetEditableElements();
     },
-    [setFieldValue, values.entities]
+    [setFieldValue, values.entities, resetEditableElements]
   );
 
   return (
@@ -682,8 +723,10 @@ function DragDropEntitiesCanvas() {
             positionData={entitiesPosition[index]}
             onDrag={handleEntityDrag}
             onEditField={handleEditField}
+            onEditEntity={handleEditEntity}
             onAddEntity={handleAddEntity}
             editedFieldIdentifier={editedField}
+            editedEntity={editedEntity}
           />
         ))}
       </DragDropContext>
