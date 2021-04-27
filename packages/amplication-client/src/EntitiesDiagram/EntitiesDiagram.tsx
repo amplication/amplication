@@ -1,26 +1,12 @@
-import React, { useCallback, useMemo, useReducer, useState } from "react";
-import classNames from "classnames";
+import { useFormikContext } from "formik";
 import { cloneDeep } from "lodash";
-import { HotKeys } from "react-hotkeys";
-
-import { FieldArray, useFormikContext } from "formik";
+import React, { useCallback, useReducer, useState } from "react";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { DraggableData } from "react-draggable";
 import * as models from "../models";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import Xarrow from "react-xarrows";
-
-import { DATA_TYPE_OPTIONS } from "../Entity/DataTypeSelectField";
-import { SelectField, TextField } from "@amplication/design-system";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
-import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";
-import { DraggableCore, DraggableData, DraggableEvent } from "react-draggable";
-
-import { Icon } from "@rmwc/icon";
 import "./EntitiesDiagram.scss";
+import { EntitiesDiagramRelations } from "./EntitiesDiagramRelations";
+import { EntitiesDiagramEntity } from "./EntitiesDiagramEntity";
 
 type EntityWithViewData = models.AppCreateWithEntitiesEntityInput & {
   level?: number;
@@ -31,7 +17,7 @@ export type EntitiesDiagramFormData = models.AppCreateWithEntitiesInput & {
   entities: EntityWithViewData[];
 };
 
-type EntityPositionData = {
+export type EntityPositionData = {
   top: number;
   left: number;
 };
@@ -40,16 +26,9 @@ type EntitiesPositionData = {
   [index: number]: EntityPositionData;
 };
 
-type FieldIdentifier = {
+export type FieldIdentifier = {
   entityIndex: number;
   fieldIndex: number;
-};
-
-const ARROW_PROPS = {
-  color: "white",
-  strokeWidth: 2,
-  headSize: 5,
-  curveness: 0.7,
 };
 
 export const COMMON_FIELDS: models.AppCreateWithEntitiesFieldInput[] = [
@@ -67,11 +46,11 @@ export const COMMON_FIELDS: models.AppCreateWithEntitiesFieldInput[] = [
   },
 ];
 
-const keyMap = {
+export const keyMap = {
   CLOSE_MODAL: ["enter", "esc"],
 };
 
-const CLASS_NAME = "entities-diagram";
+export const CLASS_NAME = "entities-diagram";
 
 export default function EntitiesDiagram() {
   const { setFieldValue, values } = useFormikContext<EntitiesDiagramFormData>();
@@ -220,13 +199,13 @@ export default function EntitiesDiagram() {
 
   return (
     <div className={CLASS_NAME}>
-      <EntityRelations entities={values.entities} />
+      <EntitiesDiagramRelations entities={values.entities} />
       <DragDropContext
         onDragEnd={onFieldDragEnd}
         onDragStart={onFieldDragStart}
       >
         {values.entities.map((entity, index) => (
-          <EntityItem
+          <EntitiesDiagramEntity
             key={`entity_${index}`}
             entity={entity}
             entityIndex={index}
@@ -244,280 +223,4 @@ export default function EntitiesDiagram() {
   );
 }
 
-type EntityRelationsProps = {
-  entities: models.AppCreateWithEntitiesEntityInput[];
-};
 
-function EntityRelations({ entities }: EntityRelationsProps) {
-  const relations = useMemo(() => {
-    return entities.flatMap((entity, index) => {
-      if (!entity.relationsToEntityIndex) return [];
-      return entity.relationsToEntityIndex.map((relation) => ({
-        key: `${index}_${relation}`,
-        start: `entity${index}`,
-        end: `entity${relation}`,
-      }));
-    });
-  }, [entities]);
-
-  return (
-    <div>
-      {relations.map((relation) => (
-        <Xarrow {...relation} key={relation.key} {...ARROW_PROPS} />
-      ))}
-    </div>
-  );
-}
-
-type EntityItemProps = {
-  entity: models.AppCreateWithEntitiesEntityInput;
-  entityIndex: number;
-  editedFieldIdentifier: FieldIdentifier | null;
-  editedEntity: number | null;
-  positionData: EntityPositionData;
-  onDrag?: (entityIndex: number, data: DraggableData) => void;
-  onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
-  onEditEntity: (entityIndex: number | null) => void;
-  onAddEntity: (entityIndex: number) => void;
-};
-
-const EntityItem = React.memo(
-  ({
-    entity,
-    entityIndex,
-    editedFieldIdentifier,
-    editedEntity,
-    positionData,
-    onDrag,
-    onEditField,
-    onEditEntity,
-    onAddEntity,
-  }: EntityItemProps) => {
-    const handleAddEntity = useCallback(() => {
-      onAddEntity && onAddEntity(entityIndex);
-    }, [entityIndex, onAddEntity]);
-
-    const handleDrag = useCallback(
-      (e: DraggableEvent, data: DraggableData) => {
-        onDrag && onDrag(entityIndex, data);
-      },
-      [onDrag, entityIndex]
-    );
-
-    const handleEditEntity = useCallback(() => {
-      onEditEntity && onEditEntity(entityIndex);
-    }, [onEditEntity, entityIndex]);
-
-    const selected = entityIndex === editedEntity;
-
-    const handlers = {
-      CLOSE_MODAL: () => {
-        onEditEntity(null);
-      },
-    };
-
-    return (
-      <DraggableCore handle=".handle" onDrag={handleDrag}>
-        <div
-          id={`entity${entityIndex}`}
-          className={`${CLASS_NAME}__entities__entity`}
-          style={positionData}
-        >
-          <div>
-            <div className={`${CLASS_NAME}__entities__entity__name `}>
-              <Icon icon="menu" className="handle" />
-              <span>{entity.name}</span>
-              <span className="spacer" />
-              <Button
-                className={`${CLASS_NAME}__entities__entity__edit`}
-                buttonStyle={EnumButtonStyle.Clear}
-                type="button"
-                onClick={handleEditEntity}
-                icon="edit_2"
-              />
-              <Button
-                className={`${CLASS_NAME}__entities__entity__add`}
-                buttonStyle={EnumButtonStyle.Primary}
-                onClick={handleAddEntity}
-                type="button"
-                icon="plus"
-              />
-              {selected && (
-                <div className={`${CLASS_NAME}__entities__entity__edit-area`}>
-                  <HotKeys keyMap={keyMap} handlers={handlers}>
-                    <TextField
-                      name={`entities.${entityIndex}.name`}
-                      autoFocus
-                      label="Entity Name"
-                      placeholder="Entity Name"
-                      required
-                    />
-                  </HotKeys>
-                </div>
-              )}
-            </div>
-
-            <FieldArray
-              name={`entities.${entityIndex}.fields`}
-              render={(fieldsArrayHelpers) => (
-                <div className={`${CLASS_NAME}__fields`}>
-                  {COMMON_FIELDS.map((field, fieldIndex) => (
-                    <StaticFieldItem
-                      key={`static_${entityIndex}_${fieldIndex}`}
-                      field={field}
-                    />
-                  ))}
-                  <Droppable droppableId={`droppable_${entityIndex}`}>
-                    {(provided, snapshot) => (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className={classNames(`${CLASS_NAME}__droppable`, {
-                          [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
-                        })}
-                      >
-                        {entity.fields.map((field, fieldIndex) => (
-                          <FieldItem
-                            key={`${entityIndex}_${fieldIndex}`}
-                            field={field}
-                            entityIndex={entityIndex}
-                            fieldIndex={fieldIndex}
-                            onEdit={onEditField}
-                            editedFieldIdentifier={editedFieldIdentifier}
-                          />
-                        ))}
-
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </div>
-              )}
-            />
-          </div>
-        </div>
-      </DraggableCore>
-    );
-  }
-);
-
-type StaticFieldItemProps = {
-  field: models.AppCreateWithEntitiesFieldInput;
-};
-
-const StaticFieldItem = React.memo(({ field }: StaticFieldItemProps) => {
-  const dataType = field.dataType || models.EnumDataType.SingleLineText;
-
-  return (
-    <div
-      className={classNames(
-        `${CLASS_NAME}__fields__field`,
-        `${CLASS_NAME}__fields__field--static`
-      )}
-    >
-      <Icon
-        icon={{
-          icon: DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon,
-          size: "xsmall",
-        }}
-      />
-      <span>{field.name}</span>
-      <span className="spacer" />
-    </div>
-  );
-});
-
-type FieldItemProps = {
-  field: models.AppCreateWithEntitiesFieldInput;
-  entityIndex: number;
-  fieldIndex: number;
-  editedFieldIdentifier: FieldIdentifier | null;
-  onEdit: (fieldIdentifier: FieldIdentifier | null) => void;
-};
-
-const FieldItem = React.memo(
-  ({
-    field,
-    entityIndex,
-    fieldIndex,
-    editedFieldIdentifier,
-    onEdit,
-  }: FieldItemProps) => {
-    const dataType = field.dataType || models.EnumDataType.SingleLineText;
-
-    const handleClick = useCallback(() => {
-      onEdit && onEdit({ entityIndex, fieldIndex });
-    }, [onEdit, entityIndex, fieldIndex]);
-
-    const selected =
-      editedFieldIdentifier &&
-      editedFieldIdentifier.entityIndex === entityIndex &&
-      editedFieldIdentifier.fieldIndex === fieldIndex;
-
-    const handlers = {
-      CLOSE_MODAL: () => {
-        onEdit(null);
-      },
-    };
-
-    return (
-      <Draggable
-        key={`${entityIndex}_${fieldIndex}`}
-        draggableId={`${entityIndex}_${fieldIndex}`}
-        index={fieldIndex}
-      >
-        {(provided, snapshot) => (
-          <div ref={provided.innerRef} {...provided.draggableProps}>
-            <div
-              className={classNames(
-                `${CLASS_NAME}__fields__field`,
-                {
-                  [`${CLASS_NAME}__fields__field--selected`]: selected,
-                },
-                {
-                  [`${CLASS_NAME}__fields__field--dragged`]: snapshot.isDragging,
-                }
-              )}
-              {...provided.dragHandleProps}
-            >
-              <Icon
-                icon={{
-                  icon: DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon,
-                  size: "xsmall",
-                }}
-              />
-              <span>{field.name}</span>
-              <span className="spacer" />
-              <Button
-                className={`${CLASS_NAME}__fields__field__edit`}
-                buttonStyle={EnumButtonStyle.Clear}
-                type="button"
-                onClick={handleClick}
-                icon="edit_2"
-              />
-              {selected && (
-                <div className={`${CLASS_NAME}__fields__field__edit-area`}>
-                  <HotKeys keyMap={keyMap} handlers={handlers}>
-                    <TextField
-                      name={`entities.${entityIndex}.fields.${fieldIndex}.name`}
-                      autoFocus
-                      placeholder="Field Name"
-                      label="Field Name"
-                      required
-                    />
-
-                    <SelectField
-                      label="Data Type"
-                      name={`entities.${entityIndex}.fields.${fieldIndex}.dataType`}
-                      options={DATA_TYPE_OPTIONS}
-                    />
-                  </HotKeys>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </Draggable>
-    );
-  }
-);
