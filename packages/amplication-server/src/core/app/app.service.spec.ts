@@ -33,6 +33,7 @@ import { Build } from '../build/dto/Build';
 import { GithubService } from '../github/github.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
+import { QueryMode } from 'src/enums/QueryMode';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -615,8 +616,21 @@ describe('AppService', () => {
     expect(prismaAppCreateMock).toBeCalledTimes(1);
     expect(prismaAppCreateMock).toBeCalledWith(prismaAppCreateAppArgs);
 
-    expect(prismaAppFindManyMock).toBeCalledTimes(2);
+    expect(prismaAppFindManyMock).toBeCalledTimes(3);
     expect(prismaAppFindManyMock.mock.calls).toEqual([
+      [
+        {
+          where: {
+            name: {
+              mode: QueryMode.Insensitive,
+              startsWith: SAMPLE_APP_DATA.name
+            }
+          },
+          select: {
+            name: true
+          }
+        }
+      ],
       [findManyArgs],
       [findManyArgs]
     ]);
