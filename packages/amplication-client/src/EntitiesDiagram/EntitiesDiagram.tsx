@@ -15,6 +15,8 @@ export type EntitiesDiagramFormData = models.AppCreateWithEntitiesInput;
 export type EntityPositionData = {
   top: number;
   left: number;
+  width: number;
+  height: number;
 };
 
 type EntitiesPositionData = {
@@ -48,6 +50,11 @@ export const keyMap = {
 const ZOOM_LEVEL_STEP = 0.1;
 const ZOOM_LEVEL_MIN = 0.2;
 const ZOOM_LEVEL_MAX = 2;
+
+const DEFAULT_ENTITY_WIDTH = 200;
+const DEFAULT_ENTITY_HEIGHT = 300;
+const DEFAULT_ENTITY_HORIZONTAL_GAP = 200;
+const DEFAULT_ENTITY_VERTICAL_GAP = 50;
 
 export const CLASS_NAME = "entities-diagram";
 
@@ -139,7 +146,14 @@ export default function EntitiesDiagram() {
 
   const [entitiesPosition, setEntitiesPosition] = useState<
     EntitiesPositionData
-  >({ 0: { top: 0, left: 0 } });
+  >({
+    0: {
+      top: 0,
+      left: 0,
+      width: DEFAULT_ENTITY_WIDTH,
+      height: DEFAULT_ENTITY_HEIGHT,
+    },
+  });
 
   //used to force redraw the arrows (the internal lists of fields are not updated since it used  )
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -151,9 +165,12 @@ export default function EntitiesDiagram() {
         const position = current[entityIndex] || { top: 0, left: 0 };
         const deltaX = draggableData.deltaX / zoomLevel;
         const deltaY = draggableData.deltaY / zoomLevel;
+
         const newPosition = {
           top: position.top + deltaY > 0 ? position.top + deltaY : 0,
           left: position.left + deltaX > 0 ? position.left + deltaX : 0,
+          width: draggableData.node.offsetWidth,
+          height: draggableData.node.offsetHeight,
         };
 
         current[entityIndex] = newPosition;
@@ -175,6 +192,44 @@ export default function EntitiesDiagram() {
 
       currentEntity.relationsToEntityIndex = [...relations, currentLength];
 
+      const clonedPositions = cloneDeep(entitiesPosition);
+      const sourcePosition = clonedPositions[entityIndex];
+
+      const newLeft =
+        sourcePosition.left +
+        sourcePosition.width +
+        DEFAULT_ENTITY_HORIZONTAL_GAP;
+      const newRight = newLeft + DEFAULT_ENTITY_WIDTH;
+      const minMaxValues: number[] = [];
+
+      Object.entries(clonedPositions).forEach(([key, value]) => {
+        if (!(value.left > newRight || value.left + value.width < newLeft)) {
+          minMaxValues.push(value.top);
+          minMaxValues.push(value.top + value.height);
+        }
+      });
+
+      const min = Math.min(...minMaxValues);
+      const max = Math.max(...minMaxValues);
+
+      let newTop = 0;
+
+      if (min >= DEFAULT_ENTITY_HEIGHT + DEFAULT_ENTITY_VERTICAL_GAP) {
+        newTop = 0;
+      } else {
+        newTop = max + DEFAULT_ENTITY_VERTICAL_GAP;
+      }
+
+      const newPosition = {
+        top: newTop,
+        left: newLeft,
+        width: DEFAULT_ENTITY_WIDTH,
+        height: DEFAULT_ENTITY_HEIGHT,
+      };
+      clonedPositions[currentLength] = newPosition;
+
+      setEntitiesPosition(clonedPositions);
+
       setFieldValue(`entities`, [
         ...entities,
         {
@@ -182,22 +237,10 @@ export default function EntitiesDiagram() {
           fields: [],
         },
       ]);
-
-      setEntitiesPosition((current) => {
-        const position = current[entityIndex];
-        const newPosition = {
-          top: position.top,
-          left: position.left + 300,
-        };
-
-        current[currentLength] = newPosition;
-
-        return current;
-      });
       resetEditableElements();
       setEditedEntity(currentLength);
     },
-    [setFieldValue, values.entities, resetEditableElements]
+    [setFieldValue, values.entities, resetEditableElements, entitiesPosition]
   );
 
   return (

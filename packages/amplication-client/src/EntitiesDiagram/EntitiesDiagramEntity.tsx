@@ -72,7 +72,7 @@ export const EntitiesDiagramEntity = React.memo(
         <div
           id={`entity${entityIndex}`}
           className={`${CLASS_NAME}__entities__entity`}
-          style={positionData}
+          style={{ top: positionData?.top, left: positionData?.left }}
         >
           <div>
             <div className={`${CLASS_NAME}__entities__entity__name `}>
