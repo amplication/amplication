@@ -1,9 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
 import { useHistory, Link } from "react-router-dom";
 import { Snackbar } from "@rmwc/snackbar";
 import classNames from "classnames";
-import omitDeep from "deepdash-es/omitDeep";
 import { forEach, isEmpty } from "lodash";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
@@ -20,6 +18,7 @@ import { GET_APPLICATIONS } from "./Applications";
 import "./CreateAppFromExcel.scss";
 import { CreateAppFromExcelForm } from "./CreateAppFromExcelForm";
 import { sampleAppWithEntities } from "./constants";
+import { CircularProgress } from "@rmwc/circular-progress";
 
 type ColumnKey = {
   name: string;
@@ -221,7 +220,23 @@ export function CreateAppFromExcel() {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__layout`}>
-        {isEmpty(fileName) ? (
+        {loading ? (
+          <div className={`${CLASS_NAME}__processing`}>
+            <div className={`${CLASS_NAME}__processing__title`}>
+              All set! We’re currently generating your app.
+            </div>
+            <div className={`${CLASS_NAME}__processing__message`}>
+              It should only take a few seconds to finish. Don't go away!
+            </div>
+            <div className={`${CLASS_NAME}__processing__loader`}>
+              <CircularProgress />
+            </div>
+            <div className={`${CLASS_NAME}__processing__tagline`}>
+              For a full experience, connect with a GitHub repository and get a
+              new Pull Request when you make changes in your data model.
+            </div>
+          </div>
+        ) : isEmpty(fileName) ? (
           <div className={`${CLASS_NAME}__select-file`}>
             <div className={`${CLASS_NAME}__header`}>
               <SvgThemeImage image={EnumImages.ImportExcel} />
@@ -267,12 +282,6 @@ export function CreateAppFromExcel() {
                 <div>View my apps</div>
               </Link>
             </div>
-
-            {loading && (
-              <div className={`${CLASS_NAME}__loader`}>
-                <CircularProgress />
-              </div>
-            )}
           </div>
         ) : (
           <CreateAppFromExcelForm
