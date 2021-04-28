@@ -6,7 +6,7 @@ import ApplicationLayout from "./Application/ApplicationLayout";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
 import Applications from "./Application/Applications";
-import { CreateApplicationFromExcel } from "./Application/CreateApplicationFromExcel";
+import { CreateAppFromExcel } from "./Application/CreateAppFromExcel";
 
 import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
@@ -56,7 +56,7 @@ function App() {
           <PrivateRoute
             exact
             path="/import-from-excel"
-            component={CreateApplicationFromExcel}
+            component={CreateAppFromExcel}
           />
           <PrivateRoute path="/:application" component={ApplicationLayout} />
         </Switch>

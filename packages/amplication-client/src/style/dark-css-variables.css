@@ -38,6 +38,8 @@
   --image-add-app: url("../assets/images/mono/add-app-dark.svg");
   --image-relations: url("../assets/images/mono/relations-dark.svg");
   --image-import-excel: url("../assets/images/mono/import-excel-dark.svg");
+  --image-my-apps: url("../assets/images/mono/my-apps-dark.svg");
+  --image-sample-app: url("../assets/images/mono/sample-app-dark.svg");
 
   --diffViewerBackground: var(--white);
   --diffViewerColor: var(--black100);

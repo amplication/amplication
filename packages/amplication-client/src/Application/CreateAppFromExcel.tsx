@@ -1,28 +1,24 @@
 import { gql, useMutation } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
+import { useHistory, Link } from "react-router-dom";
 import { Snackbar } from "@rmwc/snackbar";
 import classNames from "classnames";
 import omitDeep from "deepdash-es/omitDeep";
-import { Formik } from "formik";
 import { forEach, isEmpty } from "lodash";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
-import { useHistory } from "react-router-dom";
 import * as XLSX from "xlsx";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { DisplayNameField } from "../Components/DisplayNameField";
-import { Form } from "../Components/Form";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
-import EntitiesDiagram, {
+import {
   COMMON_FIELDS,
   EntitiesDiagramFormData,
 } from "../EntitiesDiagram/EntitiesDiagram";
-import MainLayout from "../Layout/MainLayout";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import { GET_APPLICATIONS } from "./Applications";
-import "./CreateApplicationFromExcel.scss";
+import "./CreateAppFromExcel.scss";
+import { CreateAppFromExcelForm } from "./CreateAppFromExcelForm";
 
 type ColumnKey = {
   name: string;
@@ -43,10 +39,10 @@ type TData = {
   createAppWithEntities: models.App;
 };
 
-const CLASS_NAME = "create-application-from-excel";
+export const CLASS_NAME = "create-app-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
-export function CreateApplicationFromExcel() {
+export function CreateAppFromExcel() {
   const [importList, setImportList] = React.useState<ImportField[]>([]);
   const [fileName, setFileName] = React.useState<string | null>(null);
 
@@ -158,7 +154,10 @@ export function CreateApplicationFromExcel() {
 
   useEffect(() => {
     if (data) {
-      history.push(`/${data.createAppWithEntities.id}`);
+      const appId = data.createAppWithEntities.id;
+      const buildId = data.createAppWithEntities.builds[0].id;
+
+      history.push(`/${appId}/builds/${buildId}`);
     }
   }, [history, data]);
 
@@ -211,121 +210,79 @@ export function CreateApplicationFromExcel() {
   };
 
   return (
-    <MainLayout>
-      <MainLayout.Menu />
-      <MainLayout.Content>
-        <div className={CLASS_NAME}>
-          <div className={`${CLASS_NAME}__layout`}>
-            {isEmpty(fileName) ? (
-              <div>
-                <div className={`${CLASS_NAME}__header`}>
-                  <SvgThemeImage image={EnumImages.ImportExcel} />
-                  <h2>Import schema from excel</h2>
-                  <div className={`${CLASS_NAME}__message`}>
-                    Start building your application from an existing schema.
-                    Just upload an excel or CSV file to import its schema, and
-                    generate your node.JS application source code
-                  </div>
-                </div>
-
-                <div
-                  {...getRootProps()}
-                  className={classNames(`${CLASS_NAME}__dropzone`, {
-                    [`${CLASS_NAME}__dropzone--active`]: isDragActive,
-                  })}
-                >
-                  <input {...getInputProps()} />
-                  {isDragActive ? (
-                    <p>Drop the file here ...</p>
-                  ) : (
-                    <p>Drag and drop a file here, or click to select a file</p>
-                  )}
-                </div>
-
-                {loading && (
-                  <div className={`${CLASS_NAME}__loader`}>
-                    <CircularProgress />
-                  </div>
-                )}
+    <div className={CLASS_NAME}>
+      <div className={`${CLASS_NAME}__layout`}>
+        {isEmpty(fileName) ? (
+          <div className={`${CLASS_NAME}__select-file`}>
+            <div className={`${CLASS_NAME}__header`}>
+              <SvgThemeImage image={EnumImages.ImportExcel} />
+              <h2>Start with schema from excel</h2>
+              <div className={`${CLASS_NAME}__message`}>
+                Start building your application from an existing schema. Just
+                upload an excel or CSV file to import its schema, and generate
+                your node.JS application source code
               </div>
-            ) : (
-              <Formik
-                initialValues={initialValues}
-                enableReinitialize
-                onSubmit={handleSubmit}
-                render={({ values, handleSubmit }) => (
-                  <Form className={`${CLASS_NAME}__layout__body`}>
-                    <div className={`${CLASS_NAME}__layout__body__side`}>
-                      <h3>{fileName}</h3>
-                      <div className={`${CLASS_NAME}__notice`}>
-                        <ul
-                          className={`${CLASS_NAME}__layout__body__side__message`}
-                        >
-                          <li>
-                            You can change the name and the data type of your
-                            fields
-                          </li>
-                          <li>
-                            You can create additional entities and move fields
-                            between entities to normalize your data model
-                          </li>
-                          <li>
-                            All relations are created as one-to-many by default.
-                            You can change that later if needed.
-                          </li>
-                          <li>
-                            You can update anything in your data models after
-                            you created the app
-                          </li>
-                          <li>
-                            Give your app a descriptive name and click on
-                            "Create App" below
-                          </li>
-                        </ul>
-                      </div>
+            </div>
 
-                      <DisplayNameField
-                        name="app.name"
-                        label="Application Name"
-                        required
-                      />
+            <div
+              {...getRootProps()}
+              className={classNames(`${CLASS_NAME}__dropzone`, {
+                [`${CLASS_NAME}__dropzone--active`]: isDragActive,
+              })}
+            >
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <p>Drop the file here ...</p>
+              ) : (
+                <p>Drag and drop a file here, or click to select a file</p>
+              )}
+            </div>
+            <div className={`${CLASS_NAME}__divider`}>or</div>
+            <div className={`${CLASS_NAME}__other-options`}>
+              <Link
+                to="/"
+                onClick={() => {}}
+                className={`${CLASS_NAME}__other-options__option`}
+              >
+                <SvgThemeImage image={EnumImages.AddApp} />
+                <div>Start From Scratch</div>
+              </Link>
+              <Link
+                to="/"
+                onClick={() => {}}
+                className={`${CLASS_NAME}__other-options__option`}
+              >
+                <SvgThemeImage image={EnumImages.SampleApp} />
+                <div>Start from a sample app</div>
+              </Link>
+              <Link
+                to="/"
+                onClick={() => {}}
+                className={`${CLASS_NAME}__other-options__option`}
+              >
+                <SvgThemeImage image={EnumImages.MyApps} />
+                <div>View my apps</div>
+              </Link>
+            </div>
 
-                      <Button
-                        buttonStyle={EnumButtonStyle.Primary}
-                        disabled={loading}
-                        onClick={handleSubmit}
-                        type="button"
-                      >
-                        Create App
-                      </Button>
-                    </div>
-
-                    <div className={`${CLASS_NAME}__layout__body__content`}>
-                      <div
-                        className={`${CLASS_NAME}__layout__body__content__toolbar`}
-                      >
-                        <Button
-                          buttonStyle={EnumButtonStyle.Clear}
-                          disabled={loading}
-                          type="button"
-                          onClick={clearSelectedFile}
-                        >
-                          Back
-                        </Button>
-                      </div>
-                      <div className={`${CLASS_NAME}__entities`}>
-                        <EntitiesDiagram />
-                      </div>
-                    </div>
-                  </Form>
-                )}
-              />
+            {loading && (
+              <div className={`${CLASS_NAME}__loader`}>
+                <CircularProgress />
+              </div>
             )}
-            <Snackbar open={Boolean(error)} message={errorMessage} />
           </div>
-        </div>
-      </MainLayout.Content>
-    </MainLayout>
+        ) : (
+          <CreateAppFromExcelForm
+            fileName={fileName}
+            loading={loading}
+            onClearForm={clearSelectedFile}
+            onSubmit={handleSubmit}
+            initialValues={initialValues}
+          />
+        )}
+        <Snackbar open={Boolean(error)} message={errorMessage} />
+      </div>
+    </div>
   );
 }
 
@@ -391,6 +348,9 @@ const CREATE_APP_WITH_ENTITIES = gql`
       id
       name
       description
+      builds(orderBy: { createdAt: Desc }, take: 1) {
+        id
+      }
     }
   }
 `;

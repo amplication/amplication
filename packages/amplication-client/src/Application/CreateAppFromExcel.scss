@@ -2,21 +2,11 @@
 
 $max-width: 700px;
 $dropzone-height: 250px;
+$options-max-width: 1000px;
+$header-image-size: 100px;
+$option-image-size: 70px;
 
-@mixin edit-area {
-  position: absolute;
-  left: calc(100% + var(--default-spacing-small));
-  top: 0;
-  background: var(--black5);
-  border: $border-black10;
-  border-radius: var(--default-border-radius);
-  padding: var(--default-spacing-small);
-  width: $entity-width;
-  z-index: $z-index-edit-area;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
-}
-
-.create-application-from-excel {
+.create-app-from-excel {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -28,6 +18,10 @@ $dropzone-height: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    .svg-theme-image {
+      height: $header-image-size;
+      background-position: center;
+    }
   }
 
   &__message {
@@ -40,16 +34,64 @@ $dropzone-height: 250px;
     margin: var(--default-spacing);
   }
 
+  &__select-file {
+    padding: var(--double-spacing);
+  }
+  &__divider {
+    @include title1;
+    max-width: $options-max-width;
+    width: 100%;
+    margin: var(--default-spacing) auto;
+    text-align: center;
+    position: relative;
+
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+      border-top: $border-black20;
+      width: calc(50% - var(--double-spacing));
+      right: 0;
+      top: 50%;
+    }
+
+    &:after {
+      right: aut;
+      left: 0;
+    }
+  }
+  &__other-options {
+    max-width: $options-max-width;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+
+    &__option {
+      @include optionCard;
+      @include body1;
+      height: auto;
+
+      .svg-theme-image {
+        height: $option-image-size;
+
+        margin-bottom: var(--default-spacing);
+        background-position: center;
+      }
+    }
+  }
   &__dropzone {
     @include body1;
-    margin: var(--double-spacing);
+    margin: var(--double-spacing) auto;
     height: $dropzone-height;
+    max-width: $options-max-width;
+
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--double-spacing);
 
     border-radius: var(--default-border-radius);
     border: $border-black10;

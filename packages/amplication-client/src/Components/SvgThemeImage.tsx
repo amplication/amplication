@@ -11,6 +11,8 @@ export enum EnumImages {
   AddApp = "--image-add-app",
   Relations = "--image-relations",
   ImportExcel = "--image-import-excel",
+  MyApps = "--image-my-apps",
+  SampleApp = "--image-sample-app",
 }
 
 type Props = {
