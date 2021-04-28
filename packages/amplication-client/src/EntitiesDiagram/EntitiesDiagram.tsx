@@ -245,7 +245,7 @@ export default function EntitiesDiagram() {
 
   return (
     <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__scroll-content`}>
+      <div className={`${CLASS_NAME}__toolbar`}>
         <Button
           className={`${CLASS_NAME}__toolbar__button`}
           buttonStyle={EnumButtonStyle.Clear}
@@ -268,33 +268,36 @@ export default function EntitiesDiagram() {
           onClick={zoomReset}
           icon="maximize_2"
         />
+      </div>
+      <div className={`${CLASS_NAME}__scroll`}>
+        <div className={`${CLASS_NAME}__scroll-content`}>
+          <EntitiesDiagramRelations entities={values.entities} />
 
-        <EntitiesDiagramRelations entities={values.entities} />
-
-        <div
-          className={`${CLASS_NAME}__scale`}
-          style={{ transform: `scale(${zoomLevel})` }}
-        >
-          <DragDropContext
-            onDragEnd={onFieldDragEnd}
-            onDragStart={onFieldDragStart}
+          <div
+            className={`${CLASS_NAME}__scale`}
+            style={{ transform: `scale(${zoomLevel})` }}
           >
-            {values.entities.map((entity, index) => (
-              <EntitiesDiagramEntity
-                zoomLevel={zoomLevel}
-                key={`entity_${index}`}
-                entity={entity}
-                entityIndex={index}
-                positionData={entitiesPosition[index]}
-                onDrag={handleEntityDrag}
-                onEditField={handleEditField}
-                onEditEntity={handleEditEntity}
-                onAddEntity={handleAddEntity}
-                editedFieldIdentifier={editedField}
-                editedEntity={editedEntity}
-              />
-            ))}
-          </DragDropContext>
+            <DragDropContext
+              onDragEnd={onFieldDragEnd}
+              onDragStart={onFieldDragStart}
+            >
+              {values.entities.map((entity, index) => (
+                <EntitiesDiagramEntity
+                  zoomLevel={zoomLevel}
+                  key={`entity_${index}`}
+                  entity={entity}
+                  entityIndex={index}
+                  positionData={entitiesPosition[index]}
+                  onDrag={handleEntityDrag}
+                  onEditField={handleEditField}
+                  onEditEntity={handleEditEntity}
+                  onAddEntity={handleAddEntity}
+                  editedFieldIdentifier={editedField}
+                  editedEntity={editedEntity}
+                />
+              ))}
+            </DragDropContext>
+          </div>
         </div>
       </div>
     </div>

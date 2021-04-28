@@ -152,6 +152,7 @@ $option-image-size: 70px;
     align-items: stretch;
     justify-content: stretch;
     background: var(--black2);
+    overflow: auto;
 
     &__body {
       flex: 1;
