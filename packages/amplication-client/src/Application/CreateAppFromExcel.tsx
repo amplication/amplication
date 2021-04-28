@@ -157,9 +157,9 @@ export function CreateAppFromExcel() {
   useEffect(() => {
     if (data) {
       const appId = data.createAppWithEntities.id;
-      const buildId = data.createAppWithEntities.builds[0].id;
+      //const buildId = data.createAppWithEntities.builds[0].id;
 
-      history.push(`/${appId}/builds/${buildId}`);
+      history.push(`/${appId}/entities`);
     }
   }, [history, data]);
 
@@ -227,7 +227,7 @@ export function CreateAppFromExcel() {
             </div>
             <div className={`${CLASS_NAME}__processing__tagline`}>
               For a full experience, connect with a GitHub repository and get a
-              new Pull Request when you make changes in your data model.
+              new Pull Request every time you make changes in your data model.
             </div>
           </div>
         ) : isEmpty(fileName) ? (
