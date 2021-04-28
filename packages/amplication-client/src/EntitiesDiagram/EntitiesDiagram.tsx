@@ -10,14 +10,7 @@ import { EntitiesDiagramEntity } from "./EntitiesDiagramEntity";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 
-type EntityWithViewData = models.AppCreateWithEntitiesEntityInput & {
-  level?: number;
-  levelIndex?: number;
-};
-
-export type EntitiesDiagramFormData = models.AppCreateWithEntitiesInput & {
-  entities: EntityWithViewData[];
-};
+export type EntitiesDiagramFormData = models.AppCreateWithEntitiesInput;
 
 export type EntityPositionData = {
   top: number;
@@ -175,18 +168,10 @@ export default function EntitiesDiagram() {
 
   const handleAddEntity = useCallback(
     (entityIndex: number) => {
-      const entities: EntityWithViewData[] = cloneDeep(values.entities);
+      const entities = cloneDeep(values.entities);
       const currentLength = entities.length;
       const relations = entities[entityIndex].relationsToEntityIndex || [];
       const currentEntity = entities[entityIndex];
-
-      const newEntityLevel = currentEntity.level ? currentEntity.level + 1 : 1;
-
-      const levelEntities = entities.filter(
-        (entity) => entity.level === newEntityLevel
-      );
-
-      const levelIndex = levelEntities.length;
 
       currentEntity.relationsToEntityIndex = [...relations, currentLength];
 
@@ -195,8 +180,6 @@ export default function EntitiesDiagram() {
         {
           name: "",
           fields: [],
-          level: newEntityLevel,
-          levelIndex: levelIndex,
         },
       ]);
 

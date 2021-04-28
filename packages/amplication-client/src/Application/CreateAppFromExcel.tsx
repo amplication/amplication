@@ -19,6 +19,7 @@ import { formatError } from "../util/error";
 import { GET_APPLICATIONS } from "./Applications";
 import "./CreateAppFromExcel.scss";
 import { CreateAppFromExcelForm } from "./CreateAppFromExcelForm";
+import { sampleAppWithEntities } from "./constants";
 
 type ColumnKey = {
   name: string;
@@ -39,6 +40,8 @@ type TData = {
   createAppWithEntities: models.App;
 };
 
+const SAMPLE_APP_FILE_NAME = "%%%SampleApp%%%";
+
 export const CLASS_NAME = "create-app-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
@@ -49,6 +52,14 @@ export function CreateAppFromExcel() {
   const { trackEvent } = useTracking();
 
   const history = useHistory();
+
+  const handleStartFromSample = useCallback(() => {
+    setFileName(SAMPLE_APP_FILE_NAME);
+  }, [setFileName]);
+
+  const handleStartFromScratch = useCallback(() => {
+    setFileName(SAMPLE_APP_FILE_NAME);
+  }, [setFileName]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const reader = new FileReader();
@@ -114,8 +125,12 @@ export function CreateAppFromExcel() {
     setFileName(null);
   }, [setFileName]);
 
-  const initialValues = useMemo(() => {
+  const initialValues = useMemo((): EntitiesDiagramFormData => {
     const fileNameWithoutExtension = fileName?.replace(/\.[^/.]+$/, "");
+
+    if (fileName === SAMPLE_APP_FILE_NAME) {
+      return sampleAppWithEntities;
+    }
 
     const data: EntitiesDiagramFormData = {
       app: {
@@ -139,13 +154,7 @@ export function CreateAppFromExcel() {
 
   const handleSubmit = useCallback(
     (data: EntitiesDiagramFormData) => {
-      const sanitizedData: models.AppCreateWithEntitiesInput = omitDeep(data, [
-        "level",
-        "levelIndex",
-      ]);
-      createAppWithEntities({ variables: { data: sanitizedData } }).catch(
-        console.error
-      );
+      createAppWithEntities({ variables: { data } }).catch(console.error);
     },
     [createAppWithEntities]
   );
@@ -240,26 +249,20 @@ export function CreateAppFromExcel() {
             <div className={`${CLASS_NAME}__divider`}>or</div>
             <div className={`${CLASS_NAME}__other-options`}>
               <Link
-                to="/"
-                onClick={() => {}}
+                onClick={handleStartFromScratch}
                 className={`${CLASS_NAME}__other-options__option`}
               >
                 <SvgThemeImage image={EnumImages.AddApp} />
                 <div>Start From Scratch</div>
               </Link>
               <Link
-                to="/"
-                onClick={() => {}}
+                onClick={handleStartFromSample}
                 className={`${CLASS_NAME}__other-options__option`}
               >
                 <SvgThemeImage image={EnumImages.SampleApp} />
                 <div>Start from a sample app</div>
               </Link>
-              <Link
-                to="/"
-                onClick={() => {}}
-                className={`${CLASS_NAME}__other-options__option`}
-              >
+              <Link to="/" className={`${CLASS_NAME}__other-options__option`}>
                 <SvgThemeImage image={EnumImages.MyApps} />
                 <div>View my apps</div>
               </Link>
