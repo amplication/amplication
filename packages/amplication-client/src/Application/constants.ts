@@ -45,6 +45,16 @@ export const COLOR_TO_NAME: {
   [BLUE]: "blue",
 };
 
+export const sampleAppWithoutEntities: models.AppCreateWithEntitiesInput = {
+  app: {
+    name: "Sample Application",
+    description: "Sample application",
+    color: GREEN,
+  },
+  commitMessage: "",
+  entities: [],
+};
+
 export const sampleAppWithEntities: models.AppCreateWithEntitiesInput = {
   app: {
     name: "Sample Application",

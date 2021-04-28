@@ -17,7 +17,7 @@ import { formatError } from "../util/error";
 import { GET_APPLICATIONS } from "./Applications";
 import "./CreateAppFromExcel.scss";
 import { CreateAppFromExcelForm } from "./CreateAppFromExcelForm";
-import { sampleAppWithEntities } from "./constants";
+import { sampleAppWithEntities, sampleAppWithoutEntities } from "./constants";
 import { CircularProgress } from "@rmwc/circular-progress";
 
 type ColumnKey = {
@@ -39,8 +39,6 @@ type TData = {
   createAppWithEntities: models.App;
 };
 
-const SAMPLE_APP_FILE_NAME = "%%%SampleApp%%%";
-
 export const CLASS_NAME = "create-app-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
@@ -51,14 +49,6 @@ export function CreateAppFromExcel() {
   const { trackEvent } = useTracking();
 
   const history = useHistory();
-
-  const handleStartFromSample = useCallback(() => {
-    setFileName(SAMPLE_APP_FILE_NAME);
-  }, [setFileName]);
-
-  const handleStartFromScratch = useCallback(() => {
-    setFileName(SAMPLE_APP_FILE_NAME);
-  }, [setFileName]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const reader = new FileReader();
@@ -127,10 +117,6 @@ export function CreateAppFromExcel() {
   const initialValues = useMemo((): EntitiesDiagramFormData => {
     const fileNameWithoutExtension = fileName?.replace(/\.[^/.]+$/, "");
 
-    if (fileName === SAMPLE_APP_FILE_NAME) {
-      return sampleAppWithEntities;
-    }
-
     const data: EntitiesDiagramFormData = {
       app: {
         name: fileNameWithoutExtension || "",
@@ -159,6 +145,14 @@ export function CreateAppFromExcel() {
   );
 
   const errorMessage = formatError(error);
+
+  const handleStartFromSample = useCallback(() => {
+    handleSubmit(sampleAppWithEntities);
+  }, [handleSubmit]);
+
+  const handleStartFromScratch = useCallback(() => {
+    handleSubmit(sampleAppWithoutEntities);
+  }, [handleSubmit]);
 
   useEffect(() => {
     if (data) {
