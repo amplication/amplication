@@ -32,7 +32,8 @@ export const EntitiesDiagramField = React.memo(
       onEdit && onEdit({ entityIndex, fieldIndex });
     }, [onEdit, entityIndex, fieldIndex]);
 
-    const selected = editedFieldIdentifier &&
+    const selected =
+      editedFieldIdentifier &&
       editedFieldIdentifier.entityIndex === entityIndex &&
       editedFieldIdentifier.fieldIndex === fieldIndex;
 
@@ -66,7 +67,8 @@ export const EntitiesDiagramField = React.memo(
                 icon={{
                   icon: DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon,
                   size: "xsmall",
-                }} />
+                }}
+              />
               <span>{field.name}</span>
               <span className="spacer" />
               <Button
@@ -74,21 +76,25 @@ export const EntitiesDiagramField = React.memo(
                 buttonStyle={EnumButtonStyle.Clear}
                 type="button"
                 onClick={handleClick}
-                icon="edit_2" />
+                icon="edit_2"
+              />
               {selected && (
                 <div className={`${CLASS_NAME}__fields__field__edit-area`}>
                   <HotKeys keyMap={keyMap} handlers={handlers}>
                     <TextField
                       name={`entities.${entityIndex}.fields.${fieldIndex}.name`}
                       autoFocus
+                      autoComplete="off"
                       placeholder="Field Name"
                       label="Field Name"
-                      required />
+                      required
+                    />
 
                     <SelectField
                       label="Data Type"
                       name={`entities.${entityIndex}.fields.${fieldIndex}.dataType`}
-                      options={DATA_TYPE_OPTIONS} />
+                      options={DATA_TYPE_OPTIONS}
+                    />
                   </HotKeys>
                 </div>
               )}

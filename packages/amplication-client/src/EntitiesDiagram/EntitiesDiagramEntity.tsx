@@ -8,6 +8,7 @@ import { HotKeys } from "react-hotkeys";
 import { TextField } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
+import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";
 import {
   CLASS_NAME,
   COMMON_FIELDS,
@@ -24,6 +25,7 @@ type Props = {
   editedFieldIdentifier: FieldIdentifier | null;
   editedEntity: number | null;
   positionData: EntityPositionData;
+  zoomLevel: number;
   onDrag?: (entityIndex: number, data: DraggableData) => void;
   onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
   onEditEntity: (entityIndex: number | null) => void;
@@ -36,6 +38,7 @@ export const EntitiesDiagramEntity = React.memo(
     editedFieldIdentifier,
     editedEntity,
     positionData,
+    zoomLevel,
     onDrag,
     onEditField,
     onEditEntity,
@@ -96,6 +99,7 @@ export const EntitiesDiagramEntity = React.memo(
                     <TextField
                       name={`entities.${entityIndex}.name`}
                       autoFocus
+                      autoComplete="off"
                       label="Entity Name"
                       placeholder="Entity Name"
                       required
@@ -115,7 +119,39 @@ export const EntitiesDiagramEntity = React.memo(
                       field={field}
                     />
                   ))}
-                  <Droppable droppableId={`droppable_${entityIndex}`}>
+                  <Droppable
+                    droppableId={`droppable_${entityIndex}`}
+                    //we use re-parenting to allow frag when the canvas is scaled (using transform: scale())
+                    //https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/reparenting.md
+                    renderClone={(provided, snapshot, rubric) => (
+                      <div
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        ref={provided.innerRef}
+                      >
+                        <div
+                          style={{ transform: `scale(${zoomLevel})` }}
+                          className={classNames(
+                            `${CLASS_NAME}__fields__field`,
+                            `${CLASS_NAME}__fields__field--dragged`
+                          )}
+                        >
+                          <Icon
+                            icon={{
+                              icon:
+                                DATA_TYPE_TO_LABEL_AND_ICON[
+                                  entity.fields[rubric.source.index].dataType ||
+                                    models.EnumDataType.SingleLineText
+                                ].icon,
+                              size: "xsmall",
+                            }}
+                          />
+                          <span>{entity.fields[rubric.source.index].name}</span>
+                          <span className="spacer" />
+                        </div>
+                      </div>
+                    )}
+                  >
                     {(provided, snapshot) => (
                       <div
                         {...provided.droppableProps}

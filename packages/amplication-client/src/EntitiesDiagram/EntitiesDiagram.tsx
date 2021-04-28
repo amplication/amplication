@@ -8,6 +8,8 @@ import "./EntitiesDiagram.scss";
 import { EntitiesDiagramRelations } from "./EntitiesDiagramRelations";
 import { EntitiesDiagramEntity } from "./EntitiesDiagramEntity";
 
+import { Button, EnumButtonStyle } from "../Components/Button";
+
 type EntityWithViewData = models.AppCreateWithEntitiesEntityInput & {
   level?: number;
   levelIndex?: number;
@@ -50,10 +52,32 @@ export const keyMap = {
   CLOSE_MODAL: ["enter", "esc"],
 };
 
+const ZOOM_LEVEL_STEP = 0.1;
+const ZOOM_LEVEL_MIN = 0.2;
+const ZOOM_LEVEL_MAX = 2;
+
 export const CLASS_NAME = "entities-diagram";
 
 export default function EntitiesDiagram() {
   const { setFieldValue, values } = useFormikContext<EntitiesDiagramFormData>();
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+
+  const zoomIn = useCallback(() => {
+    setZoomLevel((zoomLevel) => {
+      if (zoomLevel < ZOOM_LEVEL_MAX) return zoomLevel + ZOOM_LEVEL_STEP;
+      return zoomLevel;
+    });
+  }, []);
+  const zoomOut = useCallback(() => {
+    setZoomLevel((zoomLevel) => {
+      if (zoomLevel > ZOOM_LEVEL_MIN) return zoomLevel - ZOOM_LEVEL_STEP;
+      return zoomLevel;
+    });
+  }, []);
+
+  const zoomReset = useCallback(() => {
+    setZoomLevel(1);
+  }, []);
 
   const [editedField, setEditedField] = React.useState<FieldIdentifier | null>(
     null
@@ -132,15 +156,11 @@ export default function EntitiesDiagram() {
       resetEditableElements();
       setEntitiesPosition((current) => {
         const position = current[entityIndex] || { top: 0, left: 0 };
+        const deltaX = draggableData.deltaX / zoomLevel;
+        const deltaY = draggableData.deltaY / zoomLevel;
         const newPosition = {
-          top:
-            position.top + draggableData.deltaY > 0
-              ? position.top + draggableData.deltaY
-              : 0,
-          left:
-            position.left + draggableData.deltaX > 0
-              ? position.left + draggableData.deltaX
-              : 0,
+          top: position.top + deltaY > 0 ? position.top + deltaY : 0,
+          left: position.left + deltaX > 0 ? position.left + deltaX : 0,
         };
 
         current[entityIndex] = newPosition;
@@ -150,7 +170,7 @@ export default function EntitiesDiagram() {
 
       forceUpdate();
     },
-    [forceUpdate, resetEditableElements]
+    [forceUpdate, resetEditableElements, zoomLevel]
   );
 
   const handleAddEntity = useCallback(
@@ -199,26 +219,58 @@ export default function EntitiesDiagram() {
 
   return (
     <div className={CLASS_NAME}>
-      <EntitiesDiagramRelations entities={values.entities} />
-      <DragDropContext
-        onDragEnd={onFieldDragEnd}
-        onDragStart={onFieldDragStart}
-      >
-        {values.entities.map((entity, index) => (
-          <EntitiesDiagramEntity
-            key={`entity_${index}`}
-            entity={entity}
-            entityIndex={index}
-            positionData={entitiesPosition[index]}
-            onDrag={handleEntityDrag}
-            onEditField={handleEditField}
-            onEditEntity={handleEditEntity}
-            onAddEntity={handleAddEntity}
-            editedFieldIdentifier={editedField}
-            editedEntity={editedEntity}
-          />
-        ))}
-      </DragDropContext>
+      <div className={`${CLASS_NAME}__scroll-content`}>
+        <Button
+          className={`${CLASS_NAME}__toolbar__button`}
+          buttonStyle={EnumButtonStyle.Clear}
+          type="button"
+          onClick={zoomIn}
+          icon="zoom_in"
+        />
+        <Button
+          className={`${CLASS_NAME}__toolbar__button`}
+          buttonStyle={EnumButtonStyle.Clear}
+          type="button"
+          onClick={zoomOut}
+          icon="zoom_out"
+        />
+
+        <Button
+          className={`${CLASS_NAME}__toolbar__button`}
+          buttonStyle={EnumButtonStyle.Clear}
+          type="button"
+          onClick={zoomReset}
+          icon="maximize_2"
+        />
+
+        <EntitiesDiagramRelations entities={values.entities} />
+
+        <div
+          className={`${CLASS_NAME}__scale`}
+          style={{ transform: `scale(${zoomLevel})` }}
+        >
+          <DragDropContext
+            onDragEnd={onFieldDragEnd}
+            onDragStart={onFieldDragStart}
+          >
+            {values.entities.map((entity, index) => (
+              <EntitiesDiagramEntity
+                zoomLevel={zoomLevel}
+                key={`entity_${index}`}
+                entity={entity}
+                entityIndex={index}
+                positionData={entitiesPosition[index]}
+                onDrag={handleEntityDrag}
+                onEditField={handleEditField}
+                onEditEntity={handleEditEntity}
+                onAddEntity={handleAddEntity}
+                editedFieldIdentifier={editedField}
+                editedEntity={editedEntity}
+              />
+            ))}
+          </DragDropContext>
+        </div>
+      </div>
     </div>
   );
 }
