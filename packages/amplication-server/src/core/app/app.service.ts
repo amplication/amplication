@@ -40,6 +40,7 @@ import { GithubService } from '../github/github.service';
 import { GithubRepo } from '../github/dto/githubRepo';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { EnumDataType } from 'src/enums/EnumDataType';
+import { QueryMode } from 'src/enums/QueryMode';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -94,24 +95,26 @@ export class AppService {
 
     await this.environmentService.createDefaultEnvironment(app.id);
 
-    await this.commit(
-      {
-        data: {
-          app: {
-            connect: {
-              id: app.id
-            }
-          },
-          message: INITIAL_COMMIT_MESSAGE,
-          user: {
-            connect: {
-              id: user.id
+    try {
+      await this.commit(
+        {
+          data: {
+            app: {
+              connect: {
+                id: app.id
+              }
+            },
+            message: INITIAL_COMMIT_MESSAGE,
+            user: {
+              connect: {
+                id: user.id
+              }
             }
           }
-        }
-      },
-      true
-    );
+        },
+        true
+      );
+    } catch {} //ignore - return the new app and the message will be available on the build log
 
     return app;
   }
@@ -179,6 +182,29 @@ export class AppService {
       )
     ) {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
+    }
+
+    const existingApps = await this.prisma.app.findMany({
+      where: {
+        name: {
+          mode: QueryMode.Insensitive,
+          startsWith: data.app.name
+        }
+      },
+      select: {
+        name: true
+      }
+    });
+
+    const appName = data.app.name;
+    let index = 1;
+    while (
+      existingApps.find(app => {
+        return app.name.toLowerCase() === data.app.name.toLowerCase();
+      })
+    ) {
+      data.app.name = `${appName}-${index}`;
+      index += 1;
     }
 
     const app = await this.createApp(
@@ -265,22 +291,26 @@ export class AppService {
         }
       }
     }
-
-    await this.commit({
-      data: {
-        app: {
-          connect: {
-            id: app.id
+    // do not commit if there are no entities
+    if (!isEmpty(data.entities)) {
+      try {
+        await this.commit({
+          data: {
+            app: {
+              connect: {
+                id: app.id
+              }
+            },
+            message: data.commitMessage,
+            user: {
+              connect: {
+                id: user.id
+              }
+            }
           }
-        },
-        message: data.commitMessage,
-        user: {
-          connect: {
-            id: user.id
-          }
-        }
-      }
-    });
+        });
+      } catch {} //ignore - return the new app and the message will be available on the build log
+    }
 
     return app;
   }
