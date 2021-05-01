@@ -199,6 +199,7 @@ export const EntityPermissionFields = ({
       </div>
       {permission.permissionFields?.map((field) => (
         <EntityPermissionField
+          key={field.id}
           entityId={entityId}
           permission={permission}
           actionDisplayName={actionDisplayName}

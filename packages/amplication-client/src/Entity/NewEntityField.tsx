@@ -12,10 +12,6 @@ import { useTracking } from "../util/analytics";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./NewEntityField.scss";
 
-type Values = {
-  displayName: string;
-};
-
 type Props = {
   entity: models.Entity;
   onFieldAdd?: (field: models.EntityField) => void;

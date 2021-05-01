@@ -74,11 +74,11 @@ const CommitValidation = ({ applicationId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      {data?.appValidateBeforeCommit.messages.map((message) => {
+      {data?.appValidateBeforeCommit.messages.map((message, index) => {
         const errorData = VALIDATION_MESSAGES_TO_TEXT[message];
 
         return (
-          <div className={`${CLASS_NAME}__item`}>
+          <div className={`${CLASS_NAME}__item`} key={index}>
             <Icon icon="info_circle" />
             <div>
               {errorData.message}

@@ -8,10 +8,6 @@ import * as models from "../models";
 import { DeleteApiToken } from "./DeleteApiToken";
 import "./ApiTokenListItem.scss";
 
-type DType = {
-  deleteEntityField: { id: string };
-};
-
 const EXPIRATION_DAYS = 30;
 
 type Props = {
