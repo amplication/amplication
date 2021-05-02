@@ -36,7 +36,7 @@ function NewEntityPage({ match }: Props) {
 
   const handleSubmit = useCallback(
     (data: Omit<models.EntityPage, "blockType" | "versionNumber">) => {
-      let { id, ...sanitizedCreateData } = data;
+      let { id, ...sanitizedCreateData } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
 
       createEntityPage({
         variables: {

@@ -110,7 +110,8 @@ const EntityField = () => {
           return;
         }
       }
-      const { id, ...rest } = data;
+
+      const { id, ...rest } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
       updateEntityField({
         variables: {
           where: {
@@ -128,7 +129,7 @@ const EntityField = () => {
       if (!lookupPendingData) {
         throw new Error("lookupPendingData must be defined");
       }
-      const { id, ...rest } = lookupPendingData;
+      const { id, ...rest } = lookupPendingData; // eslint-disable-line @typescript-eslint/no-unused-vars
       updateEntityField({
         variables: {
           where: {

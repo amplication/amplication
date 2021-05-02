@@ -1,2 +1,3 @@
 node_modules/
 build/
+src/models.ts
