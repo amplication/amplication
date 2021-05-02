@@ -55,7 +55,7 @@ function App() {
           <PrivateRoute exact path="/" component={Applications} />
           <PrivateRoute
             exact
-            path="/import-from-excel"
+            path="/create-app"
             component={CreateAppFromExcel}
           />
           <PrivateRoute path="/:application" component={ApplicationLayout} />

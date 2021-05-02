@@ -38,7 +38,7 @@ $option-image-size: 70px;
     padding: var(--double-spacing);
   }
   &__divider {
-    @include title1;
+    @include body2;
     max-width: $options-max-width;
     width: 100%;
     margin: var(--default-spacing) auto;

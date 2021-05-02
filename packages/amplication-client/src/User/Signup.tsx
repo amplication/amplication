@@ -59,7 +59,7 @@ const Signup = () => {
     if (data) {
       setToken(data.signup.token);
       // @ts-ignore
-      const { from } = location.state || { from: { pathname: "/" } };
+      const { from } = location.state || { from: { pathname: "/create-app" } };
       history.replace(from);
     }
   }, [data, history, location]);

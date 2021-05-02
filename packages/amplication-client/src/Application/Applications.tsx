@@ -51,7 +51,7 @@ function Applications() {
             >
               <Link
                 onClick={handleNewAppClick}
-                to="/import-from-excel"
+                to="/create-app"
                 className="applications__new-app"
               >
                 <Icon icon="plus" />

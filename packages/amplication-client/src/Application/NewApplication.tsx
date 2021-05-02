@@ -132,7 +132,7 @@ const NewApplication = () => {
             </div>
           </Link>
           <Link
-            to="/import-from-excel"
+            to="/create-app"
             onClick={StepImportExcel}
             className={`${CLASS_NAME}__step1__option`}
           >
