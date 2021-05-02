@@ -5,6 +5,7 @@ $z-index-entity-hover: 997;
 $z-index-entity-default: 2;
 
 $entity-hover-margin: 50px;
+$droppable-min-height: 100px;
 
 $entity-width: 200px;
 
@@ -28,7 +29,7 @@ $entity-width: 200px;
 
   &__droppable {
     height: 100%;
-    min-height: 100px;
+    min-height: $droppable-min-height;
   }
 
   &__scroll {
