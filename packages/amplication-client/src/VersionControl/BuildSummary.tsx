@@ -68,7 +68,7 @@ const BuildSummary = ({ build, onError }: Props) => {
   const handleDismissHelpGitHub = useCallback(() => {
     setShowGitHubHelp("false");
     setShowSandboxHelp("true");
-  }, [setShowGitHubHelp]);
+  }, [setShowGitHubHelp, setShowSandboxHelp]);
 
   const handleDismissHelpSandbox = useCallback(() => {
     setShowSandboxHelp("false");
