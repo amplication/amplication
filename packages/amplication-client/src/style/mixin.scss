@@ -133,6 +133,34 @@ $bullet-size: 6px;
   }
 }
 
+@mixin optionCard {
+  box-sizing: border-box;
+  background: var(--black5);
+  border-radius: var(--default-border-radius);
+  border: none;
+
+  padding: var(--large-spacing);
+  width: var(--application-card-width);
+  height: var(--application-card-height);
+  margin: var(--large-spacing);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--black10);
+  text-align: center;
+
+  &:last-child {
+    margin-right: 0;
+  }
+  &:first-child {
+    margin-left: 0;
+  }
+  &:hover {
+    box-shadow: var(--hover-box-shadow);
+    background: var(--black10);
+  }
+}
+
 @mixin scrollbars(
   $size,
   $foreground-color,

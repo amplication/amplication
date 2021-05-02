@@ -67,11 +67,12 @@ const Entity = ({ match }: Props) => {
   const handleSubmit = useCallback(
     (data: Omit<models.Entity, "versionNumber">) => {
       /**@todo: check why the "fields" and "permissions" properties are not removed by omitDeep in the form */
+
       let {
         id,
-        fields,
-        permissions,
-        lockedByUser,
+        fields, // eslint-disable-line @typescript-eslint/no-unused-vars
+        permissions, // eslint-disable-line @typescript-eslint/no-unused-vars
+        lockedByUser, // eslint-disable-line @typescript-eslint/no-unused-vars
         ...sanitizedCreateData
       } = data;
 

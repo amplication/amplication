@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'nestjs-prisma';
 import * as semver from 'semver';
+import pluralize from 'pluralize';
+import { pascalCase } from 'pascal-case';
 import { isEmpty } from 'lodash';
 import { validateHTMLColorHex } from 'validate-color';
 import { App, User, Commit } from 'src/models';
@@ -25,7 +27,8 @@ import {
   FindAvailableGithubReposArgs,
   AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
-  AppValidationErrorTypes
+  AppValidationErrorTypes,
+  AppCreateWithEntitiesInput
 } from './dto';
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
@@ -35,6 +38,9 @@ import { EnvironmentService } from '../environment/environment.service';
 import { InvalidColorError } from './InvalidColorError';
 import { GithubService } from '../github/github.service';
 import { GithubRepo } from '../github/dto/githubRepo';
+import { ReservedEntityNameError } from './ReservedEntityNameError';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { QueryMode } from 'src/enums/QueryMode';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -89,24 +95,26 @@ export class AppService {
 
     await this.environmentService.createDefaultEnvironment(app.id);
 
-    await this.commit(
-      {
-        data: {
-          app: {
-            connect: {
-              id: app.id
-            }
-          },
-          message: INITIAL_COMMIT_MESSAGE,
-          user: {
-            connect: {
-              id: user.id
+    try {
+      await this.commit(
+        {
+          data: {
+            app: {
+              connect: {
+                id: app.id
+              }
+            },
+            message: INITIAL_COMMIT_MESSAGE,
+            user: {
+              connect: {
+                id: user.id
+              }
             }
           }
-        }
-      },
-      true
-    );
+        },
+        true
+      );
+    } catch {} //ignore - return the new app and the message will be available on the build log
 
     return app;
   }
@@ -156,6 +164,153 @@ export class AppService {
         }
       }
     });
+
+    return app;
+  }
+
+  /**
+   * Create an app with entities and field in one transaction, based only on entities and fields names
+   * @param user the user to associate the created app with
+   */
+  async createAppWithEntities(
+    data: AppCreateWithEntitiesInput,
+    user: User
+  ): Promise<App> {
+    if (
+      data.entities.find(
+        entity => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
+      )
+    ) {
+      throw new ReservedEntityNameError(USER_ENTITY_NAME);
+    }
+
+    const existingApps = await this.prisma.app.findMany({
+      where: {
+        name: {
+          mode: QueryMode.Insensitive,
+          startsWith: data.app.name
+        }
+      },
+      select: {
+        name: true
+      }
+    });
+
+    const appName = data.app.name;
+    let index = 1;
+    while (
+      existingApps.find(app => {
+        return app.name.toLowerCase() === data.app.name.toLowerCase();
+      })
+    ) {
+      data.app.name = `${appName}-${index}`;
+      index += 1;
+    }
+
+    const app = await this.createApp(
+      {
+        data: data.app
+      },
+      user
+    );
+
+    const newEntities: {
+      [index: number]: { entityId: string; name: string };
+    } = {};
+
+    for (const { entity, index } of data.entities.map((entity, index) => ({
+      index,
+      entity
+    }))) {
+      const displayName = entity.name.trim();
+
+      const pluralDisplayName = pluralize(displayName);
+      const singularDisplayName = pluralize.singular(displayName);
+      const name = pascalCase(singularDisplayName);
+
+      const newEntity = await this.entityService.createOneEntity(
+        {
+          data: {
+            app: {
+              connect: {
+                id: app.id
+              }
+            },
+            displayName: displayName,
+            name: name,
+            pluralDisplayName: pluralDisplayName
+          }
+        },
+        user
+      );
+
+      newEntities[index] = {
+        entityId: newEntity.id,
+        name: newEntity.name
+      };
+
+      for (const entityField of entity.fields) {
+        await this.entityService.createFieldByDisplayName(
+          {
+            data: {
+              entity: {
+                connect: {
+                  id: newEntity.id
+                }
+              },
+              displayName: entityField.name,
+              dataType: entityField.dataType
+            }
+          },
+          user
+        );
+      }
+    }
+
+    //after all entities were created, create the relation fields
+    for (const { entity, index } of data.entities.map((entity, index) => ({
+      index,
+      entity
+    }))) {
+      if (entity.relationsToEntityIndex) {
+        for (const relationToIndex of entity.relationsToEntityIndex) {
+          await this.entityService.createFieldByDisplayName(
+            {
+              data: {
+                entity: {
+                  connect: {
+                    id: newEntities[index].entityId
+                  }
+                },
+                displayName: newEntities[relationToIndex].name,
+                dataType: EnumDataType.Lookup
+              }
+            },
+            user
+          );
+        }
+      }
+    }
+    // do not commit if there are no entities
+    if (!isEmpty(data.entities)) {
+      try {
+        await this.commit({
+          data: {
+            app: {
+              connect: {
+                id: app.id
+              }
+            },
+            message: data.commitMessage,
+            user: {
+              connect: {
+                id: user.id
+              }
+            }
+          }
+        });
+      } catch {} //ignore - return the new app and the message will be available on the build log
+    }
 
     return app;
   }

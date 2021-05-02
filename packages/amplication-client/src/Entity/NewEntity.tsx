@@ -9,7 +9,10 @@ import { formatError } from "../util/error";
 import * as models from "../models";
 import { TextField } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { generatePluralDisplayName, generateSingularDisplayName } from "../Components/PluralDisplayNameField";
+import {
+  generatePluralDisplayName,
+  generateSingularDisplayName,
+} from "../Components/PluralDisplayNameField";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
@@ -18,10 +21,6 @@ import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./NewEntity.scss";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
-
-type EntityListType = {
-  entities: models.Entity[];
-};
 
 type DType = {
   createOneEntity: models.Entity;
@@ -104,7 +103,7 @@ const NewEntity = ({ applicationId }: Props) => {
       const pluralDisplayName = generatePluralDisplayName(displayName);
       const singularDisplayName = generateSingularDisplayName(displayName);
       const name = pascalCase(singularDisplayName);
-      
+
       createEntity({
         variables: {
           data: {

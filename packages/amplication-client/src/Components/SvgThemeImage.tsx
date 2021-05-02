@@ -10,6 +10,10 @@ export enum EnumImages {
   NoChanges = "--image-no-changes",
   AddApp = "--image-add-app",
   Relations = "--image-relations",
+  ImportExcel = "--image-import-excel",
+  MyApps = "--image-my-apps",
+  SampleApp = "--image-sample-app",
+  Generating = "--image-generating",
 }
 
 type Props = {

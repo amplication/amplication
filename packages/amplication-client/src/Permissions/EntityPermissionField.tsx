@@ -12,10 +12,6 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "entity-permission-fields";
 
-type TData = {
-  entity: models.Entity;
-};
-
 type Props = {
   entityId: string;
   actionDisplayName: string;

@@ -6,6 +6,7 @@ import ApplicationLayout from "./Application/ApplicationLayout";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
 import Applications from "./Application/Applications";
+import { CreateAppFromExcel } from "./Application/CreateAppFromExcel";
 
 import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
@@ -52,6 +53,11 @@ function App() {
             component={AuthAppWithGithubCallback}
           />
           <PrivateRoute exact path="/" component={Applications} />
+          <PrivateRoute
+            exact
+            path="/create-app"
+            component={CreateAppFromExcel}
+          />
           <PrivateRoute path="/:application" component={ApplicationLayout} />
         </Switch>
       </NavigationTabsProvider>

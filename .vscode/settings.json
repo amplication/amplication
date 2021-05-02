@@ -2,6 +2,7 @@
   "cSpell.words": [
     "Amplication",
     "Authorizable",
+    "Dropzone",
     "Formik",
     "IBLOCK",
     "Octokit",
@@ -9,8 +10,10 @@
     "Repos",
     "Signup",
     "UNREQUIRED",
+    "Xarrow",
     "camelcase",
     "checkmark",
+    "curveness",
     "deepdash",
     "dtos",
     "linkcode",
@@ -23,6 +26,7 @@
     "unelevated",
     "unmark",
     "upsert",
+    "xarrows",
     "xsmall"
   ],
   "eslint.workingDirectories": [

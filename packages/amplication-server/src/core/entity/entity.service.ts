@@ -38,7 +38,8 @@ import {
   USER_ENTITY_FIELDS,
   DEFAULT_ENTITIES,
   DEFAULT_PERMISSIONS,
-  SYSTEM_DATA_TYPES
+  SYSTEM_DATA_TYPES,
+  DATA_TYPE_TO_DEFAULT_PROPERTIES
 } from './constants';
 import {
   prepareDeletedItemName,
@@ -1469,6 +1470,12 @@ export class EntityService {
     return this.createField(createFieldArgs, user);
   }
 
+  /**
+   * Created the field input with the relevant properties. When dataType is not provided, it will be guessed based on the field name
+   * @param args
+   * @param entity
+   * @returns
+   */
   async createFieldCreateInputByDisplayName(
     args: CreateOneEntityFieldByDisplayNameArgs,
     entity: Entity
@@ -1476,44 +1483,24 @@ export class EntityService {
     const { displayName } = args.data;
     const lowerCaseName = displayName.toLowerCase();
     const name = camelCase(displayName);
-    if (lowerCaseName.includes('date')) {
-      return {
-        name,
-        dataType: EnumDataType.DateTime,
-        properties: {
-          timeZone: 'localTime',
-          dateOnly: false
-        }
-      };
+
+    let dataType: EnumDataType | null = null;
+
+    if (args.data.dataType) {
+      dataType = args.data.dataType as EnumDataType;
+    } else if (lowerCaseName.includes('date')) {
+      dataType = EnumDataType.DateTime;
     } else if (lowerCaseName.includes('description')) {
-      return {
-        name,
-        dataType: EnumDataType.MultiLineText,
-        properties: {
-          maxLength: 1000
-        }
-      };
+      dataType = EnumDataType.MultiLineText;
     } else if (lowerCaseName.includes('email')) {
-      return {
-        name,
-        dataType: EnumDataType.Email,
-        properties: {}
-      };
+      dataType = EnumDataType.Email;
     } else if (lowerCaseName.includes('status')) {
-      return {
-        name,
-        dataType: EnumDataType.OptionSet,
-        properties: {
-          options: [{ label: 'Option 1', value: 'Option1' }]
-        }
-      };
+      dataType = EnumDataType.OptionSet;
     } else if (lowerCaseName.startsWith('is')) {
-      return {
-        name,
-        dataType: EnumDataType.Boolean,
-        properties: {}
-      };
-    } else {
+      dataType = EnumDataType.Boolean;
+    }
+
+    if (dataType === EnumDataType.Lookup || dataType === null) {
       // Find an entity with the field's display name
       const relatedEntity = await this.findEntityByNames(name, entity.appId);
       // If found attempt to create a lookup field
@@ -1549,12 +1536,12 @@ export class EntityService {
         }
       }
     }
+
     return {
       name,
-      dataType: EnumDataType.SingleLineText,
-      properties: {
-        maxLength: 1000
-      }
+      dataType: dataType || EnumDataType.SingleLineText,
+      properties:
+        DATA_TYPE_TO_DEFAULT_PROPERTIES[dataType || EnumDataType.SingleLineText]
     };
   }
 
@@ -2048,27 +2035,24 @@ export function createEntityNamesWhereInput(
   return {
     appId,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    AND: [
+    OR: [
+      {
+        displayName: {
+          equals: name,
+          mode: Prisma.QueryMode.insensitive
+        }
+      },
+      {
+        pluralDisplayName: {
+          equals: name,
+          mode: Prisma.QueryMode.insensitive
+        }
+      },
       {
         name: {
           equals: name,
           mode: Prisma.QueryMode.insensitive
-        },
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [
-          {
-            displayName: {
-              equals: name,
-              mode: Prisma.QueryMode.insensitive
-            }
-          },
-          {
-            pluralDisplayName: {
-              equals: name,
-              mode: Prisma.QueryMode.insensitive
-            }
-          }
-        ]
+        }
       }
     ]
   };

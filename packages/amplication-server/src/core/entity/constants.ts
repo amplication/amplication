@@ -160,3 +160,48 @@ export const DEFAULT_ENTITIES: EntityData[] = [
     ]
   }
 ];
+
+export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
+  [key in EnumDataType]: JsonObject;
+} = {
+  [EnumDataType.SingleLineText]: {
+    maxLength: 1000
+  },
+  [EnumDataType.MultiLineText]: {
+    maxLength: 1000
+  },
+  [EnumDataType.Email]: {},
+  [EnumDataType.WholeNumber]: {
+    minimumValue: -999999999,
+    maximumValue: 999999999
+  },
+  [EnumDataType.DecimalNumber]: {
+    minimumValue: -999999999,
+    maximumValue: 999999999,
+    precision: 2
+  },
+  [EnumDataType.DateTime]: {
+    timeZone: 'localTime',
+    dateOnly: false
+  },
+  [EnumDataType.Lookup]: {
+    relatedEntityId: '',
+    allowMultipleSelection: false,
+    relatedFieldId: ''
+  },
+  [EnumDataType.Boolean]: {},
+  [EnumDataType.Json]: {},
+  [EnumDataType.OptionSet]: {
+    options: [{ label: 'Option 1', value: 'Option1' }]
+  },
+  [EnumDataType.MultiSelectOptionSet]: {
+    options: [{ label: 'Option 1', value: 'Option1' }]
+  },
+  [EnumDataType.GeographicLocation]: {},
+  [EnumDataType.CreatedAt]: {},
+  [EnumDataType.UpdatedAt]: {},
+  [EnumDataType.Id]: {},
+  [EnumDataType.Username]: {},
+  [EnumDataType.Password]: {},
+  [EnumDataType.Roles]: {}
+};

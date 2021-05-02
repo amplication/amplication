@@ -5,7 +5,7 @@
   "dependencies": {
     "@amplication/data": "^0.5.3",
     "@amplication/design-system": "^0.5.3",
-    "@apollo/client": "^3.2.5",
+    "@apollo/client": "^3.3.15",
     "@extra-set/difference": "^2.2.3",
     "@primer/components": "^19.1.1",
     "@rmwc/circular-progress": "^6.1.4",
@@ -35,6 +35,7 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/react-tracking": "^7.0.4",
     "@types/semver": "^7.3.3",
+    "ajv-errors": "^3.0.0",
     "amplitude-js": "^7.1.1",
     "capital-case": "^1.0.3",
     "chalk-pipe": "^4.0.0",
@@ -53,24 +54,29 @@
     "pluralize": "^8.0.0",
     "react": "^16.14.0",
     "react-animate-height": "^2.0.23",
+    "react-beautiful-dnd": "^13.1.0",
     "react-command-palette": "^0.13.0-0",
     "react-compound-timer": "^1.2.0",
     "react-device-detect": "^1.13.1",
     "react-diff-viewer": "^3.1.1",
     "react-dom": "^16.14.0",
+    "react-draggable": "^4.4.3",
+    "react-dropzone": "^11.3.2",
     "react-hotkeys": "^2.0.0",
     "react-lazylog": "^4.5.3",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.1",
+    "react-scripts": "4.0.3",
     "react-select": "3.1.1",
     "react-teleporter": "^2.1.1",
     "react-tracking": "^8.0.0",
     "react-use-localstorage": "^3.5.3",
+    "react-xarrows": "^1.6.1",
     "sass": "^1.29.0",
     "semver": "^7.3.2",
     "styled-components": "^5.1.1",
     "typescript": "~3.7.2",
     "use-debounce": "^3.4.3",
+    "xlsx": "^0.16.9",
     "yaml": "^1.10.0"
   },
   "scripts": {
@@ -94,14 +100,10 @@
       "react/jsx-no-useless-fragment": "error",
       "no-duplicate-imports": "error",
       "no-undef": "error",
-      "no-unused-vars": "error",
-      "@typescript-eslint/naming-convention": [
+      "@typescript-eslint/no-unused-vars": [
         "error",
         {
-          "selector": "typeLike",
-          "format": [
-            "PascalCase"
-          ]
+          "args": "none"
         }
       ]
     }
@@ -127,7 +129,9 @@
     ]
   },
   "devDependencies": {
+    "@types/ajv-errors": "^1.0.3",
     "@types/lodash.debounce": "^4.0.6",
+    "@types/react-beautiful-dnd": "^13.0.0",
     "prettier": "^2.0.5",
     "react-app-rewired": "^2.1.6"
   }

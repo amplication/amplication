@@ -117,6 +117,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
             {entity.fields && entity.fields.length
               ? entity.fields?.map((field) => (
                   <EntityRelationFieldsChart
+                    key={field.id}
                     fixInPlace
                     applicationId={applicationId}
                     entityId={entity.id}

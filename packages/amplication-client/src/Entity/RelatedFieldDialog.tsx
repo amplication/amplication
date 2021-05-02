@@ -125,7 +125,7 @@ const RelatedFieldDisplayNameField = ({
       const newValue = camelCase(event.target.value);
       formik.values.relatedFieldName = newValue;
     },
-    [formik.values.relatedFieldName]
+    [formik.values]
   );
 
   return (

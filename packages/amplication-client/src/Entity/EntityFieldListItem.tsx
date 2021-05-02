@@ -8,10 +8,6 @@ import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityFieldListItem.scss";
 
-type DType = {
-  deleteEntityField: { id: string };
-};
-
 type Props = {
   applicationId: string;
   entity: models.Entity;

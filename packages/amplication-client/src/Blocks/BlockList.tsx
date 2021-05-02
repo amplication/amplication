@@ -164,7 +164,11 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
             block.blockType
           );
           return (
-            <DataGridRow clickData={block} onClick={handleRowClick}>
+            <DataGridRow
+              key={block.id}
+              clickData={block}
+              onClick={handleRowClick}
+            >
               <DataGridCell>
                 <Link
                   className="amp-data-grid-item--navigate"

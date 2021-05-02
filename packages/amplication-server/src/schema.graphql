@@ -76,6 +76,23 @@ input AppCreateInput {
   color: String
 }
 
+input AppCreateWithEntitiesEntityInput {
+  name: String!
+  fields: [AppCreateWithEntitiesFieldInput!]!
+  relationsToEntityIndex: [Int!]
+}
+
+input AppCreateWithEntitiesFieldInput {
+  name: String!
+  dataType: EnumDataType
+}
+
+input AppCreateWithEntitiesInput {
+  app: AppCreateInput!
+  entities: [AppCreateWithEntitiesEntityInput!]!
+  commitMessage: String!
+}
+
 input AppEnableSyncWithGithubRepoInput {
   """The full name of the repo in the format org-name/repo-name"""
   githubRepo: String!
@@ -545,6 +562,7 @@ type EntityField {
 
 input EntityFieldCreateByDisplayNameInput {
   displayName: String!
+  dataType: EnumDataType
   entity: WhereParentIdInput!
 }
 
@@ -1039,6 +1057,7 @@ type Mutation {
   createBuild(data: BuildCreateInput!): Build!
   createDeployment(data: DeploymentCreateInput!): Deployment!
   createApp(data: AppCreateInput!): App!
+  createAppWithEntities(data: AppCreateWithEntitiesInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit

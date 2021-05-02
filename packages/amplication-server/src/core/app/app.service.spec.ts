@@ -17,6 +17,7 @@ import { Environment } from '../environment/dto/Environment';
 import { App } from 'src/models/App';
 import { User } from 'src/models/User';
 import { Entity } from 'src/models/Entity';
+import { EntityField } from 'src/models/EntityField';
 import { PendingChange } from './dto/PendingChange';
 import { EntityVersion, Commit } from 'src/models';
 import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
@@ -30,6 +31,9 @@ import { InvalidColorError } from './InvalidColorError';
 import { BuildService } from '../build/build.service';
 import { Build } from '../build/dto/Build';
 import { GithubService } from '../github/github.service';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { ReservedEntityNameError } from './ReservedEntityNameError';
+import { QueryMode } from 'src/enums/QueryMode';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -64,9 +68,10 @@ const EXAMPLE_USER: User = {
 };
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
-const EXAMPLE_ENTITY_NAME = 'exampleEntityName';
-const EXAMPLE_ENTITY_DISPLAY_NAME = 'exampleEntityDisplayName';
-const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = 'exampleEntityPluralDisplayName';
+const EXAMPLE_ENTITY_NAME = 'ExampleEntityName';
+const EXAMPLE_ENTITY_DISPLAY_NAME = 'Example Entity Name';
+const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = 'Example Entity Names';
+const EXAMPLE_ENTITY_FIELD_NAME = 'exampleEntityFieldName';
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
@@ -76,6 +81,20 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+};
+
+const EXAMPLE_ENTITY_FIELD: EntityField = {
+  id: EXAMPLE_ENTITY_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_ENTITY_FIELD_NAME,
+  dataType: EnumDataType.SingleLineText,
+  description: 'SampleEntityDescription',
+  displayName: 'SampleEntityFieldDisplayName',
+  permanentId: 'SampleFieldPermanentId',
+  properties: {},
+  required: false,
+  searchable: false
 };
 
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {
@@ -155,6 +174,10 @@ const prismaCommitCreateMock = jest.fn(() => {
 const entityServiceCreateVersionMock = jest.fn(
   async () => EXAMPLE_ENTITY_VERSION
 );
+const entityServiceCreateOneEntityMock = jest.fn(async () => EXAMPLE_ENTITY);
+const entityServiceCreateFieldByDisplayNameMock = jest.fn(
+  async () => EXAMPLE_ENTITY_FIELD
+);
 const entityServiceReleaseLockMock = jest.fn(async () => EXAMPLE_ENTITY);
 
 const entityServiceGetChangedEntitiesMock = jest.fn(() => {
@@ -217,6 +240,8 @@ describe('AppService', () => {
           provide: EntityService,
           useClass: jest.fn().mockImplementation(() => ({
             createVersion: entityServiceCreateVersionMock,
+            createFieldByDisplayName: entityServiceCreateFieldByDisplayNameMock,
+            createOneEntity: entityServiceCreateOneEntityMock,
             releaseLock: entityServiceReleaseLockMock,
             createDefaultEntities: entityServiceCreateDefaultEntitiesMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock,
@@ -437,6 +462,190 @@ describe('AppService', () => {
       [findManyArgs],
       [findManyArgs]
     ]);
+
+    expect(prismaCommitCreateMock).toBeCalledTimes(2);
+    expect(prismaCommitCreateMock.mock.calls).toEqual([
+      [initialCommitArgs],
+      [createSampleEntitiesCommitArgs]
+    ]);
+    expect(entityServiceCreateVersionMock).toBeCalledTimes(2);
+    expect(entityServiceCreateVersionMock.mock.calls).toEqual([
+      [createVersionArgs],
+      [createVersionArgs]
+    ]);
+    expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
+    expect(entityServiceReleaseLockMock.mock.calls).toEqual([
+      [EXAMPLE_ENTITY_ID],
+      [EXAMPLE_ENTITY_ID]
+    ]);
+    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
+    expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
+      [changedEntitiesArgs.appId, changedEntitiesArgs.userId],
+      [changedEntitiesArgs.appId, changedEntitiesArgs.userId]
+    ]);
+  });
+
+  it('should fail to create app with entities with a reserved name', async () => {
+    await expect(
+      service.createAppWithEntities(
+        {
+          app: SAMPLE_APP_DATA,
+          commitMessage: 'commitMessage',
+          entities: [
+            {
+              name: USER_ENTITY_NAME,
+              fields: [
+                {
+                  name: EXAMPLE_ENTITY_FIELD_NAME
+                }
+              ]
+            }
+          ]
+        },
+
+        EXAMPLE_USER
+      )
+    ).rejects.toThrow(new ReservedEntityNameError(USER_ENTITY_NAME));
+  });
+
+  it('should create app with entities', async () => {
+    const prismaAppCreateAppArgs = {
+      data: {
+        ...DEFAULT_APP_DATA,
+        ...SAMPLE_APP_DATA,
+        organization: {
+          connect: {
+            id: EXAMPLE_USER.organization?.id
+          }
+        },
+        roles: {
+          create: EXAMPLE_USER_APP_ROLE
+        }
+      }
+    };
+    const initialCommitArgs = {
+      data: {
+        message: INITIAL_COMMIT_MESSAGE,
+        app: { connect: { id: EXAMPLE_APP_ID } },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
+    };
+    const commitMessage = 'CreateWithEntitiesCommitMessage';
+    const createSampleEntitiesCommitArgs = {
+      data: {
+        message: commitMessage,
+        app: { connect: { id: EXAMPLE_APP_ID } },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
+    };
+    const findManyArgs = {
+      where: {
+        id: EXAMPLE_APP_ID,
+        organization: {
+          users: {
+            some: {
+              id: EXAMPLE_USER_ID
+            }
+          }
+        }
+      }
+    };
+    const createVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        entity: {
+          connect: {
+            id: EXAMPLE_ENTITY_ID
+          }
+        }
+      }
+    };
+
+    const createOneEntityArgs = {
+      data: {
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
+        },
+        displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
+        name: EXAMPLE_ENTITY_NAME,
+        pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+      }
+    };
+
+    const createFieldByDisplayNameArgs = {
+      data: {
+        entity: {
+          connect: {
+            id: EXAMPLE_ENTITY_ID
+          }
+        },
+        displayName: EXAMPLE_ENTITY_FIELD_NAME
+      }
+    };
+
+    const changedEntitiesArgs = {
+      appId: EXAMPLE_APP_ID,
+      userId: EXAMPLE_USER_ID
+    };
+    await expect(
+      service.createAppWithEntities(
+        {
+          app: SAMPLE_APP_DATA,
+          commitMessage: commitMessage,
+          entities: [
+            {
+              name: EXAMPLE_ENTITY_DISPLAY_NAME,
+              fields: [
+                {
+                  name: EXAMPLE_ENTITY_FIELD_NAME
+                }
+              ]
+            }
+          ]
+        },
+
+        EXAMPLE_USER
+      )
+    ).resolves.toEqual(EXAMPLE_APP);
+    expect(prismaAppCreateMock).toBeCalledTimes(1);
+    expect(prismaAppCreateMock).toBeCalledWith(prismaAppCreateAppArgs);
+
+    expect(prismaAppFindManyMock).toBeCalledTimes(3);
+    expect(prismaAppFindManyMock.mock.calls).toEqual([
+      [
+        {
+          where: {
+            name: {
+              mode: QueryMode.Insensitive,
+              startsWith: SAMPLE_APP_DATA.name
+            }
+          },
+          select: {
+            name: true
+          }
+        }
+      ],
+      [findManyArgs],
+      [findManyArgs]
+    ]);
+
+    expect(entityServiceCreateOneEntityMock).toBeCalledTimes(1);
+    expect(entityServiceCreateOneEntityMock).toBeCalledWith(
+      createOneEntityArgs,
+      EXAMPLE_USER
+    );
+
+    expect(entityServiceCreateFieldByDisplayNameMock).toBeCalledTimes(1);
+    expect(entityServiceCreateFieldByDisplayNameMock).toBeCalledWith(
+      createFieldByDisplayNameArgs,
+      EXAMPLE_USER
+    );
 
     expect(prismaCommitCreateMock).toBeCalledTimes(2);
     expect(prismaCommitCreateMock.mock.calls).toEqual([

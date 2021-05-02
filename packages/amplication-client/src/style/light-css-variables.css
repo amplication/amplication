@@ -37,6 +37,10 @@
   --image-no-changes: url("../assets/images/mono/no-changes.svg");
   --image-add-app: url("../assets/images/mono/add-app.svg");
   --image-relations: url("../assets/images/mono/relations.svg");
+  --image-import-excel: url("../assets/images/mono/import-excel.svg");
+  --image-my-apps: url("../assets/images/mono/my-apps.svg");
+  --image-sample-app: url("../assets/images/mono/sample-app.svg");
+  --image-generating: url("../assets/images/mono/generating.svg");
 
   --diffViewerBackground: var(--white);
   --diffViewerColor: var(--black100);

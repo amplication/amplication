@@ -15,6 +15,7 @@ type Props = Omit<SelectFieldProps, "options"> & {
   applicationId: string;
   //none: null;
 };
+const NONE_OPTION = { value: "", label: "None" };
 
 const PageSelectField = (props: Props) => {
   const { applicationId } = props;
@@ -25,8 +26,6 @@ const PageSelectField = (props: Props) => {
     },
   });
 
-  const noneOption = { value: "", label: "None" };
-
   const pageLisOptions = useMemo(() => {
     const returnList = pageList
       ? pageList.blocks.map((page) => ({
@@ -34,9 +33,9 @@ const PageSelectField = (props: Props) => {
           label: page.displayName,
         }))
       : [];
-    returnList.push(noneOption);
+    returnList.push(NONE_OPTION);
     return returnList;
-  }, [pageList, noneOption]);
+  }, [pageList]);
 
   return <SelectField {...props} options={pageLisOptions} />;
 };

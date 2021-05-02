@@ -32,15 +32,6 @@ type TEntities = {
   ];
 };
 
-type TPages = {
-  blocks: [
-    {
-      id: string;
-      displayName: string;
-    }
-  ];
-};
-
 type Props = {
   entityPage?: models.EntityPage;
   onSubmit: (entityPage: EntityPageInput) => void;

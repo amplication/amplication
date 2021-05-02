@@ -1,0 +1,246 @@
+@import "../style/index.scss";
+
+$max-width: 700px;
+$dropzone-height: 250px;
+$options-max-width: 1000px;
+$header-image-size: 100px;
+$option-image-size: 70px;
+
+.create-app-from-excel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+
+  &__header {
+    margin: var(--double-spacing);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .svg-theme-image {
+      height: $header-image-size;
+      background-position: center;
+    }
+  }
+
+  &__message {
+    @include body1;
+    line-height: 1.5;
+    color: var(--black80);
+    margin-bottom: var(--triple-spacing);
+    max-width: $max-width;
+    text-align: center;
+    margin: var(--default-spacing);
+  }
+
+  &__select-file {
+    padding: var(--double-spacing);
+  }
+  &__divider {
+    @include body2;
+    max-width: $options-max-width;
+    width: 100%;
+    margin: var(--default-spacing) auto;
+    text-align: center;
+    position: relative;
+
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+      border-top: $border-black20;
+      width: calc(50% - var(--double-spacing));
+      right: 0;
+      top: 50%;
+    }
+
+    &:after {
+      right: aut;
+      left: 0;
+    }
+  }
+  &__other-options {
+    max-width: $options-max-width;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+
+    &__option {
+      @include optionCard;
+      @include body1;
+      height: auto;
+      flex: 1;
+
+      .svg-theme-image {
+        height: $option-image-size;
+
+        margin-bottom: var(--default-spacing);
+        background-position: center;
+      }
+    }
+  }
+  &__dropzone {
+    @include body1;
+    margin: var(--double-spacing) auto;
+    height: $dropzone-height;
+    max-width: $options-max-width;
+
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--default-border-radius);
+    border: $border-black10;
+    border-style: dashed;
+    background-color: var(--white);
+    color: var(--black80);
+    outline: none;
+    transition: border 0.1s ease-in-out;
+    cursor: pointer;
+
+    &:hover,
+    &--active {
+      border-color: var(--primary);
+      background-color: var(--black5);
+    }
+  }
+
+  &__notice {
+    text-align: left;
+    color: var(--black100);
+    margin-bottom: var(--double-spacing);
+
+    ul {
+      margin: 0;
+      padding: 0;
+      color: var(--black60);
+
+      li {
+        @include flexFullRow;
+        list-style: none;
+        margin: 0;
+        margin-top: var(--default-spacing);
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+    }
+
+    a {
+      color: var(--primary);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__entities {
+    width: 100%;
+    flex: 1;
+
+    overflow: auto;
+  }
+  &__layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: stretch;
+    justify-content: stretch;
+    background: var(--black2);
+    overflow: auto;
+
+    &__body {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      justify-content: stretch;
+      align-items: stretch;
+      width: 100%;
+
+      &__side {
+        order: 2;
+        width: 300px;
+        background-color: var(--black5);
+        padding: var(--default-spacing);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        &__message {
+          @include body2;
+        }
+
+        h3 {
+          margin: var(--double-spacing) 0;
+        }
+
+        .text-input {
+          width: 100%;
+        }
+        .amp-button {
+          margin-top: auto;
+          width: 100%;
+        }
+      }
+
+      &__content {
+        order: 1;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+        align-items: stretch;
+
+        &__toolbar {
+          padding: var(--default-spacing);
+        }
+      }
+    }
+  }
+
+  &__processing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    &__title {
+      @include pageTitle;
+    }
+
+    &__message {
+      @include sectionTitle;
+      margin-top: var(--double-spacing);
+    }
+
+    &__tagline {
+      @include title1;
+      max-width: $max-width;
+      text-align: center;
+    }
+
+    .svg-theme-image {
+      width: 200px;
+      height: 200px;
+      margin: 50px;
+    }
+    &__loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: var(--double-spacing);
+      max-width: $max-width;
+    }
+  }
+}

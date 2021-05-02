@@ -16,7 +16,8 @@ import {
   FindAvailableGithubReposArgs,
   PendingChange,
   AppEnableSyncWithGithubRepoArgs,
-  AppValidationResult
+  AppValidationResult,
+  CreateAppWithEntitiesArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { App, Entity, User, Commit } from 'src/models';
@@ -113,6 +114,19 @@ export class AppResolver {
     @UserEntity() user: User
   ): Promise<App> {
     return this.appService.createApp(args, user);
+  }
+
+  @Mutation(() => App, { nullable: false })
+  @Roles('ORGANIZATION_ADMIN')
+  @InjectContextValue(
+    InjectableResourceParameter.OrganizationId,
+    'data.app.organization.connect.id'
+  )
+  async createAppWithEntities(
+    @Args() args: CreateAppWithEntitiesArgs,
+    @UserEntity() user: User
+  ): Promise<App> {
+    return this.appService.createAppWithEntities(args.data, user);
   }
 
   @Mutation(() => App, {

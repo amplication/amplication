@@ -17,10 +17,6 @@ import {
 import { BuildStepsStatus } from "./BuildStepsStatus";
 import "./CommitListItem.scss";
 
-type DType = {
-  deleteEntity: { id: string };
-};
-
 type Props = {
   applicationId: string;
   commit: models.Commit;

@@ -1,19 +1,19 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
+import { isEmpty } from "lodash";
 import "@rmwc/snackbar/styles";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "./Applications.scss";
 import { formatError } from "../util/error";
 import { Icon } from "@rmwc/icon";
 import classNames from "classnames";
 import { isMobileOnly } from "react-device-detect";
+import { useTracking } from "../util/analytics";
 
 import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
 import ApplicationCard from "./ApplicationCard";
-import { Dialog } from "@amplication/design-system";
-import NewApplication from "./NewApplication";
 import MobileMessage from "../Layout/MobileMessage";
 
 type TData = {
@@ -21,61 +21,59 @@ type TData = {
 };
 
 function Applications() {
-  const [newApp, setNewApp] = useState<boolean>(false);
+  const { trackEvent } = useTracking();
+  const history = useHistory();
 
   const { data, error } = useQuery<TData>(GET_APPLICATIONS);
   const errorMessage = formatError(error);
 
   const handleNewAppClick = useCallback(() => {
-    setNewApp(!newApp);
-  }, [newApp, setNewApp]);
+    trackEvent({
+      eventName: "createNewAppCardClick",
+    });
+  }, [trackEvent]);
+
+  useEffect(() => {
+    if (data && isEmpty(data.apps)) {
+      history.replace({ pathname: "/create-app" });
+    }
+  }, [data, history]);
 
   if (isMobileOnly) {
     return <MobileMessage />;
   }
 
   return (
-    <>
-      <Dialog
-        className="new-app-dialog"
-        isOpen={newApp}
-        onDismiss={handleNewAppClick}
-        title="New App"
-      >
-        <NewApplication />
-      </Dialog>
-      <MainLayout>
-        <MainLayout.Menu />
-        <MainLayout.Content>
-          <div className="applications">
-            <div className="applications__bg">
-              <div className="applications__header">
-                <h1>My Apps</h1>
-              </div>
-              <div
-                className={classNames("previews", {
-                  "previews--center": (data?.apps.length || 0) < 3,
-                })}
-              >
-                <Link
-                  onClick={handleNewAppClick}
-                  to=""
-                  className="applications__new-app"
-                >
-                  <Icon icon="plus" />
-                  Create New App
-                </Link>
-
-                {data?.apps.map((app) => {
-                  return <ApplicationCard key={app.id} app={app} />;
-                })}
-              </div>
+    <MainLayout>
+      <MainLayout.Menu />
+      <MainLayout.Content>
+        <div className="applications">
+          <div className="applications__bg">
+            <div className="applications__header">
+              <h1>My Apps</h1>
             </div>
-            <Snackbar open={Boolean(error)} message={errorMessage} />
+            <div
+              className={classNames("previews", {
+                "previews--center": (data?.apps.length || 0) < 3,
+              })}
+            >
+              <Link
+                onClick={handleNewAppClick}
+                to="/create-app"
+                className="applications__new-app"
+              >
+                <Icon icon="plus" />
+                Create New App
+              </Link>
+              {data?.apps.map((app) => {
+                return <ApplicationCard key={app.id} app={app} />;
+              })}
+            </div>
           </div>
-        </MainLayout.Content>
-      </MainLayout>
-    </>
+          <Snackbar open={Boolean(error)} message={errorMessage} />
+        </div>
+      </MainLayout.Content>
+    </MainLayout>
   );
 }
 

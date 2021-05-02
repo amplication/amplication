@@ -12,10 +12,6 @@ type Props = {
   match: match<{ application: string }>;
 };
 
-type TData = {
-  blocks: models.Block[];
-};
-
 const blockTypes = [
   models.EnumBlockType.Layout,
   models.EnumBlockType.CanvasPage,
