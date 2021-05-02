@@ -219,8 +219,6 @@ describe('OrganizationService', () => {
     );
     expect(prismaOrganizationCreateMock).toBeCalledTimes(1);
     expect(prismaOrganizationCreateMock).toBeCalledWith(prismaArgs);
-    expect(appCreateSampleAppMock).toBeCalledTimes(1);
-    expect(appCreateSampleAppMock).toBeCalledWith(EXAMPLE_USER);
   });
 
   /**@todo fix test*/

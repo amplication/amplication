@@ -9,6 +9,7 @@ type Props = {
 
 const FormikAutoSave = ({ debounceMS = 1000, onError }: Props) => {
   const formik = useFormikContext();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSubmit = useCallback(
     debounce(() => {
       return formik
@@ -24,7 +25,6 @@ const FormikAutoSave = ({ debounceMS = 1000, onError }: Props) => {
       debouncedSubmit();
     }
   }, [debouncedSubmit, formik.values, formik.dirty]);
-
   return null;
 };
 

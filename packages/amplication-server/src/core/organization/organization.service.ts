@@ -51,7 +51,7 @@ export class OrganizationService {
   async createOrganization(
     accountId: string,
     args: Prisma.OrganizationCreateArgs
-  ) {
+  ): Promise<Organization> {
     // Create organization
     // Create a new user and link it to the account
     // Assign the user an "ORGANIZATION_ADMIN" role
@@ -76,8 +76,7 @@ export class OrganizationService {
         users: args?.include?.users || true
       }
     });
-    const [user] = organization.users;
-    await this.appService.createSampleApp(user);
+
     return organization;
   }
 
