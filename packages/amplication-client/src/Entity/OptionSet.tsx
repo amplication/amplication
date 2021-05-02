@@ -99,7 +99,7 @@ function useVirtualPush(value: unknown[]): [() => void, boolean] {
   return [add, hasNew];
 }
 
-type OptionSetOption = {
+type OptionSetOptionType = {
   name: string;
   index: number;
   onRemove: (index: number) => void;
@@ -111,7 +111,7 @@ const OptionSetOption = ({
   index,
   onRemove,
   onChange,
-}: OptionSetOption) => {
+}: OptionSetOptionType) => {
   const handleRemoveOption = useCallback(() => {
     onRemove(index);
   }, [onRemove, index]);

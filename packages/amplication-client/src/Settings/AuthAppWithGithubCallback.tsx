@@ -7,7 +7,7 @@ type Props = {
   match: match<{ application: string }>;
 };
 
-export default ({ match }: Props) => {
+const AuthAppWithGithubCallback = ({ match }: Props) => {
   const { application } = match.params;
   const { trackEvent } = useTracking();
 
@@ -45,6 +45,8 @@ export default ({ match }: Props) => {
   /**@todo: show formatted layout and optional error message */
   return <p>Please wait...</p>;
 };
+
+export default AuthAppWithGithubCallback;
 
 const COMPLETE_AUTH_APP_WITH_GITHUB = gql`
   mutation completeAuthorizeAppWithGithub(
