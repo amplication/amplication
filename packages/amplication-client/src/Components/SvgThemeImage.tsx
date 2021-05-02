@@ -13,6 +13,7 @@ export enum EnumImages {
   ImportExcel = "--image-import-excel",
   MyApps = "--image-my-apps",
   SampleApp = "--image-sample-app",
+  Generating = "--image-generating",
 }
 
 type Props = {

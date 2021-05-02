@@ -18,7 +18,7 @@ import { GET_APPLICATIONS } from "./Applications";
 import "./CreateAppFromExcel.scss";
 import { CreateAppFromExcelForm } from "./CreateAppFromExcelForm";
 import { sampleAppWithEntities, sampleAppWithoutEntities } from "./constants";
-import { CircularProgress } from "@rmwc/circular-progress";
+import ProgressBar from "../Components/ProgressBar";
 
 type ColumnKey = {
   name: string;
@@ -214,7 +214,7 @@ export function CreateAppFromExcel() {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__layout`}>
-        {loading ? (
+        {!loading ? (
           <div className={`${CLASS_NAME}__processing`}>
             <div className={`${CLASS_NAME}__processing__title`}>
               All set! We’re currently generating your app.
@@ -222,12 +222,15 @@ export function CreateAppFromExcel() {
             <div className={`${CLASS_NAME}__processing__message`}>
               It should only take a few seconds to finish. Don't go away!
             </div>
-            <div className={`${CLASS_NAME}__processing__loader`}>
-              <CircularProgress />
-            </div>
+
+            <SvgThemeImage image={EnumImages.Generating} />
+
             <div className={`${CLASS_NAME}__processing__tagline`}>
               For a full experience, connect with a GitHub repository and get a
               new Pull Request every time you make changes in your data model.
+            </div>
+            <div className={`${CLASS_NAME}__processing__loader`}>
+              <ProgressBar />
             </div>
           </div>
         ) : isEmpty(fileName) ? (
