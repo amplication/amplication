@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useHistory, Link } from "react-router-dom";
 import { Snackbar } from "@rmwc/snackbar";
 import classNames from "classnames";
@@ -45,6 +45,9 @@ const MAX_SAMPLE_DATA = 3;
 export function CreateAppFromExcel() {
   const [importList, setImportList] = React.useState<ImportField[]>([]);
   const [fileName, setFileName] = React.useState<string | null>(null);
+  const { data: appsData } = useQuery<{
+    apps: Array<models.App>;
+  }>(GET_APPLICATIONS);
 
   const { trackEvent } = useTracking();
 
@@ -82,6 +85,10 @@ export function CreateAppFromExcel() {
     maxFiles: 1,
     onDrop,
   });
+
+  const appsExist = useMemo(() => {
+    return appsData && !isEmpty(appsData.apps);
+  }, [appsData]);
 
   const [createAppWithEntities, { loading, data, error }] = useMutation<TData>(
     CREATE_APP_WITH_ENTITIES,
@@ -274,10 +281,12 @@ export function CreateAppFromExcel() {
                 <SvgThemeImage image={EnumImages.SampleApp} />
                 <div>Start from a sample app</div>
               </Link>
-              <Link to="/" className={`${CLASS_NAME}__other-options__option`}>
-                <SvgThemeImage image={EnumImages.MyApps} />
-                <div>View my apps</div>
-              </Link>
+              {appsExist && (
+                <Link to="/" className={`${CLASS_NAME}__other-options__option`}>
+                  <SvgThemeImage image={EnumImages.MyApps} />
+                  <div>View my apps</div>
+                </Link>
+              )}
             </div>
           </div>
         ) : (

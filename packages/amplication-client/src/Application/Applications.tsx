@@ -1,8 +1,9 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
+import { isEmpty } from "lodash";
 import "@rmwc/snackbar/styles";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "./Applications.scss";
 import { formatError } from "../util/error";
 import { Icon } from "@rmwc/icon";
@@ -21,6 +22,7 @@ type TData = {
 
 function Applications() {
   const { trackEvent } = useTracking();
+  const history = useHistory();
 
   const { data, error } = useQuery<TData>(GET_APPLICATIONS);
   const errorMessage = formatError(error);
@@ -30,6 +32,12 @@ function Applications() {
       eventName: "createNewAppCardClick",
     });
   }, [trackEvent]);
+
+  useEffect(() => {
+    if (data && isEmpty(data.apps)) {
+      history.replace({ pathname: "/create-app" });
+    }
+  }, [data, history]);
 
   if (isMobileOnly) {
     return <MobileMessage />;

@@ -72,6 +72,7 @@ $option-image-size: 70px;
       @include optionCard;
       @include body1;
       height: auto;
+      flex: 1;
 
       .svg-theme-image {
         height: $option-image-size;
