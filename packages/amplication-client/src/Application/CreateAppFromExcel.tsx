@@ -214,7 +214,7 @@ export function CreateAppFromExcel() {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__layout`}>
-        {!loading ? (
+        {loading ? (
           <div className={`${CLASS_NAME}__processing`}>
             <div className={`${CLASS_NAME}__processing__title`}>
               All set! We’re currently generating your app.
