@@ -75,39 +75,48 @@ export const EntitiesDiagramEntity = React.memo(
           style={{ top: positionData?.top, left: positionData?.left }}
         >
           <div>
-            <div className={`${CLASS_NAME}__entities__entity__name `}>
-              <Icon icon="menu" className="handle" />
-              <span>{entity.name}</span>
-              <span className="spacer" />
-              <Button
-                className={`${CLASS_NAME}__entities__entity__edit`}
-                buttonStyle={EnumButtonStyle.Clear}
-                type="button"
-                onClick={handleEditEntity}
-                icon="edit_2"
-              />
-              <Button
-                className={`${CLASS_NAME}__entities__entity__add`}
-                buttonStyle={EnumButtonStyle.Primary}
-                onClick={handleAddEntity}
-                type="button"
-                icon="plus"
-              />
-              {selected && (
-                <div className={`${CLASS_NAME}__entities__entity__edit-area`}>
-                  <HotKeys keyMap={keyMap} handlers={handlers}>
-                    <TextField
-                      name={`entities.${entityIndex}.name`}
-                      autoFocus
-                      autoComplete="off"
-                      label="Entity Name"
-                      placeholder="Entity Name"
-                      required
+            <HotKeys keyMap={keyMap} handlers={handlers}>
+              <div className={`${CLASS_NAME}__entities__entity__name-wrapper `}>
+                {selected ? (
+                  <TextField
+                    name={`entities.${entityIndex}.name`}
+                    autoFocus
+                    autoComplete="off"
+                    label=""
+                    placeholder="Entity Name"
+                    required
+                  />
+                ) : (
+                  <>
+                    <div
+                      className={classNames(
+                        `${CLASS_NAME}__entities__entity__name`,
+                        "handle"
+                      )}
+                    >
+                      <Icon icon="database" />
+                      <span>{entity.name}</span>
+                      <span className="spacer" />
+                    </div>
+                    <Button
+                      className={`${CLASS_NAME}__entities__entity__edit`}
+                      buttonStyle={EnumButtonStyle.Clear}
+                      type="button"
+                      onClick={handleEditEntity}
+                      icon="edit_2"
                     />
-                  </HotKeys>
-                </div>
-              )}
-            </div>
+                  </>
+                )}
+
+                <Button
+                  className={`${CLASS_NAME}__entities__entity__add`}
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={handleAddEntity}
+                  type="button"
+                  icon="plus"
+                />
+              </div>
+            </HotKeys>
 
             <FieldArray
               name={`entities.${entityIndex}.fields`}

@@ -89,17 +89,20 @@ $entity-width: 200px;
       }
       .handle {
         cursor: grab;
-        font-size: 22px;
       }
 
-      &__edit-area {
-        @include edit-area;
+      &__name-wrapper {
+        @include flexFullRowWithSpacing;
+        padding: var(--default-spacing);
+        background-color: var(--black5);
+
+        label {
+          margin: 0;
+        }
       }
 
       &__name {
         @include flexFullRowWithSpacing;
-        padding: var(--default-spacing);
-        background-color: var(--black5);
       }
 
       &__add.amp-button {
