@@ -53,32 +53,39 @@ export function CreateAppFromExcel() {
 
   const history = useHistory();
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const reader = new FileReader();
-    const rABS = !!reader.readAsBinaryString;
-    reader.onload = () => {
-      setFileName(acceptedFiles[0].name);
-      const wb = XLSX.read(reader.result, {
-        type: rABS ? "binary" : "array",
-      });
-      /* Get first worksheet */
-      const worksheetName = wb.SheetNames[0];
-      const ws = wb.Sheets[worksheetName];
-      /* Convert array of arrays */
-      const jsonData = XLSX.utils.sheet_to_json(ws, {
-        header: 1,
-        blankrows: false,
-      });
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const reader = new FileReader();
+      const rABS = !!reader.readAsBinaryString;
+      reader.onload = () => {
+        setFileName(acceptedFiles[0].name);
+        const wb = XLSX.read(reader.result, {
+          type: rABS ? "binary" : "array",
+        });
+        /* Get first worksheet */
+        const worksheetName = wb.SheetNames[0];
+        const ws = wb.Sheets[worksheetName];
+        /* Convert array of arrays */
+        const jsonData = XLSX.utils.sheet_to_json(ws, {
+          header: 1,
+          blankrows: false,
+        });
 
-      const [headers, ...rest] = jsonData;
+        const [headers, ...rest] = jsonData;
 
-      const columns = generateColumnKeys(ws["!ref"]);
-      buildImportList(rest as WorksheetData, headers as string[], columns);
-    };
+        const columns = generateColumnKeys(ws["!ref"]);
+        trackEvent({
+          eventName: "uploadFileToImportSchema",
+          appName: fileName,
+        });
+        buildImportList(rest as WorksheetData, headers as string[], columns);
+      };
 
-    // read file contents
-    acceptedFiles.forEach((file) => reader.readAsBinaryString(file));
-  }, []);
+      // read file contents
+      acceptedFiles.forEach((file) => reader.readAsBinaryString(file));
+    },
+    [trackEvent, fileName]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: SheetAcceptedFormats,
@@ -93,12 +100,6 @@ export function CreateAppFromExcel() {
   const [createAppWithEntities, { loading, data, error }] = useMutation<TData>(
     CREATE_APP_WITH_ENTITIES,
     {
-      onCompleted: (data) => {
-        trackEvent({
-          eventName: "createAppFromFile",
-          appName: data.createAppWithEntities.name,
-        });
-      },
       update(cache, { data }) {
         if (!data) return;
         const queryData = cache.readQuery<{ apps: Array<models.App> }>({
@@ -146,20 +147,30 @@ export function CreateAppFromExcel() {
 
   const handleSubmit = useCallback(
     (data: EntitiesDiagramFormData) => {
+      trackEvent({
+        eventName: "createAppFromFile",
+        appName: data.app.name,
+      });
       createAppWithEntities({ variables: { data } }).catch(console.error);
     },
-    [createAppWithEntities]
+    [createAppWithEntities, trackEvent]
   );
 
   const errorMessage = formatError(error);
 
   const handleStartFromSample = useCallback(() => {
+    trackEvent({
+      eventName: "createAppFromSample",
+    });
     handleSubmit(sampleAppWithEntities);
-  }, [handleSubmit]);
+  }, [handleSubmit, trackEvent]);
 
   const handleStartFromScratch = useCallback(() => {
+    trackEvent({
+      eventName: "createAppFromScratch",
+    });
     handleSubmit(sampleAppWithoutEntities);
-  }, [handleSubmit]);
+  }, [handleSubmit, trackEvent]);
 
   useEffect(() => {
     if (data) {
