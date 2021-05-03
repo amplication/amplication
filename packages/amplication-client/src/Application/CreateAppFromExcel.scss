@@ -206,6 +206,12 @@ $option-image-size: 70px;
     }
   }
 
+  &__back {
+    display: flex;
+    .amp-icon {
+      padding-right: var(--default-spacing-small);
+    }
+  }
   &__processing {
     display: flex;
     flex-direction: column;
@@ -213,20 +219,27 @@ $option-image-size: 70px;
     justify-content: center;
     width: 100%;
     height: 100%;
+    max-width: $max-width;
+    margin: auto;
 
     &__title {
-      @include pageTitle;
+      @include headline1;
+      text-align: center;
+      padding: 0 var(--default-spacing);
     }
 
     &__message {
       @include sectionTitle;
+      color: var(--black80);
       margin-top: var(--double-spacing);
     }
 
     &__tagline {
-      @include title1;
+      @include body2;
+      color: var(--black100);
       max-width: $max-width;
       text-align: center;
+      max-width: $max-width/1.5;
     }
 
     .svg-theme-image {
@@ -239,8 +252,7 @@ $option-image-size: 70px;
       align-items: center;
       justify-content: center;
       width: 100%;
-      margin-top: var(--double-spacing);
-      max-width: $max-width;
+      margin-bottom: var(--double-spacing);
     }
   }
 }
