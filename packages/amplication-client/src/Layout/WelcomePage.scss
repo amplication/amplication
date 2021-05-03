@@ -19,6 +19,9 @@ $title-font-size: 30px;
 
   overflow: auto;
 
+  &__source-title {
+    margin-bottom: var(--default-spacing);
+  }
   &__stripe {
     box-sizing: border-box;
     height: $stripe-top-height-small;
@@ -31,7 +34,8 @@ $title-font-size: 30px;
     justify-content: space-between;
     padding: var(--double-spacing);
 
-    &__logo svg {
+    &__logo svg,
+    &__logo img {
       width: 150px;
     }
     &__open-source-message {
