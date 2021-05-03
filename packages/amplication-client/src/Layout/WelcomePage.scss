@@ -58,6 +58,7 @@ $title-font-size: 30px;
 
   .open-source-message {
     color: var(--black80);
+    line-height: 1.6;
 
     a {
       color: var(--secondary);
@@ -86,6 +87,7 @@ $title-font-size: 30px;
     box-sizing: border-box;
     text-align: center;
     padding: $panel-padding !important;
+    border: $border-black10;
 
     label {
       text-align: left;

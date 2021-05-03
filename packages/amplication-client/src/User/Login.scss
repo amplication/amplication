@@ -7,7 +7,7 @@ $message-margin-bottom: 40px;
 .login-page {
   &__signup {
     @include body2;
-    color: var(--black60);
+    color: var(--black80);
 
     a {
       color: var(--primary);
@@ -48,10 +48,10 @@ $message-margin-bottom: 40px;
     margin-top: $policy-margin-top !important;
     margin-bottom: 0;
     @include body2;
-    color: var(--black40);
+    color: var(--black80);
 
     a {
-      color: var(--black40);
+      color: var(--black80);
       text-decoration: underline;
     }
   }
