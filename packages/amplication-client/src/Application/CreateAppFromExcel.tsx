@@ -19,6 +19,7 @@ import "./CreateAppFromExcel.scss";
 import { CreateAppFromExcelForm } from "./CreateAppFromExcelForm";
 import { sampleAppWithEntities, sampleAppWithoutEntities } from "./constants";
 import ProgressBar from "../Components/ProgressBar";
+import { Icon } from "@rmwc/icon";
 
 type ColumnKey = {
   name: string;
@@ -242,17 +243,22 @@ export function CreateAppFromExcel() {
             </div>
 
             <SvgThemeImage image={EnumImages.Generating} />
-
+            <div className={`${CLASS_NAME}__processing__loader`}>
+              <ProgressBar />
+            </div>
             <div className={`${CLASS_NAME}__processing__tagline`}>
               For a full experience, connect with a GitHub repository and get a
               new Pull Request every time you make changes in your data model.
             </div>
-            <div className={`${CLASS_NAME}__processing__loader`}>
-              <ProgressBar />
-            </div>
           </div>
         ) : isEmpty(fileName) ? (
           <div className={`${CLASS_NAME}__select-file`}>
+            {appsExist && (
+              <Link to="/" className={`${CLASS_NAME}__back`}>
+                <Icon icon="arrow_left" />
+                Back
+              </Link>
+            )}
             <div className={`${CLASS_NAME}__header`}>
               <SvgThemeImage image={EnumImages.ImportExcel} />
               <h2>Start with schema from excel</h2>
@@ -292,12 +298,6 @@ export function CreateAppFromExcel() {
                 <SvgThemeImage image={EnumImages.SampleApp} />
                 <div>Start from a sample app</div>
               </Link>
-              {appsExist && (
-                <Link to="/" className={`${CLASS_NAME}__other-options__option`}>
-                  <SvgThemeImage image={EnumImages.MyApps} />
-                  <div>View my apps</div>
-                </Link>
-              )}
             </div>
           </div>
         ) : (
