@@ -1,0 +1,15 @@
+@import "../style/index.scss";
+
+.build-status-icons {
+  &__status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: var(--large-spacing);
+    .amp-icon {
+      color: var(--black80);
+      margin-left: var(--default-spacing);
+      font-size: 20px;
+    }
+  }
+}
