@@ -1,11 +1,12 @@
 @import "../style/index.scss";
 
 .commit {
-  @include modalForm;
-
+  padding-top: 0;
+  margin-bottom: var(--default-spacing);
   .amp-button {
     margin-top: 0;
     margin-top: -10px;
+    width: 100%;
   }
   .text-input {
     label {

@@ -23,7 +23,7 @@ const INITIAL_VALUES: TCommit = {
 
 type Props = {
   applicationId: string;
-  disabled: boolean;
+  noChanges: boolean;
 };
 const CLASS_NAME = "commit";
 
@@ -31,7 +31,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const Commit = ({ applicationId, disabled }: Props) => {
+const Commit = ({ applicationId, noChanges }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
@@ -90,18 +90,18 @@ const Commit = ({ applicationId, disabled }: Props) => {
 
           return (
             <Form>
-              {!disabled && (
+              {!loading && (
                 <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               )}
               <TextField
                 rows={3}
                 textarea
                 name="message"
-                label="Type in a commit message"
-                disabled={loading || disabled}
+                label={noChanges ? "Build message" : "Commit message"}
+                disabled={loading}
                 autoFocus
                 hideLabel
-                placeholder={disabled ? "" : "Type in a commit message"}
+                placeholder={noChanges ? "Build message" : "Commit message"}
                 autoComplete="off"
               />
               <Button
@@ -110,9 +110,9 @@ const Commit = ({ applicationId, disabled }: Props) => {
                 eventData={{
                   eventName: "commit",
                 }}
-                disabled={loading || disabled}
+                disabled={loading}
               >
-                Commit Changes
+                {noChanges ? "Rebuild" : "Commit changes & build "}
               </Button>
             </Form>
           );

@@ -393,12 +393,6 @@ export class AppService {
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
-    if (isEmpty(changedEntities)) {
-      throw new Error(
-        `There are no pending changes for user ${userId} in app ${appId}`
-      );
-    }
-
     const commit = await this.prisma.commit.create(args);
 
     await Promise.all(

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
+import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
 import { formatError } from "../util/error";
 import * as models from "../models";
@@ -72,7 +73,7 @@ const CommitValidation = ({ applicationId }: Props) => {
 
   const errorMessage = formatError(error);
 
-  return (
+  return !isEmpty(data?.appValidateBeforeCommit.messages) ? (
     <div className={CLASS_NAME}>
       {data?.appValidateBeforeCommit.messages.map((message, index) => {
         const errorData = VALIDATION_MESSAGES_TO_TEXT[message];
@@ -98,7 +99,7 @@ const CommitValidation = ({ applicationId }: Props) => {
         </div>
       )}
     </div>
-  );
+  ) : null;
 };
 
 export default CommitValidation;
