@@ -88,8 +88,29 @@ export const GET_APPLICATIONS = gql`
       color
       updatedAt
       builds(orderBy: { createdAt: Desc }, take: 1) {
+        id
         version
         createdAt
+        status
+        action {
+          id
+          createdAt
+          steps {
+            id
+            name
+            createdAt
+            message
+            status
+            completedAt
+            logs {
+              id
+              createdAt
+              message
+              meta
+              level
+            }
+          }
+        }
       }
     }
   }

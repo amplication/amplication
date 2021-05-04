@@ -33,16 +33,6 @@
     }
   }
 
-  &__status {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: var(--large-spacing);
-    .amp-icon {
-      color: var(--black80);
-      margin-left: var(--default-spacing);
-    }
-  }
   &__property {
     color: var(--positive-default);
     border: 1px solid var(--positive-default);

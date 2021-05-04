@@ -9,6 +9,7 @@ import * as models from "../models";
 import { format } from "date-fns";
 
 import "./ApplicationCard.scss";
+import { BuildStatusIcons } from "../VersionControl/BuildStatusIcons";
 
 type Props = {
   app: models.App;
@@ -17,7 +18,7 @@ type Props = {
 const DATE_FORMAT = "P p";
 
 function ApplicationCard({ app }: Props) {
-  const { id, name, description, updatedAt, color } = app;
+  const { id, name, description, color } = app;
   const { trackEvent } = useTracking();
 
   const handleClick = useCallback(() => {
@@ -26,7 +27,7 @@ function ApplicationCard({ app }: Props) {
     });
   }, [trackEvent]);
 
-  const updateAtData = new Date(updatedAt);
+  const lastBuildData = new Date(app.builds[0]?.createdAt);
   return (
     <NavLink to={`/${id}`} className="application-card" onClick={handleClick}>
       <div className="application-card__header">
@@ -35,13 +36,17 @@ function ApplicationCard({ app }: Props) {
       <div className="application-card__description">{description}</div>
       <div className="application-card__footer">
         <div>
-          Created
           <div className="application-card__recently-used">
             <Icon icon="clock" />
-            <Tooltip aria-label={format(updateAtData, DATE_FORMAT)}>
-              {format(updateAtData, "PP")}
+            <Tooltip
+              aria-label={`Last build: ${format(lastBuildData, DATE_FORMAT)}`}
+            >
+              {format(lastBuildData, "PP")}
             </Tooltip>
           </div>
+        </div>
+        <div>
+          <BuildStatusIcons build={app.builds[0]} />
         </div>
       </div>
     </NavLink>
