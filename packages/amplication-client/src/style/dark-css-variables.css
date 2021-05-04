@@ -14,7 +14,7 @@
   --black2: #22273c; /*dark: black90 */
 
   --modal-background: rgba(12, 11, 14, 0.48);
-  --welcome-page-stripe-background: var(--black10);
+  --welcome-page-stripe-background: var(--black2);
   --panel-hover-background: var(--black100);
 
   --panel-background: var(--black5);
