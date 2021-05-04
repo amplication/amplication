@@ -6,6 +6,13 @@
   white-space: nowrap;
   padding: 0 var(--default-spacing);
 
+  &__generating {
+    background: var(--primary);
+    .rmwc-circular-progress {
+      color: var(--static-white);
+    }
+  }
+
   .clickable-id {
     color: var(--black80);
     a {

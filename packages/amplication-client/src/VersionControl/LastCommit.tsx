@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useContext } from "react";
 import { gql, useQuery } from "@apollo/client";
+import classNames from "classnames";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import { CircularProgress } from "@rmwc/circular-progress";
@@ -66,7 +67,11 @@ const LastCommit = ({ applicationId }: Props) => {
   );
 
   return (
-    <div className={`${CLASS_NAME}`}>
+    <div
+      className={classNames(`${CLASS_NAME}`, {
+        [`${CLASS_NAME}__generating`]: pendingChangesContext.commitRunning,
+      })}
+    >
       {Boolean(error) && errorMessage}
 
       {pendingChangesContext.commitRunning ? (
