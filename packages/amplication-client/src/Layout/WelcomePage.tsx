@@ -1,23 +1,49 @@
 import React from "react";
+import { isEmpty } from "lodash";
 import "./PageContent.scss";
 import { Panel } from "@amplication/design-system";
-import { ReactComponent as AmplicationLogo } from "../assets/logo-amplication-white.svg";
 import { ReactComponent as DiscordButton } from "../assets/images/discord-button.svg";
 import "./WelcomePage.scss";
 
 const CLASS_NAME = "welcome-page";
 
-type Props = {
+export type PageContent = {
+  name: string;
+  title: string;
+  subTitle: string;
+  message: string;
+  logo: string;
+};
+type Props = PageContent & {
   children: React.ReactNode;
 };
 
 /**A stylish full page with a panel in the center used for scenarios like sign in and sign up forms  */
-function WelcomePage({ children }: Props) {
+function WelcomePage({
+  children,
+  name,
+  title,
+  subTitle,
+  message,
+  logo,
+}: Props) {
   const openSourceMessage = (
     <div className="open-source-message">
       <p>
-        amplication is currently in alpha and it should not be used in
-        production.
+        {!isEmpty(message) && (
+          <div className={`${CLASS_NAME}__source-title`}>{message}</div>
+        )}
+        Amplication is currently in Beta however your generated apps are
+        production-ready. Every app generated using Amplication platform
+        contains popular, documented, secured, and supported production-ready
+        open-source components & packages. Read more about our stack{" "}
+        <a
+          href="https://docs.amplication.com/docs/getting-started"
+          target="docs"
+        >
+          here
+        </a>
+        .
       </p>
       <p>
         amplication is an open-source project and you can send us{" "}
@@ -53,15 +79,11 @@ function WelcomePage({ children }: Props) {
           href="https://amplication.com"
           className={`${CLASS_NAME}__stripe__logo`}
         >
-          <AmplicationLogo />
+          <img src={logo} alt="logo" />
         </a>
         <div>
-          <div className={`${CLASS_NAME}__stripe__title`}>
-            Instantly generate quality Node.js apps
-          </div>
-          <div className={`${CLASS_NAME}__stripe__subtitle`}>
-            Just code what matters.
-          </div>
+          <div className={`${CLASS_NAME}__stripe__title`}>{title}</div>
+          <div className={`${CLASS_NAME}__stripe__subtitle`}>{subTitle}</div>
           <div className={`${CLASS_NAME}__stripe__open-source-message`}>
             {openSourceMessage}
           </div>
