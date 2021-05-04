@@ -1,6 +1,7 @@
 @import "../style/index.scss";
 
 .commit-validation {
+  margin-bottom: var(--default-spacing);
   &__item {
     display: flex;
     align-items: flex-start;
