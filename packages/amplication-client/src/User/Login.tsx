@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react";
+import { Location } from "history";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
@@ -12,6 +13,7 @@ import { Button } from "../Components/Button";
 import { Form } from "../Components/Form";
 import queryString from "query-string";
 import { Icon } from "@rmwc/icon";
+import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
@@ -22,7 +24,12 @@ type Values = {
   password: string;
 };
 
+interface LocationStateInterface {
+  from?: Location;
+}
+
 const CLASS_NAME = "login-page";
+const URL_SOURCE_PARAM = "utm_source";
 
 const INITIAL_VALUES: Values = {
   email: "",
@@ -33,6 +40,15 @@ const Login = () => {
   const history = useHistory();
   const location = useLocation();
   const [login, { loading, data, error }] = useMutation(DO_LOGIN);
+
+  const content = useMemo(() => {
+    const s: LocationStateInterface | undefined | null = location.state;
+    const urlParams = new URLSearchParams(s?.from?.search);
+    const source = urlParams.get(URL_SOURCE_PARAM) || DEFAULT_PAGE_SOURCE;
+    return (
+      SIGN_IN_PAGE_CONTENT[source] || SIGN_IN_PAGE_CONTENT[DEFAULT_PAGE_SOURCE]
+    );
+  }, [location.state]);
 
   const handleSubmit = useCallback(
     (data) => {
@@ -67,7 +83,7 @@ const Login = () => {
   const errorMessage = formatError(error);
 
   return (
-    <WelcomePage>
+    <WelcomePage {...content}>
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
@@ -81,7 +97,7 @@ const Login = () => {
           {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
-                Welcome to amplication. Please use your GitHub account to
+                Welcome to {content.name}. Please use your GitHub account to
                 sign&nbsp;in.
               </div>
               <GitHubLoginButton />
@@ -122,7 +138,7 @@ const Login = () => {
           )}
 
           <div className={`${CLASS_NAME}__policy`}>
-            By signing up to amplication, you agree to our{" "}
+            By signing up to {content.name}, you agree to our{" "}
             <a href="https://amplication.com/terms" target="terms">
               terms of service
             </a>{" "}

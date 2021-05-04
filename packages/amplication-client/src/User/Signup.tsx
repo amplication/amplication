@@ -11,6 +11,7 @@ import { Formik, Form } from "formik";
 import WelcomePage from "../Layout/WelcomePage";
 import { TextField } from "@amplication/design-system";
 import { Button } from "../Components/Button";
+import { SIGN_IN_PAGE_CONTENT, DEFAULT_PAGE_SOURCE } from "../User/constants";
 import "./Signup.scss";
 
 type Values = {
@@ -24,6 +25,8 @@ type Values = {
 };
 
 const CLASS_NAME = "signup-page";
+
+const PAGE_CONTENT = SIGN_IN_PAGE_CONTENT[DEFAULT_PAGE_SOURCE];
 
 const INITIAL_VALUES: Values = {
   email: "",
@@ -67,7 +70,7 @@ const Signup = () => {
   const errorMessage = formatError(error);
 
   return (
-    <WelcomePage>
+    <WelcomePage {...PAGE_CONTENT}>
       <span className={`${CLASS_NAME}__title`}>Sign Up</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>

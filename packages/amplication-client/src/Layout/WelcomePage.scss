@@ -3,7 +3,7 @@
 $stripe-top-height: 120px;
 $stripe-top-height-small: 90px;
 $stripe-side-width: 550px;
-$stripe-side-padding: 60px;
+$stripe-side-padding: 75px;
 $form-min-width: 550px;
 $form-mobile-max-width: 400px;
 $panel-min-width: 400px;
@@ -11,6 +11,7 @@ $panel-padding: 64px 48px;
 $button-padding: 24px;
 
 $title-font-size: 30px;
+$sub-title-font-size: 28px;
 
 .welcome-page {
   width: 100%;
@@ -19,6 +20,9 @@ $title-font-size: 30px;
 
   overflow: auto;
 
+  &__source-title {
+    margin-bottom: var(--default-spacing);
+  }
   &__stripe {
     box-sizing: border-box;
     height: $stripe-top-height-small;
@@ -31,8 +35,16 @@ $title-font-size: 30px;
     justify-content: space-between;
     padding: var(--double-spacing);
 
-    &__logo svg {
-      width: 150px;
+    .discord-button {
+      margin-top: calc(var(--large-spacing) * 2);
+    }
+
+    &__logo {
+      margin-bottom: calc(var(--large-spacing) * 2);
+      img,
+      svg {
+        width: 150px;
+      }
     }
     &__open-source-message {
       display: none;
@@ -44,20 +56,21 @@ $title-font-size: 30px;
       font-size: $title-font-size;
       @include semiBold;
       color: var(--welcome-page-stripe-color);
-      padding-top: calc(var(--default-spacing) * 3);
-      padding-bottom: var(--double-spacing);
+      padding-top: 0;
+      padding-bottom: var(--large-spacing);
     }
 
     &__subtitle {
       @include fontMono;
+      font-size: $sub-title-font-size;
       color: var(--secondary);
-      padding-top: 0;
-      padding-bottom: calc(var(--default-spacing) * 3);
+      padding-bottom: calc(var(--large-spacing) * 2);
     }
   }
 
   .open-source-message {
     color: var(--black80);
+    line-height: 1.6;
 
     a {
       color: var(--secondary);
@@ -86,6 +99,7 @@ $title-font-size: 30px;
     box-sizing: border-box;
     text-align: center;
     padding: $panel-padding !important;
+    border: $border-black10;
 
     label {
       text-align: left;
