@@ -25,7 +25,11 @@ import {
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
 import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
-import { JSON_VALUE_ID, JSON_NULLABLE_FILTER } from "./type-fest.util";
+import { JSON_VALUE_ID } from "./type-fest.util";
+import {
+  EnumScalarFiltersTypes,
+  SCALAR_FILTER_TO_MODULE_AND_TYPE,
+} from "./filters.util";
 
 import * as classTransformerUtil from "./class-transformer.util";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
@@ -54,7 +58,9 @@ const PRISMA_SCALAR_TO_QUERY_TYPE: {
   [ScalarType.Float]: builders.tsNumberKeyword(),
   [ScalarType.Int]: builders.tsNumberKeyword(),
   [ScalarType.String]: builders.tsStringKeyword(),
-  [ScalarType.Json]: builders.tsTypeReference(JSON_NULLABLE_FILTER),
+  [ScalarType.Json]: builders.tsTypeReference(
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.JsonNullable].type
+  ),
 };
 
 const PRISMA_SCALAR_TO_DECORATOR_ID: {
@@ -300,7 +306,9 @@ function createGraphQLFieldType(
   }
   if (prismaField.type === ScalarType.Json) {
     if (isQuery) {
-      return JSON_NULLABLE_FILTER;
+      return SCALAR_FILTER_TO_MODULE_AND_TYPE[
+        EnumScalarFiltersTypes.JsonNullable
+      ].type;
     } else {
       return GRAPHQL_JSON_OBJECT_ID;
     }

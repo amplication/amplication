@@ -38,13 +38,21 @@ import {
   GRAPHQL_TYPE_JSON_MODULE,
   GRAPHQL_JSON_OBJECT_ID,
 } from "./graphql-type-json.util";
+import { TYPE_FEST_MODULE, JSON_VALUE_ID } from "./type-fest.util";
 import {
-  TYPE_FEST_MODULE,
-  JSON_VALUE_ID,
-  JSON_NULLABLE_FILTER,
-  JSON_NULLABLE_FILTER_MODULE,
-} from "./type-fest.util";
+  EnumScalarFiltersTypes,
+  SCALAR_FILTER_TO_MODULE_AND_TYPE,
+} from "./filters.util";
 import { SRC_DIRECTORY } from "../../constants";
+
+const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
+  Object.values(EnumScalarFiltersTypes).map((filter) => {
+    return [
+      SCALAR_FILTER_TO_MODULE_AND_TYPE[filter].module,
+      [SCALAR_FILTER_TO_MODULE_AND_TYPE[filter].type],
+    ];
+  })
+);
 
 export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
   [CLASS_VALIDATOR_MODULE]: [
@@ -61,7 +69,6 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
   [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
   [TYPE_FEST_MODULE]: [JSON_VALUE_ID],
-  [JSON_NULLABLE_FILTER_MODULE]: [JSON_NULLABLE_FILTER],
   [GRAPHQL_TYPE_JSON_MODULE]: [GRAPHQL_JSON_OBJECT_ID],
   [NESTJS_GRAPHQL_MODULE]: [
     OBJECT_TYPE_ID,
@@ -69,6 +76,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     ARGS_TYPE_ID,
     FIELD_ID,
   ],
+  ...FILTERS_IMPORTABLE_NAMES,
 };
 
 export function createDTOModule(

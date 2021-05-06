@@ -11444,6 +11444,335 @@ export class UserService extends UserServiceBase {
   }
 }
 ",
+  "server/src/util/BooleanFilter.ts": "import { Field, InputType } from '@nestjs/graphql';
+
+@InputType({
+  isAbstract: true,
+  description: undefined
+})
+export class BooleanFilter {
+  @Field(() => Boolean, {
+    nullable: false,
+    description: undefined
+  })
+  equals?: boolean ;
+
+  @Field(() => Boolean, {
+    nullable: false,
+    description: undefined
+  })
+  not?: boolean ;
+}
+",
+  "server/src/util/BooleanNullableFilter.ts": "import { Field, InputType } from '@nestjs/graphql';
+
+@InputType({
+  isAbstract: true,
+  description: undefined
+})
+export class BooleanFilter {
+  @Field(() => Boolean, {
+    nullable: true,
+    description: undefined
+  })
+  equals?: boolean | null;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: undefined
+  })
+  not?: boolean | null;
+}
+",
+  "server/src/util/DateTimeFilter.ts": "import { Field, InputType } from '@nestjs/graphql';
+
+@InputType({
+  isAbstract: true,
+  description: undefined
+})
+export class DateTimeFilter {
+  @Field(() => Date, {
+    nullable: false
+  })
+  equals?: Date ;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  not?: Date ;
+
+  @Field(() => [Date], {
+    nullable: false
+  })
+  in?: Date[] ;
+
+  @Field(() => [Date], {
+    nullable: false
+  })
+  notIn?: Date[] ;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  lt?: Date ;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  lte?: Date ;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  gt?: Date ;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  gte?: Date ;
+}
+",
+  "server/src/util/DateTimeNullableFilter.ts": "import { Field, InputType } from '@nestjs/graphql';
+
+@InputType({
+  isAbstract: true,
+  description: undefined
+})
+export class DateTimeNullableFilter {
+  @Field(() => Date, {
+    nullable: true
+  })
+  equals?: Date | null ;
+
+
+  @Field(() => [Date], {
+    nullable: true
+  })
+  in?: Date[] | null;
+
+  @Field(() => [Date], {
+    nullable: true
+  })
+  notIn?: Date[] | null;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  lt?: Date ;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  lte?: Date ;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  gt?: Date ;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  gte?: Date ;
+
+  @Field(() => Date, {
+    nullable: false
+  })
+  not?: Date ;
+}
+",
+  "server/src/util/FloatFilter.ts": "import { Field, InputType, Float } from '@nestjs/graphql';
+
+@InputType({
+  isAbstract: true,
+  description: undefined
+})
+export class FloatFilter {
+  @Field(() => Float, {
+    nullable: false
+  })
+  equals?: number ;
+ 
+  @Field(() => [Float], {
+    nullable: false
+  })
+  in?: number[] ;
+
+  @Field(() => [Float], {
+    nullable: false
+  })
+  notIn?: number[] ;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  lt?: number ;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  lte?: number ;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  gt?: number ;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  gte?: number ;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  not?: number ;
+}
+",
+  "server/src/util/FloatNullableFilter.ts": "import { Field, InputType, Float } from '@nestjs/graphql';
+
+@InputType({
+  isAbstract: true,
+  description: undefined
+})
+export class FloatNullableFilter {
+  @Field(() => Float, {
+    nullable: true
+  })
+  equals?: number | null;
+ 
+  @Field(() => [Float], {
+    nullable: true
+  })
+  in?: number[] | null;
+
+  @Field(() => [Float], {
+    nullable: true
+  })
+  notIn?: number[] | null;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  lt?: number ;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  lte?: number ;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  gt?: number ;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  gte?: number ;
+
+  @Field(() => Float, {
+    nullable: false
+  })
+  not?: number ;
+}
+",
+  "server/src/util/IntFilter.ts": "import { Field, InputType, Int } from '@nestjs/graphql';
+
+@InputType({
+  isAbstract: true,
+  description: undefined
+})
+export class IntFilter {
+  @Field(() => Int, {
+    nullable: false
+  })
+  equals?: number ;
+ 
+  @Field(() => [Int], {
+    nullable: false
+  })
+  in?: number[] ;
+
+  @Field(() => [Int], {
+    nullable: false
+  })
+  notIn?: number[] ;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  lt?: number ;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  lte?: number ;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  gt?: number ;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  gte?: number ;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  not?: number ;
+}
+",
+  "server/src/util/IntNullableFilter.ts": "import { Field, InputType, Int } from '@nestjs/graphql';
+
+@InputType({
+  isAbstract: true,
+  description: undefined
+})
+export class IntNullableFilter {
+  @Field(() => Int, {
+    nullable: true
+  })
+  equals?: number | null;
+ 
+  @Field(() => [Int], {
+    nullable: true
+  })
+  in?: number[] | null;
+
+  @Field(() => [Int], {
+    nullable: true
+  })
+  notIn?: number[] | null;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  lt?: number ;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  lte?: number ;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  gt?: number ;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  gte?: number ;
+
+  @Field(() => Int, {
+    nullable: false
+  })
+  not?: number ;
+}
+",
   "server/src/util/JsonNullableFilter.ts": "// @ts-ignore
 // eslint-disable-next-line
 import { JsonValue } from \\"type-fest\\";
@@ -11464,6 +11793,153 @@ export class JsonNullableFilter {
     nullable: true,
   })
   not?: JsonValue | null;
+}
+",
+  "server/src/util/QueryMode.ts": "import { registerEnumType } from '@nestjs/graphql';
+
+export enum QueryMode {
+  Default = 'default',
+  Insensitive = 'insensitive'
+}
+registerEnumType(QueryMode, {
+  name: 'QueryMode',
+  description: undefined
+});
+",
+  "server/src/util/StringFilter.ts": "import { Field, InputType } from '@nestjs/graphql';
+import { QueryMode } from './QueryMode';
+
+@InputType({
+  isAbstract: true
+})
+export class StringFilter {
+  @Field(() => String, {
+    nullable: false
+  })
+  equals?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  not?: string ;
+
+  @Field(() => [String], {
+    nullable: false
+  })
+  in?: string[] ;
+
+  @Field(() => [String], {
+    nullable: false
+  })
+  notIn?: string[] ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  lt?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  lte?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  gt?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  gte?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  contains?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  startsWith?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  endsWith?: string ;
+
+  @Field(() => QueryMode, {
+    nullable: false
+  })
+  mode?: QueryMode;
+}
+",
+  "server/src/util/StringNullableFilter.ts": "import { Field, InputType } from '@nestjs/graphql';
+import { QueryMode } from './QueryMode';
+
+@InputType({
+  isAbstract: true
+})
+export class StringNullableFilter {
+  @Field(() => String, {
+    nullable: true
+  })
+  equals?: string | null;
+
+  @Field(() => [String], {
+    nullable: true
+  })
+  in?: string[] | null;
+
+  @Field(() => [String], {
+    nullable: true
+  })
+  notIn?: string[] | null;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  lt?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  lte?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  gt?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  gte?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  contains?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  startsWith?: string ;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  endsWith?: string ;
+
+  @Field(() => QueryMode, {
+    nullable: false
+  })
+  mode?: QueryMode;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  not?: string ;
 }
 ",
 }
