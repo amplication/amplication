@@ -10,7 +10,7 @@ export function createWhereUniqueInput(entity: Entity): NamedClassDeclaration {
     fields,
     entity,
     false,
-    true
+    false //do not use as query since the ID field in WhereUniqueInput is required
   );
 }
 

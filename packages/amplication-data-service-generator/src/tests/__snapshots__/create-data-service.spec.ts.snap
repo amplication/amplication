@@ -4710,7 +4710,9 @@ class CustomerWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   id?: StringFilter;
   @ApiProperty({
     required: false,
@@ -4718,7 +4720,9 @@ class CustomerWhereInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => DateTimeFilter)
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   createdAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
@@ -4726,7 +4730,9 @@ class CustomerWhereInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => DateTimeFilter)
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   updatedAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
@@ -4734,7 +4740,9 @@ class CustomerWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   email?: StringFilter;
   @ApiProperty({
     required: false,
@@ -6143,7 +6151,9 @@ class EmptyWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   id?: StringFilter;
   @ApiProperty({
     required: false,
@@ -6151,7 +6161,9 @@ class EmptyWhereInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => DateTimeFilter)
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   createdAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
@@ -6159,7 +6171,9 @@ class EmptyWhereInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => DateTimeFilter)
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   updatedAt?: DateTimeFilter;
 }
 export { EmptyWhereInput };
@@ -7039,7 +7053,9 @@ class OrderWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   id?: StringFilter;
   @ApiProperty({
     required: false,
@@ -7047,7 +7063,9 @@ class OrderWhereInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => DateTimeFilter)
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   createdAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
@@ -7055,7 +7073,9 @@ class OrderWhereInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => DateTimeFilter)
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   updatedAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
@@ -7065,7 +7085,9 @@ class OrderWhereInput {
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
-  @Field(() => CustomerWhereUniqueInput)
+  @Field(() => CustomerWhereUniqueInput, {
+    nullable: true,
+  })
   customer?: CustomerWhereUniqueInput;
   @ApiProperty({
     required: false,
@@ -7073,7 +7095,9 @@ class OrderWhereInput {
   })
   @IsEnum(EnumOrderStatus)
   @IsOptional()
-  @Field(() => EnumOrderStatus)
+  @Field(() => EnumOrderStatus, {
+    nullable: true,
+  })
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
@@ -8010,7 +8034,9 @@ class OrganizationWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   id?: StringFilter;
   @ApiProperty({
     required: false,
@@ -8018,7 +8044,9 @@ class OrganizationWhereInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => DateTimeFilter)
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   createdAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
@@ -8026,7 +8054,9 @@ class OrganizationWhereInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => DateTimeFilter)
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   updatedAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
@@ -8034,7 +8064,9 @@ class OrganizationWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   name?: StringFilter;
 }
 export { OrganizationWhereInput };
@@ -10077,7 +10109,9 @@ class UserWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   username?: StringFilter;
   @ApiProperty({
     required: false,
@@ -10085,7 +10119,9 @@ class UserWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   id?: StringFilter;
   @ApiProperty({
     required: false,
@@ -10093,7 +10129,9 @@ class UserWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   name?: StringFilter;
   @ApiProperty({
     required: false,
@@ -10101,7 +10139,9 @@ class UserWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   bio?: StringFilter;
   @ApiProperty({
     required: false,
@@ -10109,7 +10149,9 @@ class UserWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   email?: StringFilter;
   @ApiProperty({
     required: false,
@@ -10117,7 +10159,9 @@ class UserWhereInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => IntFilter)
+  @Field(() => IntFilter, {
+    nullable: true,
+  })
   age?: IntFilter;
   @ApiProperty({
     required: false,
@@ -10125,7 +10169,9 @@ class UserWhereInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => DateTimeFilter)
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   birthDate?: DateTimeFilter;
   @ApiProperty({
     required: false,
@@ -10133,7 +10179,9 @@ class UserWhereInput {
   })
   @IsNumber()
   @IsOptional()
-  @Field(() => FloatFilter)
+  @Field(() => FloatFilter, {
+    nullable: true,
+  })
   score?: FloatFilter;
   @ApiProperty({
     required: false,
@@ -10165,7 +10213,9 @@ class UserWhereInput {
   })
   @IsEnum(EnumUserPriority)
   @IsOptional()
-  @Field(() => EnumUserPriority)
+  @Field(() => EnumUserPriority, {
+    nullable: true,
+  })
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
     required: false,
@@ -10173,7 +10223,9 @@ class UserWhereInput {
   })
   @IsBoolean()
   @IsOptional()
-  @Field(() => BooleanFilter)
+  @Field(() => BooleanFilter, {
+    nullable: true,
+  })
   isCurious?: BooleanFilter;
   @ApiProperty({
     required: false,
@@ -10181,14 +10233,18 @@ class UserWhereInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => StringFilter)
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   location?: StringFilter;
   @ApiProperty({
     required: false,
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => JsonNullableFilter)
+  @Field(() => JsonNullableFilter, {
+    nullable: true,
+  })
   extendedProperties?: JsonNullableFilter;
 }
 export { UserWhereInput };

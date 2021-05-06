@@ -51,16 +51,40 @@ const PRISMA_SCALAR_TO_TYPE: {
 };
 
 const PRISMA_SCALAR_TO_QUERY_TYPE: {
-  [scalar in ScalarType]: TSTypeKind;
+  [scalar in ScalarType]: namedTypes.Identifier;
 } = {
-  [ScalarType.Boolean]: builders.tsBooleanKeyword(),
-  [ScalarType.DateTime]: builders.tsTypeReference(DATE_ID),
-  [ScalarType.Float]: builders.tsNumberKeyword(),
-  [ScalarType.Int]: builders.tsNumberKeyword(),
-  [ScalarType.String]: builders.tsStringKeyword(),
-  [ScalarType.Json]: builders.tsTypeReference(
-    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.JsonNullable].type
-  ),
+  [ScalarType.Boolean]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.Boolean].type,
+  [ScalarType.DateTime]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.DateTime].type,
+  [ScalarType.Float]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.Float].type,
+  [ScalarType.Int]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.Int].type,
+  [ScalarType.String]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.String].type,
+  [ScalarType.Json]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.JsonNullable].type,
+};
+
+const PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE: {
+  [scalar in ScalarType]: namedTypes.Identifier;
+} = {
+  [ScalarType.Boolean]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.BooleanNullable]
+      .type,
+  [ScalarType.DateTime]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.DateTimeNullable]
+      .type,
+  [ScalarType.Float]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.FloatNullable].type,
+  [ScalarType.Int]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.IntNullable].type,
+  [ScalarType.String]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.StringNullable]
+      .type,
+  [ScalarType.Json]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.JsonNullable].type,
 };
 
 const PRISMA_SCALAR_TO_DECORATOR_ID: {
@@ -110,6 +134,7 @@ export function createFieldClassProperty(
   const type = createFieldValueTypeFromPrismaField(
     field,
     prismaField,
+    optional,
     isInput,
     isEnum,
     isQuery
@@ -128,10 +153,12 @@ export function createFieldClassProperty(
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;
   }
+  //optional properties are marked with ? - not to be confused with optional fields (nullable)
+  //all relation fields on entity dto (not input) are optional
   const optionalProperty =
-    //all relation fields on entity dto (not input) are optional
     (prismaField.kind === FieldKind.Object && !isInput) ||
     (optional && (isInput || prismaField.kind === FieldKind.Object));
+
   const definitive = !optionalProperty;
 
   if (prismaField.kind === FieldKind.Scalar) {
@@ -225,14 +252,7 @@ export function createFieldClassProperty(
     (isInput && isOneToOneRelationField(field))
   ) {
     decorators.push(
-      createGraphQLFieldDecorator(
-        prismaField,
-        isEnum,
-        field,
-        optional,
-        entity,
-        isQuery
-      )
+      createGraphQLFieldDecorator(prismaField, isEnum, field, entity, isQuery)
     );
   }
   return classProperty(
@@ -249,7 +269,6 @@ function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
   isEnum: boolean,
   field: EntityField,
-  optional: boolean,
   entity: Entity,
   isQuery: boolean
 ): namedTypes.Decorator {
@@ -260,7 +279,7 @@ function createGraphQLFieldDecorator(
   return builders.decorator(
     builders.callExpression(
       FIELD_ID,
-      optional
+      !field.required || isQuery
         ? [
             type,
             builders.objectExpression([
@@ -289,6 +308,12 @@ function createGraphQLFieldType(
     );
     return builders.arrayExpression([itemType]);
   }
+  if (isQuery && prismaField.kind === FieldKind.Scalar) {
+    return !field.required
+      ? PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[prismaField.type]
+      : PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type];
+  }
+
   if (prismaField.type === ScalarType.Boolean) {
     return BOOLEAN_ID;
   }
@@ -305,13 +330,7 @@ function createGraphQLFieldType(
     return STRING_ID;
   }
   if (prismaField.type === ScalarType.Json) {
-    if (isQuery) {
-      return SCALAR_FILTER_TO_MODULE_AND_TYPE[
-        EnumScalarFiltersTypes.JsonNullable
-      ].type;
-    } else {
-      return GRAPHQL_JSON_OBJECT_ID;
-    }
+    return GRAPHQL_JSON_OBJECT_ID;
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));
@@ -336,6 +355,7 @@ export function createTypeDecorator(
 export function createFieldValueTypeFromPrismaField(
   field: EntityField,
   prismaField: ScalarField | ObjectField,
+  optional: boolean,
   isInput: boolean,
   isEnum: boolean,
   isQuery: boolean
@@ -347,6 +367,7 @@ export function createFieldValueTypeFromPrismaField(
         ...prismaField,
         isRequired: true,
       },
+      optional,
       isInput,
       isEnum,
       isQuery
@@ -361,6 +382,7 @@ export function createFieldValueTypeFromPrismaField(
     const itemType = createFieldValueTypeFromPrismaField(
       field,
       itemPrismaField,
+      optional,
       isInput,
       isEnum,
       isQuery
@@ -369,7 +391,11 @@ export function createFieldValueTypeFromPrismaField(
   }
   if (prismaField.kind === FieldKind.Scalar) {
     if (isQuery) {
-      return PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type];
+      return builders.tsTypeReference(
+        !field.required
+          ? PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[prismaField.type]
+          : PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type]
+      );
     } else {
       return PRISMA_SCALAR_TO_TYPE[prismaField.type];
     }
