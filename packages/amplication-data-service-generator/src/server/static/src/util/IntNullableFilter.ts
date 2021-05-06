@@ -1,47 +1,47 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
+import { Field, InputType, Int } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class IntNullableFilter {
   @Field(() => Int, {
-    nullable: true
+    nullable: true,
   })
   equals?: number | null;
- 
+
   @Field(() => [Int], {
-    nullable: true
+    nullable: true,
   })
   in?: number[] | null;
 
   @Field(() => [Int], {
-    nullable: true
+    nullable: true,
   })
   notIn?: number[] | null;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: true,
   })
-  lt?: number ;
+  lt?: number;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: true,
   })
-  lte?: number ;
+  lte?: number;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: true,
   })
-  gt?: number ;
+  gt?: number;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: true,
   })
-  gte?: number ;
+  gte?: number;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: true,
   })
-  not?: number ;
+  not?: number;
 }

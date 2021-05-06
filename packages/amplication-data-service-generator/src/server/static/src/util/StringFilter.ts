@@ -1,67 +1,67 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { QueryMode } from './QueryMode';
+import { Field, InputType } from "@nestjs/graphql";
+import { QueryMode } from "./QueryMode";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class StringFilter {
   @Field(() => String, {
-    nullable: false
+    nullable: true,
   })
-  equals?: string ;
+  equals?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: true,
   })
-  not?: string ;
+  not?: string;
 
   @Field(() => [String], {
-    nullable: false
+    nullable: true,
   })
-  in?: string[] ;
+  in?: string[];
 
   @Field(() => [String], {
-    nullable: false
+    nullable: true,
   })
-  notIn?: string[] ;
+  notIn?: string[];
 
   @Field(() => String, {
-    nullable: false
+    nullable: true,
   })
-  lt?: string ;
+  lt?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: true,
   })
-  lte?: string ;
+  lte?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: true,
   })
-  gt?: string ;
+  gt?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: true,
   })
-  gte?: string ;
+  gte?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: true,
   })
-  contains?: string ;
+  contains?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: true,
   })
-  startsWith?: string ;
+  startsWith?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: true,
   })
-  endsWith?: string ;
+  endsWith?: string;
 
   @Field(() => QueryMode, {
-    nullable: false
+    nullable: true,
   })
   mode?: QueryMode;
 }

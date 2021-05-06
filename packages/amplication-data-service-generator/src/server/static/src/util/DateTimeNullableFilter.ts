@@ -1,48 +1,47 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class DateTimeNullableFilter {
   @Field(() => Date, {
-    nullable: true
+    nullable: true,
   })
-  equals?: Date | null ;
-
+  equals?: Date | null;
 
   @Field(() => [Date], {
-    nullable: true
+    nullable: true,
   })
   in?: Date[] | null;
 
   @Field(() => [Date], {
-    nullable: true
+    nullable: true,
   })
   notIn?: Date[] | null;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: true,
   })
-  lt?: Date ;
+  lt?: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: true,
   })
-  lte?: Date ;
+  lte?: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: true,
   })
-  gt?: Date ;
+  gt?: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: true,
   })
-  gte?: Date ;
+  gte?: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: true,
   })
-  not?: Date ;
+  not?: Date;
 }

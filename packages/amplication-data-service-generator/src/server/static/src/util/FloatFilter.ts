@@ -1,47 +1,47 @@
-import { Field, InputType, Float } from '@nestjs/graphql';
+import { Field, InputType, Float } from "@nestjs/graphql";
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class FloatFilter {
   @Field(() => Float, {
-    nullable: false
+    nullable: true,
   })
-  equals?: number ;
- 
-  @Field(() => [Float], {
-    nullable: false
-  })
-  in?: number[] ;
+  equals?: number;
 
   @Field(() => [Float], {
-    nullable: false
+    nullable: true,
   })
-  notIn?: number[] ;
+  in?: number[];
+
+  @Field(() => [Float], {
+    nullable: true,
+  })
+  notIn?: number[];
 
   @Field(() => Float, {
-    nullable: false
+    nullable: true,
   })
-  lt?: number ;
+  lt?: number;
 
   @Field(() => Float, {
-    nullable: false
+    nullable: true,
   })
-  lte?: number ;
+  lte?: number;
 
   @Field(() => Float, {
-    nullable: false
+    nullable: true,
   })
-  gt?: number ;
+  gt?: number;
 
   @Field(() => Float, {
-    nullable: false
+    nullable: true,
   })
-  gte?: number ;
+  gte?: number;
 
   @Field(() => Float, {
-    nullable: false
+    nullable: true,
   })
-  not?: number ;
+  not?: number;
 }
