@@ -11380,17 +11380,28 @@ export class UserService extends UserServiceBase {
 }
 ",
   "server/src/util/BooleanFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
-
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 @InputType({
   isAbstract: true,
   description: undefined,
 })
 export class BooleanFilter {
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
   equals?: boolean;
 
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
@@ -11398,17 +11409,28 @@ export class BooleanFilter {
 }
 ",
   "server/src/util/BooleanNullableFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
-
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 @InputType({
   isAbstract: true,
   description: undefined,
 })
 export class BooleanFilter {
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
   equals?: boolean | null;
 
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
@@ -11416,47 +11438,88 @@ export class BooleanFilter {
 }
 ",
   "server/src/util/DateTimeFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
-
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 @InputType({
   isAbstract: true,
   description: undefined,
 })
 export class DateTimeFilter {
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   equals?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   not?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: [Date],
+  })
+  @IsOptional()
   @Field(() => [Date], {
     nullable: true,
   })
   in?: Date[];
 
+  @ApiProperty({
+    required: false,
+    type: [Date],
+  })
+  @IsOptional()
   @Field(() => [Date], {
     nullable: true,
   })
   notIn?: Date[];
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   lt?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   lte?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   gt?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
@@ -11464,47 +11527,88 @@ export class DateTimeFilter {
 }
 ",
   "server/src/util/DateTimeNullableFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
-
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 @InputType({
   isAbstract: true,
   description: undefined,
 })
 export class DateTimeNullableFilter {
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   equals?: Date | null;
 
+  @ApiProperty({
+    required: false,
+    type: [Date],
+  })
+  @IsOptional()
   @Field(() => [Date], {
     nullable: true,
   })
   in?: Date[] | null;
 
+  @ApiProperty({
+    required: false,
+    type: [Date],
+  })
+  @IsOptional()
   @Field(() => [Date], {
     nullable: true,
   })
   notIn?: Date[] | null;
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   lt?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   lte?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   gt?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
   gte?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: Date,
+  })
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
@@ -11512,47 +11616,89 @@ export class DateTimeNullableFilter {
 }
 ",
   "server/src/util/FloatFilter.ts": "import { Field, InputType, Float } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 
 @InputType({
   isAbstract: true,
   description: undefined,
 })
 export class FloatFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   equals?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => [Float], {
     nullable: true,
   })
   in?: number[];
 
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
   @Field(() => [Float], {
     nullable: true,
   })
   notIn?: number[];
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   lt?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   lte?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   gt?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   gte?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
@@ -11560,47 +11706,89 @@ export class FloatFilter {
 }
 ",
   "server/src/util/FloatNullableFilter.ts": "import { Field, InputType, Float } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 
 @InputType({
   isAbstract: true,
   description: undefined,
 })
 export class FloatNullableFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   equals?: number | null;
 
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
   @Field(() => [Float], {
     nullable: true,
   })
   in?: number[] | null;
 
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
   @Field(() => [Float], {
     nullable: true,
   })
   notIn?: number[] | null;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   lt?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   lte?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   gt?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
   gte?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Float, {
     nullable: true,
   })
@@ -11608,47 +11796,89 @@ export class FloatNullableFilter {
 }
 ",
   "server/src/util/IntFilter.ts": "import { Field, InputType, Int } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 
 @InputType({
   isAbstract: true,
   description: undefined,
 })
 export class IntFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   equals?: number;
 
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
   @Field(() => [Int], {
     nullable: true,
   })
   in?: number[];
 
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
   @Field(() => [Int], {
     nullable: true,
   })
   notIn?: number[];
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   lt?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   lte?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   gt?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   gte?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
@@ -11656,47 +11886,89 @@ export class IntFilter {
 }
 ",
   "server/src/util/IntNullableFilter.ts": "import { Field, InputType, Int } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 
 @InputType({
   isAbstract: true,
   description: undefined,
 })
 export class IntNullableFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   equals?: number | null;
 
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
   @Field(() => [Int], {
     nullable: true,
   })
   in?: number[] | null;
 
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
   @Field(() => [Int], {
     nullable: true,
   })
   notIn?: number[] | null;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   lt?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   lte?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   gt?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
   gte?: number;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
   @Field(() => Int, {
     nullable: true,
   })
@@ -11706,7 +11978,9 @@ export class IntNullableFilter {
   "server/src/util/JsonNullableFilter.ts": "// @ts-ignore
 // eslint-disable-next-line
 import { JsonValue } from \\"type-fest\\";
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { Field, InputType } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
 
 @InputType({
@@ -11714,90 +11988,162 @@ import { GraphQLJSONObject } from \\"graphql-type-json\\";
   description: undefined,
 })
 export class JsonNullableFilter {
+  @ApiProperty({
+    required: false,
+    type: GraphQLJSONObject,
+  })
+  @IsOptional()
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
   equals?: JsonValue | null;
 
+  @ApiProperty({
+    required: false,
+    type: GraphQLJSONObject,
+  })
+  @IsOptional()
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
   not?: JsonValue | null;
 }
 ",
-  "server/src/util/QueryMode.ts": "import { registerEnumType } from '@nestjs/graphql';
+  "server/src/util/QueryMode.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum QueryMode {
-  Default = 'default',
-  Insensitive = 'insensitive'
+  Default = \\"default\\",
+  Insensitive = \\"insensitive\\",
 }
 registerEnumType(QueryMode, {
-  name: 'QueryMode',
-  description: undefined
+  name: \\"QueryMode\\",
+  description: undefined,
 });
 ",
   "server/src/util/StringFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
 import { QueryMode } from \\"./QueryMode\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 
 @InputType({
   isAbstract: true,
 })
 export class StringFilter {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   equals?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   not?: string;
 
+  @ApiProperty({
+    required: false,
+    type: [String],
+  })
+  @IsOptional()
   @Field(() => [String], {
     nullable: true,
   })
   in?: string[];
 
+  @ApiProperty({
+    required: false,
+    type: [String],
+  })
+  @IsOptional()
   @Field(() => [String], {
     nullable: true,
   })
   notIn?: string[];
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   lt?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   lte?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   gt?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   gte?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   contains?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   startsWith?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   endsWith?: string;
 
+  @ApiProperty({
+    required: false,
+    enum: [\\"Default\\", \\"Insensitive\\"],
+  })
+  @IsOptional()
   @Field(() => QueryMode, {
     nullable: true,
   })
@@ -11806,66 +12152,128 @@ export class StringFilter {
 ",
   "server/src/util/StringNullableFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
 import { QueryMode } from \\"./QueryMode\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
 
 @InputType({
   isAbstract: true,
 })
 export class StringNullableFilter {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   equals?: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: [String],
+  })
+  @IsOptional()
   @Field(() => [String], {
     nullable: true,
   })
   in?: string[] | null;
 
+  @ApiProperty({
+    required: false,
+    type: [String],
+  })
+  @IsOptional()
   @Field(() => [String], {
     nullable: true,
   })
   notIn?: string[] | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   lt?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   lte?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   gt?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   gte?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   contains?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   startsWith?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
   endsWith?: string;
 
+  @ApiProperty({
+    required: false,
+    enum: [\\"Default\\", \\"Insensitive\\"],
+  })
+  @IsOptional()
   @Field(() => QueryMode, {
     nullable: true,
   })
   mode?: QueryMode;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })

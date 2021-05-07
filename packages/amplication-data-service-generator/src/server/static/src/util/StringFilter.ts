@@ -119,7 +119,7 @@ export class StringFilter {
 
   @ApiProperty({
     required: false,
-    type: QueryMode,
+    enum: ["Default", "Insensitive"],
   })
   @IsOptional()
   @Field(() => QueryMode, {
