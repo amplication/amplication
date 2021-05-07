@@ -4680,20 +4680,8 @@ export { CustomerUpdateInput };
 ",
   "server/src/customer/base/CustomerWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-
-import {
-  IsString,
-  IsOptional,
-  IsDate,
-  IsBoolean,
-  IsNumber,
-  IsInt,
-  IsEnum,
-  ValidateNested,
-} from \\"class-validator\\";
-
 import { StringFilter } from \\"../../util/StringFilter\\";
-import { Type, Transform } from \\"class-transformer\\";
+import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
 import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
@@ -4702,13 +4690,13 @@ import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { Transform, Type } from \\"class-transformer\\";
 @InputType()
 class CustomerWhereInput {
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -4716,9 +4704,8 @@ class CustomerWhereInput {
   id?: StringFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -4726,9 +4713,8 @@ class CustomerWhereInput {
   createdAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -4736,9 +4722,8 @@ class CustomerWhereInput {
   updatedAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -4746,9 +4731,8 @@ class CustomerWhereInput {
   email?: StringFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringNullableFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
@@ -4756,9 +4740,8 @@ class CustomerWhereInput {
   firstName?: StringNullableFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringNullableFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
@@ -4766,9 +4749,8 @@ class CustomerWhereInput {
   lastName?: StringNullableFilter;
   @ApiProperty({
     required: false,
-    type: Boolean,
+    type: BooleanNullableFilter,
   })
-  @IsBoolean()
   @IsOptional()
   @Field(() => BooleanNullableFilter, {
     nullable: true,
@@ -4776,9 +4758,8 @@ class CustomerWhereInput {
   isVip?: BooleanNullableFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeNullableFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeNullableFilter, {
     nullable: true,
@@ -4786,9 +4767,8 @@ class CustomerWhereInput {
   birthData?: DateTimeNullableFilter;
   @ApiProperty({
     required: false,
-    type: Number,
+    type: FloatNullableFilter,
   })
-  @IsNumber()
   @IsOptional()
   @Field(() => FloatNullableFilter, {
     nullable: true,
@@ -4796,9 +4776,8 @@ class CustomerWhereInput {
   averageSale?: FloatNullableFilter;
   @ApiProperty({
     required: false,
-    type: Number,
+    type: IntNullableFilter,
   })
-  @IsInt()
   @IsOptional()
   @Field(() => IntNullableFilter, {
     nullable: true,
@@ -4806,9 +4785,8 @@ class CustomerWhereInput {
   favoriteNumber?: IntNullableFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringNullableFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
@@ -4816,9 +4794,8 @@ class CustomerWhereInput {
   geoLocation?: StringNullableFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringNullableFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
@@ -6139,17 +6116,15 @@ export { EmptyUpdateInput };
 ",
   "server/src/empty/base/EmptyWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
-import { Type } from \\"class-transformer\\";
+import { IsOptional } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 @InputType()
 class EmptyWhereInput {
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -6157,9 +6132,8 @@ class EmptyWhereInput {
   id?: StringFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -6167,9 +6141,8 @@ class EmptyWhereInput {
   createdAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -7032,26 +7005,19 @@ export { OrderUpdateInput };
 ",
   "server/src/order/base/OrderWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import {
-  IsString,
-  IsOptional,
-  IsDate,
-  ValidateNested,
-  IsEnum,
-} from \\"class-validator\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
-import { Type, Transform } from \\"class-transformer\\";
+import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { Transform, Type } from \\"class-transformer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
 class OrderWhereInput {
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -7059,9 +7025,8 @@ class OrderWhereInput {
   id?: StringFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -7069,9 +7034,8 @@ class OrderWhereInput {
   createdAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -8022,17 +7986,15 @@ export { OrganizationUpdateInput };
 ",
   "server/src/organization/base/OrganizationWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
-import { Type } from \\"class-transformer\\";
+import { IsOptional } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 @InputType()
 class OrganizationWhereInput {
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -8040,9 +8002,8 @@ class OrganizationWhereInput {
   id?: StringFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -8050,9 +8011,8 @@ class OrganizationWhereInput {
   createdAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -8060,9 +8020,8 @@ class OrganizationWhereInput {
   updatedAt?: DateTimeFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -10078,25 +10037,13 @@ export { UserUpdateInput };
 ",
   "server/src/user/base/UserWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-
-import {
-  IsString,
-  IsOptional,
-  IsInt,
-  IsDate,
-  IsNumber,
-  ValidateNested,
-  IsEnum,
-  IsBoolean,
-  IsJSON,
-} from \\"class-validator\\";
-
 import { StringFilter } from \\"../../util/StringFilter\\";
+import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
-import { Type, Transform } from \\"class-transformer\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { FloatFilter } from \\"../../util/FloatFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { Transform, Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
@@ -10105,9 +10052,8 @@ import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
 class UserWhereInput {
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -10115,9 +10061,8 @@ class UserWhereInput {
   username?: StringFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -10125,9 +10070,8 @@ class UserWhereInput {
   id?: StringFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -10135,9 +10079,8 @@ class UserWhereInput {
   name?: StringFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -10145,9 +10088,8 @@ class UserWhereInput {
   bio?: StringFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -10155,9 +10097,8 @@ class UserWhereInput {
   email?: StringFilter;
   @ApiProperty({
     required: false,
-    type: Number,
+    type: IntFilter,
   })
-  @IsInt()
   @IsOptional()
   @Field(() => IntFilter, {
     nullable: true,
@@ -10165,9 +10106,8 @@ class UserWhereInput {
   age?: IntFilter;
   @ApiProperty({
     required: false,
+    type: DateTimeFilter,
   })
-  @IsDate()
-  @Type(() => Date)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -10175,9 +10115,8 @@ class UserWhereInput {
   birthDate?: DateTimeFilter;
   @ApiProperty({
     required: false,
-    type: Number,
+    type: FloatFilter,
   })
-  @IsNumber()
   @IsOptional()
   @Field(() => FloatFilter, {
     nullable: true,
@@ -10219,9 +10158,8 @@ class UserWhereInput {
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
     required: false,
-    type: Boolean,
+    type: BooleanFilter,
   })
-  @IsBoolean()
   @IsOptional()
   @Field(() => BooleanFilter, {
     nullable: true,
@@ -10229,9 +10167,8 @@ class UserWhereInput {
   isCurious?: BooleanFilter;
   @ApiProperty({
     required: false,
-    type: String,
+    type: StringFilter,
   })
-  @IsString()
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -10239,8 +10176,8 @@ class UserWhereInput {
   location?: StringFilter;
   @ApiProperty({
     required: false,
+    type: JsonNullableFilter,
   })
-  @IsJSON()
   @IsOptional()
   @Field(() => JsonNullableFilter, {
     nullable: true,

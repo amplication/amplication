@@ -162,18 +162,24 @@ export function createFieldClassProperty(
   const definitive = !optionalProperty;
 
   if (prismaField.kind === FieldKind.Scalar) {
-    const id = PRISMA_SCALAR_TO_DECORATOR_ID[prismaField.type];
-    if (id) {
-      const args = prismaField.isList
-        ? [
-            builders.objectExpression([
-              builders.objectProperty(EACH_ID, TRUE_LITERAL),
-            ]),
-          ]
-        : [];
-      decorators.push(builders.decorator(builders.callExpression(id, args)));
+    if (!isQuery) {
+      const id = PRISMA_SCALAR_TO_DECORATOR_ID[prismaField.type];
+      if (id) {
+        const args = prismaField.isList
+          ? [
+              builders.objectExpression([
+                builders.objectProperty(EACH_ID, TRUE_LITERAL),
+              ]),
+            ]
+          : [];
+        decorators.push(builders.decorator(builders.callExpression(id, args)));
+      }
     }
-    const swaggerType = PRISMA_SCALAR_TO_SWAGGER_TYPE[prismaField.type];
+    const swaggerType = !isQuery
+      ? PRISMA_SCALAR_TO_SWAGGER_TYPE[prismaField.type]
+      : !field.required
+      ? PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[prismaField.type]
+      : PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type];
     if (swaggerType) {
       const type = prismaField.isList
         ? builders.arrayExpression([swaggerType])
@@ -183,7 +189,7 @@ export function createFieldClassProperty(
       );
     }
   }
-  if (prismaField.type === ScalarType.DateTime) {
+  if (prismaField.type === ScalarType.DateTime && !isQuery) {
     decorators.push(createTypeDecorator(DATE_ID));
   }
   if (isEnum) {
