@@ -16,6 +16,7 @@ import {
   removeImportsTSIgnoreComments,
   getMethods,
   NamedClassDeclaration,
+  removeTSIgnoreComments,
 } from "../../../util/ast";
 import { isToManyRelationField } from "../../../util/field";
 import { SRC_DIRECTORY } from "../../constants";
@@ -179,7 +180,7 @@ async function createControllerModule(
     ]);
   }
 
-  removeImportsTSIgnoreComments(file);
+  removeTSIgnoreComments(file);
   removeESLintComments(file);
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);

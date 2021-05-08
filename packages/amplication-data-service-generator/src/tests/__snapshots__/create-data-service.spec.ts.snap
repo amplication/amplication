@@ -5119,7 +5119,6 @@ export class CustomerControllerBase {
   @swagger.ApiCreatedResponse({ type: Customer })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -5149,7 +5148,6 @@ export class CustomerControllerBase {
         \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    // @ts-ignore
     return await this.service.create({
       ...query,
       data: {
@@ -5209,7 +5207,6 @@ export class CustomerControllerBase {
   @swagger.ApiOkResponse({ type: [Customer] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => CustomerWhereInput,
     style: \\"deepObject\\",
     explode: true,
@@ -5272,7 +5269,6 @@ export class CustomerControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -5342,7 +5338,6 @@ export class CustomerControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -5374,7 +5369,6 @@ export class CustomerControllerBase {
       );
     }
     try {
-      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
@@ -5444,7 +5438,6 @@ export class CustomerControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -5506,11 +5499,17 @@ export class CustomerControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @swagger.ApiQuery({
+    type: () => OrderWhereInput,
+    style: \\"deepObject\\",
+    explode: true,
+  })
   async findManyOrders(
+    @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Query() query: OrderWhereInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Order[]> {
+    const query: OrderWhereInput = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -6382,7 +6381,6 @@ export class EmptyControllerBase {
   @swagger.ApiCreatedResponse({ type: Empty })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -6412,7 +6410,6 @@ export class EmptyControllerBase {
         \`providing the properties: \${properties} on \${\\"Empty\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    // @ts-ignore
     return await this.service.create({
       ...query,
       data: data,
@@ -6435,7 +6432,6 @@ export class EmptyControllerBase {
   @swagger.ApiOkResponse({ type: [Empty] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => EmptyWhereInput,
     style: \\"deepObject\\",
     explode: true,
@@ -6475,7 +6471,6 @@ export class EmptyControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -6522,7 +6517,6 @@ export class EmptyControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -6554,7 +6548,6 @@ export class EmptyControllerBase {
       );
     }
     try {
-      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
@@ -6587,7 +6580,6 @@ export class EmptyControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -7372,7 +7364,6 @@ export class OrderControllerBase {
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -7402,7 +7393,6 @@ export class OrderControllerBase {
         \`providing the properties: \${properties} on \${\\"Order\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    // @ts-ignore
     return await this.service.create({
       ...query,
       data: {
@@ -7440,7 +7430,6 @@ export class OrderControllerBase {
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => OrderWhereInput,
     style: \\"deepObject\\",
     explode: true,
@@ -7489,7 +7478,6 @@ export class OrderControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -7545,7 +7533,6 @@ export class OrderControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -7577,7 +7564,6 @@ export class OrderControllerBase {
       );
     }
     try {
-      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
@@ -7625,7 +7611,6 @@ export class OrderControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -8379,7 +8364,6 @@ export class OrganizationControllerBase {
   @swagger.ApiCreatedResponse({ type: Organization })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -8409,7 +8393,6 @@ export class OrganizationControllerBase {
         \`providing the properties: \${properties} on \${\\"Organization\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    // @ts-ignore
     return await this.service.create({
       ...query,
       data: data,
@@ -8433,7 +8416,6 @@ export class OrganizationControllerBase {
   @swagger.ApiOkResponse({ type: [Organization] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => OrganizationWhereInput,
     style: \\"deepObject\\",
     explode: true,
@@ -8474,7 +8456,6 @@ export class OrganizationControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -8522,7 +8503,6 @@ export class OrganizationControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -8554,7 +8534,6 @@ export class OrganizationControllerBase {
       );
     }
     try {
-      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
@@ -8588,7 +8567,6 @@ export class OrganizationControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -8628,11 +8606,17 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @swagger.ApiQuery({
+    type: () => UserWhereInput,
+    style: \\"deepObject\\",
+    explode: true,
+  })
   async findManyUsers(
+    @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Query() query: UserWhereInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User[]> {
+    const query: UserWhereInput = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -8808,11 +8792,17 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @swagger.ApiQuery({
+    type: () => CustomerWhereInput,
+    style: \\"deepObject\\",
+    explode: true,
+  })
   async findManyCustomers(
+    @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Query() query: CustomerWhereInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
+    const query: CustomerWhereInput = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -8987,11 +8977,17 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @swagger.ApiQuery({
+    type: () => CustomerWhereInput,
+    style: \\"deepObject\\",
+    explode: true,
+  })
   async findManyVipCustomers(
+    @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Query() query: CustomerWhereInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
+    const query: CustomerWhereInput = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -10635,7 +10631,6 @@ export class UserControllerBase {
   @swagger.ApiCreatedResponse({ type: User })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -10665,7 +10660,6 @@ export class UserControllerBase {
         \`providing the properties: \${properties} on \${\\"User\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    // @ts-ignore
     return await this.service.create({
       ...query,
       data: {
@@ -10726,7 +10720,6 @@ export class UserControllerBase {
   @swagger.ApiOkResponse({ type: [User] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => UserWhereInput,
     style: \\"deepObject\\",
     explode: true,
@@ -10790,7 +10783,6 @@ export class UserControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -10861,7 +10853,6 @@ export class UserControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -10893,7 +10884,6 @@ export class UserControllerBase {
       );
     }
     try {
-      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
@@ -10964,7 +10954,6 @@ export class UserControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiQuery({
-    //@ts-ignore
     type: () => {},
     style: \\"deepObject\\",
     explode: true,
@@ -11027,11 +11016,17 @@ export class UserControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @swagger.ApiQuery({
+    type: () => UserWhereInput,
+    style: \\"deepObject\\",
+    explode: true,
+  })
   async findManyEmployees(
+    @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
-    @common.Query() query: UserWhereInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User[]> {
+    const query: UserWhereInput = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
