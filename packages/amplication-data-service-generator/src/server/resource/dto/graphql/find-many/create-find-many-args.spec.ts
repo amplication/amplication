@@ -26,8 +26,29 @@ describe("createFindManyArgs", () => {
       print(await createFindManyArgs(EXAMPLE_ENTITY, EXAMPLE_WHERE_INPUT)).code
     ).toEqual(`@ArgsType()
 class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
+  @ApiProperty({
+    required: false,
+    type: () => ${EXAMPLE_WHERE_INPUT.id.name},
+  })
   @Field(() => ${EXAMPLE_WHERE_INPUT.id.name}, { nullable: true })
+  @Type(() => ${EXAMPLE_WHERE_INPUT.id.name})
   where?: ${EXAMPLE_WHERE_INPUT.id.name};
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  skip?: number;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  take?: number;
 }`);
   });
 });
