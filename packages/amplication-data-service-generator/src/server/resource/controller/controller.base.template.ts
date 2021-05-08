@@ -11,10 +11,14 @@ import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import * as errors from "../../errors";
 import { Request } from "express";
+import { plainToClass } from "class-transformer";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
 declare interface WHERE_UNIQUE_INPUT {}
+declare class FIND_MANY_ARGS {
+  where: WHERE_INPUT;
+}
 declare interface UPDATE_INPUT {}
 
 declare const FINE_ONE_PATH: string;
@@ -101,7 +105,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
     //@ts-ignore
-    type: () => WHERE_INPUT,
+    type: () => FIND_MANY_ARGS,
     style: "deepObject",
     explode: true,
   })
@@ -109,7 +113,7 @@ export class CONTROLLER_BASE {
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
-    const query: WHERE_INPUT = request.query;
+    const args = plainToClass(FIND_MANY_ARGS, request.query);
 
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -118,7 +122,7 @@ export class CONTROLLER_BASE {
       resource: ENTITY_NAME,
     });
     const results = await this.service.findMany({
-      where: query,
+      ...args,
       select: SELECT,
     });
     return results.map((result) => permission.filter(result));

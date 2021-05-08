@@ -5128,10 +5128,12 @@ import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
+import { plainToClass } from \\"class-transformer\\";
 import { CustomerService } from \\"../customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
 import { OrderWhereInput } from \\"../../order/base/OrderWhereInput\\";
@@ -5233,7 +5235,7 @@ export class CustomerControllerBase {
   @swagger.ApiOkResponse({ type: [Customer] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    type: () => CustomerWhereInput,
+    type: () => CustomerFindManyArgs,
     style: \\"deepObject\\",
     explode: true,
   })
@@ -5241,7 +5243,7 @@ export class CustomerControllerBase {
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
-    const query: CustomerWhereInput = request.query;
+    const args = plainToClass(CustomerFindManyArgs, request.query);
 
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -5250,7 +5252,7 @@ export class CustomerControllerBase {
       resource: \\"Customer\\",
     });
     const results = await this.service.findMany({
-      where: query,
+      ...args,
       select: {
         id: true,
         createdAt: true,
@@ -6378,10 +6380,12 @@ import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
+import { plainToClass } from \\"class-transformer\\";
 import { EmptyService } from \\"../empty.service\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
 
@@ -6444,7 +6448,7 @@ export class EmptyControllerBase {
   @swagger.ApiOkResponse({ type: [Empty] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    type: () => EmptyWhereInput,
+    type: () => EmptyFindManyArgs,
     style: \\"deepObject\\",
     explode: true,
   })
@@ -6452,7 +6456,7 @@ export class EmptyControllerBase {
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Empty[]> {
-    const query: EmptyWhereInput = request.query;
+    const args = plainToClass(EmptyFindManyArgs, request.query);
 
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -6461,7 +6465,7 @@ export class EmptyControllerBase {
       resource: \\"Empty\\",
     });
     const results = await this.service.findMany({
-      where: query,
+      ...args,
       select: {
         id: true,
         createdAt: true,
@@ -7338,10 +7342,12 @@ import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
+import { plainToClass } from \\"class-transformer\\";
 import { OrderService } from \\"../order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
 
@@ -7419,7 +7425,7 @@ export class OrderControllerBase {
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    type: () => OrderWhereInput,
+    type: () => OrderFindManyArgs,
     style: \\"deepObject\\",
     explode: true,
   })
@@ -7427,7 +7433,7 @@ export class OrderControllerBase {
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Order[]> {
-    const query: OrderWhereInput = request.query;
+    const args = plainToClass(OrderFindManyArgs, request.query);
 
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -7436,7 +7442,7 @@ export class OrderControllerBase {
       resource: \\"Order\\",
     });
     const results = await this.service.findMany({
-      where: query,
+      ...args,
       select: {
         id: true,
         createdAt: true,
@@ -8317,10 +8323,12 @@ import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
+import { plainToClass } from \\"class-transformer\\";
 import { OrganizationService } from \\"../organization.service\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
 import { UserWhereInput } from \\"../../user/base/UserWhereInput\\";
@@ -8388,7 +8396,7 @@ export class OrganizationControllerBase {
   @swagger.ApiOkResponse({ type: [Organization] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    type: () => OrganizationWhereInput,
+    type: () => OrganizationFindManyArgs,
     style: \\"deepObject\\",
     explode: true,
   })
@@ -8396,7 +8404,7 @@ export class OrganizationControllerBase {
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization[]> {
-    const query: OrganizationWhereInput = request.query;
+    const args = plainToClass(OrganizationFindManyArgs, request.query);
 
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -8405,7 +8413,7 @@ export class OrganizationControllerBase {
       resource: \\"Organization\\",
     });
     const results = await this.service.findMany({
-      where: query,
+      ...args,
       select: {
         id: true,
         createdAt: true,
@@ -10527,10 +10535,12 @@ import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
+import { plainToClass } from \\"class-transformer\\";
 import { UserService } from \\"../user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
 
@@ -10631,7 +10641,7 @@ export class UserControllerBase {
   @swagger.ApiOkResponse({ type: [User] })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiQuery({
-    type: () => UserWhereInput,
+    type: () => UserFindManyArgs,
     style: \\"deepObject\\",
     explode: true,
   })
@@ -10639,7 +10649,7 @@ export class UserControllerBase {
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User[]> {
-    const query: UserWhereInput = request.query;
+    const args = plainToClass(UserFindManyArgs, request.query);
 
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -10648,7 +10658,7 @@ export class UserControllerBase {
       resource: \\"User\\",
     });
     const results = await this.service.findMany({
-      where: query,
+      ...args,
       select: {
         username: true,
         roles: true,
