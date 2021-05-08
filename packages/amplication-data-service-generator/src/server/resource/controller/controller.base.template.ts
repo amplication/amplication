@@ -10,10 +10,7 @@ import * as abacUtil from "../../auth/abac.util";
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import * as errors from "../../errors";
-
-declare interface CREATE_QUERY {}
-declare interface UPDATE_QUERY {}
-declare interface DELETE_QUERY {}
+import { Request } from "express";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -23,7 +20,6 @@ declare interface UPDATE_INPUT {}
 declare const FINE_ONE_PATH: string;
 declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
-declare interface FIND_ONE_QUERY {}
 
 declare class ENTITY {}
 declare interface Select {}
@@ -66,7 +62,6 @@ export class CONTROLLER_BASE {
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
-    @common.Query() query: CREATE_QUERY,
     @common.Body() data: CREATE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
@@ -88,9 +83,7 @@ export class CONTROLLER_BASE {
         `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
       );
     }
-    // @ts-ignore
     return await this.service.create({
-      ...query,
       data: CREATE_DATA_MAPPING,
       select: SELECT,
     });
@@ -106,10 +99,18 @@ export class CONTROLLER_BASE {
   })
   @swagger.ApiOkResponse({ type: [ENTITY] })
   @swagger.ApiForbiddenResponse()
+  @swagger.ApiQuery({
+    //@ts-ignore
+    type: () => WHERE_INPUT,
+    style: "deepObject",
+    explode: true,
+  })
   async findMany(
-    @common.Query() query: WHERE_INPUT,
+    @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
+    const query: WHERE_INPUT = request.query;
+
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: "read",
@@ -135,7 +136,6 @@ export class CONTROLLER_BASE {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Query() query: FIND_ONE_QUERY,
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
@@ -146,7 +146,6 @@ export class CONTROLLER_BASE {
       resource: ENTITY_NAME,
     });
     const result = await this.service.findOne({
-      ...query,
       where: params,
       select: SELECT,
     });
@@ -170,7 +169,6 @@ export class CONTROLLER_BASE {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
-    @common.Query() query: UPDATE_QUERY,
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body()
     data: UPDATE_INPUT,
@@ -195,9 +193,7 @@ export class CONTROLLER_BASE {
       );
     }
     try {
-      // @ts-ignore
       return await this.service.update({
-        ...query,
         where: params,
         data: UPDATE_DATA_MAPPING,
         select: SELECT,
@@ -224,12 +220,10 @@ export class CONTROLLER_BASE {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
-    @common.Query() query: DELETE_QUERY,
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     try {
       return await this.service.delete({
-        ...query,
         where: params,
         select: SELECT,
       });
