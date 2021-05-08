@@ -12,10 +12,6 @@ import { isRecordNotFoundError } from "../../prisma.util";
 import * as errors from "../../errors";
 import { Request } from "express";
 
-declare interface CREATE_QUERY {}
-declare interface UPDATE_QUERY {}
-declare interface DELETE_QUERY {}
-
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
 declare interface WHERE_UNIQUE_INPUT {}
@@ -24,7 +20,6 @@ declare interface UPDATE_INPUT {}
 declare const FINE_ONE_PATH: string;
 declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
-declare interface FIND_ONE_QUERY {}
 
 declare class ENTITY {}
 declare interface Select {}
@@ -66,19 +61,10 @@ export class CONTROLLER_BASE {
   })
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    //@ts-ignore
-    type: () => CREATE_QUERY,
-    style: "deepObject",
-    explode: true,
-  })
   async create(
-    @common.Req() request: Request,
     @common.Body() data: CREATE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
-    const query: CREATE_QUERY = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: "create",
@@ -97,9 +83,7 @@ export class CONTROLLER_BASE {
         `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
       );
     }
-    // @ts-ignore
     return await this.service.create({
-      ...query,
       data: CREATE_DATA_MAPPING,
       select: SELECT,
     });
@@ -151,19 +135,10 @@ export class CONTROLLER_BASE {
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    //@ts-ignore
-    type: () => FIND_ONE_QUERY,
-    style: "deepObject",
-    explode: true,
-  })
   async findOne(
-    @common.Req() request: Request,
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
-    const query: FIND_ONE_QUERY = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: "read",
@@ -171,7 +146,6 @@ export class CONTROLLER_BASE {
       resource: ENTITY_NAME,
     });
     const result = await this.service.findOne({
-      ...query,
       where: params,
       select: SELECT,
     });
@@ -194,20 +168,12 @@ export class CONTROLLER_BASE {
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    //@ts-ignore
-    type: () => UPDATE_QUERY,
-    style: "deepObject",
-    explode: true,
-  })
   async update(
-    @common.Req() request: Request,
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body()
     data: UPDATE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
-    const query: UPDATE_QUERY = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: "update",
@@ -227,9 +193,7 @@ export class CONTROLLER_BASE {
       );
     }
     try {
-      // @ts-ignore
       return await this.service.update({
-        ...query,
         where: params,
         data: UPDATE_DATA_MAPPING,
         select: SELECT,
@@ -255,21 +219,11 @@ export class CONTROLLER_BASE {
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    //@ts-ignore
-    type: () => DELETE_QUERY,
-    style: "deepObject",
-    explode: true,
-  })
   async delete(
-    @common.Req() request: Request,
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
-    const query: DELETE_QUERY = request.query;
-
     try {
       return await this.service.delete({
-        ...query,
         where: params,
         select: SELECT,
       });

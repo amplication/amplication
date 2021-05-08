@@ -13,7 +13,6 @@ import {
   getClassDeclarationById,
   removeESLintComments,
   importContainedIdentifiers,
-  removeImportsTSIgnoreComments,
   getMethods,
   NamedClassDeclaration,
   removeTSIgnoreComments,
@@ -61,10 +60,7 @@ export async function createControllerModules(
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
     SELECT: createSelect(entityDTO, entity),
-    /** @todo replace */
-    CREATE_QUERY: builders.tsTypeLiteral([]),
-    UPDATE_QUERY: builders.tsTypeLiteral([]),
-    DELETE_QUERY: builders.tsTypeLiteral([]),
+
     CREATE_INPUT: entityDTOs.createInput.id,
     CREATE_DATA_MAPPING: createDataMapping(
       entity,
@@ -83,8 +79,6 @@ export async function createControllerModules(
     FINE_ONE_PATH: builders.stringLiteral("/:id"),
     UPDATE_PATH: builders.stringLiteral("/:id"),
     DELETE_PATH: builders.stringLiteral("/:id"),
-    /** @todo replace */
-    FIND_ONE_QUERY: builders.tsTypeLiteral([]),
     WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
   };
   return [

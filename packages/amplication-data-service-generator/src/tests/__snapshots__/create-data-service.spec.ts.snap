@@ -5118,18 +5118,10 @@ export class CustomerControllerBase {
   })
   @swagger.ApiCreatedResponse({ type: Customer })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async create(
-    @common.Req() request: Request,
     @common.Body() data: CustomerCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"create\\",
@@ -5149,7 +5141,6 @@ export class CustomerControllerBase {
       );
     }
     return await this.service.create({
-      ...query,
       data: {
         ...data,
 
@@ -5268,18 +5259,10 @@ export class CustomerControllerBase {
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async findOne(
-    @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -5287,7 +5270,6 @@ export class CustomerControllerBase {
       resource: \\"Customer\\",
     });
     const result = await this.service.findOne({
-      ...query,
       where: params,
       select: {
         id: true,
@@ -5337,19 +5319,12 @@ export class CustomerControllerBase {
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async update(
-    @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body()
     data: CustomerUpdateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
-    const query: {} = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"update\\",
@@ -5370,7 +5345,6 @@ export class CustomerControllerBase {
     }
     try {
       return await this.service.update({
-        ...query,
         where: params,
         data: {
           ...data,
@@ -5437,20 +5411,11 @@ export class CustomerControllerBase {
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async delete(
-    @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    const query: {} = request.query;
-
     try {
       return await this.service.delete({
-        ...query,
         where: params,
         select: {
           id: true,
@@ -6380,18 +6345,10 @@ export class EmptyControllerBase {
   })
   @swagger.ApiCreatedResponse({ type: Empty })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async create(
-    @common.Req() request: Request,
     @common.Body() data: EmptyCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Empty> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"create\\",
@@ -6411,7 +6368,6 @@ export class EmptyControllerBase {
       );
     }
     return await this.service.create({
-      ...query,
       data: data,
       select: {
         id: true,
@@ -6470,18 +6426,10 @@ export class EmptyControllerBase {
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async findOne(
-    @common.Req() request: Request,
     @common.Param() params: EmptyWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Empty | null> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -6489,7 +6437,6 @@ export class EmptyControllerBase {
       resource: \\"Empty\\",
     });
     const result = await this.service.findOne({
-      ...query,
       where: params,
       select: {
         id: true,
@@ -6516,19 +6463,12 @@ export class EmptyControllerBase {
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async update(
-    @common.Req() request: Request,
     @common.Param() params: EmptyWhereUniqueInput,
     @common.Body()
     data: EmptyUpdateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Empty | null> {
-    const query: {} = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"update\\",
@@ -6549,7 +6489,6 @@ export class EmptyControllerBase {
     }
     try {
       return await this.service.update({
-        ...query,
         where: params,
         data: data,
         select: {
@@ -6579,20 +6518,11 @@ export class EmptyControllerBase {
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async delete(
-    @common.Req() request: Request,
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
-    const query: {} = request.query;
-
     try {
       return await this.service.delete({
-        ...query,
         where: params,
         select: {
           id: true,
@@ -7363,18 +7293,10 @@ export class OrderControllerBase {
   })
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async create(
-    @common.Req() request: Request,
     @common.Body() data: OrderCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Order> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"create\\",
@@ -7394,7 +7316,6 @@ export class OrderControllerBase {
       );
     }
     return await this.service.create({
-      ...query,
       data: {
         ...data,
 
@@ -7477,18 +7398,10 @@ export class OrderControllerBase {
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async findOne(
-    @common.Req() request: Request,
     @common.Param() params: OrderWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -7496,7 +7409,6 @@ export class OrderControllerBase {
       resource: \\"Order\\",
     });
     const result = await this.service.findOne({
-      ...query,
       where: params,
       select: {
         id: true,
@@ -7532,19 +7444,12 @@ export class OrderControllerBase {
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async update(
-    @common.Req() request: Request,
     @common.Param() params: OrderWhereUniqueInput,
     @common.Body()
     data: OrderUpdateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
-    const query: {} = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"update\\",
@@ -7565,7 +7470,6 @@ export class OrderControllerBase {
     }
     try {
       return await this.service.update({
-        ...query,
         where: params,
         data: {
           ...data,
@@ -7610,20 +7514,11 @@ export class OrderControllerBase {
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async delete(
-    @common.Req() request: Request,
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    const query: {} = request.query;
-
     try {
       return await this.service.delete({
-        ...query,
         where: params,
         select: {
           id: true,
@@ -8363,18 +8258,10 @@ export class OrganizationControllerBase {
   })
   @swagger.ApiCreatedResponse({ type: Organization })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async create(
-    @common.Req() request: Request,
     @common.Body() data: OrganizationCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"create\\",
@@ -8394,7 +8281,6 @@ export class OrganizationControllerBase {
       );
     }
     return await this.service.create({
-      ...query,
       data: data,
       select: {
         id: true,
@@ -8455,18 +8341,10 @@ export class OrganizationControllerBase {
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async findOne(
-    @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -8474,7 +8352,6 @@ export class OrganizationControllerBase {
       resource: \\"Organization\\",
     });
     const result = await this.service.findOne({
-      ...query,
       where: params,
       select: {
         id: true,
@@ -8502,19 +8379,12 @@ export class OrganizationControllerBase {
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async update(
-    @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body()
     data: OrganizationUpdateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
-    const query: {} = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"update\\",
@@ -8535,7 +8405,6 @@ export class OrganizationControllerBase {
     }
     try {
       return await this.service.update({
-        ...query,
         where: params,
         data: data,
         select: {
@@ -8566,20 +8435,11 @@ export class OrganizationControllerBase {
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async delete(
-    @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    const query: {} = request.query;
-
     try {
       return await this.service.delete({
-        ...query,
         where: params,
         select: {
           id: true,
@@ -10630,18 +10490,10 @@ export class UserControllerBase {
   })
   @swagger.ApiCreatedResponse({ type: User })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async create(
-    @common.Req() request: Request,
     @common.Body() data: UserCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"create\\",
@@ -10661,7 +10513,6 @@ export class UserControllerBase {
       );
     }
     return await this.service.create({
-      ...query,
       data: {
         ...data,
 
@@ -10782,18 +10633,10 @@ export class UserControllerBase {
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async findOne(
-    @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User | null> {
-    const query: {} = request.query;
-
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -10801,7 +10644,6 @@ export class UserControllerBase {
       resource: \\"User\\",
     });
     const result = await this.service.findOne({
-      ...query,
       where: params,
       select: {
         username: true,
@@ -10852,19 +10694,12 @@ export class UserControllerBase {
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async update(
-    @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
     @common.Body()
     data: UserUpdateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User | null> {
-    const query: {} = request.query;
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"update\\",
@@ -10885,7 +10720,6 @@ export class UserControllerBase {
     }
     try {
       return await this.service.update({
-        ...query,
         where: params,
         data: {
           ...data,
@@ -10953,20 +10787,11 @@ export class UserControllerBase {
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @swagger.ApiQuery({
-    type: () => {},
-    style: \\"deepObject\\",
-    explode: true,
-  })
   async delete(
-    @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    const query: {} = request.query;
-
     try {
       return await this.service.delete({
-        ...query,
         where: params,
         select: {
           username: true,
