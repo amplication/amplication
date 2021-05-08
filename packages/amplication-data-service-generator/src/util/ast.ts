@@ -476,6 +476,7 @@ export function classProperty(
     ${recast.print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
     recast.print(typeAnnotation).code
   }${defaultValue ? `= ${recast.print(defaultValue).code}` : ""}
+  
   }`;
   const ast = parse(code);
   const [classDeclaration] = ast.program.body as [namedTypes.ClassDeclaration];
