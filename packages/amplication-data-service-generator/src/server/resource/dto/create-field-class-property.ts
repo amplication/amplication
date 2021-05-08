@@ -180,7 +180,12 @@ export function createFieldClassProperty(
       : !field.required
       ? PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[prismaField.type]
       : PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type];
+
     if (swaggerType) {
+      if (isQuery) {
+        decorators.push(createTypeDecorator(swaggerType));
+      }
+
       const type = prismaField.isList
         ? builders.arrayExpression([swaggerType])
         : swaggerType;

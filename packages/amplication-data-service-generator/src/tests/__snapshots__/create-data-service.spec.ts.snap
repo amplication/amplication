@@ -4212,6 +4212,7 @@ class Customer {
   @IsString()
   @Field(() => String)
   id!: string;
+
   @ApiProperty({
     required: true,
   })
@@ -4219,6 +4220,7 @@ class Customer {
   @Type(() => Date)
   @Field(() => Date)
   createdAt!: Date;
+
   @ApiProperty({
     required: true,
   })
@@ -4226,6 +4228,7 @@ class Customer {
   @Type(() => Date)
   @Field(() => Date)
   updatedAt!: Date;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -4233,6 +4236,7 @@ class Customer {
   @IsString()
   @Field(() => String)
   email!: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4243,6 +4247,7 @@ class Customer {
     nullable: true,
   })
   firstName!: string | null;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4253,6 +4258,7 @@ class Customer {
     nullable: true,
   })
   lastName!: string | null;
+
   @ApiProperty({
     required: false,
     type: Boolean,
@@ -4263,6 +4269,7 @@ class Customer {
     nullable: true,
   })
   isVip!: boolean | null;
+
   @ApiProperty({
     required: false,
   })
@@ -4273,6 +4280,7 @@ class Customer {
     nullable: true,
   })
   birthData!: Date | null;
+
   @ApiProperty({
     required: false,
     type: Number,
@@ -4283,6 +4291,7 @@ class Customer {
     nullable: true,
   })
   averageSale!: number | null;
+
   @ApiProperty({
     required: false,
     type: Number,
@@ -4293,6 +4302,7 @@ class Customer {
     nullable: true,
   })
   favoriteNumber!: number | null;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4303,6 +4313,7 @@ class Customer {
     nullable: true,
   })
   geoLocation!: string | null;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4313,6 +4324,7 @@ class Customer {
     nullable: true,
   })
   comments!: string | null;
+
   @ApiProperty({
     required: false,
     enum: EnumCustomerFavoriteColors,
@@ -4326,6 +4338,7 @@ class Customer {
     nullable: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+
   @ApiProperty({
     required: false,
     enum: EnumCustomerCustomerType,
@@ -4336,6 +4349,7 @@ class Customer {
     nullable: true,
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4344,6 +4358,7 @@ class Customer {
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4382,6 +4397,7 @@ class CustomerCreateInput {
   @IsString()
   @Field(() => String)
   email!: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4392,6 +4408,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   firstName?: string | null;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4402,6 +4419,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   lastName?: string | null;
+
   @ApiProperty({
     required: false,
     type: Boolean,
@@ -4412,6 +4430,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   isVip?: boolean | null;
+
   @ApiProperty({
     required: false,
   })
@@ -4422,6 +4441,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   birthData?: Date | null;
+
   @ApiProperty({
     required: false,
     type: Number,
@@ -4432,6 +4452,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   averageSale?: number | null;
+
   @ApiProperty({
     required: false,
     type: Number,
@@ -4442,6 +4463,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   favoriteNumber?: number | null;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4452,6 +4474,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   geoLocation?: string | null;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4462,6 +4485,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   comments?: string | null;
+
   @ApiProperty({
     required: false,
     enum: EnumCustomerFavoriteColors,
@@ -4475,6 +4499,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+
   @ApiProperty({
     required: false,
     enum: EnumCustomerCustomerType,
@@ -4485,6 +4510,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4496,6 +4522,7 @@ class CustomerCreateInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput | null;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4583,6 +4610,7 @@ class CustomerUpdateInput {
   @IsOptional()
   @Field(() => String)
   email?: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4593,6 +4621,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   firstName?: string | null;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4603,6 +4632,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   lastName?: string | null;
+
   @ApiProperty({
     required: false,
     type: Boolean,
@@ -4613,6 +4643,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   isVip?: boolean | null;
+
   @ApiProperty({
     required: false,
   })
@@ -4623,6 +4654,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   birthData?: Date | null;
+
   @ApiProperty({
     required: false,
     type: Number,
@@ -4633,6 +4665,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   averageSale?: number | null;
+
   @ApiProperty({
     required: false,
     type: Number,
@@ -4643,6 +4676,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   favoriteNumber?: number | null;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4653,6 +4687,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   geoLocation?: string | null;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -4663,6 +4698,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   comments?: string | null;
+
   @ApiProperty({
     required: false,
     enum: EnumCustomerFavoriteColors,
@@ -4676,6 +4712,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+
   @ApiProperty({
     required: false,
     enum: EnumCustomerCustomerType,
@@ -4686,6 +4723,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4697,6 +4735,7 @@ class CustomerUpdateInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput | null;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4714,6 +4753,7 @@ export { CustomerUpdateInput };
   "server/src/customer/base/CustomerWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type, Transform } from \\"class-transformer\\";
 import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
@@ -4723,117 +4763,140 @@ import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
-import { Transform, Type } from \\"class-transformer\\";
 @InputType()
 class CustomerWhereInput {
   @ApiProperty({
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   id?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeFilter,
   })
+  @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
   createdAt?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeFilter,
   })
+  @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
   updatedAt?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   email?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: StringNullableFilter,
   })
+  @Type(() => StringNullableFilter)
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
   firstName?: StringNullableFilter;
+
   @ApiProperty({
     required: false,
     type: StringNullableFilter,
   })
+  @Type(() => StringNullableFilter)
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
   lastName?: StringNullableFilter;
+
   @ApiProperty({
     required: false,
     type: BooleanNullableFilter,
   })
+  @Type(() => BooleanNullableFilter)
   @IsOptional()
   @Field(() => BooleanNullableFilter, {
     nullable: true,
   })
   isVip?: BooleanNullableFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeNullableFilter,
   })
+  @Type(() => DateTimeNullableFilter)
   @IsOptional()
   @Field(() => DateTimeNullableFilter, {
     nullable: true,
   })
   birthData?: DateTimeNullableFilter;
+
   @ApiProperty({
     required: false,
     type: FloatNullableFilter,
   })
+  @Type(() => FloatNullableFilter)
   @IsOptional()
   @Field(() => FloatNullableFilter, {
     nullable: true,
   })
   averageSale?: FloatNullableFilter;
+
   @ApiProperty({
     required: false,
     type: IntNullableFilter,
   })
+  @Type(() => IntNullableFilter)
   @IsOptional()
   @Field(() => IntNullableFilter, {
     nullable: true,
   })
   favoriteNumber?: IntNullableFilter;
+
   @ApiProperty({
     required: false,
     type: StringNullableFilter,
   })
+  @Type(() => StringNullableFilter)
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
   geoLocation?: StringNullableFilter;
+
   @ApiProperty({
     required: false,
     type: StringNullableFilter,
   })
+  @Type(() => StringNullableFilter)
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
   comments?: StringNullableFilter;
+
   @ApiProperty({
     required: false,
     enum: EnumCustomerCustomerType,
@@ -4844,6 +4907,7 @@ class CustomerWhereInput {
     nullable: true,
   })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -4856,6 +4920,7 @@ class CustomerWhereInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -6108,6 +6173,7 @@ class Empty {
   @IsString()
   @Field(() => String)
   id!: string;
+
   @ApiProperty({
     required: true,
   })
@@ -6115,6 +6181,7 @@ class Empty {
   @Type(() => Date)
   @Field(() => Date)
   createdAt!: Date;
+
   @ApiProperty({
     required: true,
   })
@@ -6179,6 +6246,7 @@ export { EmptyUpdateInput };
   "server/src/empty/base/EmptyWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
 import { IsOptional } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 @InputType()
@@ -6187,24 +6255,29 @@ class EmptyWhereInput {
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   id?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeFilter,
   })
+  @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
   createdAt?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeFilter,
   })
+  @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
@@ -6926,6 +6999,7 @@ class Order {
   @IsString()
   @Field(() => String)
   id!: string;
+
   @ApiProperty({
     required: true,
   })
@@ -6933,6 +7007,7 @@ class Order {
   @Type(() => Date)
   @Field(() => Date)
   createdAt!: Date;
+
   @ApiProperty({
     required: true,
   })
@@ -6940,6 +7015,7 @@ class Order {
   @Type(() => Date)
   @Field(() => Date)
   updatedAt!: Date;
+
   @ApiProperty({
     required: true,
     type: CustomerWhereUniqueInput,
@@ -6947,6 +7023,7 @@ class Order {
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   customer?: CustomerWhereUniqueInput;
+
   @ApiProperty({
     required: true,
     enum: EnumOrderStatus,
@@ -6954,6 +7031,7 @@ class Order {
   @IsEnum(EnumOrderStatus)
   @Field(() => EnumOrderStatus)
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+
   @ApiProperty({
     required: false,
     enum: EnumOrderLabel,
@@ -6984,6 +7062,7 @@ class OrderCreateInput {
   @Type(() => CustomerWhereUniqueInput)
   @Field(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
+
   @ApiProperty({
     required: true,
     enum: EnumOrderStatus,
@@ -6991,6 +7070,7 @@ class OrderCreateInput {
   @IsEnum(EnumOrderStatus)
   @Field(() => EnumOrderStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+
   @ApiProperty({
     required: false,
     enum: EnumOrderLabel,
@@ -7067,6 +7147,7 @@ class OrderUpdateInput {
   @IsOptional()
   @Field(() => CustomerWhereUniqueInput)
   customer?: CustomerWhereUniqueInput;
+
   @ApiProperty({
     required: false,
     enum: EnumOrderStatus,
@@ -7075,6 +7156,7 @@ class OrderUpdateInput {
   @IsOptional()
   @Field(() => EnumOrderStatus)
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+
   @ApiProperty({
     required: false,
     enum: EnumOrderLabel,
@@ -7091,10 +7173,10 @@ export { OrderUpdateInput };
   "server/src/order/base/OrderWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type, Transform } from \\"class-transformer\\";
 import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
-import { Transform, Type } from \\"class-transformer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
@@ -7103,29 +7185,35 @@ class OrderWhereInput {
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   id?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeFilter,
   })
+  @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
   createdAt?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeFilter,
   })
+  @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
   updatedAt?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: CustomerWhereUniqueInput,
@@ -7138,6 +7226,7 @@ class OrderWhereInput {
     nullable: true,
   })
   customer?: CustomerWhereUniqueInput;
+
   @ApiProperty({
     required: false,
     enum: EnumOrderStatus,
@@ -7148,6 +7237,7 @@ class OrderWhereInput {
     nullable: true,
   })
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+
   @ApiProperty({
     required: false,
     enum: EnumOrderLabel,
@@ -7992,6 +8082,7 @@ class Organization {
   @IsString()
   @Field(() => String)
   id!: string;
+
   @ApiProperty({
     required: true,
   })
@@ -7999,6 +8090,7 @@ class Organization {
   @Type(() => Date)
   @Field(() => Date)
   createdAt!: Date;
+
   @ApiProperty({
     required: true,
   })
@@ -8006,6 +8098,7 @@ class Organization {
   @Type(() => Date)
   @Field(() => Date)
   updatedAt!: Date;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -8095,6 +8188,7 @@ export { OrganizationUpdateInput };
   "server/src/organization/base/OrganizationWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
 import { IsOptional } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 @InputType()
@@ -8103,33 +8197,40 @@ class OrganizationWhereInput {
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   id?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeFilter,
   })
+  @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
   createdAt?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeFilter,
   })
+  @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
   updatedAt?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
@@ -9707,6 +9808,7 @@ class User {
   @IsString()
   @Field(() => String)
   username!: string;
+
   @ApiProperty({
     required: true,
     type: [String],
@@ -9716,6 +9818,7 @@ class User {
   })
   @Field(() => [String])
   roles!: Array<string>;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9723,6 +9826,7 @@ class User {
   @IsString()
   @Field(() => String)
   id!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9730,6 +9834,7 @@ class User {
   @IsString()
   @Field(() => String)
   name!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9737,6 +9842,7 @@ class User {
   @IsString()
   @Field(() => String)
   bio!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9744,6 +9850,7 @@ class User {
   @IsString()
   @Field(() => String)
   email!: string;
+
   @ApiProperty({
     required: true,
     type: Number,
@@ -9751,6 +9858,7 @@ class User {
   @IsInt()
   @Field(() => Number)
   age!: number;
+
   @ApiProperty({
     required: true,
   })
@@ -9758,6 +9866,7 @@ class User {
   @Type(() => Date)
   @Field(() => Date)
   birthDate!: Date;
+
   @ApiProperty({
     required: true,
     type: Number,
@@ -9765,6 +9874,7 @@ class User {
   @IsNumber()
   @Field(() => Number)
   score!: number;
+
   @ApiProperty({
     required: false,
     type: UserWhereUniqueInput,
@@ -9773,6 +9883,7 @@ class User {
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
   manager?: UserWhereUniqueInput | null;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -9781,6 +9892,7 @@ class User {
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
+
   @ApiProperty({
     required: true,
     enum: EnumUserInterests,
@@ -9792,6 +9904,7 @@ class User {
   @IsOptional()
   @Field(() => [EnumUserInterests])
   interests?: Array<\\"programming\\" | \\"design\\">;
+
   @ApiProperty({
     required: true,
     enum: EnumUserPriority,
@@ -9799,6 +9912,7 @@ class User {
   @IsEnum(EnumUserPriority)
   @Field(() => EnumUserPriority)
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
+
   @ApiProperty({
     required: true,
     type: Boolean,
@@ -9806,6 +9920,7 @@ class User {
   @IsBoolean()
   @Field(() => Boolean)
   isCurious!: boolean;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9813,6 +9928,7 @@ class User {
   @IsString()
   @Field(() => String)
   location!: string;
+
   @ApiProperty({
     required: true,
   })
@@ -9853,6 +9969,7 @@ class UserCreateInput {
   @IsString()
   @Field(() => String)
   username!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9860,6 +9977,7 @@ class UserCreateInput {
   @IsString()
   @Field(() => String)
   password!: string;
+
   @ApiProperty({
     required: true,
     type: [String],
@@ -9869,6 +9987,7 @@ class UserCreateInput {
   })
   @Field(() => [String])
   roles!: Array<string>;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9876,6 +9995,7 @@ class UserCreateInput {
   @IsString()
   @Field(() => String)
   name!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9883,6 +10003,7 @@ class UserCreateInput {
   @IsString()
   @Field(() => String)
   bio!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9890,6 +10011,7 @@ class UserCreateInput {
   @IsString()
   @Field(() => String)
   email!: string;
+
   @ApiProperty({
     required: true,
     type: Number,
@@ -9897,6 +10019,7 @@ class UserCreateInput {
   @IsInt()
   @Field(() => Number)
   age!: number;
+
   @ApiProperty({
     required: true,
   })
@@ -9904,6 +10027,7 @@ class UserCreateInput {
   @Type(() => Date)
   @Field(() => Date)
   birthDate!: Date;
+
   @ApiProperty({
     required: true,
     type: Number,
@@ -9911,6 +10035,7 @@ class UserCreateInput {
   @IsNumber()
   @Field(() => Number)
   score!: number;
+
   @ApiProperty({
     required: false,
     type: UserWhereUniqueInput,
@@ -9922,6 +10047,7 @@ class UserCreateInput {
     nullable: true,
   })
   manager?: UserWhereUniqueInput | null;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -9933,6 +10059,7 @@ class UserCreateInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput | null;
+
   @ApiProperty({
     required: true,
     enum: EnumUserInterests,
@@ -9944,6 +10071,7 @@ class UserCreateInput {
   @IsOptional()
   @Field(() => [EnumUserInterests])
   interests?: Array<\\"programming\\" | \\"design\\">;
+
   @ApiProperty({
     required: true,
     enum: EnumUserPriority,
@@ -9951,6 +10079,7 @@ class UserCreateInput {
   @IsEnum(EnumUserPriority)
   @Field(() => EnumUserPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
+
   @ApiProperty({
     required: true,
     type: Boolean,
@@ -9958,6 +10087,7 @@ class UserCreateInput {
   @IsBoolean()
   @Field(() => Boolean)
   isCurious!: boolean;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -9965,6 +10095,7 @@ class UserCreateInput {
   @IsString()
   @Field(() => String)
   location!: string;
+
   @ApiProperty({
     required: true,
   })
@@ -10051,6 +10182,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => String)
   username?: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -10059,6 +10191,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => String)
   password?: string;
+
   @ApiProperty({
     required: false,
     type: [String],
@@ -10069,6 +10202,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => [String])
   roles?: Array<string>;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -10077,6 +10211,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => String)
   name?: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -10085,6 +10220,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => String)
   bio?: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -10093,6 +10229,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => String)
   email?: string;
+
   @ApiProperty({
     required: false,
     type: Number,
@@ -10101,6 +10238,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => Number)
   age?: number;
+
   @ApiProperty({
     required: false,
   })
@@ -10109,6 +10247,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => Date)
   birthDate?: Date;
+
   @ApiProperty({
     required: false,
     type: Number,
@@ -10117,6 +10256,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => Number)
   score?: number;
+
   @ApiProperty({
     required: false,
     type: UserWhereUniqueInput,
@@ -10128,6 +10268,7 @@ class UserUpdateInput {
     nullable: true,
   })
   manager?: UserWhereUniqueInput | null;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -10139,6 +10280,7 @@ class UserUpdateInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput | null;
+
   @ApiProperty({
     required: false,
     enum: EnumUserInterests,
@@ -10150,6 +10292,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => [EnumUserInterests])
   interests?: Array<\\"programming\\" | \\"design\\">;
+
   @ApiProperty({
     required: false,
     enum: EnumUserPriority,
@@ -10158,6 +10301,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => EnumUserPriority)
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
+
   @ApiProperty({
     required: false,
     type: Boolean,
@@ -10166,6 +10310,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => Boolean)
   isCurious?: boolean;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -10174,6 +10319,7 @@ class UserUpdateInput {
   @IsOptional()
   @Field(() => String)
   location?: string;
+
   @ApiProperty({
     required: false,
   })
@@ -10187,12 +10333,12 @@ export { UserUpdateInput };
   "server/src/user/base/UserWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type, Transform } from \\"class-transformer\\";
 import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { FloatFilter } from \\"../../util/FloatFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { Transform, Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
@@ -10203,74 +10349,90 @@ class UserWhereInput {
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   username?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   id?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   name?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   bio?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   email?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: IntFilter,
   })
+  @Type(() => IntFilter)
   @IsOptional()
   @Field(() => IntFilter, {
     nullable: true,
   })
   age?: IntFilter;
+
   @ApiProperty({
     required: false,
     type: DateTimeFilter,
   })
+  @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
   birthDate?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: FloatFilter,
   })
+  @Type(() => FloatFilter)
   @IsOptional()
   @Field(() => FloatFilter, {
     nullable: true,
   })
   score?: FloatFilter;
+
   @ApiProperty({
     required: false,
     type: UserWhereUniqueInput,
@@ -10283,6 +10445,7 @@ class UserWhereInput {
     nullable: true,
   })
   manager?: UserWhereUniqueInput;
+
   @ApiProperty({
     required: false,
     type: OrganizationWhereUniqueInput,
@@ -10295,6 +10458,7 @@ class UserWhereInput {
     nullable: true,
   })
   organization?: OrganizationWhereUniqueInput;
+
   @ApiProperty({
     required: false,
     enum: EnumUserPriority,
@@ -10305,28 +10469,34 @@ class UserWhereInput {
     nullable: true,
   })
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
+
   @ApiProperty({
     required: false,
     type: BooleanFilter,
   })
+  @Type(() => BooleanFilter)
   @IsOptional()
   @Field(() => BooleanFilter, {
     nullable: true,
   })
   isCurious?: BooleanFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
   })
+  @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
   location?: StringFilter;
+
   @ApiProperty({
     required: false,
     type: JsonNullableFilter,
   })
+  @Type(() => JsonNullableFilter)
   @IsOptional()
   @Field(() => JsonNullableFilter, {
     nullable: true,
