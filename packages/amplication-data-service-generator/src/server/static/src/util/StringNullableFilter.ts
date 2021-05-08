@@ -2,6 +2,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { QueryMode } from "./QueryMode";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
+import { Type } from "class-transformer";
 
 @InputType({
   isAbstract: true,
@@ -15,6 +16,7 @@ export class StringNullableFilter {
   @Field(() => String, {
     nullable: true,
   })
+  @Type(() => String)
   equals?: string | null;
 
   @ApiProperty({
@@ -25,6 +27,7 @@ export class StringNullableFilter {
   @Field(() => [String], {
     nullable: true,
   })
+  @Type(() => String)
   in?: string[] | null;
 
   @ApiProperty({
@@ -35,6 +38,7 @@ export class StringNullableFilter {
   @Field(() => [String], {
     nullable: true,
   })
+  @Type(() => String)
   notIn?: string[] | null;
 
   @ApiProperty({
@@ -45,6 +49,7 @@ export class StringNullableFilter {
   @Field(() => String, {
     nullable: true,
   })
+  @Type(() => String)
   lt?: string;
 
   @ApiProperty({
@@ -55,6 +60,7 @@ export class StringNullableFilter {
   @Field(() => String, {
     nullable: true,
   })
+  @Type(() => String)
   lte?: string;
 
   @ApiProperty({
@@ -65,6 +71,7 @@ export class StringNullableFilter {
   @Field(() => String, {
     nullable: true,
   })
+  @Type(() => String)
   gt?: string;
 
   @ApiProperty({
@@ -75,6 +82,7 @@ export class StringNullableFilter {
   @Field(() => String, {
     nullable: true,
   })
+  @Type(() => String)
   gte?: string;
 
   @ApiProperty({
@@ -85,6 +93,7 @@ export class StringNullableFilter {
   @Field(() => String, {
     nullable: true,
   })
+  @Type(() => String)
   contains?: string;
 
   @ApiProperty({
@@ -95,6 +104,7 @@ export class StringNullableFilter {
   @Field(() => String, {
     nullable: true,
   })
+  @Type(() => String)
   startsWith?: string;
 
   @ApiProperty({
@@ -105,6 +115,7 @@ export class StringNullableFilter {
   @Field(() => String, {
     nullable: true,
   })
+  @Type(() => String)
   endsWith?: string;
 
   @ApiProperty({
@@ -125,5 +136,6 @@ export class StringNullableFilter {
   @Field(() => String, {
     nullable: true,
   })
+  @Type(() => String)
   not?: string;
 }

@@ -1,6 +1,7 @@
 import { Field, InputType, Int } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
+import { Type } from "class-transformer";
 
 @InputType({
   isAbstract: true,
@@ -15,6 +16,7 @@ export class IntFilter {
   @Field(() => Int, {
     nullable: true,
   })
+  @Type(() => Number)
   equals?: number;
 
   @ApiProperty({
@@ -25,6 +27,7 @@ export class IntFilter {
   @Field(() => [Int], {
     nullable: true,
   })
+  @Type(() => Number)
   in?: number[];
 
   @ApiProperty({
@@ -35,6 +38,7 @@ export class IntFilter {
   @Field(() => [Int], {
     nullable: true,
   })
+  @Type(() => Number)
   notIn?: number[];
 
   @ApiProperty({
@@ -45,6 +49,7 @@ export class IntFilter {
   @Field(() => Int, {
     nullable: true,
   })
+  @Type(() => Number)
   lt?: number;
 
   @ApiProperty({
@@ -55,6 +60,7 @@ export class IntFilter {
   @Field(() => Int, {
     nullable: true,
   })
+  @Type(() => Number)
   lte?: number;
 
   @ApiProperty({
@@ -65,6 +71,7 @@ export class IntFilter {
   @Field(() => Int, {
     nullable: true,
   })
+  @Type(() => Number)
   gt?: number;
 
   @ApiProperty({
@@ -75,6 +82,7 @@ export class IntFilter {
   @Field(() => Int, {
     nullable: true,
   })
+  @Type(() => Number)
   gte?: number;
 
   @ApiProperty({
@@ -85,5 +93,6 @@ export class IntFilter {
   @Field(() => Int, {
     nullable: true,
   })
+  @Type(() => Number)
   not?: number;
 }
