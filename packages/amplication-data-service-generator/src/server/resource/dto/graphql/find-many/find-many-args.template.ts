@@ -3,6 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 
 declare class WHERE_INPUT {}
+declare class ORDER_BY_INPUT {}
 
 @ArgsType()
 export class ID {
@@ -13,6 +14,14 @@ export class ID {
   @Field(() => WHERE_INPUT, { nullable: true })
   @Type(() => WHERE_INPUT)
   where?: WHERE_INPUT;
+
+  @ApiProperty({
+    required: false,
+    type: ORDER_BY_INPUT,
+  })
+  @Field(() => ORDER_BY_INPUT, { nullable: true })
+  @Type(() => ORDER_BY_INPUT)
+  orderBy?: ORDER_BY_INPUT;
 
   @ApiProperty({
     required: false,

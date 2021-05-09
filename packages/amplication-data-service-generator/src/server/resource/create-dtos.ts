@@ -13,6 +13,7 @@ import { createWhereUniqueInput } from "./dto/create-where-unique-input";
 import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
 import { createEnumDTOModule } from "./dto/create-enum-dto-module";
 import { createCreateArgs } from "./dto/graphql/create/create-create-args";
+import { createOrderByInput } from "./dto/graphql/order-by-input/order-by-input";
 import { createDeleteArgs } from "./dto/graphql/delete/create-delete-args";
 import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-args";
 import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
@@ -29,6 +30,7 @@ type EntityDTOs = {
   findOneArgs: NamedClassDeclaration;
   createArgs?: NamedClassDeclaration;
   updateArgs?: NamedClassDeclaration;
+  orderByInput: NamedClassDeclaration;
 };
 
 type EntityEnumDTOs = {
@@ -84,8 +86,13 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
   const whereInput = createWhereInput(entity);
   const whereUniqueInput = createWhereUniqueInput(entity);
   const createArgs = await createCreateArgs(entity, createInput);
+  const orderByInput = await createOrderByInput(entity);
   const deleteArgs = await createDeleteArgs(entity, whereUniqueInput);
-  const findManyArgs = await createFindManyArgs(entity, whereInput);
+  const findManyArgs = await createFindManyArgs(
+    entity,
+    whereInput,
+    orderByInput
+  );
   const findOneArgs = await createFindOneArgs(entity, whereUniqueInput);
   const updateArgs = await createUpdateArgs(
     entity,
@@ -101,6 +108,7 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
     deleteArgs,
     findManyArgs,
     findOneArgs,
+    orderByInput,
   };
   if (createArgs) {
     dtos.createArgs = createArgs;
