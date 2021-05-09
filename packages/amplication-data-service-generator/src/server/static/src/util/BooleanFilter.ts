@@ -1,33 +1,32 @@
-// @ts-ignore
-// eslint-disable-next-line
-import { JsonValue } from "type-fest";
 import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
-import { GraphQLJSONObject } from "graphql-type-json";
+import { Type } from "class-transformer";
 
 @InputType({
   isAbstract: true,
   description: undefined,
 })
-export class JsonNullableFilter {
+export class BooleanFilter {
   @ApiProperty({
     required: false,
-    type: GraphQLJSONObject,
+    type: Boolean,
   })
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => Boolean, {
     nullable: true,
   })
-  equals?: JsonValue | null;
+  @Type(() => Boolean)
+  equals?: boolean;
 
   @ApiProperty({
     required: false,
-    type: GraphQLJSONObject,
+    type: Boolean,
   })
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => Boolean, {
     nullable: true,
   })
-  not?: JsonValue | null;
+  @Type(() => Boolean)
+  not?: boolean;
 }

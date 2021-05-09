@@ -40,14 +40,14 @@ export const BuildStatusIcons = ({ build }: BuildStatusIconsProps) => {
   }, [build]);
 
   const stepDeploy = useMemo(() => {
-    if (!build.action?.steps?.length) {
+    if (!build?.action?.steps?.length) {
       return EMPTY_STEP;
     }
     return (
       build.action.steps.find((step) => step.name === DEPLOY_STEP_NAME) ||
       EMPTY_STEP
     );
-  }, [build.action]);
+  }, [build]);
 
   return (
     <>
@@ -75,7 +75,7 @@ export const BuildStatusIcons = ({ build }: BuildStatusIconsProps) => {
         aria-label="Publish App to Sandbox"
         className={`${CLASS_NAME}__status`}
       >
-        <BuildStepsStatus status={stepDeploy.status} />
+        <BuildStepsStatus status={stepDeploy?.status} />
         <Icon icon="publish" />
       </Tooltip>
     </>

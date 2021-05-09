@@ -309,6 +309,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         createFieldValueTypeFromPrismaField(
           field,
           prismaField,
+          field.required,
           isInput,
           isEnum,
           false

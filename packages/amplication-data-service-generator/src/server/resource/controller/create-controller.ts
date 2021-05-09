@@ -73,7 +73,7 @@ export async function createControllerModules(
       entityDTOs.updateInput,
       DATA_ID
     ),
-    /** @todo extend */
+    FIND_MANY_ARGS: entityDTOs.findManyArgs.id,
     WHERE_INPUT: entityDTOs.whereInput.id,
     /** @todo make dynamic */
     FINE_ONE_PATH: builders.stringLiteral("/:id"),
