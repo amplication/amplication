@@ -806,21 +806,17 @@ export type UserUpdateInput = {
   "admin/src/api/user/UserWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
-import { FloatFilter } from \\"../../util/FloatFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
 
 export type UserWhereInput = {
-  username?: StringFilter;
   id?: StringFilter;
   name?: StringFilter;
   bio?: StringFilter;
-  email?: StringFilter;
   age?: IntFilter;
   birthDate?: DateTimeFilter;
-  score?: FloatFilter;
   manager?: UserWhereUniqueInput;
   organization?: OrganizationWhereUniqueInput;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -10987,7 +10983,6 @@ import { Type, Transform } from \\"class-transformer\\";
 import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
-import { FloatFilter } from \\"../../util/FloatFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
@@ -10995,17 +10990,6 @@ import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
 @InputType()
 class UserWhereInput {
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  username?: StringFilter;
-
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -11041,17 +11025,6 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  email?: StringFilter;
-
-  @ApiProperty({
-    required: false,
     type: IntFilter,
   })
   @Type(() => IntFilter)
@@ -11071,17 +11044,6 @@ class UserWhereInput {
     nullable: true,
   })
   birthDate?: DateTimeFilter;
-
-  @ApiProperty({
-    required: false,
-    type: FloatFilter,
-  })
-  @Type(() => FloatFilter)
-  @IsOptional()
-  @Field(() => FloatFilter, {
-    nullable: true,
-  })
-  score?: FloatFilter;
 
   @ApiProperty({
     required: false,

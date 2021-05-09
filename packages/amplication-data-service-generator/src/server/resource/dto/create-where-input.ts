@@ -26,6 +26,7 @@ export function createWhereInputID(entityName: string): namedTypes.Identifier {
 
 export function isQueryableField(field: EntityField): boolean {
   return (
+    field.searchable &&
     !isScalarListField(field) &&
     (!isRelationField(field) || isOneToOneRelationField(field)) &&
     !isPasswordField(field)

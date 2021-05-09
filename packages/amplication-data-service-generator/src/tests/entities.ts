@@ -37,7 +37,7 @@ const USER: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "a4e0c058-5768-4481-9da9-e48c73ab224d",
@@ -45,7 +45,7 @@ const USER: Entity = {
       name: "name",
       displayName: "Name",
       required: true,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.SingleLineText,
     },
     {
@@ -54,7 +54,7 @@ const USER: Entity = {
       name: "bio",
       displayName: "Bio",
       required: true,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.MultiLineText,
     },
     {
@@ -72,7 +72,7 @@ const USER: Entity = {
       name: "age",
       displayName: "Age",
       required: true,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.WholeNumber,
     },
     {
@@ -81,7 +81,7 @@ const USER: Entity = {
       name: "birthDate",
       displayName: "Birth Date",
       required: true,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.DateTime,
       properties: { dataOnly: false },
     },
@@ -101,7 +101,7 @@ const USER: Entity = {
       name: "manager",
       displayName: "Manager",
       required: false,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: USER_ID,
@@ -115,7 +115,7 @@ const USER: Entity = {
       name: "employees",
       displayName: "Employees",
       required: false,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: USER_ID,
@@ -129,7 +129,7 @@ const USER: Entity = {
       name: "organization",
       displayName: "Organization",
       required: false,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: ORGANIZATION_ID,
@@ -143,7 +143,7 @@ const USER: Entity = {
       name: "interests",
       displayName: "Interests",
       required: true,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.MultiSelectOptionSet,
       properties: {
         options: [
@@ -158,7 +158,7 @@ const USER: Entity = {
       name: "priority",
       displayName: "Priority",
       required: true,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.OptionSet,
       properties: {
         options: [
@@ -174,7 +174,7 @@ const USER: Entity = {
       name: "isCurious",
       displayName: "Is Curious",
       required: true,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.Boolean,
     },
     {
@@ -183,7 +183,7 @@ const USER: Entity = {
       name: "location",
       displayName: "Location",
       required: true,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.GeographicLocation,
     },
     {
@@ -192,7 +192,7 @@ const USER: Entity = {
       name: "extendedProperties",
       displayName: "Extended Properties",
       required: true,
-      searchable: false,
+      searchable: true,
       dataType: EnumDataType.Json,
     },
   ],
@@ -244,7 +244,7 @@ const ORDER: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "67063f41-e123-4c19-9707-5df92df469a4",
@@ -254,7 +254,7 @@ const ORDER: Entity = {
       dataType: EnumDataType.CreatedAt,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "b77e5adf-71ce-4b22-b37b-f8641e277032",
@@ -264,7 +264,7 @@ const ORDER: Entity = {
       dataType: EnumDataType.UpdatedAt,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "77c79b5e-b298-44b2-9648-d417c92a282b",
@@ -277,7 +277,7 @@ const ORDER: Entity = {
         relatedFieldId: CUSTOMER_ORDERS_FIELD_ID,
       },
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "474eda0e-4ad1-4ab6-9cd5-bfde089a833c",
@@ -302,7 +302,7 @@ const ORDER: Entity = {
         ],
       },
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "8ee1d632-078e-4932-8fbd-1470df109821",
@@ -319,7 +319,7 @@ const ORDER: Entity = {
         ],
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
   ],
   permissions: [
@@ -370,7 +370,7 @@ const ORGANIZATION: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "4c22d45e-997c-4c9a-8bb8-c7b69c273da1",
@@ -380,7 +380,7 @@ const ORGANIZATION: Entity = {
       dataType: EnumDataType.CreatedAt,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "3f34a87a-f392-47bf-bfab-2eb23cdbffd4",
@@ -390,7 +390,7 @@ const ORGANIZATION: Entity = {
       dataType: EnumDataType.UpdatedAt,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "22c4a27a-6490-4fb8-b951-7f42ded681bc",
@@ -400,7 +400,7 @@ const ORGANIZATION: Entity = {
       dataType: EnumDataType.SingleLineText,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "22c4a27a-6490-4fb8-b951-7f42ded6a766",
@@ -414,7 +414,7 @@ const ORGANIZATION: Entity = {
         allowMultipleSelection: true,
       },
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "22c4a27a-6490-4fb8-b951-7f42ded68b99",
@@ -428,7 +428,7 @@ const ORGANIZATION: Entity = {
         allowMultipleSelection: true,
       },
       required: true,
-      searchable: false,
+      searchable: true,
     },
     // Additional lookup field to the same entity
     {
@@ -443,7 +443,7 @@ const ORGANIZATION: Entity = {
         allowMultipleSelection: true,
       },
       required: true,
-      searchable: false,
+      searchable: true,
     },
   ],
   permissions: [
@@ -494,7 +494,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "d4d95cff-e8f4-4bd4-b102-fd10c93d5dea",
@@ -504,7 +504,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.CreatedAt,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "68435ba2-711c-4a86-aa8f-af3b693c4433",
@@ -514,7 +514,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.UpdatedAt,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "15ca8761-2b26-4893-9306-a6fd384efdce",
@@ -524,7 +524,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.Email,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "ad93150b-615a-4b95-837e-3b3ab4d378eb",
@@ -534,7 +534,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.SingleLineText,
       properties: {},
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "6a12fcaa-9e0f-4d4a-b2ce-67d7d896f438",
@@ -544,7 +544,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.SingleLineText,
       properties: {},
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "9f1681d5-59ac-4d6a-9fe5-d90832cd32fe",
@@ -554,7 +554,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.Boolean,
       properties: {},
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "02242b3d-7f0b-489b-ae83-b772975dea06",
@@ -567,7 +567,7 @@ const CUSTOMER: Entity = {
         dateOnly: true,
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "fa359cdb-60b1-4a8c-a59b-d70a2370fbd6",
@@ -581,7 +581,7 @@ const CUSTOMER: Entity = {
         precision: 2,
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "88931847-cfff-4345-8faf-82a762160340",
@@ -594,7 +594,7 @@ const CUSTOMER: Entity = {
         maximumValue: 20,
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "75f4b8c8-a1e7-4b83-aef2-b3b0b0c5d0bc",
@@ -604,7 +604,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.GeographicLocation,
       properties: {},
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "ecd8dbca-3524-4e38-985e-cc72c28f0b99",
@@ -616,7 +616,7 @@ const CUSTOMER: Entity = {
         maxLength: 500,
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "e0d70a60-6a1c-47be-8687-2d07f3e93b0b",
@@ -645,7 +645,7 @@ const CUSTOMER: Entity = {
         ],
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "b227bd7a-2fe5-47f8-8f3e-29a2c26104a8",
@@ -674,7 +674,7 @@ const CUSTOMER: Entity = {
         ],
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "b227bd7a-2fe5-47f8-8f3e-29a2c26111b7",
@@ -688,7 +688,7 @@ const CUSTOMER: Entity = {
         allowMultipleSelection: false,
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "b227bd7a-2fe5-47f8-8f3e-29a2c26113a2",
@@ -702,7 +702,7 @@ const CUSTOMER: Entity = {
         allowMultipleSelection: false,
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "e0d70a60-6a1c-47be-8687-2d07f3e9399a",
@@ -716,7 +716,7 @@ const CUSTOMER: Entity = {
         allowMultipleSelection: true,
       },
       required: false,
-      searchable: false,
+      searchable: true,
     },
   ],
   permissions: [
@@ -767,7 +767,7 @@ const EMPTY: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "26273293-4cd3-4765-b316-07d68ca99d44",
@@ -777,7 +777,7 @@ const EMPTY: Entity = {
       dataType: EnumDataType.CreatedAt,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
     {
       id: "97c4cded-8b11-4907-8079-861b2d83125f",
@@ -787,7 +787,7 @@ const EMPTY: Entity = {
       dataType: EnumDataType.UpdatedAt,
       properties: {},
       required: true,
-      searchable: false,
+      searchable: true,
     },
   ],
   permissions: [
