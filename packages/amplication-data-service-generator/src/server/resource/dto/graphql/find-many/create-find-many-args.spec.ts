@@ -49,7 +49,7 @@ class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
   })
   @Field(() => ${EXAMPLE_ORDER_BY_INPUT.id.name}, { nullable: true })
   @Type(() => ${EXAMPLE_ORDER_BY_INPUT.id.name})
-  orderBy?: ${EXAMPLE_ORDER_BY_INPUT.id.name} ;
+  orderBy?: ${EXAMPLE_ORDER_BY_INPUT.id.name};
 
   @ApiProperty({
     required: false,
