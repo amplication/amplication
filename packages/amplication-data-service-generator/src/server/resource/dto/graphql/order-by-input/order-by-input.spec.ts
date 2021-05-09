@@ -1,11 +1,10 @@
 import { print } from "recast";
 import { Entity } from "../../../../../types";
-import { createCreateInput } from "../../create-create-input";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
 } from "../../../util/test-data";
-import { createOrderByInputId, createOrderByInput } from "./order-by-input";
+import { createOrderByInput } from "./order-by-input";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
@@ -15,18 +14,6 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
-const EXAMPLE_CREATE_INPUT = createCreateInput(EXAMPLE_ENTITY);
-const EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS: Entity = {
-  id: "EXAMPLE_ENTITY_WITHOUT_CREATABLE_FIELDS_ID",
-  name: "ExampleEntityWithoutCreatableFields",
-  displayName: "Example Entity Without Creatable Fields",
-  pluralDisplayName: "Example Entities Without Creatable Fields",
-  fields: [EXAMPLE_ID_FIELD],
-  permissions: [],
-};
-const EXAMPLE_CREATE_INPUT_WITHOUT_CREATABLE_FIELDS = createCreateInput(
-  EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS
-);
 
 describe("createOrderByInput", () => {
   test("creates order by input", async () => {
