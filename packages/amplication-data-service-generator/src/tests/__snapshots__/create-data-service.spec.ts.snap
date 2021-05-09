@@ -310,9 +310,11 @@ export type CustomerCreateInput = {
 };
 ",
   "admin/src/api/customer/CustomerFindManyArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+import { CustomerOrderByInput } from \\"./CustomerOrderByInput\\";
 
 export type CustomerFindManyArgs = {
   where?: CustomerWhereInput;
+  orderBy?: CustomerOrderByInput;
   skip?: number;
   take?: number;
 };
@@ -321,6 +323,28 @@ export type CustomerFindManyArgs = {
 
 export type CustomerFindUniqueArgs = {
   where: CustomerWhereUniqueInput;
+};
+",
+  "admin/src/api/customer/CustomerOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+
+export type CustomerOrderByInput = {
+  id?: SortOrder;
+  createdAt?: SortOrder;
+  updatedAt?: SortOrder;
+  email?: SortOrder;
+  firstName?: SortOrder;
+  lastName?: SortOrder;
+  isVip?: SortOrder;
+  birthData?: SortOrder;
+  averageSale?: SortOrder;
+  favoriteNumber?: SortOrder;
+  geoLocation?: SortOrder;
+  comments?: SortOrder;
+  favoriteColors?: SortOrder;
+  customerType?: SortOrder;
+  organization?: SortOrder;
+  vipOrganization?: SortOrder;
+  orders?: SortOrder;
 };
 ",
   "admin/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -415,9 +439,11 @@ export type DeleteEmptyArgs = {
   "admin/src/api/empty/EmptyCreateInput.ts": "export type EmptyCreateInput = {};
 ",
   "admin/src/api/empty/EmptyFindManyArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+import { EmptyOrderByInput } from \\"./EmptyOrderByInput\\";
 
 export type EmptyFindManyArgs = {
   where?: EmptyWhereInput;
+  orderBy?: EmptyOrderByInput;
   skip?: number;
   take?: number;
 };
@@ -426,6 +452,14 @@ export type EmptyFindManyArgs = {
 
 export type EmptyFindUniqueArgs = {
   where: EmptyWhereUniqueInput;
+};
+",
+  "admin/src/api/empty/EmptyOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+
+export type EmptyOrderByInput = {
+  id?: SortOrder;
+  createdAt?: SortOrder;
+  updatedAt?: SortOrder;
 };
 ",
   "admin/src/api/empty/EmptyUpdateInput.ts": "export type EmptyUpdateInput = {};
@@ -494,9 +528,11 @@ export type OrderCreateInput = {
 };
 ",
   "admin/src/api/order/OrderFindManyArgs.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
+import { OrderOrderByInput } from \\"./OrderOrderByInput\\";
 
 export type OrderFindManyArgs = {
   where?: OrderWhereInput;
+  orderBy?: OrderOrderByInput;
   skip?: number;
   take?: number;
 };
@@ -505,6 +541,17 @@ export type OrderFindManyArgs = {
 
 export type OrderFindUniqueArgs = {
   where: OrderWhereUniqueInput;
+};
+",
+  "admin/src/api/order/OrderOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+
+export type OrderOrderByInput = {
+  id?: SortOrder;
+  createdAt?: SortOrder;
+  updatedAt?: SortOrder;
+  customer?: SortOrder;
+  status?: SortOrder;
+  label?: SortOrder;
 };
 ",
   "admin/src/api/order/OrderUpdateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
@@ -564,9 +611,11 @@ export type DeleteOrganizationArgs = {
 };
 ",
   "admin/src/api/organization/OrganizationFindManyArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+import { OrganizationOrderByInput } from \\"./OrganizationOrderByInput\\";
 
 export type OrganizationFindManyArgs = {
   where?: OrganizationWhereInput;
+  orderBy?: OrganizationOrderByInput;
   skip?: number;
   take?: number;
 };
@@ -575,6 +624,18 @@ export type OrganizationFindManyArgs = {
 
 export type OrganizationFindUniqueArgs = {
   where: OrganizationWhereUniqueInput;
+};
+",
+  "admin/src/api/organization/OrganizationOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+
+export type OrganizationOrderByInput = {
+  id?: SortOrder;
+  createdAt?: SortOrder;
+  updatedAt?: SortOrder;
+  name?: SortOrder;
+  users?: SortOrder;
+  customers?: SortOrder;
+  vipCustomers?: SortOrder;
 };
 ",
   "admin/src/api/organization/OrganizationUpdateInput.ts": "export type OrganizationUpdateInput = {
@@ -681,9 +742,11 @@ export type UserCreateInput = {
 };
 ",
   "admin/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
+import { UserOrderByInput } from \\"./UserOrderByInput\\";
 
 export type UserFindManyArgs = {
   where?: UserWhereInput;
+  orderBy?: UserOrderByInput;
   skip?: number;
   take?: number;
 };
@@ -692,6 +755,29 @@ export type UserFindManyArgs = {
 
 export type UserFindUniqueArgs = {
   where: UserWhereUniqueInput;
+};
+",
+  "admin/src/api/user/UserOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+
+export type UserOrderByInput = {
+  username?: SortOrder;
+  password?: SortOrder;
+  roles?: SortOrder;
+  id?: SortOrder;
+  name?: SortOrder;
+  bio?: SortOrder;
+  email?: SortOrder;
+  age?: SortOrder;
+  birthDate?: SortOrder;
+  score?: SortOrder;
+  manager?: SortOrder;
+  employees?: SortOrder;
+  organization?: SortOrder;
+  interests?: SortOrder;
+  priority?: SortOrder;
+  isCurious?: SortOrder;
+  location?: SortOrder;
+  extendedProperties?: SortOrder;
 };
 ",
   "admin/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -4541,6 +4627,7 @@ export { CustomerCreateInput };
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { Type } from \\"class-transformer\\";
+import { CustomerOrderByInput } from \\"./CustomerOrderByInput\\";
 
 @ArgsType()
 class CustomerFindManyArgs {
@@ -4551,6 +4638,14 @@ class CustomerFindManyArgs {
   @Field(() => CustomerWhereInput, { nullable: true })
   @Type(() => CustomerWhereInput)
   where?: CustomerWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: CustomerOrderByInput,
+  })
+  @Field(() => CustomerOrderByInput, { nullable: true })
+  @Type(() => CustomerOrderByInput)
+  orderBy?: CustomerOrderByInput;
 
   @ApiProperty({
     required: false,
@@ -4581,6 +4676,171 @@ class CustomerFindUniqueArgs {
 }
 
 export { CustomerFindUniqueArgs };
+",
+  "server/src/customer/base/CustomerOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { SortOrder } from \\"../../util/SortOrder\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+class CustomerOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  id?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  email?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  firstName?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  lastName?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  isVip?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  birthData?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  averageSale?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  favoriteNumber?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  geoLocation?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  comments?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  favoriteColors?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  customerType?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  organization?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  vipOrganization?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  orders?: SortOrder;
+}
+
+export { CustomerOrderByInput };
 ",
   "server/src/customer/base/CustomerUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -6199,6 +6459,7 @@ export { EmptyCreateInput };
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { Type } from \\"class-transformer\\";
+import { EmptyOrderByInput } from \\"./EmptyOrderByInput\\";
 
 @ArgsType()
 class EmptyFindManyArgs {
@@ -6209,6 +6470,14 @@ class EmptyFindManyArgs {
   @Field(() => EmptyWhereInput, { nullable: true })
   @Type(() => EmptyWhereInput)
   where?: EmptyWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: EmptyOrderByInput,
+  })
+  @Field(() => EmptyOrderByInput, { nullable: true })
+  @Type(() => EmptyOrderByInput)
+  orderBy?: EmptyOrderByInput;
 
   @ApiProperty({
     required: false,
@@ -6239,6 +6508,45 @@ class EmptyFindUniqueArgs {
 }
 
 export { EmptyFindUniqueArgs };
+",
+  "server/src/empty/base/EmptyOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { SortOrder } from \\"../../util/SortOrder\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+class EmptyOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  id?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedAt?: SortOrder;
+}
+
+export { EmptyOrderByInput };
 ",
   "server/src/empty/base/EmptyUpdateInput.ts": "class EmptyUpdateInput {}
 export { EmptyUpdateInput };
@@ -7088,6 +7396,7 @@ export { OrderCreateInput };
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { Type } from \\"class-transformer\\";
+import { OrderOrderByInput } from \\"./OrderOrderByInput\\";
 
 @ArgsType()
 class OrderFindManyArgs {
@@ -7098,6 +7407,14 @@ class OrderFindManyArgs {
   @Field(() => OrderWhereInput, { nullable: true })
   @Type(() => OrderWhereInput)
   where?: OrderWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: OrderOrderByInput,
+  })
+  @Field(() => OrderOrderByInput, { nullable: true })
+  @Type(() => OrderOrderByInput)
+  orderBy?: OrderOrderByInput;
 
   @ApiProperty({
     required: false,
@@ -7128,6 +7445,72 @@ class OrderFindUniqueArgs {
 }
 
 export { OrderFindUniqueArgs };
+",
+  "server/src/order/base/OrderOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { SortOrder } from \\"../../util/SortOrder\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+class OrderOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  id?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  customer?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  status?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  label?: SortOrder;
+}
+
+export { OrderOrderByInput };
 ",
   "server/src/order/base/OrderUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -8128,6 +8511,7 @@ export { OrganizationCreateInput };
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { Type } from \\"class-transformer\\";
+import { OrganizationOrderByInput } from \\"./OrganizationOrderByInput\\";
 
 @ArgsType()
 class OrganizationFindManyArgs {
@@ -8138,6 +8522,14 @@ class OrganizationFindManyArgs {
   @Field(() => OrganizationWhereInput, { nullable: true })
   @Type(() => OrganizationWhereInput)
   where?: OrganizationWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: OrganizationOrderByInput,
+  })
+  @Field(() => OrganizationOrderByInput, { nullable: true })
+  @Type(() => OrganizationOrderByInput)
+  orderBy?: OrganizationOrderByInput;
 
   @ApiProperty({
     required: false,
@@ -8168,6 +8560,81 @@ class OrganizationFindUniqueArgs {
 }
 
 export { OrganizationFindUniqueArgs };
+",
+  "server/src/organization/base/OrganizationOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { SortOrder } from \\"../../util/SortOrder\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+class OrganizationOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  id?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  name?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  users?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  customers?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  vipCustomers?: SortOrder;
+}
+
+export { OrganizationOrderByInput };
 ",
   "server/src/organization/base/OrganizationUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -10109,6 +10576,7 @@ export { UserCreateInput };
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { Type } from \\"class-transformer\\";
+import { UserOrderByInput } from \\"./UserOrderByInput\\";
 
 @ArgsType()
 class UserFindManyArgs {
@@ -10119,6 +10587,14 @@ class UserFindManyArgs {
   @Field(() => UserWhereInput, { nullable: true })
   @Type(() => UserWhereInput)
   where?: UserWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: UserOrderByInput,
+  })
+  @Field(() => UserOrderByInput, { nullable: true })
+  @Type(() => UserOrderByInput)
+  orderBy?: UserOrderByInput;
 
   @ApiProperty({
     required: false,
@@ -10149,6 +10625,180 @@ class UserFindUniqueArgs {
 }
 
 export { UserFindUniqueArgs };
+",
+  "server/src/user/base/UserOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { SortOrder } from \\"../../util/SortOrder\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+class UserOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  username?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  password?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  roles?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  id?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  name?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  bio?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  email?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  age?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  birthDate?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  score?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  manager?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  employees?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  organization?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  interests?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  priority?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  isCurious?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  location?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  extendedProperties?: SortOrder;
+}
+
+export { UserOrderByInput };
 ",
   "server/src/user/base/UserUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -12403,6 +13053,17 @@ export enum QueryMode {
 }
 registerEnumType(QueryMode, {
   name: \\"QueryMode\\",
+  description: undefined,
+});
+",
+  "server/src/util/SortOrder.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+
+export enum SortOrder {
+  Asc = \\"asc\\",
+  Desc = \\"desc\\",
+}
+registerEnumType(SortOrder, {
+  name: \\"SortOrder\\",
   description: undefined,
 });
 ",
