@@ -44,6 +44,7 @@ import {
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
 import { SRC_DIRECTORY } from "../../constants";
+import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
@@ -76,6 +77,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     ARGS_TYPE_ID,
     FIELD_ID,
   ],
+  [SORT_ORDER_MODULE]: [SORT_ORDER_ID],
   ...FILTERS_IMPORTABLE_NAMES,
 };
 

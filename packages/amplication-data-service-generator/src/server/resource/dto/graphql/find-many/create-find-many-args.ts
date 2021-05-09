@@ -12,7 +12,8 @@ const templatePath = require.resolve("./find-many-args.template.ts");
 
 export async function createFindManyArgs(
   entity: Entity,
-  whereInput: NamedClassDeclaration
+  whereInput: NamedClassDeclaration,
+  orderByInput: NamedClassDeclaration
 ): Promise<NamedClassDeclaration> {
   const file = await readFile(templatePath);
   const id = createFindManyArgsId(entity.name);
@@ -20,6 +21,7 @@ export async function createFindManyArgs(
   interpolate(file, {
     ID: id,
     WHERE_INPUT: whereInput.id,
+    ORDER_BY_INPUT: orderByInput.id,
   });
 
   removeTSClassDeclares(file);
