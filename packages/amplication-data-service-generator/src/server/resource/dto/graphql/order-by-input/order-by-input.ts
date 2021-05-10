@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { Entity } from "../../../../../types";
+import { Entity, EnumDataType } from "../../../../../types";
 import { readFile } from "../../../../../util/module";
 import {
   interpolate,
@@ -20,6 +20,7 @@ import {
   SORT_ORDER_DESC_LITERAL,
   SORT_ORDER_ASC_LITERAL,
 } from "../../sort-order.util";
+import { types } from "@amplication/data";
 
 const templatePath = require.resolve("./order-by-input.template.ts");
 
@@ -57,10 +58,21 @@ export async function createOrderByInput(
     createGraphQLFieldDecorator(),
   ];
 
-  const properties = entity.fields.map((field) => {
-    const id = builders.identifier(field.name);
+  const properties = entity.fields.flatMap((field) => {
+    let propertyName = field.name;
 
-    return classProperty(id, typeAnnotation, false, true, null, decorators);
+    if (field.dataType === EnumDataType.Lookup) {
+      const fieldProperties = field.properties as types.Lookup;
+      if (!fieldProperties.allowMultipleSelection) {
+        propertyName = `${field.name}Id`;
+      } else {
+        return [];
+      }
+    }
+
+    const id = builders.identifier(propertyName);
+
+    return [classProperty(id, typeAnnotation, false, true, null, decorators)];
   });
 
   classDeclaration.body = builders.classBody(properties);

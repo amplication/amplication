@@ -342,9 +342,8 @@ export type CustomerOrderByInput = {
   comments?: SortOrder;
   favoriteColors?: SortOrder;
   customerType?: SortOrder;
-  organization?: SortOrder;
-  vipOrganization?: SortOrder;
-  orders?: SortOrder;
+  organizationId?: SortOrder;
+  vipOrganizationId?: SortOrder;
 };
 ",
   "admin/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -549,7 +548,7 @@ export type OrderOrderByInput = {
   id?: SortOrder;
   createdAt?: SortOrder;
   updatedAt?: SortOrder;
-  customer?: SortOrder;
+  customerId?: SortOrder;
   status?: SortOrder;
   label?: SortOrder;
 };
@@ -633,9 +632,6 @@ export type OrganizationOrderByInput = {
   createdAt?: SortOrder;
   updatedAt?: SortOrder;
   name?: SortOrder;
-  users?: SortOrder;
-  customers?: SortOrder;
-  vipCustomers?: SortOrder;
 };
 ",
   "admin/src/api/organization/OrganizationUpdateInput.ts": "export type OrganizationUpdateInput = {
@@ -770,9 +766,8 @@ export type UserOrderByInput = {
   age?: SortOrder;
   birthDate?: SortOrder;
   score?: SortOrder;
-  manager?: SortOrder;
-  employees?: SortOrder;
-  organization?: SortOrder;
+  managerId?: SortOrder;
+  organizationId?: SortOrder;
   interests?: SortOrder;
   priority?: SortOrder;
   isCurious?: SortOrder;
@@ -4815,7 +4810,7 @@ class CustomerOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  organization?: SortOrder;
+  organizationId?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -4824,16 +4819,7 @@ class CustomerOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  vipOrganization?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  orders?: SortOrder;
+  vipOrganizationId?: SortOrder;
 }
 
 export { CustomerOrderByInput };
@@ -7483,7 +7469,7 @@ class OrderOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  customer?: SortOrder;
+  customerId?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -8598,33 +8584,6 @@ class OrganizationOrderByInput {
     nullable: true,
   })
   name?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  users?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  customers?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  vipCustomers?: SortOrder;
 }
 
 export { OrganizationOrderByInput };
@@ -10725,7 +10684,7 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  manager?: SortOrder;
+  managerId?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -10734,16 +10693,7 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  employees?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  organization?: SortOrder;
+  organizationId?: SortOrder;
 
   @ApiProperty({
     required: false,
