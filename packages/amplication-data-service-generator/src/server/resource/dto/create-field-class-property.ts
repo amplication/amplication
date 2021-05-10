@@ -238,15 +238,15 @@ export function createFieldClassProperty(
     apiPropertyOptionsObjectExpression.properties.push(
       builders.objectProperty(TYPE_ID, typeName)
     );
-    if (isQuery) {
-      decorators.push(
-        builders.decorator(
-          builders.callExpression(classTransformerUtil.TRANSFORM_ID, [
-            builders.memberExpression(JSON_ID, PARSE_ID),
-          ])
-        )
-      );
-    }
+    // if (isQuery) {
+    //   decorators.push(
+    //     builders.decorator(
+    //       builders.callExpression(classTransformerUtil.TRANSFORM_ID, [
+    //         builders.memberExpression(JSON_ID, PARSE_ID),
+    //       ])
+    //     )
+    //   );
+    // }
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       createTypeDecorator(typeName)
