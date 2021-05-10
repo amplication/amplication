@@ -48,6 +48,11 @@ export class Mixin {
       resource: RELATED_ENTITY_NAME,
     });
     const results = await this.service.FIND_PROPERTY(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+    
     return results.map((result) => permission.filter(result));
   }
 }

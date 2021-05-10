@@ -6212,6 +6212,11 @@ export class CustomerResolverBase {
       resource: \\"Order\\",
     });
     const results = await this.service.findOrders(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
     return results.map((result) => permission.filter(result));
   }
 
@@ -9844,6 +9849,11 @@ export class OrganizationResolverBase {
       resource: \\"User\\",
     });
     const results = await this.service.findUsers(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
     return results.map((result) => permission.filter(result));
   }
 
@@ -9865,6 +9875,11 @@ export class OrganizationResolverBase {
       resource: \\"Customer\\",
     });
     const results = await this.service.findCustomers(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
     return results.map((result) => permission.filter(result));
   }
 
@@ -9886,6 +9901,11 @@ export class OrganizationResolverBase {
       resource: \\"Customer\\",
     });
     const results = await this.service.findVipCustomers(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
     return results.map((result) => permission.filter(result));
   }
 }
@@ -12055,6 +12075,11 @@ export class UserResolverBase {
       resource: \\"User\\",
     });
     const results = await this.service.findEmployees(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
     return results.map((result) => permission.filter(result));
   }
 
