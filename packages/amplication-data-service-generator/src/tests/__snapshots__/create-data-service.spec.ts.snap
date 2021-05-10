@@ -5009,7 +5009,7 @@ export { CustomerUpdateInput };
   "server/src/customer/base/CustomerWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
-import { Type, Transform } from \\"class-transformer\\";
+import { Type } from \\"class-transformer\\";
 import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
@@ -5168,7 +5168,6 @@ class CustomerWhereInput {
     required: false,
     type: OrganizationWhereUniqueInput,
   })
-  @Transform(JSON.parse)
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
@@ -5181,7 +5180,6 @@ class CustomerWhereInput {
     required: false,
     type: OrganizationWhereUniqueInput,
   })
-  @Transform(JSON.parse)
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
@@ -7552,7 +7550,7 @@ export { OrderUpdateInput };
   "server/src/order/base/OrderWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
-import { Type, Transform } from \\"class-transformer\\";
+import { Type } from \\"class-transformer\\";
 import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
@@ -7597,7 +7595,6 @@ class OrderWhereInput {
     required: false,
     type: CustomerWhereUniqueInput,
   })
-  @Transform(JSON.parse)
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
@@ -10979,7 +10976,7 @@ export { UserUpdateInput };
   "server/src/user/base/UserWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
-import { Type, Transform } from \\"class-transformer\\";
+import { Type } from \\"class-transformer\\";
 import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
@@ -11049,7 +11046,6 @@ class UserWhereInput {
     required: false,
     type: UserWhereUniqueInput,
   })
-  @Transform(JSON.parse)
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
@@ -11062,7 +11058,6 @@ class UserWhereInput {
     required: false,
     type: OrganizationWhereUniqueInput,
   })
-  @Transform(JSON.parse)
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
