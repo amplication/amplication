@@ -864,145 +864,6 @@ export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
 ",
-  "admin/src/components/PrivateRoute.tsx": "import React from \\"react\\";
-import { Route, Redirect, RouteProps } from \\"react-router-dom\\";
-import useAuthenticated from \\"../use-authenticated\\";
-
-type Props = Omit<RouteProps, \\"render\\">;
-
-// A wrapper for <Route> that redirects to the login
-// screen if you're not yet authenticated.
-// Based on: https://reacttraining.com/react-router/web/example/auth-workflow
-function PrivateRoute({ component, children, ...rest }: Props) {
-  const authenticated = useAuthenticated();
-  return (
-    <Route
-      {...rest}
-      render={(props) => {
-        const { location } = props;
-        const childNode = component
-          ? React.createElement(component, props)
-          : children;
-        return authenticated ? (
-          childNode
-        ) : (
-          <Redirect
-            to={{
-              pathname: \\"/login\\",
-              state: { from: location },
-            }}
-          />
-        );
-      }}
-    />
-  );
-}
-
-export default PrivateRoute;
-",
-  "admin/src/components/breadcrumbs/BreadcrumbsContext.ts": "import { createContext } from \\"react\\";
-
-export type BreadcrumbItem = {
-  name?: string | null;
-  url: string;
-};
-
-export type ContextDataType = {
-  breadcrumbsItems: BreadcrumbItem[];
-  registerItem: (item: BreadcrumbItem) => void;
-  unregisterItem: (url: string) => void;
-};
-
-const BreadcrumbsContext = createContext<ContextDataType>({
-  breadcrumbsItems: [],
-  registerItem: (item: BreadcrumbItem) => {
-    throw new Error();
-  },
-  unregisterItem: (url: string) => {
-    throw new Error();
-  },
-});
-
-export default BreadcrumbsContext;
-",
-  "admin/src/components/breadcrumbs/BreadcrumbsProvider.tsx": "import React, { useState, useCallback, useMemo } from \\"react\\";
-import { sortBy } from \\"lodash\\";
-import BreadcrumbsContext, { BreadcrumbItem } from \\"./BreadcrumbsContext\\";
-
-type Props = {
-  children: React.ReactNode;
-};
-
-function BreadcrumbsProvider({ children }: Props) {
-  const [breadcrumbsItems, setBreadcrumbsItems] = useState<BreadcrumbItem[]>(
-    []
-  );
-
-  const registerBreadcrumbItem = useCallback(
-    (addItem: BreadcrumbItem) => {
-      setBreadcrumbsItems((items) => {
-        return sortBy(
-          [...items.filter((item) => item.url !== addItem.url), addItem],
-          (sortItem) => sortItem.url
-        );
-      });
-    },
-    [setBreadcrumbsItems]
-  );
-
-  const unregisterBreadcrumbItem = useCallback(
-    (url: string) => {
-      setBreadcrumbsItems((items) => {
-        return sortBy(
-          items.filter((item) => item.url !== url),
-          (sortItem) => sortItem.url
-        );
-      });
-    },
-    [setBreadcrumbsItems]
-  );
-
-  const breadcrumbsContextValue = useMemo(
-    () => ({
-      breadcrumbsItems,
-      registerItem: registerBreadcrumbItem,
-      unregisterItem: unregisterBreadcrumbItem,
-    }),
-    [breadcrumbsItems, registerBreadcrumbItem, unregisterBreadcrumbItem]
-  );
-
-  return (
-    <BreadcrumbsContext.Provider value={breadcrumbsContextValue}>
-      {children}
-    </BreadcrumbsContext.Provider>
-  );
-}
-
-export default BreadcrumbsProvider;
-",
-  "admin/src/components/breadcrumbs/use-breadcrumbs.ts": "import { useEffect, useContext } from \\"react\\";
-import BreadcrumbsContext from \\"./BreadcrumbsContext\\";
-
-export default function useBreadcrumbs(url: string, name?: string | null) {
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-
-  useEffect(() => {
-    breadcrumbsContext.registerItem({
-      name,
-      url,
-    });
-    return () => {
-      breadcrumbsContext.unregisterItem(url);
-    };
-    // eslint-disable-next-line  react-hooks/exhaustive-deps
-  }, [
-    name,
-    url,
-    breadcrumbsContext.registerItem,
-    breadcrumbsContext.unregisterItem,
-  ]);
-}
-",
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { useHistory } from \\"react-router-dom\\";
@@ -1168,208 +1029,47 @@ export const CustomerIndex = (): React.ReactElement => {
 };
 ",
   "admin/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
 
 import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-  CircleIcon,
-  EnumCircleIconStyle,
-} from \\"@amplication/design-system\\";
+  List,
+  Datagrid,
+  TextField,
+  DateField,
+  NumberField,
+  ReferenceField,
+  ListProps,
+  BooleanField,
+} from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 
-type Data = TCustomer[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-  {
-    name: \\"email\\",
-    title: \\"Email\\",
-    sortable: false,
-  },
-  {
-    name: \\"firstName\\",
-    title: \\"First Name\\",
-    sortable: false,
-  },
-  {
-    name: \\"lastName\\",
-    title: \\"Last Name\\",
-    sortable: false,
-  },
-  {
-    name: \\"isVip\\",
-    title: \\"VIP\\",
-    sortable: false,
-  },
-  {
-    name: \\"birthData\\",
-    title: \\"Birth Data\\",
-    sortable: false,
-  },
-  {
-    name: \\"averageSale\\",
-    title: \\"Average Sale (-1500.00 - 1500.00)\\",
-    sortable: false,
-  },
-  {
-    name: \\"favoriteNumber\\",
-    title: \\"Favorite Number (1 - 20)\\",
-    sortable: false,
-  },
-  {
-    name: \\"geoLocation\\",
-    title: \\"Geographic Location\\",
-    sortable: false,
-  },
-  {
-    name: \\"comments\\",
-    title: \\"Comments (up to 500 characters)\\",
-    sortable: false,
-  },
-  {
-    name: \\"favoriteColors\\",
-    title: \\"Favorite Colors (multi-select)\\",
-    sortable: false,
-  },
-  {
-    name: \\"customerType\\",
-    title: \\"Customer Type\\",
-    sortable: false,
-  },
-  {
-    name: \\"organization\\",
-    title: \\"Organization\\",
-    sortable: false,
-  },
-  {
-    name: \\"vipOrganization\\",
-    title: \\"VIP Organization\\",
-    sortable: false,
-  },
-];
-
-export const CustomerList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/customers\\",
-    async () => {
-      const response = await api.get(\\"/api/customers\\");
-      return response.data;
-    }
-  );
-
+export const CustomerList = (props: ListProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Customers\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/customers/new\\"}>
-            <Button>Create Customer </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TCustomer) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/customers\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.email}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.firstName}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.lastName}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>
-                    {item.isVip && (
-                      <CircleIcon
-                        icon=\\"check\\"
-                        style={EnumCircleIconStyle.positive}
-                      />
-                    )}
-                  </>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.birthData}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.averageSale}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.favoriteNumber}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.geoLocation}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.comments}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.favoriteColors}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.customerType}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <OrganizationTitle id={item.organization?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <OrganizationTitle id={item.vipOrganization?.id} />
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <List {...props} bulkActionButtons={false} title={\\"Customers\\"} perPage={50}>
+      <Datagrid rowClick=\\"edit\\">
+        <TextField source=\\"id\\" />
+        <DateField source=\\"createdAt\\" />
+        <DateField source=\\"updatedAt\\" />
+        <TextField source=\\"email\\" />
+        <TextField source=\\"firstName\\" />
+        <TextField source=\\"lastName\\" />
+        <BooleanField source=\\"isVip\\" />
+        <TextField source=\\"birthData\\" />
+        <TextField source=\\"averageSale\\" />
+        <TextField source=\\"favoriteNumber\\" />
+        <TextField source=\\"geoLocation\\" />
+        <TextField source=\\"comments\\" />
+        <TextField source=\\"favoriteColors\\" />
+        <TextField source=\\"customerType\\" />
+        <ReferenceField source=\\"organization.id\\" reference=\\"Organization\\">
+          <TextField source=\\"firstName\\" />
+        </ReferenceField>
+        <ReferenceField source=\\"organization.id\\" reference=\\"Organization\\">
+          <TextField source=\\"firstName\\" />
+        </ReferenceField>
+      </Datagrid>
+    </List>
   );
 };
 ",
@@ -1734,94 +1434,29 @@ export const EmptyIndex = (): React.ReactElement => {
 };
 ",
   "admin/src/empty/EmptyList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
 
 import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-} from \\"@amplication/design-system\\";
+  List,
+  Datagrid,
+  TextField,
+  DateField,
+  NumberField,
+  ReferenceField,
+  ListProps,
+  BooleanField,
+} from \\"react-admin\\";
 
 import { Empty as TEmpty } from \\"../api/empty/Empty\\";
 
-type Data = TEmpty[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-];
-
-export const EmptyList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/empties\\",
-    async () => {
-      const response = await api.get(\\"/api/empties\\");
-      return response.data;
-    }
-  );
-
+export const EmptyList = (props: ListProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Empties\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/empties/new\\"}>
-            <Button>Create Empty </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TEmpty) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/empties\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <List {...props} bulkActionButtons={false} title={\\"Empties\\"} perPage={50}>
+      <Datagrid rowClick=\\"edit\\">
+        <TextField source=\\"id\\" />
+        <DateField source=\\"createdAt\\" />
+        <DateField source=\\"updatedAt\\" />
+      </Datagrid>
+    </List>
   );
 };
 ",
@@ -2002,21 +1637,14 @@ export const ViewEmpty = (): React.ReactElement => {
 ",
   "admin/src/index.tsx": "import React from \\"react\\";
 import ReactDOM from \\"react-dom\\";
-import { BrowserRouter as Router } from \\"react-router-dom\\";
 import \\"./index.css\\";
 // @ts-ignore
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
-import * as amplicationDesignSystem from \\"@amplication/design-system\\";
-import \\"@amplication/design-system/icons\\";
 
 ReactDOM.render(
   <React.StrictMode>
-    <amplicationDesignSystem.Provider>
-      <Router>
-        <App />
-      </Router>
-    </amplicationDesignSystem.Provider>
+    <App />
   </React.StrictMode>,
   document.getElementById(\\"root\\")
 );
@@ -2134,119 +1762,35 @@ export const OrderIndex = (): React.ReactElement => {
 };
 ",
   "admin/src/order/OrderList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
 
 import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-} from \\"@amplication/design-system\\";
+  List,
+  Datagrid,
+  TextField,
+  DateField,
+  NumberField,
+  ReferenceField,
+  ListProps,
+  BooleanField,
+} from \\"react-admin\\";
 
 import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 
-type Data = TOrder[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-  {
-    name: \\"customer\\",
-    title: \\"Customer\\",
-    sortable: false,
-  },
-  {
-    name: \\"status\\",
-    title: \\"Status\\",
-    sortable: false,
-  },
-  {
-    name: \\"label\\",
-    title: \\"Label\\",
-    sortable: false,
-  },
-];
-
-export const OrderList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/orders\\",
-    async () => {
-      const response = await api.get(\\"/api/orders\\");
-      return response.data;
-    }
-  );
-
+export const OrderList = (props: ListProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Orders\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/orders/new\\"}>
-            <Button>Create Order </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TOrder) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/orders\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <CustomerTitle id={item.customer?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.status}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.label}</>
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <List {...props} bulkActionButtons={false} title={\\"Orders\\"} perPage={50}>
+      <Datagrid rowClick=\\"edit\\">
+        <TextField source=\\"id\\" />
+        <DateField source=\\"createdAt\\" />
+        <DateField source=\\"updatedAt\\" />
+        <ReferenceField source=\\"customer.id\\" reference=\\"Customer\\">
+          <TextField source=\\"firstName\\" />
+        </ReferenceField>
+        <TextField source=\\"status\\" />
+        <TextField source=\\"label\\" />
+      </Datagrid>
+    </List>
   );
 };
 ",
@@ -2550,105 +2094,35 @@ export const OrganizationIndex = (): React.ReactElement => {
 };
 ",
   "admin/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
 
 import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-} from \\"@amplication/design-system\\";
+  List,
+  Datagrid,
+  TextField,
+  DateField,
+  NumberField,
+  ReferenceField,
+  ListProps,
+  BooleanField,
+} from \\"react-admin\\";
 
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 
-type Data = TOrganization[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-  {
-    name: \\"name\\",
-    title: \\"Name\\",
-    sortable: false,
-  },
-];
-
-export const OrganizationList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/organizations\\",
-    async () => {
-      const response = await api.get(\\"/api/organizations\\");
-      return response.data;
-    }
-  );
-
+export const OrganizationList = (props: ListProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Organizations\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/organizations/new\\"}>
-            <Button>Create Organization </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TOrganization) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link
-                    className=\\"entity-id\\"
-                    to={\`\${\\"/organizations\\"}/\${item.id}\`}
-                  >
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.name}</>
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Organizations\\"}
+      perPage={50}
+    >
+      <Datagrid rowClick=\\"edit\\">
+        <TextField source=\\"id\\" />
+        <DateField source=\\"createdAt\\" />
+        <DateField source=\\"updatedAt\\" />
+        <TextField source=\\"name\\" />
+      </Datagrid>
+    </List>
   );
 };
 ",
@@ -2858,19 +2332,6 @@ export default reportWebVitals;
 // learn more: https://github.com/testing-library/jest-dom
 import \\"@testing-library/jest-dom\\";
 ",
-  "admin/src/use-authenticated.ts": "import { useState, useEffect } from \\"react\\";
-import { listen, isAuthenticated } from \\"./auth\\";
-
-export default function useAuthenticated() {
-  const [authenticated, setAuthenticated] = useState<boolean>(
-    isAuthenticated()
-  );
-  useEffect(() => {
-    listen(setAuthenticated);
-  }, [setAuthenticated]);
-  return authenticated;
-}
-",
   "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { useHistory } from \\"react-router-dom\\";
@@ -3057,208 +2518,48 @@ export const UserIndex = (): React.ReactElement => {
 };
 ",
   "admin/src/user/UserList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
 
 import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  CircleIcon,
-  EnumCircleIconStyle,
-} from \\"@amplication/design-system\\";
+  List,
+  Datagrid,
+  TextField,
+  DateField,
+  NumberField,
+  ReferenceField,
+  ListProps,
+  BooleanField,
+} from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { User as TUser } from \\"../api/user/User\\";
 
-type Data = TUser[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"username\\",
-    title: \\"Username\\",
-    sortable: false,
-  },
-  {
-    name: \\"roles\\",
-    title: \\"Roles\\",
-    sortable: false,
-  },
-  {
-    name: \\"name\\",
-    title: \\"Name\\",
-    sortable: false,
-  },
-  {
-    name: \\"bio\\",
-    title: \\"Bio\\",
-    sortable: false,
-  },
-  {
-    name: \\"email\\",
-    title: \\"Email\\",
-    sortable: false,
-  },
-  {
-    name: \\"age\\",
-    title: \\"Age\\",
-    sortable: false,
-  },
-  {
-    name: \\"birthDate\\",
-    title: \\"Birth Date\\",
-    sortable: false,
-  },
-  {
-    name: \\"score\\",
-    title: \\"Score\\",
-    sortable: false,
-  },
-  {
-    name: \\"manager\\",
-    title: \\"Manager\\",
-    sortable: false,
-  },
-  {
-    name: \\"organization\\",
-    title: \\"Organization\\",
-    sortable: false,
-  },
-  {
-    name: \\"interests\\",
-    title: \\"Interests\\",
-    sortable: false,
-  },
-  {
-    name: \\"priority\\",
-    title: \\"Priority\\",
-    sortable: false,
-  },
-  {
-    name: \\"isCurious\\",
-    title: \\"Is Curious\\",
-    sortable: false,
-  },
-  {
-    name: \\"location\\",
-    title: \\"Location\\",
-    sortable: false,
-  },
-  {
-    name: \\"extendedProperties\\",
-    title: \\"Extended Properties\\",
-    sortable: false,
-  },
-];
-
-export const UserList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/users\\",
-    async () => {
-      const response = await api.get(\\"/api/users\\");
-      return response.data;
-    }
-  );
-
+export const UserList = (props: ListProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Users\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/users/new\\"}>
-            <Button>Create User </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TUser) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/users\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.username}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.roles}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.name}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.bio}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.email}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.age}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.birthDate}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.score}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <UserTitle id={item.manager?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <OrganizationTitle id={item.organization?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.interests}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.priority}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>
-                    {item.isCurious && (
-                      <CircleIcon
-                        icon=\\"check\\"
-                        style={EnumCircleIconStyle.positive}
-                      />
-                    )}
-                  </>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.location}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.extendedProperties}</>
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <List {...props} bulkActionButtons={false} title={\\"Users\\"} perPage={50}>
+      <Datagrid rowClick=\\"edit\\">
+        <TextField source=\\"username\\" />
+        <TextField source=\\"roles\\" />
+        <TextField source=\\"id\\" />
+        <TextField source=\\"name\\" />
+        <TextField source=\\"bio\\" />
+        <TextField source=\\"email\\" />
+        <TextField source=\\"age\\" />
+        <TextField source=\\"birthDate\\" />
+        <TextField source=\\"score\\" />
+        <ReferenceField source=\\"user.id\\" reference=\\"User\\">
+          <TextField source=\\"firstName\\" />
+        </ReferenceField>
+        <ReferenceField source=\\"organization.id\\" reference=\\"Organization\\">
+          <TextField source=\\"firstName\\" />
+        </ReferenceField>
+        <TextField source=\\"interests\\" />
+        <TextField source=\\"priority\\" />
+        <BooleanField source=\\"isCurious\\" />
+        <TextField source=\\"location\\" />
+        <TextField source=\\"extendedProperties\\" />
+      </Datagrid>
+    </List>
   );
 };
 ",

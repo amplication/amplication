@@ -1,11 +1,6 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import {
-  Entity,
-  EnumDataType,
-  EntityField,
-  LookupResolvedProperties,
-} from "../../../types";
+import { Entity, EnumDataType, LookupResolvedProperties } from "../../../types";
 import {
   addImports,
   getNamedProperties,
@@ -42,8 +37,6 @@ export async function createEntityListComponent(
   const file = await readFile(template);
   const name = `${entity.name}List`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const path = entityToPath[entity.name];
-  const resource = entityToResource[entity.name];
   const entityDTO = dtos[entity.name].entity;
   const fieldNameToField = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
@@ -52,54 +45,20 @@ export async function createEntityListComponent(
   const fields = entityDTOProperties.map(
     (property) => fieldNameToField[property.key.name]
   );
-  const nonIdFields = fields.filter(
-    (field) => field.dataType !== EnumDataType.Id
-  );
-  const idField = fields.find(
-    (field) => field.dataType === EnumDataType.Id
-  ) as EntityField;
-  const relationFields = nonIdFields.filter(
+
+  const relationFields = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
   const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
 
   interpolate(file, {
-    ENTITY: localEntityDTOId,
     ENTITY_LIST: builders.identifier(name),
     ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
       entity.pluralDisplayName
     ),
-    ENTITY_DISPLAY_NAME: builders.stringLiteral(entity.displayName),
-    PATH: builders.stringLiteral(path),
-    RESOURCE: builders.stringLiteral(resource),
-    FIELDS_VALUE: builders.arrayExpression(
-      [idField, ...nonIdFields].map((field) => {
-        return builders.objectExpression([
-          builders.property(
-            "init",
-            builders.identifier("name"),
-            builders.stringLiteral(field.name)
-          ),
-          builders.property(
-            "init",
-            builders.identifier("title"),
-            builders.stringLiteral(field.displayName)
-          ),
-          builders.property(
-            "init",
-            builders.identifier("sortable"),
-            builders.booleanLiteral(false)
-          ),
-        ]);
-      })
-    ),
-    CELLS: jsxFragment`<>${nonIdFields.map(
+    CELLS: jsxFragment`<>${fields.map(
       (field) =>
-        jsxElement`<DataGridCell>${createFieldValue(
-          field,
-          ITEM_ID,
-          entityToTitleComponent
-        )}</DataGridCell>`
+        jsxElement`${createFieldValue(field, ITEM_ID, entityToTitleComponent)}`
     )}</>`,
   });
 

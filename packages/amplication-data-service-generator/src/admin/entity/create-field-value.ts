@@ -1,11 +1,10 @@
 import { namedTypes } from "ast-types";
-import { memberExpression } from "../../util/ast";
 import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
 } from "../../types";
-import { jsxElement, jsxFragment } from "../util";
+import { jsxElement } from "../util";
 import { EntityComponent } from "../types";
 /**
  * Creates a node for displaying given entity field value
@@ -17,20 +16,24 @@ export function createFieldValue(
   dataId: namedTypes.Identifier,
   entityToTitleComponent: Record<string, EntityComponent>
 ): namedTypes.JSXElement | namedTypes.JSXFragment {
-  const value = memberExpression`${dataId}.${field.name}`;
   switch (field.dataType) {
     case EnumDataType.CreatedAt:
     case EnumDataType.UpdatedAt:
-      return jsxElement`<TimeSince time={${value}} />`;
+      return jsxElement`<DateField source="${field.name}" />`;
     case EnumDataType.Lookup:
       const { relatedEntity } = field.properties as LookupResolvedProperties;
-      const relatedEntityTitleComponent =
-        entityToTitleComponent[relatedEntity.name];
+      // const relatedEntityTitleComponent =
+      //   entityToTitleComponent[relatedEntity.name];
 
-      return jsxElement`<${relatedEntityTitleComponent.name} id={${value}?.id}  />`;
+      return jsxElement`<ReferenceField source="${relatedEntity.name.toLowerCase()}.id" reference="${
+        relatedEntity.name
+      }">
+            <TextField source="firstName" /> 
+        </ReferenceField>`;
+    //return jsxElement`<${relatedEntityTitleComponent.name} id={${value}?.id}  />`;
 
     case EnumDataType.Boolean:
-      return jsxFragment`<>{${value} && <CircleIcon icon="check" style={EnumCircleIconStyle.positive} />}</>`;
+      return jsxElement`<BooleanField source="${field.name}" />`;
     case EnumDataType.DateTime:
     case EnumDataType.DecimalNumber:
     case EnumDataType.Email:
@@ -46,6 +49,6 @@ export function createFieldValue(
     case EnumDataType.WholeNumber:
     case EnumDataType.Json:
     default:
-      return jsxFragment`<>{${value}}</>`;
+      return jsxElement`<TextField source="${field.name}" />`;
   }
 }
