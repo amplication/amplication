@@ -4320,7 +4320,9 @@ class Customer {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   firstName!: string | null;
 
   @ApiProperty({
@@ -4329,7 +4331,9 @@ class Customer {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   lastName!: string | null;
 
   @ApiProperty({
@@ -4338,7 +4342,9 @@ class Customer {
   })
   @IsBoolean()
   @IsOptional()
-  @Field(() => Boolean)
+  @Field(() => Boolean, {
+    nullable: true,
+  })
   isVip!: boolean | null;
 
   @ApiProperty({
@@ -4347,7 +4353,9 @@ class Customer {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => Date)
+  @Field(() => Date, {
+    nullable: true,
+  })
   birthData!: Date | null;
 
   @ApiProperty({
@@ -4356,7 +4364,9 @@ class Customer {
   })
   @IsNumber()
   @IsOptional()
-  @Field(() => Number)
+  @Field(() => Number, {
+    nullable: true,
+  })
   averageSale!: number | null;
 
   @ApiProperty({
@@ -4365,7 +4375,9 @@ class Customer {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number)
+  @Field(() => Number, {
+    nullable: true,
+  })
   favoriteNumber!: number | null;
 
   @ApiProperty({
@@ -4374,7 +4386,9 @@ class Customer {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   geoLocation!: string | null;
 
   @ApiProperty({
@@ -4383,7 +4397,9 @@ class Customer {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   comments!: string | null;
 
   @ApiProperty({

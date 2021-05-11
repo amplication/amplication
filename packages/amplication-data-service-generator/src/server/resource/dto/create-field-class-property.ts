@@ -289,7 +289,7 @@ function createGraphQLFieldDecorator(
   return builders.decorator(
     builders.callExpression(
       FIELD_ID,
-      optional || isQuery
+      optional || isQuery || !field.required
         ? [
             type,
             builders.objectExpression([
