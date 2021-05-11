@@ -6,7 +6,7 @@ import { Type } from "class-transformer";
   isAbstract: true,
   description: undefined,
 })
-export class BooleanFilter {
+export class BooleanNullableFilter {
   @ApiProperty({
     required: false,
     type: Boolean,
