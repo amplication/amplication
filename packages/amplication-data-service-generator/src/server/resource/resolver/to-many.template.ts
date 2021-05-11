@@ -3,7 +3,6 @@ import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as gqlUserRoles from "../auth/gqlUserRoles.decorator";
 
-declare interface WHERE_UNIQUE_INPUT {}
 declare interface RELATED_ENTITY_WHERE_INPUT {}
 
 declare interface ENTITY {
@@ -52,7 +51,7 @@ export class Mixin {
     if (!results) {
       return [];
     }
-    
+
     return results.map((result) => permission.filter(result));
   }
 }
