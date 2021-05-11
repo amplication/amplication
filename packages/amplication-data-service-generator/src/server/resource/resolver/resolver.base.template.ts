@@ -12,6 +12,8 @@ import * as gqlUserRoles from "../../auth/gqlUserRoles.decorator";
 import * as abacUtil from "../../auth/abac.util";
 // @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
+// @ts-ignore
+import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -30,6 +32,8 @@ declare interface DELETE_ARGS {
 }
 declare interface FIND_MANY_ARGS {
   where: WHERE_INPUT;
+  skip: number | undefined;
+  take: number | undefined;
 }
 declare interface FIND_ONE_ARGS {
   where: WHERE_UNIQUE_INPUT;
@@ -42,7 +46,8 @@ declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 
 declare interface SERVICE {
   create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
-  findMany(args: { where: WHERE_INPUT }): Promise<ENTITY[]>;
+  count(args: FIND_MANY_ARGS): Promise<number>;
+  findMany(args: FIND_MANY_ARGS): Promise<ENTITY[]>;
   findOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY | null>;
   update(args: {
     where: WHERE_UNIQUE_INPUT;
@@ -60,6 +65,25 @@ export class RESOLVER_BASE {
     protected readonly service: SERVICE,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
+
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: ENTITY_NAME,
+    action: "read",
+    possession: "any",
+  })
+  async META_QUERY(
+    @graphql.Args() args: FIND_MANY_ARGS
+  ): Promise<MetaQueryPayload> {
+    const results = await this.service.count({
+      ...args,
+      skip: undefined,
+      take: undefined,
+    });
+    return {
+      count: results,
+    };
+  }
 
   @graphql.Query(() => [ENTITY])
   @nestAccessControl.UseRoles({

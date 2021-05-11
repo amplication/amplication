@@ -5999,6 +5999,7 @@ import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
@@ -6017,6 +6018,25 @@ export class CustomerResolverBase {
     protected readonly service: CustomerService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
+
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async _customersMeta(
+    @graphql.Args() args: CustomerFindManyArgs
+  ): Promise<MetaQueryPayload> {
+    const results = await this.service.count({
+      ...args,
+      skip: undefined,
+      take: undefined,
+    });
+    return {
+      count: results,
+    };
+  }
 
   @graphql.Query(() => [Customer])
   @nestAccessControl.UseRoles({
@@ -6276,6 +6296,12 @@ import { Prisma, Customer, Order, Organization } from \\"@prisma/client\\";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
+
+  async count<T extends Prisma.CustomerFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
+  ): Promise<number> {
+    return this.prisma.customer.count(args);
+  }
 
   async findMany<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
@@ -6996,6 +7022,7 @@ import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyFindUniqueArgs } from \\"./EmptyFindUniqueArgs\\";
@@ -7009,6 +7036,25 @@ export class EmptyResolverBase {
     protected readonly service: EmptyService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
+
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: \\"Empty\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async _emptiesMeta(
+    @graphql.Args() args: EmptyFindManyArgs
+  ): Promise<MetaQueryPayload> {
+    const results = await this.service.count({
+      ...args,
+      skip: undefined,
+      take: undefined,
+    });
+    return {
+      count: results,
+    };
+  }
 
   @graphql.Query(() => [Empty])
   @nestAccessControl.UseRoles({
@@ -7081,6 +7127,12 @@ import { Prisma, Empty } from \\"@prisma/client\\";
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
+
+  async count<T extends Prisma.EmptyFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
+  ): Promise<number> {
+    return this.prisma.empty.count(args);
+  }
 
   async findMany<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
@@ -8112,6 +8164,7 @@ import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
@@ -8128,6 +8181,25 @@ export class OrderResolverBase {
     protected readonly service: OrderService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
+
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async _ordersMeta(
+    @graphql.Args() args: OrderFindManyArgs
+  ): Promise<MetaQueryPayload> {
+    const results = await this.service.count({
+      ...args,
+      skip: undefined,
+      take: undefined,
+    });
+    return {
+      count: results,
+    };
+  }
 
   @graphql.Query(() => [Order])
   @nestAccessControl.UseRoles({
@@ -8321,6 +8393,12 @@ import { Prisma, Order, Customer } from \\"@prisma/client\\";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
+
+  async count<T extends Prisma.OrderFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
+  ): Promise<number> {
+    return this.prisma.order.count(args);
+  }
 
   async findMany<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
@@ -9671,6 +9749,7 @@ import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
@@ -9690,6 +9769,25 @@ export class OrganizationResolverBase {
     protected readonly service: OrganizationService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
+
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async _organizationsMeta(
+    @graphql.Args() args: OrganizationFindManyArgs
+  ): Promise<MetaQueryPayload> {
+    const results = await this.service.count({
+      ...args,
+      skip: undefined,
+      take: undefined,
+    });
+    return {
+      count: results,
+    };
+  }
 
   @graphql.Query(() => [Organization])
   @nestAccessControl.UseRoles({
@@ -9925,6 +10023,12 @@ import { Prisma, Organization, User, Customer } from \\"@prisma/client\\";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
+
+  async count<T extends Prisma.OrganizationFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
+  ): Promise<number> {
+    return this.prisma.organization.count(args);
+  }
 
   async findMany<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
@@ -11908,6 +12012,7 @@ import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
@@ -11924,6 +12029,25 @@ export class UserResolverBase {
     protected readonly service: UserService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
+
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async _usersMeta(
+    @graphql.Args() args: UserFindManyArgs
+  ): Promise<MetaQueryPayload> {
+    const results = await this.service.count({
+      ...args,
+      skip: undefined,
+      take: undefined,
+    });
+    return {
+      count: results,
+    };
+  }
 
   @graphql.Query(() => [User])
   @nestAccessControl.UseRoles({
@@ -12186,6 +12310,12 @@ export class UserServiceBase {
     protected readonly prisma: PrismaService,
     protected readonly passwordService: PasswordService
   ) {}
+
+  async count<T extends Prisma.UserFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
+  ): Promise<number> {
+    return this.prisma.user.count(args);
+  }
 
   async findMany<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
@@ -13020,6 +13150,19 @@ export class JsonNullableFilter {
   })
   not?: JsonValue | null;
 }
+",
+  "server/src/util/MetaQueryPayload.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+
+@ObjectType()
+class MetaQueryPayload {
+  @ApiProperty({
+    required: true,
+  })
+  @Field(() => String)
+  count!: number;
+}
+export { MetaQueryPayload };
 ",
   "server/src/util/QueryMode.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
