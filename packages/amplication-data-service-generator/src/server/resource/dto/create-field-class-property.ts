@@ -254,7 +254,14 @@ export function createFieldClassProperty(
     (isInput && isOneToOneRelationField(field))
   ) {
     decorators.push(
-      createGraphQLFieldDecorator(prismaField, isEnum, field, entity, isQuery)
+      createGraphQLFieldDecorator(
+        prismaField,
+        isEnum,
+        field,
+        optionalProperty,
+        entity,
+        isQuery
+      )
     );
   }
   return classProperty(
@@ -271,6 +278,7 @@ function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
   isEnum: boolean,
   field: EntityField,
+  optional: boolean,
   entity: Entity,
   isQuery: boolean
 ): namedTypes.Decorator {
@@ -281,7 +289,7 @@ function createGraphQLFieldDecorator(
   return builders.decorator(
     builders.callExpression(
       FIELD_ID,
-      !field.required || isQuery
+      optional || isQuery
         ? [
             type,
             builders.objectExpression([

@@ -4320,9 +4320,7 @@ class Customer {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
+  @Field(() => String)
   firstName!: string | null;
 
   @ApiProperty({
@@ -4331,9 +4329,7 @@ class Customer {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
+  @Field(() => String)
   lastName!: string | null;
 
   @ApiProperty({
@@ -4342,9 +4338,7 @@ class Customer {
   })
   @IsBoolean()
   @IsOptional()
-  @Field(() => Boolean, {
-    nullable: true,
-  })
+  @Field(() => Boolean)
   isVip!: boolean | null;
 
   @ApiProperty({
@@ -4353,9 +4347,7 @@ class Customer {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => Date, {
-    nullable: true,
-  })
+  @Field(() => Date)
   birthData!: Date | null;
 
   @ApiProperty({
@@ -4364,9 +4356,7 @@ class Customer {
   })
   @IsNumber()
   @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
+  @Field(() => Number)
   averageSale!: number | null;
 
   @ApiProperty({
@@ -4375,9 +4365,7 @@ class Customer {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
+  @Field(() => Number)
   favoriteNumber!: number | null;
 
   @ApiProperty({
@@ -4386,9 +4374,7 @@ class Customer {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
+  @Field(() => String)
   geoLocation!: string | null;
 
   @ApiProperty({
@@ -4397,9 +4383,7 @@ class Customer {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
+  @Field(() => String)
   comments!: string | null;
 
   @ApiProperty({
@@ -4850,7 +4834,9 @@ class CustomerUpdateInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   email?: string;
 
   @ApiProperty({
@@ -7322,7 +7308,9 @@ class Order {
     enum: EnumOrderStatus,
   })
   @IsEnum(EnumOrderStatus)
-  @Field(() => EnumOrderStatus)
+  @Field(() => EnumOrderStatus, {
+    nullable: true,
+  })
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 
   @ApiProperty({
@@ -7513,7 +7501,9 @@ class OrderUpdateInput {
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
-  @Field(() => CustomerWhereUniqueInput)
+  @Field(() => CustomerWhereUniqueInput, {
+    nullable: true,
+  })
   customer?: CustomerWhereUniqueInput;
 
   @ApiProperty({
@@ -7522,7 +7512,9 @@ class OrderUpdateInput {
   })
   @IsEnum(EnumOrderStatus)
   @IsOptional()
-  @Field(() => EnumOrderStatus)
+  @Field(() => EnumOrderStatus, {
+    nullable: true,
+  })
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 
   @ApiProperty({
@@ -8604,7 +8596,9 @@ class OrganizationUpdateInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   name?: string;
 }
 export { OrganizationUpdateInput };
@@ -10341,7 +10335,9 @@ class User {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumUserInterests])
+  @Field(() => [EnumUserInterests], {
+    nullable: true,
+  })
   interests?: Array<\\"programming\\" | \\"design\\">;
 
   @ApiProperty({
@@ -10349,7 +10345,9 @@ class User {
     enum: EnumUserPriority,
   })
   @IsEnum(EnumUserPriority)
-  @Field(() => EnumUserPriority)
+  @Field(() => EnumUserPriority, {
+    nullable: true,
+  })
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
 
   @ApiProperty({
@@ -10508,7 +10506,9 @@ class UserCreateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumUserInterests])
+  @Field(() => [EnumUserInterests], {
+    nullable: true,
+  })
   interests?: Array<\\"programming\\" | \\"design\\">;
 
   @ApiProperty({
@@ -10793,7 +10793,9 @@ class UserUpdateInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   username?: string;
 
   @ApiProperty({
@@ -10802,7 +10804,9 @@ class UserUpdateInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   password?: string;
 
   @ApiProperty({
@@ -10813,7 +10817,9 @@ class UserUpdateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => [String])
+  @Field(() => [String], {
+    nullable: true,
+  })
   roles?: Array<string>;
 
   @ApiProperty({
@@ -10822,7 +10828,9 @@ class UserUpdateInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   name?: string;
 
   @ApiProperty({
@@ -10831,7 +10839,9 @@ class UserUpdateInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   bio?: string;
 
   @ApiProperty({
@@ -10840,7 +10850,9 @@ class UserUpdateInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   email?: string;
 
   @ApiProperty({
@@ -10849,7 +10861,9 @@ class UserUpdateInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number)
+  @Field(() => Number, {
+    nullable: true,
+  })
   age?: number;
 
   @ApiProperty({
@@ -10858,7 +10872,9 @@ class UserUpdateInput {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  @Field(() => Date)
+  @Field(() => Date, {
+    nullable: true,
+  })
   birthDate?: Date;
 
   @ApiProperty({
@@ -10867,7 +10883,9 @@ class UserUpdateInput {
   })
   @IsNumber()
   @IsOptional()
-  @Field(() => Number)
+  @Field(() => Number, {
+    nullable: true,
+  })
   score?: number;
 
   @ApiProperty({
@@ -10903,7 +10921,9 @@ class UserUpdateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumUserInterests])
+  @Field(() => [EnumUserInterests], {
+    nullable: true,
+  })
   interests?: Array<\\"programming\\" | \\"design\\">;
 
   @ApiProperty({
@@ -10912,7 +10932,9 @@ class UserUpdateInput {
   })
   @IsEnum(EnumUserPriority)
   @IsOptional()
-  @Field(() => EnumUserPriority)
+  @Field(() => EnumUserPriority, {
+    nullable: true,
+  })
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
 
   @ApiProperty({
@@ -10921,7 +10943,9 @@ class UserUpdateInput {
   })
   @IsBoolean()
   @IsOptional()
-  @Field(() => Boolean)
+  @Field(() => Boolean, {
+    nullable: true,
+  })
   isCurious?: boolean;
 
   @ApiProperty({
@@ -10930,7 +10954,9 @@ class UserUpdateInput {
   })
   @IsString()
   @IsOptional()
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true,
+  })
   location?: string;
 
   @ApiProperty({
@@ -10938,7 +10964,9 @@ class UserUpdateInput {
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
   extendedProperties?: JsonValue;
 }
 export { UserUpdateInput };
