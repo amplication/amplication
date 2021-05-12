@@ -3,13 +3,11 @@ import { print } from "recast";
 import { builders } from "ast-types";
 import { Module, AppInfo } from "../../types";
 import {
-  addImports,
-  importNames,
   interpolate,
   removeTSIgnoreComments,
   removeTSVariableDeclares,
 } from "../../util/ast";
-import { readFile, relativeImportPath } from "../../util/module";
+import { readFile } from "../../util/module";
 import { EntityComponents } from "../types";
 import { SRC_DIRECTORY } from "../constants";
 import { jsxElement, jsxFragment } from "../util";
@@ -26,7 +24,7 @@ export async function createAppModule(
   const entitiesRoutes = Object.entries(entitiesComponents).map(
     ([entityName, entityComponents]) => {
       const entityPath = entityToPath[entityName];
-      return jsxElement`<PrivateRoute path="${entityPath}" component={${entityComponents.index.name}} />`;
+      return jsxElement`<PrivateRoute path="${entityPath}"  />`;
     }
   );
   interpolate(file, {
@@ -35,15 +33,15 @@ export async function createAppModule(
   });
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);
-  const entityImports = Object.values(
-    entitiesComponents
-  ).map((entityComponents) =>
-    importNames(
-      [builders.identifier(entityComponents.index.name)],
-      relativeImportPath(PATH, entityComponents.index.modulePath)
-    )
-  );
-  addImports(file, [...entityImports]);
+  // const entityImports = Object.values(
+  //   entitiesComponents
+  // ).map((entityComponents) =>
+  //   importNames(
+  //     [builders.identifier(entityComponents.index.name)],
+  //     relativeImportPath(PATH, entityComponents.index.modulePath)
+  //   )
+  // );
+  //addImports(file, [...entityImports]);
   return {
     path: PATH,
     code: print(file).code,

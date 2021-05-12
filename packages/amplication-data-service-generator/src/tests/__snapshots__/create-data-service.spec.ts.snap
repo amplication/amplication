@@ -18,11 +18,6 @@ import BreadcrumbsContext from \\"./components/breadcrumbs/BreadcrumbsContext\\"
 import BreadcrumbsProvider from \\"./components/breadcrumbs/BreadcrumbsProvider\\";
 import useBreadcrumbs from \\"./components/breadcrumbs/use-breadcrumbs\\";
 import PrivateRoute from \\"./components/PrivateRoute\\";
-import { UserIndex } from \\"./user/UserIndex\\";
-import { OrderIndex } from \\"./order/OrderIndex\\";
-import { OrganizationIndex } from \\"./organization/OrganizationIndex\\";
-import { CustomerIndex } from \\"./customer/CustomerIndex\\";
-import { EmptyIndex } from \\"./empty/EmptyIndex\\";
 
 const App = (): React.ReactElement => {
   const history = useHistory();
@@ -91,11 +86,11 @@ const AppLayout = (): React.ReactElement => {
         <Page>
           <Switch>
             <PrivateRoute exact path=\\"/\\" component={Navigation} />
-            <PrivateRoute path=\\"/users\\" component={UserIndex} />
-            <PrivateRoute path=\\"/orders\\" component={OrderIndex} />
-            <PrivateRoute path=\\"/organizations\\" component={OrganizationIndex} />
-            <PrivateRoute path=\\"/customers\\" component={CustomerIndex} />
-            <PrivateRoute path=\\"/empties\\" component={EmptyIndex} />
+            <PrivateRoute path=\\"/users\\" />
+            <PrivateRoute path=\\"/orders\\" />
+            <PrivateRoute path=\\"/organizations\\" />
+            <PrivateRoute path=\\"/customers\\" />
+            <PrivateRoute path=\\"/empties\\" />
           </Switch>
         </Page>
       </MainLayout.Content>
@@ -865,166 +860,108 @@ export function removeCredentials(): void {
 }
 ",
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
-
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  TextField,
-  ToggleField,
-  SelectField,
-} from \\"@amplication/design-system\\";
-
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
+  Create,
+  SimpleForm,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  CreateProps,
+} from \\"react-admin\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
 
-const INITIAL_VALUES = {} as CustomerCreateInput;
-
-export const CreateCustomer = (): React.ReactElement => {
-  useBreadcrumbs(\\"/customers/new\\", \\"Create Customer\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TCustomer,
-    AxiosError,
-    CustomerCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/customers\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/customers\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: CustomerCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
+export const CreateCustomer = (props: CreateProps): React.ReactElement => {
   return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create Customer\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
-        >
-          <div>
-            <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
-          </div>
-          <div>
-            <TextField label=\\"First Name\\" name=\\"firstName\\" />
-          </div>
-          <div>
-            <TextField label=\\"Last Name\\" name=\\"lastName\\" />
-          </div>
-          <div>
-            <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
-          </div>
-          <div>
-            <TextField type=\\"date\\" label=\\"Birth Data\\" name=\\"birthData\\" />
-          </div>
-          <div>
-            <TextField
-              type=\\"number\\"
-              label=\\"Average Sale (-1500.00 - 1500.00)\\"
-              name=\\"averageSale\\"
-            />
-          </div>
-          <div>
-            <TextField
-              type=\\"number\\"
-              step={1}
-              label=\\"Favorite Number (1 - 20)\\"
-              name=\\"favoriteNumber\\"
-            />
-          </div>
-          <div>
-            <TextField label=\\"Geographic Location\\" name=\\"geoLocation\\" />
-          </div>
-          <div>
-            <TextField
-              label=\\"Comments (up to 500 characters)\\"
-              name=\\"comments\\"
-              textarea
-            />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Favorite Colors (multi-select)\\"
-              name=\\"favoriteColors\\"
-              options={[
-                { label: \\"Red\\", value: \\"red\\" },
-                { label: \\"Green\\", value: \\"green\\" },
-                { label: \\"Purple\\", value: \\"purple\\" },
-                { label: \\"yellow\\", value: \\"yellow\\" },
-              ]}
-              isMulti
-            />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Customer Type\\"
-              name=\\"customerType\\"
-              options={[
-                { label: \\"Platinum\\", value: \\"platinum\\" },
-                { label: \\"Gold\\", value: \\"gold\\" },
-                { label: \\"Bronze\\", value: \\"bronze\\" },
-                { label: \\"Regular\\", value: \\"regular\\" },
-              ]}
-            />
-          </div>
-          <div>
-            <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
-          </div>
-          <div>
-            <OrganizationSelect
-              label=\\"VIP Organization\\"
-              name=\\"vipOrganization.id\\"
-            />
-          </div>
-        </Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/customer/CustomerIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { CustomerList } from \\"./CustomerList\\";
-import { CreateCustomer } from \\"./CreateCustomer\\";
-import { ViewCustomer } from \\"./ViewCustomer\\";
-
-export const CustomerIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/customers/\\", \\"Customers\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/customers/\\"} component={CustomerList} />
-      <PrivateRoute path={\\"/customers/new\\"} component={CreateCustomer} />
-      <PrivateRoute path={\\"/customers/:id\\"} component={ViewCustomer} />
-    </Switch>
+    <Create {...props}>
+      <SimpleForm>
+        <div>
+          <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        </div>
+        <div>
+          <TextInput label=\\"First Name\\" source=\\"firstName\\" />
+        </div>
+        <div>
+          <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
+        </div>
+        <div>
+          <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
+        </div>
+        <div>
+          <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
+        </div>
+        <div>
+          <NumberInput
+            label=\\"Average Sale (-1500.00 - 1500.00)\\"
+            source=\\"averageSale\\"
+          />
+        </div>
+        <div>
+          <NumberInput
+            step={1}
+            label=\\"Favorite Number (1 - 20)\\"
+            source=\\"favoriteNumber\\"
+          />
+        </div>
+        <div>
+          <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+        </div>
+        <div>
+          <TextInput
+            label=\\"Comments (up to 500 characters)\\"
+            multiline
+            source=\\"comments\\"
+          />
+        </div>
+        <div>
+          <SelectArrayInput
+            label=\\"Favorite Colors (multi-select)\\"
+            source=\\"favoriteColors\\"
+            choices={[
+              { label: \\"Red\\", value: \\"red\\" },
+              { label: \\"Green\\", value: \\"green\\" },
+              { label: \\"Purple\\", value: \\"purple\\" },
+              { label: \\"yellow\\", value: \\"yellow\\" },
+            ]}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <SelectInput
+            source=\\"customerType\\"
+            label=\\"Customer Type\\"
+            choices={[
+              { label: \\"Platinum\\", value: \\"platinum\\" },
+              { label: \\"Gold\\", value: \\"gold\\" },
+              { label: \\"Bronze\\", value: \\"bronze\\" },
+              { label: \\"Regular\\", value: \\"regular\\" },
+            ]}
+            optionText=\\"label\\"
+            allowEmpty
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <ReferenceInput
+            source=\\"organization.id\\"
+            reference=\\"Organization\\"
+            label=\\"Organization\\"
+          >
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+        <div>
+          <ReferenceInput
+            source=\\"organization.id\\"
+            reference=\\"Organization\\"
+            label=\\"VIP Organization\\"
+          >
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+      </SimpleForm>
+    </Create>
   );
 };
 ",
@@ -1073,39 +1010,6 @@ export const CustomerList = (props: ListProps): React.ReactElement => {
   );
 };
 ",
-  "admin/src/customer/CustomerSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
-
-type Data = TCustomer[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const CustomerSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/customers\\",
-    async () => {
-      const response = await api.get(\\"/api/customers\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label:
-            item.firstName && item.firstName.length ? item.firstName : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
   "admin/src/customer/CustomerTitle.tsx": "import React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
@@ -1146,7 +1050,6 @@ import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
-
 import {
   Form,
   EnumFormStyle,
@@ -1154,14 +1057,9 @@ import {
   FormHeader,
   Snackbar,
   EnumButtonStyle,
-  TextField,
-  ToggleField,
-  SelectField,
 } from \\"@amplication/design-system\\";
-
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 
@@ -1269,78 +1167,89 @@ export const ViewCustomer = (): React.ReactElement => {
             }
           >
             <div>
-              <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
+              <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
             </div>
             <div>
-              <TextField label=\\"First Name\\" name=\\"firstName\\" />
+              <TextInput label=\\"First Name\\" source=\\"firstName\\" />
             </div>
             <div>
-              <TextField label=\\"Last Name\\" name=\\"lastName\\" />
+              <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
             </div>
             <div>
-              <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
+              <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
             </div>
             <div>
-              <TextField type=\\"date\\" label=\\"Birth Data\\" name=\\"birthData\\" />
+              <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
             </div>
             <div>
-              <TextField
-                type=\\"number\\"
+              <NumberInput
                 label=\\"Average Sale (-1500.00 - 1500.00)\\"
-                name=\\"averageSale\\"
+                source=\\"averageSale\\"
               />
             </div>
             <div>
-              <TextField
-                type=\\"number\\"
+              <NumberInput
                 step={1}
                 label=\\"Favorite Number (1 - 20)\\"
-                name=\\"favoriteNumber\\"
+                source=\\"favoriteNumber\\"
               />
             </div>
             <div>
-              <TextField label=\\"Geographic Location\\" name=\\"geoLocation\\" />
+              <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
             </div>
             <div>
-              <TextField
+              <TextInput
                 label=\\"Comments (up to 500 characters)\\"
-                name=\\"comments\\"
-                textarea
+                multiline
+                source=\\"comments\\"
               />
             </div>
             <div>
-              <SelectField
+              <SelectArrayInput
                 label=\\"Favorite Colors (multi-select)\\"
-                name=\\"favoriteColors\\"
-                options={[
+                source=\\"favoriteColors\\"
+                choices={[
                   { label: \\"Red\\", value: \\"red\\" },
                   { label: \\"Green\\", value: \\"green\\" },
                   { label: \\"Purple\\", value: \\"purple\\" },
                   { label: \\"yellow\\", value: \\"yellow\\" },
                 ]}
-                isMulti
+                optionText=\\"label\\"
+                optionValue=\\"value\\"
               />
             </div>
             <div>
-              <SelectField
+              <SelectInput
+                source=\\"customerType\\"
                 label=\\"Customer Type\\"
-                name=\\"customerType\\"
-                options={[
+                choices={[
                   { label: \\"Platinum\\", value: \\"platinum\\" },
                   { label: \\"Gold\\", value: \\"gold\\" },
                   { label: \\"Bronze\\", value: \\"bronze\\" },
                   { label: \\"Regular\\", value: \\"regular\\" },
                 ]}
+                optionText=\\"label\\"
+                allowEmpty
+                optionValue=\\"value\\"
               />
             </div>
             <div>
-              <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
+              <ReferenceInput
+                source=\\"organization.id\\"
+                reference=\\"Organization\\"
+                label=\\"Organization\\"
+              >
+                <SelectInput optionText=\\"product\\" />
+              </ReferenceInput>
             </div>
             <div>
-              <OrganizationSelect
+              <ReferenceInput
+                source=\\"organization.id\\"
+                reference=\\"Organization\\"
                 label=\\"VIP Organization\\"
-                name=\\"vipOrganization.id\\"
-              />
+              >
+                <SelectInput optionText=\\"product\\" />
+              </ReferenceInput>
             </div>
           </Form>
         </Formik>
@@ -1351,85 +1260,22 @@ export const ViewCustomer = (): React.ReactElement => {
 };
 ",
   "admin/src/empty/CreateEmpty.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+  Create,
+  SimpleForm,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  CreateProps,
+} from \\"react-admin\\";
 import { Empty as TEmpty } from \\"../api/empty/Empty\\";
 import { EmptyCreateInput } from \\"../api/empty/EmptyCreateInput\\";
 
-const INITIAL_VALUES = {} as EmptyCreateInput;
-
-export const CreateEmpty = (): React.ReactElement => {
-  useBreadcrumbs(\\"/empties/new\\", \\"Create Empty\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TEmpty,
-    AxiosError,
-    EmptyCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/empties\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/empties\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: EmptyCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
+export const CreateEmpty = (props: CreateProps): React.ReactElement => {
   return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create Empty\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
-        ></Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/empty/EmptyIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { EmptyList } from \\"./EmptyList\\";
-import { CreateEmpty } from \\"./CreateEmpty\\";
-import { ViewEmpty } from \\"./ViewEmpty\\";
-
-export const EmptyIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/empties/\\", \\"Empties\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/empties/\\"} component={EmptyList} />
-      <PrivateRoute path={\\"/empties/new\\"} component={CreateEmpty} />
-      <PrivateRoute path={\\"/empties/:id\\"} component={ViewEmpty} />
-    </Switch>
+    <Create {...props}>
+      <SimpleForm></SimpleForm>
+    </Create>
   );
 };
 ",
@@ -1458,38 +1304,6 @@ export const EmptyList = (props: ListProps): React.ReactElement => {
       </Datagrid>
     </List>
   );
-};
-",
-  "admin/src/empty/EmptySelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
-
-type Data = TEmpty[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const EmptySelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/empties\\",
-    async () => {
-      const response = await api.get(\\"/api/empties\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label: item.id && item.id.length ? item.id : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
 };
 ",
   "admin/src/empty/EmptyTitle.tsx": "import React from \\"react\\";
@@ -1655,109 +1469,55 @@ ReactDOM.render(
 reportWebVitals();
 ",
   "admin/src/order/CreateOrder.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  SelectField,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { CustomerSelect } from \\"../customer/CustomerSelect\\";
+  Create,
+  SimpleForm,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  CreateProps,
+} from \\"react-admin\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
 
-const INITIAL_VALUES = {} as OrderCreateInput;
-
-export const CreateOrder = (): React.ReactElement => {
-  useBreadcrumbs(\\"/orders/new\\", \\"Create Order\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TOrder,
-    AxiosError,
-    OrderCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/orders\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/orders\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: OrderCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
+export const CreateOrder = (props: CreateProps): React.ReactElement => {
   return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create Order\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
-        >
-          <div>
-            <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Status\\"
-              name=\\"status\\"
-              options={[
-                { label: \\"Pending\\", value: \\"pending\\" },
-                { label: \\"In Progress\\", value: \\"inProgress\\" },
-                { label: \\"Done\\", value: \\"done\\" },
-              ]}
-            />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Label\\"
-              name=\\"label\\"
-              options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
-            />
-          </div>
-        </Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/order/OrderIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrderList } from \\"./OrderList\\";
-import { CreateOrder } from \\"./CreateOrder\\";
-import { ViewOrder } from \\"./ViewOrder\\";
-
-export const OrderIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/orders/\\", \\"Orders\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/orders/\\"} component={OrderList} />
-      <PrivateRoute path={\\"/orders/new\\"} component={CreateOrder} />
-      <PrivateRoute path={\\"/orders/:id\\"} component={ViewOrder} />
-    </Switch>
+    <Create {...props}>
+      <SimpleForm>
+        <div>
+          <ReferenceInput
+            source=\\"customer.id\\"
+            reference=\\"Customer\\"
+            label=\\"Customer\\"
+          >
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+        <div>
+          <SelectInput
+            source=\\"status\\"
+            label=\\"Status\\"
+            choices={[
+              { label: \\"Pending\\", value: \\"pending\\" },
+              { label: \\"In Progress\\", value: \\"inProgress\\" },
+              { label: \\"Done\\", value: \\"done\\" },
+            ]}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <SelectInput
+            source=\\"label\\"
+            label=\\"Label\\"
+            choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+            optionText=\\"label\\"
+            allowEmpty
+            optionValue=\\"value\\"
+          />
+        </div>
+      </SimpleForm>
+    </Create>
   );
 };
 ",
@@ -1792,38 +1552,6 @@ export const OrderList = (props: ListProps): React.ReactElement => {
       </Datagrid>
     </List>
   );
-};
-",
-  "admin/src/order/OrderSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Order as TOrder } from \\"../api/order/Order\\";
-
-type Data = TOrder[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const OrderSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/orders\\",
-    async () => {
-      const response = await api.get(\\"/api/orders\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label: item.id && item.id.length ? item.id : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
 };
 ",
   "admin/src/order/OrderTitle.tsx": "import React from \\"react\\";
@@ -1866,7 +1594,6 @@ import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
-
 import {
   Form,
   EnumFormStyle,
@@ -1874,12 +1601,9 @@ import {
   FormHeader,
   Snackbar,
   EnumButtonStyle,
-  SelectField,
 } from \\"@amplication/design-system\\";
-
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 
@@ -1970,24 +1694,35 @@ export const ViewOrder = (): React.ReactElement => {
             }
           >
             <div>
-              <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
+              <ReferenceInput
+                source=\\"customer.id\\"
+                reference=\\"Customer\\"
+                label=\\"Customer\\"
+              >
+                <SelectInput optionText=\\"product\\" />
+              </ReferenceInput>
             </div>
             <div>
-              <SelectField
+              <SelectInput
+                source=\\"status\\"
                 label=\\"Status\\"
-                name=\\"status\\"
-                options={[
+                choices={[
                   { label: \\"Pending\\", value: \\"pending\\" },
                   { label: \\"In Progress\\", value: \\"inProgress\\" },
                   { label: \\"Done\\", value: \\"done\\" },
                 ]}
+                optionText=\\"label\\"
+                optionValue=\\"value\\"
               />
             </div>
             <div>
-              <SelectField
+              <SelectInput
+                source=\\"label\\"
                 label=\\"Label\\"
-                name=\\"label\\"
-                options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+                choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+                optionText=\\"label\\"
+                allowEmpty
+                optionValue=\\"value\\"
               />
             </div>
           </Form>
@@ -1999,97 +1734,26 @@ export const ViewOrder = (): React.ReactElement => {
 };
 ",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  TextField,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+  Create,
+  SimpleForm,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  CreateProps,
+} from \\"react-admin\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
 
-const INITIAL_VALUES = {} as OrganizationCreateInput;
-
-export const CreateOrganization = (): React.ReactElement => {
-  useBreadcrumbs(\\"/organizations/new\\", \\"Create Organization\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TOrganization,
-    AxiosError,
-    OrganizationCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/organizations\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/organizations\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: OrganizationCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
+export const CreateOrganization = (props: CreateProps): React.ReactElement => {
   return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create Organization\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
-        >
-          <div>
-            <TextField label=\\"Name\\" name=\\"name\\" />
-          </div>
-        </Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/organization/OrganizationIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrganizationList } from \\"./OrganizationList\\";
-import { CreateOrganization } from \\"./CreateOrganization\\";
-import { ViewOrganization } from \\"./ViewOrganization\\";
-
-export const OrganizationIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/organizations/\\", \\"Organizations\\");
-
-  return (
-    <Switch>
-      <PrivateRoute
-        exact
-        path={\\"/organizations/\\"}
-        component={OrganizationList}
-      />
-      <PrivateRoute
-        path={\\"/organizations/new\\"}
-        component={CreateOrganization}
-      />
-      <PrivateRoute path={\\"/organizations/:id\\"} component={ViewOrganization} />
-    </Switch>
+    <Create {...props}>
+      <SimpleForm>
+        <div>
+          <TextInput label=\\"Name\\" source=\\"name\\" />
+        </div>
+      </SimpleForm>
+    </Create>
   );
 };
 ",
@@ -2124,38 +1788,6 @@ export const OrganizationList = (props: ListProps): React.ReactElement => {
       </Datagrid>
     </List>
   );
-};
-",
-  "admin/src/organization/OrganizationSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
-
-type Data = TOrganization[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const OrganizationSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/organizations\\",
-    async () => {
-      const response = await api.get(\\"/api/organizations\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label: item.name && item.name.length ? item.name : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
 };
 ",
   "admin/src/organization/OrganizationTitle.tsx": "import React from \\"react\\";
@@ -2198,7 +1830,6 @@ import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
-
 import {
   Form,
   EnumFormStyle,
@@ -2206,9 +1837,7 @@ import {
   FormHeader,
   Snackbar,
   EnumButtonStyle,
-  TextField,
 } from \\"@amplication/design-system\\";
-
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
@@ -2300,7 +1929,7 @@ export const ViewOrganization = (): React.ReactElement => {
             }
           >
             <div>
-              <TextField label=\\"Name\\" name=\\"name\\" />
+              <TextInput label=\\"Name\\" source=\\"name\\" />
             </div>
           </Form>
         </Formik>
@@ -2333,140 +1962,101 @@ export default reportWebVitals;
 import \\"@testing-library/jest-dom\\";
 ",
   "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
-
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  TextField,
-  SelectField,
-  ToggleField,
-} from \\"@amplication/design-system\\";
-
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { UserSelect } from \\"./UserSelect\\";
-import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
+  Create,
+  SimpleForm,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  CreateProps,
+} from \\"react-admin\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 
-const INITIAL_VALUES = {} as UserCreateInput;
-
-export const CreateUser = (): React.ReactElement => {
-  useBreadcrumbs(\\"/users/new\\", \\"Create User\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TUser,
-    AxiosError,
-    UserCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/users\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/users\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: UserCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
+export const CreateUser = (props: CreateProps): React.ReactElement => {
   return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create User\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
-        >
-          <div>
-            <TextField label=\\"Username\\" name=\\"username\\" />
-          </div>
-          <div>
-            <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
-          </div>
-          <div>
-            <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
-          </div>
-          <div>
-            <TextField label=\\"Name\\" name=\\"name\\" />
-          </div>
-          <div>
-            <TextField label=\\"Bio\\" name=\\"bio\\" textarea />
-          </div>
-          <div>
-            <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
-          </div>
-          <div>
-            <TextField type=\\"number\\" step={1} label=\\"Age\\" name=\\"age\\" />
-          </div>
-          <div>
-            <TextField
-              type=\\"datetime-local\\"
-              label=\\"Birth Date\\"
-              name=\\"birthDate\\"
-            />
-          </div>
-          <div>
-            <TextField type=\\"number\\" label=\\"Score\\" name=\\"score\\" />
-          </div>
-          <div>
-            <UserSelect label=\\"Manager\\" name=\\"manager.id\\" />
-          </div>
-          <div>
-            <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Interests\\"
-              name=\\"interests\\"
-              options={[
-                { label: \\"Programming\\", value: \\"programming\\" },
-                { label: \\"Design\\", value: \\"design\\" },
-              ]}
-              isMulti
-            />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Priority\\"
-              name=\\"priority\\"
-              options={[
-                { label: \\"High\\", value: \\"high\\" },
-                { label: \\"Medium\\", value: \\"medium\\" },
-                { label: \\"Low\\", value: \\"low\\" },
-              ]}
-            />
-          </div>
-          <div>
-            <ToggleField label=\\"Is Curious\\" name=\\"isCurious\\" />
-          </div>
-          <div>
-            <TextField label=\\"Location\\" name=\\"location\\" />
-          </div>
-          <div />
-        </Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <Create {...props}>
+      <SimpleForm>
+        <div>
+          <TextInput label=\\"Username\\" source=\\"username\\" />
+        </div>
+        <div>
+          <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
+        </div>
+        <div>
+          <SelectArrayInput
+            source=\\"roles\\"
+            choices={ROLES_OPTIONS}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <TextInput label=\\"Name\\" source=\\"name\\" />
+        </div>
+        <div>
+          <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
+        </div>
+        <div>
+          <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        </div>
+        <div>
+          <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
+        </div>
+        <div>
+          <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
+        </div>
+        <div>
+          <NumberInput label=\\"Score\\" source=\\"score\\" />
+        </div>
+        <div>
+          <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+        <div>
+          <ReferenceInput
+            source=\\"organization.id\\"
+            reference=\\"Organization\\"
+            label=\\"Organization\\"
+          >
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+        <div>
+          <SelectArrayInput
+            label=\\"Interests\\"
+            source=\\"interests\\"
+            choices={[
+              { label: \\"Programming\\", value: \\"programming\\" },
+              { label: \\"Design\\", value: \\"design\\" },
+            ]}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <SelectInput
+            source=\\"priority\\"
+            label=\\"Priority\\"
+            choices={[
+              { label: \\"High\\", value: \\"high\\" },
+              { label: \\"Medium\\", value: \\"medium\\" },
+              { label: \\"Low\\", value: \\"low\\" },
+            ]}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
+        </div>
+        <div>
+          <TextInput label=\\"Location\\" source=\\"location\\" />
+        </div>
+        <div />
+      </SimpleForm>
+    </Create>
   );
 };
 ",
@@ -2495,26 +2085,6 @@ type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const RoleSelect = (props: Props) => {
   return <SelectField {...props} options={OPTIONS} />;
-};
-",
-  "admin/src/user/UserIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { UserList } from \\"./UserList\\";
-import { CreateUser } from \\"./CreateUser\\";
-import { ViewUser } from \\"./ViewUser\\";
-
-export const UserIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/users/\\", \\"Users\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/users/\\"} component={UserList} />
-      <PrivateRoute path={\\"/users/new\\"} component={CreateUser} />
-      <PrivateRoute path={\\"/users/:id\\"} component={ViewUser} />
-    </Switch>
-  );
 };
 ",
   "admin/src/user/UserList.tsx": "import * as React from \\"react\\";
@@ -2563,36 +2133,6 @@ export const UserList = (props: ListProps): React.ReactElement => {
   );
 };
 ",
-  "admin/src/user/UserSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { User as TUser } from \\"../api/user/User\\";
-
-type Data = TUser[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const UserSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(\\"select-/api/users\\", async () => {
-    const response = await api.get(\\"/api/users\\");
-    return response.data;
-  });
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label:
-            item.username && item.username.length ? item.username : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
   "admin/src/user/UserTitle.tsx": "import React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
@@ -2633,7 +2173,6 @@ import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
-
 import {
   Form,
   EnumFormStyle,
@@ -2641,18 +2180,11 @@ import {
   FormHeader,
   Snackbar,
   EnumButtonStyle,
-  TextField,
-  SelectField,
-  ToggleField,
 } from \\"@amplication/design-system\\";
-
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { UserSelect } from \\"./UserSelect\\";
-import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 
 export const ViewUser = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
@@ -2761,69 +2293,81 @@ export const ViewUser = (): React.ReactElement => {
             }
           >
             <div>
-              <TextField label=\\"Username\\" name=\\"username\\" />
+              <TextInput label=\\"Username\\" source=\\"username\\" />
             </div>
             <div>
-              <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
+              <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
             </div>
             <div>
-              <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
-            </div>
-            <div>
-              <TextField label=\\"Name\\" name=\\"name\\" />
-            </div>
-            <div>
-              <TextField label=\\"Bio\\" name=\\"bio\\" textarea />
-            </div>
-            <div>
-              <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
-            </div>
-            <div>
-              <TextField type=\\"number\\" step={1} label=\\"Age\\" name=\\"age\\" />
-            </div>
-            <div>
-              <TextField
-                type=\\"datetime-local\\"
-                label=\\"Birth Date\\"
-                name=\\"birthDate\\"
+              <SelectArrayInput
+                source=\\"roles\\"
+                choices={ROLES_OPTIONS}
+                optionText=\\"label\\"
+                optionValue=\\"value\\"
               />
             </div>
             <div>
-              <TextField type=\\"number\\" label=\\"Score\\" name=\\"score\\" />
+              <TextInput label=\\"Name\\" source=\\"name\\" />
             </div>
             <div>
-              <UserSelect label=\\"Manager\\" name=\\"manager.id\\" />
+              <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
             </div>
             <div>
-              <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
+              <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
             </div>
             <div>
-              <SelectField
+              <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
+            </div>
+            <div>
+              <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
+            </div>
+            <div>
+              <NumberInput label=\\"Score\\" source=\\"score\\" />
+            </div>
+            <div>
+              <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+                <SelectInput optionText=\\"product\\" />
+              </ReferenceInput>
+            </div>
+            <div>
+              <ReferenceInput
+                source=\\"organization.id\\"
+                reference=\\"Organization\\"
+                label=\\"Organization\\"
+              >
+                <SelectInput optionText=\\"product\\" />
+              </ReferenceInput>
+            </div>
+            <div>
+              <SelectArrayInput
                 label=\\"Interests\\"
-                name=\\"interests\\"
-                options={[
+                source=\\"interests\\"
+                choices={[
                   { label: \\"Programming\\", value: \\"programming\\" },
                   { label: \\"Design\\", value: \\"design\\" },
                 ]}
-                isMulti
+                optionText=\\"label\\"
+                optionValue=\\"value\\"
               />
             </div>
             <div>
-              <SelectField
+              <SelectInput
+                source=\\"priority\\"
                 label=\\"Priority\\"
-                name=\\"priority\\"
-                options={[
+                choices={[
                   { label: \\"High\\", value: \\"high\\" },
                   { label: \\"Medium\\", value: \\"medium\\" },
                   { label: \\"Low\\", value: \\"low\\" },
                 ]}
+                optionText=\\"label\\"
+                optionValue=\\"value\\"
               />
             </div>
             <div>
-              <ToggleField label=\\"Is Curious\\" name=\\"isCurious\\" />
+              <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
             </div>
             <div>
-              <TextField label=\\"Location\\" name=\\"location\\" />
+              <TextInput label=\\"Location\\" source=\\"location\\" />
             </div>
             <div />
           </Form>
