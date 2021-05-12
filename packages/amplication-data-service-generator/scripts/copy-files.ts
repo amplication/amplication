@@ -14,7 +14,7 @@ const DIST_DIRECTORY = path.join(__dirname, "..", "dist");
 /*** The directory of the server source code */
 const SERVER_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "server");
 /*** The directory of the admin source code */
-const ADMIN_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "admin");
+const ADMIN_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "admin-ui");
 const SRC_DIRECTORY_GLOB = normalize(SRC_DIRECTORY);
 const SERVER_SRC_DIRECTORY_GLOB = normalize(SERVER_SRC_DIRECTORY);
 const ADMIN_SRC_DIRECTORY_GLOB = normalize(ADMIN_SRC_DIRECTORY);
