@@ -33,7 +33,7 @@ export async function createNewEntityComponent(
   dtoNameToPath: Record<string, string>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
-  const name = `Create${entity.name}`;
+  const name = `${entity.name}Create`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   const entityDTO = dtos[entity.name].entity;
   const dto = dtos[entity.name].createInput;

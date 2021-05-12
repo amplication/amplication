@@ -859,7 +859,7 @@ export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
 ",
-  "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
+  "admin/src/customer/CustomerCreate.tsx": "import * as React from \\"react\\";
 import {
   Create,
   SimpleForm,
@@ -871,7 +871,7 @@ import {
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
 
-export const CreateCustomer = (props: CreateProps): React.ReactElement => {
+export const CustomerCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
@@ -965,6 +965,116 @@ export const CreateCustomer = (props: CreateProps): React.ReactElement => {
   );
 };
 ",
+  "admin/src/customer/CustomerEdit.tsx": "import * as React from \\"react\\";
+
+import {
+  Edit,
+  SimpleForm,
+  TextInput,
+  DateInput,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  EditProps,
+} from \\"react-admin\\";
+
+import { Customer as TCustomer } from \\"../api/customer/Customer\\";
+import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
+
+export const CustomerEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <div>
+          <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        </div>
+        <div>
+          <TextInput label=\\"First Name\\" source=\\"firstName\\" />
+        </div>
+        <div>
+          <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
+        </div>
+        <div>
+          <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
+        </div>
+        <div>
+          <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
+        </div>
+        <div>
+          <NumberInput
+            label=\\"Average Sale (-1500.00 - 1500.00)\\"
+            source=\\"averageSale\\"
+          />
+        </div>
+        <div>
+          <NumberInput
+            step={1}
+            label=\\"Favorite Number (1 - 20)\\"
+            source=\\"favoriteNumber\\"
+          />
+        </div>
+        <div>
+          <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+        </div>
+        <div>
+          <TextInput
+            label=\\"Comments (up to 500 characters)\\"
+            multiline
+            source=\\"comments\\"
+          />
+        </div>
+        <div>
+          <SelectArrayInput
+            label=\\"Favorite Colors (multi-select)\\"
+            source=\\"favoriteColors\\"
+            choices={[
+              { label: \\"Red\\", value: \\"red\\" },
+              { label: \\"Green\\", value: \\"green\\" },
+              { label: \\"Purple\\", value: \\"purple\\" },
+              { label: \\"yellow\\", value: \\"yellow\\" },
+            ]}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <SelectInput
+            source=\\"customerType\\"
+            label=\\"Customer Type\\"
+            choices={[
+              { label: \\"Platinum\\", value: \\"platinum\\" },
+              { label: \\"Gold\\", value: \\"gold\\" },
+              { label: \\"Bronze\\", value: \\"bronze\\" },
+              { label: \\"Regular\\", value: \\"regular\\" },
+            ]}
+            optionText=\\"label\\"
+            allowEmpty
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <ReferenceInput
+            source=\\"organization.id\\"
+            reference=\\"Organization\\"
+            label=\\"Organization\\"
+          >
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+        <div>
+          <ReferenceInput
+            source=\\"organization.id\\"
+            reference=\\"Organization\\"
+            label=\\"VIP Organization\\"
+          >
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
   "admin/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
 
 import {
@@ -1044,222 +1154,7 @@ export const CustomerTitle = ({ id }: Props) => {
   );
 };
 ",
-  "admin/src/customer/ViewCustomer.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
-import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
-import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
-
-export const ViewCustomer = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TCustomer,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/customers\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/customers\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TCustomer, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/customers\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//customers\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TCustomer, AxiosError, CustomerUpdateInput>(async (data) => {
-    const response = await api.patch(\`\${\\"/api/customers\\"}/\${id}\`, data);
-    return response.data;
-  });
-
-  const handleSubmit = React.useCallback(
-    (values: CustomerUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.firstName);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(
-    () =>
-      pick(data, [
-        \\"email\\",
-        \\"firstName\\",
-        \\"lastName\\",
-        \\"isVip\\",
-        \\"birthData\\",
-        \\"averageSale\\",
-        \\"favoriteNumber\\",
-        \\"geoLocation\\",
-        \\"comments\\",
-        \\"favoriteColors\\",
-        \\"customerType\\",
-        \\"organization\\",
-        \\"vipOrganization\\",
-      ]),
-    [data]
-  );
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"Customer\\"} \${
-                  data?.firstName && data?.firstName.length
-                    ? data.firstName
-                    : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          >
-            <div>
-              <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
-            </div>
-            <div>
-              <TextInput label=\\"First Name\\" source=\\"firstName\\" />
-            </div>
-            <div>
-              <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
-            </div>
-            <div>
-              <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
-            </div>
-            <div>
-              <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
-            </div>
-            <div>
-              <NumberInput
-                label=\\"Average Sale (-1500.00 - 1500.00)\\"
-                source=\\"averageSale\\"
-              />
-            </div>
-            <div>
-              <NumberInput
-                step={1}
-                label=\\"Favorite Number (1 - 20)\\"
-                source=\\"favoriteNumber\\"
-              />
-            </div>
-            <div>
-              <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
-            </div>
-            <div>
-              <TextInput
-                label=\\"Comments (up to 500 characters)\\"
-                multiline
-                source=\\"comments\\"
-              />
-            </div>
-            <div>
-              <SelectArrayInput
-                label=\\"Favorite Colors (multi-select)\\"
-                source=\\"favoriteColors\\"
-                choices={[
-                  { label: \\"Red\\", value: \\"red\\" },
-                  { label: \\"Green\\", value: \\"green\\" },
-                  { label: \\"Purple\\", value: \\"purple\\" },
-                  { label: \\"yellow\\", value: \\"yellow\\" },
-                ]}
-                optionText=\\"label\\"
-                optionValue=\\"value\\"
-              />
-            </div>
-            <div>
-              <SelectInput
-                source=\\"customerType\\"
-                label=\\"Customer Type\\"
-                choices={[
-                  { label: \\"Platinum\\", value: \\"platinum\\" },
-                  { label: \\"Gold\\", value: \\"gold\\" },
-                  { label: \\"Bronze\\", value: \\"bronze\\" },
-                  { label: \\"Regular\\", value: \\"regular\\" },
-                ]}
-                optionText=\\"label\\"
-                allowEmpty
-                optionValue=\\"value\\"
-              />
-            </div>
-            <div>
-              <ReferenceInput
-                source=\\"organization.id\\"
-                reference=\\"Organization\\"
-                label=\\"Organization\\"
-              >
-                <SelectInput optionText=\\"product\\" />
-              </ReferenceInput>
-            </div>
-            <div>
-              <ReferenceInput
-                source=\\"organization.id\\"
-                reference=\\"Organization\\"
-                label=\\"VIP Organization\\"
-              >
-                <SelectInput optionText=\\"product\\" />
-              </ReferenceInput>
-            </div>
-          </Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
-  );
-};
-",
-  "admin/src/empty/CreateEmpty.tsx": "import * as React from \\"react\\";
+  "admin/src/empty/EmptyCreate.tsx": "import * as React from \\"react\\";
 import {
   Create,
   SimpleForm,
@@ -1271,11 +1166,35 @@ import {
 import { Empty as TEmpty } from \\"../api/empty/Empty\\";
 import { EmptyCreateInput } from \\"../api/empty/EmptyCreateInput\\";
 
-export const CreateEmpty = (props: CreateProps): React.ReactElement => {
+export const EmptyCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm></SimpleForm>
     </Create>
+  );
+};
+",
+  "admin/src/empty/EmptyEdit.tsx": "import * as React from \\"react\\";
+
+import {
+  Edit,
+  SimpleForm,
+  TextInput,
+  DateInput,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  EditProps,
+} from \\"react-admin\\";
+
+import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+import { EmptyUpdateInput } from \\"../api/empty/EmptyUpdateInput\\";
+
+export const EmptyEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm></SimpleForm>
+    </Edit>
   );
 };
 ",
@@ -1340,115 +1259,6 @@ export const EmptyTitle = ({ id }: Props) => {
   );
 };
 ",
-  "admin/src/empty/ViewEmpty.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
-import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
-import { EmptyUpdateInput } from \\"../api/empty/EmptyUpdateInput\\";
-
-export const ViewEmpty = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/empties/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TEmpty,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/empties\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/empties\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TEmpty, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/empties\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//empties\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TEmpty, AxiosError, EmptyUpdateInput>(async (data) => {
-    const response = await api.patch(\`\${\\"/api/empties\\"}/\${id}\`, data);
-    return response.data;
-  });
-
-  const handleSubmit = React.useCallback(
-    (values: EmptyUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.id);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(() => pick(data, []), [data]);
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"Empty\\"} \${
-                  data?.id && data?.id.length ? data.id : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          ></Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
-  );
-};
-",
   "admin/src/index.tsx": "import React from \\"react\\";
 import ReactDOM from \\"react-dom\\";
 import \\"./index.css\\";
@@ -1468,7 +1278,7 @@ ReactDOM.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 ",
-  "admin/src/order/CreateOrder.tsx": "import * as React from \\"react\\";
+  "admin/src/order/OrderCreate.tsx": "import * as React from \\"react\\";
 import {
   Create,
   SimpleForm,
@@ -1480,7 +1290,7 @@ import {
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
 
-export const CreateOrder = (props: CreateProps): React.ReactElement => {
+export const OrderCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
@@ -1518,6 +1328,63 @@ export const CreateOrder = (props: CreateProps): React.ReactElement => {
         </div>
       </SimpleForm>
     </Create>
+  );
+};
+",
+  "admin/src/order/OrderEdit.tsx": "import * as React from \\"react\\";
+
+import {
+  Edit,
+  SimpleForm,
+  TextInput,
+  DateInput,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  EditProps,
+} from \\"react-admin\\";
+
+import { Order as TOrder } from \\"../api/order/Order\\";
+import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
+
+export const OrderEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <div>
+          <ReferenceInput
+            source=\\"customer.id\\"
+            reference=\\"Customer\\"
+            label=\\"Customer\\"
+          >
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+        <div>
+          <SelectInput
+            source=\\"status\\"
+            label=\\"Status\\"
+            choices={[
+              { label: \\"Pending\\", value: \\"pending\\" },
+              { label: \\"In Progress\\", value: \\"inProgress\\" },
+              { label: \\"Done\\", value: \\"done\\" },
+            ]}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <SelectInput
+            source=\\"label\\"
+            label=\\"Label\\"
+            choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+            optionText=\\"label\\"
+            allowEmpty
+            optionValue=\\"value\\"
+          />
+        </div>
+      </SimpleForm>
+    </Edit>
   );
 };
 ",
@@ -1588,152 +1455,7 @@ export const OrderTitle = ({ id }: Props) => {
   );
 };
 ",
-  "admin/src/order/ViewOrder.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
-import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Order as TOrder } from \\"../api/order/Order\\";
-import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
-
-export const ViewOrder = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TOrder,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/orders\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/orders\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TOrder, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/orders\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//orders\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TOrder, AxiosError, OrderUpdateInput>(async (data) => {
-    const response = await api.patch(\`\${\\"/api/orders\\"}/\${id}\`, data);
-    return response.data;
-  });
-
-  const handleSubmit = React.useCallback(
-    (values: OrderUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.id);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(
-    () => pick(data, [\\"customer\\", \\"status\\", \\"label\\"]),
-    [data]
-  );
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"Order\\"} \${
-                  data?.id && data?.id.length ? data.id : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          >
-            <div>
-              <ReferenceInput
-                source=\\"customer.id\\"
-                reference=\\"Customer\\"
-                label=\\"Customer\\"
-              >
-                <SelectInput optionText=\\"product\\" />
-              </ReferenceInput>
-            </div>
-            <div>
-              <SelectInput
-                source=\\"status\\"
-                label=\\"Status\\"
-                choices={[
-                  { label: \\"Pending\\", value: \\"pending\\" },
-                  { label: \\"In Progress\\", value: \\"inProgress\\" },
-                  { label: \\"Done\\", value: \\"done\\" },
-                ]}
-                optionText=\\"label\\"
-                optionValue=\\"value\\"
-              />
-            </div>
-            <div>
-              <SelectInput
-                source=\\"label\\"
-                label=\\"Label\\"
-                choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
-                optionText=\\"label\\"
-                allowEmpty
-                optionValue=\\"value\\"
-              />
-            </div>
-          </Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
-  );
-};
-",
-  "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
+  "admin/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
 import {
   Create,
   SimpleForm,
@@ -1745,7 +1467,7 @@ import {
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
 
-export const CreateOrganization = (props: CreateProps): React.ReactElement => {
+export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
@@ -1754,6 +1476,34 @@ export const CreateOrganization = (props: CreateProps): React.ReactElement => {
         </div>
       </SimpleForm>
     </Create>
+  );
+};
+",
+  "admin/src/organization/OrganizationEdit.tsx": "import * as React from \\"react\\";
+
+import {
+  Edit,
+  SimpleForm,
+  TextInput,
+  DateInput,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  EditProps,
+} from \\"react-admin\\";
+
+import { Organization as TOrganization } from \\"../api/organization/Organization\\";
+import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
+
+export const OrganizationEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <div>
+          <TextInput label=\\"Name\\" source=\\"name\\" />
+        </div>
+      </SimpleForm>
+    </Edit>
   );
 };
 ",
@@ -1824,121 +1574,6 @@ export const OrganizationTitle = ({ id }: Props) => {
   );
 };
 ",
-  "admin/src/organization/ViewOrganization.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
-import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
-import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
-
-export const ViewOrganization = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TOrganization,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/organizations\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/organizations\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TOrganization, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/organizations\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//organizations\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TOrganization, AxiosError, OrganizationUpdateInput>(
-    async (data) => {
-      const response = await api.patch(\`\${\\"/api/organizations\\"}/\${id}\`, data);
-      return response.data;
-    }
-  );
-
-  const handleSubmit = React.useCallback(
-    (values: OrganizationUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.name);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(() => pick(data, [\\"name\\"]), [data]);
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"Organization\\"} \${
-                  data?.name && data?.name.length ? data.name : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          >
-            <div>
-              <TextInput label=\\"Name\\" source=\\"name\\" />
-            </div>
-          </Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
-  );
-};
-",
   "admin/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 
 const reportWebVitals = (onPerfEntry?: ReportHandler) => {
@@ -1961,7 +1596,34 @@ export default reportWebVitals;
 // learn more: https://github.com/testing-library/jest-dom
 import \\"@testing-library/jest-dom\\";
 ",
-  "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
+  "admin/src/user/EnumRoles.ts": "export enum EnumRoles {
+  User = \\"user\\",
+  Admin = \\"admin\\",
+  AreaManager = \\"areaManager\\",
+}
+",
+  "admin/src/user/RoleSelect.tsx": "import React from \\"react\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+//@ts-ignore
+import { ROLES } from \\"./roles\\";
+
+declare interface Role {
+  name: string;
+  displayName: string;
+}
+
+const OPTIONS = ROLES.map((role: Role) => ({
+  value: role.name,
+  label: role.displayName,
+}));
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const RoleSelect = (props: Props) => {
+  return <SelectField {...props} options={OPTIONS} />;
+};
+",
+  "admin/src/user/UserCreate.tsx": "import * as React from \\"react\\";
 import {
   Create,
   SimpleForm,
@@ -1973,7 +1635,7 @@ import {
 import { User as TUser } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
 
-export const CreateUser = (props: CreateProps): React.ReactElement => {
+export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
@@ -2060,31 +1722,107 @@ export const CreateUser = (props: CreateProps): React.ReactElement => {
   );
 };
 ",
-  "admin/src/user/EnumRoles.ts": "export enum EnumRoles {
-  User = \\"user\\",
-  Admin = \\"admin\\",
-  AreaManager = \\"areaManager\\",
-}
-",
-  "admin/src/user/RoleSelect.tsx": "import React from \\"react\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-//@ts-ignore
-import { ROLES } from \\"./roles\\";
+  "admin/src/user/UserEdit.tsx": "import * as React from \\"react\\";
 
-declare interface Role {
-  name: string;
-  displayName: string;
-}
+import {
+  Edit,
+  SimpleForm,
+  TextInput,
+  DateInput,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+  EditProps,
+} from \\"react-admin\\";
 
-const OPTIONS = ROLES.map((role: Role) => ({
-  value: role.name,
-  label: role.displayName,
-}));
+import { User as TUser } from \\"../api/user/User\\";
+import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const RoleSelect = (props: Props) => {
-  return <SelectField {...props} options={OPTIONS} />;
+export const UserEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <div>
+          <TextInput label=\\"Username\\" source=\\"username\\" />
+        </div>
+        <div>
+          <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
+        </div>
+        <div>
+          <SelectArrayInput
+            source=\\"roles\\"
+            choices={ROLES_OPTIONS}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <TextInput label=\\"Name\\" source=\\"name\\" />
+        </div>
+        <div>
+          <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
+        </div>
+        <div>
+          <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        </div>
+        <div>
+          <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
+        </div>
+        <div>
+          <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
+        </div>
+        <div>
+          <NumberInput label=\\"Score\\" source=\\"score\\" />
+        </div>
+        <div>
+          <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+        <div>
+          <ReferenceInput
+            source=\\"organization.id\\"
+            reference=\\"Organization\\"
+            label=\\"Organization\\"
+          >
+            <SelectInput optionText=\\"product\\" />
+          </ReferenceInput>
+        </div>
+        <div>
+          <SelectArrayInput
+            label=\\"Interests\\"
+            source=\\"interests\\"
+            choices={[
+              { label: \\"Programming\\", value: \\"programming\\" },
+              { label: \\"Design\\", value: \\"design\\" },
+            ]}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <SelectInput
+            source=\\"priority\\"
+            label=\\"Priority\\"
+            choices={[
+              { label: \\"High\\", value: \\"high\\" },
+              { label: \\"Medium\\", value: \\"medium\\" },
+              { label: \\"Low\\", value: \\"low\\" },
+            ]}
+            optionText=\\"label\\"
+            optionValue=\\"value\\"
+          />
+        </div>
+        <div>
+          <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
+        </div>
+        <div>
+          <TextInput label=\\"Location\\" source=\\"location\\" />
+        </div>
+        <div />
+      </SimpleForm>
+    </Edit>
+  );
 };
 ",
   "admin/src/user/UserList.tsx": "import * as React from \\"react\\";
@@ -2164,217 +1902,6 @@ export const UserTitle = ({ id }: Props) => {
     <Link to={\`\${\\"/api/users\\"}/\${id}\`} className=\\"entity-id\\">
       {data?.username && data?.username.length ? data.username : data?.id}
     </Link>
-  );
-};
-",
-  "admin/src/user/ViewUser.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
-import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { User as TUser } from \\"../api/user/User\\";
-import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
-
-export const ViewUser = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TUser,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/users\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/users\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TUser, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/users\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//users\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TUser, AxiosError, UserUpdateInput>(async (data) => {
-    const response = await api.patch(\`\${\\"/api/users\\"}/\${id}\`, data);
-    return response.data;
-  });
-
-  const handleSubmit = React.useCallback(
-    (values: UserUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.username);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(
-    () =>
-      pick(data, [
-        \\"username\\",
-        \\"password\\",
-        \\"roles\\",
-        \\"name\\",
-        \\"bio\\",
-        \\"email\\",
-        \\"age\\",
-        \\"birthDate\\",
-        \\"score\\",
-        \\"manager\\",
-        \\"organization\\",
-        \\"interests\\",
-        \\"priority\\",
-        \\"isCurious\\",
-        \\"location\\",
-        \\"extendedProperties\\",
-      ]),
-    [data]
-  );
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"User\\"} \${
-                  data?.username && data?.username.length
-                    ? data.username
-                    : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          >
-            <div>
-              <TextInput label=\\"Username\\" source=\\"username\\" />
-            </div>
-            <div>
-              <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
-            </div>
-            <div>
-              <SelectArrayInput
-                source=\\"roles\\"
-                choices={ROLES_OPTIONS}
-                optionText=\\"label\\"
-                optionValue=\\"value\\"
-              />
-            </div>
-            <div>
-              <TextInput label=\\"Name\\" source=\\"name\\" />
-            </div>
-            <div>
-              <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
-            </div>
-            <div>
-              <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
-            </div>
-            <div>
-              <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
-            </div>
-            <div>
-              <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
-            </div>
-            <div>
-              <NumberInput label=\\"Score\\" source=\\"score\\" />
-            </div>
-            <div>
-              <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
-                <SelectInput optionText=\\"product\\" />
-              </ReferenceInput>
-            </div>
-            <div>
-              <ReferenceInput
-                source=\\"organization.id\\"
-                reference=\\"Organization\\"
-                label=\\"Organization\\"
-              >
-                <SelectInput optionText=\\"product\\" />
-              </ReferenceInput>
-            </div>
-            <div>
-              <SelectArrayInput
-                label=\\"Interests\\"
-                source=\\"interests\\"
-                choices={[
-                  { label: \\"Programming\\", value: \\"programming\\" },
-                  { label: \\"Design\\", value: \\"design\\" },
-                ]}
-                optionText=\\"label\\"
-                optionValue=\\"value\\"
-              />
-            </div>
-            <div>
-              <SelectInput
-                source=\\"priority\\"
-                label=\\"Priority\\"
-                choices={[
-                  { label: \\"High\\", value: \\"high\\" },
-                  { label: \\"Medium\\", value: \\"medium\\" },
-                  { label: \\"Low\\", value: \\"low\\" },
-                ]}
-                optionText=\\"label\\"
-                optionValue=\\"value\\"
-              />
-            </div>
-            <div>
-              <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
-            </div>
-            <div>
-              <TextInput label=\\"Location\\" source=\\"location\\" />
-            </div>
-            <div />
-          </Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
   );
 };
 ",

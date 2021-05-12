@@ -1,8 +1,6 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import {
-  Entity,
-} from "../../../types";
+import { Entity } from "../../../types";
 import {
   addImports,
   getNamedProperties,
@@ -15,7 +13,6 @@ import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";
-import { getEntityTitleField } from "../entity-title-component/create-entity-title-component";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
 const IMPORTABLE_IDS = {
@@ -35,10 +32,8 @@ export async function createEntityComponent(
   entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>
 ): Promise<EntityComponent> {
-  const name = `View${entity.name}`;
+  const name = `${entity.name}Edit`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const resource = entityToResource[entity.name];
-  const path = entityToPath[entity.name];
   const entityDTO = dtos[entity.name].entity;
   const dto = dtos[entity.name].updateInput;
   const dtoProperties = getNamedProperties(dto);
@@ -48,22 +43,13 @@ export async function createEntityComponent(
   const fields = dtoProperties.map(
     (property) => fieldsByName[property.key.name]
   );
-  
+
   const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
   const file = await readFile(template);
 
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
-    ENTITY_NAME: builders.stringLiteral(entity.displayName),
-    RESOURCE: builders.stringLiteral(resource),
-    PATH: builders.stringLiteral(path),
-    ENTITY: localEntityDTOId,
-    UPDATE_INPUT: dto.id,
-    ENTITY_TITLE_FIELD: builders.identifier(getEntityTitleField(entity)),
     INPUTS: jsxFragment`<>${fields.map((field) => createFieldInput(field))}</>`,
-    EDITABLE_PROPERTIES: builders.arrayExpression(
-      dtoProperties.map((property) => builders.stringLiteral(property.key.name))
-    ),
   });
 
   addImports(file, [
