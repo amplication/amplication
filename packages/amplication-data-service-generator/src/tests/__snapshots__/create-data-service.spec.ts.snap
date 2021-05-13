@@ -785,91 +785,65 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
-        <div>
-          <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
-        </div>
-        <div>
-          <TextInput label=\\"First Name\\" source=\\"firstName\\" />
-        </div>
-        <div>
-          <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
-        </div>
-        <div>
-          <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
-        </div>
-        <div>
-          <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
-        </div>
-        <div>
-          <NumberInput
-            label=\\"Average Sale (-1500.00 - 1500.00)\\"
-            source=\\"averageSale\\"
-          />
-        </div>
-        <div>
-          <NumberInput
-            step={1}
-            label=\\"Favorite Number (1 - 20)\\"
-            source=\\"favoriteNumber\\"
-          />
-        </div>
-        <div>
-          <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
-        </div>
-        <div>
-          <TextInput
-            label=\\"Comments (up to 500 characters)\\"
-            multiline
-            source=\\"comments\\"
-          />
-        </div>
-        <div>
-          <SelectArrayInput
-            label=\\"Favorite Colors (multi-select)\\"
-            source=\\"favoriteColors\\"
-            choices={[
-              { label: \\"Red\\", value: \\"red\\" },
-              { label: \\"Green\\", value: \\"green\\" },
-              { label: \\"Purple\\", value: \\"purple\\" },
-              { label: \\"yellow\\", value: \\"yellow\\" },
-            ]}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <SelectInput
-            source=\\"customerType\\"
-            label=\\"Customer Type\\"
-            choices={[
-              { label: \\"Platinum\\", value: \\"platinum\\" },
-              { label: \\"Gold\\", value: \\"gold\\" },
-              { label: \\"Bronze\\", value: \\"bronze\\" },
-              { label: \\"Regular\\", value: \\"regular\\" },
-            ]}
-            optionText=\\"label\\"
-            allowEmpty
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <ReferenceInput
-            source=\\"organization.id\\"
-            reference=\\"Organization\\"
-            label=\\"Organization\\"
-          >
-            <SelectInput optionText={OrganizationTitle} />
-          </ReferenceInput>
-        </div>
-        <div>
-          <ReferenceInput
-            source=\\"organization.id\\"
-            reference=\\"Organization\\"
-            label=\\"VIP Organization\\"
-          >
-            <SelectInput optionText={OrganizationTitle} />
-          </ReferenceInput>
-        </div>
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <TextInput label=\\"First Name\\" source=\\"firstName\\" />
+        <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
+        <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
+        <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
+        <NumberInput
+          label=\\"Average Sale (-1500.00 - 1500.00)\\"
+          source=\\"averageSale\\"
+        />
+        <NumberInput
+          step={1}
+          label=\\"Favorite Number (1 - 20)\\"
+          source=\\"favoriteNumber\\"
+        />
+        <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+        <TextInput
+          label=\\"Comments (up to 500 characters)\\"
+          multiline
+          source=\\"comments\\"
+        />
+        <SelectArrayInput
+          label=\\"Favorite Colors (multi-select)\\"
+          source=\\"favoriteColors\\"
+          choices={[
+            { label: \\"Red\\", value: \\"red\\" },
+            { label: \\"Green\\", value: \\"green\\" },
+            { label: \\"Purple\\", value: \\"purple\\" },
+            { label: \\"yellow\\", value: \\"yellow\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"customerType\\"
+          label=\\"Customer Type\\"
+          choices={[
+            { label: \\"Platinum\\", value: \\"platinum\\" },
+            { label: \\"Gold\\", value: \\"gold\\" },
+            { label: \\"Bronze\\", value: \\"bronze\\" },
+            { label: \\"Regular\\", value: \\"regular\\" },
+          ]}
+          optionText=\\"label\\"
+          allowEmpty
+          optionValue=\\"value\\"
+        />
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"VIP Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Create>
   );
@@ -895,91 +869,65 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
-        <div>
-          <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
-        </div>
-        <div>
-          <TextInput label=\\"First Name\\" source=\\"firstName\\" />
-        </div>
-        <div>
-          <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
-        </div>
-        <div>
-          <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
-        </div>
-        <div>
-          <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
-        </div>
-        <div>
-          <NumberInput
-            label=\\"Average Sale (-1500.00 - 1500.00)\\"
-            source=\\"averageSale\\"
-          />
-        </div>
-        <div>
-          <NumberInput
-            step={1}
-            label=\\"Favorite Number (1 - 20)\\"
-            source=\\"favoriteNumber\\"
-          />
-        </div>
-        <div>
-          <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
-        </div>
-        <div>
-          <TextInput
-            label=\\"Comments (up to 500 characters)\\"
-            multiline
-            source=\\"comments\\"
-          />
-        </div>
-        <div>
-          <SelectArrayInput
-            label=\\"Favorite Colors (multi-select)\\"
-            source=\\"favoriteColors\\"
-            choices={[
-              { label: \\"Red\\", value: \\"red\\" },
-              { label: \\"Green\\", value: \\"green\\" },
-              { label: \\"Purple\\", value: \\"purple\\" },
-              { label: \\"yellow\\", value: \\"yellow\\" },
-            ]}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <SelectInput
-            source=\\"customerType\\"
-            label=\\"Customer Type\\"
-            choices={[
-              { label: \\"Platinum\\", value: \\"platinum\\" },
-              { label: \\"Gold\\", value: \\"gold\\" },
-              { label: \\"Bronze\\", value: \\"bronze\\" },
-              { label: \\"Regular\\", value: \\"regular\\" },
-            ]}
-            optionText=\\"label\\"
-            allowEmpty
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <ReferenceInput
-            source=\\"organization.id\\"
-            reference=\\"Organization\\"
-            label=\\"Organization\\"
-          >
-            <SelectInput optionText={OrganizationTitle} />
-          </ReferenceInput>
-        </div>
-        <div>
-          <ReferenceInput
-            source=\\"organization.id\\"
-            reference=\\"Organization\\"
-            label=\\"VIP Organization\\"
-          >
-            <SelectInput optionText={OrganizationTitle} />
-          </ReferenceInput>
-        </div>
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <TextInput label=\\"First Name\\" source=\\"firstName\\" />
+        <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
+        <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
+        <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
+        <NumberInput
+          label=\\"Average Sale (-1500.00 - 1500.00)\\"
+          source=\\"averageSale\\"
+        />
+        <NumberInput
+          step={1}
+          label=\\"Favorite Number (1 - 20)\\"
+          source=\\"favoriteNumber\\"
+        />
+        <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+        <TextInput
+          label=\\"Comments (up to 500 characters)\\"
+          multiline
+          source=\\"comments\\"
+        />
+        <SelectArrayInput
+          label=\\"Favorite Colors (multi-select)\\"
+          source=\\"favoriteColors\\"
+          choices={[
+            { label: \\"Red\\", value: \\"red\\" },
+            { label: \\"Green\\", value: \\"green\\" },
+            { label: \\"Purple\\", value: \\"purple\\" },
+            { label: \\"yellow\\", value: \\"yellow\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"customerType\\"
+          label=\\"Customer Type\\"
+          choices={[
+            { label: \\"Platinum\\", value: \\"platinum\\" },
+            { label: \\"Gold\\", value: \\"gold\\" },
+            { label: \\"Bronze\\", value: \\"bronze\\" },
+            { label: \\"Regular\\", value: \\"regular\\" },
+          ]}
+          optionText=\\"label\\"
+          allowEmpty
+          optionValue=\\"value\\"
+        />
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"VIP Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Edit>
   );
@@ -1159,38 +1107,32 @@ export const OrderCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
-        <div>
-          <ReferenceInput
-            source=\\"customer.id\\"
-            reference=\\"Customer\\"
-            label=\\"Customer\\"
-          >
-            <SelectInput optionText={CustomerTitle} />
-          </ReferenceInput>
-        </div>
-        <div>
-          <SelectInput
-            source=\\"status\\"
-            label=\\"Status\\"
-            choices={[
-              { label: \\"Pending\\", value: \\"pending\\" },
-              { label: \\"In Progress\\", value: \\"inProgress\\" },
-              { label: \\"Done\\", value: \\"done\\" },
-            ]}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <SelectInput
-            source=\\"label\\"
-            label=\\"Label\\"
-            choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
-            optionText=\\"label\\"
-            allowEmpty
-            optionValue=\\"value\\"
-          />
-        </div>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"Customer\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <SelectInput
+          source=\\"status\\"
+          label=\\"Status\\"
+          choices={[
+            { label: \\"Pending\\", value: \\"pending\\" },
+            { label: \\"In Progress\\", value: \\"inProgress\\" },
+            { label: \\"Done\\", value: \\"done\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"label\\"
+          label=\\"Label\\"
+          choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+          optionText=\\"label\\"
+          allowEmpty
+          optionValue=\\"value\\"
+        />
       </SimpleForm>
     </Create>
   );
@@ -1210,38 +1152,32 @@ export const OrderEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
-        <div>
-          <ReferenceInput
-            source=\\"customer.id\\"
-            reference=\\"Customer\\"
-            label=\\"Customer\\"
-          >
-            <SelectInput optionText={CustomerTitle} />
-          </ReferenceInput>
-        </div>
-        <div>
-          <SelectInput
-            source=\\"status\\"
-            label=\\"Status\\"
-            choices={[
-              { label: \\"Pending\\", value: \\"pending\\" },
-              { label: \\"In Progress\\", value: \\"inProgress\\" },
-              { label: \\"Done\\", value: \\"done\\" },
-            ]}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <SelectInput
-            source=\\"label\\"
-            label=\\"Label\\"
-            choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
-            optionText=\\"label\\"
-            allowEmpty
-            optionValue=\\"value\\"
-          />
-        </div>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"Customer\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <SelectInput
+          source=\\"status\\"
+          label=\\"Status\\"
+          choices={[
+            { label: \\"Pending\\", value: \\"pending\\" },
+            { label: \\"In Progress\\", value: \\"inProgress\\" },
+            { label: \\"Done\\", value: \\"done\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"label\\"
+          label=\\"Label\\"
+          choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+          optionText=\\"label\\"
+          allowEmpty
+          optionValue=\\"value\\"
+        />
       </SimpleForm>
     </Edit>
   );
@@ -1294,9 +1230,7 @@ export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
-        <div>
-          <TextInput label=\\"Name\\" source=\\"name\\" />
-        </div>
+        <TextInput label=\\"Name\\" source=\\"name\\" />
       </SimpleForm>
     </Create>
   );
@@ -1309,9 +1243,7 @@ export const OrganizationEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
-        <div>
-          <TextInput label=\\"Name\\" source=\\"name\\" />
-        </div>
+        <TextInput label=\\"Name\\" source=\\"name\\" />
       </SimpleForm>
     </Edit>
   );
@@ -1422,83 +1354,53 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
-        <div>
-          <TextInput label=\\"Username\\" source=\\"username\\" />
-        </div>
-        <div>
-          <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
-        </div>
-        <div>
-          <SelectArrayInput
-            source=\\"roles\\"
-            choices={ROLES_OPTIONS}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <TextInput label=\\"Name\\" source=\\"name\\" />
-        </div>
-        <div>
-          <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
-        </div>
-        <div>
-          <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
-        </div>
-        <div>
-          <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
-        </div>
-        <div>
-          <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
-        </div>
-        <div>
-          <NumberInput label=\\"Score\\" source=\\"score\\" />
-        </div>
-        <div>
-          <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
-            <SelectInput optionText={UserTitle} />
-          </ReferenceInput>
-        </div>
-        <div>
-          <ReferenceInput
-            source=\\"organization.id\\"
-            reference=\\"Organization\\"
-            label=\\"Organization\\"
-          >
-            <SelectInput optionText={OrganizationTitle} />
-          </ReferenceInput>
-        </div>
-        <div>
-          <SelectArrayInput
-            label=\\"Interests\\"
-            source=\\"interests\\"
-            choices={[
-              { label: \\"Programming\\", value: \\"programming\\" },
-              { label: \\"Design\\", value: \\"design\\" },
-            ]}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <SelectInput
-            source=\\"priority\\"
-            label=\\"Priority\\"
-            choices={[
-              { label: \\"High\\", value: \\"high\\" },
-              { label: \\"Medium\\", value: \\"medium\\" },
-              { label: \\"Low\\", value: \\"low\\" },
-            ]}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
-        </div>
-        <div>
-          <TextInput label=\\"Location\\" source=\\"location\\" />
-        </div>
+        <TextInput label=\\"Username\\" source=\\"username\\" />
+        <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
+        <SelectArrayInput
+          source=\\"roles\\"
+          choices={ROLES_OPTIONS}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <TextInput label=\\"Name\\" source=\\"name\\" />
+        <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
+        <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
+        <NumberInput label=\\"Score\\" source=\\"score\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <SelectArrayInput
+          label=\\"Interests\\"
+          source=\\"interests\\"
+          choices={[
+            { label: \\"Programming\\", value: \\"programming\\" },
+            { label: \\"Design\\", value: \\"design\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"priority\\"
+          label=\\"Priority\\"
+          choices={[
+            { label: \\"High\\", value: \\"high\\" },
+            { label: \\"Medium\\", value: \\"medium\\" },
+            { label: \\"Low\\", value: \\"low\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
+        <TextInput label=\\"Location\\" source=\\"location\\" />
         <div />
       </SimpleForm>
     </Create>
@@ -1527,83 +1429,53 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
-        <div>
-          <TextInput label=\\"Username\\" source=\\"username\\" />
-        </div>
-        <div>
-          <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
-        </div>
-        <div>
-          <SelectArrayInput
-            source=\\"roles\\"
-            choices={ROLES_OPTIONS}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <TextInput label=\\"Name\\" source=\\"name\\" />
-        </div>
-        <div>
-          <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
-        </div>
-        <div>
-          <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
-        </div>
-        <div>
-          <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
-        </div>
-        <div>
-          <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
-        </div>
-        <div>
-          <NumberInput label=\\"Score\\" source=\\"score\\" />
-        </div>
-        <div>
-          <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
-            <SelectInput optionText={UserTitle} />
-          </ReferenceInput>
-        </div>
-        <div>
-          <ReferenceInput
-            source=\\"organization.id\\"
-            reference=\\"Organization\\"
-            label=\\"Organization\\"
-          >
-            <SelectInput optionText={OrganizationTitle} />
-          </ReferenceInput>
-        </div>
-        <div>
-          <SelectArrayInput
-            label=\\"Interests\\"
-            source=\\"interests\\"
-            choices={[
-              { label: \\"Programming\\", value: \\"programming\\" },
-              { label: \\"Design\\", value: \\"design\\" },
-            ]}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <SelectInput
-            source=\\"priority\\"
-            label=\\"Priority\\"
-            choices={[
-              { label: \\"High\\", value: \\"high\\" },
-              { label: \\"Medium\\", value: \\"medium\\" },
-              { label: \\"Low\\", value: \\"low\\" },
-            ]}
-            optionText=\\"label\\"
-            optionValue=\\"value\\"
-          />
-        </div>
-        <div>
-          <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
-        </div>
-        <div>
-          <TextInput label=\\"Location\\" source=\\"location\\" />
-        </div>
+        <TextInput label=\\"Username\\" source=\\"username\\" />
+        <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
+        <SelectArrayInput
+          source=\\"roles\\"
+          choices={ROLES_OPTIONS}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <TextInput label=\\"Name\\" source=\\"name\\" />
+        <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
+        <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
+        <NumberInput label=\\"Score\\" source=\\"score\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <SelectArrayInput
+          label=\\"Interests\\"
+          source=\\"interests\\"
+          choices={[
+            { label: \\"Programming\\", value: \\"programming\\" },
+            { label: \\"Design\\", value: \\"design\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"priority\\"
+          label=\\"Priority\\"
+          choices={[
+            { label: \\"High\\", value: \\"high\\" },
+            { label: \\"Medium\\", value: \\"medium\\" },
+            { label: \\"Low\\", value: \\"low\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
+        <TextInput label=\\"Location\\" source=\\"location\\" />
         <div />
       </SimpleForm>
     </Edit>
