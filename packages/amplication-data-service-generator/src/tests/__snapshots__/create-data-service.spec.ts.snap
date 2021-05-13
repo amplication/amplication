@@ -955,11 +955,18 @@ import {
   ReferenceField,
 } from \\"react-admin\\";
 
+import Pagination from \\"../Components/Pagination\\";
 import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
 export const CustomerList = (props: ListProps): React.ReactElement => {
   return (
-    <List {...props} bulkActionButtons={false} title={\\"Customers\\"} perPage={50}>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Customers\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
       <Datagrid rowClick=\\"show\\">
         <TextField label=\\"Id\\" source=\\"id\\" />
         <DateField source=\\"createdAt\\" label=\\"Created At\\" />
@@ -1120,10 +1127,17 @@ export const EmptyEdit = (props: EditProps): React.ReactElement => {
 ",
   "admin-ui/src/empty/EmptyList.tsx": "import * as React from \\"react\\";
 import { List, Datagrid, ListProps, TextField, DateField } from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
 
 export const EmptyList = (props: ListProps): React.ReactElement => {
   return (
-    <List {...props} bulkActionButtons={false} title={\\"Empties\\"} perPage={50}>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Empties\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
       <Datagrid rowClick=\\"show\\">
         <TextField label=\\"Id\\" source=\\"id\\" />
         <DateField source=\\"createdAt\\" label=\\"Created At\\" />
@@ -1280,11 +1294,18 @@ import {
   DateField,
   ReferenceField,
 } from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
 import { CUSTOMER_TITLE_FIELD } from \\"../customer/CustomerTitle\\";
 
 export const OrderList = (props: ListProps): React.ReactElement => {
   return (
-    <List {...props} bulkActionButtons={false} title={\\"Orders\\"} perPage={50}>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Orders\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
       <Datagrid rowClick=\\"show\\">
         <TextField label=\\"Id\\" source=\\"id\\" />
         <DateField source=\\"createdAt\\" label=\\"Created At\\" />
@@ -1371,6 +1392,7 @@ export const OrganizationEdit = (props: EditProps): React.ReactElement => {
 ",
   "admin-ui/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
 import { List, Datagrid, ListProps, TextField, DateField } from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
 
 export const OrganizationList = (props: ListProps): React.ReactElement => {
   return (
@@ -1379,6 +1401,7 @@ export const OrganizationList = (props: ListProps): React.ReactElement => {
       bulkActionButtons={false}
       title={\\"Organizations\\"}
       perPage={50}
+      pagination={<Pagination />}
     >
       <Datagrid rowClick=\\"show\\">
         <TextField label=\\"Id\\" source=\\"id\\" />
@@ -1633,12 +1656,19 @@ import {
   ReferenceField,
   BooleanField,
 } from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
 import { USER_TITLE_FIELD } from \\"./UserTitle\\";
 import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
 export const UserList = (props: ListProps): React.ReactElement => {
   return (
-    <List {...props} bulkActionButtons={false} title={\\"Users\\"} perPage={50}>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Users\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
       <Datagrid rowClick=\\"show\\">
         <TextField label=\\"Username\\" source=\\"username\\" />
         <TextField label=\\"Roles\\" source=\\"roles\\" />
