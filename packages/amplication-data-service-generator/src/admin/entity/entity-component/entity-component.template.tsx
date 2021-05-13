@@ -1,14 +1,5 @@
 import * as React from "react";
-import {
-  Edit,
-  SimpleForm,
-  TextInput,
-  DateInput,
-  NumberInput,
-  ReferenceInput,
-  SelectInput,
-  EditProps,
-} from "react-admin";
+import { Edit, SimpleForm, EditProps } from "react-admin";
 
 declare const INPUTS: React.ReactElement[];
 

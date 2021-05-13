@@ -1,14 +1,5 @@
 import * as React from "react";
-import {
-  List,
-  Datagrid,
-  TextField,
-  DateField,
-  NumberField,
-  ReferenceField,
-  ListProps,
-  BooleanField,
-} from "react-admin";
+import { List, Datagrid, ListProps } from "react-admin";
 
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const CELLS: React.ReactElement[];

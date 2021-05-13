@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  Create,
-  SimpleForm,
-  NumberInput,
-  ReferenceInput,
-  SelectInput,
-  CreateProps,
-} from "react-admin";
+import { Create, SimpleForm, CreateProps } from "react-admin";
 
 declare const INPUTS: React.ReactElement[];
 

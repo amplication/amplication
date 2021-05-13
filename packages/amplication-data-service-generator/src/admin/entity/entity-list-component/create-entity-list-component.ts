@@ -5,25 +5,25 @@ import {
   addImports,
   getNamedProperties,
   importContainedIdentifiers,
-  importNames,
   interpolate,
 } from "../../../util/ast";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { readFile } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { jsxElement, jsxFragment } from "../../util";
 import { createFieldValue } from "../create-field-value";
+import {
+  REACT_ADMIN_MODULE,
+  REACT_ADMIN_COMPONENTS_ID,
+} from "../react-admin.util";
+
+const IMPORTABLE_IDS = {
+  "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
+  [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
+};
 
 const template = path.resolve(__dirname, "entity-list-component.template.tsx");
-
 const ITEM_ID = builders.identifier("item");
-const IMPORTABLE_IDS = {
-  "@amplication/design-system": [
-    builders.identifier("TimeSince"),
-    builders.identifier("CircleIcon"),
-    builders.identifier("EnumCircleIconStyle"),
-  ],
-};
 
 export async function createEntityListComponent(
   entity: Entity,

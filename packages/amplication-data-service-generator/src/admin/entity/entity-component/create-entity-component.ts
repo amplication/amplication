@@ -5,24 +5,23 @@ import {
   addImports,
   getNamedProperties,
   importContainedIdentifiers,
-  importNames,
   interpolate,
 } from "../../../util/ast";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { readFile } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";
 
-const template = path.resolve(__dirname, "entity-component.template.tsx");
+import {
+  REACT_ADMIN_MODULE,
+  REACT_ADMIN_COMPONENTS_ID,
+} from "../react-admin.util";
 const IMPORTABLE_IDS = {
-  "../user/RoleSelect": [builders.identifier("RoleSelect")],
-  "@amplication/design-system": [
-    builders.identifier("TextField"),
-    builders.identifier("SelectField"),
-    builders.identifier("ToggleField"),
-  ],
+  "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
+  [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
 };
+const template = path.resolve(__dirname, "entity-component.template.tsx");
 
 export async function createEntityComponent(
   entity: Entity,
