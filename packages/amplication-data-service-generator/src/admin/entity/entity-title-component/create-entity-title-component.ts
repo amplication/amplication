@@ -28,6 +28,9 @@ export async function createEntityTitleComponent(
     ENTITY_TITLE: builders.identifier(name),
     ENTITY_TITLE_FIELD: builders.identifier(entityTitleFieldName),
     ENTITY_TITLE_FIELD_NAME: builders.stringLiteral(entityTitleFieldName),
+    ENTITY_TITLE_FIELD_NAME_ID: builders.identifier(
+      `${entity.name.toUpperCase()}_TITLE_FIELD`
+    ),
     RESOURCE: builders.stringLiteral(resource),
   });
 

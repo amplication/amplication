@@ -1,13 +1,19 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { Entity } from "../../../types";
+import {
+  Entity,
+  EnumDataType,
+  EntityField,
+  LookupResolvedProperties,
+} from "../../../types";
 import {
   addImports,
   getNamedProperties,
   importContainedIdentifiers,
+  importNames,
   interpolate,
 } from "../../../util/ast";
-import { readFile } from "../../../util/module";
+import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { jsxElement, jsxFragment } from "../../util";
@@ -45,6 +51,9 @@ export async function createEntityListComponent(
   const fields = entityDTOProperties.map(
     (property) => fieldNameToField[property.key.name]
   );
+  const relationFields: EntityField[] = fields.filter(
+    (field) => field.dataType === EnumDataType.Lookup
+  );
 
   interpolate(file, {
     ENTITY_LIST: builders.identifier(name),
@@ -56,6 +65,20 @@ export async function createEntityListComponent(
         jsxElement`${createFieldValue(field, ITEM_ID, entityToTitleComponent)}`
     )}</>`,
   });
+
+  // Add imports for entities title components
+addImports(
+  file,
+  relationFields.map((field) => {
+    const { relatedEntity } = field.properties as LookupResolvedProperties;
+    const relatedEntityTitleComponent =
+      entityToTitleComponent[relatedEntity.name];
+    return importNames(
+      [builders.identifier(`${relatedEntity.name.toUpperCase()}_TITLE_FIELD`)],
+      relativeImportPath(modulePath, relatedEntityTitleComponent.modulePath)
+    );
+  })
+);
 
   addImports(file, [...importContainedIdentifiers(file, IMPORTABLE_IDS)]);
 

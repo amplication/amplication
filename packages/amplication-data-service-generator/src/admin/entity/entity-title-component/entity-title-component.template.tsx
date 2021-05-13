@@ -4,7 +4,7 @@ declare interface ENTITY {
 }
 declare const ENTITY_TITLE_FIELD_NAME = "title";
 
-export const TITLE_FIELD = ENTITY_TITLE_FIELD_NAME;
+export const ENTITY_TITLE_FIELD_NAME_ID = ENTITY_TITLE_FIELD_NAME;
 
 export const ENTITY_TITLE = (record: ENTITY) => {
   return record.ENTITY_TITLE_FIELD;

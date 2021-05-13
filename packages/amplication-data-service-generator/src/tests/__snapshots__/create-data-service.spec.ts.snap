@@ -997,29 +997,45 @@ import {
   ReferenceField,
 } from \\"react-admin\\";
 
+import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
+
 export const CustomerList = (props: ListProps): React.ReactElement => {
   return (
     <List {...props} bulkActionButtons={false} title={\\"Customers\\"} perPage={50}>
       <Datagrid rowClick=\\"edit\\">
-        <TextField source=\\"id\\" />
-        <DateField source=\\"createdAt\\" />
-        <DateField source=\\"updatedAt\\" />
-        <TextField source=\\"email\\" />
-        <TextField source=\\"firstName\\" />
-        <TextField source=\\"lastName\\" />
-        <BooleanField source=\\"isVip\\" />
-        <TextField source=\\"birthData\\" />
-        <TextField source=\\"averageSale\\" />
-        <TextField source=\\"favoriteNumber\\" />
-        <TextField source=\\"geoLocation\\" />
-        <TextField source=\\"comments\\" />
-        <TextField source=\\"favoriteColors\\" />
-        <TextField source=\\"customerType\\" />
-        <ReferenceField source=\\"organization.id\\" reference=\\"Organization\\">
-          <TextField source=\\"firstName\\" />
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <TextField label=\\"Email\\" source=\\"email\\" />
+        <TextField label=\\"First Name\\" source=\\"firstName\\" />
+        <TextField label=\\"Last Name\\" source=\\"lastName\\" />
+        <BooleanField label=\\"VIP\\" source=\\"isVip\\" />
+        <TextField label=\\"Birth Data\\" source=\\"birthData\\" />
+        <TextField
+          label=\\"Average Sale (-1500.00 - 1500.00)\\"
+          source=\\"averageSale\\"
+        />
+        <TextField label=\\"Favorite Number (1 - 20)\\" source=\\"favoriteNumber\\" />
+        <TextField label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+        <TextField label=\\"Comments (up to 500 characters)\\" source=\\"comments\\" />
+        <TextField
+          label=\\"Favorite Colors (multi-select)\\"
+          source=\\"favoriteColors\\"
+        />
+        <TextField label=\\"Customer Type\\" source=\\"customerType\\" />
+        <ReferenceField
+          label=\\"Organization\\"
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
         </ReferenceField>
-        <ReferenceField source=\\"organization.id\\" reference=\\"Organization\\">
-          <TextField source=\\"firstName\\" />
+        <ReferenceField
+          label=\\"VIP Organization\\"
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
         </ReferenceField>
       </Datagrid>
     </List>
@@ -1028,7 +1044,7 @@ export const CustomerList = (props: ListProps): React.ReactElement => {
 ",
   "admin-ui/src/customer/CustomerTitle.ts": "import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 
-export const TITLE_FIELD = \\"firstName\\";
+export const CUSTOMER_TITLE_FIELD = \\"firstName\\";
 
 export const CustomerTitle = (record: TCustomer) => {
   return record.firstName;
@@ -1094,9 +1110,9 @@ export const EmptyList = (props: ListProps): React.ReactElement => {
   return (
     <List {...props} bulkActionButtons={false} title={\\"Empties\\"} perPage={50}>
       <Datagrid rowClick=\\"edit\\">
-        <TextField source=\\"id\\" />
-        <DateField source=\\"createdAt\\" />
-        <DateField source=\\"updatedAt\\" />
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
       </Datagrid>
     </List>
   );
@@ -1104,7 +1120,7 @@ export const EmptyList = (props: ListProps): React.ReactElement => {
 ",
   "admin-ui/src/empty/EmptyTitle.ts": "import { Empty as TEmpty } from \\"../api/empty/Empty\\";
 
-export const TITLE_FIELD = \\"id\\";
+export const EMPTY_TITLE_FIELD = \\"id\\";
 
 export const EmptyTitle = (record: TEmpty) => {
   return record.id;
@@ -1240,19 +1256,24 @@ import {
   DateField,
   ReferenceField,
 } from \\"react-admin\\";
+import { CUSTOMER_TITLE_FIELD } from \\"../customer/CustomerTitle\\";
 
 export const OrderList = (props: ListProps): React.ReactElement => {
   return (
     <List {...props} bulkActionButtons={false} title={\\"Orders\\"} perPage={50}>
       <Datagrid rowClick=\\"edit\\">
-        <TextField source=\\"id\\" />
-        <DateField source=\\"createdAt\\" />
-        <DateField source=\\"updatedAt\\" />
-        <ReferenceField source=\\"customer.id\\" reference=\\"Customer\\">
-          <TextField source=\\"firstName\\" />
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <ReferenceField
+          label=\\"Customer\\"
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+        >
+          <TextField source={CUSTOMER_TITLE_FIELD} />
         </ReferenceField>
-        <TextField source=\\"status\\" />
-        <TextField source=\\"label\\" />
+        <TextField label=\\"Status\\" source=\\"status\\" />
+        <TextField label=\\"Label\\" source=\\"label\\" />
       </Datagrid>
     </List>
   );
@@ -1260,7 +1281,7 @@ export const OrderList = (props: ListProps): React.ReactElement => {
 ",
   "admin-ui/src/order/OrderTitle.ts": "import { Order as TOrder } from \\"../api/order/Order\\";
 
-export const TITLE_FIELD = \\"id\\";
+export const ORDER_TITLE_FIELD = \\"id\\";
 
 export const OrderTitle = (record: TOrder) => {
   return record.id;
@@ -1308,10 +1329,10 @@ export const OrganizationList = (props: ListProps): React.ReactElement => {
       perPage={50}
     >
       <Datagrid rowClick=\\"edit\\">
-        <TextField source=\\"id\\" />
-        <DateField source=\\"createdAt\\" />
-        <DateField source=\\"updatedAt\\" />
-        <TextField source=\\"name\\" />
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <TextField label=\\"Name\\" source=\\"name\\" />
       </Datagrid>
     </List>
   );
@@ -1319,7 +1340,7 @@ export const OrganizationList = (props: ListProps): React.ReactElement => {
 ",
   "admin-ui/src/organization/OrganizationTitle.ts": "import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 
-export const TITLE_FIELD = \\"name\\";
+export const ORGANIZATION_TITLE_FIELD = \\"name\\";
 
 export const OrganizationTitle = (record: TOrganization) => {
   return record.name;
@@ -1598,31 +1619,37 @@ import {
   ReferenceField,
   BooleanField,
 } from \\"react-admin\\";
+import { USER_TITLE_FIELD } from \\"./UserTitle\\";
+import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
 export const UserList = (props: ListProps): React.ReactElement => {
   return (
     <List {...props} bulkActionButtons={false} title={\\"Users\\"} perPage={50}>
       <Datagrid rowClick=\\"edit\\">
-        <TextField source=\\"username\\" />
-        <TextField source=\\"roles\\" />
-        <TextField source=\\"id\\" />
-        <TextField source=\\"name\\" />
-        <TextField source=\\"bio\\" />
-        <TextField source=\\"email\\" />
-        <TextField source=\\"age\\" />
-        <TextField source=\\"birthDate\\" />
-        <TextField source=\\"score\\" />
-        <ReferenceField source=\\"user.id\\" reference=\\"User\\">
-          <TextField source=\\"firstName\\" />
+        <TextField label=\\"Username\\" source=\\"username\\" />
+        <TextField label=\\"Roles\\" source=\\"roles\\" />
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <TextField label=\\"Name\\" source=\\"name\\" />
+        <TextField label=\\"Bio\\" source=\\"bio\\" />
+        <TextField label=\\"Email\\" source=\\"email\\" />
+        <TextField label=\\"Age\\" source=\\"age\\" />
+        <TextField label=\\"Birth Date\\" source=\\"birthDate\\" />
+        <TextField label=\\"Score\\" source=\\"score\\" />
+        <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
+          <TextField source={USER_TITLE_FIELD} />
         </ReferenceField>
-        <ReferenceField source=\\"organization.id\\" reference=\\"Organization\\">
-          <TextField source=\\"firstName\\" />
+        <ReferenceField
+          label=\\"Organization\\"
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
         </ReferenceField>
-        <TextField source=\\"interests\\" />
-        <TextField source=\\"priority\\" />
-        <BooleanField source=\\"isCurious\\" />
-        <TextField source=\\"location\\" />
-        <TextField source=\\"extendedProperties\\" />
+        <TextField label=\\"Interests\\" source=\\"interests\\" />
+        <TextField label=\\"Priority\\" source=\\"priority\\" />
+        <BooleanField label=\\"Is Curious\\" source=\\"isCurious\\" />
+        <TextField label=\\"Location\\" source=\\"location\\" />
+        <TextField label=\\"Extended Properties\\" source=\\"extendedProperties\\" />
       </Datagrid>
     </List>
   );
@@ -1630,7 +1657,7 @@ export const UserList = (props: ListProps): React.ReactElement => {
 ",
   "admin-ui/src/user/UserTitle.ts": "import { User as TUser } from \\"../api/user/User\\";
 
-export const TITLE_FIELD = \\"username\\";
+export const USER_TITLE_FIELD = \\"username\\";
 
 export const UserTitle = (record: TUser) => {
   return record.username;

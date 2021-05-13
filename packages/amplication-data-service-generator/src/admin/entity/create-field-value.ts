@@ -19,21 +19,18 @@ export function createFieldValue(
   switch (field.dataType) {
     case EnumDataType.CreatedAt:
     case EnumDataType.UpdatedAt:
-      return jsxElement`<DateField source="${field.name}" />`;
+      return jsxElement`<DateField source="${field.name}" label="${field.displayName}" />`;
     case EnumDataType.Lookup:
       const { relatedEntity } = field.properties as LookupResolvedProperties;
-      // const relatedEntityTitleComponent =
-      //   entityToTitleComponent[relatedEntity.name];
-
-      return jsxElement`<ReferenceField source="${relatedEntity.name.toLowerCase()}.id" reference="${
+      return jsxElement`<ReferenceField label="${
+        field.displayName
+      }" source="${relatedEntity.name.toLowerCase()}.id" reference="${
         relatedEntity.name
       }">
-            <TextField source="firstName" /> 
+            <TextField source={${relatedEntity.name.toUpperCase()}_TITLE_FIELD} /> 
         </ReferenceField>`;
-    //return jsxElement`<${relatedEntityTitleComponent.name} id={${value}?.id}  />`;
-
     case EnumDataType.Boolean:
-      return jsxElement`<BooleanField source="${field.name}" />`;
+      return jsxElement`<BooleanField label="${field.displayName}" source="${field.name}" />`;
     case EnumDataType.DateTime:
     case EnumDataType.DecimalNumber:
     case EnumDataType.Email:
@@ -49,6 +46,6 @@ export function createFieldValue(
     case EnumDataType.WholeNumber:
     case EnumDataType.Json:
     default:
-      return jsxElement`<TextField source="${field.name}" />`;
+      return jsxElement`<TextField label="${field.displayName}" source="${field.name}" />`;
   }
 }
