@@ -27,9 +27,9 @@ const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
   [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
 };
-const template = path.resolve(__dirname, "entity-component.template.tsx");
+const template = path.resolve(__dirname, "entity-edit-component.template.tsx");
 
-export async function createEntityComponent(
+export async function createEditEntityComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
