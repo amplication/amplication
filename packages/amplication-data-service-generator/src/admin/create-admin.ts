@@ -43,6 +43,11 @@ export async function createAdminModules(
     name: `${paramCase(appInfo.name)}-admin`,
     version: appInfo.version,
   });
+
+  /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
+   * currently the files were manually copied to /admin/static/src/util
+   */
+
   const entityToPath = Object.fromEntries(
     entities.map((entity) => [
       entity.name,
