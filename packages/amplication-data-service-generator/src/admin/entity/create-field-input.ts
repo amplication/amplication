@@ -48,7 +48,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     return jsxElement`<ReferenceInput source="${relatedEntity.name.toLowerCase()}.id" reference="${
       relatedEntity.name
     }" label="${field.displayName}">
-      <SelectInput optionText="product" />
+      <SelectInput optionText={${relatedEntity.name}Title} />
     </ReferenceInput>`;
   },
   [EnumDataType.MultiSelectOptionSet]: (field) => {

@@ -1,6 +1,6 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { Entity, EnumDataType, LookupResolvedProperties } from "../../../types";
+import { Entity } from "../../../types";
 import {
   addImports,
   getNamedProperties,

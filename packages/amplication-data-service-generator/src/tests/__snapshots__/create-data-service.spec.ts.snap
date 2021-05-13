@@ -94,96 +94,6 @@ const Pagination = (props: PaginationProps) => (
 
 export default Pagination;
 ",
-  "admin-ui/src/Login.tsx": "import React, { useCallback } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
-import {
-  Panel,
-  PanelHeader,
-  TextField,
-  Button,
-  EnumPanelStyle,
-  EnumButtonStyle,
-} from \\"@amplication/design-system\\";
-import { Credentials } from \\"./auth\\";
-import { api } from \\"./api\\";
-import \\"./login.scss\\";
-
-export type Props = {
-  onLogin: (credentials: Credentials) => void;
-};
-
-const INITIAL_VALUES = {
-  username: \\"\\",
-  password: \\"\\",
-};
-
-const Login = ({ onLogin }: Props) => {
-  const [login, { error }] = useMutation<unknown, AxiosError, Credentials>(
-    async (data) => api.post(\\"/api/login\\", data),
-    {
-      onSuccess: (data, variables) => {
-        onLogin(variables);
-      },
-    }
-  );
-  const handleSubmit = useCallback(
-    (values) => {
-      login(values);
-    },
-    [login]
-  );
-  return (
-    <div className=\\"login-page\\">
-      <div className=\\"options-container\\">
-        <Panel panelStyle={EnumPanelStyle.Bordered}>
-          <PanelHeader>Sign In to Admin UI</PanelHeader>
-          <div className=\\"message\\">
-            By default, your app comes with one user with the username \\"admin\\"
-            and password \\"admin\\".
-          </div>
-          <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-            <Form>
-              <TextField label=\\"Username\\" name=\\"username\\" type=\\"text\\" />
-              <TextField label=\\"Password\\" name=\\"password\\" type=\\"password\\" />
-              <Button type=\\"submit\\">Continue</Button>
-            </Form>
-          </Formik>
-          {error && error.response?.data?.message}
-        </Panel>
-        <div className=\\"divider\\">Or</div>
-        <Panel panelStyle={EnumPanelStyle.Bordered}>
-          <PanelHeader>Connect via API</PanelHeader>
-          <div className=\\"message\\">
-            Choose the type of API for connecting to your app.
-          </div>
-          <a href=\\"/graphql\\" target=\\"graphql\\">
-            <Button type=\\"button\\" buttonStyle={EnumButtonStyle.Secondary}>
-              GraphQL API
-            </Button>
-          </a>
-          <a href=\\"/api\\" target=\\"api\\">
-            <Button type=\\"button\\" buttonStyle={EnumButtonStyle.Secondary}>
-              REST API
-            </Button>
-          </a>
-          <hr />
-          <div className=\\"message\\">
-            <span>Read </span>
-            <a href=\\"https://docs.amplication.com/docs/api\\" target=\\"docs\\">
-              Amplication docs
-            </a>
-            <span> to learn more</span>
-          </div>
-        </Panel>
-      </div>
-    </div>
-  );
-};
-
-export default Login;
-",
   "admin-ui/src/Navigation.tsx": "import React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { Panel, PanelHeader, EnumPanelStyle } from \\"@amplication/design-system\\";
@@ -869,6 +779,8 @@ import {
   ReferenceInput,
 } from \\"react-admin\\";
 
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+
 export const CustomerCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
@@ -946,7 +858,7 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
             reference=\\"Organization\\"
             label=\\"Organization\\"
           >
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={OrganizationTitle} />
           </ReferenceInput>
         </div>
         <div>
@@ -955,7 +867,7 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
             reference=\\"Organization\\"
             label=\\"VIP Organization\\"
           >
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={OrganizationTitle} />
           </ReferenceInput>
         </div>
       </SimpleForm>
@@ -976,6 +888,8 @@ import {
   SelectInput,
   ReferenceInput,
 } from \\"react-admin\\";
+
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 
 export const CustomerEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -1054,7 +968,7 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
             reference=\\"Organization\\"
             label=\\"Organization\\"
           >
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={OrganizationTitle} />
           </ReferenceInput>
         </div>
         <div>
@@ -1063,7 +977,7 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
             reference=\\"Organization\\"
             label=\\"VIP Organization\\"
           >
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={OrganizationTitle} />
           </ReferenceInput>
         </div>
       </SimpleForm>
@@ -1112,11 +1026,12 @@ export const CustomerList = (props: ListProps): React.ReactElement => {
   );
 };
 ",
-  "admin-ui/src/customer/CustomerTitle.tsx": "import React from \\"react\\";
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
+  "admin-ui/src/customer/CustomerTitle.ts": "import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 
-export const CustomerTitle = () => {
-  return <span>Loading...</span>;
+export const TITLE_FIELD = \\"firstName\\";
+
+export const CustomerTitle = (record: TCustomer) => {
+  return record.firstName;
 };
 ",
   "admin-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
@@ -1187,11 +1102,12 @@ export const EmptyList = (props: ListProps): React.ReactElement => {
   );
 };
 ",
-  "admin-ui/src/empty/EmptyTitle.tsx": "import React from \\"react\\";
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+  "admin-ui/src/empty/EmptyTitle.ts": "import { Empty as TEmpty } from \\"../api/empty/Empty\\";
 
-export const EmptyTitle = () => {
-  return <span>Loading...</span>;
+export const TITLE_FIELD = \\"id\\";
+
+export const EmptyTitle = (record: TEmpty) => {
+  return record.id;
 };
 ",
   "admin-ui/src/index.tsx": "import React from \\"react\\";
@@ -1221,6 +1137,7 @@ import {
   ReferenceInput,
   SelectInput,
 } from \\"react-admin\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 
 export const OrderCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -1232,7 +1149,7 @@ export const OrderCreate = (props: CreateProps): React.ReactElement => {
             reference=\\"Customer\\"
             label=\\"Customer\\"
           >
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={CustomerTitle} />
           </ReferenceInput>
         </div>
         <div>
@@ -1271,6 +1188,7 @@ import {
   ReferenceInput,
   SelectInput,
 } from \\"react-admin\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 
 export const OrderEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -1282,7 +1200,7 @@ export const OrderEdit = (props: EditProps): React.ReactElement => {
             reference=\\"Customer\\"
             label=\\"Customer\\"
           >
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={CustomerTitle} />
           </ReferenceInput>
         </div>
         <div>
@@ -1340,11 +1258,12 @@ export const OrderList = (props: ListProps): React.ReactElement => {
   );
 };
 ",
-  "admin-ui/src/order/OrderTitle.tsx": "import React from \\"react\\";
-import { Order as TOrder } from \\"../api/order/Order\\";
+  "admin-ui/src/order/OrderTitle.ts": "import { Order as TOrder } from \\"../api/order/Order\\";
 
-export const OrderTitle = () => {
-  return <span>Loading...</span>;
+export const TITLE_FIELD = \\"id\\";
+
+export const OrderTitle = (record: TOrder) => {
+  return record.id;
 };
 ",
   "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
@@ -1398,11 +1317,12 @@ export const OrganizationList = (props: ListProps): React.ReactElement => {
   );
 };
 ",
-  "admin-ui/src/organization/OrganizationTitle.tsx": "import React from \\"react\\";
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
+  "admin-ui/src/organization/OrganizationTitle.ts": "import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 
-export const OrganizationTitle = () => {
-  return <span>Loading...</span>;
+export const TITLE_FIELD = \\"name\\";
+
+export const OrganizationTitle = (record: TOrganization) => {
+  return record.name;
 };
 ",
   "admin-ui/src/pages/Dashboard.tsx": "import * as React from \\"react\\";
@@ -1473,6 +1393,8 @@ import {
   SelectInput,
 } from \\"react-admin\\";
 
+import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
@@ -1513,7 +1435,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         </div>
         <div>
           <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={UserTitle} />
           </ReferenceInput>
         </div>
         <div>
@@ -1522,7 +1444,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
             reference=\\"Organization\\"
             label=\\"Organization\\"
           >
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={OrganizationTitle} />
           </ReferenceInput>
         </div>
         <div>
@@ -1576,6 +1498,8 @@ import {
   SelectInput,
 } from \\"react-admin\\";
 
+import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
@@ -1616,7 +1540,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         </div>
         <div>
           <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={UserTitle} />
           </ReferenceInput>
         </div>
         <div>
@@ -1625,7 +1549,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
             reference=\\"Organization\\"
             label=\\"Organization\\"
           >
-            <SelectInput optionText=\\"product\\" />
+            <SelectInput optionText={OrganizationTitle} />
           </ReferenceInput>
         </div>
         <div>
@@ -1704,11 +1628,12 @@ export const UserList = (props: ListProps): React.ReactElement => {
   );
 };
 ",
-  "admin-ui/src/user/UserTitle.tsx": "import React from \\"react\\";
-import { User as TUser } from \\"../api/user/User\\";
+  "admin-ui/src/user/UserTitle.ts": "import { User as TUser } from \\"../api/user/User\\";
 
-export const UserTitle = () => {
-  return <span>Loading...</span>;
+export const TITLE_FIELD = \\"username\\";
+
+export const UserTitle = (record: TUser) => {
+  return record.username;
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [

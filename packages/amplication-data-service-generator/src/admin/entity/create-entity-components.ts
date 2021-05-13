@@ -30,7 +30,8 @@ export async function createEntityComponents(
       entityToDirectory,
       entityToPath,
       entityToResource,
-      dtoNameToPath
+      dtoNameToPath,
+      entityToTitleComponent
     ),
     createEntityComponent(
       entity,
@@ -38,7 +39,8 @@ export async function createEntityComponents(
       entityToDirectory,
       entityToPath,
       entityToResource,
-      dtoNameToPath
+      dtoNameToPath,
+      entityToTitleComponent
     ),
   ]);
 
