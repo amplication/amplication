@@ -34,7 +34,6 @@ export async function createEntityComponent(
 ): Promise<EntityComponent> {
   const name = `${entity.name}Edit`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const entityDTO = dtos[entity.name].entity;
   const dto = dtos[entity.name].updateInput;
   const dtoProperties = getNamedProperties(dto);
   const fieldsByName = Object.fromEntries(
@@ -44,7 +43,6 @@ export async function createEntityComponent(
     (property) => fieldsByName[property.key.name]
   );
 
-  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
   const file = await readFile(template);
 
   interpolate(file, {
@@ -52,19 +50,7 @@ export async function createEntityComponent(
     INPUTS: jsxFragment`<>${fields.map((field) => createFieldInput(field))}</>`,
   });
 
-  addImports(file, [
-    builders.importDeclaration(
-      [builders.importSpecifier(entityDTO.id, localEntityDTOId)],
-      builders.stringLiteral(
-        relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
-      )
-    ),
-    importNames(
-      [dto.id],
-      relativeImportPath(modulePath, dtoNameToPath[dto.id.name])
-    ),
-    ...importContainedIdentifiers(file, IMPORTABLE_IDS),
-  ]);
+  addImports(file, [...importContainedIdentifiers(file, IMPORTABLE_IDS)]);
 
   return { name, file, modulePath };
 }

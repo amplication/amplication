@@ -1012,9 +1012,6 @@ import {
   EditProps,
 } from \\"react-admin\\";
 
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
-import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
-
 export const CustomerEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
@@ -1247,9 +1244,6 @@ import {
   EditProps,
 } from \\"react-admin\\";
 
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
-import { EmptyUpdateInput } from \\"../api/empty/EmptyUpdateInput\\";
-
 export const EmptyEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
@@ -1400,9 +1394,6 @@ import {
   EditProps,
 } from \\"react-admin\\";
 
-import { Order as TOrder } from \\"../api/order/Order\\";
-import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
-
 export const OrderEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
@@ -1542,9 +1533,6 @@ import {
   SelectInput,
   EditProps,
 } from \\"react-admin\\";
-
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
-import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
 export const OrganizationEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -1794,9 +1782,6 @@ import {
   SelectInput,
   EditProps,
 } from \\"react-admin\\";
-
-import { User as TUser } from \\"../api/user/User\\";
-import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
