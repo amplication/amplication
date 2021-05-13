@@ -58,19 +58,7 @@ export async function createNewEntityComponent(
     INPUTS: jsxFragment`<>${fields.map((field) => createFieldInput(field))}</>`,
   });
 
-  addImports(file, [
-    builders.importDeclaration(
-      [builders.importSpecifier(entityDTO.id, localEntityDTOId)],
-      builders.stringLiteral(
-        relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
-      )
-    ),
-    importNames(
-      [dto.id],
-      relativeImportPath(modulePath, dtoNameToPath[dto.id.name])
-    ),
-    ...importContainedIdentifiers(file, IMPORTABLE_IDS),
-  ]);
+  addImports(file, [...importContainedIdentifiers(file, IMPORTABLE_IDS)]);
 
   return { name, file, modulePath };
 }

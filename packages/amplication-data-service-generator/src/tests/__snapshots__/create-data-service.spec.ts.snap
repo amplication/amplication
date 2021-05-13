@@ -904,8 +904,6 @@ import {
   SelectInput,
   CreateProps,
 } from \\"react-admin\\";
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
-import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
 
 export const CustomerCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -1230,8 +1228,6 @@ import {
   SelectInput,
   CreateProps,
 } from \\"react-admin\\";
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
-import { EmptyCreateInput } from \\"../api/empty/EmptyCreateInput\\";
 
 export const EmptyCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -1354,8 +1350,6 @@ import {
   SelectInput,
   CreateProps,
 } from \\"react-admin\\";
-import { Order as TOrder } from \\"../api/order/Order\\";
-import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
 
 export const OrderCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -1531,8 +1525,6 @@ import {
   SelectInput,
   CreateProps,
 } from \\"react-admin\\";
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
-import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
 
 export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -1712,8 +1704,6 @@ import {
   SelectInput,
   CreateProps,
 } from \\"react-admin\\";
-import { User as TUser } from \\"../api/user/User\\";
-import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
