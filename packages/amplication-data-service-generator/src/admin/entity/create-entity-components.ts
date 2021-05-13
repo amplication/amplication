@@ -1,7 +1,7 @@
 import { Entity } from "../../types";
 import { DTOs } from "../../server/resource/create-dtos";
 import { EntityComponent, EntityComponents } from "../types";
-import { createNewEntityComponent } from "./new-entity-component/create-new-entity-component";
+import { createEntityCreateComponent } from "./entity-create-component/create-entity-create-component";
 import { createEntityListComponent } from "./entity-list-component/create-entity-list-component";
 import { createEditEntityComponent } from "./entity-edit-component/create-edit-entity-component";
 
@@ -18,7 +18,7 @@ export async function createEntityComponents(
       entityToDirectory,
       entityToTitleComponent
     ),
-    createNewEntityComponent(
+    createEntityCreateComponent(
       entity,
       dtos,
       entityToDirectory,

@@ -21,14 +21,17 @@ import {
   REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
 } from "../react-admin.util";
-const template = path.resolve(__dirname, "new-entity-component.template.tsx");
+const template = path.resolve(
+  __dirname,
+  "entity-create-component.template.tsx"
+);
 
 const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
   [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
 };
 
-export async function createNewEntityComponent(
+export async function createEntityCreateComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
