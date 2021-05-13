@@ -51,8 +51,6 @@ export async function createNewEntityComponent(
     (property) => fieldsByName[property.key.name]
   );
 
-  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
-
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
     INPUTS: jsxFragment`<>${fields.map((field) => createFieldInput(field))}</>`,

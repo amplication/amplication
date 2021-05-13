@@ -46,11 +46,6 @@ export async function createEntityListComponent(
     (property) => fieldNameToField[property.key.name]
   );
 
-  const relationFields = fields.filter(
-    (field) => field.dataType === EnumDataType.Lookup
-  );
-  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
-
   interpolate(file, {
     ENTITY_LIST: builders.identifier(name),
     ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
@@ -62,29 +57,7 @@ export async function createEntityListComponent(
     )}</>`,
   });
 
-  // Add imports for entities select components
-  addImports(
-    file,
-    relationFields.map((field) => {
-      const { relatedEntity } = field.properties as LookupResolvedProperties;
-      const relatedEntitySelectComponent =
-        entityToTitleComponent[relatedEntity.name];
-      return importNames(
-        [builders.identifier(relatedEntitySelectComponent.name)],
-        relativeImportPath(modulePath, relatedEntitySelectComponent.modulePath)
-      );
-    })
-  );
-
-  addImports(file, [
-    builders.importDeclaration(
-      [builders.importSpecifier(entityDTO.id, localEntityDTOId)],
-      builders.stringLiteral(
-        relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
-      )
-    ),
-    ...importContainedIdentifiers(file, IMPORTABLE_IDS),
-  ]);
+  addImports(file, [...importContainedIdentifiers(file, IMPORTABLE_IDS)]);
 
   return { name, file, modulePath };
 }
