@@ -2,101 +2,97 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
-  "admin-ui/src/App.tsx": "import React, { useCallback, useContext } from \\"react\\";
-import { Route, Switch, useHistory, Link, NavLink } from \\"react-router-dom\\";
-import Navigation from \\"./Navigation\\";
-import Login from \\"./Login\\";
-import { Credentials, setCredentials, removeCredentials } from \\"./auth\\";
-import {
-  Menu,
-  MainLayout,
-  Page,
-  CircleBadge,
-  Breadcrumbs,
-} from \\"@amplication/design-system\\";
-import BreadcrumbsContext from \\"./components/breadcrumbs/BreadcrumbsContext\\";
-import BreadcrumbsProvider from \\"./components/breadcrumbs/BreadcrumbsProvider\\";
-import useBreadcrumbs from \\"./components/breadcrumbs/use-breadcrumbs\\";
-import PrivateRoute from \\"./components/PrivateRoute\\";
+  "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
+import { Admin, DataProvider, Resource } from \\"react-admin\\";
+import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
+import basicHttpAuthProvider from \\"./auth-provider/ra-auth-basic-http\\";
+import \\"./App.css\\";
+import Dashboard from \\"./pages/Dashboard\\";
+import { UserList } from \\"./user/UserList\\";
+import { UserCreate } from \\"./user/UserCreate\\";
+import { UserEdit } from \\"./user/UserEdit\\";
+import { OrderList } from \\"./order/OrderList\\";
+import { OrderCreate } from \\"./order/OrderCreate\\";
+import { OrderEdit } from \\"./order/OrderEdit\\";
+import { OrganizationList } from \\"./organization/OrganizationList\\";
+import { OrganizationCreate } from \\"./organization/OrganizationCreate\\";
+import { OrganizationEdit } from \\"./organization/OrganizationEdit\\";
+import { CustomerList } from \\"./customer/CustomerList\\";
+import { CustomerCreate } from \\"./customer/CustomerCreate\\";
+import { CustomerEdit } from \\"./customer/CustomerEdit\\";
+import { EmptyList } from \\"./empty/EmptyList\\";
+import { EmptyCreate } from \\"./empty/EmptyCreate\\";
+import { EmptyEdit } from \\"./empty/EmptyEdit\\";
 
 const App = (): React.ReactElement => {
-  const history = useHistory();
-  const handleLogin = useCallback(
-    (credentials: Credentials) => {
-      setCredentials(credentials);
-      history.push(\\"/\\");
-    },
-    [history]
-  );
-
+  const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
+  useEffect(() => {
+    buildGraphQLProvider
+      .then((provider: any) => {
+        setDataProvider(() => provider);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+  }, []);
+  if (!dataProvider) {
+    return <div>Loading</div>;
+  }
   return (
-    <BreadcrumbsProvider>
-      <MainLayout>
-        <Switch>
-          <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
-          <PrivateRoute path=\\"/\\" component={AppLayout} />
-        </Switch>
-      </MainLayout>
-    </BreadcrumbsProvider>
+    <div className=\\"App\\">
+      <Admin
+        title=\\"My Custom Admin\\"
+        dataProvider={dataProvider}
+        authProvider={basicHttpAuthProvider}
+        dashboard={Dashboard}
+      >
+        <Resource
+          name=\\"User\\"
+          list={UserList}
+          edit={UserEdit}
+          create={UserCreate}
+        />
+        <Resource
+          name=\\"Order\\"
+          list={OrderList}
+          edit={OrderEdit}
+          create={OrderCreate}
+        />
+        <Resource
+          name=\\"Organization\\"
+          list={OrganizationList}
+          edit={OrganizationEdit}
+          create={OrganizationCreate}
+        />
+        <Resource
+          name=\\"Customer\\"
+          list={CustomerList}
+          edit={CustomerEdit}
+          create={CustomerCreate}
+        />
+        <Resource
+          name=\\"Empty\\"
+          list={EmptyList}
+          edit={EmptyEdit}
+          create={EmptyCreate}
+        />
+      </Admin>
+    </div>
   );
 };
 
 export default App;
+",
+  "admin-ui/src/Components/Pagination.tsx": "import React from \\"react\\";
+import { Pagination as RAPagination, PaginationProps } from \\"react-admin\\";
 
-/**@todo: move to a separate template file */
-const AppLayout = (): React.ReactElement => {
-  const history = useHistory();
-  useBreadcrumbs(\\"/\\", \\"Sample Application\\");
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
+const PAGINATION_OPTIONS = [10, 25, 50, 100, 200];
 
-  const signOut = useCallback(() => {
-    removeCredentials();
-    history.push(\\"/login\\");
-  }, [history]);
+const Pagination = (props: PaginationProps) => (
+  <RAPagination rowsPerPageOptions={PAGINATION_OPTIONS} {...props} />
+);
 
-  // Use navLink for breadcrumbs to prevent page reload
-  const ItemLink = ({ href, ...rest }: { href: string }) => (
-    <NavLink {...rest} to={href} />
-  );
-
-  return (
-    <>
-      <Menu
-        onSignOutClick={signOut}
-        logoContent={
-          <Link to=\\"/\\">
-            <CircleBadge name={\\"Sample Application\\"} />
-          </Link>
-        }
-      ></Menu>
-      <MainLayout.Content>
-        <Breadcrumbs>
-          {}
-          {breadcrumbsContext.breadcrumbsItems.map((item, index, items) => (
-            <Breadcrumbs.Item
-              as={ItemLink}
-              key={index}
-              selected={index + 1 === items.length}
-              href={item.url}
-            >
-              {item.name}
-            </Breadcrumbs.Item>
-          ))}
-        </Breadcrumbs>
-        <Page>
-          <Switch>
-            <PrivateRoute exact path=\\"/\\" component={Navigation} />
-            <PrivateRoute path=\\"/users\\" />
-            <PrivateRoute path=\\"/orders\\" />
-            <PrivateRoute path=\\"/organizations\\" />
-            <PrivateRoute path=\\"/customers\\" />
-            <PrivateRoute path=\\"/empties\\" />
-          </Switch>
-        </Page>
-      </MainLayout.Content>
-    </>
-  );
-};
+export default Pagination;
 ",
   "admin-ui/src/Login.tsx": "import React, { useCallback } from \\"react\\";
 import { AxiosError } from \\"axios\\";
@@ -819,6 +815,46 @@ export type UserWhereInput = {
   id: string;
 };
 ",
+  "admin-ui/src/auth-provider/ra-auth-basic-http.ts": "const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
+
+export type Credentials = {
+  username: string;
+  password: string;
+};
+
+const basicHttpAuthProvider = {
+  login: (credentials: Credentials) => {
+    localStorage.setItem(
+      CREDENTIALS_LOCAL_STORAGE_ITEM,
+      JSON.stringify(credentials)
+    );
+    return Promise.resolve();
+  },
+  logout: () => {
+    localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+    return Promise.resolve();
+  },
+  checkError: ({ status }: any) => {
+    if (status === 401 || status === 403) {
+      localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+      return Promise.reject();
+    }
+    return Promise.resolve();
+  },
+  checkAuth: () => {
+    return localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
+      ? Promise.resolve()
+      : Promise.reject();
+  },
+  // getIdentity: () => {
+  //   return Promise.resolve(
+  //     localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
+  //   );
+  // },
+  getPermissions: () => Promise.resolve(),
+};
+export default basicHttpAuthProvider;
+",
   "admin-ui/src/auth.ts": "import { EventEmitter } from \\"events\\";
 
 export type Credentials = {
@@ -1153,6 +1189,37 @@ export const CustomerTitle = ({ id }: Props) => {
     </Link>
   );
 };
+",
+  "admin-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
+import { ApolloClient } from \\"apollo-client\\";
+import { createHttpLink } from \\"apollo-link-http\\";
+import { setContext } from \\"apollo-link-context\\";
+import { InMemoryCache } from \\"apollo-cache-inmemory\\";
+
+const httpLink = createHttpLink({
+  //@todo: get the url from a configuration file
+  uri: \\"http://localhost:3000/graphql\\",
+});
+
+const authLink = setContext((_, { headers }) => {
+  //@todo: get the authentication token from local storage
+  const token = \\"YWRtaW46YWRtaW4=\\";
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? \`Basic \${token}\` : \\"\\",
+    },
+  };
+});
+
+const apolloClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authLink.concat(httpLink),
+});
+
+export default buildGraphQLProvider({
+  client: apolloClient,
+});
 ",
   "admin-ui/src/empty/EmptyCreate.tsx": "import * as React from \\"react\\";
 import {
@@ -1573,6 +1640,19 @@ export const OrganizationTitle = ({ id }: Props) => {
     </Link>
   );
 };
+",
+  "admin-ui/src/pages/Dashboard.tsx": "import * as React from \\"react\\";
+import Card from \\"@material-ui/core/Card\\";
+import CardContent from \\"@material-ui/core/CardContent\\";
+import { Title } from \\"react-admin\\";
+const Dashboard = () => (
+  <Card>
+    <Title title=\\"Welcome to the administration\\" />
+    <CardContent>Lorem ipsum sic dolor amet...</CardContent>
+  </Card>
+);
+
+export default Dashboard;
 ",
   "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 

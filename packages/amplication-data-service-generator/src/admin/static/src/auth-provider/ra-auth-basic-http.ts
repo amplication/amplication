@@ -17,7 +17,7 @@ const basicHttpAuthProvider = {
     localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
     return Promise.resolve();
   },
-  checkError: ({ status }) => {
+  checkError: ({ status }: any) => {
     if (status === 401 || status === 403) {
       localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
       return Promise.reject();
