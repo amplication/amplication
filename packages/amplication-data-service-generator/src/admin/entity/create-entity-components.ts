@@ -4,6 +4,7 @@ import { EntityComponent, EntityComponents } from "../types";
 import { createEntityCreateComponent } from "./entity-create-component/create-entity-create-component";
 import { createEntityListComponent } from "./entity-list-component/create-entity-list-component";
 import { createEditEntityComponent } from "./entity-edit-component/create-edit-entity-component";
+import { createEntityShowComponent } from "./entity-show-component/create-entity-show-component";
 
 export async function createEntityComponents(
   entity: Entity,
@@ -11,7 +12,7 @@ export async function createEntityComponents(
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponents> {
-  const [list, newComponent, entityComponent] = await Promise.all([
+  const [list, newComponent, editComponent, showComponent] = await Promise.all([
     createEntityListComponent(
       entity,
       dtos,
@@ -30,7 +31,13 @@ export async function createEntityComponents(
       entityToDirectory,
       entityToTitleComponent
     ),
+    createEntityShowComponent(
+      entity,
+      dtos,
+      entityToDirectory,
+      entityToTitleComponent
+    ),
   ]);
 
-  return { list, new: newComponent, entity: entityComponent };
+  return { list, new: newComponent, edit: editComponent, show: showComponent };
 }

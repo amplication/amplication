@@ -12,7 +12,7 @@ export const ENTITY_LIST = (props: ListProps): React.ReactElement => {
       title={ENTITY_PLURAL_DISPLAY_NAME}
       perPage={50}
     >
-      <Datagrid rowClick="edit">{CELLS}</Datagrid>
+      <Datagrid rowClick="show">{CELLS}</Datagrid>
     </List>
   );
 };

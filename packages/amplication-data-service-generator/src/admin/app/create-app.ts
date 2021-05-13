@@ -30,6 +30,7 @@ export async function createAppModule(
           list={${entityName}List}
           edit={${entityName}Edit}
           create={${entityName}Create}
+          show={${entityName}Show}
         />`;
     }
   );
