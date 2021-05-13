@@ -20,7 +20,7 @@ export function createFieldInput(field: EntityField): namedTypes.JSXElement {
     return jsxElement`<div/>`;
   }
 
-  return jsxElement`<div>${createDataTypeFieldInput(field)}</div>`;
+  return jsxElement`${createDataTypeFieldInput(field)}`;
 }
 
 const DATA_TYPE_TO_FIELD_INPUT: {
