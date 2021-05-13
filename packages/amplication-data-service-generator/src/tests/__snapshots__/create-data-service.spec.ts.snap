@@ -1961,6 +1961,135 @@ export const UserTitle = ({ id }: Props) => {
   },
 ];
 ",
+  "admin-ui/src/util/BooleanFilter.ts": "export class BooleanFilter {
+  equals?: boolean;
+  not?: boolean;
+}
+",
+  "admin-ui/src/util/BooleanNullableFilter.ts": "export class BooleanNullableFilter {
+  equals?: boolean | null;
+  not?: boolean | null;
+}
+",
+  "admin-ui/src/util/DateTimeFilter.ts": "export class DateTimeFilter {
+  equals?: Date;
+  not?: Date;
+  in?: Date[];
+  notIn?: Date[];
+  lt?: Date;
+  lte?: Date;
+  gt?: Date;
+  gte?: Date;
+}
+",
+  "admin-ui/src/util/DateTimeNullableFilter.ts": "export class DateTimeNullableFilter {
+  equals?: Date | null;
+  in?: Date[] | null;
+  notIn?: Date[] | null;
+  lt?: Date;
+  lte?: Date;
+  gt?: Date;
+  gte?: Date;
+  not?: Date;
+}
+",
+  "admin-ui/src/util/FloatFilter.ts": "export class FloatFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/FloatNullableFilter.ts": "export class FloatNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/IntFilter.ts": "export class IntFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/IntNullableFilter.ts": "export class IntNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/JsonNullableFilter.ts": "import { JsonValue } from \\"type-fest\\";
+export class JsonNullableFilter {
+  equals?: JsonValue | null;
+  not?: JsonValue | null;
+}
+",
+  "admin-ui/src/util/MetaQueryPayload.ts": "export class MetaQueryPayload {
+  count!: number;
+}
+",
+  "admin-ui/src/util/QueryMode.ts": "export enum QueryMode {
+  Default = \\"default\\",
+  Insensitive = \\"insensitive\\",
+}
+",
+  "admin-ui/src/util/SortOrder.ts": "export enum SortOrder {
+  Asc = \\"asc\\",
+  Desc = \\"desc\\",
+}
+",
+  "admin-ui/src/util/StringFilter.ts": "import { QueryMode } from \\"./QueryMode\\";
+
+export class StringFilter {
+  equals?: string;
+  in?: string[];
+  notIn?: string[];
+  lt?: string;
+  lte?: string;
+  gt?: string;
+  gte?: string;
+  contains?: string;
+  startsWith?: string;
+  endsWith?: string;
+  mode?: QueryMode;
+  not?: string;
+}
+",
+  "admin-ui/src/util/StringNullableFilter.ts": "import { QueryMode } from \\"./QueryMode\\";
+export class StringNullableFilter {
+  equals?: string | null;
+  in?: string[] | null;
+  notIn?: string[] | null;
+  lt?: string;
+  lte?: string;
+  gt?: string;
+  gte?: string;
+  contains?: string;
+  startsWith?: string;
+  endsWith?: string;
+  mode?: QueryMode;
+  not?: string;
+}
+",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
