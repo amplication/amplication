@@ -32,9 +32,6 @@ export async function createNewEntityComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  entityToPath: Record<string, string>,
-  entityToResource: Record<string, string>,
-  dtoNameToPath: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const file = await readFile(template);

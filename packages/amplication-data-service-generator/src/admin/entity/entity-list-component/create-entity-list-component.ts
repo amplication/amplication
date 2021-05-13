@@ -29,15 +29,11 @@ const IMPORTABLE_IDS = {
 };
 
 const template = path.resolve(__dirname, "entity-list-component.template.tsx");
-const ITEM_ID = builders.identifier("item");
 
 export async function createEntityListComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  entityToPath: Record<string, string>,
-  entityToResource: Record<string, string>,
-  dtoNameToPath: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
@@ -61,24 +57,27 @@ export async function createEntityListComponent(
       entity.pluralDisplayName
     ),
     CELLS: jsxFragment`<>${fields.map(
-      (field) =>
-        jsxElement`${createFieldValue(field, ITEM_ID, entityToTitleComponent)}`
+      (field) => jsxElement`${createFieldValue(field)}`
     )}</>`,
   });
 
   // Add imports for entities title components
-addImports(
-  file,
-  relationFields.map((field) => {
-    const { relatedEntity } = field.properties as LookupResolvedProperties;
-    const relatedEntityTitleComponent =
-      entityToTitleComponent[relatedEntity.name];
-    return importNames(
-      [builders.identifier(`${relatedEntity.name.toUpperCase()}_TITLE_FIELD`)],
-      relativeImportPath(modulePath, relatedEntityTitleComponent.modulePath)
-    );
-  })
-);
+  addImports(
+    file,
+    relationFields.map((field) => {
+      const { relatedEntity } = field.properties as LookupResolvedProperties;
+      const relatedEntityTitleComponent =
+        entityToTitleComponent[relatedEntity.name];
+      return importNames(
+        [
+          builders.identifier(
+            `${relatedEntity.name.toUpperCase()}_TITLE_FIELD`
+          ),
+        ],
+        relativeImportPath(modulePath, relatedEntityTitleComponent.modulePath)
+      );
+    })
+  );
 
   addImports(file, [...importContainedIdentifiers(file, IMPORTABLE_IDS)]);
 

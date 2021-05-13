@@ -5,16 +5,13 @@ import {
   LookupResolvedProperties,
 } from "../../types";
 import { jsxElement } from "../util";
-import { EntityComponent } from "../types";
 /**
  * Creates a node for displaying given entity field value
  * @param field the entity field to create value view for
  * @returns the node AST representation
  */
 export function createFieldValue(
-  field: EntityField,
-  dataId: namedTypes.Identifier,
-  entityToTitleComponent: Record<string, EntityComponent>
+  field: EntityField
 ): namedTypes.JSXElement | namedTypes.JSXFragment {
   switch (field.dataType) {
     case EnumDataType.CreatedAt:

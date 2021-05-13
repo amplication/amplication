@@ -85,9 +85,6 @@ export async function createAdminModules(
     entities,
     dtos,
     entityToDirectory,
-    entityToPath,
-    entityToResource,
-    dtoNameToPath,
     entityToTitleComponent
   );
   const entityComponentsModules = await createEntityComponentsModules(
