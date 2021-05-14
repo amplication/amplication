@@ -782,6 +782,7 @@ import {
   SimpleForm,
   CreateProps,
   TextInput,
+  BooleanInput,
   DateInput,
   NumberInput,
   SelectArrayInput,
@@ -866,6 +867,7 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
+  BooleanInput,
   DateInput,
   NumberInput,
   SelectArrayInput,
@@ -1109,7 +1111,9 @@ import { Create, SimpleForm, CreateProps } from \\"react-admin\\";
 export const EmptyCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
-      <SimpleForm></SimpleForm>
+      <SimpleForm>
+        <div />
+      </SimpleForm>
     </Create>
   );
 };
@@ -1120,7 +1124,9 @@ import { Edit, SimpleForm, EditProps } from \\"react-admin\\";
 export const EmptyEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
-      <SimpleForm></SimpleForm>
+      <SimpleForm>
+        <div />
+      </SimpleForm>
     </Edit>
   );
 };
@@ -1507,8 +1513,10 @@ import {
   PasswordInput,
   SelectArrayInput,
   NumberInput,
+  DateTimeInput,
   ReferenceInput,
   SelectInput,
+  BooleanInput,
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
@@ -1582,8 +1590,10 @@ import {
   PasswordInput,
   SelectArrayInput,
   NumberInput,
+  DateTimeInput,
   ReferenceInput,
   SelectInput,
+  BooleanInput,
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
