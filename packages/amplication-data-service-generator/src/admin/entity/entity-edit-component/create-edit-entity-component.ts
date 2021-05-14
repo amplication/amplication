@@ -1,5 +1,6 @@
 import * as path from "path";
 import { builders } from "ast-types";
+import { isEmpty } from "lodash";
 import {
   Entity,
   EnumDataType,
@@ -53,7 +54,11 @@ export async function createEditEntityComponent(
 
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
-    INPUTS: jsxFragment`<>${fields.map((field) => createFieldInput(field))}</>`,
+    INPUTS: jsxFragment`<>${
+      isEmpty(fields)
+        ? "<div/>" //create an empty div if no fields exist - <SimpleForm> {children} must not be empty
+        : fields.map((field) => createFieldInput(field))
+    }</>`,
   });
 
   // Add imports for entities title components

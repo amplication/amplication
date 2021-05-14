@@ -7,7 +7,6 @@ import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
 import { updatePackageJSONs } from "../update-package-jsons";
 import { DTOs } from "../server/resource/create-dtos";
-import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";
@@ -61,7 +60,6 @@ export async function createAdminModules(
     ])
   );
   const publicFilesModules = await createPublicFiles(appInfo);
-  const navigationModule = await createNavigationModule(entities, entityToPath);
   const entityToDirectory = createEntityToDirectory(entities);
   const dtoNameToPath = createDTONameToPath(dtos);
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
@@ -97,7 +95,6 @@ export async function createAdminModules(
   );
   const createdModules = [
     appModule,
-    navigationModule,
     enumRolesModule,
     rolesModule,
     ...dtoModules,
