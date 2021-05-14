@@ -21,6 +21,7 @@
   "dependencies": {
     "@amplication/data": "^0.5.3",
     "@amplication/design-system": "^0.5.3",
+    "@apollo/client": "^3.3.18",
     "@babel/parser": "^7.12.11",
     "@extra-set/difference": "^2.2.3",
     "@nestjs/common": "^7.2.0",
@@ -56,8 +57,6 @@
     "@types/react-router-dom": "^5.1.6",
     "@types/replace-ext": "^2.0.0",
     "@types/semver": "^7.3.4",
-    "apollo-client": "^2.6.10",
-    "apollo-link-context": "^1.0.20",
     "apollo-server-express": "^2.19.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
