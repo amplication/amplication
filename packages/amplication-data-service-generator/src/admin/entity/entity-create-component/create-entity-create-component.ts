@@ -1,5 +1,5 @@
 import * as path from "path";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import {
   Entity,
   EnumDataType,
@@ -8,7 +8,6 @@ import {
 } from "../../../types";
 import {
   addImports,
-  getNamedProperties,
   importContainedIdentifiers,
   importNames,
   interpolate,
@@ -16,49 +15,52 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { jsxElement, jsxFragment } from "../../util";
-import { createFieldValue } from "../create-field-value";
+import { createFieldInput } from "../create-field-input";
+import { jsxFragment } from "../../util";
 import {
   REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
 } from "../react-admin.util";
+const template = path.resolve(
+  __dirname,
+  "entity-create-component.template.tsx"
+);
 
 const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
   [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
 };
 
-const template = path.resolve(__dirname, "entity-list-component.template.tsx");
-
-export async function createEntityListComponent(
+export async function createEntityCreateComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
-  const name = `${entity.name}List`;
+  const name = `${entity.name}Create`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const entityDTO = dtos[entity.name].entity;
-  const fieldNameToField = Object.fromEntries(
+  const dto = dtos[entity.name].createInput;
+  const dtoProperties = dto.body.body.filter(
+    (
+      member
+    ): member is namedTypes.ClassProperty & { key: namedTypes.Identifier } =>
+      namedTypes.ClassProperty.check(member) &&
+      namedTypes.Identifier.check(member.key)
+  );
+  const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
-  const entityDTOProperties = getNamedProperties(entityDTO);
-  const fields = entityDTOProperties.map(
-    (property) => fieldNameToField[property.key.name]
+  const fields = dtoProperties.map(
+    (property) => fieldsByName[property.key.name]
   );
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
 
   interpolate(file, {
-    ENTITY_LIST: builders.identifier(name),
-    ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
-      entity.pluralDisplayName
-    ),
-    CELLS: jsxFragment`<>${fields.map(
-      (field) => jsxElement`${createFieldValue(field)}`
-    )}</>`,
+    COMPONENT_NAME: builders.identifier(name),
+    INPUTS: jsxFragment`<>${fields.map((field) => createFieldInput(field))}</>`,
   });
 
   // Add imports for entities title components
@@ -69,11 +71,7 @@ export async function createEntityListComponent(
       const relatedEntityTitleComponent =
         entityToTitleComponent[relatedEntity.name];
       return importNames(
-        [
-          builders.identifier(
-            `${relatedEntity.name.toUpperCase()}_TITLE_FIELD`
-          ),
-        ],
+        [builders.identifier(relatedEntityTitleComponent.name)],
         relativeImportPath(modulePath, relatedEntityTitleComponent.modulePath)
       );
     })

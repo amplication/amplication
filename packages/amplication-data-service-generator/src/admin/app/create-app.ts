@@ -23,25 +23,32 @@ export async function createAppModule(
   entitiesComponents: Record<string, EntityComponents>
 ): Promise<Module> {
   const file = await readFile(navigationTemplatePath);
-  const entitiesRoutes = Object.entries(entitiesComponents).map(
+  const resources = Object.entries(entitiesComponents).map(
     ([entityName, entityComponents]) => {
-      const entityPath = entityToPath[entityName];
-      return jsxElement`<PrivateRoute path="${entityPath}" component={${entityComponents.index.name}} />`;
+      return jsxElement`<Resource
+          name="${entityName}"
+          list={${entityName}List}
+          edit={${entityName}Edit}
+          create={${entityName}Create}
+          show={${entityName}Show}
+        />`;
     }
   );
   interpolate(file, {
     APP_NAME: builders.stringLiteral(appInfo.name),
-    ROUTES: jsxFragment`<>${entitiesRoutes}</>`,
+    RESOURCES: jsxFragment`<>${resources}</>`,
   });
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);
-  const entityImports = Object.values(
-    entitiesComponents
-  ).map((entityComponents) =>
-    importNames(
-      [builders.identifier(entityComponents.index.name)],
-      relativeImportPath(PATH, entityComponents.index.modulePath)
-    )
+  const entityImports = Object.values(entitiesComponents).flatMap(
+    (entityComponents) => {
+      return Object.values(entityComponents).map((entityComponent) => {
+        return importNames(
+          [builders.identifier(entityComponent.name)],
+          relativeImportPath(PATH, entityComponent.modulePath)
+        );
+      });
+    }
   );
   addImports(file, [...entityImports]);
   return {

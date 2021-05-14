@@ -9,6 +9,6 @@ export type EntityComponent = {
 export type EntityComponents = {
   new: EntityComponent;
   list: EntityComponent;
-  entity: EntityComponent;
-  index: EntityComponent;
+  edit: EntityComponent;
+  show: EntityComponent;
 };

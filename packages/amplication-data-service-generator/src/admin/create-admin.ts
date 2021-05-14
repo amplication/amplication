@@ -11,11 +11,9 @@ import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";
-import { createEntitySelectComponents } from "./entity/create-entity-select-components";
 import { createEntityTitleComponents } from "./entity/create-entity-title-components";
 import {
   createEntityComponentsModules,
-  createEntitySelectComponentsModules,
   createEntityTitleComponentsModules,
 } from "./entity/create-entity-components-modules";
 import { createPublicFiles } from "./public-files/create-public-files";
@@ -45,6 +43,11 @@ export async function createAdminModules(
     name: `${paramCase(appInfo.name)}-admin`,
     version: appInfo.version,
   });
+
+  /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
+   * currently the files were manually copied to /admin/static/src/util
+   */
+
   const entityToPath = Object.fromEntries(
     entities.map((entity) => [
       entity.name,
@@ -65,19 +68,6 @@ export async function createAdminModules(
   const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles);
 
-  // Create select components first so they are available when creating entity modules
-  const entityToSelectComponent = await createEntitySelectComponents(
-    entities,
-    dtos,
-    entityToDirectory,
-    entityToResource,
-    dtoNameToPath
-  );
-
-  const entitySelectComponentsModules = await createEntitySelectComponentsModules(
-    entityToSelectComponent
-  );
-
   // Create title components first so they are available when creating entity modules
   const entityToTitleComponent = await createEntityTitleComponents(
     entities,
@@ -95,10 +85,6 @@ export async function createAdminModules(
     entities,
     dtos,
     entityToDirectory,
-    entityToPath,
-    entityToResource,
-    dtoNameToPath,
-    entityToSelectComponent,
     entityToTitleComponent
   );
   const entityComponentsModules = await createEntityComponentsModules(
@@ -115,7 +101,6 @@ export async function createAdminModules(
     enumRolesModule,
     rolesModule,
     ...dtoModules,
-    ...entitySelectComponentsModules,
     ...entityTitleComponentsModules,
     ...entityComponentsModules,
   ];

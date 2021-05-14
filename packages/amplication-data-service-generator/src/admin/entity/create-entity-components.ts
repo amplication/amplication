@@ -1,57 +1,43 @@
 import { Entity } from "../../types";
 import { DTOs } from "../../server/resource/create-dtos";
 import { EntityComponent, EntityComponents } from "../types";
-import { createNewEntityComponent } from "./new-entity-component/create-new-entity-component";
+import { createEntityCreateComponent } from "./entity-create-component/create-entity-create-component";
 import { createEntityListComponent } from "./entity-list-component/create-entity-list-component";
-import { createEntityComponent } from "./entity-component/create-entity-component";
-import { createEntityIndexComponent } from "./entity-index-component/create-entity-index-component";
+import { createEditEntityComponent } from "./entity-edit-component/create-edit-entity-component";
+import { createEntityShowComponent } from "./entity-show-component/create-entity-show-component";
 
 export async function createEntityComponents(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  entityToPath: Record<string, string>,
-  entityToResource: Record<string, string>,
-  dtoNameToPath: Record<string, string>,
-  entityToSelectComponent: Record<string, EntityComponent>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponents> {
-  const [list, newComponent, entityComponent] = await Promise.all([
+  const [list, newComponent, editComponent, showComponent] = await Promise.all([
     createEntityListComponent(
       entity,
       dtos,
       entityToDirectory,
-      entityToPath,
-      entityToResource,
-      dtoNameToPath,
       entityToTitleComponent
     ),
-    createNewEntityComponent(
+    createEntityCreateComponent(
       entity,
       dtos,
       entityToDirectory,
-      entityToPath,
-      entityToResource,
-      dtoNameToPath,
-      entityToSelectComponent
+      entityToTitleComponent
     ),
-    createEntityComponent(
+    createEditEntityComponent(
       entity,
       dtos,
       entityToDirectory,
-      entityToPath,
-      entityToResource,
-      dtoNameToPath,
-      entityToSelectComponent
+      entityToTitleComponent
+    ),
+    createEntityShowComponent(
+      entity,
+      dtos,
+      entityToDirectory,
+      entityToTitleComponent
     ),
   ]);
-  const index = await createEntityIndexComponent(
-    entity,
-    entityToDirectory,
-    entityToPath,
-    list,
-    newComponent,
-    entityComponent
-  );
-  return { list, new: newComponent, entity: entityComponent, index };
+
+  return { list, new: newComponent, edit: editComponent, show: showComponent };
 }

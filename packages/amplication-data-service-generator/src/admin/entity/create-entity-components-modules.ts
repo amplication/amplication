@@ -14,16 +14,6 @@ export function createEntityComponentsModules(
   );
 }
 
-export function createEntitySelectComponentsModules(
-  selectComponents: Record<string, EntityComponent>
-): Promise<Module[]> {
-  return Promise.all(
-    Object.values(selectComponents).flatMap((component) =>
-      createEntityComponentModule(component)
-    )
-  );
-}
-
 export function createEntityTitleComponentsModules(
   titleComponents: Record<string, EntityComponent>
 ): Promise<Module[]> {

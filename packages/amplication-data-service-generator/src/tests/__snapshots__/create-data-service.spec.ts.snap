@@ -2,198 +2,109 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
-  "admin/src/App.tsx": "import React, { useCallback, useContext } from \\"react\\";
-import { Route, Switch, useHistory, Link, NavLink } from \\"react-router-dom\\";
-import Navigation from \\"./Navigation\\";
-import Login from \\"./Login\\";
-import { Credentials, setCredentials, removeCredentials } from \\"./auth\\";
-import {
-  Menu,
-  MainLayout,
-  Page,
-  CircleBadge,
-  Breadcrumbs,
-} from \\"@amplication/design-system\\";
-import BreadcrumbsContext from \\"./components/breadcrumbs/BreadcrumbsContext\\";
-import BreadcrumbsProvider from \\"./components/breadcrumbs/BreadcrumbsProvider\\";
-import useBreadcrumbs from \\"./components/breadcrumbs/use-breadcrumbs\\";
-import PrivateRoute from \\"./components/PrivateRoute\\";
-import { UserIndex } from \\"./user/UserIndex\\";
-import { OrderIndex } from \\"./order/OrderIndex\\";
-import { OrganizationIndex } from \\"./organization/OrganizationIndex\\";
-import { CustomerIndex } from \\"./customer/CustomerIndex\\";
-import { EmptyIndex } from \\"./empty/EmptyIndex\\";
+  "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
+import { Admin, DataProvider, Resource } from \\"react-admin\\";
+import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
+import basicHttpAuthProvider from \\"./auth-provider/ra-auth-basic-http\\";
+import \\"./App.css\\";
+import Dashboard from \\"./pages/Dashboard\\";
+import { UserList } from \\"./user/UserList\\";
+import { UserCreate } from \\"./user/UserCreate\\";
+import { UserEdit } from \\"./user/UserEdit\\";
+import { UserShow } from \\"./user/UserShow\\";
+import { OrderList } from \\"./order/OrderList\\";
+import { OrderCreate } from \\"./order/OrderCreate\\";
+import { OrderEdit } from \\"./order/OrderEdit\\";
+import { OrderShow } from \\"./order/OrderShow\\";
+import { OrganizationList } from \\"./organization/OrganizationList\\";
+import { OrganizationCreate } from \\"./organization/OrganizationCreate\\";
+import { OrganizationEdit } from \\"./organization/OrganizationEdit\\";
+import { OrganizationShow } from \\"./organization/OrganizationShow\\";
+import { CustomerList } from \\"./customer/CustomerList\\";
+import { CustomerCreate } from \\"./customer/CustomerCreate\\";
+import { CustomerEdit } from \\"./customer/CustomerEdit\\";
+import { CustomerShow } from \\"./customer/CustomerShow\\";
+import { EmptyList } from \\"./empty/EmptyList\\";
+import { EmptyCreate } from \\"./empty/EmptyCreate\\";
+import { EmptyEdit } from \\"./empty/EmptyEdit\\";
+import { EmptyShow } from \\"./empty/EmptyShow\\";
 
 const App = (): React.ReactElement => {
-  const history = useHistory();
-  const handleLogin = useCallback(
-    (credentials: Credentials) => {
-      setCredentials(credentials);
-      history.push(\\"/\\");
-    },
-    [history]
-  );
-
+  const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
+  useEffect(() => {
+    buildGraphQLProvider
+      .then((provider: any) => {
+        setDataProvider(() => provider);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+  }, []);
+  if (!dataProvider) {
+    return <div>Loading</div>;
+  }
   return (
-    <BreadcrumbsProvider>
-      <MainLayout>
-        <Switch>
-          <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
-          <PrivateRoute path=\\"/\\" component={AppLayout} />
-        </Switch>
-      </MainLayout>
-    </BreadcrumbsProvider>
-  );
-};
-
-export default App;
-
-/**@todo: move to a separate template file */
-const AppLayout = (): React.ReactElement => {
-  const history = useHistory();
-  useBreadcrumbs(\\"/\\", \\"Sample Application\\");
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-
-  const signOut = useCallback(() => {
-    removeCredentials();
-    history.push(\\"/login\\");
-  }, [history]);
-
-  // Use navLink for breadcrumbs to prevent page reload
-  const ItemLink = ({ href, ...rest }: { href: string }) => (
-    <NavLink {...rest} to={href} />
-  );
-
-  return (
-    <>
-      <Menu
-        onSignOutClick={signOut}
-        logoContent={
-          <Link to=\\"/\\">
-            <CircleBadge name={\\"Sample Application\\"} />
-          </Link>
-        }
-      ></Menu>
-      <MainLayout.Content>
-        <Breadcrumbs>
-          {}
-          {breadcrumbsContext.breadcrumbsItems.map((item, index, items) => (
-            <Breadcrumbs.Item
-              as={ItemLink}
-              key={index}
-              selected={index + 1 === items.length}
-              href={item.url}
-            >
-              {item.name}
-            </Breadcrumbs.Item>
-          ))}
-        </Breadcrumbs>
-        <Page>
-          <Switch>
-            <PrivateRoute exact path=\\"/\\" component={Navigation} />
-            <PrivateRoute path=\\"/users\\" component={UserIndex} />
-            <PrivateRoute path=\\"/orders\\" component={OrderIndex} />
-            <PrivateRoute path=\\"/organizations\\" component={OrganizationIndex} />
-            <PrivateRoute path=\\"/customers\\" component={CustomerIndex} />
-            <PrivateRoute path=\\"/empties\\" component={EmptyIndex} />
-          </Switch>
-        </Page>
-      </MainLayout.Content>
-    </>
-  );
-};
-",
-  "admin/src/Login.tsx": "import React, { useCallback } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
-import {
-  Panel,
-  PanelHeader,
-  TextField,
-  Button,
-  EnumPanelStyle,
-  EnumButtonStyle,
-} from \\"@amplication/design-system\\";
-import { Credentials } from \\"./auth\\";
-import { api } from \\"./api\\";
-import \\"./login.scss\\";
-
-export type Props = {
-  onLogin: (credentials: Credentials) => void;
-};
-
-const INITIAL_VALUES = {
-  username: \\"\\",
-  password: \\"\\",
-};
-
-const Login = ({ onLogin }: Props) => {
-  const [login, { error }] = useMutation<unknown, AxiosError, Credentials>(
-    async (data) => api.post(\\"/api/login\\", data),
-    {
-      onSuccess: (data, variables) => {
-        onLogin(variables);
-      },
-    }
-  );
-  const handleSubmit = useCallback(
-    (values) => {
-      login(values);
-    },
-    [login]
-  );
-  return (
-    <div className=\\"login-page\\">
-      <div className=\\"options-container\\">
-        <Panel panelStyle={EnumPanelStyle.Bordered}>
-          <PanelHeader>Sign In to Admin UI</PanelHeader>
-          <div className=\\"message\\">
-            By default, your app comes with one user with the username \\"admin\\"
-            and password \\"admin\\".
-          </div>
-          <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-            <Form>
-              <TextField label=\\"Username\\" name=\\"username\\" type=\\"text\\" />
-              <TextField label=\\"Password\\" name=\\"password\\" type=\\"password\\" />
-              <Button type=\\"submit\\">Continue</Button>
-            </Form>
-          </Formik>
-          {error && error.response?.data?.message}
-        </Panel>
-        <div className=\\"divider\\">Or</div>
-        <Panel panelStyle={EnumPanelStyle.Bordered}>
-          <PanelHeader>Connect via API</PanelHeader>
-          <div className=\\"message\\">
-            Choose the type of API for connecting to your app.
-          </div>
-          <a href=\\"/graphql\\" target=\\"graphql\\">
-            <Button type=\\"button\\" buttonStyle={EnumButtonStyle.Secondary}>
-              GraphQL API
-            </Button>
-          </a>
-          <a href=\\"/api\\" target=\\"api\\">
-            <Button type=\\"button\\" buttonStyle={EnumButtonStyle.Secondary}>
-              REST API
-            </Button>
-          </a>
-          <hr />
-          <div className=\\"message\\">
-            <span>Read </span>
-            <a href=\\"https://docs.amplication.com/docs/api\\" target=\\"docs\\">
-              Amplication docs
-            </a>
-            <span> to learn more</span>
-          </div>
-        </Panel>
-      </div>
+    <div className=\\"App\\">
+      <Admin
+        title=\\"My Custom Admin\\"
+        dataProvider={dataProvider}
+        authProvider={basicHttpAuthProvider}
+        dashboard={Dashboard}
+      >
+        <Resource
+          name=\\"User\\"
+          list={UserList}
+          edit={UserEdit}
+          create={UserCreate}
+          show={UserShow}
+        />
+        <Resource
+          name=\\"Order\\"
+          list={OrderList}
+          edit={OrderEdit}
+          create={OrderCreate}
+          show={OrderShow}
+        />
+        <Resource
+          name=\\"Organization\\"
+          list={OrganizationList}
+          edit={OrganizationEdit}
+          create={OrganizationCreate}
+          show={OrganizationShow}
+        />
+        <Resource
+          name=\\"Customer\\"
+          list={CustomerList}
+          edit={CustomerEdit}
+          create={CustomerCreate}
+          show={CustomerShow}
+        />
+        <Resource
+          name=\\"Empty\\"
+          list={EmptyList}
+          edit={EmptyEdit}
+          create={EmptyCreate}
+          show={EmptyShow}
+        />
+      </Admin>
     </div>
   );
 };
 
-export default Login;
+export default App;
 ",
-  "admin/src/Navigation.tsx": "import React from \\"react\\";
+  "admin-ui/src/Components/Pagination.tsx": "import React from \\"react\\";
+import { Pagination as RAPagination, PaginationProps } from \\"react-admin\\";
+
+const PAGINATION_OPTIONS = [10, 25, 50, 100, 200];
+
+const Pagination = (props: PaginationProps) => (
+  <RAPagination rowsPerPageOptions={PAGINATION_OPTIONS} {...props} />
+);
+
+export default Pagination;
+",
+  "admin-ui/src/Navigation.tsx": "import React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { Panel, PanelHeader, EnumPanelStyle } from \\"@amplication/design-system\\";
 
@@ -226,51 +137,13 @@ const NavigationItem = ({
   </Link>
 );
 ",
-  "admin/src/api/api.ts": "import axios from \\"axios\\";
-import { getCredentials } from \\"../auth\\";
-import { createBasicAuthorizationHeader } from \\"./http.util\\";
-
-export const api = axios.create({
-  headers: {
-    \\"Content-Type\\": \\"application/json\\",
-  },
-});
-
-api.interceptors.request.use((config) => {
-  const credentials = getCredentials();
-  if (credentials) {
-    config.headers[\\"Authorization\\"] = createBasicAuthorizationHeader(
-      credentials.username,
-      credentials.password
-    );
-  }
-  return config;
-});
-",
-  "admin/src/api/api.util.ts": "import { getCredentials } from \\"../auth\\";
-import { createBasicAuthorizationHeader } from \\"./http.util\\";
-
-export function getHeaders(
-  init?: Headers | string[][] | Record<string, string> | undefined
-) {
-  const headers = new Headers(init);
-  const credentials = getCredentials();
-  if (credentials) {
-    headers.append(
-      \\"Authorization\\",
-      createBasicAuthorizationHeader(credentials.username, credentials.password)
-    );
-  }
-  return headers;
-}
-",
-  "admin/src/api/customer/CreateCustomerArgs.ts": "import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
+  "admin-ui/src/api/customer/CreateCustomerArgs.ts": "import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 
 export type CreateCustomerArgs = {
   data: CustomerCreateInput;
 };
 ",
-  "admin/src/api/customer/Customer.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin-ui/src/api/customer/Customer.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type Customer = {
   id: string;
@@ -291,7 +164,7 @@ export type Customer = {
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
-  "admin/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type CustomerCreateInput = {
   email: string;
@@ -309,7 +182,7 @@ export type CustomerCreateInput = {
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
-  "admin/src/api/customer/CustomerFindManyArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+  "admin-ui/src/api/customer/CustomerFindManyArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerOrderByInput } from \\"./CustomerOrderByInput\\";
 
 export type CustomerFindManyArgs = {
@@ -319,13 +192,13 @@ export type CustomerFindManyArgs = {
   take?: number;
 };
 ",
-  "admin/src/api/customer/CustomerFindUniqueArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+  "admin-ui/src/api/customer/CustomerFindUniqueArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 
 export type CustomerFindUniqueArgs = {
   where: CustomerWhereUniqueInput;
 };
 ",
-  "admin/src/api/customer/CustomerOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+  "admin-ui/src/api/customer/CustomerOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type CustomerOrderByInput = {
   id?: SortOrder;
@@ -346,7 +219,7 @@ export type CustomerOrderByInput = {
   vipOrganizationId?: SortOrder;
 };
 ",
-  "admin/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin-ui/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type CustomerUpdateInput = {
   email?: string;
@@ -364,7 +237,7 @@ export type CustomerUpdateInput = {
   vipOrganization?: OrganizationWhereUniqueInput | null;
 };
 ",
-  "admin/src/api/customer/CustomerWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+  "admin-ui/src/api/customer/CustomerWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
 import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
@@ -391,31 +264,31 @@ export type CustomerWhereInput = {
   vipOrganization?: OrganizationWhereUniqueInput;
 };
 ",
-  "admin/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
+  "admin-ui/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
   id: string;
 };
 ",
-  "admin/src/api/customer/DeleteCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+  "admin-ui/src/api/customer/DeleteCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 
 export type DeleteCustomerArgs = {
   where: CustomerWhereUniqueInput;
 };
 ",
-  "admin/src/api/customer/EnumCustomerCustomerType.ts": "export enum EnumCustomerCustomerType {
+  "admin-ui/src/api/customer/EnumCustomerCustomerType.ts": "export enum EnumCustomerCustomerType {
   Platinum = \\"platinum\\",
   Gold = \\"gold\\",
   Bronze = \\"bronze\\",
   Regular = \\"regular\\",
 }
 ",
-  "admin/src/api/customer/EnumCustomerFavoriteColors.ts": "export enum EnumCustomerFavoriteColors {
+  "admin-ui/src/api/customer/EnumCustomerFavoriteColors.ts": "export enum EnumCustomerFavoriteColors {
   Red = \\"red\\",
   Green = \\"green\\",
   Purple = \\"purple\\",
   Yellow = \\"yellow\\",
 }
 ",
-  "admin/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+  "admin-ui/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 
 export type UpdateCustomerArgs = {
@@ -423,21 +296,21 @@ export type UpdateCustomerArgs = {
   data: CustomerUpdateInput;
 };
 ",
-  "admin/src/api/empty/DeleteEmptyArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+  "admin-ui/src/api/empty/DeleteEmptyArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 
 export type DeleteEmptyArgs = {
   where: EmptyWhereUniqueInput;
 };
 ",
-  "admin/src/api/empty/Empty.ts": "export type Empty = {
+  "admin-ui/src/api/empty/Empty.ts": "export type Empty = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
 };
 ",
-  "admin/src/api/empty/EmptyCreateInput.ts": "export type EmptyCreateInput = {};
+  "admin-ui/src/api/empty/EmptyCreateInput.ts": "export type EmptyCreateInput = {};
 ",
-  "admin/src/api/empty/EmptyFindManyArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+  "admin-ui/src/api/empty/EmptyFindManyArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyOrderByInput } from \\"./EmptyOrderByInput\\";
 
 export type EmptyFindManyArgs = {
@@ -447,13 +320,13 @@ export type EmptyFindManyArgs = {
   take?: number;
 };
 ",
-  "admin/src/api/empty/EmptyFindUniqueArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+  "admin-ui/src/api/empty/EmptyFindUniqueArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 
 export type EmptyFindUniqueArgs = {
   where: EmptyWhereUniqueInput;
 };
 ",
-  "admin/src/api/empty/EmptyOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+  "admin-ui/src/api/empty/EmptyOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type EmptyOrderByInput = {
   id?: SortOrder;
@@ -461,9 +334,9 @@ export type EmptyOrderByInput = {
   updatedAt?: SortOrder;
 };
 ",
-  "admin/src/api/empty/EmptyUpdateInput.ts": "export type EmptyUpdateInput = {};
+  "admin-ui/src/api/empty/EmptyUpdateInput.ts": "export type EmptyUpdateInput = {};
 ",
-  "admin/src/api/empty/EmptyWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+  "admin-ui/src/api/empty/EmptyWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 
 export type EmptyWhereInput = {
@@ -472,42 +345,40 @@ export type EmptyWhereInput = {
   updatedAt?: DateTimeFilter;
 };
 ",
-  "admin/src/api/empty/EmptyWhereUniqueInput.ts": "export type EmptyWhereUniqueInput = {
+  "admin-ui/src/api/empty/EmptyWhereUniqueInput.ts": "export type EmptyWhereUniqueInput = {
   id: string;
 };
 ",
-  "admin/src/api/http.util.ts": "export function createBasicAuthorizationHeader(
+  "admin-ui/src/api/http.util.ts": "export function createBasicAuthorizationHeader(
   username: string,
   password: string
 ): string {
   return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
 }
 ",
-  "admin/src/api/index.ts": "export { api } from \\"./api\\";
-",
-  "admin/src/api/order/CreateOrderArgs.ts": "import { OrderCreateInput } from \\"./OrderCreateInput\\";
+  "admin-ui/src/api/order/CreateOrderArgs.ts": "import { OrderCreateInput } from \\"./OrderCreateInput\\";
 
 export type CreateOrderArgs = {
   data: OrderCreateInput;
 };
 ",
-  "admin/src/api/order/DeleteOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+  "admin-ui/src/api/order/DeleteOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 
 export type DeleteOrderArgs = {
   where: OrderWhereUniqueInput;
 };
 ",
-  "admin/src/api/order/EnumOrderLabel.ts": "export enum EnumOrderLabel {
+  "admin-ui/src/api/order/EnumOrderLabel.ts": "export enum EnumOrderLabel {
   Fragile = \\"fragile\\",
 }
 ",
-  "admin/src/api/order/EnumOrderStatus.ts": "export enum EnumOrderStatus {
+  "admin-ui/src/api/order/EnumOrderStatus.ts": "export enum EnumOrderStatus {
   Pending = \\"pending\\",
   InProgress = \\"inProgress\\",
   Done = \\"done\\",
 }
 ",
-  "admin/src/api/order/Order.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+  "admin-ui/src/api/order/Order.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export type Order = {
   id: string;
@@ -518,7 +389,7 @@ export type Order = {
   label?: \\"fragile\\" | null;
 };
 ",
-  "admin/src/api/order/OrderCreateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+  "admin-ui/src/api/order/OrderCreateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export type OrderCreateInput = {
   customer: CustomerWhereUniqueInput;
@@ -526,7 +397,7 @@ export type OrderCreateInput = {
   label?: \\"fragile\\" | null;
 };
 ",
-  "admin/src/api/order/OrderFindManyArgs.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
+  "admin-ui/src/api/order/OrderFindManyArgs.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderOrderByInput } from \\"./OrderOrderByInput\\";
 
 export type OrderFindManyArgs = {
@@ -536,13 +407,13 @@ export type OrderFindManyArgs = {
   take?: number;
 };
 ",
-  "admin/src/api/order/OrderFindUniqueArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+  "admin-ui/src/api/order/OrderFindUniqueArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 
 export type OrderFindUniqueArgs = {
   where: OrderWhereUniqueInput;
 };
 ",
-  "admin/src/api/order/OrderOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+  "admin-ui/src/api/order/OrderOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type OrderOrderByInput = {
   id?: SortOrder;
@@ -553,7 +424,7 @@ export type OrderOrderByInput = {
   label?: SortOrder;
 };
 ",
-  "admin/src/api/order/OrderUpdateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+  "admin-ui/src/api/order/OrderUpdateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export type OrderUpdateInput = {
   customer?: CustomerWhereUniqueInput;
@@ -561,7 +432,7 @@ export type OrderUpdateInput = {
   label?: \\"fragile\\" | null;
 };
 ",
-  "admin/src/api/order/OrderWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+  "admin-ui/src/api/order/OrderWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
@@ -574,11 +445,11 @@ export type OrderWhereInput = {
   label?: \\"fragile\\";
 };
 ",
-  "admin/src/api/order/OrderWhereUniqueInput.ts": "export type OrderWhereUniqueInput = {
+  "admin-ui/src/api/order/OrderWhereUniqueInput.ts": "export type OrderWhereUniqueInput = {
   id: string;
 };
 ",
-  "admin/src/api/order/UpdateOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+  "admin-ui/src/api/order/UpdateOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 
 export type UpdateOrderArgs = {
@@ -586,30 +457,30 @@ export type UpdateOrderArgs = {
   data: OrderUpdateInput;
 };
 ",
-  "admin/src/api/organization/CreateOrganizationArgs.ts": "import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
+  "admin-ui/src/api/organization/CreateOrganizationArgs.ts": "import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 
 export type CreateOrganizationArgs = {
   data: OrganizationCreateInput;
 };
 ",
-  "admin/src/api/organization/DeleteOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+  "admin-ui/src/api/organization/DeleteOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
 export type DeleteOrganizationArgs = {
   where: OrganizationWhereUniqueInput;
 };
 ",
-  "admin/src/api/organization/Organization.ts": "export type Organization = {
+  "admin-ui/src/api/organization/Organization.ts": "export type Organization = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
   name: string;
 };
 ",
-  "admin/src/api/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
+  "admin-ui/src/api/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
   name: string;
 };
 ",
-  "admin/src/api/organization/OrganizationFindManyArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+  "admin-ui/src/api/organization/OrganizationFindManyArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationOrderByInput } from \\"./OrganizationOrderByInput\\";
 
 export type OrganizationFindManyArgs = {
@@ -619,13 +490,13 @@ export type OrganizationFindManyArgs = {
   take?: number;
 };
 ",
-  "admin/src/api/organization/OrganizationFindUniqueArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+  "admin-ui/src/api/organization/OrganizationFindUniqueArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
 export type OrganizationFindUniqueArgs = {
   where: OrganizationWhereUniqueInput;
 };
 ",
-  "admin/src/api/organization/OrganizationOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+  "admin-ui/src/api/organization/OrganizationOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type OrganizationOrderByInput = {
   id?: SortOrder;
@@ -634,11 +505,11 @@ export type OrganizationOrderByInput = {
   name?: SortOrder;
 };
 ",
-  "admin/src/api/organization/OrganizationUpdateInput.ts": "export type OrganizationUpdateInput = {
+  "admin-ui/src/api/organization/OrganizationUpdateInput.ts": "export type OrganizationUpdateInput = {
   name?: string;
 };
 ",
-  "admin/src/api/organization/OrganizationWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+  "admin-ui/src/api/organization/OrganizationWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 
 export type OrganizationWhereInput = {
@@ -648,11 +519,11 @@ export type OrganizationWhereInput = {
   name?: StringFilter;
 };
 ",
-  "admin/src/api/organization/OrganizationWhereUniqueInput.ts": "export type OrganizationWhereUniqueInput = {
+  "admin-ui/src/api/organization/OrganizationWhereUniqueInput.ts": "export type OrganizationWhereUniqueInput = {
   id: string;
 };
 ",
-  "admin/src/api/organization/UpdateOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+  "admin-ui/src/api/organization/UpdateOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 
 export type UpdateOrganizationArgs = {
@@ -660,30 +531,30 @@ export type UpdateOrganizationArgs = {
   data: OrganizationUpdateInput;
 };
 ",
-  "admin/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from \\"./UserCreateInput\\";
+  "admin-ui/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from \\"./UserCreateInput\\";
 
 export type CreateUserArgs = {
   data: UserCreateInput;
 };
 ",
-  "admin/src/api/user/DeleteUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/DeleteUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 
 export type DeleteUserArgs = {
   where: UserWhereUniqueInput;
 };
 ",
-  "admin/src/api/user/EnumUserInterests.ts": "export enum EnumUserInterests {
+  "admin-ui/src/api/user/EnumUserInterests.ts": "export enum EnumUserInterests {
   Programming = \\"programming\\",
   Design = \\"design\\",
 }
 ",
-  "admin/src/api/user/EnumUserPriority.ts": "export enum EnumUserPriority {
+  "admin-ui/src/api/user/EnumUserPriority.ts": "export enum EnumUserPriority {
   High = \\"high\\",
   Medium = \\"medium\\",
   Low = \\"low\\",
 }
 ",
-  "admin/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 
 export type UpdateUserArgs = {
@@ -691,7 +562,7 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin/src/api/user/User.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/User.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { JsonValue } from \\"type-fest\\";
 
@@ -714,7 +585,7 @@ export type User = {
   extendedProperties: JsonValue;
 };
 ",
-  "admin/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { JsonValue } from \\"type-fest\\";
 
@@ -737,7 +608,7 @@ export type UserCreateInput = {
   extendedProperties: JsonValue;
 };
 ",
-  "admin/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
+  "admin-ui/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserOrderByInput } from \\"./UserOrderByInput\\";
 
 export type UserFindManyArgs = {
@@ -747,13 +618,13 @@ export type UserFindManyArgs = {
   take?: number;
 };
 ",
-  "admin/src/api/user/UserFindUniqueArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserFindUniqueArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 
 export type UserFindUniqueArgs = {
   where: UserWhereUniqueInput;
 };
 ",
-  "admin/src/api/user/UserOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+  "admin-ui/src/api/user/UserOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type UserOrderByInput = {
   username?: SortOrder;
@@ -775,7 +646,7 @@ export type UserOrderByInput = {
   extendedProperties?: SortOrder;
 };
 ",
-  "admin/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { JsonValue } from \\"type-fest\\";
 
@@ -798,7 +669,7 @@ export type UserUpdateInput = {
   extendedProperties?: JsonValue;
 };
 ",
-  "admin/src/api/user/UserWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+  "admin-ui/src/api/user/UserWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -820,11 +691,51 @@ export type UserWhereInput = {
   extendedProperties?: JsonNullableFilter;
 };
 ",
-  "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
+  "admin-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
   id: string;
 };
 ",
-  "admin/src/auth.ts": "import { EventEmitter } from \\"events\\";
+  "admin-ui/src/auth-provider/ra-auth-basic-http.ts": "const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
+
+export type Credentials = {
+  username: string;
+  password: string;
+};
+
+const basicHttpAuthProvider = {
+  login: (credentials: Credentials) => {
+    localStorage.setItem(
+      CREDENTIALS_LOCAL_STORAGE_ITEM,
+      JSON.stringify(credentials)
+    );
+    return Promise.resolve();
+  },
+  logout: () => {
+    localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+    return Promise.resolve();
+  },
+  checkError: ({ status }: any) => {
+    if (status === 401 || status === 403) {
+      localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+      return Promise.reject();
+    }
+    return Promise.resolve();
+  },
+  checkAuth: () => {
+    return localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
+      ? Promise.resolve()
+      : Promise.reject();
+  },
+  // getIdentity: () => {
+  //   return Promise.resolve(
+  //     localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
+  //   );
+  // },
+  getPermissions: () => Promise.resolve(),
+};
+export default basicHttpAuthProvider;
+",
+  "admin-ui/src/auth.ts": "import { EventEmitter } from \\"events\\";
 
 export type Credentials = {
   username: string;
@@ -864,1159 +775,417 @@ export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
 ",
-  "admin/src/components/PrivateRoute.tsx": "import React from \\"react\\";
-import { Route, Redirect, RouteProps } from \\"react-router-dom\\";
-import useAuthenticated from \\"../use-authenticated\\";
-
-type Props = Omit<RouteProps, \\"render\\">;
-
-// A wrapper for <Route> that redirects to the login
-// screen if you're not yet authenticated.
-// Based on: https://reacttraining.com/react-router/web/example/auth-workflow
-function PrivateRoute({ component, children, ...rest }: Props) {
-  const authenticated = useAuthenticated();
-  return (
-    <Route
-      {...rest}
-      render={(props) => {
-        const { location } = props;
-        const childNode = component
-          ? React.createElement(component, props)
-          : children;
-        return authenticated ? (
-          childNode
-        ) : (
-          <Redirect
-            to={{
-              pathname: \\"/login\\",
-              state: { from: location },
-            }}
-          />
-        );
-      }}
-    />
-  );
-}
-
-export default PrivateRoute;
-",
-  "admin/src/components/breadcrumbs/BreadcrumbsContext.ts": "import { createContext } from \\"react\\";
-
-export type BreadcrumbItem = {
-  name?: string | null;
-  url: string;
-};
-
-export type ContextDataType = {
-  breadcrumbsItems: BreadcrumbItem[];
-  registerItem: (item: BreadcrumbItem) => void;
-  unregisterItem: (url: string) => void;
-};
-
-const BreadcrumbsContext = createContext<ContextDataType>({
-  breadcrumbsItems: [],
-  registerItem: (item: BreadcrumbItem) => {
-    throw new Error();
-  },
-  unregisterItem: (url: string) => {
-    throw new Error();
-  },
-});
-
-export default BreadcrumbsContext;
-",
-  "admin/src/components/breadcrumbs/BreadcrumbsProvider.tsx": "import React, { useState, useCallback, useMemo } from \\"react\\";
-import { sortBy } from \\"lodash\\";
-import BreadcrumbsContext, { BreadcrumbItem } from \\"./BreadcrumbsContext\\";
-
-type Props = {
-  children: React.ReactNode;
-};
-
-function BreadcrumbsProvider({ children }: Props) {
-  const [breadcrumbsItems, setBreadcrumbsItems] = useState<BreadcrumbItem[]>(
-    []
-  );
-
-  const registerBreadcrumbItem = useCallback(
-    (addItem: BreadcrumbItem) => {
-      setBreadcrumbsItems((items) => {
-        return sortBy(
-          [...items.filter((item) => item.url !== addItem.url), addItem],
-          (sortItem) => sortItem.url
-        );
-      });
-    },
-    [setBreadcrumbsItems]
-  );
-
-  const unregisterBreadcrumbItem = useCallback(
-    (url: string) => {
-      setBreadcrumbsItems((items) => {
-        return sortBy(
-          items.filter((item) => item.url !== url),
-          (sortItem) => sortItem.url
-        );
-      });
-    },
-    [setBreadcrumbsItems]
-  );
-
-  const breadcrumbsContextValue = useMemo(
-    () => ({
-      breadcrumbsItems,
-      registerItem: registerBreadcrumbItem,
-      unregisterItem: unregisterBreadcrumbItem,
-    }),
-    [breadcrumbsItems, registerBreadcrumbItem, unregisterBreadcrumbItem]
-  );
-
-  return (
-    <BreadcrumbsContext.Provider value={breadcrumbsContextValue}>
-      {children}
-    </BreadcrumbsContext.Provider>
-  );
-}
-
-export default BreadcrumbsProvider;
-",
-  "admin/src/components/breadcrumbs/use-breadcrumbs.ts": "import { useEffect, useContext } from \\"react\\";
-import BreadcrumbsContext from \\"./BreadcrumbsContext\\";
-
-export default function useBreadcrumbs(url: string, name?: string | null) {
-  const breadcrumbsContext = useContext(BreadcrumbsContext);
-
-  useEffect(() => {
-    breadcrumbsContext.registerItem({
-      name,
-      url,
-    });
-    return () => {
-      breadcrumbsContext.unregisterItem(url);
-    };
-    // eslint-disable-next-line  react-hooks/exhaustive-deps
-  }, [
-    name,
-    url,
-    breadcrumbsContext.registerItem,
-    breadcrumbsContext.unregisterItem,
-  ]);
-}
-",
-  "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
+  "admin-ui/src/customer/CustomerCreate.tsx": "import * as React from \\"react\\";
 
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  TextField,
-  ToggleField,
-  SelectField,
-} from \\"@amplication/design-system\\";
-
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
-import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
-
-const INITIAL_VALUES = {} as CustomerCreateInput;
-
-export const CreateCustomer = (): React.ReactElement => {
-  useBreadcrumbs(\\"/customers/new\\", \\"Create Customer\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TCustomer,
-    AxiosError,
-    CustomerCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/customers\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/customers\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: CustomerCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
-  return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create Customer\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
-        >
-          <div>
-            <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
-          </div>
-          <div>
-            <TextField label=\\"First Name\\" name=\\"firstName\\" />
-          </div>
-          <div>
-            <TextField label=\\"Last Name\\" name=\\"lastName\\" />
-          </div>
-          <div>
-            <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
-          </div>
-          <div>
-            <TextField type=\\"date\\" label=\\"Birth Data\\" name=\\"birthData\\" />
-          </div>
-          <div>
-            <TextField
-              type=\\"number\\"
-              label=\\"Average Sale (-1500.00 - 1500.00)\\"
-              name=\\"averageSale\\"
-            />
-          </div>
-          <div>
-            <TextField
-              type=\\"number\\"
-              step={1}
-              label=\\"Favorite Number (1 - 20)\\"
-              name=\\"favoriteNumber\\"
-            />
-          </div>
-          <div>
-            <TextField label=\\"Geographic Location\\" name=\\"geoLocation\\" />
-          </div>
-          <div>
-            <TextField
-              label=\\"Comments (up to 500 characters)\\"
-              name=\\"comments\\"
-              textarea
-            />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Favorite Colors (multi-select)\\"
-              name=\\"favoriteColors\\"
-              options={[
-                { label: \\"Red\\", value: \\"red\\" },
-                { label: \\"Green\\", value: \\"green\\" },
-                { label: \\"Purple\\", value: \\"purple\\" },
-                { label: \\"yellow\\", value: \\"yellow\\" },
-              ]}
-              isMulti
-            />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Customer Type\\"
-              name=\\"customerType\\"
-              options={[
-                { label: \\"Platinum\\", value: \\"platinum\\" },
-                { label: \\"Gold\\", value: \\"gold\\" },
-                { label: \\"Bronze\\", value: \\"bronze\\" },
-                { label: \\"Regular\\", value: \\"regular\\" },
-              ]}
-            />
-          </div>
-          <div>
-            <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
-          </div>
-          <div>
-            <OrganizationSelect
-              label=\\"VIP Organization\\"
-              name=\\"vipOrganization.id\\"
-            />
-          </div>
-        </Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/customer/CustomerIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { CustomerList } from \\"./CustomerList\\";
-import { CreateCustomer } from \\"./CreateCustomer\\";
-import { ViewCustomer } from \\"./ViewCustomer\\";
-
-export const CustomerIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/customers/\\", \\"Customers\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/customers/\\"} component={CustomerList} />
-      <PrivateRoute path={\\"/customers/new\\"} component={CreateCustomer} />
-      <PrivateRoute path={\\"/customers/:id\\"} component={ViewCustomer} />
-    </Switch>
-  );
-};
-",
-  "admin/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-
-import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-  CircleIcon,
-  EnumCircleIconStyle,
-} from \\"@amplication/design-system\\";
+  Create,
+  SimpleForm,
+  CreateProps,
+  TextInput,
+  DateInput,
+  NumberInput,
+  SelectArrayInput,
+  SelectInput,
+  ReferenceInput,
+} from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 
-type Data = TCustomer[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-  {
-    name: \\"email\\",
-    title: \\"Email\\",
-    sortable: false,
-  },
-  {
-    name: \\"firstName\\",
-    title: \\"First Name\\",
-    sortable: false,
-  },
-  {
-    name: \\"lastName\\",
-    title: \\"Last Name\\",
-    sortable: false,
-  },
-  {
-    name: \\"isVip\\",
-    title: \\"VIP\\",
-    sortable: false,
-  },
-  {
-    name: \\"birthData\\",
-    title: \\"Birth Data\\",
-    sortable: false,
-  },
-  {
-    name: \\"averageSale\\",
-    title: \\"Average Sale (-1500.00 - 1500.00)\\",
-    sortable: false,
-  },
-  {
-    name: \\"favoriteNumber\\",
-    title: \\"Favorite Number (1 - 20)\\",
-    sortable: false,
-  },
-  {
-    name: \\"geoLocation\\",
-    title: \\"Geographic Location\\",
-    sortable: false,
-  },
-  {
-    name: \\"comments\\",
-    title: \\"Comments (up to 500 characters)\\",
-    sortable: false,
-  },
-  {
-    name: \\"favoriteColors\\",
-    title: \\"Favorite Colors (multi-select)\\",
-    sortable: false,
-  },
-  {
-    name: \\"customerType\\",
-    title: \\"Customer Type\\",
-    sortable: false,
-  },
-  {
-    name: \\"organization\\",
-    title: \\"Organization\\",
-    sortable: false,
-  },
-  {
-    name: \\"vipOrganization\\",
-    title: \\"VIP Organization\\",
-    sortable: false,
-  },
-];
-
-export const CustomerList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/customers\\",
-    async () => {
-      const response = await api.get(\\"/api/customers\\");
-      return response.data;
-    }
-  );
-
+export const CustomerCreate = (props: CreateProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Customers\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/customers/new\\"}>
-            <Button>Create Customer </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TCustomer) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/customers\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.email}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.firstName}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.lastName}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>
-                    {item.isVip && (
-                      <CircleIcon
-                        icon=\\"check\\"
-                        style={EnumCircleIconStyle.positive}
-                      />
-                    )}
-                  </>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.birthData}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.averageSale}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.favoriteNumber}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.geoLocation}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.comments}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.favoriteColors}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.customerType}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <OrganizationTitle id={item.organization?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <OrganizationTitle id={item.vipOrganization?.id} />
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <Create {...props}>
+      <SimpleForm>
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <TextInput label=\\"First Name\\" source=\\"firstName\\" />
+        <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
+        <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
+        <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
+        <NumberInput
+          label=\\"Average Sale (-1500.00 - 1500.00)\\"
+          source=\\"averageSale\\"
+        />
+        <NumberInput
+          step={1}
+          label=\\"Favorite Number (1 - 20)\\"
+          source=\\"favoriteNumber\\"
+        />
+        <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+        <TextInput
+          label=\\"Comments (up to 500 characters)\\"
+          multiline
+          source=\\"comments\\"
+        />
+        <SelectArrayInput
+          label=\\"Favorite Colors (multi-select)\\"
+          source=\\"favoriteColors\\"
+          choices={[
+            { label: \\"Red\\", value: \\"red\\" },
+            { label: \\"Green\\", value: \\"green\\" },
+            { label: \\"Purple\\", value: \\"purple\\" },
+            { label: \\"yellow\\", value: \\"yellow\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"customerType\\"
+          label=\\"Customer Type\\"
+          choices={[
+            { label: \\"Platinum\\", value: \\"platinum\\" },
+            { label: \\"Gold\\", value: \\"gold\\" },
+            { label: \\"Bronze\\", value: \\"bronze\\" },
+            { label: \\"Regular\\", value: \\"regular\\" },
+          ]}
+          optionText=\\"label\\"
+          allowEmpty
+          optionValue=\\"value\\"
+        />
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"VIP Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Create>
   );
 };
 ",
-  "admin/src/customer/CustomerSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
-
-type Data = TCustomer[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const CustomerSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/customers\\",
-    async () => {
-      const response = await api.get(\\"/api/customers\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label:
-            item.firstName && item.firstName.length ? item.firstName : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
-  "admin/src/customer/CustomerTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
-
-type Props = { id: string };
-
-export const CustomerTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    TCustomer,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/customers\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/customers\\"}/\${id}\`);
-    return response.data;
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
-
-  return (
-    <Link to={\`\${\\"/api/customers\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.firstName && data?.firstName.length ? data.firstName : data?.id}
-    </Link>
-  );
-};
-",
-  "admin/src/customer/ViewCustomer.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
+  "admin-ui/src/customer/CustomerEdit.tsx": "import * as React from \\"react\\";
 
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
+  Edit,
+  SimpleForm,
+  EditProps,
+  TextInput,
+  DateInput,
+  NumberInput,
+  SelectArrayInput,
+  SelectInput,
+  ReferenceInput,
+} from \\"react-admin\\";
+
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+
+export const CustomerEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <TextInput label=\\"First Name\\" source=\\"firstName\\" />
+        <TextInput label=\\"Last Name\\" source=\\"lastName\\" />
+        <BooleanInput label=\\"VIP\\" source=\\"isVip\\" />
+        <DateInput label=\\"Birth Data\\" source=\\"birthData\\" />
+        <NumberInput
+          label=\\"Average Sale (-1500.00 - 1500.00)\\"
+          source=\\"averageSale\\"
+        />
+        <NumberInput
+          step={1}
+          label=\\"Favorite Number (1 - 20)\\"
+          source=\\"favoriteNumber\\"
+        />
+        <TextInput label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+        <TextInput
+          label=\\"Comments (up to 500 characters)\\"
+          multiline
+          source=\\"comments\\"
+        />
+        <SelectArrayInput
+          label=\\"Favorite Colors (multi-select)\\"
+          source=\\"favoriteColors\\"
+          choices={[
+            { label: \\"Red\\", value: \\"red\\" },
+            { label: \\"Green\\", value: \\"green\\" },
+            { label: \\"Purple\\", value: \\"purple\\" },
+            { label: \\"yellow\\", value: \\"yellow\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"customerType\\"
+          label=\\"Customer Type\\"
+          choices={[
+            { label: \\"Platinum\\", value: \\"platinum\\" },
+            { label: \\"Gold\\", value: \\"gold\\" },
+            { label: \\"Bronze\\", value: \\"bronze\\" },
+            { label: \\"Regular\\", value: \\"regular\\" },
+          ]}
+          optionText=\\"label\\"
+          allowEmpty
+          optionValue=\\"value\\"
+        />
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"VIP Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
+
+import {
+  List,
+  Datagrid,
+  ListProps,
   TextField,
-  ToggleField,
-  SelectField,
-} from \\"@amplication/design-system\\";
+  DateField,
+  BooleanField,
+  ReferenceField,
+} from \\"react-admin\\";
 
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
-import { Customer as TCustomer } from \\"../api/customer/Customer\\";
-import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
+import Pagination from \\"../Components/Pagination\\";
+import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
-export const ViewCustomer = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TCustomer,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/customers\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/customers\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TCustomer, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/customers\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//customers\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TCustomer, AxiosError, CustomerUpdateInput>(async (data) => {
-    const response = await api.patch(\`\${\\"/api/customers\\"}/\${id}\`, data);
-    return response.data;
-  });
-
-  const handleSubmit = React.useCallback(
-    (values: CustomerUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.firstName);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(
-    () =>
-      pick(data, [
-        \\"email\\",
-        \\"firstName\\",
-        \\"lastName\\",
-        \\"isVip\\",
-        \\"birthData\\",
-        \\"averageSale\\",
-        \\"favoriteNumber\\",
-        \\"geoLocation\\",
-        \\"comments\\",
-        \\"favoriteColors\\",
-        \\"customerType\\",
-        \\"organization\\",
-        \\"vipOrganization\\",
-      ]),
-    [data]
-  );
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
+export const CustomerList = (props: ListProps): React.ReactElement => {
   return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"Customer\\"} \${
-                  data?.firstName && data?.firstName.length
-                    ? data.firstName
-                    : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          >
-            <div>
-              <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
-            </div>
-            <div>
-              <TextField label=\\"First Name\\" name=\\"firstName\\" />
-            </div>
-            <div>
-              <TextField label=\\"Last Name\\" name=\\"lastName\\" />
-            </div>
-            <div>
-              <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
-            </div>
-            <div>
-              <TextField type=\\"date\\" label=\\"Birth Data\\" name=\\"birthData\\" />
-            </div>
-            <div>
-              <TextField
-                type=\\"number\\"
-                label=\\"Average Sale (-1500.00 - 1500.00)\\"
-                name=\\"averageSale\\"
-              />
-            </div>
-            <div>
-              <TextField
-                type=\\"number\\"
-                step={1}
-                label=\\"Favorite Number (1 - 20)\\"
-                name=\\"favoriteNumber\\"
-              />
-            </div>
-            <div>
-              <TextField label=\\"Geographic Location\\" name=\\"geoLocation\\" />
-            </div>
-            <div>
-              <TextField
-                label=\\"Comments (up to 500 characters)\\"
-                name=\\"comments\\"
-                textarea
-              />
-            </div>
-            <div>
-              <SelectField
-                label=\\"Favorite Colors (multi-select)\\"
-                name=\\"favoriteColors\\"
-                options={[
-                  { label: \\"Red\\", value: \\"red\\" },
-                  { label: \\"Green\\", value: \\"green\\" },
-                  { label: \\"Purple\\", value: \\"purple\\" },
-                  { label: \\"yellow\\", value: \\"yellow\\" },
-                ]}
-                isMulti
-              />
-            </div>
-            <div>
-              <SelectField
-                label=\\"Customer Type\\"
-                name=\\"customerType\\"
-                options={[
-                  { label: \\"Platinum\\", value: \\"platinum\\" },
-                  { label: \\"Gold\\", value: \\"gold\\" },
-                  { label: \\"Bronze\\", value: \\"bronze\\" },
-                  { label: \\"Regular\\", value: \\"regular\\" },
-                ]}
-              />
-            </div>
-            <div>
-              <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
-            </div>
-            <div>
-              <OrganizationSelect
-                label=\\"VIP Organization\\"
-                name=\\"vipOrganization.id\\"
-              />
-            </div>
-          </Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Customers\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick=\\"show\\">
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <TextField label=\\"Email\\" source=\\"email\\" />
+        <TextField label=\\"First Name\\" source=\\"firstName\\" />
+        <TextField label=\\"Last Name\\" source=\\"lastName\\" />
+        <BooleanField label=\\"VIP\\" source=\\"isVip\\" />
+        <TextField label=\\"Birth Data\\" source=\\"birthData\\" />
+        <TextField
+          label=\\"Average Sale (-1500.00 - 1500.00)\\"
+          source=\\"averageSale\\"
+        />
+        <TextField label=\\"Favorite Number (1 - 20)\\" source=\\"favoriteNumber\\" />
+        <TextField label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+        <TextField label=\\"Comments (up to 500 characters)\\" source=\\"comments\\" />
+        <TextField
+          label=\\"Favorite Colors (multi-select)\\"
+          source=\\"favoriteColors\\"
+        />
+        <TextField label=\\"Customer Type\\" source=\\"customerType\\" />
+        <ReferenceField
+          label=\\"Organization\\"
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+        <ReferenceField
+          label=\\"VIP Organization\\"
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+      </Datagrid>
+    </List>
   );
 };
 ",
-  "admin/src/empty/CreateEmpty.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
-import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
-import { EmptyCreateInput } from \\"../api/empty/EmptyCreateInput\\";
-
-const INITIAL_VALUES = {} as EmptyCreateInput;
-
-export const CreateEmpty = (): React.ReactElement => {
-  useBreadcrumbs(\\"/empties/new\\", \\"Create Empty\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TEmpty,
-    AxiosError,
-    EmptyCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/empties\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/empties\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: EmptyCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
-  return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create Empty\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
-        ></Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/empty/EmptyIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { EmptyList } from \\"./EmptyList\\";
-import { CreateEmpty } from \\"./CreateEmpty\\";
-import { ViewEmpty } from \\"./ViewEmpty\\";
-
-export const EmptyIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/empties/\\", \\"Empties\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/empties/\\"} component={EmptyList} />
-      <PrivateRoute path={\\"/empties/new\\"} component={CreateEmpty} />
-      <PrivateRoute path={\\"/empties/:id\\"} component={ViewEmpty} />
-    </Switch>
-  );
-};
-",
-  "admin/src/empty/EmptyList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
+  "admin-ui/src/customer/CustomerShow.tsx": "import * as React from \\"react\\";
 
 import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-} from \\"@amplication/design-system\\";
+  Show,
+  SimpleShowLayout,
+  ListProps,
+  TextField,
+  DateField,
+  BooleanField,
+  ReferenceField,
+} from \\"react-admin\\";
 
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
-type Data = TEmpty[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-];
-
-export const EmptyList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/empties\\",
-    async () => {
-      const response = await api.get(\\"/api/empties\\");
-      return response.data;
-    }
-  );
-
+export const CustomerShow = (props: ListProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Empties\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/empties/new\\"}>
-            <Button>Create Empty </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TEmpty) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/empties\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <TextField label=\\"Email\\" source=\\"email\\" />
+        <TextField label=\\"First Name\\" source=\\"firstName\\" />
+        <TextField label=\\"Last Name\\" source=\\"lastName\\" />
+        <BooleanField label=\\"VIP\\" source=\\"isVip\\" />
+        <TextField label=\\"Birth Data\\" source=\\"birthData\\" />
+        <TextField
+          label=\\"Average Sale (-1500.00 - 1500.00)\\"
+          source=\\"averageSale\\"
+        />
+        <TextField label=\\"Favorite Number (1 - 20)\\" source=\\"favoriteNumber\\" />
+        <TextField label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+        <TextField label=\\"Comments (up to 500 characters)\\" source=\\"comments\\" />
+        <TextField
+          label=\\"Favorite Colors (multi-select)\\"
+          source=\\"favoriteColors\\"
+        />
+        <TextField label=\\"Customer Type\\" source=\\"customerType\\" />
+        <ReferenceField
+          label=\\"Organization\\"
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+        <ReferenceField
+          label=\\"VIP Organization\\"
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+      </SimpleShowLayout>
+    </Show>
   );
 };
 ",
-  "admin/src/empty/EmptySelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+  "admin-ui/src/customer/CustomerTitle.ts": "import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 
-type Data = TEmpty[];
+export const CUSTOMER_TITLE_FIELD = \\"firstName\\";
 
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const EmptySelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/empties\\",
-    async () => {
-      const response = await api.get(\\"/api/empties\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label: item.id && item.id.length ? item.id : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
+export const CustomerTitle = (record: TCustomer) => {
+  return record.firstName;
 };
 ",
-  "admin/src/empty/EmptyTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+  "admin-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
+import { ApolloClient } from \\"apollo-client\\";
+import { createHttpLink } from \\"apollo-link-http\\";
+import { setContext } from \\"apollo-link-context\\";
+import { InMemoryCache } from \\"apollo-cache-inmemory\\";
 
-type Props = { id: string };
+const httpLink = createHttpLink({
+  //@todo: get the url from a configuration file
+  uri: \\"http://localhost:3000/graphql\\",
+});
 
-export const EmptyTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    TEmpty,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/empties\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/empties\\"}/\${id}\`);
-    return response.data;
-  });
+const authLink = setContext((_, { headers }) => {
+  //@todo: get the authentication token from local storage
+  const token = \\"YWRtaW46YWRtaW4=\\";
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? \`Basic \${token}\` : \\"\\",
+    },
+  };
+});
 
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
+const apolloClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authLink.concat(httpLink),
+});
 
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
+export default buildGraphQLProvider({
+  client: apolloClient,
+});
+",
+  "admin-ui/src/empty/EmptyCreate.tsx": "import * as React from \\"react\\";
+import { Create, SimpleForm, CreateProps } from \\"react-admin\\";
 
+export const EmptyCreate = (props: CreateProps): React.ReactElement => {
   return (
-    <Link to={\`\${\\"/api/empties\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.id && data?.id.length ? data.id : data?.id}
-    </Link>
+    <Create {...props}>
+      <SimpleForm></SimpleForm>
+    </Create>
   );
 };
 ",
-  "admin/src/empty/ViewEmpty.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
+  "admin-ui/src/empty/EmptyEdit.tsx": "import * as React from \\"react\\";
+import { Edit, SimpleForm, EditProps } from \\"react-admin\\";
+
+export const EmptyEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm></SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/empty/EmptyList.tsx": "import * as React from \\"react\\";
+import { List, Datagrid, ListProps, TextField, DateField } from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
+
+export const EmptyList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Empties\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick=\\"show\\">
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/empty/EmptyShow.tsx": "import * as React from \\"react\\";
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Empty as TEmpty } from \\"../api/empty/Empty\\";
-import { EmptyUpdateInput } from \\"../api/empty/EmptyUpdateInput\\";
+  Show,
+  SimpleShowLayout,
+  ListProps,
+  TextField,
+  DateField,
+} from \\"react-admin\\";
 
-export const ViewEmpty = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/empties/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TEmpty,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/empties\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/empties\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TEmpty, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/empties\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//empties\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TEmpty, AxiosError, EmptyUpdateInput>(async (data) => {
-    const response = await api.patch(\`\${\\"/api/empties\\"}/\${id}\`, data);
-    return response.data;
-  });
-
-  const handleSubmit = React.useCallback(
-    (values: EmptyUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.id);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(() => pick(data, []), [data]);
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
+export const EmptyShow = (props: ListProps): React.ReactElement => {
   return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"Empty\\"} \${
-                  data?.id && data?.id.length ? data.id : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          ></Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+      </SimpleShowLayout>
+    </Show>
   );
 };
 ",
-  "admin/src/index.tsx": "import React from \\"react\\";
+  "admin-ui/src/empty/EmptyTitle.ts": "import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+
+export const EMPTY_TITLE_FIELD = \\"id\\";
+
+export const EmptyTitle = (record: TEmpty) => {
+  return record.id;
+};
+",
+  "admin-ui/src/index.tsx": "import React from \\"react\\";
 import ReactDOM from \\"react-dom\\";
-import { BrowserRouter as Router } from \\"react-router-dom\\";
 import \\"./index.css\\";
 // @ts-ignore
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
-import * as amplicationDesignSystem from \\"@amplication/design-system\\";
-import \\"@amplication/design-system/icons\\";
 
 ReactDOM.render(
   <React.StrictMode>
-    <amplicationDesignSystem.Provider>
-      <Router>
-        <App />
-      </Router>
-    </amplicationDesignSystem.Provider>
+    <App />
   </React.StrictMode>,
   document.getElementById(\\"root\\")
 );
@@ -2026,817 +1195,268 @@ ReactDOM.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 ",
-  "admin/src/order/CreateOrder.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
+  "admin-ui/src/order/OrderCreate.tsx": "import * as React from \\"react\\";
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  SelectField,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { CustomerSelect } from \\"../customer/CustomerSelect\\";
-import { Order as TOrder } from \\"../api/order/Order\\";
-import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
-
-const INITIAL_VALUES = {} as OrderCreateInput;
-
-export const CreateOrder = (): React.ReactElement => {
-  useBreadcrumbs(\\"/orders/new\\", \\"Create Order\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TOrder,
-    AxiosError,
-    OrderCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/orders\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/orders\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: OrderCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
-  return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create Order\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
-        >
-          <div>
-            <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Status\\"
-              name=\\"status\\"
-              options={[
-                { label: \\"Pending\\", value: \\"pending\\" },
-                { label: \\"In Progress\\", value: \\"inProgress\\" },
-                { label: \\"Done\\", value: \\"done\\" },
-              ]}
-            />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Label\\"
-              name=\\"label\\"
-              options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
-            />
-          </div>
-        </Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/order/OrderIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrderList } from \\"./OrderList\\";
-import { CreateOrder } from \\"./CreateOrder\\";
-import { ViewOrder } from \\"./ViewOrder\\";
-
-export const OrderIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/orders/\\", \\"Orders\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/orders/\\"} component={OrderList} />
-      <PrivateRoute path={\\"/orders/new\\"} component={CreateOrder} />
-      <PrivateRoute path={\\"/orders/:id\\"} component={ViewOrder} />
-    </Switch>
-  );
-};
-",
-  "admin/src/order/OrderList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-
-import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-} from \\"@amplication/design-system\\";
-
+  Create,
+  SimpleForm,
+  CreateProps,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
 import { CustomerTitle } from \\"../customer/CustomerTitle\\";
-import { Order as TOrder } from \\"../api/order/Order\\";
 
-type Data = TOrder[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-  {
-    name: \\"customer\\",
-    title: \\"Customer\\",
-    sortable: false,
-  },
-  {
-    name: \\"status\\",
-    title: \\"Status\\",
-    sortable: false,
-  },
-  {
-    name: \\"label\\",
-    title: \\"Label\\",
-    sortable: false,
-  },
-];
-
-export const OrderList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/orders\\",
-    async () => {
-      const response = await api.get(\\"/api/orders\\");
-      return response.data;
-    }
-  );
-
+export const OrderCreate = (props: CreateProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Orders\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/orders/new\\"}>
-            <Button>Create Order </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TOrder) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/orders\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <CustomerTitle id={item.customer?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.status}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.label}</>
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/order/OrderSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Order as TOrder } from \\"../api/order/Order\\";
-
-type Data = TOrder[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const OrderSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/orders\\",
-    async () => {
-      const response = await api.get(\\"/api/orders\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label: item.id && item.id.length ? item.id : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
-  "admin/src/order/OrderTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { Order as TOrder } from \\"../api/order/Order\\";
-
-type Props = { id: string };
-
-export const OrderTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    TOrder,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/orders\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/orders\\"}/\${id}\`);
-    return response.data;
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
-
-  return (
-    <Link to={\`\${\\"/api/orders\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.id && data?.id.length ? data.id : data?.id}
-    </Link>
-  );
-};
-",
-  "admin/src/order/ViewOrder.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
-
-import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
-  SelectField,
-} from \\"@amplication/design-system\\";
-
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { CustomerSelect } from \\"../customer/CustomerSelect\\";
-import { Order as TOrder } from \\"../api/order/Order\\";
-import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
-
-export const ViewOrder = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TOrder,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/orders\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/orders\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TOrder, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/orders\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//orders\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TOrder, AxiosError, OrderUpdateInput>(async (data) => {
-    const response = await api.patch(\`\${\\"/api/orders\\"}/\${id}\`, data);
-    return response.data;
-  });
-
-  const handleSubmit = React.useCallback(
-    (values: OrderUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.id);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(
-    () => pick(data, [\\"customer\\", \\"status\\", \\"label\\"]),
-    [data]
-  );
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"Order\\"} \${
-                  data?.id && data?.id.length ? data.id : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          >
-            <div>
-              <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
-            </div>
-            <div>
-              <SelectField
-                label=\\"Status\\"
-                name=\\"status\\"
-                options={[
-                  { label: \\"Pending\\", value: \\"pending\\" },
-                  { label: \\"In Progress\\", value: \\"inProgress\\" },
-                  { label: \\"Done\\", value: \\"done\\" },
-                ]}
-              />
-            </div>
-            <div>
-              <SelectField
-                label=\\"Label\\"
-                name=\\"label\\"
-                options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
-              />
-            </div>
-          </Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
-  );
-};
-",
-  "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
-import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  TextField,
-} from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
-import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
-
-const INITIAL_VALUES = {} as OrganizationCreateInput;
-
-export const CreateOrganization = (): React.ReactElement => {
-  useBreadcrumbs(\\"/organizations/new\\", \\"Create Organization\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TOrganization,
-    AxiosError,
-    OrganizationCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/organizations\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/organizations\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: OrganizationCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
-  return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create Organization\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
+    <Create {...props}>
+      <SimpleForm>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"Customer\\"
         >
-          <div>
-            <TextField label=\\"Name\\" name=\\"name\\" />
-          </div>
-        </Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <SelectInput
+          source=\\"status\\"
+          label=\\"Status\\"
+          choices={[
+            { label: \\"Pending\\", value: \\"pending\\" },
+            { label: \\"In Progress\\", value: \\"inProgress\\" },
+            { label: \\"Done\\", value: \\"done\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"label\\"
+          label=\\"Label\\"
+          choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+          optionText=\\"label\\"
+          allowEmpty
+          optionValue=\\"value\\"
+        />
+      </SimpleForm>
+    </Create>
   );
 };
 ",
-  "admin/src/organization/OrganizationIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { OrganizationList } from \\"./OrganizationList\\";
-import { CreateOrganization } from \\"./CreateOrganization\\";
-import { ViewOrganization } from \\"./ViewOrganization\\";
-
-export const OrganizationIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/organizations/\\", \\"Organizations\\");
-
-  return (
-    <Switch>
-      <PrivateRoute
-        exact
-        path={\\"/organizations/\\"}
-        component={OrganizationList}
-      />
-      <PrivateRoute
-        path={\\"/organizations/new\\"}
-        component={CreateOrganization}
-      />
-      <PrivateRoute path={\\"/organizations/:id\\"} component={ViewOrganization} />
-    </Switch>
-  );
-};
-",
-  "admin/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-
+  "admin-ui/src/order/OrderEdit.tsx": "import * as React from \\"react\\";
 import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  TimeSince,
-} from \\"@amplication/design-system\\";
+  Edit,
+  SimpleForm,
+  EditProps,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
-
-type Data = TOrganization[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"createdAt\\",
-    title: \\"Created At\\",
-    sortable: false,
-  },
-  {
-    name: \\"updatedAt\\",
-    title: \\"Updated At\\",
-    sortable: false,
-  },
-  {
-    name: \\"name\\",
-    title: \\"Name\\",
-    sortable: false,
-  },
-];
-
-export const OrganizationList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/organizations\\",
-    async () => {
-      const response = await api.get(\\"/api/organizations\\");
-      return response.data;
-    }
-  );
-
+export const OrderEdit = (props: EditProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Organizations\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/organizations/new\\"}>
-            <Button>Create Organization </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TOrganization) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link
-                    className=\\"entity-id\\"
-                    to={\`\${\\"/organizations\\"}/\${item.id}\`}
-                  >
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.createdAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <TimeSince time={item.updatedAt} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.name}</>
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <Edit {...props}>
+      <SimpleForm>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"Customer\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <SelectInput
+          source=\\"status\\"
+          label=\\"Status\\"
+          choices={[
+            { label: \\"Pending\\", value: \\"pending\\" },
+            { label: \\"In Progress\\", value: \\"inProgress\\" },
+            { label: \\"Done\\", value: \\"done\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"label\\"
+          label=\\"Label\\"
+          choices={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+          optionText=\\"label\\"
+          allowEmpty
+          optionValue=\\"value\\"
+        />
+      </SimpleForm>
+    </Edit>
   );
 };
 ",
-  "admin/src/organization/OrganizationSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
-
-type Data = TOrganization[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const OrganizationSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(
-    \\"select-/api/organizations\\",
-    async () => {
-      const response = await api.get(\\"/api/organizations\\");
-      return response.data;
-    }
-  );
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label: item.name && item.name.length ? item.name : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
-  "admin/src/organization/OrganizationTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
-
-type Props = { id: string };
-
-export const OrganizationTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    TOrganization,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/organizations\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/organizations\\"}/\${id}\`);
-    return response.data;
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
-
-  return (
-    <Link to={\`\${\\"/api/organizations\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.name && data?.name.length ? data.name : data?.id}
-    </Link>
-  );
-};
-",
-  "admin/src/organization/ViewOrganization.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
-
+  "admin-ui/src/order/OrderList.tsx": "import * as React from \\"react\\";
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
+  List,
+  Datagrid,
+  ListProps,
   TextField,
-} from \\"@amplication/design-system\\";
+  DateField,
+  ReferenceField,
+} from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
+import { CUSTOMER_TITLE_FIELD } from \\"../customer/CustomerTitle\\";
 
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { Organization as TOrganization } from \\"../api/organization/Organization\\";
-import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
-
-export const ViewOrganization = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TOrganization,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/organizations\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/organizations\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TOrganization, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/organizations\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//organizations\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TOrganization, AxiosError, OrganizationUpdateInput>(
-    async (data) => {
-      const response = await api.patch(\`\${\\"/api/organizations\\"}/\${id}\`, data);
-      return response.data;
-    }
-  );
-
-  const handleSubmit = React.useCallback(
-    (values: OrganizationUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.name);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(() => pick(data, [\\"name\\"]), [data]);
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
+export const OrderList = (props: ListProps): React.ReactElement => {
   return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"Organization\\"} \${
-                  data?.name && data?.name.length ? data.name : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          >
-            <div>
-              <TextField label=\\"Name\\" name=\\"name\\" />
-            </div>
-          </Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Orders\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick=\\"show\\">
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <ReferenceField
+          label=\\"Customer\\"
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+        >
+          <TextField source={CUSTOMER_TITLE_FIELD} />
+        </ReferenceField>
+        <TextField label=\\"Status\\" source=\\"status\\" />
+        <TextField label=\\"Label\\" source=\\"label\\" />
+      </Datagrid>
+    </List>
   );
 };
 ",
-  "admin/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
+  "admin-ui/src/order/OrderShow.tsx": "import * as React from \\"react\\";
+import {
+  Show,
+  SimpleShowLayout,
+  ListProps,
+  TextField,
+  DateField,
+  ReferenceField,
+} from \\"react-admin\\";
+import { CUSTOMER_TITLE_FIELD } from \\"../customer/CustomerTitle\\";
+
+export const OrderShow = (props: ListProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <ReferenceField
+          label=\\"Customer\\"
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+        >
+          <TextField source={CUSTOMER_TITLE_FIELD} />
+        </ReferenceField>
+        <TextField label=\\"Status\\" source=\\"status\\" />
+        <TextField label=\\"Label\\" source=\\"label\\" />
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/order/OrderTitle.ts": "import { Order as TOrder } from \\"../api/order/Order\\";
+
+export const ORDER_TITLE_FIELD = \\"id\\";
+
+export const OrderTitle = (record: TOrder) => {
+  return record.id;
+};
+",
+  "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
+import { Create, SimpleForm, CreateProps, TextInput } from \\"react-admin\\";
+
+export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <TextInput label=\\"Name\\" source=\\"name\\" />
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/organization/OrganizationEdit.tsx": "import * as React from \\"react\\";
+import { Edit, SimpleForm, EditProps, TextInput } from \\"react-admin\\";
+
+export const OrganizationEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <TextInput label=\\"Name\\" source=\\"name\\" />
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
+import { List, Datagrid, ListProps, TextField, DateField } from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
+
+export const OrganizationList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Organizations\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick=\\"show\\">
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <TextField label=\\"Name\\" source=\\"name\\" />
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/organization/OrganizationShow.tsx": "import * as React from \\"react\\";
+import {
+  Show,
+  SimpleShowLayout,
+  ListProps,
+  TextField,
+  DateField,
+} from \\"react-admin\\";
+
+export const OrganizationShow = (props: ListProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <TextField label=\\"Name\\" source=\\"name\\" />
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/organization/OrganizationTitle.ts": "import { Organization as TOrganization } from \\"../api/organization/Organization\\";
+
+export const ORGANIZATION_TITLE_FIELD = \\"name\\";
+
+export const OrganizationTitle = (record: TOrganization) => {
+  return record.name;
+};
+",
+  "admin-ui/src/pages/Dashboard.tsx": "import * as React from \\"react\\";
+import Card from \\"@material-ui/core/Card\\";
+import CardContent from \\"@material-ui/core/CardContent\\";
+import { Title } from \\"react-admin\\";
+const Dashboard = () => (
+  <Card>
+    <Title title=\\"Welcome to the administration\\" />
+    <CardContent>Lorem ipsum sic dolor amet...</CardContent>
+  </Card>
+);
+
+export default Dashboard;
+",
+  "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 
 const reportWebVitals = (onPerfEntry?: ReportHandler) => {
   if (onPerfEntry && onPerfEntry instanceof Function) {
@@ -2852,172 +1472,19 @@ const reportWebVitals = (onPerfEntry?: ReportHandler) => {
 
 export default reportWebVitals;
 ",
-  "admin/src/setupTests.ts": "// jest-dom adds custom jest matchers for asserting on DOM nodes.
+  "admin-ui/src/setupTests.ts": "// jest-dom adds custom jest matchers for asserting on DOM nodes.
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import \\"@testing-library/jest-dom\\";
 ",
-  "admin/src/use-authenticated.ts": "import { useState, useEffect } from \\"react\\";
-import { listen, isAuthenticated } from \\"./auth\\";
-
-export default function useAuthenticated() {
-  const [authenticated, setAuthenticated] = useState<boolean>(
-    isAuthenticated()
-  );
-  useEffect(() => {
-    listen(setAuthenticated);
-  }, [setAuthenticated]);
-  return authenticated;
-}
-",
-  "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
-import { useMutation } from \\"react-query\\";
-import { useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { Formik } from \\"formik\\";
-
-import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  TextField,
-  SelectField,
-  ToggleField,
-} from \\"@amplication/design-system\\";
-
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { UserSelect } from \\"./UserSelect\\";
-import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
-import { User as TUser } from \\"../api/user/User\\";
-import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
-
-const INITIAL_VALUES = {} as UserCreateInput;
-
-export const CreateUser = (): React.ReactElement => {
-  useBreadcrumbs(\\"/users/new\\", \\"Create User\\");
-  const history = useHistory();
-
-  const [create, { error, isError, isLoading }] = useMutation<
-    TUser,
-    AxiosError,
-    UserCreateInput
-  >(
-    async (data) => {
-      const response = await api.post(\\"/api/users\\", data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\`\${\\"/users\\"}/\${data.id}\`);
-      },
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: UserCreateInput) => {
-      void create(values);
-    },
-    [create]
-  );
-  return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title={\\"Create User\\"}>
-              <Button type=\\"submit\\" disabled={isLoading}>
-                Save
-              </Button>
-            </FormHeader>
-          }
-        >
-          <div>
-            <TextField label=\\"Username\\" name=\\"username\\" />
-          </div>
-          <div>
-            <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
-          </div>
-          <div>
-            <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
-          </div>
-          <div>
-            <TextField label=\\"Name\\" name=\\"name\\" />
-          </div>
-          <div>
-            <TextField label=\\"Bio\\" name=\\"bio\\" textarea />
-          </div>
-          <div>
-            <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
-          </div>
-          <div>
-            <TextField type=\\"number\\" step={1} label=\\"Age\\" name=\\"age\\" />
-          </div>
-          <div>
-            <TextField
-              type=\\"datetime-local\\"
-              label=\\"Birth Date\\"
-              name=\\"birthDate\\"
-            />
-          </div>
-          <div>
-            <TextField type=\\"number\\" label=\\"Score\\" name=\\"score\\" />
-          </div>
-          <div>
-            <UserSelect label=\\"Manager\\" name=\\"manager.id\\" />
-          </div>
-          <div>
-            <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Interests\\"
-              name=\\"interests\\"
-              options={[
-                { label: \\"Programming\\", value: \\"programming\\" },
-                { label: \\"Design\\", value: \\"design\\" },
-              ]}
-              isMulti
-            />
-          </div>
-          <div>
-            <SelectField
-              label=\\"Priority\\"
-              name=\\"priority\\"
-              options={[
-                { label: \\"High\\", value: \\"high\\" },
-                { label: \\"Medium\\", value: \\"medium\\" },
-                { label: \\"Low\\", value: \\"low\\" },
-              ]}
-            />
-          </div>
-          <div>
-            <ToggleField label=\\"Is Curious\\" name=\\"isCurious\\" />
-          </div>
-          <div>
-            <TextField label=\\"Location\\" name=\\"location\\" />
-          </div>
-          <div />
-        </Form>
-      </Formik>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
-  );
-};
-",
-  "admin/src/user/EnumRoles.ts": "export enum EnumRoles {
+  "admin-ui/src/user/EnumRoles.ts": "export enum EnumRoles {
   User = \\"user\\",
   Admin = \\"admin\\",
   AreaManager = \\"areaManager\\",
 }
 ",
-  "admin/src/user/RoleSelect.tsx": "import React from \\"react\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-//@ts-ignore
+  "admin-ui/src/user/RolesOptions.ts": "//@ts-ignore
 import { ROLES } from \\"./roles\\";
 
 declare interface Role {
@@ -3025,515 +1492,267 @@ declare interface Role {
   displayName: string;
 }
 
-const OPTIONS = ROLES.map((role: Role) => ({
+export const ROLES_OPTIONS = ROLES.map((role: Role) => ({
   value: role.name,
   label: role.displayName,
 }));
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const RoleSelect = (props: Props) => {
-  return <SelectField {...props} options={OPTIONS} />;
-};
 ",
-  "admin/src/user/UserIndex.tsx": "import * as React from \\"react\\";
-import { Switch } from \\"react-router-dom\\";
-import PrivateRoute from \\"../components/PrivateRoute\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { UserList } from \\"./UserList\\";
-import { CreateUser } from \\"./CreateUser\\";
-import { ViewUser } from \\"./ViewUser\\";
-
-export const UserIndex = (): React.ReactElement => {
-  useBreadcrumbs(\\"/users/\\", \\"Users\\");
-
-  return (
-    <Switch>
-      <PrivateRoute exact path={\\"/users/\\"} component={UserList} />
-      <PrivateRoute path={\\"/users/new\\"} component={CreateUser} />
-      <PrivateRoute path={\\"/users/:id\\"} component={ViewUser} />
-    </Switch>
-  );
-};
-",
-  "admin/src/user/UserList.tsx": "import * as React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
+  "admin-ui/src/user/UserCreate.tsx": "import * as React from \\"react\\";
 
 import {
-  DataGrid,
-  DataField,
-  SortData,
-  DataGridRow,
-  DataGridCell,
-  EnumTitleType,
-  Button,
-  Snackbar,
-  CircleIcon,
-  EnumCircleIconStyle,
-} from \\"@amplication/design-system\\";
+  Create,
+  SimpleForm,
+  CreateProps,
+  TextInput,
+  PasswordInput,
+  SelectArrayInput,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
-import { User as TUser } from \\"../api/user/User\\";
+import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
-type Data = TUser[];
-
-const SORT_DATA: SortData = {
-  field: null,
-  order: null,
-};
-
-const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
-  {
-    name: \\"username\\",
-    title: \\"Username\\",
-    sortable: false,
-  },
-  {
-    name: \\"roles\\",
-    title: \\"Roles\\",
-    sortable: false,
-  },
-  {
-    name: \\"name\\",
-    title: \\"Name\\",
-    sortable: false,
-  },
-  {
-    name: \\"bio\\",
-    title: \\"Bio\\",
-    sortable: false,
-  },
-  {
-    name: \\"email\\",
-    title: \\"Email\\",
-    sortable: false,
-  },
-  {
-    name: \\"age\\",
-    title: \\"Age\\",
-    sortable: false,
-  },
-  {
-    name: \\"birthDate\\",
-    title: \\"Birth Date\\",
-    sortable: false,
-  },
-  {
-    name: \\"score\\",
-    title: \\"Score\\",
-    sortable: false,
-  },
-  {
-    name: \\"manager\\",
-    title: \\"Manager\\",
-    sortable: false,
-  },
-  {
-    name: \\"organization\\",
-    title: \\"Organization\\",
-    sortable: false,
-  },
-  {
-    name: \\"interests\\",
-    title: \\"Interests\\",
-    sortable: false,
-  },
-  {
-    name: \\"priority\\",
-    title: \\"Priority\\",
-    sortable: false,
-  },
-  {
-    name: \\"isCurious\\",
-    title: \\"Is Curious\\",
-    sortable: false,
-  },
-  {
-    name: \\"location\\",
-    title: \\"Location\\",
-    sortable: false,
-  },
-  {
-    name: \\"extendedProperties\\",
-    title: \\"Extended Properties\\",
-    sortable: false,
-  },
-];
-
-export const UserList = (): React.ReactElement => {
-  const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-/api/users\\",
-    async () => {
-      const response = await api.get(\\"/api/users\\");
-      return response.data;
-    }
-  );
-
+export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
-    <>
-      <DataGrid
-        fields={FIELDS}
-        titleType={EnumTitleType.PageTitle}
-        title={\\"Users\\"}
-        loading={false}
-        sortDir={SORT_DATA}
-        toolbarContentEnd={
-          <Link to={\\"/users/new\\"}>
-            <Button>Create User </Button>
-          </Link>
-        }
-      >
-        {data &&
-          data.map((item: TUser) => {
-            return (
-              <DataGridRow key={item.id} clickData={item}>
-                <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`\${\\"/users\\"}/\${item.id}\`}>
-                    {item.id}
-                  </Link>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.username}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.roles}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.name}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.bio}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.email}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.age}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.birthDate}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.score}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <UserTitle id={item.manager?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <OrganizationTitle id={item.organization?.id} />
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.interests}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.priority}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>
-                    {item.isCurious && (
-                      <CircleIcon
-                        icon=\\"check\\"
-                        style={EnumCircleIconStyle.positive}
-                      />
-                    )}
-                  </>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.location}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.extendedProperties}</>
-                </DataGridCell>
-              </DataGridRow>
-            );
-          })}
-      </DataGrid>
-      <Snackbar open={isError} message={error?.response?.data?.message} />
-    </>
+    <Create {...props}>
+      <SimpleForm>
+        <TextInput label=\\"Username\\" source=\\"username\\" />
+        <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
+        <SelectArrayInput
+          source=\\"roles\\"
+          choices={ROLES_OPTIONS}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <TextInput label=\\"Name\\" source=\\"name\\" />
+        <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
+        <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
+        <NumberInput label=\\"Score\\" source=\\"score\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <SelectArrayInput
+          label=\\"Interests\\"
+          source=\\"interests\\"
+          choices={[
+            { label: \\"Programming\\", value: \\"programming\\" },
+            { label: \\"Design\\", value: \\"design\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"priority\\"
+          label=\\"Priority\\"
+          choices={[
+            { label: \\"High\\", value: \\"high\\" },
+            { label: \\"Medium\\", value: \\"medium\\" },
+            { label: \\"Low\\", value: \\"low\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
+        <TextInput label=\\"Location\\" source=\\"location\\" />
+        <div />
+      </SimpleForm>
+    </Create>
   );
 };
 ",
-  "admin/src/user/UserSelect.tsx": "import React, { useMemo } from \\"react\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
-import { User as TUser } from \\"../api/user/User\\";
-
-type Data = TUser[];
-
-type Props = Omit<SelectFieldProps, \\"options\\">;
-
-export const UserSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(\\"select-/api/users\\", async () => {
-    const response = await api.get(\\"/api/users\\");
-    return response.data;
-  });
-
-  const options = useMemo(() => {
-    return data
-      ? data.map((item) => ({
-          value: item.id,
-          label:
-            item.username && item.username.length ? item.username : item.id,
-        }))
-      : [];
-  }, [data]);
-
-  return <SelectField {...props} options={options} />;
-};
-",
-  "admin/src/user/UserTitle.tsx": "import React from \\"react\\";
-import { Link } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery } from \\"react-query\\";
-import { api } from \\"../api\\";
-import { User as TUser } from \\"../api/user/User\\";
-
-type Props = { id: string };
-
-export const UserTitle = ({ id }: Props) => {
-  const { data, isLoading, isError, error } = useQuery<
-    TUser,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/users\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/users\\"}/\${id}\`);
-    return response.data;
-  });
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error?.message}</span>;
-  }
-
-  return (
-    <Link to={\`\${\\"/api/users\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.username && data?.username.length ? data.username : data?.id}
-    </Link>
-  );
-};
-",
-  "admin/src/user/ViewUser.tsx": "import * as React from \\"react\\";
-import { useRouteMatch, useHistory } from \\"react-router-dom\\";
-import { AxiosError } from \\"axios\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
-import pick from \\"lodash.pick\\";
+  "admin-ui/src/user/UserEdit.tsx": "import * as React from \\"react\\";
 
 import {
-  Form,
-  EnumFormStyle,
-  Button,
-  FormHeader,
-  Snackbar,
-  EnumButtonStyle,
-  TextField,
-  SelectField,
-  ToggleField,
-} from \\"@amplication/design-system\\";
+  Edit,
+  SimpleForm,
+  EditProps,
+  TextInput,
+  PasswordInput,
+  SelectArrayInput,
+  NumberInput,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
 
-import { api } from \\"../api\\";
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { UserSelect } from \\"./UserSelect\\";
-import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
-import { User as TUser } from \\"../api/user/User\\";
-import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
+import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
-export const ViewUser = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
-  const id = match?.params?.id;
-  const history = useHistory();
-
-  const { data, isLoading, isError, error } = useQuery<
-    TUser,
-    AxiosError,
-    [string, string]
-  >([\\"get-/api/users\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`\${\\"/api/users\\"}/\${id}\`);
-    return response.data;
-  });
-
-  const [deleteEntity] = useMutation<TUser, AxiosError>(
-    async (data) => {
-      const response = await api.delete(\`\${\\"/api/users\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: (data, variables) => {
-        history.push(\\"//users\\");
-      },
-    }
-  );
-
-  const [
-    update,
-    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
-  ] = useMutation<TUser, AxiosError, UserUpdateInput>(async (data) => {
-    const response = await api.patch(\`\${\\"/api/users\\"}/\${id}\`, data);
-    return response.data;
-  });
-
-  const handleSubmit = React.useCallback(
-    (values: UserUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  useBreadcrumbs(match?.url, data?.username);
-
-  const handleDelete = React.useCallback(() => {
-    void deleteEntity();
-  }, [deleteEntity]);
-
-  const errorMessage =
-    updateError?.response?.data?.message || error?.response?.data?.message;
-
-  const initialValues = React.useMemo(
-    () =>
-      pick(data, [
-        \\"username\\",
-        \\"password\\",
-        \\"roles\\",
-        \\"name\\",
-        \\"bio\\",
-        \\"email\\",
-        \\"age\\",
-        \\"birthDate\\",
-        \\"score\\",
-        \\"manager\\",
-        \\"organization\\",
-        \\"interests\\",
-        \\"priority\\",
-        \\"isCurious\\",
-        \\"location\\",
-        \\"extendedProperties\\",
-      ]),
-    [data]
-  );
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
+export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
-    <>
-      {data && (
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          <Form
-            formStyle={EnumFormStyle.Horizontal}
-            formHeaderContent={
-              <FormHeader
-                title={\`\${\\"User\\"} \${
-                  data?.username && data?.username.length
-                    ? data.username
-                    : data?.id
-                }\`}
-              >
-                <Button
-                  type=\\"button\\"
-                  disabled={updateIsLoading}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon=\\"trash_2\\"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-                <Button type=\\"submit\\" disabled={updateIsLoading}>
-                  Save
-                </Button>
-              </FormHeader>
-            }
-          >
-            <div>
-              <TextField label=\\"Username\\" name=\\"username\\" />
-            </div>
-            <div>
-              <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
-            </div>
-            <div>
-              <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
-            </div>
-            <div>
-              <TextField label=\\"Name\\" name=\\"name\\" />
-            </div>
-            <div>
-              <TextField label=\\"Bio\\" name=\\"bio\\" textarea />
-            </div>
-            <div>
-              <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
-            </div>
-            <div>
-              <TextField type=\\"number\\" step={1} label=\\"Age\\" name=\\"age\\" />
-            </div>
-            <div>
-              <TextField
-                type=\\"datetime-local\\"
-                label=\\"Birth Date\\"
-                name=\\"birthDate\\"
-              />
-            </div>
-            <div>
-              <TextField type=\\"number\\" label=\\"Score\\" name=\\"score\\" />
-            </div>
-            <div>
-              <UserSelect label=\\"Manager\\" name=\\"manager.id\\" />
-            </div>
-            <div>
-              <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
-            </div>
-            <div>
-              <SelectField
-                label=\\"Interests\\"
-                name=\\"interests\\"
-                options={[
-                  { label: \\"Programming\\", value: \\"programming\\" },
-                  { label: \\"Design\\", value: \\"design\\" },
-                ]}
-                isMulti
-              />
-            </div>
-            <div>
-              <SelectField
-                label=\\"Priority\\"
-                name=\\"priority\\"
-                options={[
-                  { label: \\"High\\", value: \\"high\\" },
-                  { label: \\"Medium\\", value: \\"medium\\" },
-                  { label: \\"Low\\", value: \\"low\\" },
-                ]}
-              />
-            </div>
-            <div>
-              <ToggleField label=\\"Is Curious\\" name=\\"isCurious\\" />
-            </div>
-            <div>
-              <TextField label=\\"Location\\" name=\\"location\\" />
-            </div>
-            <div />
-          </Form>
-        </Formik>
-      )}
-      <Snackbar open={isError || updateIsError} message={errorMessage} />
-    </>
+    <Edit {...props}>
+      <SimpleForm>
+        <TextInput label=\\"Username\\" source=\\"username\\" />
+        <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
+        <SelectArrayInput
+          source=\\"roles\\"
+          choices={ROLES_OPTIONS}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <TextInput label=\\"Name\\" source=\\"name\\" />
+        <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
+        <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
+        <NumberInput label=\\"Score\\" source=\\"score\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organization\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <SelectArrayInput
+          label=\\"Interests\\"
+          source=\\"interests\\"
+          choices={[
+            { label: \\"Programming\\", value: \\"programming\\" },
+            { label: \\"Design\\", value: \\"design\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <SelectInput
+          source=\\"priority\\"
+          label=\\"Priority\\"
+          choices={[
+            { label: \\"High\\", value: \\"high\\" },
+            { label: \\"Medium\\", value: \\"medium\\" },
+            { label: \\"Low\\", value: \\"low\\" },
+          ]}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
+        <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
+        <TextInput label=\\"Location\\" source=\\"location\\" />
+        <div />
+      </SimpleForm>
+    </Edit>
   );
 };
 ",
-  "admin/src/user/roles.ts": "export const ROLES = [
+  "admin-ui/src/user/UserList.tsx": "import * as React from \\"react\\";
+import {
+  List,
+  Datagrid,
+  ListProps,
+  TextField,
+  ReferenceField,
+  BooleanField,
+} from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
+import { USER_TITLE_FIELD } from \\"./UserTitle\\";
+import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
+
+export const UserList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Users\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick=\\"show\\">
+        <TextField label=\\"Username\\" source=\\"username\\" />
+        <TextField label=\\"Roles\\" source=\\"roles\\" />
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <TextField label=\\"Name\\" source=\\"name\\" />
+        <TextField label=\\"Bio\\" source=\\"bio\\" />
+        <TextField label=\\"Email\\" source=\\"email\\" />
+        <TextField label=\\"Age\\" source=\\"age\\" />
+        <TextField label=\\"Birth Date\\" source=\\"birthDate\\" />
+        <TextField label=\\"Score\\" source=\\"score\\" />
+        <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
+          <TextField source={USER_TITLE_FIELD} />
+        </ReferenceField>
+        <ReferenceField
+          label=\\"Organization\\"
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+        <TextField label=\\"Interests\\" source=\\"interests\\" />
+        <TextField label=\\"Priority\\" source=\\"priority\\" />
+        <BooleanField label=\\"Is Curious\\" source=\\"isCurious\\" />
+        <TextField label=\\"Location\\" source=\\"location\\" />
+        <TextField label=\\"Extended Properties\\" source=\\"extendedProperties\\" />
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/user/UserShow.tsx": "import * as React from \\"react\\";
+import {
+  Show,
+  SimpleShowLayout,
+  ListProps,
+  TextField,
+  ReferenceField,
+  BooleanField,
+} from \\"react-admin\\";
+import { USER_TITLE_FIELD } from \\"./UserTitle\\";
+import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
+
+export const UserShow = (props: ListProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label=\\"Username\\" source=\\"username\\" />
+        <TextField label=\\"Roles\\" source=\\"roles\\" />
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <TextField label=\\"Name\\" source=\\"name\\" />
+        <TextField label=\\"Bio\\" source=\\"bio\\" />
+        <TextField label=\\"Email\\" source=\\"email\\" />
+        <TextField label=\\"Age\\" source=\\"age\\" />
+        <TextField label=\\"Birth Date\\" source=\\"birthDate\\" />
+        <TextField label=\\"Score\\" source=\\"score\\" />
+        <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
+          <TextField source={USER_TITLE_FIELD} />
+        </ReferenceField>
+        <ReferenceField
+          label=\\"Organization\\"
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+        <TextField label=\\"Interests\\" source=\\"interests\\" />
+        <TextField label=\\"Priority\\" source=\\"priority\\" />
+        <BooleanField label=\\"Is Curious\\" source=\\"isCurious\\" />
+        <TextField label=\\"Location\\" source=\\"location\\" />
+        <TextField label=\\"Extended Properties\\" source=\\"extendedProperties\\" />
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/user/UserTitle.ts": "import { User as TUser } from \\"../api/user/User\\";
+
+export const USER_TITLE_FIELD = \\"username\\";
+
+export const UserTitle = (record: TUser) => {
+  return record.username;
+};
+",
+  "admin-ui/src/user/roles.ts": "export const ROLES = [
   {
     name: \\"user\\",
     displayName: \\"User\\",
@@ -3547,6 +1766,135 @@ export const ViewUser = (): React.ReactElement => {
     displayName: \\"Area Manager\\",
   },
 ];
+",
+  "admin-ui/src/util/BooleanFilter.ts": "export class BooleanFilter {
+  equals?: boolean;
+  not?: boolean;
+}
+",
+  "admin-ui/src/util/BooleanNullableFilter.ts": "export class BooleanNullableFilter {
+  equals?: boolean | null;
+  not?: boolean | null;
+}
+",
+  "admin-ui/src/util/DateTimeFilter.ts": "export class DateTimeFilter {
+  equals?: Date;
+  not?: Date;
+  in?: Date[];
+  notIn?: Date[];
+  lt?: Date;
+  lte?: Date;
+  gt?: Date;
+  gte?: Date;
+}
+",
+  "admin-ui/src/util/DateTimeNullableFilter.ts": "export class DateTimeNullableFilter {
+  equals?: Date | null;
+  in?: Date[] | null;
+  notIn?: Date[] | null;
+  lt?: Date;
+  lte?: Date;
+  gt?: Date;
+  gte?: Date;
+  not?: Date;
+}
+",
+  "admin-ui/src/util/FloatFilter.ts": "export class FloatFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/FloatNullableFilter.ts": "export class FloatNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/IntFilter.ts": "export class IntFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/IntNullableFilter.ts": "export class IntNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/JsonNullableFilter.ts": "import { JsonValue } from \\"type-fest\\";
+export class JsonNullableFilter {
+  equals?: JsonValue | null;
+  not?: JsonValue | null;
+}
+",
+  "admin-ui/src/util/MetaQueryPayload.ts": "export class MetaQueryPayload {
+  count!: number;
+}
+",
+  "admin-ui/src/util/QueryMode.ts": "export enum QueryMode {
+  Default = \\"default\\",
+  Insensitive = \\"insensitive\\",
+}
+",
+  "admin-ui/src/util/SortOrder.ts": "export enum SortOrder {
+  Asc = \\"asc\\",
+  Desc = \\"desc\\",
+}
+",
+  "admin-ui/src/util/StringFilter.ts": "import { QueryMode } from \\"./QueryMode\\";
+
+export class StringFilter {
+  equals?: string;
+  in?: string[];
+  notIn?: string[];
+  lt?: string;
+  lte?: string;
+  gt?: string;
+  gte?: string;
+  contains?: string;
+  startsWith?: string;
+  endsWith?: string;
+  mode?: QueryMode;
+  not?: string;
+}
+",
+  "admin-ui/src/util/StringNullableFilter.ts": "import { QueryMode } from \\"./QueryMode\\";
+export class StringNullableFilter {
+  equals?: string | null;
+  in?: string[] | null;
+  notIn?: string[] | null;
+  lt?: string;
+  lte?: string;
+  gt?: string;
+  gte?: string;
+  contains?: string;
+  startsWith?: string;
+  endsWith?: string;
+  mode?: QueryMode;
+  not?: string;
+}
 ",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"

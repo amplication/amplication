@@ -1,20 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router } from "react-router-dom";
 import "./index.css";
 // @ts-ignore
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import * as amplicationDesignSystem from "@amplication/design-system";
-import "@amplication/design-system/icons";
 
 ReactDOM.render(
   <React.StrictMode>
-    <amplicationDesignSystem.Provider>
-      <Router>
-        <App />
-      </Router>
-    </amplicationDesignSystem.Provider>
+    <App />
   </React.StrictMode>,
   document.getElementById("root")
 );

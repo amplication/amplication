@@ -3,23 +3,21 @@
   "version": "0.5.3",
   "private": true,
   "dependencies": {
-    "@amplication/design-system": "^0.2.0",
-    "@primer/components": "^20.3.0",
-    "@rmwc/provider": "^6.1.4",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/react-router-dom": "^5.1.6",
-    "axios": "^0.21.1",
-    "formik": "^2.2.5",
-    "lodash.pick": "^4.4.0",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-query": "^2.26.2",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.0",
-    "styled-components": "^5.1.1",
-    "web-vitals": "^0.2.4"
+    "@material-ui/core": "^4.11.4",
+    "apollo-client": "^2.6.10",
+    "apollo-link-context": "^1.0.20",
+    "gql": "^1.1.2",
+    "graphql": "^14.7.0",
+    "graphql-tag": "^2.12.4",
+    "pluralize": "^7.0.0",
+    "ra-data-graphql-amplication": "^0.0.5",
+    "react": "^16.8.0",
+    "react-admin": "^3.15.0",
+    "react-apollo": "^3.1.5",
+    "react-dom": "^16.8.0",
+    "react-scripts": "4.0.3",
+    "typescript": "^4.1.2",
+    "web-vitals": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -47,6 +45,12 @@
   },
   "proxy": "http://localhost:3000",
   "devDependencies": {
-    "sass": "^1.30.0"
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.8.0",
+    "@types/react-dom": "^17.0.0"
   }
 }

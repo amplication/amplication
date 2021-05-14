@@ -28,16 +28,16 @@ const IMPORTABLE_IDS = {
   [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
 };
 
-const template = path.resolve(__dirname, "entity-list-component.template.tsx");
+const template = path.resolve(__dirname, "entity-show-component.template.tsx");
 
-export async function createEntityListComponent(
+export async function createEntityShowComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
-  const name = `${entity.name}List`;
+  const name = `${entity.name}Show`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   const entityDTO = dtos[entity.name].entity;
   const fieldNameToField = Object.fromEntries(
@@ -52,11 +52,8 @@ export async function createEntityListComponent(
   );
 
   interpolate(file, {
-    ENTITY_LIST: builders.identifier(name),
-    ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
-      entity.pluralDisplayName
-    ),
-    CELLS: jsxFragment`<>${fields.map(
+    ENTITY_SHOW: builders.identifier(name),
+    FIELDS: jsxFragment`<>${fields.map(
       (field) => jsxElement`${createFieldValue(field)}`
     )}</>`,
   });

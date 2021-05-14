@@ -1,36 +1,33 @@
 import { namedTypes } from "ast-types";
-import { memberExpression } from "../../util/ast";
 import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
 } from "../../types";
-import { jsxElement, jsxFragment } from "../util";
-import { EntityComponent } from "../types";
+import { jsxElement } from "../util";
 /**
  * Creates a node for displaying given entity field value
  * @param field the entity field to create value view for
  * @returns the node AST representation
  */
 export function createFieldValue(
-  field: EntityField,
-  dataId: namedTypes.Identifier,
-  entityToTitleComponent: Record<string, EntityComponent>
+  field: EntityField
 ): namedTypes.JSXElement | namedTypes.JSXFragment {
-  const value = memberExpression`${dataId}.${field.name}`;
   switch (field.dataType) {
     case EnumDataType.CreatedAt:
     case EnumDataType.UpdatedAt:
-      return jsxElement`<TimeSince time={${value}} />`;
+      return jsxElement`<DateField source="${field.name}" label="${field.displayName}" />`;
     case EnumDataType.Lookup:
       const { relatedEntity } = field.properties as LookupResolvedProperties;
-      const relatedEntityTitleComponent =
-        entityToTitleComponent[relatedEntity.name];
-
-      return jsxElement`<${relatedEntityTitleComponent.name} id={${value}?.id}  />`;
-
+      return jsxElement`<ReferenceField label="${
+        field.displayName
+      }" source="${relatedEntity.name.toLowerCase()}.id" reference="${
+        relatedEntity.name
+      }">
+            <TextField source={${relatedEntity.name.toUpperCase()}_TITLE_FIELD} /> 
+        </ReferenceField>`;
     case EnumDataType.Boolean:
-      return jsxFragment`<>{${value} && <CircleIcon icon="check" style={EnumCircleIconStyle.positive} />}</>`;
+      return jsxElement`<BooleanField label="${field.displayName}" source="${field.name}" />`;
     case EnumDataType.DateTime:
     case EnumDataType.DecimalNumber:
     case EnumDataType.Email:
@@ -46,6 +43,6 @@ export function createFieldValue(
     case EnumDataType.WholeNumber:
     case EnumDataType.Json:
     default:
-      return jsxFragment`<>{${value}}</>`;
+      return jsxElement`<TextField label="${field.displayName}" source="${field.name}" />`;
   }
 }
