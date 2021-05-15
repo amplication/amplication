@@ -34,7 +34,8 @@ export async function createEntityShowComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  entityToTitleComponent: Record<string, EntityComponent>
+  entityToTitleComponent: Record<string, EntityComponent>,
+  allEntities: Entity[]
 ): Promise<EntityComponent> {
   const file = await readFile(template);
   const name = `${entity.name}Show`;
@@ -51,26 +52,48 @@ export async function createEntityShowComponent(
     (field) => field.dataType === EnumDataType.Lookup
   );
 
+  const toManyRelationFields = entity.fields.filter((field) => {
+    return (
+      field.dataType === EnumDataType.Lookup &&
+      (field.properties as LookupResolvedProperties).allowMultipleSelection
+    );
+  });
+
+  const toManyRelationData = toManyRelationFields.map((relatedField) => {
+    return createToManyReferenceField(entity, relatedField, dtos, allEntities);
+  });
+
+  const toManyRelationElements = toManyRelationData.map((item) => item.element);
+
+  //The list of entities related to the an immediate related entities
+  const relatedEntitiesNames = toManyRelationData.flatMap(
+    (item) => item.relatedEntitiesNames
+  );
+
+  //add the list of immediate related entities
+  const allRelatedEntitiesNames = relatedEntitiesNames.concat(
+    relationFields.map((field) => {
+      const { relatedEntity } = field.properties as LookupResolvedProperties;
+      return relatedEntity.name;
+    })
+  );
+
   interpolate(file, {
     ENTITY_SHOW: builders.identifier(name),
     FIELDS: jsxFragment`<>${fields.map(
       (field) => jsxElement`${createFieldValue(field)}`
-    )}</>`,
+    )}
+    ${toManyRelationElements}
+    </>`,
   });
 
   // Add imports for entities title components
   addImports(
     file,
-    relationFields.map((field) => {
-      const { relatedEntity } = field.properties as LookupResolvedProperties;
-      const relatedEntityTitleComponent =
-        entityToTitleComponent[relatedEntity.name];
+    allRelatedEntitiesNames.map((entityName) => {
+      const relatedEntityTitleComponent = entityToTitleComponent[entityName];
       return importNames(
-        [
-          builders.identifier(
-            `${relatedEntity.name.toUpperCase()}_TITLE_FIELD`
-          ),
-        ],
+        [builders.identifier(`${entityName.toUpperCase()}_TITLE_FIELD`)],
         relativeImportPath(modulePath, relatedEntityTitleComponent.modulePath)
       );
     })
@@ -79,4 +102,53 @@ export async function createEntityShowComponent(
   addImports(file, [...importContainedIdentifiers(file, IMPORTABLE_IDS)]);
 
   return { name, file, modulePath };
+}
+
+function createToManyReferenceField(
+  entity: Entity,
+  field: EntityField,
+  dtos: DTOs,
+  allEntities: Entity[]
+) {
+  const { relatedEntity } = field.properties as LookupResolvedProperties;
+
+  const relatedEntityWithResolvedFields = allEntities.find(
+    (entity) => entity.name === relatedEntity.name
+  );
+
+  if (!relatedEntityWithResolvedFields) {
+    throw new Error(`Cannot find entity: ${relatedEntity.name}`);
+  }
+
+  const entityDTO = dtos[relatedEntity.name].entity;
+
+  const fieldNameToField = Object.fromEntries(
+    relatedEntityWithResolvedFields.fields.map((field) => [field.name, field])
+  );
+
+  const entityDTOProperties = getNamedProperties(entityDTO);
+  const fields = entityDTOProperties.map(
+    (property) => fieldNameToField[property.key.name]
+  );
+
+  //return the names of the related entities to be used to import the title components
+  const relatedEntitiesNames = fields
+    .filter((field) => field.dataType === EnumDataType.Lookup)
+    .map(
+      (field) =>
+        (field.properties as LookupResolvedProperties).relatedEntity.name
+    );
+
+  const element = jsxElement` 
+  <ReferenceManyField
+    reference="${field.properties.relatedEntity.name}"
+    target="${entity.name}Id"
+    label="${field.properties.relatedEntity.pluralDisplayName}"
+  >
+    <Datagrid rowClick="show">
+      ${fields.map((field) => jsxElement`${createFieldValue(field)}`)}
+    </Datagrid>
+  </ReferenceManyField>`;
+
+  return { element, relatedEntitiesNames };
 }

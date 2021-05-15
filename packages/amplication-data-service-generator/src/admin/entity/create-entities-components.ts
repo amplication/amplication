@@ -17,7 +17,8 @@ export async function createEntitiesComponents(
             entity,
             dtos,
             entityToDirectory,
-            entityToTitleComponent
+            entityToTitleComponent,
+            entities
           );
           return [entity.name, components];
         }
