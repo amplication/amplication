@@ -27,7 +27,7 @@ function ApplicationCard({ app }: Props) {
     });
   }, [trackEvent]);
 
-  const lastBuildData = new Date(app.builds[0]?.createdAt);
+  const lastBuildDate = new Date(app.builds[0]?.createdAt);
   return (
     <NavLink to={`/${id}`} className="application-card" onClick={handleClick}>
       <div className="application-card__header">
@@ -39,9 +39,9 @@ function ApplicationCard({ app }: Props) {
           <div className="application-card__recently-used">
             <Icon icon="clock" />
             <Tooltip
-              aria-label={`Last build: ${format(lastBuildData, DATE_FORMAT)}`}
+              aria-label={`Last build: ${format(lastBuildDate, DATE_FORMAT)}`}
             >
-              {format(lastBuildData, "PP")}
+              {lastBuildDate && format(lastBuildDate, "PP")}
             </Tooltip>
           </div>
         </div>
