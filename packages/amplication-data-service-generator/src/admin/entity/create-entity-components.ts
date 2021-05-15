@@ -10,7 +10,8 @@ export async function createEntityComponents(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  entityToTitleComponent: Record<string, EntityComponent>
+  entityToTitleComponent: Record<string, EntityComponent>,
+  allEntities: Entity[]
 ): Promise<EntityComponents> {
   const [list, newComponent, editComponent, showComponent] = await Promise.all([
     createEntityListComponent(
@@ -35,7 +36,8 @@ export async function createEntityComponents(
       entity,
       dtos,
       entityToDirectory,
-      entityToTitleComponent
+      entityToTitleComponent,
+      allEntities
     ),
   ]);
 

@@ -34,7 +34,8 @@ export async function createEntityShowComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  entityToTitleComponent: Record<string, EntityComponent>
+  entityToTitleComponent: Record<string, EntityComponent>,
+  allEntities: Entity[]
 ): Promise<EntityComponent> {
   const file = await readFile(template);
   const name = `${entity.name}Show`;
@@ -51,11 +52,24 @@ export async function createEntityShowComponent(
     (field) => field.dataType === EnumDataType.Lookup
   );
 
+  const toManyRelationFields = entity.fields.filter((field) => {
+    return (
+      field.dataType === EnumDataType.Lookup &&
+      (field.properties as LookupResolvedProperties).allowMultipleSelection
+    );
+  });
+
+  const referenceFields = toManyRelationFields.map((relatedField) => {
+    return createToManyReferenceField(entity, relatedField, dtos, allEntities);
+  });
+
   interpolate(file, {
     ENTITY_SHOW: builders.identifier(name),
     FIELDS: jsxFragment`<>${fields.map(
       (field) => jsxElement`${createFieldValue(field)}`
-    )}</>`,
+    )}
+    ${referenceFields}
+    </>`,
   });
 
   // Add imports for entities title components
@@ -79,4 +93,45 @@ export async function createEntityShowComponent(
   addImports(file, [...importContainedIdentifiers(file, IMPORTABLE_IDS)]);
 
   return { name, file, modulePath };
+}
+
+function createToManyReferenceField(
+  entity: Entity,
+  field: EntityField,
+  dtos: DTOs,
+  allEntities: Entity[]
+) {
+  const { relatedEntity } = field.properties as LookupResolvedProperties;
+
+  const relatedEntityWithResolvedFields = allEntities.find(
+    (entity) => entity.name === relatedEntity.name
+  );
+
+  if (!relatedEntityWithResolvedFields) {
+    throw new Error(`Cannot find entity: ${relatedEntity.name}`);
+  }
+
+  const entityDTO = dtos[relatedEntity.name].entity;
+
+  const fieldNameToField = Object.fromEntries(
+    relatedEntityWithResolvedFields.fields.map((field) => [field.name, field])
+  );
+
+  const entityDTOProperties = getNamedProperties(entityDTO);
+  const fields = entityDTOProperties.map(
+    (property) => fieldNameToField[property.key.name]
+  );
+
+  const element = jsxElement` 
+  <ReferenceManyField
+    reference="${field.properties.relatedEntity.name}"
+    target="${entity.name}Id"
+    label="${field.properties.relatedEntity.pluralDisplayName}"
+  >
+    <Datagrid>
+      ${fields.map((field) => jsxElement`${createFieldValue(field)}`)}
+    </Datagrid>
+  </ReferenceManyField>`;
+
+  return element;
 }

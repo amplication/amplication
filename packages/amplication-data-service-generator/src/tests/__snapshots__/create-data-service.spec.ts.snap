@@ -1033,6 +1033,8 @@ import {
   DateField,
   BooleanField,
   ReferenceField,
+  ReferenceManyField,
+  Datagrid,
 } from \\"react-admin\\";
 
 import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
@@ -1075,6 +1077,26 @@ export const CustomerShow = (props: ListProps): React.ReactElement => {
         >
           <TextField source={ORGANIZATION_TITLE_FIELD} />
         </ReferenceField>
+        <ReferenceManyField
+          reference=\\"Order\\"
+          target=\\"CustomerId\\"
+          label=\\"Orders\\"
+        >
+          <Datagrid>
+            <TextField label=\\"Id\\" source=\\"id\\" />
+            <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+            <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+            <ReferenceField
+              label=\\"Customer\\"
+              source=\\"customer.id\\"
+              reference=\\"Customer\\"
+            >
+              <TextField source={CUSTOMER_TITLE_FIELD} />
+            </ReferenceField>
+            <TextField label=\\"Status\\" source=\\"status\\" />
+            <TextField label=\\"Label\\" source=\\"label\\" />
+          </Datagrid>
+        </ReferenceManyField>
       </SimpleShowLayout>
     </Show>
   );
@@ -1431,12 +1453,17 @@ export const OrganizationList = (props: ListProps): React.ReactElement => {
 };
 ",
   "admin-ui/src/organization/OrganizationShow.tsx": "import * as React from \\"react\\";
+
 import {
   Show,
   SimpleShowLayout,
   ListProps,
   TextField,
   DateField,
+  ReferenceManyField,
+  Datagrid,
+  ReferenceField,
+  BooleanField,
 } from \\"react-admin\\";
 
 export const OrganizationShow = (props: ListProps): React.ReactElement => {
@@ -1447,6 +1474,137 @@ export const OrganizationShow = (props: ListProps): React.ReactElement => {
         <DateField source=\\"createdAt\\" label=\\"Created At\\" />
         <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
         <TextField label=\\"Name\\" source=\\"name\\" />
+        <ReferenceManyField
+          reference=\\"User\\"
+          target=\\"OrganizationId\\"
+          label=\\"Users\\"
+        >
+          <Datagrid>
+            <TextField label=\\"Username\\" source=\\"username\\" />
+            <TextField label=\\"Roles\\" source=\\"roles\\" />
+            <TextField label=\\"Id\\" source=\\"id\\" />
+            <TextField label=\\"Name\\" source=\\"name\\" />
+            <TextField label=\\"Bio\\" source=\\"bio\\" />
+            <TextField label=\\"Email\\" source=\\"email\\" />
+            <TextField label=\\"Age\\" source=\\"age\\" />
+            <TextField label=\\"Birth Date\\" source=\\"birthDate\\" />
+            <TextField label=\\"Score\\" source=\\"score\\" />
+            <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
+              <TextField source={USER_TITLE_FIELD} />
+            </ReferenceField>
+            <ReferenceField
+              label=\\"Organization\\"
+              source=\\"organization.id\\"
+              reference=\\"Organization\\"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+            <TextField label=\\"Interests\\" source=\\"interests\\" />
+            <TextField label=\\"Priority\\" source=\\"priority\\" />
+            <BooleanField label=\\"Is Curious\\" source=\\"isCurious\\" />
+            <TextField label=\\"Location\\" source=\\"location\\" />
+            <TextField
+              label=\\"Extended Properties\\"
+              source=\\"extendedProperties\\"
+            />
+          </Datagrid>
+        </ReferenceManyField>
+        <ReferenceManyField
+          reference=\\"Customer\\"
+          target=\\"OrganizationId\\"
+          label=\\"Customers\\"
+        >
+          <Datagrid>
+            <TextField label=\\"Id\\" source=\\"id\\" />
+            <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+            <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+            <TextField label=\\"Email\\" source=\\"email\\" />
+            <TextField label=\\"First Name\\" source=\\"firstName\\" />
+            <TextField label=\\"Last Name\\" source=\\"lastName\\" />
+            <BooleanField label=\\"VIP\\" source=\\"isVip\\" />
+            <TextField label=\\"Birth Data\\" source=\\"birthData\\" />
+            <TextField
+              label=\\"Average Sale (-1500.00 - 1500.00)\\"
+              source=\\"averageSale\\"
+            />
+            <TextField
+              label=\\"Favorite Number (1 - 20)\\"
+              source=\\"favoriteNumber\\"
+            />
+            <TextField label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+            <TextField
+              label=\\"Comments (up to 500 characters)\\"
+              source=\\"comments\\"
+            />
+            <TextField
+              label=\\"Favorite Colors (multi-select)\\"
+              source=\\"favoriteColors\\"
+            />
+            <TextField label=\\"Customer Type\\" source=\\"customerType\\" />
+            <ReferenceField
+              label=\\"Organization\\"
+              source=\\"organization.id\\"
+              reference=\\"Organization\\"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+            <ReferenceField
+              label=\\"VIP Organization\\"
+              source=\\"organization.id\\"
+              reference=\\"Organization\\"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+          </Datagrid>
+        </ReferenceManyField>
+        <ReferenceManyField
+          reference=\\"Customer\\"
+          target=\\"OrganizationId\\"
+          label=\\"Customers\\"
+        >
+          <Datagrid>
+            <TextField label=\\"Id\\" source=\\"id\\" />
+            <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+            <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+            <TextField label=\\"Email\\" source=\\"email\\" />
+            <TextField label=\\"First Name\\" source=\\"firstName\\" />
+            <TextField label=\\"Last Name\\" source=\\"lastName\\" />
+            <BooleanField label=\\"VIP\\" source=\\"isVip\\" />
+            <TextField label=\\"Birth Data\\" source=\\"birthData\\" />
+            <TextField
+              label=\\"Average Sale (-1500.00 - 1500.00)\\"
+              source=\\"averageSale\\"
+            />
+            <TextField
+              label=\\"Favorite Number (1 - 20)\\"
+              source=\\"favoriteNumber\\"
+            />
+            <TextField label=\\"Geographic Location\\" source=\\"geoLocation\\" />
+            <TextField
+              label=\\"Comments (up to 500 characters)\\"
+              source=\\"comments\\"
+            />
+            <TextField
+              label=\\"Favorite Colors (multi-select)\\"
+              source=\\"favoriteColors\\"
+            />
+            <TextField label=\\"Customer Type\\" source=\\"customerType\\" />
+            <ReferenceField
+              label=\\"Organization\\"
+              source=\\"organization.id\\"
+              reference=\\"Organization\\"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+            <ReferenceField
+              label=\\"VIP Organization\\"
+              source=\\"organization.id\\"
+              reference=\\"Organization\\"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+          </Datagrid>
+        </ReferenceManyField>
       </SimpleShowLayout>
     </Show>
   );
@@ -1721,6 +1879,7 @@ export const UserList = (props: ListProps): React.ReactElement => {
 };
 ",
   "admin-ui/src/user/UserShow.tsx": "import * as React from \\"react\\";
+
 import {
   Show,
   SimpleShowLayout,
@@ -1728,7 +1887,10 @@ import {
   TextField,
   ReferenceField,
   BooleanField,
+  ReferenceManyField,
+  Datagrid,
 } from \\"react-admin\\";
+
 import { USER_TITLE_FIELD } from \\"./UserTitle\\";
 import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
@@ -1760,6 +1922,37 @@ export const UserShow = (props: ListProps): React.ReactElement => {
         <BooleanField label=\\"Is Curious\\" source=\\"isCurious\\" />
         <TextField label=\\"Location\\" source=\\"location\\" />
         <TextField label=\\"Extended Properties\\" source=\\"extendedProperties\\" />
+        <ReferenceManyField reference=\\"User\\" target=\\"UserId\\" label=\\"Users\\">
+          <Datagrid>
+            <TextField label=\\"Username\\" source=\\"username\\" />
+            <TextField label=\\"Roles\\" source=\\"roles\\" />
+            <TextField label=\\"Id\\" source=\\"id\\" />
+            <TextField label=\\"Name\\" source=\\"name\\" />
+            <TextField label=\\"Bio\\" source=\\"bio\\" />
+            <TextField label=\\"Email\\" source=\\"email\\" />
+            <TextField label=\\"Age\\" source=\\"age\\" />
+            <TextField label=\\"Birth Date\\" source=\\"birthDate\\" />
+            <TextField label=\\"Score\\" source=\\"score\\" />
+            <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
+              <TextField source={USER_TITLE_FIELD} />
+            </ReferenceField>
+            <ReferenceField
+              label=\\"Organization\\"
+              source=\\"organization.id\\"
+              reference=\\"Organization\\"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+            <TextField label=\\"Interests\\" source=\\"interests\\" />
+            <TextField label=\\"Priority\\" source=\\"priority\\" />
+            <BooleanField label=\\"Is Curious\\" source=\\"isCurious\\" />
+            <TextField label=\\"Location\\" source=\\"location\\" />
+            <TextField
+              label=\\"Extended Properties\\"
+              source=\\"extendedProperties\\"
+            />
+          </Datagrid>
+        </ReferenceManyField>
       </SimpleShowLayout>
     </Show>
   );
