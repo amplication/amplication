@@ -1,18 +1,18 @@
 import buildGraphQLProvider from "ra-data-graphql-amplication";
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "../auth-provider/ra-auth-basic-http";
 
 const httpLink = createHttpLink({
   uri: "/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
-  //@todo: get the authentication token from local storage
-  const token = "YWRtaW46YWRtaW4=";
+  const token = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
   return {
     headers: {
       ...headers,
-      authorization: token ? `Basic ${token}` : "",
+      authorization: token ? token : "",
     },
   };
 });
