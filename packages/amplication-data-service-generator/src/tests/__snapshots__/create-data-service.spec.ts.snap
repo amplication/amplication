@@ -1037,6 +1037,7 @@ import {
   Datagrid,
 } from \\"react-admin\\";
 
+import { CUSTOMER_TITLE_FIELD } from \\"./CustomerTitle\\";
 import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
 export const CustomerShow = (props: ListProps): React.ReactElement => {
@@ -1082,7 +1083,7 @@ export const CustomerShow = (props: ListProps): React.ReactElement => {
           target=\\"CustomerId\\"
           label=\\"Orders\\"
         >
-          <Datagrid>
+          <Datagrid rowClick=\\"show\\">
             <TextField label=\\"Id\\" source=\\"id\\" />
             <DateField source=\\"createdAt\\" label=\\"Created At\\" />
             <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
@@ -1466,6 +1467,9 @@ import {
   BooleanField,
 } from \\"react-admin\\";
 
+import { USER_TITLE_FIELD } from \\"../user/UserTitle\\";
+import { ORGANIZATION_TITLE_FIELD } from \\"./OrganizationTitle\\";
+
 export const OrganizationShow = (props: ListProps): React.ReactElement => {
   return (
     <Show {...props}>
@@ -1479,7 +1483,7 @@ export const OrganizationShow = (props: ListProps): React.ReactElement => {
           target=\\"OrganizationId\\"
           label=\\"Users\\"
         >
-          <Datagrid>
+          <Datagrid rowClick=\\"show\\">
             <TextField label=\\"Username\\" source=\\"username\\" />
             <TextField label=\\"Roles\\" source=\\"roles\\" />
             <TextField label=\\"Id\\" source=\\"id\\" />
@@ -1514,7 +1518,7 @@ export const OrganizationShow = (props: ListProps): React.ReactElement => {
           target=\\"OrganizationId\\"
           label=\\"Customers\\"
         >
-          <Datagrid>
+          <Datagrid rowClick=\\"show\\">
             <TextField label=\\"Id\\" source=\\"id\\" />
             <DateField source=\\"createdAt\\" label=\\"Created At\\" />
             <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
@@ -1562,7 +1566,7 @@ export const OrganizationShow = (props: ListProps): React.ReactElement => {
           target=\\"OrganizationId\\"
           label=\\"Customers\\"
         >
-          <Datagrid>
+          <Datagrid rowClick=\\"show\\">
             <TextField label=\\"Id\\" source=\\"id\\" />
             <DateField source=\\"createdAt\\" label=\\"Created At\\" />
             <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
@@ -1923,7 +1927,7 @@ export const UserShow = (props: ListProps): React.ReactElement => {
         <TextField label=\\"Location\\" source=\\"location\\" />
         <TextField label=\\"Extended Properties\\" source=\\"extendedProperties\\" />
         <ReferenceManyField reference=\\"User\\" target=\\"UserId\\" label=\\"Users\\">
-          <Datagrid>
+          <Datagrid rowClick=\\"show\\">
             <TextField label=\\"Username\\" source=\\"username\\" />
             <TextField label=\\"Roles\\" source=\\"roles\\" />
             <TextField label=\\"Id\\" source=\\"id\\" />
