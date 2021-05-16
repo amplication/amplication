@@ -8,6 +8,7 @@
     "gql": "^1.1.2",
     "graphql": "^14.7.0",
     "graphql-tag": "^2.12.4",
+    "lodash": "^4.17.21",
     "pluralize": "^7.0.0",
     "ra-data-graphql-amplication": "^0.0.5",
     "react": "^16.8.0",
@@ -48,6 +49,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@types/jest": "^26.0.15",
+    "@types/lodash": "^4.14.169",
     "@types/node": "^12.0.0",
     "@types/react": "^16.8.0",
     "@types/react-dom": "^17.0.0"
