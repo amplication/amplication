@@ -5,7 +5,7 @@ import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
 //@ts-ignore
 import basicHttpAuthProvider from "./auth-provider/ra-auth-basic-http";
 
-import "./App.css";
+import "./App.scss";
 //@ts-ignore
 import Dashboard from "./pages/Dashboard";
 

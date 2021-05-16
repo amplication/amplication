@@ -6,7 +6,7 @@ Object {
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
 import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
 import basicHttpAuthProvider from \\"./auth-provider/ra-auth-basic-http\\";
-import \\"./App.css\\";
+import \\"./App.scss\\";
 import Dashboard from \\"./pages/Dashboard\\";
 import { UserList } from \\"./user/UserList\\";
 import { UserCreate } from \\"./user/UserCreate\\";
