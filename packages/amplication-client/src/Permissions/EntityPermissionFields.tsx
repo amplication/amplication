@@ -231,7 +231,7 @@ const ADD_FIELD = gql`
         name
         displayName
       }
-      permissionFieldRoles {
+      permissionRoles {
         id
         appRole {
           id
