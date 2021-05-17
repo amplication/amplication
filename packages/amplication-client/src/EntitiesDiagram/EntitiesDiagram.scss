@@ -84,9 +84,9 @@ $entity-width: 200px;
       &:hover {
         z-index: $z-index-entity-hover;
 
-        #{$g}__add.amp-button {
-          visibility: visible;
-        }
+        // #{$g}__add.amp-button {
+        //   visibility: visible;
+        // }
       }
       .handle {
         cursor: grab;
@@ -115,7 +115,7 @@ $entity-width: 200px;
         height: var(--double-spacing);
         margin-right: calc(var(--double-spacing) * -1);
         min-width: 0;
-        visibility: hidden;
+        //visibility: hidden;
       }
     }
   }
