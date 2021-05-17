@@ -162,7 +162,7 @@ export const GET_ENTITY_VERSION = gql`
             field {
               displayName
             }
-            permissionFieldRoles {
+            permissionRoles {
               appRole {
                 displayName
               }

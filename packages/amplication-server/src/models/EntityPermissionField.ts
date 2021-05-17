@@ -44,5 +44,5 @@ export class EntityPermissionField {
   @Field(() => [EntityPermissionRole], {
     nullable: true
   })
-  permissionFieldRoles?: EntityPermissionRole[];
+  permissionRoles?: EntityPermissionRole[];
 }
