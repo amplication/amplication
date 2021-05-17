@@ -82,6 +82,7 @@ export const CreateAppFromExcelForm = ({
                 disabled={loading}
                 type="button"
                 onClick={onClearForm}
+                icon="arrow_left"
               >
                 Back
               </Button>
