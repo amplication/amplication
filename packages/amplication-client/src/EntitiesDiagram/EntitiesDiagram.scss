@@ -70,8 +70,6 @@ $entity-width: 200px;
       top: 0;
       left: 0;
 
-      $g: &;
-
       &:before {
         content: "";
         position: absolute;
@@ -81,12 +79,12 @@ $entity-width: 200px;
         height: 100%;
       }
 
+      &__edit {
+        margin-left: 0 !important;
+      }
+
       &:hover {
         z-index: $z-index-entity-hover;
-
-        // #{$g}__add.amp-button {
-        //   visibility: visible;
-        // }
       }
       .handle {
         cursor: grab;
@@ -115,7 +113,6 @@ $entity-width: 200px;
         height: var(--double-spacing);
         margin-right: calc(var(--double-spacing) * -1);
         min-width: 0;
-        //visibility: hidden;
       }
     }
   }
