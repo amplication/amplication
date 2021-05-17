@@ -29,6 +29,7 @@ type Props = {
   onDrag?: (entityIndex: number, data: DraggableData) => void;
   onEditField: (fieldIdentifier: FieldIdentifier | null) => void;
   onEditEntity: (entityIndex: number | null) => void;
+  onDeleteEntity: (entityIndex: number) => void;
   onAddEntity: (entityIndex: number) => void;
 };
 export const EntitiesDiagramEntity = React.memo(
@@ -42,11 +43,16 @@ export const EntitiesDiagramEntity = React.memo(
     onDrag,
     onEditField,
     onEditEntity,
+    onDeleteEntity,
     onAddEntity,
   }: Props) => {
     const handleAddEntity = useCallback(() => {
       onAddEntity && onAddEntity(entityIndex);
     }, [entityIndex, onAddEntity]);
+
+    const handleDeleteEntity = useCallback(() => {
+      onDeleteEntity && onDeleteEntity(entityIndex);
+    }, [entityIndex, onDeleteEntity]);
 
     const handleDrag = useCallback(
       (e: DraggableEvent, data: DraggableData) => {
@@ -98,6 +104,17 @@ export const EntitiesDiagramEntity = React.memo(
                       <span>{entity.name}</span>
                       <span className="spacer" />
                     </div>
+                    <span className="spacer" />
+
+                    {entityIndex > 0 && (
+                      <Button
+                        className={`${CLASS_NAME}__entities__entity__delete`}
+                        buttonStyle={EnumButtonStyle.Clear}
+                        type="button"
+                        onClick={handleDeleteEntity}
+                        icon="trash_2"
+                      />
+                    )}
                     <Button
                       className={`${CLASS_NAME}__entities__entity__edit`}
                       buttonStyle={EnumButtonStyle.Clear}
