@@ -69,7 +69,7 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
         for (const permissionField of permission.permissionFields) {
           const { field } = permissionField;
           fieldsWithRoles.add(field.name);
-          const roles = permissionField.permissionFieldRoles || [];
+          const roles = permissionField.permissionRoles || [];
           for (const permissionFieldRole of roles) {
             const role = permissionFieldRole.appRole.name;
             if (!(role in roleToFields)) {
