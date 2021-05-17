@@ -56,7 +56,6 @@ export const CreateAppFromExcelForm = ({
                 </li>
               </ul>
             </Panel>
-
             <Button
               buttonStyle={EnumButtonStyle.Primary}
               disabled={loading}

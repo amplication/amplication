@@ -1,5 +1,5 @@
 import { useFormikContext } from "formik";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 import React, { useCallback, useReducer, useState } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { DraggableData } from "react-draggable";
@@ -9,6 +9,7 @@ import { EntitiesDiagramRelations } from "./EntitiesDiagramRelations";
 import { EntitiesDiagramEntity } from "./EntitiesDiagramEntity";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
+import { Snackbar } from "@rmwc/snackbar";
 
 export type EntitiesDiagramFormData = models.AppCreateWithEntitiesInput;
 
@@ -59,6 +60,8 @@ const DEFAULT_ENTITY_VERTICAL_GAP = 50;
 export const CLASS_NAME = "entities-diagram";
 
 export default function EntitiesDiagram() {
+  const [error, setError] = useState<Error | null>(null);
+
   const { setFieldValue, values } = useFormikContext<EntitiesDiagramFormData>();
   const [zoomLevel, setZoomLevel] = useState<number>(1);
 
@@ -79,6 +82,10 @@ export default function EntitiesDiagram() {
     setZoomLevel(1);
   }, []);
 
+  const clearError = useCallback(() => {
+    setError(null);
+  }, [setError]);
+
   const [editedField, setEditedField] = React.useState<FieldIdentifier | null>(
     null
   );
@@ -88,6 +95,7 @@ export default function EntitiesDiagram() {
   const resetEditableElements = useCallback(() => {
     setEditedEntity(null);
     setEditedField(null);
+    setError(null);
   }, [setEditedEntity, setEditedField]);
 
   const handleEditEntity = useCallback(
@@ -181,6 +189,59 @@ export default function EntitiesDiagram() {
       forceUpdate();
     },
     [forceUpdate, resetEditableElements, zoomLevel]
+  );
+
+  const handleDeleteEntity = useCallback(
+    (entityIndex: number) => {
+      setError(null);
+
+      const clonedEntities = cloneDeep(values.entities);
+      const relations =
+        clonedEntities[entityIndex].relationsToEntityIndex || [];
+      const currentEntity = clonedEntities[entityIndex];
+
+      const clonedPositions = cloneDeep(entitiesPosition);
+
+      if (isEmpty(currentEntity.fields) && isEmpty(relations)) {
+        const newPositions = Object.fromEntries(
+          Object.keys(clonedPositions).flatMap((key) => {
+            const KeyNumber = parseInt(key);
+            if (KeyNumber < entityIndex) {
+              return [[KeyNumber, clonedPositions[KeyNumber]]];
+            } else if (KeyNumber === entityIndex) {
+              return [];
+            } else {
+              return [[KeyNumber - 1, clonedPositions[KeyNumber]]];
+            }
+          })
+        );
+
+        clonedEntities.splice(entityIndex, 1);
+
+        clonedEntities.map((entity) => {
+          entity.relationsToEntityIndex = entity.relationsToEntityIndex?.flatMap(
+            (index) => {
+              return index < entityIndex
+                ? [index]
+                : index === entityIndex
+                ? []
+                : [index - 1];
+            }
+          );
+          return entity;
+        });
+
+        setEntitiesPosition(newPositions);
+        setFieldValue(`entities`, [...clonedEntities]);
+      } else {
+        setError(
+          new Error(
+            "To delete an entity, first remove all its fields and relations"
+          )
+        );
+      }
+    },
+    [values, entitiesPosition, setFieldValue, setEntitiesPosition]
   );
 
   const handleAddEntity = useCallback(
@@ -292,6 +353,7 @@ export default function EntitiesDiagram() {
                   onEditField={handleEditField}
                   onEditEntity={handleEditEntity}
                   onAddEntity={handleAddEntity}
+                  onDeleteEntity={handleDeleteEntity}
                   editedFieldIdentifier={editedField}
                   editedEntity={editedEntity}
                 />
@@ -300,6 +362,11 @@ export default function EntitiesDiagram() {
           </div>
         </div>
       </div>
+      <Snackbar
+        open={Boolean(error)}
+        message={error?.message}
+        onClose={clearError}
+      />
     </div>
   );
 }
