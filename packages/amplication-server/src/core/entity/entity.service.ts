@@ -883,33 +883,6 @@ export class EntityService {
                 }
               };
             })
-          },
-          permissionFields: {
-            create: permission.permissionFields.map(permissionField => {
-              return {
-                field: {
-                  connect: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    entityVersionId_permanentId: {
-                      entityVersionId: targetVersionId,
-                      permanentId: permissionField.fieldPermanentId
-                    }
-                  }
-                },
-                permissionRoles: {
-                  connect: permissionField.permissionRoles.map(fieldRole => {
-                    return {
-                      // eslint-disable-next-line @typescript-eslint/naming-convention
-                      entityVersionId_action_appRoleId: {
-                        action: fieldRole.action,
-                        entityVersionId: targetVersionId,
-                        appRoleId: fieldRole.appRoleId
-                      }
-                    };
-                  })
-                }
-              };
-            })
           }
         };
       })
@@ -923,6 +896,49 @@ export class EntityService {
         permissions: createPermissionsData
       }
     });
+
+    await Promise.all(
+      sourceVersion.permissions.map(permission => {
+        return this.prisma.entityPermission.update({
+          where: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityVersionId_action: {
+              action: permission.action,
+              entityVersionId: targetVersionId
+            }
+          },
+          data: {
+            permissionFields: {
+              create: permission.permissionFields.map(permissionField => {
+                return {
+                  field: {
+                    connect: {
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
+                      entityVersionId_permanentId: {
+                        entityVersionId: targetVersionId,
+                        permanentId: permissionField.fieldPermanentId
+                      }
+                    }
+                  },
+                  permissionRoles: {
+                    connect: permissionField.permissionRoles.map(fieldRole => {
+                      return {
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        entityVersionId_action_appRoleId: {
+                          action: fieldRole.action,
+                          entityVersionId: targetVersionId,
+                          appRoleId: fieldRole.appRoleId
+                        }
+                      };
+                    })
+                  }
+                };
+              })
+            }
+          }
+        });
+      })
+    );
 
     return targetVersion;
   }
