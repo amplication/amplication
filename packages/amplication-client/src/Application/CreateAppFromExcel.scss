@@ -111,14 +111,26 @@ $option-image-size: 70px;
   }
 
   &__notice {
+    @include highlightPanel;
     text-align: left;
     color: var(--black100);
-    margin-bottom: var(--double-spacing);
+    margin-top: var(--double-spacing);
+    margin-left: 0;
+    margin-right: 0;
+
+    &__title {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      > * {
+        margin-right: var(--default-spacing-small);
+      }
+    }
 
     ul {
       margin: 0;
       padding: 0;
-      color: var(--black60);
+      color: var(--black90);
 
       li {
         @include flexFullRow;
@@ -176,6 +188,10 @@ $option-image-size: 70px;
 
         &__message {
           @include body2;
+        }
+
+        h2 {
+          color: var(--black60);
         }
 
         h3 {
