@@ -739,7 +739,7 @@ type EntityPermissionField {
   fieldPermanentId: String!
   entityVersionId: String!
   field: EntityField!
-  permissionFieldRoles: [EntityPermissionRole!]
+  permissionRoles: [EntityPermissionRole!]
 }
 
 input EntityPermissionFieldWhereUniqueInput {

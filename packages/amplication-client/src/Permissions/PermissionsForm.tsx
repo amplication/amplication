@@ -89,7 +89,7 @@ export const GET_ENTITY_PERMISSIONS = gql`
             name
             displayName
           }
-          permissionFieldRoles {
+          permissionRoles {
             id
             appRole {
               id
