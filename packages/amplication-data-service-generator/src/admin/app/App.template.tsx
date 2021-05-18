@@ -6,6 +6,8 @@ import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
 import basicHttpAuthProvider from "./auth-provider/ra-auth-basic-http";
 //@ts-ignore
 import { theme } from "./theme/theme";
+//@ts-ignore
+import Login from "./Login";
 import "./App.scss";
 //@ts-ignore
 import Dashboard from "./pages/Dashboard";
@@ -35,6 +37,7 @@ const App = (): React.ReactElement => {
         authProvider={basicHttpAuthProvider}
         theme={theme}
         dashboard={Dashboard}
+        loginPage={Login}
       >
         {RESOURCES}
       </Admin>
