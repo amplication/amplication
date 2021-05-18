@@ -4,12 +4,16 @@ import { Admin, DataProvider, Resource } from "react-admin";
 import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
 //@ts-ignore
 import basicHttpAuthProvider from "./auth-provider/ra-auth-basic-http";
-
-import "./App.css";
+//@ts-ignore
+import { theme } from "./theme/theme";
+//@ts-ignore
+import Login from "./Login";
+import "./App.scss";
 //@ts-ignore
 import Dashboard from "./pages/Dashboard";
 
 declare const RESOURCES: React.ReactElement[];
+declare const APP_NAME = "my app name";
 
 const App = (): React.ReactElement => {
   const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
@@ -28,10 +32,12 @@ const App = (): React.ReactElement => {
   return (
     <div className="App">
       <Admin
-        title="My Custom Admin"
+        title={APP_NAME}
         dataProvider={dataProvider}
         authProvider={basicHttpAuthProvider}
+        theme={theme}
         dashboard={Dashboard}
+        loginPage={Login}
       >
         {RESOURCES}
       </Admin>
