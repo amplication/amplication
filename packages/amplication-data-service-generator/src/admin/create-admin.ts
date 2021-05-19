@@ -59,6 +59,10 @@ export async function createAdminModules(
       `${API_PATHNAME}/${paramCase(plural(entity.name))}`,
     ])
   );
+  const entityNameToEntity = Object.fromEntries(
+    entities.map((entity) => [entity.name, entity])
+  );
+
   const publicFilesModules = await createPublicFiles(appInfo);
   const entityToDirectory = createEntityToDirectory(entities);
   const dtoNameToPath = createDTONameToPath(dtos);
@@ -83,7 +87,8 @@ export async function createAdminModules(
     entities,
     dtos,
     entityToDirectory,
-    entityToTitleComponent
+    entityToTitleComponent,
+    entityNameToEntity
   );
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents

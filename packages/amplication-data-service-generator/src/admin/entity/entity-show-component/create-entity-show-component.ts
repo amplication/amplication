@@ -35,7 +35,7 @@ export async function createEntityShowComponent(
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>,
-  allEntities: Entity[]
+  entityNameToEntity: Record<string, Entity>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
   const name = `${entity.name}Show`;
@@ -53,14 +53,23 @@ export async function createEntityShowComponent(
   );
 
   const toManyRelationFields = entity.fields.filter((field) => {
+    const properties = field.properties as LookupResolvedProperties;
+
     return (
       field.dataType === EnumDataType.Lookup &&
-      (field.properties as LookupResolvedProperties).allowMultipleSelection
+      properties.allowMultipleSelection &&
+      !(properties.relatedField.properties as LookupResolvedProperties)
+        .allowMultipleSelection
     );
   });
 
   const toManyRelationData = toManyRelationFields.map((relatedField) => {
-    return createToManyReferenceField(entity, relatedField, dtos, allEntities);
+    return createToManyReferenceField(
+      entity,
+      relatedField,
+      dtos,
+      entityNameToEntity
+    );
   });
 
   const toManyRelationElements = toManyRelationData.map((item) => item.element);
@@ -108,13 +117,12 @@ function createToManyReferenceField(
   entity: Entity,
   field: EntityField,
   dtos: DTOs,
-  allEntities: Entity[]
+  entityNameToEntity: Record<string, Entity>
 ) {
   const { relatedEntity } = field.properties as LookupResolvedProperties;
 
-  const relatedEntityWithResolvedFields = allEntities.find(
-    (entity) => entity.name === relatedEntity.name
-  );
+  const relatedEntityWithResolvedFields =
+    entityNameToEntity[relatedEntity.name];
 
   if (!relatedEntityWithResolvedFields) {
     throw new Error(`Cannot find entity: ${relatedEntity.name}`);

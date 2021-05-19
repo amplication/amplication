@@ -134,7 +134,7 @@ const USER: Entity = {
       properties: {
         relatedEntityId: ORGANIZATION_ID,
         relatedFieldId: ORGANIZATION_USERS_FIELD_ID,
-        allowMultipleSelection: false,
+        allowMultipleSelection: true,
       },
     },
     {
