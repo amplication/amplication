@@ -1,6 +1,6 @@
 {
   "name": "@amplication/client",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "dependencies": {
     "@amplication/data": "^0.6.0",
