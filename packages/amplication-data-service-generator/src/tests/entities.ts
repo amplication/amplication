@@ -115,7 +115,7 @@ const USER: Entity = {
       name: "employees",
       displayName: "Employees",
       required: false,
-      searchable: true,
+      searchable: false,
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: USER_ID,
