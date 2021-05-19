@@ -163,15 +163,19 @@ export function CreateAppFromExcel() {
     trackEvent({
       eventName: "createAppFromSample",
     });
-    handleSubmit(sampleAppWithEntities);
-  }, [handleSubmit, trackEvent]);
+    createAppWithEntities({ variables: { data: sampleAppWithEntities } }).catch(
+      console.error
+    );
+  }, [createAppWithEntities, trackEvent]);
 
   const handleStartFromScratch = useCallback(() => {
     trackEvent({
       eventName: "createAppFromScratch",
     });
-    handleSubmit(sampleAppWithoutEntities);
-  }, [handleSubmit, trackEvent]);
+    createAppWithEntities({
+      variables: { data: sampleAppWithoutEntities },
+    }).catch(console.error);
+  }, [createAppWithEntities, trackEvent]);
 
   useEffect(() => {
     if (data) {
