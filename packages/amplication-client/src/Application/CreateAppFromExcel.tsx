@@ -1,9 +1,9 @@
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useHistory, Link } from "react-router-dom";
 import { Snackbar } from "@rmwc/snackbar";
 import classNames from "classnames";
 import { forEach, isEmpty } from "lodash";
-import React, { useCallback, useEffect, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
@@ -44,11 +44,18 @@ export const CLASS_NAME = "create-app-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
 export function CreateAppFromExcel() {
-  const [importList, setImportList] = React.useState<ImportField[]>([]);
-  const [fileName, setFileName] = React.useState<string | null>(null);
+  const [importList, setImportList] = useState<ImportField[]>([]);
+  const [fileName, setFileName] = useState<string | null>(null);
   const { data: appsData } = useQuery<{
     apps: Array<models.App>;
   }>(GET_APPLICATIONS);
+  const [generalError, setGeneralError] = useState<Error | undefined>(
+    undefined
+  );
+
+  const clearGeneralError = useCallback(() => {
+    setGeneralError(undefined);
+  }, [setGeneralError]);
 
   const { trackEvent } = useTracking();
 
@@ -148,6 +155,28 @@ export function CreateAppFromExcel() {
 
   const handleSubmit = useCallback(
     (data: EntitiesDiagramFormData) => {
+      if (data.entities.find((entity) => isEmpty(entity.name))) {
+        setGeneralError(new Error("Entity name cannot be empty"));
+        return;
+      } else {
+        const names = data.entities.map((entity) => entity.name);
+
+        const duplicate = names.filter(
+          (name, index, arr) => arr.indexOf(name) !== index
+        );
+
+        if (!isEmpty(duplicate)) {
+          setGeneralError(
+            new Error(
+              `Entity name must be unique. Duplicate names found - ${duplicate.join(
+                ", "
+              )} `
+            )
+          );
+          return;
+        }
+      }
+
       trackEvent({
         eventName: "createAppFromFile",
         appName: data.app.name,
@@ -157,7 +186,7 @@ export function CreateAppFromExcel() {
     [createAppWithEntities, trackEvent]
   );
 
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(error) || formatError(generalError);
 
   const handleStartFromSample = useCallback(() => {
     trackEvent({
@@ -313,7 +342,11 @@ export function CreateAppFromExcel() {
             initialValues={initialValues}
           />
         )}
-        <Snackbar open={Boolean(error)} message={errorMessage} />
+        <Snackbar
+          open={Boolean(error) || Boolean(generalError)}
+          message={errorMessage}
+          onClose={clearGeneralError}
+        />
       </div>
     </div>
   );
