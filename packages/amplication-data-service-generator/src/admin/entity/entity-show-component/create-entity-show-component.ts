@@ -53,9 +53,13 @@ export async function createEntityShowComponent(
   );
 
   const toManyRelationFields = entity.fields.filter((field) => {
+    const properties = field.properties as LookupResolvedProperties;
+
     return (
       field.dataType === EnumDataType.Lookup &&
-      (field.properties as LookupResolvedProperties).allowMultipleSelection
+      properties.allowMultipleSelection &&
+      !(properties.relatedField.properties as LookupResolvedProperties)
+        .allowMultipleSelection
     );
   });
 
