@@ -644,7 +644,6 @@ export type UpdateUserArgs = {
 };
 ",
   "admin-ui/src/api/user/User.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { JsonValue } from \\"type-fest\\";
 
 export type User = {
@@ -658,7 +657,6 @@ export type User = {
   birthDate: Date;
   score: number;
   manager?: UserWhereUniqueInput | null;
-  organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -667,7 +665,6 @@ export type User = {
 };
 ",
   "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { JsonValue } from \\"type-fest\\";
 
 export type UserCreateInput = {
@@ -681,7 +678,6 @@ export type UserCreateInput = {
   birthDate: Date;
   score: number;
   manager?: UserWhereUniqueInput | null;
-  organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -719,7 +715,6 @@ export type UserOrderByInput = {
   birthDate?: SortOrder;
   score?: SortOrder;
   managerId?: SortOrder;
-  organizationId?: SortOrder;
   interests?: SortOrder;
   priority?: SortOrder;
   isCurious?: SortOrder;
@@ -728,7 +723,6 @@ export type UserOrderByInput = {
 };
 ",
   "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { JsonValue } from \\"type-fest\\";
 
 export type UserUpdateInput = {
@@ -742,7 +736,6 @@ export type UserUpdateInput = {
   birthDate?: Date;
   score?: number;
   manager?: UserWhereUniqueInput | null;
-  organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
@@ -754,7 +747,6 @@ export type UserUpdateInput = {
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
 
@@ -765,7 +757,6 @@ export type UserWhereInput = {
   age?: IntFilter;
   birthDate?: DateTimeFilter;
   manager?: UserWhereUniqueInput;
-  organization?: OrganizationWhereUniqueInput;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: BooleanFilter;
   location?: StringFilter;
@@ -1584,11 +1575,10 @@ import {
   DateField,
   ReferenceManyField,
   Datagrid,
-  ReferenceField,
   BooleanField,
+  ReferenceField,
 } from \\"react-admin\\";
 
-import { USER_TITLE_FIELD } from \\"../user/UserTitle\\";
 import { ORGANIZATION_TITLE_FIELD } from \\"./OrganizationTitle\\";
 
 export const OrganizationShow = (props: ListProps): React.ReactElement => {
@@ -1599,41 +1589,6 @@ export const OrganizationShow = (props: ListProps): React.ReactElement => {
         <DateField source=\\"createdAt\\" label=\\"Created At\\" />
         <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
         <TextField label=\\"Name\\" source=\\"name\\" />
-        <ReferenceManyField
-          reference=\\"User\\"
-          target=\\"OrganizationId\\"
-          label=\\"Users\\"
-        >
-          <Datagrid rowClick=\\"show\\">
-            <TextField label=\\"Username\\" source=\\"username\\" />
-            <TextField label=\\"Roles\\" source=\\"roles\\" />
-            <TextField label=\\"Id\\" source=\\"id\\" />
-            <TextField label=\\"Name\\" source=\\"name\\" />
-            <TextField label=\\"Bio\\" source=\\"bio\\" />
-            <TextField label=\\"Email\\" source=\\"email\\" />
-            <TextField label=\\"Age\\" source=\\"age\\" />
-            <TextField label=\\"Birth Date\\" source=\\"birthDate\\" />
-            <TextField label=\\"Score\\" source=\\"score\\" />
-            <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
-              <TextField source={USER_TITLE_FIELD} />
-            </ReferenceField>
-            <ReferenceField
-              label=\\"Organization\\"
-              source=\\"organization.id\\"
-              reference=\\"Organization\\"
-            >
-              <TextField source={ORGANIZATION_TITLE_FIELD} />
-            </ReferenceField>
-            <TextField label=\\"Interests\\" source=\\"interests\\" />
-            <TextField label=\\"Priority\\" source=\\"priority\\" />
-            <BooleanField label=\\"Is Curious\\" source=\\"isCurious\\" />
-            <TextField label=\\"Location\\" source=\\"location\\" />
-            <TextField
-              label=\\"Extended Properties\\"
-              source=\\"extendedProperties\\"
-            />
-          </Datagrid>
-        </ReferenceManyField>
         <ReferenceManyField
           reference=\\"Customer\\"
           target=\\"OrganizationId\\"
@@ -1850,7 +1805,6 @@ import {
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
-import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
@@ -1873,13 +1827,6 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <NumberInput label=\\"Score\\" source=\\"score\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source=\\"organization.id\\"
-          reference=\\"Organization\\"
-          label=\\"Organization\\"
-        >
-          <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <SelectArrayInput
           label=\\"Interests\\"
@@ -1927,7 +1874,6 @@ import {
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
-import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
@@ -1950,13 +1896,6 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <NumberInput label=\\"Score\\" source=\\"score\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source=\\"organization.id\\"
-          reference=\\"Organization\\"
-          label=\\"Organization\\"
-        >
-          <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <SelectArrayInput
           label=\\"Interests\\"
@@ -1998,7 +1937,6 @@ import {
 } from \\"react-admin\\";
 import Pagination from \\"../Components/Pagination\\";
 import { USER_TITLE_FIELD } from \\"./UserTitle\\";
-import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
 export const UserList = (props: ListProps): React.ReactElement => {
   return (
@@ -2021,13 +1959,6 @@ export const UserList = (props: ListProps): React.ReactElement => {
         <TextField label=\\"Score\\" source=\\"score\\" />
         <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
-        </ReferenceField>
-        <ReferenceField
-          label=\\"Organization\\"
-          source=\\"organization.id\\"
-          reference=\\"Organization\\"
-        >
-          <TextField source={ORGANIZATION_TITLE_FIELD} />
         </ReferenceField>
         <TextField label=\\"Interests\\" source=\\"interests\\" />
         <TextField label=\\"Priority\\" source=\\"priority\\" />
@@ -2053,7 +1984,6 @@ import {
 } from \\"react-admin\\";
 
 import { USER_TITLE_FIELD } from \\"./UserTitle\\";
-import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
 export const UserShow = (props: ListProps): React.ReactElement => {
   return (
@@ -2070,13 +2000,6 @@ export const UserShow = (props: ListProps): React.ReactElement => {
         <TextField label=\\"Score\\" source=\\"score\\" />
         <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
-        </ReferenceField>
-        <ReferenceField
-          label=\\"Organization\\"
-          source=\\"organization.id\\"
-          reference=\\"Organization\\"
-        >
-          <TextField source={ORGANIZATION_TITLE_FIELD} />
         </ReferenceField>
         <TextField label=\\"Interests\\" source=\\"interests\\" />
         <TextField label=\\"Priority\\" source=\\"priority\\" />
@@ -2096,13 +2019,6 @@ export const UserShow = (props: ListProps): React.ReactElement => {
             <TextField label=\\"Score\\" source=\\"score\\" />
             <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
               <TextField source={USER_TITLE_FIELD} />
-            </ReferenceField>
-            <ReferenceField
-              label=\\"Organization\\"
-              source=\\"organization.id\\"
-              reference=\\"Organization\\"
-            >
-              <TextField source={ORGANIZATION_TITLE_FIELD} />
             </ReferenceField>
             <TextField label=\\"Interests\\" source=\\"interests\\" />
             <TextField label=\\"Priority\\" source=\\"priority\\" />
@@ -2294,8 +2210,7 @@ model User {
   manager            User?               @relation(name: \\"employees\\", fields: [managerId], references: [id])
   managerId          String?
   employees          User[]              @relation(name: \\"employees\\")
-  organization       Organization?       @relation(fields: [organizationId], references: [id])
-  organizationId     String?
+  organization       Organization[]
   interests          EnumUserInterests[]
   priority           EnumUserPriority
   isCurious          Boolean
@@ -7932,12 +7847,6 @@ export class OrganizationControllerBase {
           },
         },
 
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
         interests: true,
         priority: true,
         isCurious: true,
@@ -9070,7 +8979,6 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -9161,15 +9069,6 @@ class User {
   manager?: UserWhereUniqueInput | null;
 
   @ApiProperty({
-    required: false,
-    type: OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  organization?: OrganizationWhereUniqueInput | null;
-
-  @ApiProperty({
     required: true,
     enum: EnumUserInterests,
     isArray: true,
@@ -9235,7 +9134,6 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -9327,18 +9225,6 @@ class UserCreateInput {
     nullable: true,
   })
   manager?: UserWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: false,
-    type: OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  organization?: OrganizationWhereUniqueInput | null;
 
   @ApiProperty({
     required: true,
@@ -9556,15 +9442,6 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  organizationId?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
   interests?: SortOrder;
 
   @ApiProperty({
@@ -9623,7 +9500,6 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -9745,18 +9621,6 @@ class UserUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  organization?: OrganizationWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: false,
     enum: EnumUserInterests,
     isArray: true,
   })
@@ -9822,7 +9686,6 @@ import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
@@ -9894,18 +9757,6 @@ class UserWhereInput {
     nullable: true,
   })
   manager?: UserWhereUniqueInput;
-
-  @ApiProperty({
-    required: false,
-    type: OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  organization?: OrganizationWhereUniqueInput;
 
   @ApiProperty({
     required: false,
@@ -10161,6 +10012,8 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
+import { OrganizationWhereInput } from \\"../../organization/base/OrganizationWhereInput\\";
+import { Organization } from \\"../../organization/base/Organization\\";
 
 export class UserControllerBase {
   constructor(
@@ -10209,12 +10062,6 @@ export class UserControllerBase {
               connect: data.manager,
             }
           : undefined,
-
-        organization: data.organization
-          ? {
-              connect: data.organization,
-            }
-          : undefined,
       },
       select: {
         username: true,
@@ -10228,12 +10075,6 @@ export class UserControllerBase {
         score: true,
 
         manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        organization: {
           select: {
             id: true,
           },
@@ -10294,12 +10135,6 @@ export class UserControllerBase {
           },
         },
 
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
         interests: true,
         priority: true,
         isCurious: true,
@@ -10345,12 +10180,6 @@ export class UserControllerBase {
         score: true,
 
         manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        organization: {
           select: {
             id: true,
           },
@@ -10417,12 +10246,6 @@ export class UserControllerBase {
                 connect: data.manager,
               }
             : undefined,
-
-          organization: data.organization
-            ? {
-                connect: data.organization,
-              }
-            : undefined,
         },
         select: {
           username: true,
@@ -10436,12 +10259,6 @@ export class UserControllerBase {
           score: true,
 
           manager: {
-            select: {
-              id: true,
-            },
-          },
-
-          organization: {
             select: {
               id: true,
             },
@@ -10493,12 +10310,6 @@ export class UserControllerBase {
           score: true,
 
           manager: {
-            select: {
-              id: true,
-            },
-          },
-
-          organization: {
             select: {
               id: true,
             },
@@ -10560,12 +10371,6 @@ export class UserControllerBase {
         score: true,
 
         manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        organization: {
           select: {
             id: true,
           },
@@ -10706,6 +10511,169 @@ export class UserControllerBase {
       select: { id: true },
     });
   }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get(\\"/:id/organization\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiQuery({
+    type: () => OrganizationWhereInput,
+    style: \\"deepObject\\",
+    explode: true,
+  })
+  async findManyOrganization(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Organization[]> {
+    const query: OrganizationWhereInput = request.query;
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const results = await this.service.findOrganization(params.id, {
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Post(\\"/:id/organization\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createOrganization(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      organization: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Patch(\\"/:id/organization\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateOrganization(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      organization: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Delete(\\"/:id/organization\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteOrganization(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[],
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      organization: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new common.ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
 }
 ",
   "server/src/user/base/user.module.base.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
@@ -10742,6 +10710,7 @@ import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
 import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
 import { UserFindUniqueArgs } from \\"./UserFindUniqueArgs\\";
 import { User } from \\"./User\\";
+import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { UserService } from \\"../user.service\\";
 
@@ -10857,12 +10826,6 @@ export class UserResolverBase {
               connect: args.data.manager,
             }
           : undefined,
-
-        organization: args.data.organization
-          ? {
-              connect: args.data.organization,
-            }
-          : undefined,
       },
     });
   }
@@ -10908,12 +10871,6 @@ export class UserResolverBase {
           manager: args.data.manager
             ? {
                 connect: args.data.manager,
-              }
-            : undefined,
-
-          organization: args.data.organization
-            ? {
-                connect: args.data.organization,
               }
             : undefined,
         },
@@ -10974,6 +10931,32 @@ export class UserResolverBase {
     return results.map((result) => permission.filter(result));
   }
 
+  @graphql.ResolveField(() => [Organization])
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async organization(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: OrganizationFindManyArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Organization[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const results = await this.service.findOrganization(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results.map((result) => permission.filter(result));
+  }
+
   @graphql.ResolveField(() => User, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10991,30 +10974,6 @@ export class UserResolverBase {
       resource: \\"User\\",
     });
     const result = await this.service.getManager(parent.id);
-
-    if (!result) {
-      return null;
-    }
-    return permission.filter(result);
-  }
-
-  @graphql.ResolveField(() => Organization, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  async organization(
-    @graphql.Parent() parent: User,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<Organization | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const result = await this.service.getOrganization(parent.id);
 
     if (!result) {
       return null;
@@ -11097,20 +11056,23 @@ export class UserServiceBase {
       .employees(args);
   }
 
+  async findOrganization(
+    parentId: string,
+    args: Prisma.OrganizationFindManyArgs
+  ): Promise<Organization[]> {
+    return this.prisma.user
+      .findUnique({
+        where: { id: parentId },
+      })
+      .organization(args);
+  }
+
   async getManager(parentId: string): Promise<User | null> {
     return this.prisma.user
       .findUnique({
         where: { id: parentId },
       })
       .manager();
-  }
-
-  async getOrganization(parentId: string): Promise<Organization | null> {
-    return this.prisma.user
-      .findUnique({
-        where: { id: parentId },
-      })
-      .organization();
   }
 }
 ",
