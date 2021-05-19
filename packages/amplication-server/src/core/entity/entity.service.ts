@@ -137,7 +137,7 @@ const BASE_FIELD: Pick<
   'required' | 'searchable' | 'description'
 > = {
   required: false,
-  searchable: false,
+  searchable: true,
   description: ''
 };
 
