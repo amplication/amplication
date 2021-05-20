@@ -57,6 +57,7 @@ export async function createEntityShowComponent(
 
     return (
       field.dataType === EnumDataType.Lookup &&
+      field.searchable &&
       properties.allowMultipleSelection &&
       !(properties.relatedField.properties as LookupResolvedProperties)
         .allowMultipleSelection

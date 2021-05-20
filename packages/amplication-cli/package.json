@@ -1,7 +1,7 @@
 {
   "name": "@amplication/cli",
   "description": "Amplication CLI",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/amplication/amplication.git"
@@ -44,8 +44,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack-manual": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "prepare": "npm run build",
-    "version": "oclif-dev readme && git add README.md"
+    "prepare": "npm run build"
   },
   "types": "lib/index.d.ts",
   "dependencies": {
