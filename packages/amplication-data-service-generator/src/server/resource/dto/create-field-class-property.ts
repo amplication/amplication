@@ -416,5 +416,9 @@ export function createFieldValueTypeFromPrismaField(
       members.map((member) => builders.tsLiteralType(member.initializer))
     );
   }
-  return builders.tsTypeReference(createWhereUniqueInputID(prismaField.type));
+  if (isQuery || isInput) {
+    return builders.tsTypeReference(createWhereUniqueInputID(prismaField.type));
+  } else {
+    return builders.tsTypeReference(builders.identifier(prismaField.type));
+  }
 }
