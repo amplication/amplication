@@ -231,7 +231,8 @@ export type CreateCustomerArgs = {
   data: CustomerCreateInput;
 };
 ",
-  "admin-ui/src/api/customer/Customer.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin-ui/src/api/customer/Customer.ts": "import { Organization } from \\"../organization/Organization\\";
+import { Order } from \\"../order/Order\\";
 
 export type Customer = {
   id: string;
@@ -248,8 +249,9 @@ export type Customer = {
   comments: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-  organization?: OrganizationWhereUniqueInput | null;
-  vipOrganization?: OrganizationWhereUniqueInput | null;
+  organization?: Organization | null;
+  vipOrganization?: Organization | null;
+  orders?: Array<Order>;
 };
 ",
   "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -459,13 +461,13 @@ export type DeleteOrderArgs = {
   Done = \\"done\\",
 }
 ",
-  "admin-ui/src/api/order/Order.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+  "admin-ui/src/api/order/Order.ts": "import { Customer } from \\"../customer/Customer\\";
 
 export type Order = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  customer?: CustomerWhereUniqueInput;
+  customer?: Customer;
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   label?: \\"fragile\\" | null;
 };
@@ -550,11 +552,17 @@ export type DeleteOrganizationArgs = {
   where: OrganizationWhereUniqueInput;
 };
 ",
-  "admin-ui/src/api/organization/Organization.ts": "export type Organization = {
+  "admin-ui/src/api/organization/Organization.ts": "import { User } from \\"../user/User\\";
+import { Customer } from \\"../customer/Customer\\";
+
+export type Organization = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
   name: string;
+  users?: Array<User>;
+  customers?: Array<Customer>;
+  vipCustomers?: Array<Customer>;
 };
 ",
   "admin-ui/src/api/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
@@ -643,7 +651,7 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/User.ts": "import { Organization } from \\"../organization/Organization\\";
 import { JsonValue } from \\"type-fest\\";
 
 export type User = {
@@ -656,7 +664,9 @@ export type User = {
   age: number;
   birthDate: Date;
   score: number;
-  manager?: UserWhereUniqueInput | null;
+  manager?: User | null;
+  employees?: Array<User>;
+  organization?: Array<Organization>;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -2889,7 +2899,8 @@ import {
 import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { Organization } from \\"../../organization/base/Organization\\";
+import { Order } from \\"../../order/base/Order\\";
 @ObjectType()
 class Customer {
   @ApiProperty({
@@ -3039,21 +3050,30 @@ class Customer {
 
   @ApiProperty({
     required: false,
-    type: OrganizationWhereUniqueInput,
+    type: Organization,
   })
   @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
+  @Type(() => Organization)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput | null;
+  organization?: Organization | null;
 
   @ApiProperty({
     required: false,
-    type: OrganizationWhereUniqueInput,
+    type: Organization,
   })
   @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
+  @Type(() => Organization)
   @IsOptional()
-  vipOrganization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: Organization | null;
+
+  @ApiProperty({
+    required: false,
+    type: Array,
+  })
+  @ValidateNested()
+  @Type(() => Array)
+  @IsOptional()
+  orders?: Array<Order>;
 }
 export { Customer };
 ",
@@ -5944,7 +5964,7 @@ import {
   IsOptional,
 } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { Customer } from \\"../../customer/base/Customer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @ObjectType()
@@ -5975,11 +5995,11 @@ class Order {
 
   @ApiProperty({
     required: true,
-    type: CustomerWhereUniqueInput,
+    type: Customer,
   })
   @ValidateNested()
-  @Type(() => CustomerWhereUniqueInput)
-  customer?: CustomerWhereUniqueInput;
+  @Type(() => Customer)
+  customer?: Customer;
 
   @ApiProperty({
     required: true,
@@ -7134,8 +7154,10 @@ export { DeleteOrganizationArgs };
 ",
   "server/src/organization/base/Organization.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsDate } from \\"class-validator\\";
+import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
+import { User } from \\"../../user/base/User\\";
+import { Customer } from \\"../../customer/base/Customer\\";
 @ObjectType()
 class Organization {
   @ApiProperty({
@@ -7169,6 +7191,33 @@ class Organization {
   @IsString()
   @Field(() => String)
   name!: string;
+
+  @ApiProperty({
+    required: true,
+    type: Array,
+  })
+  @ValidateNested()
+  @Type(() => Array)
+  @IsOptional()
+  users?: Array<User>;
+
+  @ApiProperty({
+    required: true,
+    type: Array,
+  })
+  @ValidateNested()
+  @Type(() => Array)
+  @IsOptional()
+  customers?: Array<Customer>;
+
+  @ApiProperty({
+    required: true,
+    type: Array,
+  })
+  @ValidateNested()
+  @Type(() => Array)
+  @IsOptional()
+  vipCustomers?: Array<Customer>;
 }
 export { Organization };
 ",
@@ -8950,7 +8999,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -9033,12 +9082,30 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: UserWhereUniqueInput,
+    type: User,
   })
   @ValidateNested()
-  @Type(() => UserWhereUniqueInput)
+  @Type(() => User)
   @IsOptional()
-  manager?: UserWhereUniqueInput | null;
+  manager?: User | null;
+
+  @ApiProperty({
+    required: false,
+    type: Array,
+  })
+  @ValidateNested()
+  @Type(() => Array)
+  @IsOptional()
+  employees?: Array<User>;
+
+  @ApiProperty({
+    required: false,
+    type: Array,
+  })
+  @ValidateNested()
+  @Type(() => Array)
+  @IsOptional()
+  organization?: Array<Organization>;
 
   @ApiProperty({
     required: true,

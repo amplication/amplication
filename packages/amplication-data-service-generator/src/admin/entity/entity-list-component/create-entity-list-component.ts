@@ -8,11 +8,11 @@ import {
 } from "../../../types";
 import {
   addImports,
-  getNamedProperties,
   importContainedIdentifiers,
   importNames,
   interpolate,
 } from "../../../util/ast";
+import { getFieldsFromDTOWithoutToManyRelations } from "../../../util/entity";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
@@ -39,14 +39,10 @@ export async function createEntityListComponent(
   const file = await readFile(template);
   const name = `${entity.name}List`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const entityDTO = dtos[entity.name].entity;
-  const fieldNameToField = Object.fromEntries(
-    entity.fields.map((field) => [field.name, field])
-  );
-  const entityDTOProperties = getNamedProperties(entityDTO);
-  const fields = entityDTOProperties.map(
-    (property) => fieldNameToField[property.key.name]
-  );
+
+  //get the fields from the DTO object excluding toMany relations
+  const fields = getFieldsFromDTOWithoutToManyRelations(entity, dtos);
+
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
