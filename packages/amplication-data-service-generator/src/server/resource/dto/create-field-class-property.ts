@@ -131,7 +131,7 @@ export function createFieldClassProperty(
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
-  const type = createFieldValueTypeFromPrismaField(
+  const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
     field,
     prismaField,
     optional,
@@ -230,13 +230,28 @@ export function createFieldClassProperty(
       namedTypes.TSTypeReference.check(type) &&
       namedTypes.Identifier.check(type.typeName)
     ) {
-      typeName = type.typeName;
+      if (prismaField.isList) {
+        if (
+          namedTypes.TSTypeReference.check(arrayElementType) &&
+          namedTypes.Identifier.check(arrayElementType.typeName)
+        ) {
+          typeName = arrayElementType.typeName;
+        } else {
+          typeName = type.typeName;
+        }
+      } else {
+        typeName = type.typeName;
+      }
     }
+
     if (!typeName) {
       throw new Error(`Unexpected type: ${type}`);
     }
     apiPropertyOptionsObjectExpression.properties.push(
-      builders.objectProperty(TYPE_ID, typeName)
+      builders.objectProperty(
+        TYPE_ID,
+        prismaField.isList ? builders.arrayExpression([typeName]) : typeName
+      )
     );
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
@@ -362,6 +377,9 @@ export function createTypeDecorator(
   );
 }
 
+//Returns an array of max two elements
+//element [0] is always the type of the property,
+//element [1] is only returned when the type is an array, with the array element type
 export function createFieldValueTypeFromPrismaField(
   field: EntityField,
   prismaField: ScalarField | ObjectField,
@@ -369,9 +387,9 @@ export function createFieldValueTypeFromPrismaField(
   isInput: boolean,
   isEnum: boolean,
   isQuery: boolean
-): TSTypeKind {
+): TSTypeKind[] {
   if (!prismaField.isRequired && !isQuery) {
-    const type = createFieldValueTypeFromPrismaField(
+    const [type] = createFieldValueTypeFromPrismaField(
       field,
       {
         ...prismaField,
@@ -382,14 +400,14 @@ export function createFieldValueTypeFromPrismaField(
       isEnum,
       isQuery
     );
-    return builders.tsUnionType([type, builders.tsNullKeyword()]);
+    return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
   if (prismaField.isList) {
     const itemPrismaField = {
       ...prismaField,
       isList: false,
     };
-    const itemType = createFieldValueTypeFromPrismaField(
+    const [itemType] = createFieldValueTypeFromPrismaField(
       field,
       itemPrismaField,
       optional,
@@ -397,28 +415,34 @@ export function createFieldValueTypeFromPrismaField(
       isEnum,
       isQuery
     );
-    return createGenericArray(itemType);
+    return [createGenericArray(itemType), itemType];
   }
   if (prismaField.kind === FieldKind.Scalar) {
     if (isQuery) {
-      return builders.tsTypeReference(
-        !field.required
-          ? PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[prismaField.type]
-          : PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type]
-      );
+      return [
+        builders.tsTypeReference(
+          !field.required
+            ? PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[prismaField.type]
+            : PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type]
+        ),
+      ];
     } else {
-      return PRISMA_SCALAR_TO_TYPE[prismaField.type];
+      return [PRISMA_SCALAR_TO_TYPE[prismaField.type]];
     }
   }
   if (isEnum) {
     const members = createEnumMembers(field);
-    return builders.tsUnionType(
-      members.map((member) => builders.tsLiteralType(member.initializer))
-    );
+    return [
+      builders.tsUnionType(
+        members.map((member) => builders.tsLiteralType(member.initializer))
+      ),
+    ];
   }
   if (isQuery || isInput) {
-    return builders.tsTypeReference(createWhereUniqueInputID(prismaField.type));
+    return [
+      builders.tsTypeReference(createWhereUniqueInputID(prismaField.type)),
+    ];
   } else {
-    return builders.tsTypeReference(builders.identifier(prismaField.type));
+    return [builders.tsTypeReference(builders.identifier(prismaField.type))];
   }
 }
