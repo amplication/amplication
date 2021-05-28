@@ -126,8 +126,8 @@ const USER: Entity = {
     {
       id: "9fa9604e-f9ab-45fb-b8bd-557ae1011111",
       permanentId: USER_ORGANIZATION_FIELD_ID,
-      name: "organization",
-      displayName: "Organization",
+      name: "organizations",
+      displayName: "Organizations",
       required: false,
       searchable: true,
       dataType: EnumDataType.Lookup,
