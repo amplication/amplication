@@ -666,7 +666,7 @@ export type User = {
   score: number;
   manager?: User | null;
   employees?: Array<User>;
-  organization?: Array<Organization>;
+  organizations?: Array<Organization>;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -2192,7 +2192,7 @@ model User {
   manager            User?               @relation(name: \\"employees\\", fields: [managerId], references: [id])
   managerId          String?
   employees          User[]              @relation(name: \\"employees\\")
-  organization       Organization[]
+  organizations      Organization[]
   interests          EnumUserInterests[]
   priority           EnumUserPriority
   isCurious          Boolean
@@ -3068,10 +3068,10 @@ class Customer {
 
   @ApiProperty({
     required: false,
-    type: Array,
+    type: [Order],
   })
   @ValidateNested()
-  @Type(() => Array)
+  @Type(() => Order)
   @IsOptional()
   orders?: Array<Order>;
 }
@@ -7194,28 +7194,28 @@ class Organization {
 
   @ApiProperty({
     required: true,
-    type: Array,
+    type: [User],
   })
   @ValidateNested()
-  @Type(() => Array)
+  @Type(() => User)
   @IsOptional()
   users?: Array<User>;
 
   @ApiProperty({
     required: true,
-    type: Array,
+    type: [Customer],
   })
   @ValidateNested()
-  @Type(() => Array)
+  @Type(() => Customer)
   @IsOptional()
   customers?: Array<Customer>;
 
   @ApiProperty({
     required: true,
-    type: Array,
+    type: [Customer],
   })
   @ValidateNested()
-  @Type(() => Array)
+  @Type(() => Customer)
   @IsOptional()
   vipCustomers?: Array<Customer>;
 }
@@ -9091,21 +9091,21 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: Array,
+    type: [User],
   })
   @ValidateNested()
-  @Type(() => Array)
+  @Type(() => User)
   @IsOptional()
   employees?: Array<User>;
 
   @ApiProperty({
     required: false,
-    type: Array,
+    type: [Organization],
   })
   @ValidateNested()
-  @Type(() => Array)
+  @Type(() => Organization)
   @IsOptional()
-  organization?: Array<Organization>;
+  organizations?: Array<Organization>;
 
   @ApiProperty({
     required: true,
@@ -10553,7 +10553,7 @@ export class UserControllerBase {
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
-  @common.Get(\\"/:id/organization\\")
+  @common.Get(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -10564,7 +10564,7 @@ export class UserControllerBase {
     style: \\"deepObject\\",
     explode: true,
   })
-  async findManyOrganization(
+  async findManyOrganizations(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -10576,7 +10576,7 @@ export class UserControllerBase {
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
-    const results = await this.service.findOrganization(params.id, {
+    const results = await this.service.findOrganizations(params.id, {
       where: query,
       select: {
         id: true,
@@ -10590,19 +10590,19 @@ export class UserControllerBase {
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
-  @common.Post(\\"/:id/organization\\")
+  @common.Post(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async createOrganization(
+  async createOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      organization: {
+      organizations: {
         connect: body,
       },
     };
@@ -10632,19 +10632,19 @@ export class UserControllerBase {
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
-  @common.Patch(\\"/:id/organization\\")
+  @common.Patch(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async updateOrganization(
+  async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      organization: {
+      organizations: {
         set: body,
       },
     };
@@ -10674,19 +10674,19 @@ export class UserControllerBase {
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
-  @common.Delete(\\"/:id/organization\\")
+  @common.Delete(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async deleteOrganization(
+  async deleteOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      organization: {
+      organizations: {
         disconnect: body,
       },
     };
@@ -10976,7 +10976,7 @@ export class UserResolverBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async organization(
+  async organizations(
     @graphql.Parent() parent: User,
     @graphql.Args() args: OrganizationFindManyArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
@@ -10987,7 +10987,7 @@ export class UserResolverBase {
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
-    const results = await this.service.findOrganization(parent.id, args);
+    const results = await this.service.findOrganizations(parent.id, args);
 
     if (!results) {
       return [];
@@ -11095,7 +11095,7 @@ export class UserServiceBase {
       .employees(args);
   }
 
-  async findOrganization(
+  async findOrganizations(
     parentId: string,
     args: Prisma.OrganizationFindManyArgs
   ): Promise<Organization[]> {
@@ -11103,7 +11103,7 @@ export class UserServiceBase {
       .findUnique({
         where: { id: parentId },
       })
-      .organization(args);
+      .organizations(args);
   }
 
   async getManager(parentId: string): Promise<User | null> {
