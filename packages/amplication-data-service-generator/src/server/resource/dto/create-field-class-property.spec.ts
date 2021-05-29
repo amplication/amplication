@@ -214,7 +214,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     ScalarField | ObjectField,
     boolean,
     boolean,
-    TSTypeKind
+    TSTypeKind[]
   ]> = [
     [
       "scalar type",
@@ -222,7 +222,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       createScalarField(EXAMPLE_ID_FIELD.name, ScalarType.String, false, true),
       false,
       false,
-      builders.tsStringKeyword(),
+      [builders.tsStringKeyword()],
     ],
     [
       "lookup type, not isInput",
@@ -235,9 +235,11 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       false,
       false,
-      builders.tsTypeReference(
-        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
-      ),
+      [
+        builders.tsTypeReference(
+          createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+        ),
+      ],
     ],
     [
       "lookup type, isInput",
@@ -250,9 +252,11 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       true,
       false,
-      builders.tsTypeReference(
-        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
-      ),
+      [
+        builders.tsTypeReference(
+          createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+        ),
+      ],
     ],
     [
       "lookup type, isInput, optional",
@@ -265,12 +269,14 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       true,
       false,
-      builders.tsUnionType([
-        builders.tsTypeReference(
-          createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
-        ),
-        builders.tsNullKeyword(),
-      ]),
+      [
+        builders.tsUnionType([
+          builders.tsTypeReference(
+            createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+          ),
+          builders.tsNullKeyword(),
+        ]),
+      ],
     ],
     [
       "optional scalar type",
@@ -283,10 +289,12 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       false,
       false,
-      builders.tsUnionType([
-        builders.tsStringKeyword(),
-        builders.tsNullKeyword(),
-      ]),
+      [
+        builders.tsUnionType([
+          builders.tsStringKeyword(),
+          builders.tsNullKeyword(),
+        ]),
+      ],
     ],
     [
       "scalar list type",
@@ -299,7 +307,10 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       false,
       false,
-      createGenericArray(builders.tsStringKeyword()),
+      [
+        createGenericArray(builders.tsStringKeyword()),
+        builders.tsStringKeyword(),
+      ],
     ],
   ];
   test.each(cases)(
