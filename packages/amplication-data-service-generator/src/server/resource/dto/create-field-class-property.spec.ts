@@ -237,7 +237,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       false,
       [
         builders.tsTypeReference(
-          createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+          builders.identifier(EXAMPLE_OTHER_ENTITY.name)
         ),
       ],
     ],
