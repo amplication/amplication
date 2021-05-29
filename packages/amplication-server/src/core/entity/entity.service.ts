@@ -1506,7 +1506,10 @@ export class EntityService {
       dataType = args.data.dataType as EnumDataType;
     } else if (lowerCaseName.includes('date')) {
       dataType = EnumDataType.DateTime;
-    } else if (lowerCaseName.includes('description')) {
+    } else if (
+      lowerCaseName.includes('description') ||
+      lowerCaseName.includes('comments')
+    ) {
       dataType = EnumDataType.MultiLineText;
     } else if (lowerCaseName.includes('email')) {
       dataType = EnumDataType.Email;
@@ -1514,6 +1517,13 @@ export class EntityService {
       dataType = EnumDataType.OptionSet;
     } else if (lowerCaseName.startsWith('is')) {
       dataType = EnumDataType.Boolean;
+    } else if (lowerCaseName.includes('price')) {
+      dataType = EnumDataType.DecimalNumber;
+    } else if (
+      lowerCaseName.includes('quantity') ||
+      lowerCaseName.includes('qty')
+    ) {
+      dataType = EnumDataType.WholeNumber;
     }
 
     if (dataType === EnumDataType.Lookup || dataType === null) {
