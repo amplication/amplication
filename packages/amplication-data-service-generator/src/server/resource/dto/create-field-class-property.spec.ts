@@ -158,7 +158,7 @@ describe("createFieldClassProperty", () => {
         builders.identifier(EXAMPLE_LOOKUP_FIELD.name),
         builders.tsTypeAnnotation(
           builders.tsTypeReference(
-            createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+            builders.identifier(EXAMPLE_OTHER_ENTITY.name)
           )
         ),
         false,
@@ -171,7 +171,7 @@ describe("createFieldClassProperty", () => {
                 builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
                 builders.objectProperty(
                   TYPE_ID,
-                  createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+                  builders.identifier(EXAMPLE_OTHER_ENTITY.name)
                 ),
               ]),
             ])
@@ -181,7 +181,7 @@ describe("createFieldClassProperty", () => {
             builders.callExpression(classTransformerUtil.TYPE_ID, [
               builders.arrowFunctionExpression(
                 [],
-                createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
+                builders.identifier(EXAMPLE_OTHER_ENTITY.name)
               ),
             ])
           ),
