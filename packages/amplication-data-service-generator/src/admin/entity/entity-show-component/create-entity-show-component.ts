@@ -6,9 +6,9 @@ import {
   EntityField,
   LookupResolvedProperties,
 } from "../../../types";
+import { getFieldsFromDTOWithoutToManyRelations } from "../../../util/entity";
 import {
   addImports,
-  getNamedProperties,
   importContainedIdentifiers,
   importNames,
   interpolate,
@@ -40,14 +40,9 @@ export async function createEntityShowComponent(
   const file = await readFile(template);
   const name = `${entity.name}Show`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const entityDTO = dtos[entity.name].entity;
-  const fieldNameToField = Object.fromEntries(
-    entity.fields.map((field) => [field.name, field])
-  );
-  const entityDTOProperties = getNamedProperties(entityDTO);
-  const fields = entityDTOProperties.map(
-    (property) => fieldNameToField[property.key.name]
-  );
+
+  //get the fields from the DTO object excluding toMany relations
+  const fields = getFieldsFromDTOWithoutToManyRelations(entity, dtos);
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
@@ -129,15 +124,9 @@ function createToManyReferenceField(
     throw new Error(`Cannot find entity: ${relatedEntity.name}`);
   }
 
-  const entityDTO = dtos[relatedEntity.name].entity;
-
-  const fieldNameToField = Object.fromEntries(
-    relatedEntityWithResolvedFields.fields.map((field) => [field.name, field])
-  );
-
-  const entityDTOProperties = getNamedProperties(entityDTO);
-  const fields = entityDTOProperties.map(
-    (property) => fieldNameToField[property.key.name]
+  const fields = getFieldsFromDTOWithoutToManyRelations(
+    relatedEntityWithResolvedFields,
+    dtos
   );
 
   //return the names of the related entities to be used to import the title components

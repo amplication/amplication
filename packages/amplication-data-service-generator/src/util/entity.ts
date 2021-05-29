@@ -1,6 +1,8 @@
 import { Entity, EntityField } from "../types";
-import { isEnumField } from "./field";
+import { isEnumField, isToManyRelationField } from "./field";
 import { camelCase } from "camel-case";
+import { DTOs } from "../server/resource/create-dtos";
+import { getNamedProperties } from "./ast";
 
 export const ENTITY_NAME_REGEX = /^[A-Z][A-Za-z0-9]+$/;
 
@@ -44,4 +46,26 @@ export function validateEntityName(entity: Entity): void {
 
 export function getEnumFields(entity: Entity): EntityField[] {
   return entity.fields.filter(isEnumField);
+}
+
+export function getFieldsFromDTOWithoutToManyRelations(
+  entity: Entity,
+  dtos: DTOs
+): EntityField[] {
+  const entityDTO = dtos[entity.name].entity;
+
+  const entityDTOProperties = getNamedProperties(entityDTO);
+
+  const fieldNameToField = Object.fromEntries(
+    entity.fields.map((field) => [field.name, field])
+  );
+
+  //get the fields from the DTO object excluding toMany relations
+  return entityDTOProperties.flatMap((property) => {
+    const field = fieldNameToField[property.key.name];
+    if (isToManyRelationField(field)) {
+      return [];
+    }
+    return [field];
+  });
 }

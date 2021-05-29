@@ -1,5 +1,8 @@
 import { builders, namedTypes } from "ast-types";
-import { isOneToOneRelationField } from "../../../util/field";
+import {
+  isOneToOneRelationField,
+  isToManyRelationField,
+} from "../../../util/field";
 import { Entity } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
 
@@ -26,15 +29,22 @@ export function createSelect(
           namedTypes.Identifier.check(member.key) &&
           member.key.name in nameToField
       )
-      .map((member) => {
+      .flatMap((member) => {
         const field = nameToField[member.key.name];
+
+        if (isToManyRelationField(field)) {
+          return [];
+        }
+
         if (isOneToOneRelationField(field)) {
           /** @todo use where unique input fields  */
-          return createObjectSelectProperty(member.key, [
-            createSelectProperty(ID_ID),
-          ]);
+          return [
+            createObjectSelectProperty(member.key, [
+              createSelectProperty(ID_ID),
+            ]),
+          ];
         }
-        return createSelectProperty(member.key);
+        return [createSelectProperty(member.key)];
       })
   );
 }
