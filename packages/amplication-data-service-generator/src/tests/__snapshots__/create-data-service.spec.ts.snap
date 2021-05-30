@@ -2548,11 +2548,12 @@ import { PasswordService } from \\"./password.service\\";
 })
 export class AuthModule {}
 ",
-  "server/src/auth/auth.resolver.ts": "import { Args, Mutation, Resolver } from \\"@nestjs/graphql\\";
+  "server/src/auth/auth.resolver.ts": "import { Args, Mutation, Resolver, Query } from \\"@nestjs/graphql\\";
 import { ApolloError } from \\"apollo-server-express\\";
 import { AuthService } from \\"./auth.service\\";
 import { UserInfo } from \\"./UserInfo\\";
 import { LoginArgs } from \\"./LoginArgs\\";
+import { UserData } from \\"./gqlUserData.decorator\\";
 
 @Resolver(UserInfo)
 export class AuthResolver {
@@ -2567,6 +2568,11 @@ export class AuthResolver {
       throw new ApolloError(\\"The passed credentials are incorrect\\");
     }
     return user;
+  }
+
+  @Query(() => UserInfo)
+  async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
+    return userInfo;
   }
 }
 ",
@@ -2720,6 +2726,22 @@ export class GqlBasicAuthGuard extends BasicAuthGuard {
     return ctx.getContext<{ req: Request }>().req;
   }
 }
+",
+  "server/src/auth/gqlUserData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
+import { GqlExecutionContext } from \\"@nestjs/graphql\\";
+import { UserInfo } from \\"./UserInfo\\";
+
+/**
+ * Access the user data from the request object i.e \`req.user\`.
+ */
+export function getUser(executionContext: ExecutionContext): UserInfo {
+  const gqlExecutionContext = GqlExecutionContext.create(executionContext);
+  return gqlExecutionContext.getContext().req.user;
+}
+
+export const UserData = createParamDecorator((data, ctx: ExecutionContext) =>
+  getUser(ctx)
+);
 ",
   "server/src/auth/gqlUserRoles.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";

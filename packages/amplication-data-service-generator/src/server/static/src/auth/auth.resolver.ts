@@ -1,8 +1,9 @@
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { ApolloError } from "apollo-server-express";
 import { AuthService } from "./auth.service";
 import { UserInfo } from "./UserInfo";
 import { LoginArgs } from "./LoginArgs";
+import { UserData } from "./gqlUserData.decorator";
 
 @Resolver(UserInfo)
 export class AuthResolver {
@@ -17,5 +18,10 @@ export class AuthResolver {
       throw new ApolloError("The passed credentials are incorrect");
     }
     return user;
+  }
+
+  @Query(() => UserInfo)
+  async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
+    return userInfo;
   }
 }
