@@ -250,7 +250,10 @@ export function createFieldClassProperty(
     apiPropertyOptionsObjectExpression.properties.push(
       builders.objectProperty(
         TYPE_ID,
-        prismaField.isList ? builders.arrayExpression([typeName]) : typeName
+        builders.arrowFunctionExpression(
+          [],
+          prismaField.isList ? builders.arrayExpression([typeName]) : typeName
+        )
       )
     );
     decorators.push(

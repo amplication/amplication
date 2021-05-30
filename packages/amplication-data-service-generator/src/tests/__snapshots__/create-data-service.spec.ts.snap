@@ -3050,7 +3050,7 @@ class Customer {
 
   @ApiProperty({
     required: false,
-    type: Organization,
+    type: () => Organization,
   })
   @ValidateNested()
   @Type(() => Organization)
@@ -3059,7 +3059,7 @@ class Customer {
 
   @ApiProperty({
     required: false,
-    type: Organization,
+    type: () => Organization,
   })
   @ValidateNested()
   @Type(() => Organization)
@@ -3068,7 +3068,7 @@ class Customer {
 
   @ApiProperty({
     required: false,
-    type: [Order],
+    type: () => [Order],
   })
   @ValidateNested()
   @Type(() => Order)
@@ -3220,7 +3220,7 @@ class CustomerCreateInput {
 
   @ApiProperty({
     required: false,
-    type: OrganizationWhereUniqueInput,
+    type: () => OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
@@ -3232,7 +3232,7 @@ class CustomerCreateInput {
 
   @ApiProperty({
     required: false,
-    type: OrganizationWhereUniqueInput,
+    type: () => OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
@@ -3600,7 +3600,7 @@ class CustomerUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: OrganizationWhereUniqueInput,
+    type: () => OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
@@ -3612,7 +3612,7 @@ class CustomerUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: OrganizationWhereUniqueInput,
+    type: () => OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
@@ -3784,7 +3784,7 @@ class CustomerWhereInput {
 
   @ApiProperty({
     required: false,
-    type: OrganizationWhereUniqueInput,
+    type: () => OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
@@ -3796,7 +3796,7 @@ class CustomerWhereInput {
 
   @ApiProperty({
     required: false,
-    type: OrganizationWhereUniqueInput,
+    type: () => OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
@@ -5995,7 +5995,7 @@ class Order {
 
   @ApiProperty({
     required: true,
-    type: Customer,
+    type: () => Customer,
   })
   @ValidateNested()
   @Type(() => Customer)
@@ -6035,7 +6035,7 @@ import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 class OrderCreateInput {
   @ApiProperty({
     required: true,
-    type: CustomerWhereUniqueInput,
+    type: () => CustomerWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
@@ -6194,7 +6194,7 @@ import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 class OrderUpdateInput {
   @ApiProperty({
     required: false,
-    type: CustomerWhereUniqueInput,
+    type: () => CustomerWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
@@ -6274,7 +6274,7 @@ class OrderWhereInput {
 
   @ApiProperty({
     required: false,
-    type: CustomerWhereUniqueInput,
+    type: () => CustomerWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
@@ -7194,7 +7194,7 @@ class Organization {
 
   @ApiProperty({
     required: true,
-    type: [User],
+    type: () => [User],
   })
   @ValidateNested()
   @Type(() => User)
@@ -7203,7 +7203,7 @@ class Organization {
 
   @ApiProperty({
     required: true,
-    type: [Customer],
+    type: () => [Customer],
   })
   @ValidateNested()
   @Type(() => Customer)
@@ -7212,7 +7212,7 @@ class Organization {
 
   @ApiProperty({
     required: true,
-    type: [Customer],
+    type: () => [Customer],
   })
   @ValidateNested()
   @Type(() => Customer)
@@ -9082,7 +9082,7 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: User,
+    type: () => User,
   })
   @ValidateNested()
   @Type(() => User)
@@ -9091,7 +9091,7 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: [User],
+    type: () => [User],
   })
   @ValidateNested()
   @Type(() => User)
@@ -9100,7 +9100,7 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: [Organization],
+    type: () => [Organization],
   })
   @ValidateNested()
   @Type(() => Organization)
@@ -9255,7 +9255,7 @@ class UserCreateInput {
 
   @ApiProperty({
     required: false,
-    type: UserWhereUniqueInput,
+    type: () => UserWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
@@ -9648,7 +9648,7 @@ class UserUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: UserWhereUniqueInput,
+    type: () => UserWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
@@ -9787,7 +9787,7 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
-    type: UserWhereUniqueInput,
+    type: () => UserWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
