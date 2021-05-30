@@ -117,9 +117,14 @@ export class GithubService {
       /^server\/src\/[^\/]+\/.+\.module.ts$/
     ];
 
+    const authFolder = 'server/src/auth';
+
     const files = Object.fromEntries(
       modules.map(module => {
-        if (doNotOverride.some(rx => rx.test(module.path))) {
+        if (
+          !module.path.startsWith(authFolder) &&
+          doNotOverride.some(rx => rx.test(module.path))
+        ) {
           return [
             module.path,
             ({ exists }) => {
