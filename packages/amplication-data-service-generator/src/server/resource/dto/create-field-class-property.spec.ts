@@ -171,7 +171,10 @@ describe("createFieldClassProperty", () => {
                 builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
                 builders.objectProperty(
                   TYPE_ID,
-                  builders.identifier(EXAMPLE_OTHER_ENTITY.name)
+                  builders.arrowFunctionExpression(
+                    [],
+                    builders.identifier(EXAMPLE_OTHER_ENTITY.name)
+                  )
                 ),
               ]),
             ])
