@@ -1,0 +1,44 @@
+# This workflow will deploy the provided image-id to amplication-staging-oc on GCP
+name: Deploy to staging
+on: 
+  workflow_dispatch:
+    inputs:
+      image-id:
+        description: 'Docker image ID'     
+        required: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-buildx-action@v1
+        with:
+          driver-opts: image=moby/buildkit:master
+      - name: Login to GCR
+        uses: docker/login-action@v1
+        with:
+          registry: gcr.io
+          username: _json_key
+          password: ${{ secrets.GOOGLE_CREDENTIALS }}
+      - uses: hashicorp/setup-terraform@v1
+      - run: terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        working-directory: terraform/envs/staging-oc
+      - run: terraform apply -auto-approve -lock-timeout=1200s
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_image_id: gcr.io/${{ github.event.inputs.image-id }}
+        working-directory: terraform/envs/staging-oc
+      - uses: mattes/gce-cloudsql-proxy-action@v1
+        with:
+          creds: ${{ secrets.GOOGLE_CREDENTIALS }}
+          instance: ${{ secrets.STAGING_DB_INSTANCE_NAME }}
+      - run: |
+          set -e;
+          docker run \
+            --network host \
+            --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@127.0.0.1:5432/${{ secrets.STAGING_DB_NAME }}" \
+            ${{ github.event.inputs.image-id }} \
+            npm run migrate:up
