@@ -98,7 +98,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: |
-            gcr.io/amplication/amplication:${{ github.sha }}
+            gcr.io/amplication-staging-oc/amplication:${{ github.sha }}
       - uses: hashicorp/setup-terraform@v1
       - run: terraform init
         env:
@@ -107,7 +107,7 @@ jobs:
       - run: terraform apply -auto-approve -lock-timeout=1200s
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          TF_VAR_image_id: gcr.io/amplication/amplication:${{ github.sha }}
+          TF_VAR_image_id: gcr.io/amplication-staging-oc/amplication:${{ github.sha }}
         working-directory: terraform/envs/staging-oc
       - uses: mattes/gce-cloudsql-proxy-action@v1
         with:
@@ -118,5 +118,5 @@ jobs:
           docker run \
             --network host \
             --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@127.0.0.1:5432/${{ secrets.STAGING_DB_NAME }}" \
-            amplication/amplication:${{ github.sha }} \
+            amplication-staging-oc/amplication:${{ github.sha }} \
             npm run migrate:up
