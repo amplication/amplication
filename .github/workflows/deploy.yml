@@ -40,5 +40,5 @@ jobs:
           docker run \
             --network host \
             --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@127.0.0.1:5432/${{ secrets.STAGING_DB_NAME }}" \
-            ${{ github.event.inputs.image-id }} \
+            gcr.io/${{ github.event.inputs.image-id }} \
             npm run migrate:up
