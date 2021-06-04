@@ -192,7 +192,7 @@ describe('WorkspaceService', () => {
             account: { connect: { id: args.accountId } },
             userRoles: {
               create: {
-                role: Role.WorkspaceAdmin
+                role: Role.OrganizationAdmin
               }
             }
           }
