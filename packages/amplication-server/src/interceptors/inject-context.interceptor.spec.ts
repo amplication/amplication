@@ -10,10 +10,10 @@ import { InjectableResourceParameter } from 'src/enums/InjectableResourceParamet
 
 const EXAMPLE_HANDLER = () => null;
 const EXAMPLE_INJECT_CONTEXT_VALUE_PARAMETERS: InjectContextValueParameters = {
-  parameterPath: 'data.organization.connect.id',
-  parameterType: InjectableResourceParameter.OrganizationId
+  parameterPath: 'data.workspace.connect.id',
+  parameterType: InjectableResourceParameter.WorkspaceId
 };
-const EXAMPLE_ORGANIZATION_ID = 'ExampleOrganizationId';
+const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
 const reflectorGetMock = jest.fn(metadataKey => {
   switch (metadataKey) {
@@ -53,13 +53,13 @@ describe('InjectContextInterceptor', () => {
   test('should inject context value', () => {
     const request = {
       user: {
-        organization: {
-          id: EXAMPLE_ORGANIZATION_ID
+        workspace: {
+          id: EXAMPLE_WORKSPACE_ID
         }
       }
     };
     const requestArgs: {
-      data: { name: string; organization?: { connect: { id: string } } };
+      data: { name: string; workspace?: { connect: { id: string } } };
     } = {
       data: { name: 'Foo' }
     };
@@ -91,8 +91,6 @@ describe('InjectContextInterceptor', () => {
     );
     expect(handleMock).toBeCalledTimes(1);
     expect(handleMock).toBeCalledWith();
-    expect(requestArgs.data.organization.connect.id).toBe(
-      EXAMPLE_ORGANIZATION_ID
-    );
+    expect(requestArgs.data.workspace.connect.id).toBe(EXAMPLE_WORKSPACE_ID);
   });
 });

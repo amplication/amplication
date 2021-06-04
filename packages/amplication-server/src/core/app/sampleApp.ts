@@ -1,6 +1,6 @@
 /**
  * This module defines creating a sample app.
- * When an organization is created it is provided with one.
+ * When a workspace is created it is provided with one.
  */
 
 import cuid from 'cuid';

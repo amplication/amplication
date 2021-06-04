@@ -6,7 +6,7 @@ import { App } from './App'; // eslint-disable-line import/no-cycle
   isAbstract: true,
   description: undefined
 })
-export class Organization {
+export class Workspace {
   @Field(() => String, {
     nullable: false,
     description: undefined
@@ -30,18 +30,6 @@ export class Organization {
     description: undefined
   })
   name!: string;
-
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
-  defaultTimeZone!: string;
-
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
-  address!: string;
 
   @Field(() => [App])
   apps?: App[];

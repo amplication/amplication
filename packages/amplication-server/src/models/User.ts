@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Account } from './Account'; // eslint-disable-line import/no-cycle
-import { Organization } from './Organization'; // eslint-disable-line import/no-cycle
+import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
 import { UserRole } from './UserRole'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
@@ -32,11 +32,11 @@ export class User {
   })
   account?: Account;
 
-  @Field(() => Organization, {
+  @Field(() => Workspace, {
     nullable: true,
     description: undefined
   })
-  organization?: Organization;
+  workspace?: Workspace;
 
   @Field(() => [UserRole], {
     nullable: true,

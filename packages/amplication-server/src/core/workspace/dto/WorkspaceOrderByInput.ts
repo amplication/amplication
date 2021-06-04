@@ -5,7 +5,7 @@ import { SortOrder } from 'src/enums/SortOrder';
   isAbstract: true,
   description: undefined
 })
-export class OrganizationOrderByInput {
+export class WorkspaceOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
@@ -29,16 +29,4 @@ export class OrganizationOrderByInput {
     description: undefined
   })
   name?: SortOrder | null;
-
-  @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
-  })
-  defaultTimeZone?: SortOrder | null;
-
-  @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
-  })
-  address?: SortOrder | null;
 }

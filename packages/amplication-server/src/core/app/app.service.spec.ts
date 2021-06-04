@@ -284,9 +284,9 @@ describe('AppService', () => {
     const prismaAppCreateAppArgs = {
       data: {
         ...createAppArgs.args.data,
-        organization: {
+        workspace: {
           connect: {
-            id: createAppArgs.user.organization?.id
+            id: createAppArgs.user.workspace?.id
           }
         },
         roles: {
@@ -304,7 +304,7 @@ describe('AppService', () => {
     const findManyArgs = {
       where: {
         id: EXAMPLE_APP_ID,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: EXAMPLE_USER_ID
@@ -383,9 +383,9 @@ describe('AppService', () => {
       data: {
         ...DEFAULT_APP_DATA,
         ...SAMPLE_APP_DATA,
-        organization: {
+        workspace: {
           connect: {
-            id: EXAMPLE_USER.organization?.id
+            id: EXAMPLE_USER.workspace?.id
           }
         },
         roles: {
@@ -410,7 +410,7 @@ describe('AppService', () => {
     const findManyArgs = {
       where: {
         id: EXAMPLE_APP_ID,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: EXAMPLE_USER_ID
@@ -513,9 +513,9 @@ describe('AppService', () => {
       data: {
         ...DEFAULT_APP_DATA,
         ...SAMPLE_APP_DATA,
-        organization: {
+        workspace: {
           connect: {
-            id: EXAMPLE_USER.organization?.id
+            id: EXAMPLE_USER.workspace?.id
           }
         },
         roles: {
@@ -541,7 +541,7 @@ describe('AppService', () => {
     const findManyArgs = {
       where: {
         id: EXAMPLE_APP_ID,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: EXAMPLE_USER_ID
@@ -711,7 +711,7 @@ describe('AppService', () => {
     const findManyArgs = {
       where: {
         id: EXAMPLE_APP_ID,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: EXAMPLE_USER_ID

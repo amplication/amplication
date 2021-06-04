@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AccountModule } from '../account/account.module';
 import { PrismaModule } from 'nestjs-prisma';
 import { UserModule } from '../user/user.module';
-import { OrganizationModule } from '../organization/organization.module';
+import { WorkspaceModule } from '../workspace/workspace.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 
@@ -35,7 +35,7 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
     PrismaModule, // (PrismaService)
     PermissionsModule,
     ExceptionFiltersModule,
-    OrganizationModule,
+    WorkspaceModule,
     UserModule,
     GoogleSecretsManagerModule
   ],

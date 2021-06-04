@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Entity } from './Entity'; // eslint-disable-line import/no-cycle
-import { Organization } from './Organization'; // eslint-disable-line import/no-cycle
+import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../core/environment/dto/Environment'; // eslint-disable-line import/no-cycle
 
@@ -27,7 +27,7 @@ export class App {
   })
   updatedAt!: Date;
 
-  organization?: Organization;
+  workspace?: Workspace;
 
   @Field(() => String, {
     nullable: false,

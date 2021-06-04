@@ -5,7 +5,7 @@
  * in the { @link PermissionService }
  */
 export enum AuthorizableResourceParameter {
-  OrganizationId,
+  WorkspaceId,
   AppId,
   EntityId,
   EntityFieldId,

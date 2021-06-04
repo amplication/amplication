@@ -5,6 +5,6 @@ export { SignupArgs } from './SignupArgs';
 export { JwtDto, EnumTokenType } from './jwt.dto';
 export { ChangePasswordInput } from './change-password.input';
 export { ChangePasswordArgs } from './ChangePasswordArgs';
-export { SetCurrentOrganizationArgs } from './SetCurrentOrganizationArgs';
+export { SetCurrentWorkspaceArgs } from './SetCurrentWorkspaceArgs';
 export { CreateApiTokenArgs } from './CreateApiTokenArgs';
 export { ApiToken } from './ApiToken';

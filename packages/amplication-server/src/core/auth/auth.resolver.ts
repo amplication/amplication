@@ -5,7 +5,7 @@ import {
   LoginArgs,
   SignupArgs,
   ChangePasswordArgs,
-  SetCurrentOrganizationArgs,
+  SetCurrentWorkspaceArgs,
   CreateApiTokenArgs,
   ApiToken
 } from './dto';
@@ -88,14 +88,14 @@ export class AuthResolver {
 
   @Mutation(() => Auth)
   @UseGuards(GqlAuthGuard)
-  async setCurrentOrganization(
+  async setCurrentWorkspace(
     @UserEntity() user: User,
-    @Args() args: SetCurrentOrganizationArgs
+    @Args() args: SetCurrentWorkspaceArgs
   ): Promise<Auth> {
     if (!user.account) {
       throw new Error('User has no account');
     }
-    const token = await this.authService.setCurrentOrganization(
+    const token = await this.authService.setCurrentWorkspace(
       user.account.id,
       args.data.id
     );
