@@ -43,4 +43,9 @@ export class User {
     description: undefined
   })
   userRoles?: UserRole[] | null;
+
+  @Field(() => Boolean, {
+    nullable: false
+  })
+  isOwner?: boolean;
 }
