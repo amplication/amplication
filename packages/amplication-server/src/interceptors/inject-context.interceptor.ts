@@ -60,8 +60,8 @@ export class InjectContextInterceptor implements NestInterceptor {
       case InjectableResourceParameter.UserId: {
         return user.id;
       }
-      case InjectableResourceParameter.OrganizationId: {
-        return user.organization?.id;
+      case InjectableResourceParameter.WorkspaceId: {
+        return user.workspace?.id;
       }
       default: {
         throw new Error(`Unexpected parameterType: ${parameterType}`);

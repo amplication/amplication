@@ -22,10 +22,8 @@ const EXAMPLE_EMAIL = 'exampleEmail';
 const EXAMPLE_FIRST_NAME = 'exampleFirstName';
 const EXAMPLE_LAST_NAME = 'exampleLastName';
 const EXAMPLE_PASSWORD = 'examplePassword';
-const EXAMPLE_ORGANIZATION_NAME = 'exampleOrganizationName';
-const EXAMPLE_TIME_ZONE = 'exampleTimeZone';
-const EXAMPLE_ADDRESS = 'exampleAddress';
-const EXAMPLE_ORGANIZATION_ID = 'exampleOrganizationId';
+const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
+const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ACCOUNT_ID,
@@ -60,9 +58,7 @@ const SIGNUP_MUTATION = gql`
     $password: String!
     $firstName: String!
     $lastName: String!
-    $organizationName: String!
-    $defaultTimeZone: String!
-    $address: String!
+    $workspaceName: String!
   ) {
     signup(
       data: {
@@ -70,9 +66,7 @@ const SIGNUP_MUTATION = gql`
         password: $password
         firstName: $firstName
         lastName: $lastName
-        organizationName: $organizationName
-        defaultTimeZone: $defaultTimeZone
-        address: $address
+        workspaceName: $workspaceName
       }
     ) {
       token
@@ -104,9 +98,9 @@ const CHANGE_PASSWORD_MUTATION = gql`
   }
 `;
 
-const SET_ORGANIZATION_MUTATION = gql`
+const SET_WORKSPACE_MUTATION = gql`
   mutation($id: String!) {
-    setCurrentOrganization(data: { id: $id }) {
+    setCurrentWorkspace(data: { id: $id }) {
       token
     }
   }
@@ -125,7 +119,7 @@ const ME_QUERY = gql`
 const authServiceSignUpMock = jest.fn(() => EXAMPLE_TOKEN);
 const authServiceLoginMock = jest.fn(() => EXAMPLE_TOKEN);
 const authServiceChangePasswordMock = jest.fn(() => EXAMPLE_ACCOUNT);
-const setCurrentOrganizationMock = jest.fn(() => EXAMPLE_TOKEN);
+const setCurrentWorkspaceMock = jest.fn(() => EXAMPLE_TOKEN);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
@@ -144,7 +138,7 @@ describe('AuthResolver', () => {
             signup: authServiceSignUpMock,
             login: authServiceLoginMock,
             changePassword: authServiceChangePasswordMock,
-            setCurrentOrganization: setCurrentOrganizationMock
+            setCurrentWorkspace: setCurrentWorkspaceMock
           }))
         },
         {
@@ -192,9 +186,7 @@ describe('AuthResolver', () => {
       password: EXAMPLE_PASSWORD,
       firstName: EXAMPLE_FIRST_NAME,
       lastName: EXAMPLE_LAST_NAME,
-      organizationName: EXAMPLE_ORGANIZATION_NAME,
-      defaultTimeZone: EXAMPLE_TIME_ZONE,
-      address: EXAMPLE_ADDRESS
+      workspaceName: EXAMPLE_WORKSPACE_NAME
     };
     const res = await apolloClient.mutate({
       mutation: SIGNUP_MUTATION,
@@ -259,21 +251,21 @@ describe('AuthResolver', () => {
     );
   });
 
-  it('set set the current organization', async () => {
+  it('set set the current workspace', async () => {
     const res = await apolloClient.mutate({
-      mutation: SET_ORGANIZATION_MUTATION,
-      variables: { id: EXAMPLE_ORGANIZATION_ID }
+      mutation: SET_WORKSPACE_MUTATION,
+      variables: { id: EXAMPLE_WORKSPACE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      setCurrentOrganization: {
+      setCurrentWorkspace: {
         ...EXAMPLE_AUTH
       }
     });
-    expect(setCurrentOrganizationMock).toBeCalledTimes(1);
-    expect(setCurrentOrganizationMock).toBeCalledWith(
+    expect(setCurrentWorkspaceMock).toBeCalledTimes(1);
+    expect(setCurrentWorkspaceMock).toBeCalledWith(
       EXAMPLE_ACCOUNT_ID,
-      EXAMPLE_ORGANIZATION_ID
+      EXAMPLE_WORKSPACE_ID
     );
   });
 
@@ -282,11 +274,11 @@ describe('AuthResolver', () => {
       mockGqlAuthGuardCanActivate(EXAMPLE_USER_WITHOUT_ACCOUNT)
     );
     const res = await apolloClient.mutate({
-      mutation: SET_ORGANIZATION_MUTATION,
-      variables: { id: EXAMPLE_ORGANIZATION_ID }
+      mutation: SET_WORKSPACE_MUTATION,
+      variables: { id: EXAMPLE_WORKSPACE_ID }
     });
     expect(res.errors).toEqual([new GraphQLError('User has no account')]);
     expect(res.data).toEqual(null);
-    expect(setCurrentOrganizationMock).toBeCalledTimes(0);
+    expect(setCurrentWorkspaceMock).toBeCalledTimes(0);
   });
 });

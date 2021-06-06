@@ -19,7 +19,7 @@ export class AppCreateInput {
   })
   color?: string;
 
-  organization?: {
+  workspace?: {
     connect: {
       id: string;
     };

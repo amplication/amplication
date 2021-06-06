@@ -18,11 +18,9 @@ async function main() {
   dotenv.config();
   console.log('Seeding...');
 
-  const organization = {
+  const workspace = {
     id: 'simpsons',
-    name: 'Simpsons',
-    address: 'Springfield, USA',
-    defaultTimeZone: 'GMT+0'
+    name: 'Simpsons'
   };
   const accounts = [
     {
@@ -49,11 +47,11 @@ async function main() {
       })
     )
   );
-  const { users } = await prisma.organization.upsert({
+  const { users } = await prisma.workspace.upsert({
     where: { id: 'simpsons' },
     update: {},
     create: {
-      ...organization,
+      ...workspace,
       users: {
         create: accounts.map(account => ({
           account: { connect: { id: account.id } },
@@ -85,5 +83,5 @@ async function main() {
       })
     )
   );
-  return { organization, accounts };
+  return { workspace, accounts };
 }

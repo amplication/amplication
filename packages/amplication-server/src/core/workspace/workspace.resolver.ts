@@ -7,69 +7,69 @@ import {
   Parent,
   ResolveField
 } from '@nestjs/graphql';
-import { UpdateOneOrganizationArgs, InviteUserArgs } from './dto';
+import { UpdateOneWorkspaceArgs, InviteUserArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
 
-import { Organization, App, User } from 'src/models';
+import { Workspace, App, User } from 'src/models';
 import { AppService } from 'src/core/app/app.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { OrganizationService } from './organization.service';
+import { WorkspaceService } from './workspace.service';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 
-@Resolver(() => Organization)
+@Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
-export class OrganizationResolver {
+export class WorkspaceResolver {
   constructor(
-    private readonly organizationService: OrganizationService,
+    private readonly workspaceService: WorkspaceService,
     private readonly appService: AppService
   ) {}
 
-  @Query(() => Organization, {
+  @Query(() => Workspace, {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.OrganizationId, 'where.id')
-  async organization(
+  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  async workspace(
     @Context() ctx: any,
     @Args() args: FindOneArgs
-  ): Promise<Organization | null> {
-    return this.organizationService.getOrganization(args);
+  ): Promise<Workspace | null> {
+    return this.workspaceService.getWorkspace(args);
   }
 
   @ResolveField(() => [App])
-  async apps(@Parent() organization: Organization) {
+  async apps(@Parent() workspace: Workspace) {
     return this.appService.apps({
-      where: { organization: { id: organization.id } }
+      where: { workspace: { id: workspace.id } }
     });
   }
 
-  @Mutation(() => Organization, {
+  @Mutation(() => Workspace, {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.OrganizationId, 'where.id')
-  async deleteOrganization(
+  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  async deleteWorkspace(
     @Context() ctx: any,
     @Args() args: FindOneArgs
-  ): Promise<Organization | null> {
-    return this.organizationService.deleteOrganization(args);
+  ): Promise<Workspace | null> {
+    return this.workspaceService.deleteWorkspace(args);
   }
 
-  @Mutation(() => Organization, {
+  @Mutation(() => Workspace, {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.OrganizationId, 'where.id')
-  async updateOrganization(
+  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  async updateWorkspace(
     @Context() ctx: any,
-    @Args() args: UpdateOneOrganizationArgs
-  ): Promise<Organization | null> {
-    return this.organizationService.updateOrganization(args);
+    @Args() args: UpdateOneWorkspaceArgs
+  ): Promise<Workspace | null> {
+    return this.workspaceService.updateWorkspace(args);
   }
 
   @Mutation(() => User, {
@@ -80,6 +80,6 @@ export class OrganizationResolver {
     @UserEntity() currentUser: User,
     @Args() args: InviteUserArgs
   ): Promise<User | null> {
-    return this.organizationService.inviteUser(currentUser, args);
+    return this.workspaceService.inviteUser(currentUser, args);
   }
 }

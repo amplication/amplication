@@ -28,7 +28,7 @@ export async function signUp(
   await (await page.waitForXPath("//input[@name='lastName']")).type(
     userLastName
   );
-  await (await page.waitForXPath("//input[@name='organizationName']")).type(
+  await (await page.waitForXPath("//input[@name='workspaceName']")).type(
     userLastName
   );
   await (

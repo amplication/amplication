@@ -9,37 +9,37 @@ import {
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { User } from 'src/models/User';
 import { UserRole } from 'src/models/UserRole';
-import { Organization } from 'src/models/Organization';
+import { Workspace } from 'src/models/Workspace';
 
-const EXAMPLE_ORGANIZATION_ID = 'Example Organization Id';
+const EXAMPLE_WORKSPACE_ID = 'Example Workspace Id';
 const EXAMPLE_ROLE = 'Example Role';
 const EXAMPLE_ROLES: string[] = [EXAMPLE_ROLE];
 const EXAMPLE_AUTHORIZE_CONTEXT_PARAMETERS: AuthorizeContextParameters = {
-  parameterPath: 'where.organization.id',
-  parameterType: AuthorizableResourceParameter.OrganizationId
+  parameterPath: 'where.workspace.id',
+  parameterType: AuthorizableResourceParameter.WorkspaceId
 };
 const EXAMPLE_HANDLER = () => null;
 
 const EXAMPLE_USER_ROLE = new UserRole();
 EXAMPLE_USER_ROLE.role = EXAMPLE_ROLE;
 
-const EXAMPLE_ORGANIZATION = new Organization();
-EXAMPLE_ORGANIZATION.id = EXAMPLE_ORGANIZATION_ID;
+const EXAMPLE_WORKSPACE = new Workspace();
+EXAMPLE_WORKSPACE.id = EXAMPLE_WORKSPACE_ID;
 
 const EXAMPLE_USER = new User();
 EXAMPLE_USER.userRoles = [EXAMPLE_USER_ROLE];
-EXAMPLE_USER.organization = EXAMPLE_ORGANIZATION;
+EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
 
 const EXAMPLE_FIND_REQUEST_ARGS = {
   where: {
-    organization: { id: EXAMPLE_ORGANIZATION_ID }
+    workspace: { id: EXAMPLE_WORKSPACE_ID }
   }
 };
 
 const validateAccessMock = jest.fn((user, resourceType, resourceId) => {
   return (
-    resourceType === AuthorizableResourceParameter.OrganizationId &&
-    resourceId === EXAMPLE_ORGANIZATION_ID
+    resourceType === AuthorizableResourceParameter.WorkspaceId &&
+    resourceId === EXAMPLE_WORKSPACE_ID
   );
 });
 

@@ -67,8 +67,8 @@ export class AppResolver {
   })
   @Roles('ORGANIZATION_ADMIN')
   @InjectContextValue(
-    InjectableResourceParameter.OrganizationId,
-    'where.organization.id'
+    InjectableResourceParameter.WorkspaceId,
+    'where.workspace.id'
   )
   async apps(@Args() args: FindManyAppArgs): Promise<App[]> {
     return this.appService.apps(args);
@@ -106,8 +106,8 @@ export class AppResolver {
   @Mutation(() => App, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
   @InjectContextValue(
-    InjectableResourceParameter.OrganizationId,
-    'data.organization.connect.id'
+    InjectableResourceParameter.WorkspaceId,
+    'data.workspace.connect.id'
   )
   async createApp(
     @Args() args: CreateOneAppArgs,
@@ -119,8 +119,8 @@ export class AppResolver {
   @Mutation(() => App, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
   @InjectContextValue(
-    InjectableResourceParameter.OrganizationId,
-    'data.app.organization.connect.id'
+    InjectableResourceParameter.WorkspaceId,
+    'data.app.workspace.connect.id'
   )
   async createAppWithEntities(
     @Args() args: CreateAppWithEntitiesArgs,
