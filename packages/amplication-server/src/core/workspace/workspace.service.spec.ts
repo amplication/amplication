@@ -194,7 +194,8 @@ describe('WorkspaceService', () => {
               create: {
                 role: Role.OrganizationAdmin
               }
-            }
+            },
+            isOwner: true
           }
         }
       },

@@ -1205,6 +1205,7 @@ type User {
   account: Account
   workspace: Workspace
   userRoles: [UserRole!]
+  isOwner: Boolean!
 }
 
 type UserRole {

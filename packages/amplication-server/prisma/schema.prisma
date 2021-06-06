@@ -45,6 +45,7 @@ model User {
   deployments       Deployment[]
   lockedEntitis     Entity[]
   userRoles         UserRole[]
+  isOwner           Boolean      @default(false)
 
   @@unique([accountId, workspaceId])
 }

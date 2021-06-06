@@ -60,6 +60,7 @@ export class WorkspaceService {
         users: {
           create: {
             account: { connect: { id: accountId } },
+            isOwner: true,
             userRoles: {
               create: {
                 role: Role.OrganizationAdmin
@@ -116,11 +117,17 @@ export class WorkspaceService {
       });
     }
 
-    //Create a new user record and link it to the account
+    //Create a new user record and link it to the account. All user are "Organization admin"
     const user = await this.prisma.user.create({
       data: {
         workspace: { connect: { id: workspace.id } },
-        account: { connect: { id: account.id } }
+        account: { connect: { id: account.id } },
+        isOwner: false,
+        userRoles: {
+          create: {
+            role: Role.OrganizationAdmin
+          }
+        }
       }
     });
 

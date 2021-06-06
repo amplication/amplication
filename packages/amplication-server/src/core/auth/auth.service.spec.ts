@@ -34,7 +34,8 @@ const EXAMPLE_USER: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   accountId: EXAMPLE_ACCOUNT.id,
-  workspaceId: EXAMPLE_WORKSPACE_ID
+  workspaceId: EXAMPLE_WORKSPACE_ID,
+  isOwner: true
 };
 
 const EXAMPLE_WORKSPACE: Workspace & { users: User[] } = {
@@ -65,7 +66,8 @@ const EXAMPLE_OTHER_USER: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   accountId: EXAMPLE_ACCOUNT.id,
-  workspaceId: EXAMPLE_WORKSPACE.id
+  workspaceId: EXAMPLE_WORKSPACE.id,
+  isOwner: true
 };
 
 const EXAMPLE_OTHER_USER_ROLE: UserRole = {
