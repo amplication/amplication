@@ -1,19 +1,47 @@
 @import "../style/index.scss";
 
+@mixin workspaceItem {
+  @include sectionTitle;
+  margin-bottom: 0;
+  padding: var(--default-spacing-small);
+  border-radius: var(--default-border-radius);
+  cursor: pointer;
+
+  .circle-badge {
+    margin-right: var(--default-spacing);
+  }
+  &:hover,
+  &--active {
+    background-color: var(--black2);
+  }
+}
+
 .workspaces-selector {
   margin: var(--large-spacing);
 
   &__current {
-    @include sectionTitle;
-    padding: var(--default-spacing);
+    @include workspaceItem;
+    margin-bottom: var(--default-spacing);
+
+    .amp-icon {
+      margin-left: var(--default-spacing);
+      transform: rotate(90deg);
+    }
+  }
+
+  &__list {
+    padding: var(--default-spacing-small);
+    border: $border-black20;
     border-radius: var(--default-border-radius);
 
-    .circle-badge {
-      margin-right: var(--default-spacing);
+    &__item {
+      @include workspaceItem;
     }
 
-    &:hover {
-      background-color: var(--black2);
+    &__new {
+      margin-top: var(--default-spacing);
+      border-top: $border-black20;
+      padding-top: var(--default-spacing);
     }
   }
 }
