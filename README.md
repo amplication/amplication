@@ -8,7 +8,7 @@
 </p>
 <p align="center">
   <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
-  <a href="https://discord.gg/KSJCZ24vj2">
+  <a href="https://discord.gg/Z2CG3rUFnu">
     <img src="https://img.shields.io/discord/757179260417867879?label=discord" alt="Discord">
   </a>
   <a href="code_of_conduct.md">
@@ -87,7 +87,7 @@ Every app generated using Amplication platform contains popular, documented, sec
 
 You can ask questions, and participate in discussions about Amplication-related topics in the `Amplication` Discord channel.
 
-<a href="https://discord.gg/KSJCZ24vj2"><img src="https://amplication.com/assets/images/discord_banner_purple.svg" /></a>
+<a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/assets/images/discord_banner_purple.svg" /></a>
 
 ### Create a bug report
 

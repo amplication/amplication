@@ -5,7 +5,7 @@ We make sure contributing to Amplication is easy, enjoyable, and educational for
 
 ## Got a question?
 
-You can ask questions, consult with more experienced Amplication users, and discuss Amplication-related topics in the our [Discord channel](https://discord.gg/b8MrjU6).
+You can ask questions, consult with more experienced Amplication users, and discuss Amplication-related topics in the our [Discord channel](https://discord.gg/Z2CG3rUFnu).
 
 ## Found a bug?
 
@@ -38,7 +38,6 @@ If you want to help out with a code contribution, our project uses the following
 - [React](https://reactjs.org/docs/getting-started.html)
 - [TypeScript](https://www.typescriptlang.org/docs)
 - [Apollo Client](https://www.apollographql.com/docs/react/)
-
 
 If you don't feel ready to make a code contribution yet, no problem! You can also check out the [documentation issues](https://github.com/amplication/amplication/labels/type%3A%20docs).
 

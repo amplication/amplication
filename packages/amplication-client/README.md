@@ -5,7 +5,7 @@ The client is built with React, Apollo client, Primer components, React Material
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-If you need help or have a question, go to our [Discord channel](https://discord.gg/b8MrjU6), we are here to help.
+If you need help or have a question, go to our [Discord channel](https://discord.gg/Z2CG3rUFnu), we are here to help.
 
 ### Installation
 
