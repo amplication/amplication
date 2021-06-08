@@ -1,6 +1,5 @@
 import {
   Args,
-  Context,
   Mutation,
   Query,
   Resolver,
@@ -38,8 +37,18 @@ export class WorkspaceResolver {
     return this.workspaceService.getWorkspace(args);
   }
 
+  @Query(() => Workspace, {
+    nullable: true,
+    description: undefined
+  })
+  async currentWorkspace(
+    @UserEntity() currentUser: User
+  ): Promise<Workspace | null> {
+    return currentUser.workspace;
+  }
+
   @ResolveField(() => [App])
-  async apps(@Parent() workspace: Workspace) {
+  async apps(@Parent() workspace: Workspace): Promise<App[]> {
     return this.appService.apps({
       where: { workspace: { id: workspace.id } }
     });
