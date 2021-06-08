@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseFilters } from '@nestjs/common';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
