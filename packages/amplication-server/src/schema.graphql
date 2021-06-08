@@ -1124,6 +1124,7 @@ input PropertySelectorInput {
 
 type Query {
   account: Account!
+  workspaces: [Workspace!]!
   workspace(where: WhereUniqueInput!): Workspace
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
