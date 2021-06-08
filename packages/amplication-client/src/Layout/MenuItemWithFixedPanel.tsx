@@ -9,8 +9,8 @@ import { Icon } from "@rmwc/icon";
 type Props = {
   /** Text to be displayed as a tooltip */
   tooltip: string;
-  /** the name of the icon to display */
-  icon: string;
+  /** the name of the icon to display, or false to hide the icon */
+  icon: string | boolean;
   /** indication whether the fixed panel is open or not */
   isOpen: boolean;
   /* the content to display in the fixed panel*/
@@ -19,6 +19,7 @@ type Props = {
   panelKey: string;
   /* The value to show on a badge. When null or undefined the badge is hidden*/
   badgeValue?: string | null;
+
   onClick: (panelKey: string) => void;
 };
 
@@ -41,28 +42,30 @@ const MenuItemWithFixedPanel = ({
   return (
     <div
       className={classNames("amp-menu-item amp-menu-item--with-fixed-panel", {
-        "amp-menu-item--with-fixed-panel--active": isOpen,
+        "amp-menu-item--with-fixed-panel--active": isOpen && icon,
       })}
     >
       <div className="amp-menu-item__wrapper">
-        <Tooltip
-          className="amp-menu-item__tooltip"
-          aria-label={tooltip}
-          direction={DIRECTION}
-          noDelay
-        >
-          <Button buttonStyle={EnumButtonStyle.Clear} onClick={handleClick}>
-            <Icon
-              icon={{
-                icon: icon,
-                size: ICON_SIZE,
-              }}
-            />
-          </Button>
-          {badgeValue && (
-            <span className="amp-menu-item__badge">{badgeValue}</span>
-          )}
-        </Tooltip>
+        {icon && (
+          <Tooltip
+            className="amp-menu-item__tooltip"
+            aria-label={tooltip}
+            direction={DIRECTION}
+            noDelay
+          >
+            <Button buttonStyle={EnumButtonStyle.Clear} onClick={handleClick}>
+              <Icon
+                icon={{
+                  icon: icon,
+                  size: ICON_SIZE,
+                }}
+              />
+            </Button>
+            {badgeValue && (
+              <span className="amp-menu-item__badge">{badgeValue}</span>
+            )}
+          </Tooltip>
+        )}
       </div>
       {isOpen && <MenuFixedPanel.Source>{children}</MenuFixedPanel.Source>}
     </div>
