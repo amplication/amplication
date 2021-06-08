@@ -34,10 +34,7 @@ export class WorkspaceResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
-  async workspace(
-    @Context() ctx: any,
-    @Args() args: FindOneArgs
-  ): Promise<Workspace | null> {
+  async workspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.getWorkspace(args);
   }
 
@@ -53,10 +50,7 @@ export class WorkspaceResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
-  async deleteWorkspace(
-    @Context() ctx: any,
-    @Args() args: FindOneArgs
-  ): Promise<Workspace | null> {
+  async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.deleteWorkspace(args);
   }
 
@@ -66,7 +60,6 @@ export class WorkspaceResolver {
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
   async updateWorkspace(
-    @Context() ctx: any,
     @Args() args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
     return this.workspaceService.updateWorkspace(args);
