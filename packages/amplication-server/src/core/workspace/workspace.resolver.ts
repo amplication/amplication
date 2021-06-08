@@ -6,7 +6,11 @@ import {
   Parent,
   ResolveField
 } from '@nestjs/graphql';
-import { UpdateOneWorkspaceArgs, InviteUserArgs } from './dto';
+import {
+  UpdateOneWorkspaceArgs,
+  InviteUserArgs,
+  CreateOneWorkspaceArgs
+} from './dto';
 import { FindOneArgs } from 'src/dto';
 
 import { Workspace, App, User } from 'src/models';
@@ -72,6 +76,17 @@ export class WorkspaceResolver {
     @Args() args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
     return this.workspaceService.updateWorkspace(args);
+  }
+
+  @Mutation(() => Workspace, {
+    nullable: true,
+    description: undefined
+  })
+  async createWorkspace(
+    @UserEntity() currentUser: User,
+    @Args() args: CreateOneWorkspaceArgs
+  ): Promise<Workspace | null> {
+    return this.workspaceService.createWorkspace(currentUser.account.id, args);
   }
 
   @Mutation(() => User, {
