@@ -8,6 +8,7 @@ import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import ApplicationList from "./ApplicationList";
 import InnerTabLink from "../Layout/InnerTabLink";
+import WorkspaceSelector from "./WorkspaceSelector";
 import "./WorkspaceLayout.scss";
 
 export type ApplicationData = {
@@ -31,12 +32,13 @@ function WorkspaceLayout({ match }: Props) {
     <MainLayout className={CLASS_NAME}>
       <MainLayout.Menu>
         <MenuItemWithFixedPanel
-          tooltip="Pending Changes"
-          icon="pending_changes_outline"
+          tooltip=""
+          icon={false}
           isOpen
           panelKey={"panelKey"}
           onClick={() => {}}
         >
+          <WorkspaceSelector />
           <div className={`${CLASS_NAME}__tabs`}>
             <InnerTabLink to={`/`} icon="grid">
               Apps
