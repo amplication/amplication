@@ -8,7 +8,7 @@ import { CircularProgress } from "@rmwc/circular-progress";
 import "@rmwc/circular-progress/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { GET_APPLICATIONS } from "./Applications";
+import { GET_APPLICATIONS } from "../Workspaces/ApplicationList";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";

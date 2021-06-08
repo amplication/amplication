@@ -14,7 +14,7 @@ import {
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
-import { GET_APPLICATIONS } from "./Applications";
+import { GET_APPLICATIONS } from "../Workspaces/ApplicationList";
 import "./CreateAppFromExcel.scss";
 import { CreateAppFromExcelForm } from "./CreateAppFromExcelForm";
 import { sampleAppWithEntities, sampleAppWithoutEntities } from "./constants";

@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { NavLink } from "react-router-dom";
-import ApplicationBadge from "./ApplicationBadge";
 import { Icon } from "@rmwc/icon";
 import { Tooltip } from "@primer/components";
 import { useTracking } from "../util/analytics";
@@ -8,16 +7,18 @@ import { useTracking } from "../util/analytics";
 import * as models from "../models";
 import { format } from "date-fns";
 
-import "./ApplicationCard.scss";
+import "./ApplicationListItem.scss";
 import { BuildStatusIcons } from "../VersionControl/BuildStatusIcons";
+import { CircleBadge, EnumPanelStyle, Panel } from "@amplication/design-system";
 
 type Props = {
   app: models.App;
 };
 
 const DATE_FORMAT = "P p";
+const CLASS_NAME = "application-list-item";
 
-function ApplicationCard({ app }: Props) {
+function ApplicationListItem({ app }: Props) {
   const { id, name, description, color } = app;
   const { trackEvent } = useTracking();
 
@@ -31,30 +32,41 @@ function ApplicationCard({ app }: Props) {
     ? new Date(app.builds[0].createdAt)
     : undefined;
   return (
-    <NavLink to={`/${id}`} className="application-card" onClick={handleClick}>
-      <div className="application-card__header">
-        <ApplicationBadge name={name} expanded color={color} />
-      </div>
-      <div className="application-card__description">{description}</div>
-      <div className="application-card__footer">
-        <div>
+    <NavLink to={`/${id}`}>
+      <Panel
+        className={CLASS_NAME}
+        clickable
+        onClick={handleClick}
+        panelStyle={EnumPanelStyle.Bordered}
+      >
+        <div className={`${CLASS_NAME}__row`}>
+          <CircleBadge name={name} color={color} />
+
+          <span className={`${CLASS_NAME}__title`}>{name}</span>
+
+          <span className="spacer" />
+        </div>
+        <div className={`${CLASS_NAME}__row`}>
+          <span className={`${CLASS_NAME}__description`}>{description}</span>
+        </div>
+        <div className={`${CLASS_NAME}__row`}>
           {lastBuildDate && (
-            <div className="application-card__recently-used">
+            <div className={`${CLASS_NAME}__recently-used`}>
               <Icon icon="clock" />
               <Tooltip
                 aria-label={`Last build: ${format(lastBuildDate, DATE_FORMAT)}`}
               >
+                <span>Last build </span>
                 {format(lastBuildDate, "PP")}
               </Tooltip>
             </div>
           )}
-        </div>
-        <div>
           <BuildStatusIcons build={app.builds[0]} />
+          <span className="spacer" />
         </div>
-      </div>
+      </Panel>
     </NavLink>
   );
 }
 
-export default ApplicationCard;
+export default ApplicationListItem;
