@@ -1,13 +1,16 @@
 import {
   Args,
-  Context,
   Mutation,
   Query,
   Resolver,
   Parent,
   ResolveField
 } from '@nestjs/graphql';
-import { UpdateOneWorkspaceArgs, InviteUserArgs } from './dto';
+import {
+  UpdateOneWorkspaceArgs,
+  InviteUserArgs,
+  CreateOneWorkspaceArgs
+} from './dto';
 import { FindOneArgs } from 'src/dto';
 
 import { Workspace, App, User } from 'src/models';
@@ -34,15 +37,22 @@ export class WorkspaceResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
-  async workspace(
-    @Context() ctx: any,
-    @Args() args: FindOneArgs
-  ): Promise<Workspace | null> {
+  async workspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.getWorkspace(args);
   }
 
+  @Query(() => Workspace, {
+    nullable: true,
+    description: undefined
+  })
+  async currentWorkspace(
+    @UserEntity() currentUser: User
+  ): Promise<Workspace | null> {
+    return currentUser.workspace;
+  }
+
   @ResolveField(() => [App])
-  async apps(@Parent() workspace: Workspace) {
+  async apps(@Parent() workspace: Workspace): Promise<App[]> {
     return this.appService.apps({
       where: { workspace: { id: workspace.id } }
     });
@@ -53,10 +63,7 @@ export class WorkspaceResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
-  async deleteWorkspace(
-    @Context() ctx: any,
-    @Args() args: FindOneArgs
-  ): Promise<Workspace | null> {
+  async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.deleteWorkspace(args);
   }
 
@@ -66,10 +73,20 @@ export class WorkspaceResolver {
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
   async updateWorkspace(
-    @Context() ctx: any,
     @Args() args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
     return this.workspaceService.updateWorkspace(args);
+  }
+
+  @Mutation(() => Workspace, {
+    nullable: true,
+    description: undefined
+  })
+  async createWorkspace(
+    @UserEntity() currentUser: User,
+    @Args() args: CreateOneWorkspaceArgs
+  ): Promise<Workspace | null> {
+    return this.workspaceService.createWorkspace(currentUser.account.id, args);
   }
 
   @Mutation(() => User, {

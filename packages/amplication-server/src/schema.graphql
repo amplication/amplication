@@ -1036,6 +1036,7 @@ type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  createWorkspace(data: WorkspaceCreateInput!): Workspace
   inviteUser(data: InviteUserInput!): User
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
@@ -1124,7 +1125,9 @@ input PropertySelectorInput {
 
 type Query {
   account: Account!
+  workspaces: [Workspace!]!
   workspace(where: WhereUniqueInput!): Workspace
+  currentWorkspace: Workspace
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
@@ -1230,6 +1233,10 @@ type Workspace {
   name: String!
   apps: [App!]!
   users: [User!]!
+}
+
+input WorkspaceCreateInput {
+  name: String!
 }
 
 input WorkspaceUpdateInput {

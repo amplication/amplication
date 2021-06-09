@@ -1,0 +1,17 @@
+@import "../style/index.scss";
+
+.workspaces-layout {
+  &__app-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
+  }
+
+  &__tabs {
+    @include scrollbars(10px, var(--black60), transparent);
+    padding: var(--large-spacing);
+    overflow: auto;
+  }
+}

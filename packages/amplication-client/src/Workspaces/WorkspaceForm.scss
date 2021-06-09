@@ -1,0 +1,16 @@
+@import "../style/index.scss";
+
+.application-form {
+  h1 {
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+  padding: var(--double-spacing);
+
+  hr {
+    border: none;
+    border-top: $border-black10;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+}

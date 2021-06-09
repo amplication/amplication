@@ -1118,8 +1118,9 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   updateAccount: Account;
-  deleteOrganization?: Maybe<Organization>;
-  updateOrganization?: Maybe<Organization>;
+  deleteWorkspace?: Maybe<Workspace>;
+  updateWorkspace?: Maybe<Workspace>;
+  createWorkspace?: Maybe<Workspace>;
   inviteUser?: Maybe<User>;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
@@ -1156,7 +1157,7 @@ export type Mutation = {
   createApiToken: ApiToken;
   changePassword: Account;
   deleteApiToken: ApiToken;
-  setCurrentOrganization: Auth;
+  setCurrentWorkspace: Auth;
   createConnectorRestApi: ConnectorRestApi;
   updateConnectorRestApi: ConnectorRestApi;
   createBlockVersion: Block;
@@ -1170,13 +1171,17 @@ export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
 };
 
-export type MutationDeleteOrganizationArgs = {
+export type MutationDeleteWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
-export type MutationUpdateOrganizationArgs = {
-  data: OrganizationUpdateInput;
+export type MutationUpdateWorkspaceArgs = {
+  data: WorkspaceUpdateInput;
   where: WhereUniqueInput;
+};
+
+export type MutationCreateWorkspaceArgs = {
+  data: WorkspaceCreateInput;
 };
 
 export type MutationInviteUserArgs = {
@@ -1336,7 +1341,7 @@ export type MutationDeleteApiTokenArgs = {
   where: WhereUniqueInput;
 };
 
-export type MutationSetCurrentOrganizationArgs = {
+export type MutationSetCurrentWorkspaceArgs = {
   data: WhereUniqueInput;
 };
 
@@ -1369,24 +1374,6 @@ export type MutationCreateEntityPageArgs = {
 export type MutationUpdateEntityPageArgs = {
   data: EntityPageUpdateInput;
   where: WhereUniqueInput;
-};
-
-export type Organization = {
-  __typename?: 'Organization';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  defaultTimeZone: Scalars['String'];
-  address: Scalars['String'];
-  apps: Array<App>;
-  users: Array<User>;
-};
-
-export type OrganizationUpdateInput = {
-  name?: Maybe<Scalars['String']>;
-  defaultTimeZone?: Maybe<Scalars['String']>;
-  address?: Maybe<Scalars['String']>;
 };
 
 export type PendingChange = {
@@ -1435,7 +1422,9 @@ export type PropertySelectorInput = {
 export type Query = {
   __typename?: 'Query';
   account: Account;
-  organization?: Maybe<Organization>;
+  workspaces: Array<Workspace>;
+  workspace?: Maybe<Workspace>;
+  currentWorkspace?: Maybe<Workspace>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
   appRole?: Maybe<AppRole>;
@@ -1464,7 +1453,7 @@ export type Query = {
   EntityPages: Array<EntityPage>;
 };
 
-export type QueryOrganizationArgs = {
+export type QueryWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1619,9 +1608,7 @@ export type SignupInput = {
   password: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
-  organizationName: Scalars['String'];
-  defaultTimeZone: Scalars['String'];
-  address: Scalars['String'];
+  workspaceName: Scalars['String'];
 };
 
 export enum SortOrder {
@@ -1655,8 +1642,9 @@ export type User = {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   account?: Maybe<Account>;
-  organization?: Maybe<Organization>;
+  workspace?: Maybe<Workspace>;
   userRoles?: Maybe<Array<UserRole>>;
+  isOwner: Scalars['Boolean'];
 };
 
 export type UserRole = {
@@ -1673,4 +1661,22 @@ export type WhereParentIdInput = {
 
 export type WhereUniqueInput = {
   id: Scalars['String'];
+};
+
+export type Workspace = {
+  __typename?: 'Workspace';
+  id: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
+  apps: Array<App>;
+  users: Array<User>;
+};
+
+export type WorkspaceCreateInput = {
+  name: Scalars['String'];
+};
+
+export type WorkspaceUpdateInput = {
+  name?: Maybe<Scalars['String']>;
 };

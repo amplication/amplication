@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { Prisma, Account } from '@prisma/client';
+import { Workspace } from 'src/models';
 
 @Injectable()
 export class AccountService {
@@ -29,6 +30,18 @@ export class AccountService {
       },
       where: {
         id: accountId
+      }
+    });
+  }
+
+  getWorkspaces(accountId: string): Promise<Workspace[]> {
+    return this.prisma.workspace.findMany({
+      where: {
+        users: {
+          some: {
+            accountId: accountId
+          }
+        }
       }
     });
   }

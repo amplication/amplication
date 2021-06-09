@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseFilters } from '@nestjs/common';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
@@ -22,10 +22,7 @@ export class AppRoleResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
-  async appRole(
-    @Context() ctx: any,
-    @Args() args: FindOneAppRoleArgs
-  ): Promise<AppRole | null> {
+  async appRole(@Args() args: FindOneAppRoleArgs): Promise<AppRole | null> {
     return this.appRoleService.getAppRole(args);
   }
 
@@ -34,10 +31,7 @@ export class AppRoleResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async appRoles(
-    @Context() ctx: any,
-    @Args() args: FindManyAppRoleArgs
-  ): Promise<AppRole[]> {
+  async appRoles(@Args() args: FindManyAppRoleArgs): Promise<AppRole[]> {
     return this.appRoleService.getAppRoles(args);
   }
 
@@ -46,10 +40,7 @@ export class AppRoleResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
-  async createAppRole(
-    @Context() ctx: any,
-    @Args() args: CreateAppRoleArgs
-  ): Promise<AppRole> {
+  async createAppRole(@Args() args: CreateAppRoleArgs): Promise<AppRole> {
     return this.appRoleService.createAppRole(args);
   }
 
@@ -59,7 +50,6 @@ export class AppRoleResolver {
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
   async deleteAppRole(
-    @Context() ctx: any,
     @Args() args: DeleteAppRoleArgs
   ): Promise<AppRole | null> {
     return this.appRoleService.deleteAppRole(args);
@@ -71,7 +61,6 @@ export class AppRoleResolver {
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
   async updateAppRole(
-    @Context() ctx: any,
     @Args() args: UpdateOneAppRoleArgs
   ): Promise<AppRole | null> {
     return this.appRoleService.updateAppRole(args);

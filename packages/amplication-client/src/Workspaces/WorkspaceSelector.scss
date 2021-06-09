@@ -1,0 +1,66 @@
+@import "../style/index.scss";
+
+@mixin workspaceItem {
+  @include sectionTitle;
+  margin-bottom: 0;
+  padding: var(--default-spacing-small);
+  border-radius: var(--default-border-radius);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+
+  .circle-badge {
+    margin-left: 0;
+    margin-right: var(--default-spacing);
+  }
+  &:hover,
+  &--active {
+    background-color: var(--black2);
+  }
+
+  &__name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+.workspaces-selector {
+  margin: var(--large-spacing);
+
+  &__current {
+    @include workspaceItem;
+    margin-bottom: var(--default-spacing);
+
+    .amp-icon {
+      margin-left: var(--default-spacing);
+      transform: rotate(90deg);
+    }
+  }
+
+  &__list {
+    padding: var(--default-spacing-small);
+    border: $border-black20;
+    border-radius: var(--default-border-radius);
+
+    &__item {
+      @include workspaceItem;
+      @include title1;
+      margin-bottom: var(--default-spacing-small);
+    }
+
+    &__new {
+      margin-top: var(--default-spacing);
+      border-top: $border-black20;
+      padding-top: var(--default-spacing);
+    }
+  }
+}
