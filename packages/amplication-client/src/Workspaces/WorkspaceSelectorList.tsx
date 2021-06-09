@@ -13,12 +13,14 @@ const CLASS_NAME = "workspaces-selector__list";
 
 type Props = {
   selectedWorkspace: models.Workspace;
-  onWorkspaceSelected: () => void;
+  onWorkspaceSelected: (workspace: models.Workspace) => void;
+  onNewWorkspaceClick: () => void;
 };
 
 function WorkspaceSelectorList({
   selectedWorkspace,
   onWorkspaceSelected,
+  onNewWorkspaceClick,
 }: Props) {
   const { data, loading } = useQuery<TData>(GET_WORKSPACES);
 
@@ -42,6 +44,7 @@ function WorkspaceSelectorList({
               disabled={loading}
               type="button"
               icon="plus"
+              onClick={onNewWorkspaceClick}
             >
               Create new workspace
             </Button>

@@ -1,15 +1,24 @@
-import React, { useCallback, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import React, { useCallback, useEffect, useState } from "react";
+import { gql, useQuery, useMutation, useApolloClient } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
 import classNames from "classnames";
+import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { CircleBadge } from "@amplication/design-system";
+import { setToken } from "../authentication/authentication";
+import { CircleBadge, Dialog } from "@amplication/design-system";
 import * as models from "../models";
 import WorkspaceSelectorList from "./WorkspaceSelectorList";
+import NewWorkspace from "./NewWorkspace";
 import "./WorkspaceSelector.scss";
 
 type TData = {
   currentWorkspace: models.Workspace;
+};
+
+type TSetData = {
+  setCurrentWorkspace: {
+    token: string;
+  };
 };
 
 export const COLOR = "#A787FF";
@@ -17,6 +26,39 @@ const CLASS_NAME = "workspaces-selector";
 
 function WorkspaceSelector() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [newWorkspace, setNewWorkspace] = useState<boolean>(false);
+
+  const apolloClient = useApolloClient();
+  const history = useHistory();
+
+  const [setCurrentWorkspace, { data: setCurrentData }] = useMutation<TSetData>(
+    SET_CURRENT_WORKSPACE
+  );
+
+  const handleSetCurrentWorkspace = useCallback(
+    (workspace: models.Workspace) => {
+      setIsOpen(false);
+      setCurrentWorkspace({
+        variables: {
+          workspaceId: workspace.id,
+        },
+      }).catch(console.error);
+    },
+    [setCurrentWorkspace]
+  );
+
+  useEffect(() => {
+    if (setCurrentData) {
+      apolloClient.clearStore();
+      setToken(setCurrentData.setCurrentWorkspace.token);
+      history.replace("/");
+      window.location.reload();
+    }
+  }, [setCurrentData, history, apolloClient]);
+
+  const handleNewWorkspaceClick = useCallback(() => {
+    setNewWorkspace(!newWorkspace);
+  }, [newWorkspace, setNewWorkspace]);
 
   const handleOpen = useCallback(() => {
     setIsOpen((isOpen) => {
@@ -28,6 +70,14 @@ function WorkspaceSelector() {
 
   return (
     <div className={CLASS_NAME}>
+      <Dialog
+        className="new-entity-dialog"
+        isOpen={newWorkspace}
+        onDismiss={handleNewWorkspaceClick}
+        title="New Workspace"
+      >
+        <NewWorkspace onWorkspaceCreated={handleSetCurrentWorkspace} />
+      </Dialog>
       <div
         className={classNames(`${CLASS_NAME}__current`, {
           [`${CLASS_NAME}__current--active`]: isOpen,
@@ -56,8 +106,9 @@ function WorkspaceSelector() {
       </div>
       {isOpen && data && (
         <WorkspaceSelectorList
+          onNewWorkspaceClick={handleNewWorkspaceClick}
           selectedWorkspace={data.currentWorkspace}
-          onWorkspaceSelected={handleOpen}
+          onWorkspaceSelected={handleSetCurrentWorkspace}
         />
       )}
     </div>
@@ -71,6 +122,14 @@ export const GET_CURRENT_WORKSPACE = gql`
     currentWorkspace {
       id
       name
+    }
+  }
+`;
+
+const SET_CURRENT_WORKSPACE = gql`
+  mutation setCurrentWorkspace($workspaceId: String!) {
+    setCurrentWorkspace(data: { id: $workspaceId }) {
+      token
     }
   }
 `;

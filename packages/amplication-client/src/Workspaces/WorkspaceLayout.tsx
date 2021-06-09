@@ -48,9 +48,6 @@ function WorkspaceLayout({ match }: Props) {
             <InnerTabLink to={`/workspace/settings`} icon="settings">
               Workspace Settings
             </InnerTabLink>
-            <InnerTabLink to={`/workspace/members`} icon="users">
-              Members
-            </InnerTabLink>
           </div>
         </MenuItemWithFixedPanel>
       </MainLayout.Menu>
@@ -64,13 +61,7 @@ function WorkspaceLayout({ match }: Props) {
                 component={WorkspaceForm}
               />
             </Switch>
-            <Switch>
-              <Route
-                exact
-                path="/workspace/members"
-                component={ApplicationList}
-              />
-            </Switch>
+
             <Switch>
               <Route exact path="/" component={ApplicationList} />
             </Switch>

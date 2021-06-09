@@ -1120,6 +1120,7 @@ export type Mutation = {
   updateAccount: Account;
   deleteWorkspace?: Maybe<Workspace>;
   updateWorkspace?: Maybe<Workspace>;
+  createWorkspace?: Maybe<Workspace>;
   inviteUser?: Maybe<User>;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
@@ -1177,6 +1178,10 @@ export type MutationDeleteWorkspaceArgs = {
 export type MutationUpdateWorkspaceArgs = {
   data: WorkspaceUpdateInput;
   where: WhereUniqueInput;
+};
+
+export type MutationCreateWorkspaceArgs = {
+  data: WorkspaceCreateInput;
 };
 
 export type MutationInviteUserArgs = {
@@ -1666,6 +1671,10 @@ export type Workspace = {
   name: Scalars["String"];
   apps: Array<App>;
   users: Array<User>;
+};
+
+export type WorkspaceCreateInput = {
+  name: Scalars["String"];
 };
 
 export type WorkspaceUpdateInput = {
