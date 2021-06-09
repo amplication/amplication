@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
-import { isEmpty } from "lodash";
 import "@rmwc/snackbar/styles";
-import { Link, useHistory } from "react-router-dom";
-import "./ApplicationList.scss";
+import { Link } from "react-router-dom";
+import { isEmpty } from "lodash";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { formatError } from "../util/error";
 import { isMobileOnly } from "react-device-detect";
@@ -12,10 +11,12 @@ import { useTracking } from "../util/analytics";
 
 import { SearchField } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import * as models from "../models";
 import ApplicationListItem from "./ApplicationListItem";
 import MobileMessage from "../Layout/MobileMessage";
+import "./ApplicationList.scss";
 
 type TData = {
   apps: Array<models.App>;
@@ -25,7 +26,6 @@ const CLASS_NAME = "application-list";
 
 function ApplicationList() {
   const { trackEvent } = useTracking();
-  const history = useHistory();
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const handleSearchChange = useCallback(
@@ -50,12 +50,6 @@ function ApplicationList() {
       eventName: "createNewAppCardClick",
     });
   }, [trackEvent]);
-
-  useEffect(() => {
-    if (data && isEmpty(data.apps)) {
-      history.replace({ pathname: "/create-app" });
-    }
-  }, [data, history]);
 
   if (isMobileOnly) {
     return <MobileMessage />;
@@ -83,9 +77,18 @@ function ApplicationList() {
       <div className={`${CLASS_NAME}__title`}>{data?.apps.length} Apps</div>
       {loading && <CircularProgress />}
 
-      {data?.apps.map((app) => {
-        return <ApplicationListItem key={app.id} app={app} />;
-      })}
+      {isEmpty(data?.apps) && !loading ? (
+        <div className={`${CLASS_NAME}__empty-state`}>
+          <SvgThemeImage image={EnumImages.AddApp} />
+          <div className={`${CLASS_NAME}__empty-state__title`}>
+            There are no apps to show
+          </div>
+        </div>
+      ) : (
+        data?.apps.map((app) => {
+          return <ApplicationListItem key={app.id} app={app} />;
+        })
+      )}
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
