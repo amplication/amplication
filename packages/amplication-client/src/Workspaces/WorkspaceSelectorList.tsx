@@ -39,7 +39,9 @@ function WorkspaceSelectorList({ selectedWorkspace }: Props) {
             >
               <CircleBadge name={workspace.name} color={COLOR} />
 
-              {workspace.name}
+              <span className={`${CLASS_NAME}__item__name`}>
+                {workspace.name}
+              </span>
             </div>
           ))}
           <div className={`${CLASS_NAME}__new`}>

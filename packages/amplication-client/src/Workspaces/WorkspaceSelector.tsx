@@ -42,8 +42,9 @@ function WorkspaceSelector() {
               name={data?.currentWorkspace.name || ""}
               color={COLOR}
             />
-
-            {data?.currentWorkspace.name}
+            <span className={`${CLASS_NAME}__current__name`}>
+              {data?.currentWorkspace.name}
+            </span>
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               disabled={loading}
@@ -62,7 +63,7 @@ function WorkspaceSelector() {
 
 export default WorkspaceSelector;
 
-const GET_CURRENT_WORKSPACE = gql`
+export const GET_CURRENT_WORKSPACE = gql`
   query getCurrentWorkspace {
     currentWorkspace {
       id
