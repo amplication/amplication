@@ -9,6 +9,8 @@ import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import ApplicationList from "./ApplicationList";
 import InnerTabLink from "../Layout/InnerTabLink";
 import WorkspaceSelector from "./WorkspaceSelector";
+import WorkspaceForm from "./WorkspaceForm";
+import PageContent from "../Layout/PageContent";
 import "./WorkspaceLayout.scss";
 
 export type ApplicationData = {
@@ -54,23 +56,25 @@ function WorkspaceLayout({ match }: Props) {
       </MainLayout.Menu>
       <MainLayout.Content>
         <div className={`${CLASS_NAME}__app-container`}>
-          <Switch>
-            <Route
-              exact
-              path="/workspace/settings"
-              component={ApplicationList}
-            />
-          </Switch>
-          <Switch>
-            <Route
-              exact
-              path="/workspace/members"
-              component={ApplicationList}
-            />
-          </Switch>
-          <Switch>
-            <Route exact path="/" component={ApplicationList} />
-          </Switch>
+          <PageContent className={CLASS_NAME}>
+            <Switch>
+              <Route
+                exact
+                path="/workspace/settings"
+                component={WorkspaceForm}
+              />
+            </Switch>
+            <Switch>
+              <Route
+                exact
+                path="/workspace/members"
+                component={ApplicationList}
+              />
+            </Switch>
+            <Switch>
+              <Route exact path="/" component={ApplicationList} />
+            </Switch>
+          </PageContent>
         </div>
       </MainLayout.Content>
       <ScreenResolutionMessage />

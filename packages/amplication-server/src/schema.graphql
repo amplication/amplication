@@ -1036,6 +1036,7 @@ type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  createWorkspace(data: WorkspaceCreateInput!): Workspace
   inviteUser(data: InviteUserInput!): User
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
@@ -1232,6 +1233,10 @@ type Workspace {
   name: String!
   apps: [App!]!
   users: [User!]!
+}
+
+input WorkspaceCreateInput {
+  name: String!
 }
 
 input WorkspaceUpdateInput {

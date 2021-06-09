@@ -13,7 +13,6 @@ import { useTracking } from "../util/analytics";
 import { SearchField } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
-import PageContent from "../Layout/PageContent";
 import * as models from "../models";
 import ApplicationListItem from "./ApplicationListItem";
 import MobileMessage from "../Layout/MobileMessage";
@@ -63,7 +62,7 @@ function ApplicationList() {
   }
 
   return (
-    <PageContent className={CLASS_NAME}>
+    <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
         <SearchField
           label="search"
@@ -89,7 +88,7 @@ function ApplicationList() {
       })}
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </PageContent>
+    </div>
   );
 }
 
