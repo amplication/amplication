@@ -1,11 +1,9 @@
-import { CircleBadge } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
-import classNames from "classnames";
 import { CircularProgress } from "@rmwc/circular-progress";
+import React from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import React, { useCallback } from "react";
 import * as models from "../models";
-import { COLOR } from "./WorkspaceSelector";
+import WorkspaceSelectorListItem from "./WorkspaceSelectorListItem";
 
 type TData = {
   workspaces: models.Workspace[];
@@ -15,11 +13,13 @@ const CLASS_NAME = "workspaces-selector__list";
 
 type Props = {
   selectedWorkspace: models.Workspace;
+  onWorkspaceSelected: () => void;
 };
 
-function WorkspaceSelectorList({ selectedWorkspace }: Props) {
-  const handleClick = useCallback(() => {}, []);
-
+function WorkspaceSelectorList({
+  selectedWorkspace,
+  onWorkspaceSelected,
+}: Props) {
   const { data, loading } = useQuery<TData>(GET_WORKSPACES);
 
   return (
@@ -29,20 +29,12 @@ function WorkspaceSelectorList({ selectedWorkspace }: Props) {
       ) : (
         <>
           {data?.workspaces.map((workspace) => (
-            <div
-              className={classNames(`${CLASS_NAME}__item`, {
-                [`${CLASS_NAME}__item--active`]:
-                  selectedWorkspace.id === workspace.id,
-              })}
+            <WorkspaceSelectorListItem
+              onWorkspaceSelected={onWorkspaceSelected}
+              workspace={workspace}
+              selected={selectedWorkspace.id === workspace.id}
               key={workspace.id}
-              onClick={handleClick}
-            >
-              <CircleBadge name={workspace.name} color={COLOR} />
-
-              <span className={`${CLASS_NAME}__item__name`}>
-                {workspace.name}
-              </span>
-            </div>
+            />
           ))}
           <div className={`${CLASS_NAME}__new`}>
             <Button

@@ -55,7 +55,10 @@ function WorkspaceSelector() {
         )}
       </div>
       {isOpen && data && (
-        <WorkspaceSelectorList selectedWorkspace={data.currentWorkspace} />
+        <WorkspaceSelectorList
+          selectedWorkspace={data.currentWorkspace}
+          onWorkspaceSelected={handleOpen}
+        />
       )}
     </div>
   );
