@@ -189,7 +189,8 @@ export class AppService {
         name: {
           mode: QueryMode.Insensitive,
           startsWith: data.app.name
-        }
+        },
+        workspaceId: user.workspace.id
       },
       select: {
         name: true
