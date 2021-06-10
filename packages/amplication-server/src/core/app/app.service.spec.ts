@@ -44,6 +44,7 @@ const INVALID_COLOR = 'INVALID_COLOR';
 const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
+const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
 const EXAMPLE_APP: App = {
   ...DEFAULT_APP_DATA,
@@ -64,7 +65,13 @@ const EXAMPLE_USER_APP_ROLE = {
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  workspace: {
+    id: EXAMPLE_WORKSPACE_ID,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: 'example_workspace_name'
+  }
 };
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
@@ -624,7 +631,8 @@ describe('AppService', () => {
             name: {
               mode: QueryMode.Insensitive,
               startsWith: SAMPLE_APP_DATA.name
-            }
+            },
+            workspaceId: EXAMPLE_WORKSPACE_ID
           },
           select: {
             name: true
