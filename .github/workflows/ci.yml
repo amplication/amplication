@@ -6,8 +6,14 @@ name: CI
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - "**.md"
+      - ".github/workflows/**.yml"
   pull_request:
     branches: [master]
+    paths-ignore:
+      - "**.md"
+      - ".github/workflows/**.yml"
 
 jobs:
   build:
