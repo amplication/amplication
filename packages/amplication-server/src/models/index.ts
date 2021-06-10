@@ -5,7 +5,7 @@ export { EntityVersion } from './EntityVersion';
 export { EntityPermission } from './EntityPermission';
 export { EntityPermissionRole } from './EntityPermissionRole';
 export { EntityPermissionField } from './EntityPermissionField';
-export { Organization } from './Organization';
+export { Workspace } from './Workspace';
 export { App } from './App';
 export { Commit } from './Commit';
 export { AppRole } from './AppRole';

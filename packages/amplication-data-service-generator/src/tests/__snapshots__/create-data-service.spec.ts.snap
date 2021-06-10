@@ -1150,7 +1150,7 @@ export const CustomerList = (props: ListProps): React.ReactElement => {
 import {
   Show,
   SimpleShowLayout,
-  ListProps,
+  ShowProps,
   TextField,
   DateField,
   BooleanField,
@@ -1162,7 +1162,7 @@ import {
 import { CUSTOMER_TITLE_FIELD } from \\"./CustomerTitle\\";
 import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
-export const CustomerShow = (props: ListProps): React.ReactElement => {
+export const CustomerShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
@@ -1313,12 +1313,12 @@ export const EmptyList = (props: ListProps): React.ReactElement => {
 import {
   Show,
   SimpleShowLayout,
-  ListProps,
+  ShowProps,
   TextField,
   DateField,
 } from \\"react-admin\\";
 
-export const EmptyShow = (props: ListProps): React.ReactElement => {
+export const EmptyShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
@@ -1490,14 +1490,14 @@ export const OrderList = (props: ListProps): React.ReactElement => {
 import {
   Show,
   SimpleShowLayout,
-  ListProps,
+  ShowProps,
   TextField,
   DateField,
   ReferenceField,
 } from \\"react-admin\\";
 import { CUSTOMER_TITLE_FIELD } from \\"../customer/CustomerTitle\\";
 
-export const OrderShow = (props: ListProps): React.ReactElement => {
+export const OrderShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
@@ -1580,7 +1580,7 @@ export const OrganizationList = (props: ListProps): React.ReactElement => {
 import {
   Show,
   SimpleShowLayout,
-  ListProps,
+  ShowProps,
   TextField,
   DateField,
   ReferenceManyField,
@@ -1591,7 +1591,7 @@ import {
 
 import { ORGANIZATION_TITLE_FIELD } from \\"./OrganizationTitle\\";
 
-export const OrganizationShow = (props: ListProps): React.ReactElement => {
+export const OrganizationShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
@@ -1984,14 +1984,14 @@ export const UserList = (props: ListProps): React.ReactElement => {
 import {
   Show,
   SimpleShowLayout,
-  ListProps,
+  ShowProps,
   TextField,
   ReferenceField,
   BooleanField,
 } from \\"react-admin\\";
 import { USER_TITLE_FIELD } from \\"./UserTitle\\";
 
-export const UserShow = (props: ListProps): React.ReactElement => {
+export const UserShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>

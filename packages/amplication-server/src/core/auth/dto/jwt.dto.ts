@@ -6,7 +6,7 @@ export enum EnumTokenType {
 export interface JwtDto {
   accountId: string;
   userId?: string | null;
-  organizationId?: string | null;
+  workspaceId?: string | null;
   roles?: string[] | null;
   type?: EnumTokenType;
   tokenId?: string;

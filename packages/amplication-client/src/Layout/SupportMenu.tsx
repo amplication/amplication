@@ -42,7 +42,7 @@ const SupportMenu = () => {
         Docs
       </a>
       <a
-        href="https://discord.gg/b8MrjU6"
+        href="https://discord.gg/Z2CG3rUFnu"
         target="community"
         rel="noopener"
         onClick={handleCommunityClick}

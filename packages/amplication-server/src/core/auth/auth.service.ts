@@ -11,9 +11,9 @@ import cuid from 'cuid';
 import { Prisma } from '@prisma/client';
 import { Profile as GitHubProfile } from 'passport-github2';
 import { PrismaService } from 'nestjs-prisma';
-import { Account, User, UserRole, Organization } from 'src/models';
+import { Account, User, UserRole, Workspace } from 'src/models';
 import { AccountService } from '../account/account.service';
-import { OrganizationService } from '../organization/organization.service';
+import { WorkspaceService } from '../workspace/workspace.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import {
@@ -28,25 +28,20 @@ import { FindOneArgs } from 'src/dto';
 
 export type AuthUser = User & {
   account: Account;
-  organization: Organization;
+  workspace: Workspace;
   userRoles: UserRole[];
 };
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
 
-const ORGANIZATION_DEFAULT_VALUES = {
-  address: '',
-  defaultTimeZone: ''
-};
-
 const AUTH_USER_INCLUDE = {
   account: true,
   userRoles: true,
-  organization: true
+  workspace: true
 };
 
-const ORGANIZATION_INCLUDE = {
+const WORKSPACE_INCLUDE = {
   users: {
     include: AUTH_USER_INCLUDE
   }
@@ -60,8 +55,8 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
     private readonly userService: UserService,
-    @Inject(forwardRef(() => OrganizationService))
-    private readonly organizationService: OrganizationService
+    @Inject(forwardRef(() => WorkspaceService))
+    private readonly workspaceService: WorkspaceService
   ) {}
 
   async createGitHubUser(
@@ -79,8 +74,8 @@ export class AuthService {
       }
     });
 
-    const organization = await this.createOrganization(payload.id, account);
-    const [user] = organization.users;
+    const workspace = await this.createWorkspace(payload.id, account);
+    const [user] = workspace.users;
 
     await this.accountService.setCurrentUser(account.id, user.id);
 
@@ -119,12 +114,12 @@ export class AuthService {
         }
       });
 
-      const organization = await this.createOrganization(
-        payload.organizationName,
+      const workspace = await this.createWorkspace(
+        payload.workspaceName,
         account
       );
 
-      const [user] = organization.users;
+      const [user] = workspace.users;
 
       await this.accountService.setCurrentUser(account.id, user.id);
 
@@ -141,7 +136,7 @@ export class AuthService {
       },
       include: {
         currentUser: {
-          include: { organization: true, userRoles: true, account: true }
+          include: { workspace: true, userRoles: true, account: true }
         }
       }
     });
@@ -162,14 +157,14 @@ export class AuthService {
     return this.prepareToken(account.currentUser);
   }
 
-  async setCurrentOrganization(
+  async setCurrentWorkspace(
     accountId: string,
-    organizationId: string
+    workspaceId: string
   ): Promise<string> {
     const users = (await this.userService.findUsers({
       where: {
-        organization: {
-          id: organizationId
+        workspace: {
+          id: workspaceId
         },
         account: {
           id: accountId
@@ -178,14 +173,14 @@ export class AuthService {
       include: {
         userRoles: true,
         account: true,
-        organization: true
+        workspace: true
       },
       take: 1
     })) as AuthUser[];
 
     if (!users.length) {
       throw new AmplicationError(
-        `This account does not have an active user records in the selected organization or organization not found ${organizationId}`
+        `This account does not have an active user records in the selected workspace or workspace not found ${workspaceId}`
       );
     }
 
@@ -201,7 +196,7 @@ export class AuthService {
       where: {
         id: args.data.user.connect.id
       },
-      include: { organization: true, userRoles: true, account: true }
+      include: { workspace: true, userRoles: true, account: true }
     });
 
     if (!user) {
@@ -329,7 +324,7 @@ export class AuthService {
       accountId: user.account.id,
       userId: user.id,
       roles,
-      organizationId: user.organization.id,
+      workspaceId: user.workspace.id,
       type: EnumTokenType.User
     };
     return this.jwtService.sign(payload);
@@ -347,7 +342,7 @@ export class AuthService {
       accountId: user.account.id,
       userId: user.id,
       roles,
-      organizationId: user.organization.id,
+      workspaceId: user.workspace.id,
       type: EnumTokenType.ApiToken,
       tokenId: tokenId
     };
@@ -361,7 +356,7 @@ export class AuthService {
       include: {
         account: true,
         userRoles: true,
-        organization: true
+        workspace: true
       },
       take: 1
     });
@@ -372,20 +367,16 @@ export class AuthService {
     return user as AuthUser;
   }
 
-  private async createOrganization(
+  private async createWorkspace(
     name: string,
     account: Account
-  ): Promise<Organization & { users: AuthUser[] }> {
-    const organization = await this.organizationService.createOrganization(
-      account.id,
-      {
-        data: {
-          ...ORGANIZATION_DEFAULT_VALUES,
-          name
-        },
-        include: ORGANIZATION_INCLUDE
-      }
-    );
-    return (organization as unknown) as Organization & { users: AuthUser[] };
+  ): Promise<Workspace & { users: AuthUser[] }> {
+    const workspace = await this.workspaceService.createWorkspace(account.id, {
+      data: {
+        name
+      },
+      include: WORKSPACE_INCLUDE
+    });
+    return (workspace as unknown) as Workspace & { users: AuthUser[] };
   }
 }

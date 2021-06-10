@@ -68,7 +68,7 @@ export class AppService {
   ) {}
 
   /**
-   * Create app in the user's organization, with the built-in "user" role
+   * Create app in the user's workspace, with the built-in "user" role
    */
   async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
     const { color } = args.data;
@@ -80,9 +80,9 @@ export class AppService {
       data: {
         ...DEFAULT_APP_DATA,
         ...args.data,
-        organization: {
+        workspace: {
           connect: {
-            id: user.organization?.id
+            id: user.workspace?.id
           }
         },
         roles: {
@@ -343,7 +343,7 @@ export class AppService {
     const app = await this.prisma.app.findMany({
       where: {
         id: appId,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: user.id
@@ -371,7 +371,7 @@ export class AppService {
     const app = await this.prisma.app.findMany({
       where: {
         id: appId,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: userId
@@ -462,7 +462,7 @@ export class AppService {
     const app = await this.prisma.app.findMany({
       where: {
         id: appId,
-        organization: {
+        workspace: {
           users: {
             some: {
               id: userId

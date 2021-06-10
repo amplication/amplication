@@ -1034,8 +1034,9 @@ input LoginInput {
 
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
-  deleteOrganization(where: WhereUniqueInput!): Organization
-  updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
+  deleteWorkspace(where: WhereUniqueInput!): Workspace
+  updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  createWorkspace(data: WorkspaceCreateInput!): Workspace
   inviteUser(data: InviteUserInput!): User
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
@@ -1072,7 +1073,7 @@ type Mutation {
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   changePassword(data: ChangePasswordInput!): Account!
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
-  setCurrentOrganization(data: WhereUniqueInput!): Auth!
+  setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!
@@ -1080,23 +1081,6 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-}
-
-type Organization {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  defaultTimeZone: String!
-  address: String!
-  apps: [App!]!
-  users: [User!]!
-}
-
-input OrganizationUpdateInput {
-  name: String
-  defaultTimeZone: String
-  address: String
 }
 
 type PendingChange {
@@ -1141,7 +1125,9 @@ input PropertySelectorInput {
 
 type Query {
   account: Account!
-  organization(where: WhereUniqueInput!): Organization
+  workspaces: [Workspace!]!
+  workspace(where: WhereUniqueInput!): Workspace
+  currentWorkspace: Workspace
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
@@ -1187,9 +1173,7 @@ input SignupInput {
   password: String!
   firstName: String!
   lastName: String!
-  organizationName: String!
-  defaultTimeZone: String!
-  address: String!
+  workspaceName: String!
 }
 
 enum SortOrder {
@@ -1222,8 +1206,9 @@ type User {
   createdAt: DateTime!
   updatedAt: DateTime!
   account: Account
-  organization: Organization
+  workspace: Workspace
   userRoles: [UserRole!]
+  isOwner: Boolean!
 }
 
 type UserRole {
@@ -1239,4 +1224,21 @@ input WhereParentIdInput {
 
 input WhereUniqueInput {
   id: String!
+}
+
+type Workspace {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  apps: [App!]!
+  users: [User!]!
+}
+
+input WorkspaceCreateInput {
+  name: String!
+}
+
+input WorkspaceUpdateInput {
+  name: String
 }

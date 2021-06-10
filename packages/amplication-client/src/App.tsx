@@ -5,7 +5,7 @@ import * as reactHotkeys from "react-hotkeys";
 import ApplicationLayout from "./Application/ApplicationLayout";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
-import Applications from "./Application/Applications";
+import WorkspaceLayout from "./Workspaces/WorkspaceLayout";
 import { CreateAppFromExcel } from "./Application/CreateAppFromExcel";
 
 import PrivateRoute from "./authentication/PrivateRoute";
@@ -52,7 +52,8 @@ function App() {
             path="/github-auth-app/callback/:application"
             component={AuthAppWithGithubCallback}
           />
-          <PrivateRoute exact path="/" component={Applications} />
+          <PrivateRoute exact path="/" component={WorkspaceLayout} />
+          <PrivateRoute path="/workspace" component={WorkspaceLayout} />
           <PrivateRoute
             exact
             path="/create-app"

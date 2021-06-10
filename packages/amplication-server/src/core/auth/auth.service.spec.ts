@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Organization, User, UserRole } from '@prisma/client';
+import { Account, Workspace, User, UserRole } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'nestjs-prisma';
 import { Role } from 'src/enums/Role';
@@ -7,7 +7,7 @@ import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AuthService, AuthUser } from './auth.service';
-import { OrganizationService } from '../organization/organization.service';
+import { WorkspaceService } from '../workspace/workspace.service';
 import { EnumTokenType } from './dto';
 const EXAMPLE_TOKEN = 'EXAMPLE TOKEN';
 
@@ -27,31 +27,28 @@ const EXAMPLE_HASHED_PASSWORD = 'HASHED PASSWORD';
 const EXAMPLE_NEW_PASSWORD = 'NEW PASSWORD';
 const EXAMPLE_NEW_HASHED_PASSWORD = 'NEW HASHED PASSWORD';
 
-const EXAMPLE_ORGANIZATION_ID = 'EXAMPLE_ORGANIZATION_ID';
+const EXAMPLE_WORKSPACE_ID = 'EXAMPLE_WORKSPACE_ID';
 
 const EXAMPLE_USER: User = {
   id: 'exampleUser',
   createdAt: new Date(),
   updatedAt: new Date(),
   accountId: EXAMPLE_ACCOUNT.id,
-  organizationId: EXAMPLE_ORGANIZATION_ID
+  workspaceId: EXAMPLE_WORKSPACE_ID,
+  isOwner: true
 };
 
-const EXAMPLE_ORGANIZATION: Organization & { users: User[] } = {
-  id: EXAMPLE_ORGANIZATION_ID,
-  name: 'Example Organization',
-  defaultTimeZone: '',
-  address: '',
+const EXAMPLE_WORKSPACE: Workspace & { users: User[] } = {
+  id: EXAMPLE_WORKSPACE_ID,
+  name: 'Example Workspace',
   createdAt: new Date(),
   updatedAt: new Date(),
   users: [EXAMPLE_USER]
 };
 
-const EXAMPLE_OTHER_ORGANIZATION: Organization = {
-  id: 'exampleOtherOrganization',
-  name: 'Example Other Organization',
-  defaultTimeZone: '',
-  address: '',
+const EXAMPLE_OTHER_WORKSPACE: Workspace = {
+  id: 'exampleOtherWorkspace',
+  name: 'Example Other Workspace',
   createdAt: new Date(),
   updatedAt: new Date()
 };
@@ -69,7 +66,8 @@ const EXAMPLE_OTHER_USER: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   accountId: EXAMPLE_ACCOUNT.id,
-  organizationId: EXAMPLE_ORGANIZATION.id
+  workspaceId: EXAMPLE_WORKSPACE.id,
+  isOwner: true
 };
 
 const EXAMPLE_OTHER_USER_ROLE: UserRole = {
@@ -83,14 +81,14 @@ const EXAMPLE_OTHER_USER_ROLE: UserRole = {
 const EXAMPLE_AUTH_USER: AuthUser = {
   ...EXAMPLE_USER,
   userRoles: [EXAMPLE_USER_ROLE],
-  organization: EXAMPLE_ORGANIZATION,
+  workspace: EXAMPLE_WORKSPACE,
   account: EXAMPLE_ACCOUNT
 };
 
 const EXAMPLE_OTHER_AUTH_USER: AuthUser = {
   ...EXAMPLE_OTHER_USER,
   userRoles: [EXAMPLE_OTHER_USER_ROLE],
-  organization: EXAMPLE_OTHER_ORGANIZATION,
+  workspace: EXAMPLE_OTHER_WORKSPACE,
   account: EXAMPLE_ACCOUNT
 };
 
@@ -99,7 +97,7 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
   currentUser: EXAMPLE_USER
 };
 
-const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_ORGANIZATION: Account & {
+const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE: Account & {
   currentUser: AuthUser;
 } = {
   ...EXAMPLE_ACCOUNT,
@@ -113,7 +111,7 @@ const createAccountMock = jest.fn(() => EXAMPLE_ACCOUNT);
 const setCurrentUserMock = jest.fn(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER);
 
 const prismaAccountFindOneMock = jest.fn(() => {
-  return EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_ORGANIZATION;
+  return EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE;
 });
 
 const setPasswordMock = jest.fn();
@@ -132,8 +130,8 @@ const validatePasswordMock = jest.fn(() => true);
 
 const findUsersMock = jest.fn(() => [EXAMPLE_OTHER_AUTH_USER]);
 
-const createOrganizationMock = jest.fn(() => ({
-  ...EXAMPLE_ORGANIZATION,
+const createWorkspaceMock = jest.fn(() => ({
+  ...EXAMPLE_WORKSPACE,
   users: [EXAMPLE_AUTH_USER]
 }));
 
@@ -149,7 +147,7 @@ describe('AuthService', () => {
     hashPasswordMock.mockClear();
     validatePasswordMock.mockClear();
     findUsersMock.mockClear();
-    createOrganizationMock.mockClear();
+    createWorkspaceMock.mockClear();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -175,9 +173,9 @@ describe('AuthService', () => {
           }))
         },
         {
-          provide: OrganizationService,
+          provide: WorkspaceService,
           useClass: jest.fn(() => ({
-            createOrganization: createOrganizationMock
+            createWorkspace: createWorkspaceMock
           }))
         },
         {
@@ -212,9 +210,7 @@ describe('AuthService', () => {
       password: EXAMPLE_ACCOUNT.password,
       firstName: EXAMPLE_ACCOUNT.firstName,
       lastName: EXAMPLE_ACCOUNT.lastName,
-      organizationName: EXAMPLE_ORGANIZATION.name,
-      defaultTimeZone: EXAMPLE_ORGANIZATION.defaultTimeZone,
-      address: EXAMPLE_ORGANIZATION.address
+      workspaceName: EXAMPLE_WORKSPACE.name
     });
     expect(result).toBe(EXAMPLE_TOKEN);
     expect(createAccountMock).toHaveBeenCalledTimes(1);
@@ -233,19 +229,17 @@ describe('AuthService', () => {
     );
     expect(hashPasswordMock).toHaveBeenCalledTimes(1);
     expect(hashPasswordMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.password);
-    expect(createOrganizationMock).toHaveBeenCalledTimes(1);
-    expect(createOrganizationMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.id, {
+    expect(createWorkspaceMock).toHaveBeenCalledTimes(1);
+    expect(createWorkspaceMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.id, {
       data: {
-        name: EXAMPLE_ORGANIZATION.name,
-        defaultTimeZone: EXAMPLE_ORGANIZATION.defaultTimeZone,
-        address: EXAMPLE_ORGANIZATION.address
+        name: EXAMPLE_WORKSPACE.name
       },
       include: {
         users: {
           include: {
             account: true,
             userRoles: true,
-            organization: true
+            workspace: true
           }
         }
       }
@@ -253,7 +247,7 @@ describe('AuthService', () => {
     expect(signMock).toHaveBeenCalledTimes(1);
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
-      organizationId: EXAMPLE_ORGANIZATION.id,
+      workspaceId: EXAMPLE_WORKSPACE.id,
       roles: [EXAMPLE_USER_ROLE.role],
       userId: EXAMPLE_USER.id,
       type: EnumTokenType.User
@@ -273,7 +267,7 @@ describe('AuthService', () => {
       },
       include: {
         currentUser: {
-          include: { account: true, organization: true, userRoles: true }
+          include: { account: true, workspace: true, userRoles: true }
         }
       }
     });
@@ -285,24 +279,24 @@ describe('AuthService', () => {
     expect(signMock).toHaveBeenCalledTimes(1);
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
-      organizationId: EXAMPLE_ORGANIZATION.id,
+      workspaceId: EXAMPLE_WORKSPACE.id,
       roles: [EXAMPLE_USER_ROLE.role],
       userId: EXAMPLE_USER.id,
       type: EnumTokenType.User
     });
   });
 
-  it('sets current organization for existing user and existing organization', async () => {
-    const result = await service.setCurrentOrganization(
+  it('sets current workspace for existing user and existing workspace', async () => {
+    const result = await service.setCurrentWorkspace(
       EXAMPLE_ACCOUNT.id,
-      EXAMPLE_OTHER_ORGANIZATION.id
+      EXAMPLE_OTHER_WORKSPACE.id
     );
     expect(result).toBe(EXAMPLE_TOKEN);
     expect(findUsersMock).toHaveBeenCalledTimes(1);
     expect(findUsersMock).toHaveBeenCalledWith({
       where: {
-        organization: {
-          id: EXAMPLE_OTHER_ORGANIZATION.id
+        workspace: {
+          id: EXAMPLE_OTHER_WORKSPACE.id
         },
         account: {
           id: EXAMPLE_ACCOUNT.id
@@ -310,7 +304,7 @@ describe('AuthService', () => {
       },
       include: {
         account: true,
-        organization: true,
+        workspace: true,
         userRoles: true
       },
       take: 1
@@ -323,7 +317,7 @@ describe('AuthService', () => {
     expect(signMock).toHaveBeenCalledTimes(1);
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
-      organizationId: EXAMPLE_OTHER_ORGANIZATION.id,
+      workspaceId: EXAMPLE_OTHER_WORKSPACE.id,
       roles: [EXAMPLE_USER_ROLE.role],
       userId: EXAMPLE_OTHER_AUTH_USER.id,
       type: EnumTokenType.User

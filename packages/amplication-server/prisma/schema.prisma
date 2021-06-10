@@ -21,15 +21,13 @@ model Account {
   users         User[]   @relation("AccountOnUser")
 }
 
-model Organization {
-  id              String   @id @default(cuid())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  name            String   @unique
-  defaultTimeZone String
-  address         String
-  apps            App[]
-  users           User[]
+model Workspace {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique
+  apps      App[]
+  users     User[]
 }
 
 model User {
@@ -37,9 +35,9 @@ model User {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
   accountId         String
-  organizationId    String
+  workspaceId       String
   account           Account      @relation("AccountOnUser", fields: [accountId], references: [id])
-  organization      Organization @relation(fields: [organizationId], references: [id])
+  workspace         Workspace    @relation(fields: [workspaceId], references: [id])
   assignedCurrentTo Account?
   apiTokens         ApiToken[]
   builds            Build[]
@@ -47,8 +45,9 @@ model User {
   deployments       Deployment[]
   lockedEntitis     Entity[]
   userRoles         UserRole[]
+  isOwner           Boolean      @default(false)
 
-  @@unique([accountId, organizationId])
+  @@unique([accountId, workspaceId])
 }
 
 model UserRole {
@@ -80,7 +79,7 @@ model App {
   id                     String        @id @default(cuid())
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
-  organizationId         String
+  workspaceId            String
   name                   String
   description            String
   color                  String        @default("#20A4F3")
@@ -91,7 +90,7 @@ model App {
   githubBranch           String?
   githubLastSync         DateTime?
   githubLastMessage      String?
-  organization           Organization  @relation(fields: [organizationId], references: [id])
+  workspace              Workspace     @relation(fields: [workspaceId], references: [id])
   roles                  AppRole[]
   blocks                 Block[]
   builds                 Build[]
@@ -99,7 +98,7 @@ model App {
   entities               Entity[]
   environments           Environment[]
 
-  @@unique([organizationId, name])
+  @@unique([workspaceId, name])
 }
 
 model AppRole {

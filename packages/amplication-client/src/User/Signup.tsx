@@ -20,8 +20,7 @@ type Values = {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  organizationName: string;
-  address: string;
+  workspaceName: string;
 };
 
 const CLASS_NAME = "signup-page";
@@ -34,8 +33,7 @@ const INITIAL_VALUES: Values = {
   confirmPassword: "",
   firstName: "",
   lastName: "",
-  organizationName: "",
-  address: "",
+  workspaceName: "",
 };
 
 const Signup = () => {
@@ -50,7 +48,6 @@ const Signup = () => {
         variables: {
           data: {
             ...data,
-            defaultTimeZone: "GMT+3",
           },
         },
       }).catch(console.error);
@@ -109,10 +106,10 @@ const Signup = () => {
             autoComplete="family-name"
           />
           <TextField
-            label="Organization"
-            name="organizationName"
+            label="Workspace"
+            name="workspaceName"
             type="text"
-            autoComplete="organization"
+            autoComplete="workspace"
           />
 
           <Button>Continue</Button>

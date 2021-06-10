@@ -1,10 +1,10 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { Organization, User } from 'src/models';
+import { Workspace, User } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
 import { Prisma } from '@prisma/client';
 import {
-  FindManyOrganizationArgs,
-  UpdateOneOrganizationArgs,
+  FindManyWorkspaceArgs,
+  UpdateOneWorkspaceArgs,
   InviteUserArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
@@ -14,7 +14,7 @@ import { PasswordService } from '../account/password.service';
 import { AppService } from '../app/app.service';
 
 @Injectable()
-export class OrganizationService {
+export class WorkspaceService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly accountService: AccountService,
@@ -22,46 +22,45 @@ export class OrganizationService {
     private readonly appService: AppService
   ) {}
 
-  async getOrganization(args: FindOneArgs): Promise<Organization | null> {
-    return this.prisma.organization.findUnique(args);
+  async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
+    return this.prisma.workspace.findUnique(args);
   }
 
-  async getOrganizations(
-    args: FindManyOrganizationArgs
-  ): Promise<Organization[]> {
-    return this.prisma.organization.findMany(args);
+  async getWorkspaces(args: FindManyWorkspaceArgs): Promise<Workspace[]> {
+    return this.prisma.workspace.findMany(args);
   }
 
-  async deleteOrganization(args: FindOneArgs): Promise<Organization | null> {
-    return this.prisma.organization.delete(args);
+  async deleteWorkspace(args: FindOneArgs): Promise<Workspace | null> {
+    return this.prisma.workspace.delete(args);
   }
 
-  async updateOrganization(
-    args: UpdateOneOrganizationArgs
-  ): Promise<Organization | null> {
-    return this.prisma.organization.update(args);
+  async updateWorkspace(
+    args: UpdateOneWorkspaceArgs
+  ): Promise<Workspace | null> {
+    return this.prisma.workspace.update(args);
   }
 
   /**
-   * Creates an organization and a user within it for the provided account with organization admin role
-   * @param accountId the account to create the user in the created organization
-   * @param args arguments to pass to organization creations
-   * @returns the created organization
+   * Creates a workspace and a user within it for the provided account with workspace admin role
+   * @param accountId the account to create the user in the created workspace
+   * @param args arguments to pass to workspace creations
+   * @returns the created workspace
    */
-  async createOrganization(
+  async createWorkspace(
     accountId: string,
-    args: Prisma.OrganizationCreateArgs
-  ): Promise<Organization> {
-    // Create organization
+    args: Prisma.WorkspaceCreateArgs
+  ): Promise<Workspace> {
+    // Create workspace
     // Create a new user and link it to the account
     // Assign the user an "ORGANIZATION_ADMIN" role
-    const organization = await this.prisma.organization.create({
+    const workspace = await this.prisma.workspace.create({
       ...args,
       data: {
         ...args.data,
         users: {
           create: {
             account: { connect: { id: accountId } },
+            isOwner: true,
             userRoles: {
               create: {
                 role: Role.OrganizationAdmin
@@ -77,14 +76,14 @@ export class OrganizationService {
       }
     });
 
-    return organization;
+    return workspace;
   }
 
   async inviteUser(
     currentUser: User,
     args: InviteUserArgs
   ): Promise<User | null> {
-    const { organization } = currentUser;
+    const { workspace } = currentUser;
 
     const account = await this.accountService.findAccount({
       where: { email: args.data.email }
@@ -94,13 +93,13 @@ export class OrganizationService {
       const existingUsers = await this.prisma.user.findMany({
         where: {
           account: { id: account.id },
-          organization: { id: organization.id }
+          workspace: { id: workspace.id }
         }
       });
 
       if (existingUsers.length) {
         throw new ConflictException(
-          `User with email ${args.data.email} already exist in the organization.`
+          `User with email ${args.data.email} already exist in the workspace.`
         );
       }
     }
@@ -118,11 +117,17 @@ export class OrganizationService {
       });
     }
 
-    //Create a new user record and link it to the account
+    //Create a new user record and link it to the account. All user are "Organization admin"
     const user = await this.prisma.user.create({
       data: {
-        organization: { connect: { id: organization.id } },
-        account: { connect: { id: account.id } }
+        workspace: { connect: { id: workspace.id } },
+        account: { connect: { id: account.id } },
+        isOwner: false,
+        userRoles: {
+          create: {
+            role: Role.OrganizationAdmin
+          }
+        }
       }
     });
 
