@@ -10,6 +10,8 @@ import { CoreModule } from './core/core.module';
 import { InjectContextInterceptor } from './interceptors/inject-context.interceptor';
 import { RootWinstonModule } from './services/root-winston.module';
 import { RootStorageModule } from './core/storage/root-storage.module';
+import { SegmentAnalyticsModule } from './services/segmentAnalytics/segmentAnalytics.module';
+import { SegmentAnalyticsOptionsService } from './services/segmentAnalytics/segmentAnalyticsOptionsService';
 
 @Module({
   imports: [
@@ -47,7 +49,9 @@ import { RootStorageModule } from './core/storage/root-storage.module';
     RootStorageModule,
 
     MorganModule,
-
+    SegmentAnalyticsModule.registerAsync({
+      useClass: SegmentAnalyticsOptionsService
+    }),
     CoreModule
   ],
   controllers: [],
