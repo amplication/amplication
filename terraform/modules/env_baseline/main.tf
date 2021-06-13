@@ -112,6 +112,10 @@ data "google_secret_manager_secret_version" "github_client_secret" {
   secret = var.github_client_secret_id
 }
 
+data "google_secret_manager_secret_version" "segment_write_key_secret" {
+  secret = var.segment_write_key_secret_id
+}
+
 resource "google_secret_manager_secret_iam_member" "compute_default_service_account" {
   secret_id = var.github_client_secret_id
   role      = "roles/secretmanager.secretAccessor"
@@ -200,6 +204,10 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "GITHUB_SECRET_SECRET_NAME"
           value = data.google_secret_manager_secret_version.github_client_secret.name
+        }
+         env {
+          name  = "SEGMENT_WRITE_KEY_SECRET_NAME"
+          value = data.google_secret_manager_secret_version.segment_write_key_secret.name
         }
         env {
           name  = "AMPLITUDE_API_KEY"
