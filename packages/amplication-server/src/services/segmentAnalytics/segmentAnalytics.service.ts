@@ -4,7 +4,8 @@ import { SegmentAnalyticsOptions } from './segmentAnalytics.interfaces';
 
 export type IdentifyData = {
   userId: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   createdAt: Date;
 };
