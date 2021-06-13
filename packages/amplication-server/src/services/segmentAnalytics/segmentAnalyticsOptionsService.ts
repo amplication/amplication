@@ -34,7 +34,8 @@ export class SegmentAnalyticsOptionsService
       SEGMENT_WRITE_KEY_SECRET_NAME_VAR
     );
     if (!secretName) {
-      throw new Error(MISSING_SEGMENT_WRITE_KEY_SECRET_ERROR);
+      console.error(MISSING_SEGMENT_WRITE_KEY_SECRET_ERROR);
+      return '';
     }
     return this.getSecretFromManager(secretName);
   }

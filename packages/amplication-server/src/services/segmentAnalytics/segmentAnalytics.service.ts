@@ -18,10 +18,14 @@ export class SegmentAnalyticsService {
     @Inject('SEGMENT_ANALYTICS_OPTIONS')
     private options: SegmentAnalyticsOptions
   ) {
-    this.analytics = new Analytics(this.options.segmentWriteKey);
+    if (options && options.segmentWriteKey && options.segmentWriteKey.length) {
+      this.analytics = new Analytics(this.options.segmentWriteKey);
+    }
   }
 
   public async identify(data: IdentifyData): Promise<void> {
+    if (!this.analytics) return;
+
     const { userId, ...rest } = data;
 
     this.analytics.identify({
