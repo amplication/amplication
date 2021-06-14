@@ -121,6 +121,11 @@ resource "google_secret_manager_secret_iam_member" "compute_default_service_acco
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
 }
+resource "google_secret_manager_secret_iam_member" "compute_default_service_account" {
+  secret_id = var.segment_write_key_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
 
 # Storage 
 
@@ -129,12 +134,12 @@ resource "google_storage_bucket" "artifacts" {
   location      = var.bucket_location
   force_destroy = true
   lifecycle_rule {
-      action {
-          type = "Delete"
-      }
-      condition {
-        age = 30 
-      }
+    action {
+      type = "Delete"
+    }
+    condition {
+      age = 30
+    }
   }
 
 }
@@ -205,7 +210,7 @@ resource "google_cloud_run_service" "default" {
           name  = "GITHUB_SECRET_SECRET_NAME"
           value = data.google_secret_manager_secret_version.github_client_secret.name
         }
-         env {
+        env {
           name  = "SEGMENT_WRITE_KEY_SECRET_NAME"
           value = data.google_secret_manager_secret_version.segment_write_key_secret.name
         }

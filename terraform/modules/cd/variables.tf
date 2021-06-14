@@ -47,3 +47,6 @@ variable "github_branch" {
 variable "github_client_secret_id" {
   type = string
 }
+variable "segment_write_key_secret_id" {
+  type = string
+}

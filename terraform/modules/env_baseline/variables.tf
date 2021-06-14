@@ -79,6 +79,9 @@ variable "server_max_scale" {
 variable "github_client_secret_id" {
   type = string
 }
+variable "segment_write_key_secret_id" {
+  type = string
+}
 
 # Storage
 
