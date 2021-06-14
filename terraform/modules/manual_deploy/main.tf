@@ -56,7 +56,7 @@ resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_project_service_identity.cloud_build.email}"
 }
-resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
+resource "google_secret_manager_secret_iam_member" "secret_iam_member_segment" {
   secret_id = var.segment_write_key_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_project_service_identity.cloud_build.email}"
