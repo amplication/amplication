@@ -121,7 +121,7 @@ resource "google_secret_manager_secret_iam_member" "compute_default_service_acco
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
 }
-resource "google_secret_manager_secret_iam_member" "compute_default_service_account" {
+resource "google_secret_manager_secret_iam_member" "compute_default_service_account_segment" {
   secret_id = var.segment_write_key_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
@@ -210,10 +210,7 @@ resource "google_cloud_run_service" "default" {
           name  = "GITHUB_SECRET_SECRET_NAME"
           value = data.google_secret_manager_secret_version.github_client_secret.name
         }
-        env {
-          name  = "SEGMENT_WRITE_KEY_SECRET_NAME"
-          value = data.google_secret_manager_secret_version.segment_write_key_secret.name
-        }
+
         env {
           name  = "AMPLITUDE_API_KEY"
           value = var.amplitude_api_key
@@ -290,6 +287,11 @@ resource "google_cloud_run_service" "default" {
           name  = "HOST"
           value = var.host
         }
+        env {
+          name  = "SEGMENT_WRITE_KEY_SECRET_NAME"
+          value = data.google_secret_manager_secret_version.segment_write_key_secret.name
+        }
+
         resources {
           limits = {
             cpu    = "4"
