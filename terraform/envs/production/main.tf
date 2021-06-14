@@ -24,6 +24,7 @@ module "env" {
   image_id                         = var.image_id
   bcrypt_salt_or_rounds            = var.bcrypt_salt_or_rounds
   github_client_secret_id          = var.github_client_secret_id
+  segment_write_key_secret_id      = var.segment_write_key_secret_id
   feature_flags                    = var.feature_flags
   default_disk                     = var.default_disk
   host                             = var.host
@@ -49,6 +50,7 @@ module "deploy" {
   database_name                      = module.env.database_name
   database_instance                  = module.env.database_instance
   github_client_secret_id            = var.github_client_secret_id
+  segment_write_key_secret_id        = var.segment_write_key_secret_id
   image                              = var.image
   google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
   google_cloudbuild_trigger_name     = var.google_cloudbuild_trigger_name
