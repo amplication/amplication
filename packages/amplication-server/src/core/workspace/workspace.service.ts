@@ -1,5 +1,6 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { Workspace, User } from 'src/models';
+import { Invitation } from './dto/Invitation';
 import { PrismaService } from 'nestjs-prisma';
 import { Prisma } from '@prisma/client';
 import {
@@ -82,55 +83,56 @@ export class WorkspaceService {
   async inviteUser(
     currentUser: User,
     args: InviteUserArgs
-  ): Promise<User | null> {
-    const { workspace } = currentUser;
+  ): Promise<Invitation | null> {
+    const { workspace, id: currentUserId } = currentUser;
 
-    const account = await this.accountService.findAccount({
-      where: { email: args.data.email }
+    const existingUsers = await this.prisma.user.findMany({
+      where: {
+        account: { email: args.data.email },
+        workspace: { id: workspace.id }
+      }
     });
 
-    if (account) {
-      const existingUsers = await this.prisma.user.findMany({
-        where: {
-          account: { id: account.id },
-          workspace: { id: workspace.id }
-        }
-      });
-
-      if (existingUsers.length) {
-        throw new ConflictException(
-          `User with email ${args.data.email} already exist in the workspace.`
-        );
-      }
+    if (existingUsers.length) {
+      throw new ConflictException(
+        `User with email ${args.data.email} already exist in the workspace.`
+      );
     }
-    if (!account) {
-      const password = this.passwordService.generatePassword();
-      const hashedPassword = await this.passwordService.hashPassword(password);
 
-      return this.accountService.createAccount({
-        data: {
-          firstName: '',
-          lastName: '',
+    const existingInvitation = this.prisma.invitation.findUnique({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        workspaceId_email: {
           email: args.data.email,
-          password: hashedPassword
+          workspaceId: workspace.id
         }
-      });
+      }
+    });
+
+    if (existingInvitation) {
+      throw new ConflictException(
+        `Invitation with email ${args.data.email} already exist in the workspace.`
+      );
     }
 
-    //Create a new user record and link it to the account. All user are "Organization admin"
-    const user = await this.prisma.user.create({
+    const invitation = await this.prisma.invitation.create({
       data: {
-        workspace: { connect: { id: workspace.id } },
-        account: { connect: { id: account.id } },
-        isOwner: false,
-        userRoles: {
-          create: {
-            role: Role.OrganizationAdmin
+        email: args.data.email,
+        workspace: {
+          connect: {
+            id: workspace.id
+          }
+        },
+        invitedByUser: {
+          connect: {
+            id: currentUserId
           }
         }
       }
     });
 
-    return user;
+    /**@todo: send email */
+
+    return invitation;
   }
 }
