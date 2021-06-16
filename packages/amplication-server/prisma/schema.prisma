@@ -22,30 +22,33 @@ model Account {
 }
 
 model Workspace {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @unique
-  apps      App[]
-  users     User[]
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  name        String       @unique
+  apps        App[]
+  users       User[]
+  invitations Invitation[]
 }
 
 model User {
-  id                String       @id @default(cuid())
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  accountId         String
-  workspaceId       String
-  account           Account      @relation("AccountOnUser", fields: [accountId], references: [id])
-  workspace         Workspace    @relation(fields: [workspaceId], references: [id])
-  assignedCurrentTo Account?
-  apiTokens         ApiToken[]
-  builds            Build[]
-  commits           Commit[]
-  deployments       Deployment[]
-  lockedEntitis     Entity[]
-  userRoles         UserRole[]
-  isOwner           Boolean      @default(false)
+  id                    String       @id @default(cuid())
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  accountId             String
+  workspaceId           String
+  account               Account      @relation("AccountOnUser", fields: [accountId], references: [id])
+  workspace             Workspace    @relation(fields: [workspaceId], references: [id])
+  assignedCurrentTo     Account?
+  apiTokens             ApiToken[]
+  builds                Build[]
+  commits               Commit[]
+  deployments           Deployment[]
+  lockedEntitis         Entity[]
+  userRoles             UserRole[]
+  isOwner               Boolean      @default(false)
+  sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
+  createdFromInvitation Invitation?
 
   @@unique([accountId, workspaceId])
 }
@@ -430,4 +433,21 @@ enum EnumDeploymentStatus {
   Waiting
   Failed
   Removed
+}
+
+model Invitation {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  email           String
+  invitedByUserId String
+  invitedByUser   User      @relation("InvitedByUserOnInvitation", fields: [invitedByUserId], references: [id])
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id])
+  newUserId       String?
+  newUser         User?     @relation(fields: [newUserId], references: [id])
+
+
+
+  @@unique([workspaceId, email])
 }
