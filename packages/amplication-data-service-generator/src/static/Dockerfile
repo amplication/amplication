@@ -1,7 +1,5 @@
-# By default, use node 14.15.3 as the base image
-ARG IMAGE=node@sha256:bef791f512bb4c3051a1210d7fbd58206538f41eea9b966031abc8a7453308fe
-
-FROM $IMAGE
+### BUILDER ###
+FROM node:14-alpine as builder
 
 # Define how verbose should npm install be
 ARG NPM_LOG_LEVEL=silent
@@ -22,21 +20,60 @@ WORKDIR /app
 COPY server/package.json server/package-lock.json ./server/
 COPY admin-ui/package.json admin-ui/package-lock.json ./admin-ui/
 
-# Install dependencies
-RUN cd server; npm ci --loglevel=$NPM_LOG_LEVEL;
+# Install production dependencies
 RUN cd admin-ui; npm ci --loglevel=$NPM_LOG_LEVEL;
+RUN cd server; npm ci --production --loglevel=$NPM_LOG_LEVEL
+
+# Copy production dependencies (-a to preserve symlinks)
+RUN mkdir /tmp/server
+RUN cp -a server/node_modules/ /tmp/server/node_modules/
 
 # Copy Prisma schema
 COPY server/prisma/schema.prisma ./server/prisma/
 
+# Install dev-dependencies 
+RUN cd server; npm install --only=dev --loglevel=$NPM_LOG_LEVEL;
+
 # Generate Prisma client
 RUN cd server; npm run prisma:generate;
 
-# Copy all the files
-COPY . .
+# Copy and build all the files
+COPY admin-ui ./admin-ui
+RUN set -e; cd admin-ui; npm run build
+COPY server ./server
+RUN set -e; cd server; npm run build
 
-# Build code
-RUN set -e; (cd server; npm run build) & (cd admin-ui; npm run build)
+
+### RUNNER ###
+FROM node:14-alpine
+
+# Set the working direcotry
+WORKDIR /app
+
+# Copy the production dependencies from the temp folder
+COPY --from=builder /tmp/server/node_modules/ /app/server/node_modules/
+
+# Copy prisma client
+COPY --from=builder /app/server/node_modules/@prisma/client/ /app/server/node_modules/@prisma/client/ 
+COPY --from=builder /app/server/node_modules/.prisma/client/ /app/server/node_modules/.prisma/client/
+
+# Copy the dist folder
+COPY --from=builder /app/server/dist/ /app/server/dist/
+
+# Include the Script folder with the seed and migration scripts
+COPY --from=builder /app/server/scripts/ /app/server/scripts/
+
+# Include the Prisma schema
+COPY --from=builder /app/server/prisma/ /app/server/prisma/
+
+# Include the entire src folder (used from script/seed.ts)
+COPY --from=builder /app/server/src/ /app/server/src/
+COPY --from=builder /app/server/tsconfig.json /app/server/tsconfig.json
+
+COPY --from=builder /app/server/package.json /app/server/package-lock.json /app/server/
+COPY --from=builder /app/admin-ui/package.json /app/admin-ui/package-lock.json /app/admin-ui/
+
+COPY --from=builder /app/admin-ui/build/ /app/admin-ui/build/
 
 # Expose the port the server listens to
 EXPOSE 3000
