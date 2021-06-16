@@ -446,7 +446,8 @@ model Invitation {
   workspace       Workspace @relation(fields: [workspaceId], references: [id])
   newUserId       String?
   newUser         User?     @relation(fields: [newUserId], references: [id])
-
+  token           String
+  tokenExpiration DateTime
 
 
   @@unique([workspaceId, email])
