@@ -68,6 +68,11 @@ const Login = () => {
     return params.error;
   }, [location.search]);
 
+  const invitationToken = useMemo(() => {
+    const params = queryString.parse(location.search);
+    return params.invite;
+  }, [location.search]);
+
   useEffect(() => {
     if (data) {
       setToken(data.login.token);
@@ -100,7 +105,7 @@ const Login = () => {
                 Welcome to {content.name}. Please use your GitHub account to
                 sign&nbsp;in.
               </div>
-              <GitHubLoginButton />
+              <GitHubLoginButton invitationToken={invitationToken} />
               <div className={`${CLASS_NAME}__signup`}>
                 Do not have a GitHub account?{" "}
                 <a href="https://github.com/join" target="Github">
