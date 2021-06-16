@@ -3,16 +3,9 @@ import { Icon } from "@rmwc/icon";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./GitHubLoginButton.scss";
 
-export const GitHubLoginButton = ({
-  invitationToken,
-}: {
-  invitationToken?: string;
-}) => {
-  const params = invitationToken ? `?invite=${invitationToken}` : "";
-  const url = `/github${params}`;
-
+export const GitHubLoginButton = () => {
   return (
-    <a href={url} className="github-login-button">
+    <a href="/github" className="github-login-button">
       <Button
         type="button"
         buttonStyle={EnumButtonStyle.Primary}
