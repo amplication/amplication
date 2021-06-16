@@ -6,13 +6,19 @@ import { Prisma } from '@prisma/client';
 import {
   FindManyWorkspaceArgs,
   UpdateOneWorkspaceArgs,
-  InviteUserArgs
+  InviteUserArgs,
+  CompleteInvitationArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { Role } from 'src/enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 import { AppService } from '../app/app.service';
+import cuid from 'cuid';
+import { addDays } from 'date-fns';
+import { isEmpty } from 'lodash';
+
+const INVITATION_EXPIRATION_DAYS = 7;
 
 @Injectable()
 export class WorkspaceService {
@@ -99,7 +105,7 @@ export class WorkspaceService {
       );
     }
 
-    const existingInvitation = this.prisma.invitation.findUnique({
+    const existingInvitation = await this.prisma.invitation.findUnique({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         workspaceId_email: {
@@ -127,12 +133,98 @@ export class WorkspaceService {
           connect: {
             id: currentUserId
           }
-        }
+        },
+        token: cuid(),
+        tokenExpiration: addDays(new Date(), INVITATION_EXPIRATION_DAYS)
       }
     });
 
     /**@todo: send email */
 
     return invitation;
+  }
+
+  async completeInvitation(
+    currentUser: User,
+    args: CompleteInvitationArgs
+  ): Promise<Workspace> {
+    const { account } = currentUser;
+
+    const invitations = await this.prisma.invitation.findMany({
+      where: {
+        token: args.data.token,
+        tokenExpiration: {
+          gt: addDays(new Date(), -INVITATION_EXPIRATION_DAYS)
+        },
+        newUser: null
+      }
+    });
+
+    if (!(invitations && invitations.length === 1)) {
+      throw new ConflictException(
+        `Invitation cannot be found or it has expired`
+      );
+    }
+
+    const [invitation] = invitations;
+
+    const existingUsers = await this.prisma.user.findMany({
+      where: {
+        account: { id: account.id },
+        workspace: { id: invitation.workspaceId }
+      }
+    });
+
+    if (!isEmpty(existingUsers)) {
+      throw new ConflictException(
+        `The current account is already a member in this workspace`
+      );
+    }
+
+    const workspace = await this.prisma.workspace.update({
+      where: {
+        id: invitation.workspaceId
+      },
+      data: {
+        users: {
+          create: {
+            account: { connect: { id: account.id } },
+            isOwner: false,
+            userRoles: {
+              create: {
+                role: Role.OrganizationAdmin
+              }
+            }
+          }
+        }
+      },
+      include: {
+        users: {
+          where: {
+            account: {
+              id: account.id
+            }
+          }
+        }
+      }
+    });
+
+    const [newUser] = workspace.users;
+
+    await this.prisma.invitation.update({
+      where: {
+        id: invitation.id
+      },
+      data: {
+        tokenExpiration: addDays(new Date(), -INVITATION_EXPIRATION_DAYS),
+        newUser: {
+          connect: {
+            id: newUser.id
+          }
+        }
+      }
+    });
+
+    return workspace;
   }
 }

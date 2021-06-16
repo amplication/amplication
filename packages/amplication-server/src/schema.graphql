@@ -368,6 +368,10 @@ input CompleteAuthorizeAppWithGithubInput {
   state: String!
 }
 
+input CompleteInvitationInput {
+  token: String!
+}
+
 type ConnectorRestApi implements IBlock {
   id: String!
   createdAt: DateTime!
@@ -1018,6 +1022,15 @@ input IntFilter {
   gte: Int
 }
 
+type Invitation {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  workspace: Workspace
+  invitedByUser: User
+}
+
 input InviteUserInput {
   email: String!
 }
@@ -1037,7 +1050,7 @@ type Mutation {
   deleteWorkspace(where: WhereUniqueInput!): Workspace
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
   createWorkspace(data: WorkspaceCreateInput!): Workspace
-  inviteUser(data: InviteUserInput!): User
+  inviteUser(data: InviteUserInput!): Invitation
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1074,6 +1087,7 @@ type Mutation {
   changePassword(data: ChangePasswordInput!): Account!
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
+  completeInvitation(data: CompleteInvitationInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!

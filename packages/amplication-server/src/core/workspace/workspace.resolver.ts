@@ -9,7 +9,8 @@ import {
 import {
   UpdateOneWorkspaceArgs,
   InviteUserArgs,
-  CreateOneWorkspaceArgs
+  CreateOneWorkspaceArgs,
+  Invitation
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
@@ -89,14 +90,14 @@ export class WorkspaceResolver {
     return this.workspaceService.createWorkspace(currentUser.account.id, args);
   }
 
-  @Mutation(() => User, {
+  @Mutation(() => Invitation, {
     nullable: true,
     description: undefined
   })
   async inviteUser(
     @UserEntity() currentUser: User,
     @Args() args: InviteUserArgs
-  ): Promise<User | null> {
+  ): Promise<Invitation> {
     return this.workspaceService.inviteUser(currentUser, args);
   }
 }
