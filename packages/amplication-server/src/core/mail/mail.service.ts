@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectSendGrid, SendGridService } from '@ntegral/nestjs-sendgrid';
 import { ConfigService } from '@nestjs/config';
 import { SendInvitationArgs } from './dto/SendInvitationArgs';
-import { ConnectorRestApiResolver } from '../connectorRestApi/connectorRestApi.resolver';
 
 const SENDGRID_FROM_ADDRESS_VAR = 'SENDGRID_FROM_ADDRESS';
 const SENDGRID_INVITATION_TEMPLATE_ID_VAR = 'SENDGRID_INVITATION_TEMPLATE_ID';
