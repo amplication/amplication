@@ -85,6 +85,11 @@ variable "segment_write_key_secret_id" {
   type = string
 }
 
+variable "sendgrid_api_key_secret_id" {
+  type = string
+}
+
+
 # Storage
 
 variable "default_disk" {

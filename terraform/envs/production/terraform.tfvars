@@ -26,6 +26,7 @@ server_max_scale = 3
 # Secret Manager
 github_client_secret_id = "github_client_secret"
 segment_write_key_secret_id = "segment_write_key_secret"
+sendgrid_api_key_secret_id = "sendgrid_api_key_secret"
 
 # UI
 feature_flags = {
