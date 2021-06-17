@@ -7,7 +7,8 @@ import {
   FindManyWorkspaceArgs,
   UpdateOneWorkspaceArgs,
   InviteUserArgs,
-  CompleteInvitationArgs
+  CompleteInvitationArgs,
+  WorkspaceMember
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { Role } from 'src/enums/Role';
@@ -17,6 +18,7 @@ import { AppService } from '../app/app.service';
 import cuid from 'cuid';
 import { addDays } from 'date-fns';
 import { isEmpty } from 'lodash';
+import { EnumWorkspaceMemberType } from './dto/EnumWorkspaceMemberType';
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -226,5 +228,40 @@ export class WorkspaceService {
     });
 
     return workspace;
+  }
+
+  async findMembers(args: FindOneArgs): Promise<WorkspaceMember[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        workspaceId: args.where.id
+      }
+    });
+
+    const invitations = await this.prisma.invitation.findMany({
+      where: {
+        workspaceId: args.where.id,
+        newUser: null
+      }
+    });
+
+    return users
+      .map(
+        (user): WorkspaceMember => {
+          return {
+            member: user,
+            type: EnumWorkspaceMemberType.User
+          };
+        }
+      )
+      .concat(
+        invitations.map(
+          (invitation): WorkspaceMember => {
+            return {
+              member: invitation,
+              type: EnumWorkspaceMemberType.Invitation
+            };
+          }
+        )
+      );
   }
 }

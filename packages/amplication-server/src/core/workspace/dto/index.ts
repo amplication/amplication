@@ -11,3 +11,4 @@ export { WorkspaceCreateInput } from './WorkspaceCreateInput';
 export { InviteUserInput } from './InviteUserInput';
 export { CompleteInvitationInput } from './CompleteInvitationInput';
 export { Invitation } from './Invitation';
+export { WorkspaceMember } from './workspaceMember';

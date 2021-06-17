@@ -964,6 +964,11 @@ enum EnumPendingChangeResourceType {
   Block
 }
 
+enum EnumWorkspaceMemberType {
+  User
+  Invitation
+}
+
 type Environment {
   id: String!
   createdAt: DateTime!
@@ -1142,6 +1147,7 @@ type Query {
   workspaces: [Workspace!]!
   workspace(where: WhereUniqueInput!): Workspace
   currentWorkspace: Workspace
+  workspaceMembers(where: WhereUniqueInput!): [WorkspaceMember!]
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
@@ -1252,6 +1258,13 @@ type Workspace {
 input WorkspaceCreateInput {
   name: String!
 }
+
+type WorkspaceMember {
+  type: EnumWorkspaceMemberType!
+  member: WorkspaceMemberType!
+}
+
+union WorkspaceMemberType = User | Invitation
 
 input WorkspaceUpdateInput {
   name: String

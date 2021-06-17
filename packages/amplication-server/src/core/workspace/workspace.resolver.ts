@@ -10,7 +10,8 @@ import {
   UpdateOneWorkspaceArgs,
   InviteUserArgs,
   CreateOneWorkspaceArgs,
-  Invitation
+  Invitation,
+  WorkspaceMember
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
@@ -99,5 +100,16 @@ export class WorkspaceResolver {
     @Args() args: InviteUserArgs
   ): Promise<Invitation> {
     return this.workspaceService.inviteUser(currentUser, args);
+  }
+
+  @Query(() => [WorkspaceMember], {
+    nullable: true,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  async workspaceMembers(
+    @Args() args: FindOneArgs
+  ): Promise<WorkspaceMember[]> {
+    return this.workspaceService.findMembers(args);
   }
 }
