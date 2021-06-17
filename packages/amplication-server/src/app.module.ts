@@ -13,8 +13,10 @@ import { RootStorageModule } from './core/storage/root-storage.module';
 import { SegmentAnalyticsModule } from './services/segmentAnalytics/segmentAnalytics.module';
 import { SegmentAnalyticsOptionsService } from './services/segmentAnalytics/segmentAnalyticsOptionsService';
 import { SendGridModule } from '@ntegral/nestjs-sendgrid';
+import { SendgridConfigService } from './services/sendgridConfig.service';
+import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
+import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 
-const SEND_GRID_API_KEY_VAR = 'SENDGRID_API_KEY';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,11 +24,9 @@ const SEND_GRID_API_KEY_VAR = 'SENDGRID_API_KEY';
       envFilePath: ['.env.local', '.env']
     }),
     SendGridModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (cfg: ConfigService) => ({
-        apiKey: cfg.get(SEND_GRID_API_KEY_VAR)
-      })
+      imports: [ConfigModule, GoogleSecretsManagerModule],
+      inject: [ConfigService, GoogleSecretsManagerService],
+      useClass: SendgridConfigService
     }),
     ServeStaticModule.forRoot({
       rootPath: path.join(
