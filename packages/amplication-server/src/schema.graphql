@@ -1147,7 +1147,7 @@ type Query {
   workspaces: [Workspace!]!
   workspace(where: WhereUniqueInput!): Workspace
   currentWorkspace: Workspace
-  workspaceMembers(where: WhereUniqueInput!): [WorkspaceMember!]
+  workspaceMembers: [WorkspaceMember!]
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole

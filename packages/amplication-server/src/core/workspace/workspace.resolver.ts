@@ -106,10 +106,11 @@ export class WorkspaceResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
   async workspaceMembers(
-    @Args() args: FindOneArgs
+    @UserEntity() currentUser: User
   ): Promise<WorkspaceMember[]> {
-    return this.workspaceService.findMembers(args);
+    return this.workspaceService.findMembers({
+      where: { id: currentUser.workspace.id }
+    });
   }
 }
