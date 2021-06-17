@@ -12,14 +12,22 @@ import { RootWinstonModule } from './services/root-winston.module';
 import { RootStorageModule } from './core/storage/root-storage.module';
 import { SegmentAnalyticsModule } from './services/segmentAnalytics/segmentAnalytics.module';
 import { SegmentAnalyticsOptionsService } from './services/segmentAnalytics/segmentAnalyticsOptionsService';
+import { SendGridModule } from '@ntegral/nestjs-sendgrid';
 
+const SEND_GRID_API_KEY_VAR = 'SENDGRID_API_KEY';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env']
     }),
-
+    SendGridModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (cfg: ConfigService) => ({
+        apiKey: cfg.get(SEND_GRID_API_KEY_VAR)
+      })
+    }),
     ServeStaticModule.forRoot({
       rootPath: path.join(
         __dirname,
