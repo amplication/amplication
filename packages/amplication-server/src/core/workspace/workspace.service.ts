@@ -14,6 +14,7 @@ import { FindOneArgs } from 'src/dto';
 import { Role } from 'src/enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
+import { MailService } from '../mail/mail.service';
 import { AppService } from '../app/app.service';
 import cuid from 'cuid';
 import { addDays } from 'date-fns';
@@ -28,7 +29,8 @@ export class WorkspaceService {
     private readonly prisma: PrismaService,
     private readonly accountService: AccountService,
     private readonly passwordService: PasswordService,
-    private readonly appService: AppService
+    private readonly appService: AppService,
+    private readonly mailService: MailService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -92,7 +94,7 @@ export class WorkspaceService {
     currentUser: User,
     args: InviteUserArgs
   ): Promise<Invitation | null> {
-    const { workspace, id: currentUserId } = currentUser;
+    const { workspace, id: currentUserId, account } = currentUser;
 
     if (isEmpty(args.data.email)) {
       throw new ConflictException(`email address is required to invite a user`);
@@ -127,6 +129,12 @@ export class WorkspaceService {
       );
     }
 
+    const currentUserAccount = await this.prisma.account.findUnique({
+      where: {
+        id: account.id
+      }
+    });
+
     const invitation = await this.prisma.invitation.create({
       data: {
         email: args.data.email,
@@ -143,6 +151,12 @@ export class WorkspaceService {
         token: cuid(),
         tokenExpiration: addDays(new Date(), INVITATION_EXPIRATION_DAYS)
       }
+    });
+
+    await this.mailService.sendInvitation({
+      to: invitation.email,
+      invitationToken: invitation.token,
+      invitedByUserFullName: currentUserAccount.email
     });
 
     /**@todo: send email */

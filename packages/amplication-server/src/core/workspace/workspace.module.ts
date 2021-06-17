@@ -5,9 +5,16 @@ import { PrismaModule } from 'nestjs-prisma';
 import { AccountModule } from '../account/account.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { AppModule } from '../app/app.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-  imports: [PrismaModule, AccountModule, PermissionsModule, AppModule],
+  imports: [
+    PrismaModule,
+    AccountModule,
+    PermissionsModule,
+    AppModule,
+    MailModule
+  ],
   providers: [WorkspaceService, WorkspaceResolver],
   exports: [WorkspaceService, WorkspaceResolver]
 })
