@@ -7,7 +7,7 @@ export const WorkspaceMemberType = createUnionType({
   name: 'WorkspaceMemberType',
   types: () => [User, Invitation],
   resolveType(value) {
-    if (value.email) {
+    if (value.hasOwnProperty('email')) {
       return Invitation;
     }
     return User;

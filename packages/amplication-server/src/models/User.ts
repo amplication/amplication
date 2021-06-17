@@ -47,5 +47,5 @@ export class User {
   @Field(() => Boolean, {
     nullable: false
   })
-  isOwner?: boolean;
+  isOwner: boolean;
 }

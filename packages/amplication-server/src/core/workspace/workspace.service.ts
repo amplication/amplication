@@ -94,6 +94,10 @@ export class WorkspaceService {
   ): Promise<Invitation | null> {
     const { workspace, id: currentUserId } = currentUser;
 
+    if (isEmpty(args.data.email)) {
+      throw new ConflictException(`email address is required to invite a user`);
+    }
+
     const existingUsers = await this.prisma.user.findMany({
       where: {
         account: { email: args.data.email },
