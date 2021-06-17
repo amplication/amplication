@@ -13,6 +13,10 @@ github_app_auth_redirect_uri = "https://app.amplication.com/github-auth-app/call
 # Amplitude
 amplitude_api_key = "d6c2950cd60b91196e678f9a3a7ac705"
 
+# Sendgrid
+sendgrid_from_address = "team@amplication.com"
+sendgrid_invitation_template_id = "d-aaae46e4127c4d2399d242610e6c496a"
+
 # Cloud SQL
 database_tier = "db-custom-2-4096"
 

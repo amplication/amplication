@@ -226,6 +226,14 @@ resource "google_cloud_run_service" "default" {
           value = var.amplitude_api_key
         }
         env {
+          name  = "SENDGRID_FROM_ADDRESS"
+          value = var.sendgrid_from_address
+        }
+        env {
+          name  = "SENDGRID_INVITATION_TEMPLATE_ID"
+          value = var.sendgrid_invitation_template_id
+        }
+        env {
           name  = "GITHUB_CLIENT_ID"
           value = var.github_client_id
         }

@@ -15,6 +15,10 @@ github_app_auth_redirect_uri = "https://staging-oc.amplication.com/github-auth-a
 # Amplitude
 amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"
 
+# Sendgrid
+sendgrid_from_address = "team@amplication.com"
+sendgrid_invitation_template_id = "d-aaae46e4127c4d2399d242610e6c496a"
+
 # Cloud SQL
 database_tier = "db-f1-micro"
 

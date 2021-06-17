@@ -49,6 +49,6 @@
     "editor.defaultFormatter": null
   },
   "[terraform]": {
-    "editor.defaultFormatter": null
+    "editor.defaultFormatter": "hashicorp.terraform"
   }
 }

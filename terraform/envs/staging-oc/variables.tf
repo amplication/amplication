@@ -40,6 +40,15 @@ variable "amplitude_api_key" {
   type = string
 }
 
+# Sendgrid
+variable "sendgrid_from_address" {
+  type = string
+}
+
+variable "sendgrid_invitation_template_id" {
+  type = string
+}
+
 # Cloud SQL
 variable "database_tier" {
   type = string
