@@ -31,7 +31,8 @@ export class SendgridConfigService implements SendGridOptionsFactory {
     }
     const secretName = this.configService.get(SENDGRID_API_KEY_SECRET_NAME_VAR);
     if (!secretName) {
-      throw new Error(MISSING_CLIENT_SECRET_ERROR);
+      console.error(MISSING_CLIENT_SECRET_ERROR);
+      return '';
     }
     return this.getSecretFromManager(secretName);
   }
