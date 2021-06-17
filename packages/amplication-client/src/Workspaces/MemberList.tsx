@@ -1,18 +1,14 @@
-import React, { useCallback } from "react";
 import { gql, useQuery } from "@apollo/client";
+import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
-import { CircularProgress } from "@rmwc/circular-progress";
-import { formatError } from "../util/error";
-import { useTracking } from "../util/analytics";
-
-import { Button, EnumButtonStyle } from "../Components/Button";
-import MemberListItem from "./MemberListItem";
-
+import React from "react";
 import * as models from "../models";
+import { formatError } from "../util/error";
+import InviteMember from "./InviteMember";
 import "./MemberList.scss";
+import MemberListItem from "./MemberListItem";
 
 type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
@@ -21,31 +17,15 @@ type TData = {
 const CLASS_NAME = "member-list";
 
 function MemberList() {
-  const { trackEvent } = useTracking();
-
   const { data, error, loading } = useQuery<TData>(GET_WORKSPACE_MEMBERS);
   const errorMessage = formatError(error);
-
-  const handleNewAppClick = useCallback(() => {
-    trackEvent({
-      eventName: "inviteUserClick",
-    });
-  }, [trackEvent]);
 
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
         <h2>Workspace Members</h2>
 
-        <Link onClick={handleNewAppClick} to="/create-app">
-          <Button
-            className={`${CLASS_NAME}__add-button`}
-            buttonStyle={EnumButtonStyle.Primary}
-            icon="plus"
-          >
-            Invite a member
-          </Button>
-        </Link>
+        <InviteMember />
       </div>
       <div className={`${CLASS_NAME}__title`}>
         {data?.workspaceMembers.length} Members
