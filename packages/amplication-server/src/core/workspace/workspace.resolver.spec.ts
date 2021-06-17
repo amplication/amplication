@@ -13,6 +13,7 @@ import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { WorkspaceService } from './workspace.service';
 import { WorkspaceResolver } from './workspace.resolver';
 import { App, Workspace, User } from 'src/models';
+import { Invitation } from './dto/Invitation';
 import { AppService } from '../app/app.service';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -28,12 +29,20 @@ const EXAMPLE_EMAIL = 'exampleEmail';
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
   id: EXAMPLE_WORKSPACE_ID,
   name: EXAMPLE_WORKSPACE_NAME,
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
+const EXAMPLE_INVITATION: Invitation = {
+  id: EXAMPLE_APP_ID,
+  email: 'example@email.com',
   createdAt: new Date(),
   updatedAt: new Date()
 };
@@ -99,6 +108,7 @@ const INVITE_USER_MUTATION = gql`
   mutation($email: String!) {
     inviteUser(data: { email: $email }) {
       id
+      email
       createdAt
       updatedAt
     }
@@ -108,7 +118,7 @@ const INVITE_USER_MUTATION = gql`
 const workspaceServiceGetWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
 const workspaceServiceDeleteWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
 const workspaceServiceUpdateWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
-const workspaceServiceInviteUserMock = jest.fn(() => EXAMPLE_USER);
+const workspaceServiceInviteUserMock = jest.fn(() => EXAMPLE_INVITATION);
 const appServiceAppsMock = jest.fn(() => [EXAMPLE_APP]);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
@@ -251,7 +261,7 @@ describe('WorkspaceResolver', () => {
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       inviteUser: {
-        ...EXAMPLE_USER,
+        ...EXAMPLE_INVITATION,
         createdAt: EXAMPLE_USER.createdAt.toISOString(),
         updatedAt: EXAMPLE_USER.updatedAt.toISOString()
       }

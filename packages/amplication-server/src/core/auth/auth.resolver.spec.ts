@@ -39,13 +39,15 @@ const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  account: EXAMPLE_ACCOUNT
+  account: EXAMPLE_ACCOUNT,
+  isOwner: true
 };
 
 const EXAMPLE_USER_WITHOUT_ACCOUNT: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: false
 };
 
 const EXAMPLE_AUTH: Auth = {

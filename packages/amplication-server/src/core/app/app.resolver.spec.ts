@@ -110,7 +110,8 @@ const EXAMPLE_PENDING_CHANGE: PendingChange = {
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const FIND_ONE_APP_QUERY = gql`

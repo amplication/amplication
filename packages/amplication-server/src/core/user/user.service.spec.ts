@@ -39,7 +39,8 @@ const EXAMPLE_USER: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   userRoles: [EXAMPLE_USER_ROLE],
-  account: EXAMPLE_ACCOUNT
+  account: EXAMPLE_ACCOUNT,
+  isOwner: true
 };
 
 const prismaUserFindOneMock = jest.fn(() => ({

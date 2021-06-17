@@ -6,6 +6,7 @@ import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AccountService } from '../account/account.service';
 import { AppService } from '../app/app.service';
+import { MailService } from '../mail/mail.service';
 import { Workspace, Account, User } from 'src/models';
 import { Role } from 'src/enums/Role';
 
@@ -38,7 +39,8 @@ const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  account: EXAMPLE_ACCOUNT
+  account: EXAMPLE_ACCOUNT,
+  isOwner: true
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
@@ -118,6 +120,10 @@ describe('WorkspaceService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             createSampleApp: appCreateSampleAppMock
           }))
+        },
+        {
+          provide: MailService,
+          useClass: jest.fn().mockImplementation(() => ({}))
         },
         {
           provide: AccountService,

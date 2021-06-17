@@ -72,7 +72,8 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const EXAMPLE_PERMISSION: EntityPermission = {
@@ -205,6 +206,7 @@ const LOCKED_BY_USER_QUERY = gql`
         id
         createdAt
         updatedAt
+        isOwner
       }
     }
   }
@@ -750,7 +752,8 @@ describe('EntityResolver', () => {
         lockedByUser: {
           ...EXAMPLE_USER,
           createdAt: EXAMPLE_USER.createdAt.toISOString(),
-          updatedAt: EXAMPLE_USER.updatedAt.toISOString()
+          updatedAt: EXAMPLE_USER.updatedAt.toISOString(),
+          isOwner: true
         }
       }
     });

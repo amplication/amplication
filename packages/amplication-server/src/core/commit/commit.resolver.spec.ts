@@ -30,7 +30,8 @@ const EXAMPLE_COMMIT: Commit = {
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const USER_QUERY = gql`
@@ -40,6 +41,7 @@ const USER_QUERY = gql`
         id
         createdAt
         updatedAt
+        isOwner
       }
     }
   }
