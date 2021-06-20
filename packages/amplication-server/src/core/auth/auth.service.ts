@@ -193,9 +193,10 @@ export class AuthService {
   }
 
   async createApiToken(args: CreateApiTokenArgs): Promise<ApiToken> {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this.prismaService.user.findFirst({
       where: {
-        id: args.data.user.connect.id
+        id: args.data.user.connect.id,
+        deletedAt: null
       },
       include: { workspace: true, userRoles: true, account: true }
     });
@@ -242,6 +243,9 @@ export class AuthService {
         id: args.tokenId,
         lastAccessAt: {
           gt: lastAccessThreshold
+        },
+        user: {
+          deletedAt: null
         }
       },
       data: {

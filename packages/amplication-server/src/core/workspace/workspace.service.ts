@@ -10,12 +10,11 @@ import {
   CompleteInvitationArgs,
   WorkspaceMember
 } from './dto';
+
 import { FindOneArgs } from 'src/dto';
 import { Role } from 'src/enums/Role';
-import { AccountService } from '../account/account.service';
-import { PasswordService } from '../account/password.service';
+import { UserService } from '../user/user.service';
 import { MailService } from '../mail/mail.service';
-import { AppService } from '../app/app.service';
 import cuid from 'cuid';
 import { addDays } from 'date-fns';
 import { isEmpty } from 'lodash';
@@ -27,9 +26,7 @@ const INVITATION_EXPIRATION_DAYS = 7;
 export class WorkspaceService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly accountService: AccountService,
-    private readonly passwordService: PasswordService,
-    private readonly appService: AppService,
+    private readonly userService: UserService,
     private readonly mailService: MailService
   ) {}
 
@@ -100,7 +97,7 @@ export class WorkspaceService {
       throw new ConflictException(`email address is required to invite a user`);
     }
 
-    const existingUsers = await this.prisma.user.findMany({
+    const existingUsers = await this.userService.findUsers({
       where: {
         account: { email: args.data.email },
         workspace: { id: workspace.id }
@@ -159,8 +156,6 @@ export class WorkspaceService {
       invitedByUserFullName: currentUserAccount.email
     });
 
-    /**@todo: send email */
-
     return invitation;
   }
 
@@ -188,7 +183,7 @@ export class WorkspaceService {
 
     const [invitation] = invitations;
 
-    const existingUsers = await this.prisma.user.findMany({
+    const existingUsers = await this.userService.findUsers({
       where: {
         account: { id: account.id },
         workspace: { id: invitation.workspaceId }
@@ -249,7 +244,7 @@ export class WorkspaceService {
   }
 
   async findMembers(args: FindOneArgs): Promise<WorkspaceMember[]> {
-    const users = await this.prisma.user.findMany({
+    const users = await this.userService.findUsers({
       where: {
         workspaceId: args.where.id
       }

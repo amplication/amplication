@@ -3,7 +3,6 @@ import { UserService } from './user.service';
 import { PrismaService } from 'nestjs-prisma';
 import { User, UserRole, Account } from 'src/models';
 import { Role } from 'src/enums/Role';
-import { FindOneArgs } from 'src/dto';
 import { Prisma } from '@prisma/client';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -52,6 +51,10 @@ const prismaUserFindManyMock = jest.fn(() => {
   return [EXAMPLE_USER];
 });
 
+const prismaUserUpdateMock = jest.fn(() => {
+  return EXAMPLE_USER;
+});
+
 const prismaUserRoleFindOneMock = jest.fn(() => {
   return EXAMPLE_USER_ROLE;
 });
@@ -86,7 +89,9 @@ describe('UserService', () => {
           useClass: jest.fn(() => ({
             user: {
               findUnique: prismaUserFindOneMock,
-              findMany: prismaUserFindManyMock
+              findFirst: prismaUserFindOneMock,
+              findMany: prismaUserFindManyMock,
+              update: prismaUserUpdateMock
             },
             userRole: {
               findUnique: prismaUserRoleFindOneMock,
@@ -107,17 +112,33 @@ describe('UserService', () => {
   });
 
   it('should find one', async () => {
-    const args = { where: { id: EXAMPLE_USER_ID } };
+    const args = { where: { id: EXAMPLE_USER_ID, deletedAt: null } };
     expect(await service.findUser(args)).toEqual(EXAMPLE_USER);
     expect(prismaUserFindOneMock).toBeCalledTimes(1);
     expect(prismaUserFindOneMock).toBeCalledWith(args);
   });
 
   it('should find many', async () => {
-    const args = { where: {} };
+    const args = { where: { deletedAt: null } };
     expect(await service.findUsers(args)).toEqual([EXAMPLE_USER]);
     expect(prismaUserFindManyMock).toBeCalledTimes(1);
     expect(prismaUserFindManyMock).toBeCalledWith(args);
+  });
+
+  it('should delete a user', async () => {
+    const args = { where: { id: EXAMPLE_USER_ID, deletedAt: null } };
+    expect(await service.delete(EXAMPLE_USER_ID)).toEqual(EXAMPLE_USER);
+    expect(prismaUserFindOneMock).toBeCalledTimes(1);
+    expect(prismaUserFindOneMock).toBeCalledWith(args);
+    expect(prismaUserUpdateMock).toBeCalledTimes(1);
+    expect(prismaUserUpdateMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_USER_ID
+      },
+      data: {
+        deletedAt: expect.any(Date)
+      }
+    });
   });
 
   it('should assign one role to a user', async () => {
@@ -125,9 +146,10 @@ describe('UserService', () => {
       data: { role: NON_EXISTING_ROLE },
       where: { id: EXAMPLE_ROLE_ID }
     };
-    const findOneArgs: FindOneArgs = {
+    const findOneArgs = {
       where: {
-        id: args.where.id
+        id: args.where.id,
+        deletedAt: null
       }
     };
     const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
@@ -153,9 +175,10 @@ describe('UserService', () => {
       data: { role: EXISTING_ROLE },
       where: { id: EXAMPLE_USER_ID }
     };
-    const findOneArgs: FindOneArgs = {
+    const findOneArgs = {
       where: {
-        id: args.where.id
+        id: args.where.id,
+        deletedAt: null
       }
     };
     const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
@@ -177,9 +200,10 @@ describe('UserService', () => {
       data: { role: EXISTING_ROLE },
       where: { id: EXAMPLE_USER_ID }
     };
-    const findOneArgs: FindOneArgs = {
+    const findOneArgs = {
       where: {
-        id: args.where.id
+        id: args.where.id,
+        deletedAt: null
       }
     };
     const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
@@ -204,9 +228,10 @@ describe('UserService', () => {
       data: { role: NON_EXISTING_ROLE },
       where: { id: EXAMPLE_USER_ID }
     };
-    const findOneArgs: FindOneArgs = {
+    const findOneArgs = {
       where: {
-        id: args.where.id
+        id: args.where.id,
+        deletedAt: null
       }
     };
     const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
