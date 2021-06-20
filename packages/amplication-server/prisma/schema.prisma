@@ -49,6 +49,7 @@ model User {
   isOwner               Boolean      @default(false)
   sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
+  deletedAt             DateTime?
 
   @@unique([accountId, workspaceId])
 }
