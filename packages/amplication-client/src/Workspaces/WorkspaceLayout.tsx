@@ -12,6 +12,7 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import WorkspaceSelector from "./WorkspaceSelector";
 import WorkspaceForm from "./WorkspaceForm";
 import PageContent from "../Layout/PageContent";
+import CompleteInvitation from "../User/CompleteInvitation";
 import "./WorkspaceLayout.scss";
 
 export type ApplicationData = {
@@ -56,6 +57,7 @@ function WorkspaceLayout({ match }: Props) {
         </MenuItemWithFixedPanel>
       </MainLayout.Menu>
       <MainLayout.Content>
+        <CompleteInvitation />
         <div className={`${CLASS_NAME}__app-container`}>
           <PageContent className={CLASS_NAME}>
             <Switch>

@@ -37,7 +37,7 @@ const INITIAL_VALUES: Values = {
   password: "",
 };
 
-const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
+export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
 
 const Login = () => {
   const history = useHistory();
@@ -79,6 +79,9 @@ const Login = () => {
   useEffect(() => {
     const params = queryString.parse(location.search);
     if (params.invitation) {
+      //save the invitation token in local storage to be validated by
+      //<CompleteInvitation/> after signup or sign in
+      //we user local storage since github-passport does not support dynamic callback
       setInvitationToken(params.invitation);
     }
   }, [setInvitationToken, location.search]);
