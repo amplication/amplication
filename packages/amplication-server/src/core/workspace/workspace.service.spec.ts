@@ -9,6 +9,7 @@ import { AppService } from '../app/app.service';
 import { MailService } from '../mail/mail.service';
 import { Workspace, Account, User } from 'src/models';
 import { Role } from 'src/enums/Role';
+import { DeleteUserArgs } from './dto';
 
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
@@ -74,6 +75,12 @@ const prismaUserFindManyMock = jest.fn(() => {
 const prismaUserCreateMock = jest.fn(() => {
   return EXAMPLE_USER;
 });
+const userServiceFindUserMock = jest.fn(() => {
+  return EXAMPLE_USER;
+});
+const userServiceDeleteMock = jest.fn(() => {
+  return EXAMPLE_USER;
+});
 const accountServiceFindAccountMock = jest.fn(() => {
   return EXAMPLE_ACCOUNT;
 });
@@ -97,7 +104,13 @@ describe('WorkspaceService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WorkspaceService,
-        UserService,
+        {
+          provide: UserService,
+          useClass: jest.fn().mockImplementation(() => ({
+            findUser: userServiceFindUserMock,
+            delete: userServiceDeleteMock
+          }))
+        },
         ConfigService,
         {
           provide: PrismaService,
@@ -178,6 +191,15 @@ describe('WorkspaceService', () => {
     expect(await service.updateWorkspace(args)).toEqual(EXAMPLE_WORKSPACE);
     expect(prismaWorkspaceUpdateMock).toBeCalledTimes(1);
     expect(prismaWorkspaceUpdateMock).toBeCalledWith(args);
+  });
+
+  it('should not delete a workspace owner', async () => {
+    const args: DeleteUserArgs = {
+      where: { id: EXAMPLE_USER_ID }
+    };
+    await expect(service.deleteUser(EXAMPLE_USER, args)).rejects.toThrow(
+      `Can't delete the workspace owner`
+    );
   });
 
   it('should create an workspace', async () => {

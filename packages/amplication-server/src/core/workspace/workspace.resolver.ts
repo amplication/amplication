@@ -11,7 +11,8 @@ import {
   InviteUserArgs,
   CreateOneWorkspaceArgs,
   Invitation,
-  WorkspaceMember
+  WorkspaceMember,
+  DeleteUserArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
@@ -100,6 +101,17 @@ export class WorkspaceResolver {
     @Args() args: InviteUserArgs
   ): Promise<Invitation> {
     return this.workspaceService.inviteUser(currentUser, args);
+  }
+
+  @Mutation(() => User, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteUser(
+    @UserEntity() currentUser: User,
+    @Args() args: DeleteUserArgs
+  ): Promise<User> {
+    return this.workspaceService.deleteUser(currentUser, args);
   }
 
   @Query(() => [WorkspaceMember], {

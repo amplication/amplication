@@ -8,7 +8,8 @@ import {
   UpdateOneWorkspaceArgs,
   InviteUserArgs,
   CompleteInvitationArgs,
-  WorkspaceMember
+  WorkspaceMember,
+  DeleteUserArgs
 } from './dto';
 
 import { FindOneArgs } from 'src/dto';
@@ -276,5 +277,29 @@ export class WorkspaceService {
           }
         )
       );
+  }
+
+  async deleteUser(currentUser: User, args: DeleteUserArgs): Promise<User> {
+    const user = await this.userService.findUser({
+      ...args,
+      include: {
+        workspace: true
+      }
+    });
+
+    if (!user) {
+      throw new ConflictException(`Can't find user ${args.where.id}`);
+    }
+    if (user.isOwner) {
+      throw new ConflictException(`Can't delete the workspace owner`);
+    }
+
+    if (currentUser.workspace.id !== user.workspace.id) {
+      throw new ConflictException(
+        `The requested user is not in the current user's workspace`
+      );
+    }
+
+    return this.userService.delete(args.where.id);
   }
 }
