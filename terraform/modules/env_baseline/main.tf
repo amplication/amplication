@@ -309,6 +309,10 @@ resource "google_cloud_run_service" "default" {
           name  = "SEGMENT_WRITE_KEY_SECRET_NAME"
           value = data.google_secret_manager_secret_version.segment_write_key_secret.name
         }
+        env {
+          name  = "SENDGRID_API_KEY_SECRET_NAME"
+          value = data.google_secret_manager_secret_version.sendgrid_api_key_secret.name
+        }
 
         resources {
           limits = {
