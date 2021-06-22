@@ -123,13 +123,11 @@ export const EntityListItem = ({
           )}
 
           <span className="spacer" />
-          <span className={`${CLASS_NAME}__description`}>
-            {latestVersion.commit?.message}
-          </span>
-          {latestVersion.commit && (
-            <UserAndTime
-              account={latestVersion.commit.user?.account}
-              time={latestVersion.commit.createdAt}
+          {!deleteLoading && entity.name !== USER_ENTITY && (
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              icon="trash_2"
+              onClick={handleDelete}
             />
           )}
         </div>
@@ -137,12 +135,30 @@ export const EntityListItem = ({
           <span className={`${CLASS_NAME}__description`}>
             {entity.description}
           </span>
-          {!deleteLoading && entity.name !== USER_ENTITY && (
-            <Button
-              buttonStyle={EnumButtonStyle.Clear}
-              icon="trash_2"
-              onClick={handleDelete}
+        </div>
+        <div className={`${CLASS_NAME}__divider`} />
+
+        <div className={`${CLASS_NAME}__row`}>
+          <span className={`${CLASS_NAME}__label`}>Last commit:</span>
+
+          {latestVersion.commit && (
+            <UserAndTime
+              account={latestVersion.commit.user?.account}
+              time={latestVersion.commit.createdAt}
             />
+          )}
+          <span className={`${CLASS_NAME}__description`}>
+            {latestVersion.commit ? latestVersion.commit?.message : "Never"}
+          </span>
+          <span className="spacer" />
+          {entity.lockedByUser && (
+            <>
+              <span className={`${CLASS_NAME}__label`}>Locked by:</span>
+              <UserAndTime
+                account={entity.lockedByUser.account || {}}
+                time={entity.lockedAt}
+              />
+            </>
           )}
         </div>
       </Panel>
