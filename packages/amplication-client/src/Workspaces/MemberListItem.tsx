@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useTracking } from "../util/analytics";
+import { Tooltip } from "@primer/components";
 
 import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -23,6 +24,7 @@ type Props = {
   onError: (error: Error) => void;
 };
 
+const DIRECTION = "n";
 const CLASS_NAME = "member-list-item";
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -34,6 +36,15 @@ function MemberListItem({ member, onDelete, onError }: Props) {
 
   const [deleteUser, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_USER,
+    {
+      onCompleted: (data) => {
+        onDelete && onDelete();
+      },
+    }
+  );
+
+  const [revokeInvitation, { loading: revokeLoading }] = useMutation<DType>(
+    REVOKE_INVITATION,
     {
       onCompleted: (data) => {
         onDelete && onDelete();
@@ -55,15 +66,27 @@ function MemberListItem({ member, onDelete, onError }: Props) {
 
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
-    trackEvent({
-      eventName: "deleteUserFromWorkspace",
-    });
-    deleteUser({
-      variables: {
-        userId: member.member.id,
-      },
-    }).catch(onError);
-  }, [member, deleteUser, onError, trackEvent]);
+
+    if (member.type === models.EnumWorkspaceMemberType.User) {
+      trackEvent({
+        eventName: "deleteUserFromWorkspace",
+      });
+      deleteUser({
+        variables: {
+          userId: member.member.id,
+        },
+      }).catch(onError);
+    } else {
+      trackEvent({
+        eventName: "revokeInvitation",
+      });
+      revokeInvitation({
+        variables: {
+          id: member.member.id,
+        },
+      }).catch(onError);
+    }
+  }, [member, deleteUser, onError, trackEvent, revokeInvitation]);
 
   const data =
     member.type === models.EnumWorkspaceMemberType.User
@@ -72,12 +95,14 @@ function MemberListItem({ member, onDelete, onError }: Props) {
           lastName: (member.member as models.User).account?.lastName,
           email: (member.member as models.User).account?.email,
           isOwner: (member.member as models.User).isOwner,
+          isInvitation: false,
         }
       : {
           firstName: (member.member as models.Invitation).email,
           lastName: undefined,
           email: (member.member as models.Invitation).email,
           isOwner: false,
+          isInvitation: true,
         };
 
   return (
@@ -100,12 +125,33 @@ function MemberListItem({ member, onDelete, onError }: Props) {
             <span className={`${CLASS_NAME}__description`}>(Owner)</span>
           )}
           <span className="spacer" />
-          {!data.isOwner && !deleteLoading && (
-            <Button
-              buttonStyle={EnumButtonStyle.Clear}
-              icon="trash_2"
-              onClick={handleDelete}
-            />
+          {data.isInvitation && (
+            <Tooltip
+              aria-label="Resend invitation"
+              direction={DIRECTION}
+              noDelay
+            >
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                icon="mail"
+                onClick={handleDelete}
+              />
+            </Tooltip>
+          )}
+          {!data.isOwner && !deleteLoading && !revokeLoading && (
+            <Tooltip
+              aria-label={
+                data.isInvitation ? "Revoke invitation" : "Delete user"
+              }
+              direction={DIRECTION}
+              noDelay
+            >
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                icon="trash_2"
+                onClick={handleDelete}
+              />
+            </Tooltip>
           )}
         </div>
       </Panel>
@@ -118,6 +164,14 @@ export default MemberListItem;
 const DELETE_USER = gql`
   mutation deleteUser($userId: String!) {
     deleteUser(where: { id: $userId }) {
+      id
+    }
+  }
+`;
+
+const REVOKE_INVITATION = gql`
+  mutation revokeInvitation($id: String!) {
+    revokeInvitation(where: { id: $id }) {
       id
     }
   }
