@@ -137,6 +137,9 @@ function MemberListItem({ member, onDelete, onError }: Props) {
           {data.isOwner && (
             <span className={`${CLASS_NAME}__description`}>(Owner)</span>
           )}
+          {data.isInvitation && (
+            <span className={`${CLASS_NAME}__property`}>Pending</span>
+          )}
           <span className="spacer" />
           {data.isInvitation && (
             <Tooltip
