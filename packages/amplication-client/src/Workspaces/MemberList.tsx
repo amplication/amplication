@@ -3,7 +3,7 @@ import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import InviteMember from "./InviteMember";
@@ -17,8 +17,16 @@ type TData = {
 const CLASS_NAME = "member-list";
 
 function MemberList() {
-  const { data, error, loading } = useQuery<TData>(GET_WORKSPACE_MEMBERS);
-  const errorMessage = formatError(error);
+  const [error, setError] = useState<Error>();
+  const { data, error: errorLoading, loading, refetch } = useQuery<TData>(
+    GET_WORKSPACE_MEMBERS
+  );
+  const errorMessage =
+    formatError(errorLoading) || (error && formatError(error));
+
+  const handleDelete = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   return (
     <div className={CLASS_NAME}>
@@ -40,11 +48,16 @@ function MemberList() {
         </div>
       ) : (
         data?.workspaceMembers.map((member, index) => (
-          <MemberListItem member={member} key={index} />
+          <MemberListItem
+            member={member}
+            key={index}
+            onDelete={handleDelete}
+            onError={setError}
+          />
         ))
       )}
 
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </div>
   );
 }
