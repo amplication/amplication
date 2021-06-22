@@ -4,6 +4,13 @@
   margin: 0;
   margin-bottom: var(--default-spacing);
 
+  &__divider {
+    @include flexFullRowWithSpacing;
+    border-top: $border-black10;
+    margin-bottom: var(--default-spacing);
+    margin-top: var(--default-spacing);
+  }
+
   &__row {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--default-spacing);
