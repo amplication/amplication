@@ -9,7 +9,8 @@ import {
   InviteUserArgs,
   CompleteInvitationArgs,
   WorkspaceMember,
-  DeleteUserArgs
+  DeleteUserArgs,
+  RevokeInvitationArgs
 } from './dto';
 
 import { FindOneArgs } from 'src/dto';
@@ -242,6 +243,20 @@ export class WorkspaceService {
     });
 
     return workspace;
+  }
+
+  async revokeInvitation(args: RevokeInvitationArgs): Promise<Invitation> {
+    const invitation = await this.prisma.invitation.findUnique(args);
+
+    if (!invitation) {
+      throw new ConflictException(`Invitation cannot be found`);
+    }
+
+    return this.prisma.invitation.delete({
+      where: {
+        id: invitation.id
+      }
+    });
   }
 
   async findMembers(args: FindOneArgs): Promise<WorkspaceMember[]> {

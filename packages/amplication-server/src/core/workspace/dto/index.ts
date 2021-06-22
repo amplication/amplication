@@ -4,6 +4,7 @@ export { UpdateOneWorkspaceArgs } from './UpdateOneWorkspaceArgs';
 export { InviteUserArgs } from './InviteUserArgs';
 export { DeleteUserArgs } from './DeleteUserArgs';
 export { CompleteInvitationArgs } from './CompleteInvitationArgs';
+export { RevokeInvitationArgs } from './RevokeInvitationArgs';
 
 export { WorkspaceWhereInput } from './WorkspaceWhereInput';
 export { WorkspaceOrderByInput } from './WorkspaceOrderByInput';
