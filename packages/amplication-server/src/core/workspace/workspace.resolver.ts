@@ -13,7 +13,8 @@ import {
   Invitation,
   WorkspaceMember,
   DeleteUserArgs,
-  RevokeInvitationArgs
+  RevokeInvitationArgs,
+  ResendInvitationArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
@@ -113,6 +114,17 @@ export class WorkspaceResolver {
     @Args() args: RevokeInvitationArgs
   ): Promise<Invitation> {
     return this.workspaceService.revokeInvitation(args);
+  }
+
+  @Mutation(() => Invitation, {
+    nullable: true,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.InvitationId, 'where.id')
+  async resendInvitation(
+    @Args() args: ResendInvitationArgs
+  ): Promise<Invitation> {
+    return this.workspaceService.resendInvitation(args);
   }
 
   @Mutation(() => User, {

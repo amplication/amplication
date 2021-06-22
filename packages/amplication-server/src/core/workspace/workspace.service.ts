@@ -10,7 +10,8 @@ import {
   CompleteInvitationArgs,
   WorkspaceMember,
   DeleteUserArgs,
-  RevokeInvitationArgs
+  RevokeInvitationArgs,
+  ResendInvitationArgs
 } from './dto';
 
 import { FindOneArgs } from 'src/dto';
@@ -246,7 +247,13 @@ export class WorkspaceService {
   }
 
   async revokeInvitation(args: RevokeInvitationArgs): Promise<Invitation> {
-    const invitation = await this.prisma.invitation.findUnique(args);
+    const invitation = await this.prisma.invitation.findFirst({
+      ...args,
+      where: {
+        ...args.where,
+        newUser: null
+      }
+    });
 
     if (!invitation) {
       throw new ConflictException(`Invitation cannot be found`);
@@ -257,6 +264,44 @@ export class WorkspaceService {
         id: invitation.id
       }
     });
+  }
+
+  async resendInvitation(args: ResendInvitationArgs): Promise<Invitation> {
+    const invitation = await this.prisma.invitation.findFirst({
+      ...args,
+      where: {
+        ...args.where,
+        newUser: null
+      },
+      include: {
+        invitedByUser: {
+          include: {
+            account: true
+          }
+        }
+      }
+    });
+
+    if (!invitation) {
+      throw new ConflictException(`Invitation cannot be found`);
+    }
+
+    const updatedInvitation = await this.prisma.invitation.update({
+      where: {
+        id: invitation.id
+      },
+      data: {
+        tokenExpiration: addDays(new Date(), INVITATION_EXPIRATION_DAYS)
+      }
+    });
+
+    await this.mailService.sendInvitation({
+      to: invitation.email,
+      invitationToken: invitation.token,
+      invitedByUserFullName: invitation.invitedByUser.account.email
+    });
+
+    return updatedInvitation;
   }
 
   async findMembers(args: FindOneArgs): Promise<WorkspaceMember[]> {
