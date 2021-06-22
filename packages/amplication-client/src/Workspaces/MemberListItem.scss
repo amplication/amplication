@@ -20,4 +20,19 @@
     @include body2;
     color: var(--black80);
   }
+
+  &__property {
+    color: var(--positive-default);
+    border: 1px solid var(--positive-default);
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--default-spacing);
+    background-color: rgba(49, 197, 135, 0.09);
+    .amp-icon {
+      margin-right: var(--default-spacing);
+    }
+  }
 }
