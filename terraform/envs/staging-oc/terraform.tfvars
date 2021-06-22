@@ -15,6 +15,10 @@ github_app_auth_redirect_uri = "https://staging-oc.amplication.com/github-auth-a
 # Amplitude
 amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"
 
+# Sendgrid
+sendgrid_from_address = "team@amplication.com"
+sendgrid_invitation_template_id = "d-aaae46e4127c4d2399d242610e6c496a"
+
 # Cloud SQL
 database_tier = "db-f1-micro"
 
@@ -28,6 +32,7 @@ server_max_scale = 2
 # Secret Manager
 github_client_secret_id = "github_client_secret"
 segment_write_key_secret_id = "segment_write_key_secret"
+sendgrid_api_key_secret_id = "sendgrid_api_key_secret"
 
 # UI
 feature_flags = {

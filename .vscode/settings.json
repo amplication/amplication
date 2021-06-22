@@ -9,6 +9,7 @@
     "Octokit",
     "Queryable",
     "Repos",
+    "SENDGRID",
     "Signup",
     "UNREQUIRED",
     "Xarrow",
@@ -48,6 +49,6 @@
     "editor.defaultFormatter": null
   },
   "[terraform]": {
-    "editor.defaultFormatter": null
+    "editor.defaultFormatter": "hashicorp.terraform"
   }
 }

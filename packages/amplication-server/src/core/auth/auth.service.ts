@@ -25,6 +25,7 @@ import {
 } from './dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { FindOneArgs } from 'src/dto';
+import { CompleteInvitationArgs } from '../workspace/dto';
 
 export type AuthUser = User & {
   account: Account;
@@ -192,9 +193,10 @@ export class AuthService {
   }
 
   async createApiToken(args: CreateApiTokenArgs): Promise<ApiToken> {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this.prismaService.user.findFirst({
       where: {
-        id: args.data.user.connect.id
+        id: args.data.user.connect.id,
+        deletedAt: null
       },
       include: { workspace: true, userRoles: true, account: true }
     });
@@ -241,6 +243,9 @@ export class AuthService {
         id: args.tokenId,
         lastAccessAt: {
           gt: lastAccessThreshold
+        },
+        user: {
+          deletedAt: null
         }
       },
       data: {
@@ -378,5 +383,17 @@ export class AuthService {
       include: WORKSPACE_INCLUDE
     });
     return (workspace as unknown) as Workspace & { users: AuthUser[] };
+  }
+
+  async completeInvitation(
+    currentUser: User,
+    args: CompleteInvitationArgs
+  ): Promise<string> {
+    const workspace = await this.workspaceService.completeInvitation(
+      currentUser,
+      args
+    );
+
+    return this.setCurrentWorkspace(currentUser.account.id, workspace.id);
   }
 }

@@ -29,7 +29,8 @@ const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  workspace: EXAMPLE_WORKSPACE
+  workspace: EXAMPLE_WORKSPACE,
+  isOwner: true
 };
 
 const prismaAppCountMock = jest.fn(() => {

@@ -50,7 +50,8 @@ export class AccountService {
       where: {
         users: {
           some: {
-            accountId: accountId
+            accountId: accountId,
+            deletedAt: null
           }
         }
       }

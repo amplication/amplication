@@ -39,6 +39,17 @@ export class PermissionsService {
       });
       return matching === 1;
     }
+    if (resourceType === AuthorizableResourceParameter.InvitationId) {
+      const matching = await this.prisma.invitation.count({
+        where: {
+          id: resourceId,
+          workspace: {
+            id: workspace.id
+          }
+        }
+      });
+      return matching === 1;
+    }
     if (resourceType === AuthorizableResourceParameter.ApiTokenId) {
       const matching = await this.prisma.apiToken.count({
         where: {

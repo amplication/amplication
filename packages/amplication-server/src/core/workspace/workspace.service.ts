@@ -1,25 +1,36 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { Workspace, User } from 'src/models';
+import { Invitation } from './dto/Invitation';
 import { PrismaService } from 'nestjs-prisma';
 import { Prisma } from '@prisma/client';
 import {
   FindManyWorkspaceArgs,
   UpdateOneWorkspaceArgs,
-  InviteUserArgs
+  InviteUserArgs,
+  CompleteInvitationArgs,
+  WorkspaceMember,
+  DeleteUserArgs,
+  RevokeInvitationArgs,
+  ResendInvitationArgs
 } from './dto';
+
 import { FindOneArgs } from 'src/dto';
 import { Role } from 'src/enums/Role';
-import { AccountService } from '../account/account.service';
-import { PasswordService } from '../account/password.service';
-import { AppService } from '../app/app.service';
+import { UserService } from '../user/user.service';
+import { MailService } from '../mail/mail.service';
+import cuid from 'cuid';
+import { addDays } from 'date-fns';
+import { isEmpty } from 'lodash';
+import { EnumWorkspaceMemberType } from './dto/EnumWorkspaceMemberType';
+
+const INVITATION_EXPIRATION_DAYS = 7;
 
 @Injectable()
 export class WorkspaceService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly accountService: AccountService,
-    private readonly passwordService: PasswordService,
-    private readonly appService: AppService
+    private readonly userService: UserService,
+    private readonly mailService: MailService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -82,55 +93,273 @@ export class WorkspaceService {
   async inviteUser(
     currentUser: User,
     args: InviteUserArgs
-  ): Promise<User | null> {
-    const { workspace } = currentUser;
+  ): Promise<Invitation | null> {
+    const { workspace, id: currentUserId, account } = currentUser;
 
-    const account = await this.accountService.findAccount({
-      where: { email: args.data.email }
+    if (isEmpty(args.data.email)) {
+      throw new ConflictException(`email address is required to invite a user`);
+    }
+
+    const existingUsers = await this.userService.findUsers({
+      where: {
+        account: { email: args.data.email },
+        workspace: { id: workspace.id }
+      }
     });
 
-    if (account) {
-      const existingUsers = await this.prisma.user.findMany({
-        where: {
-          account: { id: account.id },
-          workspace: { id: workspace.id }
-        }
-      });
-
-      if (existingUsers.length) {
-        throw new ConflictException(
-          `User with email ${args.data.email} already exist in the workspace.`
-        );
-      }
+    if (existingUsers.length) {
+      throw new ConflictException(
+        `User with email ${args.data.email} already exist in the workspace.`
+      );
     }
-    if (!account) {
-      const password = this.passwordService.generatePassword();
-      const hashedPassword = await this.passwordService.hashPassword(password);
 
-      return this.accountService.createAccount({
-        data: {
-          firstName: '',
-          lastName: '',
+    const existingInvitation = await this.prisma.invitation.findUnique({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        workspaceId_email: {
           email: args.data.email,
-          password: hashedPassword
+          workspaceId: workspace.id
         }
-      });
+      }
+    });
+
+    if (existingInvitation) {
+      throw new ConflictException(
+        `Invitation with email ${args.data.email} already exist in the workspace.`
+      );
     }
 
-    //Create a new user record and link it to the account. All user are "Organization admin"
-    const user = await this.prisma.user.create({
+    const currentUserAccount = await this.prisma.account.findUnique({
+      where: {
+        id: account.id
+      }
+    });
+
+    const invitation = await this.prisma.invitation.create({
       data: {
-        workspace: { connect: { id: workspace.id } },
-        account: { connect: { id: account.id } },
-        isOwner: false,
-        userRoles: {
+        email: args.data.email,
+        workspace: {
+          connect: {
+            id: workspace.id
+          }
+        },
+        invitedByUser: {
+          connect: {
+            id: currentUserId
+          }
+        },
+        token: cuid(),
+        tokenExpiration: addDays(new Date(), INVITATION_EXPIRATION_DAYS)
+      }
+    });
+
+    await this.mailService.sendInvitation({
+      to: invitation.email,
+      invitationToken: invitation.token,
+      invitedByUserFullName: currentUserAccount.email
+    });
+
+    return invitation;
+  }
+
+  async completeInvitation(
+    currentUser: User,
+    args: CompleteInvitationArgs
+  ): Promise<Workspace> {
+    const { account } = currentUser;
+
+    const invitations = await this.prisma.invitation.findMany({
+      where: {
+        token: args.data.token,
+        tokenExpiration: {
+          gt: addDays(new Date(), -INVITATION_EXPIRATION_DAYS)
+        },
+        newUser: null
+      }
+    });
+
+    if (!(invitations && invitations.length === 1)) {
+      throw new ConflictException(
+        `Invitation cannot be found or it has expired`
+      );
+    }
+
+    const [invitation] = invitations;
+
+    const existingUsers = await this.userService.findUsers({
+      where: {
+        account: { id: account.id },
+        workspace: { id: invitation.workspaceId }
+      }
+    });
+
+    if (!isEmpty(existingUsers)) {
+      throw new ConflictException(
+        `The current account is already a member in this workspace`
+      );
+    }
+
+    const workspace = await this.prisma.workspace.update({
+      where: {
+        id: invitation.workspaceId
+      },
+      data: {
+        users: {
           create: {
-            role: Role.OrganizationAdmin
+            account: { connect: { id: account.id } },
+            isOwner: false,
+            userRoles: {
+              create: {
+                role: Role.OrganizationAdmin
+              }
+            }
+          }
+        }
+      },
+      include: {
+        users: {
+          where: {
+            account: {
+              id: account.id
+            }
           }
         }
       }
     });
 
-    return user;
+    const [newUser] = workspace.users;
+
+    await this.prisma.invitation.update({
+      where: {
+        id: invitation.id
+      },
+      data: {
+        tokenExpiration: addDays(new Date(), -INVITATION_EXPIRATION_DAYS),
+        newUser: {
+          connect: {
+            id: newUser.id
+          }
+        }
+      }
+    });
+
+    return workspace;
+  }
+
+  async revokeInvitation(args: RevokeInvitationArgs): Promise<Invitation> {
+    const invitation = await this.prisma.invitation.findFirst({
+      ...args,
+      where: {
+        ...args.where,
+        newUser: null
+      }
+    });
+
+    if (!invitation) {
+      throw new ConflictException(`Invitation cannot be found`);
+    }
+
+    return this.prisma.invitation.delete({
+      where: {
+        id: invitation.id
+      }
+    });
+  }
+
+  async resendInvitation(args: ResendInvitationArgs): Promise<Invitation> {
+    const invitation = await this.prisma.invitation.findFirst({
+      ...args,
+      where: {
+        ...args.where,
+        newUser: null
+      },
+      include: {
+        invitedByUser: {
+          include: {
+            account: true
+          }
+        }
+      }
+    });
+
+    if (!invitation) {
+      throw new ConflictException(`Invitation cannot be found`);
+    }
+
+    const updatedInvitation = await this.prisma.invitation.update({
+      where: {
+        id: invitation.id
+      },
+      data: {
+        tokenExpiration: addDays(new Date(), INVITATION_EXPIRATION_DAYS)
+      }
+    });
+
+    await this.mailService.sendInvitation({
+      to: invitation.email,
+      invitationToken: invitation.token,
+      invitedByUserFullName: invitation.invitedByUser.account.email
+    });
+
+    return updatedInvitation;
+  }
+
+  async findMembers(args: FindOneArgs): Promise<WorkspaceMember[]> {
+    const users = await this.userService.findUsers({
+      where: {
+        workspaceId: args.where.id
+      }
+    });
+
+    const invitations = await this.prisma.invitation.findMany({
+      where: {
+        workspaceId: args.where.id,
+        newUser: null
+      }
+    });
+
+    return users
+      .map(
+        (user): WorkspaceMember => {
+          return {
+            member: user,
+            type: EnumWorkspaceMemberType.User
+          };
+        }
+      )
+      .concat(
+        invitations.map(
+          (invitation): WorkspaceMember => {
+            return {
+              member: invitation,
+              type: EnumWorkspaceMemberType.Invitation
+            };
+          }
+        )
+      );
+  }
+
+  async deleteUser(currentUser: User, args: DeleteUserArgs): Promise<User> {
+    const user = await this.userService.findUser({
+      ...args,
+      include: {
+        workspace: true
+      }
+    });
+
+    if (!user) {
+      throw new ConflictException(`Can't find user ${args.where.id}`);
+    }
+    if (user.isOwner) {
+      throw new ConflictException(`Can't delete the workspace owner`);
+    }
+
+    if (currentUser.workspace.id !== user.workspace.id) {
+      throw new ConflictException(
+        `The requested user is not in the current user's workspace`
+      );
+    }
+
+    return this.userService.delete(args.where.id);
   }
 }

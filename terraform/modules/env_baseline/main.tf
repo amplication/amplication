@@ -116,6 +116,10 @@ data "google_secret_manager_secret_version" "segment_write_key_secret" {
   secret = var.segment_write_key_secret_id
 }
 
+data "google_secret_manager_secret_version" "sendgrid_api_key_secret" {
+  secret = var.sendgrid_api_key_secret_id
+}
+
 resource "google_secret_manager_secret_iam_member" "compute_default_service_account" {
   secret_id = var.github_client_secret_id
   role      = "roles/secretmanager.secretAccessor"
@@ -123,6 +127,12 @@ resource "google_secret_manager_secret_iam_member" "compute_default_service_acco
 }
 resource "google_secret_manager_secret_iam_member" "compute_default_service_account_segment" {
   secret_id = var.segment_write_key_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "compute_default_service_account_sendgrid" {
+  secret_id = var.sendgrid_api_key_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
 }
@@ -214,6 +224,14 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "AMPLITUDE_API_KEY"
           value = var.amplitude_api_key
+        }
+        env {
+          name  = "SENDGRID_FROM_ADDRESS"
+          value = var.sendgrid_from_address
+        }
+        env {
+          name  = "SENDGRID_INVITATION_TEMPLATE_ID"
+          value = var.sendgrid_invitation_template_id
         }
         env {
           name  = "GITHUB_CLIENT_ID"

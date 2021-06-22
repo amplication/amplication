@@ -423,6 +423,10 @@ export type CompleteAuthorizeAppWithGithubInput = {
   state: Scalars['String'];
 };
 
+export type CompleteInvitationInput = {
+  token: Scalars['String'];
+};
+
 export type ConnectorRestApi = IBlock & {
   __typename?: 'ConnectorRestApi';
   id: Scalars['String'];
@@ -1045,6 +1049,11 @@ export enum EnumPendingChangeResourceType {
   Block = 'Block',
 }
 
+export enum EnumWorkspaceMemberType {
+  User = 'User',
+  Invitation = 'Invitation',
+}
+
 export type Environment = {
   __typename?: 'Environment';
   id: Scalars['String'];
@@ -1106,6 +1115,16 @@ export type IntFilter = {
   gte?: Maybe<Scalars['Int']>;
 };
 
+export type Invitation = {
+  __typename?: 'Invitation';
+  id: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  email: Scalars['String'];
+  workspace?: Maybe<Workspace>;
+  invitedByUser?: Maybe<User>;
+};
+
 export type InviteUserInput = {
   email: Scalars['String'];
 };
@@ -1121,7 +1140,7 @@ export type Mutation = {
   deleteWorkspace?: Maybe<Workspace>;
   updateWorkspace?: Maybe<Workspace>;
   createWorkspace?: Maybe<Workspace>;
-  inviteUser?: Maybe<User>;
+  inviteUser?: Maybe<Invitation>;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
   updateEntity?: Maybe<Entity>;
@@ -1158,6 +1177,7 @@ export type Mutation = {
   changePassword: Account;
   deleteApiToken: ApiToken;
   setCurrentWorkspace: Auth;
+  completeInvitation: Auth;
   createConnectorRestApi: ConnectorRestApi;
   updateConnectorRestApi: ConnectorRestApi;
   createBlockVersion: Block;
@@ -1345,6 +1365,10 @@ export type MutationSetCurrentWorkspaceArgs = {
   data: WhereUniqueInput;
 };
 
+export type MutationCompleteInvitationArgs = {
+  data: CompleteInvitationInput;
+};
+
 export type MutationCreateConnectorRestApiArgs = {
   data: ConnectorRestApiCreateInput;
 };
@@ -1425,6 +1449,7 @@ export type Query = {
   workspaces: Array<Workspace>;
   workspace?: Maybe<Workspace>;
   currentWorkspace?: Maybe<Workspace>;
+  workspaceMembers?: Maybe<Array<WorkspaceMember>>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
   appRole?: Maybe<AppRole>;
@@ -1676,6 +1701,14 @@ export type Workspace = {
 export type WorkspaceCreateInput = {
   name: Scalars['String'];
 };
+
+export type WorkspaceMember = {
+  __typename?: 'WorkspaceMember';
+  type: EnumWorkspaceMemberType;
+  member: WorkspaceMemberType;
+};
+
+export type WorkspaceMemberType = User | Invitation;
 
 export type WorkspaceUpdateInput = {
   name?: Maybe<Scalars['String']>;

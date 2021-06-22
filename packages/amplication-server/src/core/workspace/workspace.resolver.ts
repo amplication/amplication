@@ -9,7 +9,12 @@ import {
 import {
   UpdateOneWorkspaceArgs,
   InviteUserArgs,
-  CreateOneWorkspaceArgs
+  CreateOneWorkspaceArgs,
+  Invitation,
+  WorkspaceMember,
+  DeleteUserArgs,
+  RevokeInvitationArgs,
+  ResendInvitationArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
@@ -89,14 +94,59 @@ export class WorkspaceResolver {
     return this.workspaceService.createWorkspace(currentUser.account.id, args);
   }
 
-  @Mutation(() => User, {
+  @Mutation(() => Invitation, {
     nullable: true,
     description: undefined
   })
   async inviteUser(
     @UserEntity() currentUser: User,
     @Args() args: InviteUserArgs
-  ): Promise<User | null> {
+  ): Promise<Invitation> {
     return this.workspaceService.inviteUser(currentUser, args);
+  }
+
+  @Mutation(() => Invitation, {
+    nullable: true,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.InvitationId, 'where.id')
+  async revokeInvitation(
+    @Args() args: RevokeInvitationArgs
+  ): Promise<Invitation> {
+    return this.workspaceService.revokeInvitation(args);
+  }
+
+  @Mutation(() => Invitation, {
+    nullable: true,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.InvitationId, 'where.id')
+  async resendInvitation(
+    @Args() args: ResendInvitationArgs
+  ): Promise<Invitation> {
+    return this.workspaceService.resendInvitation(args);
+  }
+
+  @Mutation(() => User, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteUser(
+    @UserEntity() currentUser: User,
+    @Args() args: DeleteUserArgs
+  ): Promise<User> {
+    return this.workspaceService.deleteUser(currentUser, args);
+  }
+
+  @Query(() => [WorkspaceMember], {
+    nullable: true,
+    description: undefined
+  })
+  async workspaceMembers(
+    @UserEntity() currentUser: User
+  ): Promise<WorkspaceMember[]> {
+    return this.workspaceService.findMembers({
+      where: { id: currentUser.workspace.id }
+    });
   }
 }
