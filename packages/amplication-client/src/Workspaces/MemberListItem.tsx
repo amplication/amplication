@@ -43,7 +43,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
     }
   );
 
-  const [revokeInvitation, { loading: revokeLoading }] = useMutation<DType>(
+  const [revokeInvitation, { loading: revokeLoading }] = useMutation(
     REVOKE_INVITATION,
     {
       onCompleted: (data) => {
@@ -51,6 +51,8 @@ function MemberListItem({ member, onDelete, onError }: Props) {
       },
     }
   );
+
+  const [resendInvitation] = useMutation(RESEND_INVITATION);
 
   const handleDelete = useCallback(
     (event) => {
@@ -87,6 +89,17 @@ function MemberListItem({ member, onDelete, onError }: Props) {
       }).catch(onError);
     }
   }, [member, deleteUser, onError, trackEvent, revokeInvitation]);
+
+  const handleResendInvitation = useCallback(() => {
+    trackEvent({
+      eventName: "resendInvitation",
+    });
+    resendInvitation({
+      variables: {
+        id: member.member.id,
+      },
+    }).catch(onError);
+  }, [member, resendInvitation, trackEvent, onError]);
 
   const data =
     member.type === models.EnumWorkspaceMemberType.User
@@ -134,7 +147,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
               <Button
                 buttonStyle={EnumButtonStyle.Clear}
                 icon="mail"
-                onClick={handleDelete}
+                onClick={handleResendInvitation}
               />
             </Tooltip>
           )}
@@ -172,6 +185,14 @@ const DELETE_USER = gql`
 const REVOKE_INVITATION = gql`
   mutation revokeInvitation($id: String!) {
     revokeInvitation(where: { id: $id }) {
+      id
+    }
+  }
+`;
+
+const RESEND_INVITATION = gql`
+  mutation resendInvitation($id: String!) {
+    resendInvitation(where: { id: $id }) {
       id
     }
   }
