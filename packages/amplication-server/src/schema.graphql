@@ -1056,6 +1056,7 @@ type Mutation {
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   inviteUser(data: InviteUserInput!): Invitation
+  deleteUser(where: WhereUniqueInput!): User
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity

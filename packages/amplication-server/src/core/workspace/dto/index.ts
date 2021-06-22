@@ -2,6 +2,7 @@ export { CreateOneWorkspaceArgs } from './CreateOneWorkspaceArgs';
 export { FindManyWorkspaceArgs } from './FindManyWorkspaceArgs';
 export { UpdateOneWorkspaceArgs } from './UpdateOneWorkspaceArgs';
 export { InviteUserArgs } from './InviteUserArgs';
+export { DeleteUserArgs } from './DeleteUserArgs';
 export { CompleteInvitationArgs } from './CompleteInvitationArgs';
 
 export { WorkspaceWhereInput } from './WorkspaceWhereInput';

@@ -6,6 +6,7 @@ import { AccountModule } from '../account/account.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { AppModule } from '../app/app.module';
 import { MailModule } from '../mail/mail.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { MailModule } from '../mail/mail.module';
     AccountModule,
     PermissionsModule,
     AppModule,
-    MailModule
+    MailModule,
+    UserModule
   ],
   providers: [WorkspaceService, WorkspaceResolver],
   exports: [WorkspaceService, WorkspaceResolver]
