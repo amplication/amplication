@@ -30,6 +30,10 @@ export class AuthController {
   @UseGuards(AuthGuard('github'))
   async githubCallback(@Req() request: Request, @Res() response: Response) {
     const token = await this.authService.prepareToken(request.user as AuthUser);
-    response.redirect(301, `/?token=${token}`);
+
+    const host =
+      request.hostname === 'localhost' ? 'http://localhost:3001' : '';
+
+    response.redirect(301, `${host}/?token=${token}`);
   }
 }
