@@ -183,6 +183,24 @@ export type AppRoleWhereInput = {
   app?: Maybe<WhereUniqueInput>;
 };
 
+export type AppSettings = {
+  __typename?: 'AppSettings';
+  id: Scalars['String'];
+  dbHost: Scalars['String'];
+  dbName: Scalars['String'];
+  dbUser: Scalars['String'];
+  dbPassword: Scalars['String'];
+  dbPort: Scalars['Int'];
+};
+
+export type AppSettingsUpdateInput = {
+  dbHost: Scalars['String'];
+  dbName: Scalars['String'];
+  dbUser: Scalars['String'];
+  dbPassword: Scalars['String'];
+  dbPort: Scalars['Int'];
+};
+
 export type AppUpdateInput = {
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
@@ -1152,6 +1170,7 @@ export type Mutation = {
   removeAuthorizeAppWithGithub: App;
   appEnableSyncWithGithubRepo: App;
   appDisableSyncWithGithubRepo: App;
+  updateAppSettings?: Maybe<AppSettings>;
   signup: Auth;
   login: Auth;
   createApiToken: ApiToken;
@@ -1321,6 +1340,11 @@ export type MutationAppDisableSyncWithGithubRepoArgs = {
   where: WhereUniqueInput;
 };
 
+export type MutationUpdateAppSettingsArgs = {
+  data: AppSettingsUpdateInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationSignupArgs = {
   data: SignupInput;
 };
@@ -1439,6 +1463,7 @@ export type Query = {
   pendingChanges: Array<PendingChange>;
   appAvailableGithubRepos: Array<GithubRepo>;
   appValidateBeforeCommit: AppValidationResult;
+  appSettings: AppSettings;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
   me: User;
@@ -1526,6 +1551,10 @@ export type QueryAppAvailableGithubReposArgs = {
 };
 
 export type QueryAppValidateBeforeCommitArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryAppSettingsArgs = {
   where: WhereUniqueInput;
 };
 
