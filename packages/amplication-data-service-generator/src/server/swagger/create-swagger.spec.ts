@@ -12,6 +12,13 @@ const EXAMPLE_APP_INFO: AppInfo = {
   description: EXAMPLE_DESCRIPTION,
   id: "EXAMPLE_ID",
   url: "EXAMPLE_URL",
+  settings: {
+    dbHost: "localhost",
+    dbName: "",
+    dbPort: 5432,
+    dbPassword: "admin",
+    dbUser: "admin",
+  },
 };
 
 describe("createDescription", () => {
