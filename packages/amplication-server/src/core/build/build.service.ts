@@ -364,6 +364,9 @@ export class BuildService {
         const entities = await this.getOrderedEntities(build.id);
         const roles = await this.getAppRoles(build);
         const app = await this.appService.app({ where: { id: build.appId } });
+        const appSettings = await this.appService.getSettings({
+          where: { id: build.appId }
+        });
         const [
           dataServiceGeneratorLogger,
           logPromises
@@ -381,7 +384,8 @@ export class BuildService {
             description: app.description,
             version: build.version,
             id: build.appId,
-            url
+            url,
+            settings: appSettings
           },
           dataServiceGeneratorLogger
         );
