@@ -99,6 +99,12 @@ function ApplicationSettingsForm({ applicationId }: Props) {
             return (
               <Form>
                 <h3>DB Settings</h3>
+                <p>
+                  All the below settings will appear in clear text in the
+                  generated app. <br />
+                  It should only be used for the development environment
+                  variables and should not include sensitive data.
+                </p>
                 <FormikAutoSave debounceMS={2000} />
                 <TextField name="dbHost" autoComplete="off" label="Host" />
                 <TextField
