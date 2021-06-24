@@ -10,6 +10,7 @@ import { App, User, Commit } from 'src/models';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
+import { JsonObject } from 'type-fest';
 import {
   SAMPLE_APP_DATA,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
@@ -28,8 +29,12 @@ import {
   AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
   AppValidationErrorTypes,
-  AppCreateWithEntitiesInput
+  AppCreateWithEntitiesInput,
+  AppSettings,
+  UpdateAppSettingsArgs
 } from './dto';
+
+import { DEFAULT_APP_SETTINGS } from './constants';
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
 import { AppGenerationConfig } from '@amplication/data-service-generator';
@@ -504,7 +509,7 @@ export class AppService {
     return true;
   }
 
-  async startAuthorizeAppWithGithub(appId: string) {
+  async startAuthorizeAppWithGithub(appId: string): Promise<string> {
     return this.githubService.getOAuthAppAuthorizationUrl(appId);
   }
 
@@ -739,5 +744,24 @@ export class AppService {
         githubLastSync: new Date()
       }
     });
+  }
+
+  async getSettings(args: FindOneArgs): Promise<AppSettings> {
+    const app = await this.prisma.app.findUnique(args);
+
+    if (app.settings === null) return DEFAULT_APP_SETTINGS;
+
+    return (app.settings as unknown) as AppSettings;
+  }
+
+  async updateAppSettings(args: UpdateAppSettingsArgs): Promise<AppSettings> {
+    const app = await this.prisma.app.update({
+      where: args.where,
+      data: {
+        settings: (args.data as unknown) as JsonObject
+      }
+    });
+
+    return (app.settings as unknown) as AppSettings;
   }
 }

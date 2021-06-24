@@ -150,6 +150,22 @@ input AppRoleWhereInput {
   app: WhereUniqueInput
 }
 
+type AppSettings {
+  dbHost: String!
+  dbName: String!
+  dbUser: String!
+  dbPassword: String!
+  dbPort: Int!
+}
+
+input AppSettingsUpdateInput {
+  dbHost: String!
+  dbName: String!
+  dbUser: String!
+  dbPassword: String!
+  dbPort: Int!
+}
+
 input AppUpdateInput {
   name: String
   description: String
@@ -1068,6 +1084,7 @@ type Mutation {
   removeAuthorizeAppWithGithub(where: WhereUniqueInput!): App!
   appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
   appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
+  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1142,6 +1159,7 @@ type Query {
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   appAvailableGithubRepos(where: AvailableGithubReposFindInput!): [GithubRepo!]!
   appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
+  appSettings(where: WhereUniqueInput!): AppSettings!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   me: User!

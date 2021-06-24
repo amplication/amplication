@@ -17,7 +17,9 @@ import {
   PendingChange,
   AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
-  CreateAppWithEntitiesArgs
+  CreateAppWithEntitiesArgs,
+  AppSettings,
+  UpdateAppSettingsArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { App, Entity, User, Commit } from 'src/models';
@@ -257,5 +259,24 @@ export class AppResolver {
     @Args() args: FindOneArgs
   ): Promise<AppValidationResult> {
     return this.appService.validateBeforeCommit(args);
+  }
+
+  @Mutation(() => AppSettings, {
+    nullable: true,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async updateAppSettings(
+    @Args() args: UpdateAppSettingsArgs
+  ): Promise<AppSettings> {
+    return this.appService.updateAppSettings(args);
+  }
+
+  @Query(() => AppSettings, {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  async appSettings(@Args() args: FindOneArgs): Promise<AppSettings> {
+    return this.appService.getSettings(args);
   }
 }
