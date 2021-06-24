@@ -90,6 +90,7 @@ model App {
   githubBranch           String?
   githubLastSync         DateTime?
   githubLastMessage      String?
+  settings               Json?
   workspace              Workspace     @relation(fields: [workspaceId], references: [id])
   roles                  AppRole[]
   blocks                 Block[]
