@@ -21,6 +21,7 @@ import { BASE_DIRECTORY } from "./constants";
 import { createEntityToDirectory } from "./create-entity-to-directory";
 import { createEnumRolesModule } from "./create-enum-roles";
 import { createRolesModule } from "./create-roles-module";
+import { createDotEnvModule } from "./create-dotenv";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -106,10 +107,17 @@ export async function createAdminModules(
     ...entityTitleComponentsModules,
     ...entityComponentsModules,
   ];
+  const dotEnvModule = await createDotEnvModule(appInfo);
+
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({
     ...module,
     code: formatCode(module.code),
   }));
-  return [...staticModules, ...publicFilesModules, ...formattedModules];
+  return [
+    ...staticModules,
+    ...publicFilesModules,
+    ...formattedModules,
+    dotEnvModule,
+  ];
 }
