@@ -151,6 +151,7 @@ input AppRoleWhereInput {
 }
 
 type AppSettings {
+  id: String!
   dbHost: String!
   dbName: String!
   dbUser: String!

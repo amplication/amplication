@@ -1,6 +1,6 @@
 import { AppSettings } from './dto';
 
-export const DEFAULT_APP_SETTINGS: AppSettings = {
+export const DEFAULT_APP_SETTINGS: Omit<AppSettings, 'id'> = {
   dbHost: 'localhost',
   dbName: '',
   dbUser: 'admin',

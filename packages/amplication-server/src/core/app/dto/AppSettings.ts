@@ -5,6 +5,12 @@ import { Field, ObjectType, Int } from '@nestjs/graphql';
 })
 export class AppSettings {
   @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  id!: string;
+
+  @Field(() => String, {
     nullable: false
   })
   dbHost!: string;

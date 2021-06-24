@@ -10,7 +10,7 @@ import { App, User, Commit } from 'src/models';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
-import { JsonObject } from 'type-fest';
+import { JsonObject, JsonValue } from 'type-fest';
 import {
   SAMPLE_APP_DATA,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
@@ -746,12 +746,23 @@ export class AppService {
     });
   }
 
+  getAppSettingsObject(
+    appSettings: JsonValue | AppSettings,
+    appId: string
+  ): AppSettings {
+    return {
+      ...((appSettings as unknown) as AppSettings),
+      id: appId
+    };
+  }
+
   async getSettings(args: FindOneArgs): Promise<AppSettings> {
     const app = await this.prisma.app.findUnique(args);
 
-    if (app.settings === null) return DEFAULT_APP_SETTINGS;
+    if (app.settings === null)
+      return this.getAppSettingsObject(DEFAULT_APP_SETTINGS, args.where.id);
 
-    return (app.settings as unknown) as AppSettings;
+    return this.getAppSettingsObject(app.settings, args.where.id);
   }
 
   async updateAppSettings(args: UpdateAppSettingsArgs): Promise<AppSettings> {
@@ -762,6 +773,6 @@ export class AppService {
       }
     });
 
-    return (app.settings as unknown) as AppSettings;
+    return this.getAppSettingsObject(app.settings, args.where.id);
   }
 }
