@@ -32,6 +32,7 @@ export async function createDataServiceImpl(
   logger.info("Creating application...");
   const timer = logger.startTimer();
 
+  appInfo.settings.appId = appInfo.id;
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
     entities
   );

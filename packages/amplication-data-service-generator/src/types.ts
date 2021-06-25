@@ -20,7 +20,9 @@ export type WorkerParam = {
   appInfo: AppInfo;
 };
 
-export type AppSettings = Omit<models.AppSettings, "__typename" | "id">;
+export type AppSettings = Omit<models.AppSettings, "__typename" | "id"> & {
+  appId?: string;
+};
 
 export type AppInfo = {
   name: string;
