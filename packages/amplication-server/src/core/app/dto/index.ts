@@ -19,8 +19,6 @@ export { FindAvailableGithubReposArgs } from './FindAvailableGithubReposArgs';
 export { AppEnableSyncWithGithubRepoArgs } from './AppEnableSyncWithGithubRepoArgs';
 export { AppCreateWithEntitiesInput } from './AppCreateWithEntitiesInput';
 export { CreateAppWithEntitiesArgs } from './CreateAppWithEntitiesArgs';
-export { AppSettings } from './AppSettings';
-export { UpdateAppSettingsArgs } from './UpdateAppSettingsArgs';
 export {
   AppValidationResult,
   AppValidationErrorTypes

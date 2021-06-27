@@ -32,6 +32,7 @@ import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service'; // eslint-disable-line import/no-cycle
+import { AppSettingsService } from '../appSettings/appSettings.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
 import { ActionStep } from '../action/dto';
 import { createZipFileFromModules } from './zip';
@@ -155,6 +156,8 @@ export class BuildService {
     private readonly githubService: GithubService,
     @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
+    private readonly appSettingsService: AppSettingsService,
+
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -364,7 +367,7 @@ export class BuildService {
         const entities = await this.getOrderedEntities(build.id);
         const roles = await this.getAppRoles(build);
         const app = await this.appService.app({ where: { id: build.appId } });
-        const appSettings = await this.appService.getSettings({
+        const appSettings = await this.appSettingsService.getAppSettingsValues({
           where: { id: build.appId }
         });
         const [

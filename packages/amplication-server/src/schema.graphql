@@ -150,8 +150,17 @@ input AppRoleWhereInput {
   app: WhereUniqueInput
 }
 
-type AppSettings {
+type AppSettings implements IBlock {
   id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
   dbHost: String!
   dbName: String!
   dbUser: String!
@@ -160,6 +169,8 @@ type AppSettings {
 }
 
 input AppSettingsUpdateInput {
+  displayName: String
+  description: String
   dbHost: String!
   dbName: String!
   dbUser: String!
@@ -1072,6 +1083,8 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
+  createBlockVersion(data: BlockVersionCreateInput!): Block!
   createBuild(data: BuildCreateInput!): Build!
   createDeployment(data: DeploymentCreateInput!): Deployment!
   createApp(data: AppCreateInput!): App!
@@ -1085,7 +1098,6 @@ type Mutation {
   removeAuthorizeAppWithGithub(where: WhereUniqueInput!): App!
   appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
   appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
-  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1094,7 +1106,6 @@ type Mutation {
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
-  createBlockVersion(data: BlockVersionCreateInput!): Block!
   createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
@@ -1150,6 +1161,9 @@ type Query {
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  appSettings(where: WhereUniqueInput!): AppSettings!
+  blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   action(where: WhereUniqueInput!): Action!
@@ -1160,15 +1174,12 @@ type Query {
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   appAvailableGithubRepos(where: AvailableGithubReposFindInput!): [GithubRepo!]!
   appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
-  appSettings(where: WhereUniqueInput!): AppSettings!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
-  blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   ConnectorRestApiCall(where: WhereUniqueInput!, version: Float): ConnectorRestApiCall
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!, version: Float): EntityPage

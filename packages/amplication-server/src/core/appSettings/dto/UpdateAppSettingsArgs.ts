@@ -1,12 +1,9 @@
 import { ArgsType, Field } from '@nestjs/graphql';
+import { UpdateBlockArgs } from '../../block/dto/UpdateBlockArgs';
 import { AppSettingsUpdateInput } from './AppSettingsUpdateInput';
-import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()
-export class UpdateAppSettingsArgs {
+export class UpdateAppSettingsArgs extends UpdateBlockArgs {
   @Field(() => AppSettingsUpdateInput, { nullable: false })
   data!: AppSettingsUpdateInput;
-
-  @Field(() => WhereUniqueInput, { nullable: false })
-  where!: WhereUniqueInput;
 }

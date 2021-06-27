@@ -1,10 +1,12 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
+import { Field, ObjectType, Int } from '@nestjs/graphql';
+import { IBlock } from 'src/models';
 
-@InputType({
+@ObjectType({
+  implements: IBlock,
   isAbstract: true,
   description: undefined
 })
-export class AppSettingsUpdateInput {
+export class AppSettings extends IBlock {
   @Field(() => String, {
     nullable: false
   })

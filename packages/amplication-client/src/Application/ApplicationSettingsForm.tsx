@@ -137,7 +137,7 @@ function ApplicationSettingsForm({ applicationId }: Props) {
 export default ApplicationSettingsForm;
 
 const UPDATE_APP_SETTINGS = gql`
-  mutation updateApp($data: AppSettingsUpdateInput!, $appId: String!) {
+  mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
     updateAppSettings(data: $data, where: { id: $appId }) {
       id
       dbHost

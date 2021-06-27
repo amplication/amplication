@@ -1,15 +1,10 @@
-import { Field, ObjectType, Int } from '@nestjs/graphql';
+import { Field, InputType,Int } from '@nestjs/graphql';
+import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
 
-@ObjectType({
+@InputType({
   isAbstract: true
 })
-export class AppSettings {
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
-  id!: string;
-
+export class AppSettingsUpdateInput extends BlockUpdateInput {
   @Field(() => String, {
     nullable: false
   })

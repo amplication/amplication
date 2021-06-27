@@ -29,12 +29,9 @@ import {
   AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
   AppValidationErrorTypes,
-  AppCreateWithEntitiesInput,
-  AppSettings,
-  UpdateAppSettingsArgs
+  AppCreateWithEntitiesInput
 } from './dto';
 
-import { DEFAULT_APP_SETTINGS } from './constants';
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
 import { AppGenerationConfig } from '@amplication/data-service-generator';
@@ -744,35 +741,5 @@ export class AppService {
         githubLastSync: new Date()
       }
     });
-  }
-
-  getAppSettingsObject(
-    appSettings: JsonValue | AppSettings,
-    appId: string
-  ): AppSettings {
-    return {
-      ...((appSettings as unknown) as AppSettings),
-      id: appId
-    };
-  }
-
-  async getSettings(args: FindOneArgs): Promise<AppSettings> {
-    const app = await this.prisma.app.findUnique(args);
-
-    if (app.settings === null)
-      return this.getAppSettingsObject(DEFAULT_APP_SETTINGS, args.where.id);
-
-    return this.getAppSettingsObject(app.settings, args.where.id);
-  }
-
-  async updateAppSettings(args: UpdateAppSettingsArgs): Promise<AppSettings> {
-    const app = await this.prisma.app.update({
-      where: args.where,
-      data: {
-        settings: (args.data as unknown) as JsonObject
-      }
-    });
-
-    return this.getAppSettingsObject(app.settings, args.where.id);
   }
 }
