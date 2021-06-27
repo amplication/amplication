@@ -1,4 +1,4 @@
-import { Field, InputType,Int } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
 
 @InputType({

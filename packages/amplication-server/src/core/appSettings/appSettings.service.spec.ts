@@ -3,14 +3,13 @@ import { BlockService } from 'src/core/block/block.service';
 import { AppSettingsService } from './appSettings.service';
 import { AppSettings } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-
+import { DEFAULT_APP_SETTINGS } from './constants';
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
-const EXAMPLE_NAME = 'Example Connector REST API Call';
-const EXAMPLE_URL = 'http://example.com';
+const EXAMPLE_NAME = 'Example App Settings';
 const EXAMPLE_APP_ID = 'ExampleApp';
 
-const EXAMPLE_CONNECTOR_REST_API_CALL: AppSettings = {
+const EXAMPLE_APP_SETTINGS: AppSettings = {
   id: 'ExampleAppSettings',
   updatedAt: new Date(),
   createdAt: new Date(),
@@ -20,16 +19,20 @@ const EXAMPLE_CONNECTOR_REST_API_CALL: AppSettings = {
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
   displayName: EXAMPLE_NAME,
   parentBlock: null,
-  url: EXAMPLE_URL,
-  versionNumber: 0
+  versionNumber: 0,
+  dbHost: 'localhost',
+  dbName: 'myDb',
+  dbPassword: '1234',
+  dbPort: 5432,
+  dbUser: 'admin'
 };
 
-const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];
-
-const createMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
-const findOneMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
-const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALLS);
-const updateMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
+const createMock = jest.fn(() => {
+  return { ...EXAMPLE_APP_SETTINGS, ...DEFAULT_APP_SETTINGS };
+});
+const findOneMock = jest.fn(() => EXAMPLE_APP_SETTINGS);
+const findManyByBlockTypeMock = jest.fn(() => [EXAMPLE_APP_SETTINGS]);
+const updateMock = jest.fn(() => EXAMPLE_APP_SETTINGS);
 
 describe('AppSettingsService', () => {
   let service: AppSettingsService;
@@ -55,9 +58,7 @@ describe('AppSettingsService', () => {
       imports: []
     }).compile();
 
-    service = module.get<AppSettingsService>(
-      AppSettingsService
-    );
+    service = module.get<AppSettingsService>(AppSettingsService);
   });
 
   it('should be defined', () => {
@@ -66,51 +67,33 @@ describe('AppSettingsService', () => {
 
   it('should find one', async () => {
     expect(
-      await service.findOne({
-        where: { id: EXAMPLE_CONNECTOR_REST_API_CALL.id },
-        version: EXAMPLE_CONNECTOR_REST_API_CALL.versionNumber
+      await service.getAppSettingsBlock({
+        where: { id: EXAMPLE_APP_ID }
       })
-    ).toBe(EXAMPLE_CONNECTOR_REST_API_CALL);
-    expect(findOneMock).toBeCalledTimes(1);
-  });
-
-  it('should find many', async () => {
-    expect(await service.findMany({})).toEqual(
-      EXAMPLE_CONNECTOR_REST_API_CALLS
-    );
+    ).toBe(EXAMPLE_APP_SETTINGS);
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
   });
 
-  it('should create', async () => {
-    expect(
-      await service.create({
-        data: {
-          inputParameters: EXAMPLE_INPUT_PARAMETERS,
-          outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-          displayName: EXAMPLE_NAME,
-          url: EXAMPLE_URL,
-          app: {
-            connect: {
-              id: EXAMPLE_APP_ID
-            }
-          }
-        }
-      })
-    ).toEqual(EXAMPLE_CONNECTOR_REST_API_CALL);
+  it('should create default', async () => {
+    expect(await service.createDefaultAppSettings(EXAMPLE_APP_ID)).toEqual({
+      ...EXAMPLE_APP_SETTINGS,
+      ...DEFAULT_APP_SETTINGS
+    });
     expect(createMock).toBeCalledTimes(1);
   });
 
   it('should update', async () => {
     expect(
-      await service.update({
+      await service.updateAppSettings({
         data: {
-          displayName: EXAMPLE_NAME
+          ...EXAMPLE_APP_SETTINGS
         },
         where: {
-          id: EXAMPLE_CONNECTOR_REST_API_CALL.id
+          id: EXAMPLE_APP_ID
         }
       })
-    ).toEqual(EXAMPLE_CONNECTOR_REST_API_CALL);
+    ).toEqual(EXAMPLE_APP_SETTINGS);
+    expect(findManyByBlockTypeMock).toBeCalledTimes(1);
     expect(updateMock).toBeCalledTimes(1);
   });
 });
