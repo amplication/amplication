@@ -10,7 +10,6 @@ import { App, User, Commit } from 'src/models';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
-import { JsonObject, JsonValue } from 'type-fest';
 import {
   SAMPLE_APP_DATA,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
