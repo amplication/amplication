@@ -49,6 +49,9 @@ import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
 import { GithubService } from '../github/github.service';
+import { AppSettingsService } from '../appSettings/appSettings.service';
+
+import { AppSettingsValues } from '../appSettings/constants';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -86,6 +89,15 @@ const EXAMPLE_ENVIRONMENT_NAME = 'exampleEnvironmentName';
 const EXAMPLE_ADDRESS = 'exampleAddress';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
+
+const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
+  dbHost: 'localhost',
+  dbName: 'myDb',
+  dbPassword: '1234',
+  dbPort: 5432,
+  dbUser: 'admin',
+  appId: EXAMPLE_APP_ID
+};
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
@@ -390,6 +402,8 @@ const actionServiceCompleteMock = jest.fn(() => ({}));
 
 const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
+const getAppSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
+
 describe('BuildService', () => {
   let service: BuildService;
 
@@ -479,6 +493,12 @@ describe('BuildService', () => {
             findMany: deploymentFindManyMock,
             autoDeployToSandbox: deploymentAutoDeployToSandboxMock,
             canDeploy: true
+          }
+        },
+        {
+          provide: AppSettingsService,
+          useValue: {
+            getAppSettingsValues: getAppSettingsValuesMock
           }
         },
         {
@@ -620,7 +640,8 @@ describe('BuildService', () => {
         description: EXAMPLE_APP.description,
         version: EXAMPLE_BUILD.version,
         id: EXAMPLE_APP.id,
-        url: `${EXAMPLED_HOST}/${EXAMPLE_APP.id}`
+        url: `${EXAMPLED_HOST}/${EXAMPLE_APP.id}`,
+        settings: EXAMPLE_APP_SETTINGS_VALUES
       },
       MOCK_LOGGER
     );
