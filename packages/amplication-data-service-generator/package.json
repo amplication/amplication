@@ -102,7 +102,7 @@
     "typescript": "^3.9.5",
     "web-vitals": "^0.2.4",
     "winston": "^3.3.3",
-    "class-transformer" : "^0.4.0"
+    "class-transformer": "^0.4.0"
   },
   "devDependencies": {
     "@apollo/client": "^3.3.6",
