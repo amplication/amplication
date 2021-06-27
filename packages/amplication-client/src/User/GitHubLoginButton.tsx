@@ -1,11 +1,20 @@
 import React from "react";
 import { Icon } from "@rmwc/icon";
+import { isEmpty } from "lodash";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import { REACT_APP_GITHUB_CONTROLLER_LOGIN_URL } from "../env";
 import "./GitHubLoginButton.scss";
 
 export const GitHubLoginButton = () => {
   return (
-    <a href="/github" className="github-login-button">
+    <a
+      href={
+        isEmpty(REACT_APP_GITHUB_CONTROLLER_LOGIN_URL)
+          ? "/login"
+          : REACT_APP_GITHUB_CONTROLLER_LOGIN_URL
+      }
+      className="github-login-button"
+    >
       <Button
         type="button"
         buttonStyle={EnumButtonStyle.Primary}
