@@ -15,6 +15,8 @@ export type AppSettingsValuesExtended = Omit<
   | 'versionNumber'
   | 'inputParameters'
   | 'outputParameters'
+  | 'lockedByUserId'
+  | 'lockedAt'
 >;
 
 export const DEFAULT_APP_SETTINGS: AppSettingsValuesExtended = {

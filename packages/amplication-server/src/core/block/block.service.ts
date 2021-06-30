@@ -11,7 +11,13 @@ import {
   BlockVersion as PrismaBlockVersion
 } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
-import { Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
+import {
+  Block,
+  BlockVersion,
+  IBlock,
+  BlockInputOutput,
+  User
+} from 'src/models';
 
 import {
   CreateBlockArgs,
@@ -19,7 +25,8 @@ import {
   FindManyBlockArgs,
   FindManyBlockTypeArgs,
   CreateBlockVersionArgs,
-  FindManyBlockVersionArgs
+  FindManyBlockVersionArgs,
+  LockBlockArgs
 } from './dto';
 import { FindOneWithVersionArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
@@ -73,6 +80,20 @@ export class BlockService {
     throw new Error('Unexpected length of matchingBlocks');
   }
 
+  private async block(blockId: string): Promise<Block | null> {
+    const block = await this.prisma.block.findFirst({
+      where: {
+        id: blockId
+        //deletedAt: null
+      }
+    });
+
+    if (!block) {
+      throw new Error(`Cannot find block with ID ${blockId}`);
+    }
+
+    return block;
+  }
   /**
    * Creates a block of specific type
    */
@@ -297,7 +318,6 @@ export class BlockService {
         inputParameters: currentVersion.inputParameters,
         outputParameters: currentVersion.outputParameters,
         settings: currentVersion.settings,
-        label: args.data.label,
         versionNumber: nextVersionNumber,
         block: {
           connect: {
@@ -310,7 +330,6 @@ export class BlockService {
         createdAt: true,
         updatedAt: true,
         versionNumber: true,
-        label: true,
         block: true
       }
     });
@@ -324,7 +343,6 @@ export class BlockService {
         createdAt: true,
         updatedAt: true,
         versionNumber: true,
-        label: true,
         block: true
       }
     });
@@ -392,5 +410,53 @@ export class BlockService {
     });
 
     return this.versionToIBlock<T>(version);
+  }
+
+  // Tries to acquire a lock on the given block for the given user.
+  // The function checks that the given block is not already locked by another user
+  // If the current user already has a lock on the block, the function complete successfully
+  // The function also check that the given block was not "deleted".
+  async acquireLock(args: LockBlockArgs, user: User): Promise<Block | null> {
+    const blockId = args.where.id;
+
+    const block = await this.block(blockId);
+
+    if (block.lockedByUserId === user.id) {
+      return block;
+    }
+
+    if (block.lockedByUserId) {
+      throw new Error(
+        `Block ${blockId} is already locked by another user - ${block.lockedByUserId} `
+      );
+    }
+
+    return this.prisma.block.update({
+      where: {
+        id: blockId
+      },
+      data: {
+        lockedByUser: {
+          connect: {
+            id: user.id
+          }
+        },
+        lockedAt: new Date()
+      }
+    });
+  }
+
+  async releaseLock(blockId: string): Promise<Block | null> {
+    return this.prisma.block.update({
+      where: {
+        id: blockId
+      },
+      data: {
+        lockedByUser: {
+          disconnect: true
+        },
+        lockedAt: null
+      }
+    });
   }
 }

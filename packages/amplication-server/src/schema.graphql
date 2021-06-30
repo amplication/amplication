@@ -161,6 +161,8 @@ type AppSettings implements IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
   dbHost: String!
   dbName: String!
   dbUser: String!
@@ -227,6 +229,9 @@ type Block {
   description: String!
   blockType: EnumBlockType!
   versionNumber: Float
+  lockedByUserId: String
+  lockedAt: DateTime
+  lockedByUser: [User!]!
 }
 
 type BlockInputOutput {
@@ -269,12 +274,7 @@ type BlockVersion {
   updatedAt: DateTime!
   block: Block!
   versionNumber: Int!
-  label: String!
-}
-
-input BlockVersionCreateInput {
-  label: String!
-  block: WhereParentIdInput!
+  commit: Commit
 }
 
 input BlockVersionOrderByInput {
@@ -407,6 +407,8 @@ type ConnectorRestApi implements IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
   authenticationType: EnumConnectorRestApiAuthenticationType!
   privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings
   httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings
@@ -423,6 +425,8 @@ type ConnectorRestApiCall implements IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
   url: String!
 }
 
@@ -671,6 +675,8 @@ type EntityPage implements IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
   entityId: String!
   pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettings
@@ -1028,6 +1034,8 @@ interface IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
 }
 
 interface IEntityPageSettings {
@@ -1084,7 +1092,6 @@ type Mutation {
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
-  createBlockVersion(data: BlockVersionCreateInput!): Block!
   createBuild(data: BuildCreateInput!): Build!
   createDeployment(data: DeploymentCreateInput!): Deployment!
   createApp(data: AppCreateInput!): App!

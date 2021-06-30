@@ -2,6 +2,7 @@ import { JsonObject, JsonArray } from 'type-fest';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Block } from './Block';
 import { BlockInputOutput } from './BlockInputOutput';
+import { Commit } from '../models/Commit'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -38,11 +39,13 @@ export class BlockVersion {
   })
   versionNumber!: number;
 
-  @Field(() => String, {
-    nullable: false,
+  commitId?: string | null;
+
+  @Field(() => Commit, {
+    nullable: true,
     description: undefined
   })
-  label!: string;
+  commit?: Commit;
 
   settings?: JsonObject;
 

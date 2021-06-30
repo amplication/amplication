@@ -64,4 +64,16 @@ export abstract class IBlock {
     description: undefined
   })
   outputParameters!: BlockInputOutput[];
+
+  @Field(() => String, {
+    nullable: true,
+    description: undefined
+  })
+  lockedByUserId?: string;
+
+  @Field(() => Date, {
+    nullable: true,
+    description: undefined
+  })
+  lockedAt?: Date;
 }
