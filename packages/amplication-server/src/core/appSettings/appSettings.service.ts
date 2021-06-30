@@ -5,20 +5,23 @@ import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
 import { isEmpty } from 'lodash';
-
+import { User } from 'src/models';
 @Injectable()
 export class AppSettingsService {
   @Inject()
   private readonly blockService: BlockService;
 
-  async getAppSettingsValues(args: FindOneArgs): Promise<AppSettingsValues> {
+  async getAppSettingsValues(
+    args: FindOneArgs,
+    user: User
+  ): Promise<AppSettingsValues> {
     const {
       dbHost,
       dbName,
       dbPassword,
       dbPort,
       dbUser
-    } = await this.getAppSettingsBlock(args);
+    } = await this.getAppSettingsBlock(args, user);
 
     return {
       dbHost,
@@ -30,7 +33,10 @@ export class AppSettingsService {
     };
   }
 
-  async getAppSettingsBlock(args: FindOneArgs): Promise<AppSettings> {
+  async getAppSettingsBlock(
+    args: FindOneArgs,
+    user: User
+  ): Promise<AppSettings> {
     const [appSettings] = await this.blockService.findManyByBlockType<
       AppSettings
     >(
@@ -45,36 +51,51 @@ export class AppSettingsService {
     );
 
     if (isEmpty(appSettings)) {
-      return this.createDefaultAppSettings(args.where.id);
+      return this.createDefaultAppSettings(args.where.id, user);
     }
 
     return appSettings;
   }
 
-  async updateAppSettings(args: UpdateAppSettingsArgs): Promise<AppSettings> {
-    const appSettingsBlock = await this.getAppSettingsBlock({
-      where: { id: args.where.id }
-    });
-
-    return this.blockService.update<AppSettings>({
-      where: {
-        id: appSettingsBlock.id
+  async updateAppSettings(
+    args: UpdateAppSettingsArgs,
+    user: User
+  ): Promise<AppSettings> {
+    const appSettingsBlock = await this.getAppSettingsBlock(
+      {
+        where: { id: args.where.id }
       },
-      data: args.data
-    });
+      user
+    );
+
+    return this.blockService.update<AppSettings>(
+      {
+        where: {
+          id: appSettingsBlock.id
+        },
+        data: args.data
+      },
+      user
+    );
   }
 
-  async createDefaultAppSettings(appId: string): Promise<AppSettings> {
-    return this.blockService.create<AppSettings>({
-      data: {
-        app: {
-          connect: {
-            id: appId
-          }
-        },
-        ...DEFAULT_APP_SETTINGS,
-        blockType: EnumBlockType.AppSettings
-      }
-    });
+  async createDefaultAppSettings(
+    appId: string,
+    user: User
+  ): Promise<AppSettings> {
+    return this.blockService.create<AppSettings>(
+      {
+        data: {
+          app: {
+            connect: {
+              id: appId
+            }
+          },
+          ...DEFAULT_APP_SETTINGS,
+          blockType: EnumBlockType.AppSettings
+        }
+      },
+      user
+    );
   }
 }

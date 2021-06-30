@@ -361,8 +361,12 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
-    /**@todo: do the same for Blocks */
-    return this.entityService.getChangedEntities(appId, user.id);
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(appId, user.id),
+      this.blockService.getChangedBlocks(appId, user.id)
+    ]);
+
+    return [...changedEntities, ...changedBlocks];
   }
 
   async commit(

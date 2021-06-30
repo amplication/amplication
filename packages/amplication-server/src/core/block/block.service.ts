@@ -36,8 +36,7 @@ import {
   EnumPendingChangeAction
 } from '../app/dto';
 
-const NEW_VERSION_LABEL = 'Current Version';
-const INITIAL_VERSION_NUMBER = 0;
+const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
 
 export type BlockPendingChange = {
@@ -117,7 +116,8 @@ export class BlockService {
   async create<T extends IBlock>(
     args: CreateBlockArgs & {
       data: CreateBlockArgs['data'] & { blockType: keyof typeof EnumBlockType };
-    }
+    },
+    user: User
   ): Promise<T> {
     const {
       displayName,
@@ -160,13 +160,19 @@ export class BlockService {
       description: description,
       app: appConnect,
       blockType: blockType,
-      parentBlock: parentBlockConnect
+      parentBlock: parentBlockConnect,
+      lockedAt: new Date(),
+      lockedByUser: {
+        connect: {
+          id: user.id
+        }
+      }
     };
 
     const versionData = {
       displayName: displayName,
       description: description,
-      versionNumber: INITIAL_VERSION_NUMBER,
+      versionNumber: CURRENT_VERSION_NUMBER,
       inputParameters: { params: inputParameters },
       outputParameters: {
         params: outputParameters
@@ -225,7 +231,9 @@ export class BlockService {
       parentBlock,
       displayName,
       description,
-      blockType
+      blockType,
+      lockedAt,
+      lockedByUserId
     } = version.block;
     const block: IBlock = {
       id,
@@ -235,6 +243,8 @@ export class BlockService {
       displayName,
       description,
       blockType,
+      lockedAt,
+      lockedByUserId,
       versionNumber: version.versionNumber,
       inputParameters: ((version.inputParameters as unknown) as {
         params: BlockInputOutput[];
@@ -301,7 +311,7 @@ export class BlockService {
       include: {
         versions: {
           where: {
-            versionNumber: INITIAL_VERSION_NUMBER
+            versionNumber: CURRENT_VERSION_NUMBER
           }
         },
         parentBlock: true
@@ -409,8 +419,13 @@ export class BlockService {
    * This method does not update the input or output parameters
    * This method does not support partial updates
    * */
-  async update<T extends IBlock>(args: UpdateBlockArgs): Promise<T> {
+  async update<T extends IBlock>(
+    args: UpdateBlockArgs,
+    user: User
+  ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
+
+    await this.acquireLock(args, user);
 
     const version = await this.prisma.blockVersion.update({
       data: {
@@ -420,13 +435,15 @@ export class BlockService {
             displayName,
             description
           }
-        }
+        },
+        displayName,
+        description
       },
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: args.where.id,
-          versionNumber: INITIAL_VERSION_NUMBER
+          versionNumber: CURRENT_VERSION_NUMBER
         }
       },
       include: {
