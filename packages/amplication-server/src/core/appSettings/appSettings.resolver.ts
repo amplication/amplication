@@ -23,8 +23,6 @@ export class AppSettingsResolver {
     @Args() args: UpdateAppSettingsArgs,
     @UserEntity() user: User
   ): Promise<AppSettings> {
-    console.log({ user });
-
     return this.service.updateAppSettings(args, user);
   }
 

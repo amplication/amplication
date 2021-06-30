@@ -6,6 +6,7 @@ import {
 import { JsonObject } from 'type-fest';
 import head from 'lodash.head';
 import last from 'lodash.last';
+import { pick } from 'lodash';
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
@@ -306,6 +307,7 @@ export class BlockService {
     const blocks = this.prisma.block.findMany({
       ...args,
       where: {
+        ...args.where,
         blockType: { equals: blockType }
       },
       include: {
@@ -598,6 +600,82 @@ export class BlockService {
         versionNumber: changedVersion.versionNumber,
         resource: block
       };
+    });
+  }
+
+  async discardPendingChanges(blockId: string, userId: string): Promise<Block> {
+    const blockVersions = await this.prisma.blockVersion.findMany({
+      where: {
+        block: { id: blockId }
+      },
+      orderBy: {
+        versionNumber: Prisma.SortOrder.asc
+      },
+      include: {
+        block: true
+      }
+    });
+
+    const firstBlockVersion = head(blockVersions);
+    const lastBlockVersion = last(blockVersions);
+
+    if (!firstBlockVersion || !lastBlockVersion) {
+      throw new Error(`Block ${blockId} has no versions `);
+    }
+
+    if (firstBlockVersion.block.lockedByUserId !== userId) {
+      throw new Error(
+        `Cannot discard pending changes on block ${blockId} since it is not currently locked by the requesting user `
+      );
+    }
+
+    await this.cloneVersionData(lastBlockVersion.id, firstBlockVersion.id);
+
+    return this.releaseLock(blockId);
+  }
+  private async cloneVersionData(
+    sourceVersionId: string,
+    targetVersionId: string
+  ): Promise<void> {
+    const sourceVersion = await this.prisma.blockVersion.findUnique({
+      where: {
+        id: sourceVersionId
+      }
+    });
+
+    if (!sourceVersion) {
+      throw new Error(`Can't find source (Block Version ${sourceVersionId})`);
+    }
+
+    let targetVersion = await this.prisma.blockVersion.findUnique({
+      where: {
+        id: targetVersionId
+      }
+    });
+
+    if (!targetVersion) {
+      throw new Error(`Can't find target (Block Version ${targetVersionId})`);
+    }
+
+    const names = pick(sourceVersion, ['displayName', 'description']);
+
+    //update the target version with its fields, and the its parent block
+    targetVersion = await this.prisma.blockVersion.update({
+      where: {
+        id: targetVersionId
+      },
+      data: {
+        //when the source target is flagged as deleted (commit on DELETE action), do not update the parent block
+        block: sourceVersion.deleted
+          ? undefined
+          : {
+              update: {
+                ...names,
+                deletedAt: null
+              }
+            },
+        ...names
+      }
     });
   }
 }

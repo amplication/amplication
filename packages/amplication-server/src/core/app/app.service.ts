@@ -509,26 +509,29 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
-    /**@todo: do the same for Blocks */
-    const changedEntities = await this.entityService.getChangedEntities(
-      appId,
-      userId
-    );
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(appId, userId),
+      this.blockService.getChangedBlocks(appId, userId)
+    ]);
 
-    if (isEmpty(changedEntities)) {
+    if (isEmpty(changedEntities) && isEmpty(changedBlocks)) {
       throw new Error(
         `There are no pending changes for user ${userId} in app ${appId}`
       );
     }
 
-    await Promise.all(
-      changedEntities.map(change => {
-        return this.entityService.discardPendingChanges(
-          change.resourceId,
-          userId
-        );
-      })
-    );
+    const entityPromises = changedEntities.map(change => {
+      return this.entityService.discardPendingChanges(
+        change.resourceId,
+        userId
+      );
+    });
+    const blockPromises = changedBlocks.map(change => {
+      return this.blockService.discardPendingChanges(change.resourceId, userId);
+    });
+
+    await Promise.all(blockPromises);
+    await Promise.all(entityPromises);
 
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
