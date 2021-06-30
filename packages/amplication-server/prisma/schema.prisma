@@ -243,6 +243,7 @@ model Block {
   description    String?
   lockedByUserId String?
   lockedAt       DateTime?
+  deletedAt      DateTime?
   lockedByUser   User?          @relation(fields: [lockedByUserId], references: [id])
   app            App            @relation(fields: [appId], references: [id])
   parentBlock    Block?         @relation("BlockToBlock", fields: [parentBlockId], references: [id])
@@ -258,10 +259,13 @@ model BlockVersion {
   updatedAt        DateTime @updatedAt
   blockId          String
   versionNumber    Int
+  displayName      String   @default("")
+  description      String?
   inputParameters  Json?
   outputParameters Json?
   settings         Json
   commitId         String?
+  deleted          Boolean?
   commit           Commit?  @relation(fields: [commitId], references: [id])
   block            Block    @relation(fields: [blockId], references: [id])
   builds           Build[]
