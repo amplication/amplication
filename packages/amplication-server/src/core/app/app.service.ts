@@ -9,6 +9,7 @@ import { validateHTMLColorHex } from 'validate-color';
 import { App, User, Commit } from 'src/models';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
+import { BlockService } from '../block/block.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
 import {
   SAMPLE_APP_DATA,
@@ -63,6 +64,7 @@ export class AppService {
   constructor(
     private readonly prisma: PrismaService,
     private entityService: EntityService,
+    private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
     private readonly githubService: GithubService
@@ -387,11 +389,10 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
-    /**@todo: do the same for Blocks */
-    const changedEntities = await this.entityService.getChangedEntities(
-      appId,
-      userId
-    );
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(appId, userId),
+      this.blockService.getChangedBlocks(appId, userId)
+    ]);
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
@@ -417,6 +418,32 @@ export class AppService {
         const releasePromise = this.entityService.releaseLock(
           change.resourceId
         );
+
+        return [
+          versionPromise.then(() => null),
+          releasePromise.then(() => null)
+        ];
+      })
+    );
+
+    await Promise.all(
+      changedBlocks.flatMap(change => {
+        const versionPromise = this.blockService.createVersion({
+          data: {
+            commit: {
+              connect: {
+                id: commit.id
+              }
+            },
+            block: {
+              connect: {
+                id: change.resourceId
+              }
+            }
+          }
+        });
+
+        const releasePromise = this.blockService.releaseLock(change.resourceId);
 
         return [
           versionPromise.then(() => null),

@@ -8,7 +8,8 @@ import head from 'lodash.head';
 import last from 'lodash.last';
 import {
   Block as PrismaBlock,
-  BlockVersion as PrismaBlockVersion
+  BlockVersion as PrismaBlockVersion,
+  Prisma
 } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import {
@@ -18,7 +19,7 @@ import {
   BlockInputOutput,
   User
 } from 'src/models';
-
+import { revertDeletedItemName } from 'src/util/softDelete';
 import {
   CreateBlockArgs,
   UpdateBlockArgs,
@@ -30,10 +31,26 @@ import {
 } from './dto';
 import { FindOneWithVersionArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import {
+  EnumPendingChangeResourceType,
+  EnumPendingChangeAction
+} from '../app/dto';
 
 const NEW_VERSION_LABEL = 'Current Version';
 const INITIAL_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
+
+export type BlockPendingChange = {
+  /** The id of the changed block */
+  resourceId: string;
+  /** The type of change */
+  action: EnumPendingChangeAction;
+  resourceType: EnumPendingChangeResourceType.Block;
+  /** The block version number */
+  versionNumber: number;
+  /** The block */
+  resource: Block;
+};
 
 @Injectable()
 export class BlockService {
@@ -147,7 +164,8 @@ export class BlockService {
     };
 
     const versionData = {
-      label: NEW_VERSION_LABEL,
+      displayName: displayName,
+      description: description,
       versionNumber: INITIAL_VERSION_NUMBER,
       inputParameters: { params: inputParameters },
       outputParameters: {
@@ -160,6 +178,7 @@ export class BlockService {
     const version = await this.prisma.blockVersion.create({
       data: {
         ...versionData,
+        commit: undefined,
         block: {
           create: blockData
         }
@@ -299,6 +318,9 @@ export class BlockService {
     const versions = await this.prisma.blockVersion.findMany({
       where: {
         block: { id: blockId }
+      },
+      orderBy: {
+        versionNumber: Prisma.SortOrder.asc
       }
     });
     const currentVersion = head(versions); // Version 0
@@ -315,9 +337,16 @@ export class BlockService {
 
     return this.prisma.blockVersion.create({
       data: {
+        displayName: currentVersion.displayName,
+        description: currentVersion.description,
         inputParameters: currentVersion.inputParameters,
         outputParameters: currentVersion.outputParameters,
         settings: currentVersion.settings,
+        commit: {
+          connect: {
+            id: args.data.commit.connect.id
+          }
+        },
         versionNumber: nextVersionNumber,
         block: {
           connect: {
@@ -457,6 +486,101 @@ export class BlockService {
         },
         lockedAt: null
       }
+    });
+  }
+
+  /**
+   * Gets all the blocks changed since the last app commit
+   * @param appId the app ID to find changes to
+   * @param userId the user ID the app ID relates to
+   */
+  async getChangedBlocks(
+    appId: string,
+    userId: string
+  ): Promise<BlockPendingChange[]> {
+    const changedBlocks = await this.prisma.block.findMany({
+      where: {
+        lockedByUserId: userId,
+        appId
+      },
+      include: {
+        lockedByUser: true,
+        versions: {
+          orderBy: {
+            versionNumber: Prisma.SortOrder.desc
+          },
+          /**find the first two versions to decide whether it is an update or a create */
+          take: 2
+        }
+      }
+    });
+
+    return changedBlocks.map(block => {
+      const [lastVersion] = block.versions;
+      const action = block.deletedAt
+        ? EnumPendingChangeAction.Delete
+        : block.versions.length > 1
+        ? EnumPendingChangeAction.Update
+        : EnumPendingChangeAction.Create;
+
+      block.versions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
+
+      //prepare name fields for display
+      if (action === EnumPendingChangeAction.Delete) {
+        block.displayName = revertDeletedItemName(block.displayName, block.id);
+      }
+
+      return {
+        resourceId: block.id,
+        action: action,
+        resourceType: EnumPendingChangeResourceType.Block,
+        versionNumber: lastVersion.versionNumber + 1,
+        resource: block
+      };
+    });
+  }
+
+  async getChangedBlocksByCommit(
+    commitId: string
+  ): Promise<BlockPendingChange[]> {
+    const changedBlocks = await this.prisma.block.findMany({
+      where: {
+        versions: {
+          some: {
+            commitId: commitId
+          }
+        }
+      },
+      include: {
+        lockedByUser: true,
+        versions: {
+          where: {
+            commitId: commitId
+          }
+        }
+      }
+    });
+
+    return changedBlocks.map(block => {
+      const [changedVersion] = block.versions;
+      const action = changedVersion.deleted
+        ? EnumPendingChangeAction.Delete
+        : changedVersion.versionNumber > 1
+        ? EnumPendingChangeAction.Update
+        : EnumPendingChangeAction.Create;
+
+      //prepare name fields for display
+      if (action === EnumPendingChangeAction.Delete) {
+        block.displayName = changedVersion.displayName;
+      }
+
+      return {
+        resourceId: block.id,
+        action: action,
+        resourceType: EnumPendingChangeResourceType.Block,
+        versionNumber: changedVersion.versionNumber,
+        resource: block
+      };
     });
   }
 }

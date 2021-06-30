@@ -1166,11 +1166,11 @@ type Query {
   currentWorkspace: Workspace
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
   appSettings(where: WhereUniqueInput!): AppSettings!
-  blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   action(where: WhereUniqueInput!): Action!
