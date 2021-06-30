@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { FindOneWithVersionArgs } from 'src/dto';
+import { FindOneArgs } from 'src/dto';
 import { IBlock, User } from 'src/models';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockService } from '../block/block.service';
@@ -21,7 +21,7 @@ export abstract class BlockTypeService<
   @Inject()
   private readonly blockService: BlockService;
 
-  async findOne(args: FindOneWithVersionArgs): Promise<T | null> {
+  async findOne(args: FindOneArgs): Promise<T | null> {
     return this.blockService.findOne<T>(args);
   }
 

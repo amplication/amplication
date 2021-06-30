@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { IBlock, User } from 'src/models';
-import { FindOneWithVersionArgs } from 'src/dto';
+import { FindOneArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { BlockTypeService } from './blockType.service';
@@ -40,7 +40,7 @@ export function BlockTypeResolver<
       description: undefined
     })
     @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
-    async findOne(@Args() args: FindOneWithVersionArgs): Promise<T | null> {
+    async findOne(@Args() args: FindOneArgs): Promise<T | null> {
       return this.service.findOne(args);
     }
 

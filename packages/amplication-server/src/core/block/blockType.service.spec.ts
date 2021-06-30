@@ -4,7 +4,7 @@ import { BlockService } from './block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { IBlock, BlockInputOutput, Block } from 'src/models';
 import { FindManyBlockTypeArgs, CreateBlockArgs, UpdateBlockArgs } from './dto';
-import { FindOneWithVersionArgs } from 'src/dto';
+import { FindOneArgs } from 'src/dto';
 
 const EXAMPLE_IBLOCK_ID = 'exampleIblockId';
 const EXAMPLE_DISPLAY_NAME = 'exampleDisplayName';
@@ -100,9 +100,8 @@ describe('BlockTypeService', () => {
   });
 
   it('should find a block service', async () => {
-    const args: FindOneWithVersionArgs = {
-      where: { id: EXAMPLE_IBLOCK_ID },
-      version: EXAMPLE_VERSION_NUMBER
+    const args: FindOneArgs = {
+      where: { id: EXAMPLE_IBLOCK_ID }
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_IBLOCK);
     expect(blockServiceFindOneMock).toBeCalledTimes(1);

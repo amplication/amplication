@@ -17,6 +17,8 @@ export abstract class IBlock {
   })
   createdAt!: Date;
 
+  appId?: string;
+
   @Field(() => Date, {
     nullable: false,
     description: undefined

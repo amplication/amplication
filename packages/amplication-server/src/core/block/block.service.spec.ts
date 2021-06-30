@@ -186,8 +186,7 @@ describe('BlockService', () => {
     const result = await service.findOne({
       where: {
         id: EXAMPLE_BLOCK.id
-      },
-      version: EXAMPLE_BLOCK_VERSION.versionNumber
+      }
     });
     expect(result).toEqual(EXAMPLE_IBLOCK);
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledTimes(1);

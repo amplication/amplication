@@ -30,7 +30,7 @@ import {
   FindManyBlockVersionArgs,
   LockBlockArgs
 } from './dto';
-import { FindOneWithVersionArgs } from 'src/dto';
+import { FindOneArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import {
   EnumPendingChangeResourceType,
@@ -97,16 +97,16 @@ export class BlockService {
     throw new Error('Unexpected length of matchingBlocks');
   }
 
-  private async block(blockId: string): Promise<Block | null> {
+  async block(args: FindOneArgs): Promise<Block | null> {
     const block = await this.prisma.block.findFirst({
       where: {
-        id: blockId
+        id: args.where.id
         //deletedAt: null
       }
     });
 
     if (!block) {
-      throw new Error(`Cannot find block with ID ${blockId}`);
+      throw new Error(`Cannot find block with ID ${args.where.id}`);
     }
 
     return block;
@@ -261,15 +261,13 @@ export class BlockService {
     } as unknown) as T;
   }
 
-  async findOne<T extends IBlock>(
-    args: FindOneWithVersionArgs
-  ): Promise<T | null> {
+  async findOne<T extends IBlock>(args: FindOneArgs): Promise<T | null> {
     const version = await this.prisma.blockVersion.findUnique({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: args.where.id,
-          versionNumber: args.version
+          versionNumber: CURRENT_VERSION_NUMBER
         }
       },
       include: {
@@ -283,7 +281,7 @@ export class BlockService {
 
     if (!version) {
       throw new NotFoundException(
-        `Block with ID ${args.where.id} and version ${args.version} was not found`
+        `Block with ID ${args.where.id} was not found`
       );
     }
     /**  @todo: add exception handling layer on the resolver level to convert to ApolloError */
@@ -467,7 +465,11 @@ export class BlockService {
   async acquireLock(args: LockBlockArgs, user: User): Promise<Block | null> {
     const blockId = args.where.id;
 
-    const block = await this.block(blockId);
+    const block = await this.block({
+      where: {
+        id: blockId
+      }
+    });
 
     if (block.lockedByUserId === user.id) {
       return block;

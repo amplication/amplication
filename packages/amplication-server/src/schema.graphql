@@ -231,6 +231,7 @@ type Block {
   versionNumber: Float
   lockedByUserId: String
   lockedAt: DateTime
+  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
   lockedByUser: [User!]!
 }
 
@@ -1166,8 +1167,8 @@ type Query {
   currentWorkspace: Workspace
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
   blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
+  block(where: WhereUniqueInput!): Block!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
   appSettings(where: WhereUniqueInput!): AppSettings!
@@ -1185,11 +1186,11 @@ type Query {
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   me: User!
   userApiTokens: [ApiToken!]!
-  ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
+  ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
-  ConnectorRestApiCall(where: WhereUniqueInput!, version: Float): ConnectorRestApiCall
+  ConnectorRestApiCall(where: WhereUniqueInput!): ConnectorRestApiCall
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
-  EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
+  EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
 }
 
