@@ -161,6 +161,8 @@ type AppSettings implements IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
   dbHost: String!
   dbName: String!
   dbUser: String!
@@ -224,9 +226,13 @@ type Block {
   app: App
   parentBlock: Block
   displayName: String!
-  description: String!
+  description: String
   blockType: EnumBlockType!
   versionNumber: Float
+  lockedByUserId: String
+  lockedAt: DateTime
+  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]
+  lockedByUser: [User!]!
 }
 
 type BlockInputOutput {
@@ -267,14 +273,12 @@ type BlockVersion {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  displayName: String!
+  description: String
   block: Block!
   versionNumber: Int!
-  label: String!
-}
-
-input BlockVersionCreateInput {
-  label: String!
-  block: WhereParentIdInput!
+  commit: Commit
+  settings: JSONObject
 }
 
 input BlockVersionOrderByInput {
@@ -407,6 +411,8 @@ type ConnectorRestApi implements IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
   authenticationType: EnumConnectorRestApiAuthenticationType!
   privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings
   httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings
@@ -423,6 +429,8 @@ type ConnectorRestApiCall implements IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
   url: String!
 }
 
@@ -671,6 +679,8 @@ type EntityPage implements IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
   entityId: String!
   pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettings
@@ -1028,6 +1038,8 @@ interface IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
 }
 
 interface IEntityPageSettings {
@@ -1084,7 +1096,6 @@ type Mutation {
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
-  createBlockVersion(data: BlockVersionCreateInput!): Block!
   createBuild(data: BuildCreateInput!): Build!
   createDeployment(data: DeploymentCreateInput!): Deployment!
   createApp(data: AppCreateInput!): App!
@@ -1159,11 +1170,11 @@ type Query {
   currentWorkspace: Workspace
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
+  block(where: WhereUniqueInput!): Block!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
   appSettings(where: WhereUniqueInput!): AppSettings!
-  blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   action(where: WhereUniqueInput!): Action!
@@ -1178,11 +1189,11 @@ type Query {
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   me: User!
   userApiTokens: [ApiToken!]!
-  ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
+  ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
-  ConnectorRestApiCall(where: WhereUniqueInput!, version: Float): ConnectorRestApiCall
+  ConnectorRestApiCall(where: WhereUniqueInput!): ConnectorRestApiCall
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
-  EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
+  EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
 }
 

@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { IBlock } from 'src/models';
-import { FindOneWithVersionArgs } from 'src/dto';
+import { IBlock, User } from 'src/models';
+import { FindOneArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { BlockTypeService } from './blockType.service';
@@ -9,6 +9,7 @@ import {
   CreateBlockArgs,
   UpdateBlockArgs
 } from '../block/dto';
+import { UserEntity } from 'src/decorators/user.decorator';
 
 type Constructor<T> = {
   new (...args: any): T;
@@ -39,7 +40,7 @@ export function BlockTypeResolver<
       description: undefined
     })
     @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
-    async findOne(@Args() args: FindOneWithVersionArgs): Promise<T | null> {
+    async findOne(@Args() args: FindOneArgs): Promise<T | null> {
       return this.service.findOne(args);
     }
 
@@ -65,9 +66,10 @@ export function BlockTypeResolver<
       'data.app.connect.id'
     )
     async [createName](
-      @Args({ type: () => createArgsRef }) args: CreateArgs
+      @Args({ type: () => createArgsRef }) args: CreateArgs,
+      @UserEntity() user: User
     ): Promise<T> {
-      return this.service.create(args);
+      return this.service.create(args, user);
     }
 
     @Mutation(() => classRef, {
@@ -77,9 +79,10 @@ export function BlockTypeResolver<
     })
     @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
     async [updateName](
-      @Args({ type: () => updateArgsRef }) args: UpdateArgs
+      @Args({ type: () => updateArgsRef }) args: UpdateArgs,
+      @UserEntity() user: User
     ): Promise<T> {
-      return this.service.update(args);
+      return this.service.update(args, user);
     }
   }
   return BaseResolverHost;

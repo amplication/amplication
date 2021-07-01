@@ -7,6 +7,7 @@ import { EntityPage } from './dto/EntityPage';
 import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
 import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
+import { User } from 'src/models';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
@@ -62,7 +63,7 @@ export class EntityPageService extends BlockTypeService<
     /** @todo: case EnumEntityPageType.List validate navigateToPageId */
   }
 
-  async create(args: CreateEntityPageArgs): Promise<EntityPage> {
+  async create(args: CreateEntityPageArgs, user: User): Promise<EntityPage> {
     await Promise.all([
       this.validateEntityInApp(args.data.entityId, args.data.app.connect.id),
       this.validatePageType(
@@ -73,10 +74,10 @@ export class EntityPageService extends BlockTypeService<
       )
     ]);
 
-    return super.create(args);
+    return super.create(args, user);
   }
 
-  async update(args: UpdateEntityPageArgs): Promise<EntityPage> {
+  async update(args: UpdateEntityPageArgs, user: User): Promise<EntityPage> {
     await this.validatePageType(
       args.data.pageType,
       args.data.entityId,
@@ -84,6 +85,6 @@ export class EntityPageService extends BlockTypeService<
       args.data.showFieldList
     );
 
-    return super.update(args);
+    return super.update(args, user);
   }
 }

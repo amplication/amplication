@@ -6,11 +6,11 @@ import { WhereParentIdInput } from 'src/dto';
   description: undefined
 })
 export class BlockVersionCreateInput {
-  @Field(() => String, {
+  @Field(() => WhereParentIdInput, {
     nullable: false,
     description: undefined
   })
-  label!: string;
+  commit!: WhereParentIdInput;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,

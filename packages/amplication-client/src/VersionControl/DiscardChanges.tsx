@@ -1,5 +1,6 @@
 import React, { useCallback, useContext } from "react";
 import { Snackbar } from "@rmwc/snackbar";
+import * as models from "../models";
 
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
@@ -25,12 +26,24 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
 
       //remove entities from cache to reflect discarded changes
       for (var change of pendingChangesContext.pendingChanges) {
-        cache.evict({
-          id: cache.identify({
-            id: change.resourceId,
-            __typename: "Entity",
-          }),
-        });
+        if (
+          change.resourceType === models.EnumPendingChangeResourceType.Entity
+        ) {
+          cache.evict({
+            id: cache.identify({
+              id: change.resourceId,
+              __typename: "Entity",
+            }),
+          });
+        } else {
+          /**@todo: handle other types of blocks */
+          cache.evict({
+            id: cache.identify({
+              id: change.resourceId,
+              __typename: "AppSettings",
+            }),
+          });
+        }
       }
     },
     onCompleted: (data) => {

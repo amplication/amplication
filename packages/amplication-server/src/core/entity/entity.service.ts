@@ -48,7 +48,8 @@ import {
 
 import {
   EnumPendingChangeResourceType,
-  EnumPendingChangeAction
+  EnumPendingChangeAction,
+  PendingChange
 } from '../app/dto';
 
 import {
@@ -486,7 +487,7 @@ export class EntityService {
     });
   }
 
-  async getChangedEntitiesByCommit(commitId: string) {
+  async getChangedEntitiesByCommit(commitId: string): Promise<PendingChange[]> {
     const changedEntity = await this.prisma.entity.findMany({
       where: {
         versions: {

@@ -6,13 +6,13 @@ import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";
 import "./PendingChangeDiff.scss";
 
-const CLASS_NAME = "pending-change-diff";
-const CURRENT_VERSION_NUMBER = 0;
-
 export enum EnumCompareType {
   Pending = "Pending",
   Previous = "Previous",
 }
+
+const CLASS_NAME = "pending-change-diff";
+const CURRENT_VERSION_NUMBER = 0;
 
 const NON_COMPARABLE_PROPERTIES = [
   "createdAt",
@@ -30,7 +30,38 @@ type Props = {
   splitView: boolean;
 };
 
-const PendingChangeDiff = ({
+export const DIFF_STYLES = {
+  variables: {
+    light: {
+      diffViewerBackground: "var(--diffViewerBackground)",
+      diffViewerColor: "var(--diffViewerColor)",
+      addedBackground: "var(--addedBackground)",
+      addedColor: "var(--addedColor)",
+      removedBackground: "var(--removedBackground)",
+      removedColor: "var(--removedColor)",
+      wordAddedBackground: "var(--wordAddedBackground)",
+      wordRemovedBackground: "var(--wordRemovedBackground)",
+      addedGutterBackground: "var(--addedGutterBackground)",
+      removedGutterBackground: "var(--removedGutterBackground)",
+      gutterBackground: "var(--gutterBackground)",
+      gutterBackgroundDark: "var(--gutterBackgroundDark)",
+      highlightBackground: "var(--highlightBackground)",
+      highlightGutterBackground: "var(--highlightGutterBackground)",
+      codeFoldGutterBackground: "var(--codeFoldGutterBackground)",
+      codeFoldBackground: "var(--codeFoldBackground)",
+      emptyLineBackground: "var(--emptyLineBackground)",
+      gutterColor: "var(--gutterColor)",
+      addedGutterColor: "var(--addedGutterColor)",
+      removedGutterColor: "var(--removedGutterColor)",
+      codeFoldContentColor: "var(--codeFoldContentColor)",
+      diffViewerTitleBackground: "var(--diffViewerTitleBackground)",
+      diffViewerTitleColor: "var(--diffViewerTitleColor)",
+      diffViewerTitleBorderColor: "var(--diffViewerTitleBorderColor)",
+    },
+  },
+};
+
+const PendingChangeDiffEntity = ({
   change,
   compareType = EnumCompareType.Pending,
   splitView,
@@ -77,44 +108,13 @@ const PendingChangeDiff = ({
     return getEntityVersionYAML(dataOtherVersion);
   }, [dataOtherVersion]);
 
-  const diffStyles = {
-    variables: {
-      light: {
-        diffViewerBackground: "var(--diffViewerBackground)",
-        diffViewerColor: "var(--diffViewerColor)",
-        addedBackground: "var(--addedBackground)",
-        addedColor: "var(--addedColor)",
-        removedBackground: "var(--removedBackground)",
-        removedColor: "var(--removedColor)",
-        wordAddedBackground: "var(--wordAddedBackground)",
-        wordRemovedBackground: "var(--wordRemovedBackground)",
-        addedGutterBackground: "var(--addedGutterBackground)",
-        removedGutterBackground: "var(--removedGutterBackground)",
-        gutterBackground: "var(--gutterBackground)",
-        gutterBackgroundDark: "var(--gutterBackgroundDark)",
-        highlightBackground: "var(--highlightBackground)",
-        highlightGutterBackground: "var(--highlightGutterBackground)",
-        codeFoldGutterBackground: "var(--codeFoldGutterBackground)",
-        codeFoldBackground: "var(--codeFoldBackground)",
-        emptyLineBackground: "var(--emptyLineBackground)",
-        gutterColor: "var(--gutterColor)",
-        addedGutterColor: "var(--addedGutterColor)",
-        removedGutterColor: "var(--removedGutterColor)",
-        codeFoldContentColor: "var(--codeFoldContentColor)",
-        diffViewerTitleBackground: "var(--diffViewerTitleBackground)",
-        diffViewerTitleColor: "var(--diffViewerTitleColor)",
-        diffViewerTitleBorderColor: "var(--diffViewerTitleBorderColor)",
-      },
-    },
-  };
-
   return (
     <div className={CLASS_NAME}>
       {loadingCurrentVersion || loadingOtherVersion ? (
         "Loading..."
       ) : (
         <ReactDiffViewer
-          styles={diffStyles}
+          styles={DIFF_STYLES}
           compareMethod={DiffMethod.WORDS}
           oldValue={otherValue}
           newValue={newValue}
@@ -134,7 +134,7 @@ function getEntityVersionYAML(data: TData | undefined): string {
   return YAML.stringify(omitDeep(entityVersions[0], NON_COMPARABLE_PROPERTIES));
 }
 
-export default PendingChangeDiff;
+export default PendingChangeDiffEntity;
 
 export const GET_ENTITY_VERSION = gql`
   query getEntityVersionForCompare($id: String!, $whereVersion: IntFilter) {

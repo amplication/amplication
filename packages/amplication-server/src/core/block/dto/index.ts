@@ -12,3 +12,4 @@ export { FindManyBlockVersionArgs } from './FindManyBlockVersionArgs';
 export { BlockVersionOrderByInput } from './BlockVersionOrderByInput';
 export { BlockVersionWhereInput } from './BlockVersionWhereInput';
 export { UpdateBlockArgs } from './UpdateBlockArgs';
+export { LockBlockArgs } from './LockBlockArgs';
