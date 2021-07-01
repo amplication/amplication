@@ -34,6 +34,7 @@ import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { DeploymentService } from '../deployment/deployment.service';
+import { UserService } from '../user/user.service';
 import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
@@ -220,6 +221,10 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
   environment: EXAMPLE_ENVIRONMENT
 };
 
+const EXAMPLE_USER = {
+  id: EXAMPLE_USER_ID
+};
+
 const EXAMPLE_COMPLETED_BUILD_RESULT: BuildResult = {
   status: ContainerBuildStatus.Completed
 };
@@ -400,6 +405,8 @@ const containerBuilderServiceGetStatusMock = jest.fn(
 const createImageIdMock = jest.fn(tag => tag);
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
+const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
+
 const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
 const getAppSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
@@ -493,6 +500,12 @@ describe('BuildService', () => {
             findMany: deploymentFindManyMock,
             autoDeployToSandbox: deploymentAutoDeployToSandboxMock,
             canDeploy: true
+          }
+        },
+        {
+          provide: UserService,
+          useValue: {
+            findUser: userServiceFindUserMock
           }
         },
         {
