@@ -1,26 +1,14 @@
-import {
-  Args,
-  Mutation,
-  Query,
-  Resolver,
-  Parent,
-  ResolveField
-} from '@nestjs/graphql';
 import { UseFilters, UseGuards } from '@nestjs/common';
-
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { BlockService } from './block.service';
-import { UserService } from '../user/user.service';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import {
-  CreateBlockVersionArgs,
-  FindManyBlockVersionArgs,
-  FindManyBlockArgs
-} from './dto';
-import { Block, BlockVersion, User } from 'src/models';
 import { FindOneArgs } from 'src/dto';
+import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { Block, BlockVersion, User } from 'src/models';
+import { UserService } from '../user/user.service';
+import { BlockService } from './block.service';
+import { FindManyBlockArgs, FindManyBlockVersionArgs } from './dto';
 
 /** @todo add FieldResolver to return the settings, inputs, and outputs from the current version */
 
