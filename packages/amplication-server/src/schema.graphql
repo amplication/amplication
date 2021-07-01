@@ -226,12 +226,12 @@ type Block {
   app: App
   parentBlock: Block
   displayName: String!
-  description: String!
+  description: String
   blockType: EnumBlockType!
   versionNumber: Float
   lockedByUserId: String
   lockedAt: DateTime
-  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
+  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]
   lockedByUser: [User!]!
 }
 
@@ -273,9 +273,12 @@ type BlockVersion {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  displayName: String!
+  description: String
   block: Block!
   versionNumber: Int!
   commit: Commit
+  settings: JSONObject
 }
 
 input BlockVersionOrderByInput {

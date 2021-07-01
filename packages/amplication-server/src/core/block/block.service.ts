@@ -363,28 +363,12 @@ export class BlockService {
             id: blockId
           }
         }
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        versionNumber: true,
-        block: true
       }
     });
   }
 
   async getVersions(args: FindManyBlockVersionArgs): Promise<BlockVersion[]> {
-    return this.prisma.blockVersion.findMany({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        versionNumber: true,
-        block: true
-      }
-    });
+    return this.prisma.blockVersion.findMany(args);
   }
 
   private canUseParentType(

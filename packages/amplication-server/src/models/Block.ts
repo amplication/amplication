@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { App } from './App'; // eslint-disable-line import/no-cycle
+import { BlockVersion } from './BlockVersion'; // eslint-disable-line import/no-cycle
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 @ObjectType({
@@ -51,7 +52,7 @@ export class Block {
   displayName!: string;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
   description?: string;
@@ -79,4 +80,9 @@ export class Block {
     description: undefined
   })
   lockedAt?: Date;
+
+  @Field(() => [BlockVersion], {
+    nullable: true
+  })
+  versions?: BlockVersion[] | null;
 }
