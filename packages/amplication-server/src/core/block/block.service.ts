@@ -659,7 +659,10 @@ export class BlockService {
                 deletedAt: null
               }
             },
-        ...names
+        ...names,
+        settings: sourceVersion.settings,
+        inputParameters: sourceVersion.inputParameters,
+        outputParameters: sourceVersion.outputParameters
       }
     });
   }
