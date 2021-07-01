@@ -1,8 +1,8 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Block } from './Block'; // eslint-disable-line import/no-cycle
-import { Commit } from '../models/Commit'; // eslint-disable-line import/no-cycle
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { JsonValue } from 'type-fest';
+import { Commit } from '../models/Commit'; // eslint-disable-line import/no-cycle
+import { Block } from './Block'; // eslint-disable-line import/no-cycle
 @ObjectType({
   isAbstract: true,
   description: undefined
@@ -63,4 +63,8 @@ export class BlockVersion {
     description: undefined
   })
   settings?: JsonValue;
+
+  inputParameters?: JsonValue;
+
+  outputParameters?: JsonValue;
 }
