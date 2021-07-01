@@ -5,11 +5,13 @@ import { FindManyCommitArgs } from './dto/FindManyCommitArgs';
 import { Commit } from 'src/models';
 import { PendingChange } from '../app/dto';
 import { EntityService } from '../entity/entity.service';
+import { BlockService } from '../block/block.service';
 @Injectable()
 export class CommitService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
+    private readonly blockService: BlockService
   ) {}
 
   async findOne(args: FindOneCommitArgs): Promise<Commit> {
@@ -21,7 +23,11 @@ export class CommitService {
   }
 
   async getChanges(commitId: string): Promise<PendingChange[]> {
-    /**@todo: do the same for Blocks */
-    return this.entityService.getChangedEntitiesByCommit(commitId);
+    const [changedBlocks, changedEntities] = await Promise.all([
+      this.blockService.getChangedBlocksByCommit(commitId),
+      this.entityService.getChangedEntitiesByCommit(commitId)
+    ]);
+
+    return [...changedBlocks, ...changedEntities];
   }
 }

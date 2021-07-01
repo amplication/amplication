@@ -34,7 +34,8 @@ import { FindOneArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import {
   EnumPendingChangeResourceType,
-  EnumPendingChangeAction
+  EnumPendingChangeAction,
+  PendingChange
 } from '../app/dto';
 
 const CURRENT_VERSION_NUMBER = 0;
@@ -545,9 +546,7 @@ export class BlockService {
     });
   }
 
-  async getChangedBlocksByCommit(
-    commitId: string
-  ): Promise<BlockPendingChange[]> {
+  async getChangedBlocksByCommit(commitId: string): Promise<PendingChange[]> {
     const changedBlocks = await this.prisma.block.findMany({
       where: {
         versions: {
