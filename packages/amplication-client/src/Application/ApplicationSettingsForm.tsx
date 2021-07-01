@@ -3,12 +3,13 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { Form, Formik } from "formik";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 type Props = {
   applicationId: string;
@@ -54,11 +55,17 @@ function ApplicationSettingsForm({ applicationId }: Props) {
       id: applicationId,
     },
   });
+  const pendingChangesContext = useContext(PendingChangesContext);
 
   const { trackEvent } = useTracking();
 
   const [updateAppSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_APP_SETTINGS
+    UPDATE_APP_SETTINGS,
+    {
+      onCompleted: (data) => {
+        pendingChangesContext.addBlock(data.updateAppSettings.id);
+      },
+    }
   );
 
   const handleSubmit = useCallback(
