@@ -26,6 +26,12 @@ const PendingChange = ({
   applicationId,
   linkToResource = false,
 }: Props) => {
+  /**@todo: update the url for other types of blocks  */
+  const url =
+    change.resourceType === models.EnumPendingChangeResourceType.Entity
+      ? `/${applicationId}/entities/${change.resourceId}`
+      : `/${applicationId}/update`;
+
   return (
     <div className={CLASS_NAME}>
       <div
@@ -38,9 +44,7 @@ const PendingChange = ({
       </div>
       <div>
         {linkToResource ? (
-          <Link to={`/${applicationId}/entities/${change.resourceId}`}>
-            {change.resource.displayName}
-          </Link>
+          <Link to={url}>{change.resource.displayName}</Link>
         ) : (
           change.resource.displayName
         )}
