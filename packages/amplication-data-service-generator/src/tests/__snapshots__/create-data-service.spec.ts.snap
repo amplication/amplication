@@ -1829,7 +1829,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
     <Create {...props}>
       <SimpleForm>
         <TextInput label=\\"Username\\" source=\\"username\\" />
-        <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
+        <PasswordInput label=\\"Password\\" source=\\"password\\" />
         <SelectArrayInput
           source=\\"roles\\"
           choices={ROLES_OPTIONS}
@@ -1898,7 +1898,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
     <Edit {...props}>
       <SimpleForm>
         <TextInput label=\\"Username\\" source=\\"username\\" />
-        <PasswordInput label=\\"Password\\" source=\\"password\\" disabled />
+        <PasswordInput label=\\"Password\\" source=\\"password\\" />
         <SelectArrayInput
           source=\\"roles\\"
           choices={ROLES_OPTIONS}
