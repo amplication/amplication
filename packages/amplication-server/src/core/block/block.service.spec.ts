@@ -13,7 +13,6 @@ import {
 } from 'src/models';
 import { Prisma } from '@prisma/client';
 
-const NEW_VERSION_LABEL = 'Current Version';
 const INITIAL_VERSION_NUMBER = 0;
 const NOW = new Date();
 const EXAMPLE_USER_ID = 'exampleUserId';
