@@ -8,10 +8,10 @@ const appInfo: AppInfo = {
   url: "https://app.amplication.com/ckl0ow1xj00763cjnch10k6mc",
   settings: {
     dbHost: "localhost",
-    dbName: "yuval",
-    dbPort: 5432,
-    dbPassword: "admin",
-    dbUser: "admin",
+    dbName: "db-name",
+    dbPort: 5433,
+    dbPassword: "1234",
+    dbUser: "testUsername",
   },
 };
 
