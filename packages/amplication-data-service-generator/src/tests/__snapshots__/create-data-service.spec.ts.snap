@@ -2,9 +2,9 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
-  ".env": "POSTGRESQL_USER=admin
-POSTGRESQL_PASSWORD=admin
-POSTGRESQL_PORT=5432
+  ".env": "POSTGRESQL_USER=testUsername
+POSTGRESQL_PASSWORD=1234
+POSTGRESQL_PORT=5433
 SERVER_PORT=3000
 BCRYPT_SALT=10
 ",
@@ -2176,10 +2176,10 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
-  "server/.env": "POSTGRESQL_USER=admin
-POSTGRESQL_PASSWORD=admin
-POSTGRESQL_PORT=5432
-POSTGRESQL_URL=postgres://admin:admin@localhost:5432/yuval
+  "server/.env": "POSTGRESQL_USER=testUsername
+POSTGRESQL_PASSWORD=1234
+POSTGRESQL_PORT=5433
+POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
 BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${appId}
 ",
