@@ -29,17 +29,16 @@ Amplication auto-generates backend apps built with TypeScript and Node.js, and a
 Try amplication immediately on [app.amplication.com](http://app.amplication.com/)
 or [follow the instructions](#development) to run a local instance.
 
-**HN Users - If you like Amplication don't forget to upvote**
-
 ## Features
 
-Build business applications with:
+Build database applications with:
 
 - Manage data models visually or through CLI
 - Auto-generated human-editable source code
-- Node.js server built with Nest.js and Passport with REST API and GraphQL
+- Node.js server built with Nest.js and Passport
+- REST API and GraphQL for CRUD with relations, sorting, filtering, pagination
 - Custom code generated app
-- Admin UI built with React
+- Admin UI built with React-Admin
 - Role-based access control
 - Docker and docker-compose integration
 - Automatic push of the generated code to your GitHub repo
