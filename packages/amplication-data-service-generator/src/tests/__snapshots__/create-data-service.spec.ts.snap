@@ -2,6 +2,13 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
+  ".env": "POSTGRESQL_USER=testUsername
+POSTGRESQL_PASSWORD=1234
+POSTGRESQL_PORT=5433
+SERVER_PORT=3000
+BCRYPT_SALT=10
+",
+  "admin-ui/.env": "PORT=3001",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
 import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
@@ -2168,6 +2175,13 @@ export class StringNullableFilter {
   mode?: QueryMode;
   not?: string;
 }
+",
+  "server/.env": "POSTGRESQL_USER=testUsername
+POSTGRESQL_PASSWORD=1234
+POSTGRESQL_PORT=5433
+POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
+BCRYPT_SALT=10
+COMPOSE_PROJECT_NAME=amp_\${appId}
 ",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"

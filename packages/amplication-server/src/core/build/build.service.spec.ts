@@ -34,6 +34,7 @@ import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { DeploymentService } from '../deployment/deployment.service';
+import { UserService } from '../user/user.service';
 import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
@@ -49,6 +50,9 @@ import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
 import { GithubService } from '../github/github.service';
+import { AppSettingsService } from '../appSettings/appSettings.service';
+
+import { AppSettingsValues } from '../appSettings/constants';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -86,6 +90,15 @@ const EXAMPLE_ENVIRONMENT_NAME = 'exampleEnvironmentName';
 const EXAMPLE_ADDRESS = 'exampleAddress';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
+
+const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
+  dbHost: 'localhost',
+  dbName: 'myDb',
+  dbPassword: '1234',
+  dbPort: 5432,
+  dbUser: 'admin',
+  appId: EXAMPLE_APP_ID
+};
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
@@ -206,6 +219,10 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
   actionId: EXAMPLE_ACTION_ID,
   build: EXAMPLE_BUILD,
   environment: EXAMPLE_ENVIRONMENT
+};
+
+const EXAMPLE_USER = {
+  id: EXAMPLE_USER_ID
 };
 
 const EXAMPLE_COMPLETED_BUILD_RESULT: BuildResult = {
@@ -388,7 +405,11 @@ const containerBuilderServiceGetStatusMock = jest.fn(
 const createImageIdMock = jest.fn(tag => tag);
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
+const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
+
 const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
+
+const getAppSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
 
 describe('BuildService', () => {
   let service: BuildService;
@@ -479,6 +500,18 @@ describe('BuildService', () => {
             findMany: deploymentFindManyMock,
             autoDeployToSandbox: deploymentAutoDeployToSandboxMock,
             canDeploy: true
+          }
+        },
+        {
+          provide: UserService,
+          useValue: {
+            findUser: userServiceFindUserMock
+          }
+        },
+        {
+          provide: AppSettingsService,
+          useValue: {
+            getAppSettingsValues: getAppSettingsValuesMock
           }
         },
         {
@@ -620,7 +653,8 @@ describe('BuildService', () => {
         description: EXAMPLE_APP.description,
         version: EXAMPLE_BUILD.version,
         id: EXAMPLE_APP.id,
-        url: `${EXAMPLED_HOST}/${EXAMPLE_APP.id}`
+        url: `${EXAMPLED_HOST}/${EXAMPLE_APP.id}`,
+        settings: EXAMPLE_APP_SETTINGS_VALUES
       },
       MOCK_LOGGER
     );

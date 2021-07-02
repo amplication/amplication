@@ -9,6 +9,7 @@ import { JsonValue } from 'type-fest';
 import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { EntityPage } from './dto/EntityPage';
 import { EntityPageCreateInput } from './dto/EntityPageCreateInput';
+import { User } from 'src/models';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -24,6 +25,21 @@ const EXAMPLE_SINGLE_RECORD_SETTINGS: EntityPageSingleRecordSettings &
   allowCreation: true,
   allowDeletion: true,
   allowUpdate: true
+};
+
+const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  workspace: {
+    id: EXAMPLE_WORKSPACE_ID,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: 'example_workspace_name'
+  }
 };
 
 const EXAMPLE_LIST_SETTINGS: EntityPageListSettings & JsonValue = {
@@ -184,20 +200,22 @@ describe('EntityPageService', () => {
     const args = {
       data: SINGLE_RECORD_CREATE_INPUT
     };
-    expect(await service.create(args)).toEqual(
+    expect(await service.create(args, EXAMPLE_USER)).toEqual(
       EXAMPLE_SINGLE_RECORD_ENTITY_PAGE
     );
     expect(createMock).toBeCalledTimes(1);
-    expect(createMock).toBeCalledWith(args);
+    expect(createMock).toBeCalledWith(args, EXAMPLE_USER);
   });
 
   it('should create list entity page', async () => {
     const args = {
       data: LIST_CREATE_INPUT
     };
-    expect(await service.create(args)).toEqual(EXAMPLE_LIST_ENTITY_PAGE);
+    expect(await service.create(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_LIST_ENTITY_PAGE
+    );
     expect(createMock).toBeCalledTimes(1);
-    expect(createMock).toBeCalledWith(args);
+    expect(createMock).toBeCalledWith(args, EXAMPLE_USER);
   });
 
   it('should update an entity page', async () => {
@@ -209,8 +227,10 @@ describe('EntityPageService', () => {
       },
       where: { id: EXAMPLE_ENTITY_ID }
     };
-    expect(await service.update(args)).toEqual(EXAMPLE_LIST_ENTITY_PAGE);
+    expect(await service.update(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_LIST_ENTITY_PAGE
+    );
     expect(updateMock).toBeCalledTimes(1);
-    expect(updateMock).toBeCalledWith(args);
+    expect(updateMock).toBeCalledWith(args, EXAMPLE_USER);
   });
 });

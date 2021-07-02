@@ -17,23 +17,26 @@ import { Environment } from '../environment/dto/Environment';
 import { App } from 'src/models/App';
 import { User } from 'src/models/User';
 import { Entity } from 'src/models/Entity';
+import { Block } from 'src/models/Block';
 import { EntityField } from 'src/models/EntityField';
 import { PendingChange } from './dto/PendingChange';
-import { EntityVersion, Commit } from 'src/models';
+import { EntityVersion, Commit, BlockVersion } from 'src/models';
 import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
 import {
   createSampleAppEntities,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_APP_DATA
 } from './sampleApp';
-import { USER_ENTITY_NAME } from '../entity/constants';
+import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from '../entity/constants';
 import { InvalidColorError } from './InvalidColorError';
 import { BuildService } from '../build/build.service';
 import { Build } from '../build/dto/Build';
 import { GithubService } from '../github/github.service';
+import { BlockService } from '../block/block.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { QueryMode } from 'src/enums/QueryMode';
+import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -80,6 +83,9 @@ const EXAMPLE_ENTITY_DISPLAY_NAME = 'Example Entity Name';
 const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = 'Example Entity Names';
 const EXAMPLE_ENTITY_FIELD_NAME = 'exampleEntityFieldName';
 
+const EXAMPLE_BLOCK_ID = 'exampleBlockId';
+const EXAMPLE_BLOCK_DISPLAY_NAME = 'Example Entity Name';
+
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
   createdAt: new Date(),
@@ -88,6 +94,18 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+};
+
+const EXAMPLE_BLOCK: Block = {
+  id: EXAMPLE_BLOCK_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  appId: EXAMPLE_APP_ID,
+  displayName: EXAMPLE_BLOCK_DISPLAY_NAME,
+  blockType: EnumBlockType.AppSettings,
+  parentBlock: null,
+  versionNumber: CURRENT_VERSION_NUMBER,
+  description: 'example block description'
 };
 
 const EXAMPLE_ENTITY_FIELD: EntityField = {
@@ -112,7 +130,16 @@ const EXAMPLE_CHANGED_ENTITY: PendingChange = {
   resource: EXAMPLE_ENTITY
 };
 
+const EXAMPLE_CHANGED_BLOCK: PendingChange = {
+  resourceId: EXAMPLE_BLOCK_ID,
+  action: EnumPendingChangeAction.Create,
+  resourceType: EnumPendingChangeResourceType.Block,
+  versionNumber: 1,
+  resource: EXAMPLE_BLOCK
+};
+
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
+const EXAMPLE_BLOCK_VERSION_ID = 'exampleBlockVersionId';
 const EXAMPLE_VERSION_NUMBER = 0;
 
 const EXAMPLE_ENTITY_VERSION: EntityVersion = {
@@ -124,6 +151,14 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+};
+
+const EXAMPLE_BLOCK_VERSION: BlockVersion = {
+  id: EXAMPLE_BLOCK_VERSION_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  versionNumber: EXAMPLE_VERSION_NUMBER,
+  displayName: EXAMPLE_BLOCK_DISPLAY_NAME
 };
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
@@ -190,6 +225,15 @@ const entityServiceReleaseLockMock = jest.fn(async () => EXAMPLE_ENTITY);
 const entityServiceGetChangedEntitiesMock = jest.fn(() => {
   return [EXAMPLE_CHANGED_ENTITY];
 });
+
+const blockServiceGetChangedBlocksMock = jest.fn(() => {
+  return [EXAMPLE_CHANGED_BLOCK];
+});
+const blockServiceCreateVersionMock = jest.fn(
+  async () => EXAMPLE_BLOCK_VERSION
+);
+
+const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 
 const USER_ENTITY_MOCK = {
   id: 'USER_ENTITY_MOCK_ID'
@@ -260,6 +304,14 @@ describe('AppService', () => {
         {
           provide: GithubService,
           useValue: {}
+        },
+        {
+          provide: BlockService,
+          useValue: {
+            getChangedBlocks: blockServiceGetChangedBlocksMock,
+            createVersion: blockServiceCreateVersionMock,
+            releaseLock: blockServiceReleaseLockMock
+          }
         },
         {
           provide: EnvironmentService,
@@ -334,6 +386,20 @@ describe('AppService', () => {
         }
       }
     };
+    const blockCreateVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK_ID
+          }
+        }
+      }
+    };
     const changedEntitiesArgs = {
       appId: EXAMPLE_APP_ID,
       userId: EXAMPLE_USER_ID
@@ -360,10 +426,22 @@ describe('AppService', () => {
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
     expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
     expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
+    expect(blockServiceCreateVersionMock).toBeCalledTimes(1);
+    expect(blockServiceCreateVersionMock).toBeCalledWith(
+      blockCreateVersionArgs
+    );
+
     expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
     expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
+    expect(blockServiceReleaseLockMock).toBeCalledTimes(1);
+    expect(blockServiceReleaseLockMock).toBeCalledWith(EXAMPLE_BLOCK_ID);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
+      changedEntitiesArgs.appId,
+      changedEntitiesArgs.userId
+    );
+    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
+    expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
       changedEntitiesArgs.appId,
       changedEntitiesArgs.userId
     );
@@ -440,7 +518,21 @@ describe('AppService', () => {
         }
       }
     };
-    const changedEntitiesArgs = {
+    const blockCreateVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK_ID
+          }
+        }
+      }
+    };
+    const changesArgs = {
       appId: EXAMPLE_APP_ID,
       userId: EXAMPLE_USER_ID
     };
@@ -480,15 +572,30 @@ describe('AppService', () => {
       [createVersionArgs],
       [createVersionArgs]
     ]);
+    expect(blockServiceCreateVersionMock).toBeCalledTimes(2);
+    expect(blockServiceCreateVersionMock.mock.calls).toEqual([
+      [blockCreateVersionArgs],
+      [blockCreateVersionArgs]
+    ]);
     expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
     expect(entityServiceReleaseLockMock.mock.calls).toEqual([
       [EXAMPLE_ENTITY_ID],
       [EXAMPLE_ENTITY_ID]
     ]);
+    expect(blockServiceReleaseLockMock).toBeCalledTimes(2);
+    expect(blockServiceReleaseLockMock.mock.calls).toEqual([
+      [EXAMPLE_BLOCK_ID],
+      [EXAMPLE_BLOCK_ID]
+    ]);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
     expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
-      [changedEntitiesArgs.appId, changedEntitiesArgs.userId],
-      [changedEntitiesArgs.appId, changedEntitiesArgs.userId]
+      [changesArgs.appId, changesArgs.userId],
+      [changesArgs.appId, changesArgs.userId]
+    ]);
+    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(2);
+    expect(blockServiceGetChangedBlocksMock.mock.calls).toEqual([
+      [changesArgs.appId, changesArgs.userId],
+      [changesArgs.appId, changesArgs.userId]
     ]);
   });
 
@@ -571,6 +678,20 @@ describe('AppService', () => {
         }
       }
     };
+    const blockCreateVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK_ID
+          }
+        }
+      }
+    };
 
     const createOneEntityArgs = {
       data: {
@@ -596,7 +717,7 @@ describe('AppService', () => {
       }
     };
 
-    const changedEntitiesArgs = {
+    const changesArgs = {
       appId: EXAMPLE_APP_ID,
       userId: EXAMPLE_USER_ID
     };
@@ -665,15 +786,30 @@ describe('AppService', () => {
       [createVersionArgs],
       [createVersionArgs]
     ]);
+    expect(blockServiceCreateVersionMock).toBeCalledTimes(2);
+    expect(blockServiceCreateVersionMock.mock.calls).toEqual([
+      [blockCreateVersionArgs],
+      [blockCreateVersionArgs]
+    ]);
     expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
     expect(entityServiceReleaseLockMock.mock.calls).toEqual([
       [EXAMPLE_ENTITY_ID],
       [EXAMPLE_ENTITY_ID]
     ]);
+    expect(blockServiceReleaseLockMock).toBeCalledTimes(2);
+    expect(blockServiceReleaseLockMock.mock.calls).toEqual([
+      [EXAMPLE_BLOCK_ID],
+      [EXAMPLE_BLOCK_ID]
+    ]);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
     expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
-      [changedEntitiesArgs.appId, changedEntitiesArgs.userId],
-      [changedEntitiesArgs.appId, changedEntitiesArgs.userId]
+      [changesArgs.appId, changesArgs.userId],
+      [changesArgs.appId, changesArgs.userId]
+    ]);
+    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(2);
+    expect(blockServiceGetChangedBlocksMock.mock.calls).toEqual([
+      [changesArgs.appId, changesArgs.userId],
+      [changesArgs.appId, changesArgs.userId]
     ]);
   });
 
@@ -743,7 +879,21 @@ describe('AppService', () => {
         }
       }
     };
-    const changedEntitiesArgs = {
+    const blockCreateVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK_ID
+          }
+        }
+      }
+    };
+    const changesArgs = {
       appId: EXAMPLE_APP_ID,
       userId: EXAMPLE_USER_ID
     };
@@ -775,13 +925,25 @@ describe('AppService', () => {
     expect(prismaCommitCreateMock).toBeCalledWith(args);
     expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
     expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
+    expect(blockServiceCreateVersionMock).toBeCalledTimes(1);
+    expect(blockServiceCreateVersionMock).toBeCalledWith(
+      blockCreateVersionArgs
+    );
     expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
     expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
 
+    expect(blockServiceReleaseLockMock).toBeCalledTimes(1);
+    expect(blockServiceReleaseLockMock).toBeCalledWith(EXAMPLE_BLOCK_ID);
+
     expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
-      changedEntitiesArgs.appId,
-      changedEntitiesArgs.userId
+      changesArgs.appId,
+      changesArgs.userId
+    );
+    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
+    expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
+      changesArgs.appId,
+      changesArgs.userId
     );
     expect(buildServiceCreateMock).toBeCalledTimes(1);
     expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs, false);

@@ -3,6 +3,7 @@ import { PrismaModule } from 'nestjs-prisma';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { UserModule } from '../user/user.module';
 import { EntityModule } from '../entity/entity.module';
+import { BlockModule } from '../block/block.module';
 import { BuildModule } from '../build/build.module'; // eslint-disable-line import/no-cycle
 import { EnvironmentModule } from '../environment/environment.module';
 import { AppService } from './app.service';
@@ -19,7 +20,8 @@ import { GithubModule } from '../github/github.module';
     forwardRef(() => BuildModule),
     EnvironmentModule,
     CommitModule,
-    GithubModule
+    GithubModule,
+    BlockModule
   ],
   providers: [AppService, AppResolver],
   exports: [AppService, AppResolver]

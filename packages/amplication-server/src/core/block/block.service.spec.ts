@@ -3,11 +3,21 @@ import { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
 import { PrismaService } from 'nestjs-prisma';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { App, Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
+import {
+  App,
+  Block,
+  BlockVersion,
+  IBlock,
+  BlockInputOutput,
+  User
+} from 'src/models';
+import { Prisma } from '@prisma/client';
 
-const NEW_VERSION_LABEL = 'Current Version';
 const INITIAL_VERSION_NUMBER = 0;
 const NOW = new Date();
+const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
+const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 
 const EXAMPLE_APP: App = {
   id: 'ExampleApp',
@@ -16,6 +26,18 @@ const EXAMPLE_APP: App = {
   name: 'Example App',
   description: 'Example App Description',
   githubSyncEnabled: false
+};
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  workspace: {
+    id: EXAMPLE_WORKSPACE_ID,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: 'example_workspace_name'
+  }
 };
 
 const EXAMPLE_BLOCK: Block = {
@@ -49,10 +71,10 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   updatedAt: NOW,
   block: EXAMPLE_BLOCK,
   versionNumber: 0,
-  label: 'Block Version Label',
+  settings: EXAMPLE_BLOCK_SETTINGS,
+  displayName: 'Example display name',
   inputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST },
-  outputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST },
-  settings: EXAMPLE_BLOCK_SETTINGS
+  outputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST }
 };
 
 type BlockType = IBlock & {
@@ -76,6 +98,12 @@ const EXAMPLE_IBLOCK: BlockType = {
 const prismaBlockFindOneMock = jest.fn(() => {
   return EXAMPLE_BLOCK;
 });
+const prismaBlockFindFirstMock = jest.fn(() => {
+  return EXAMPLE_BLOCK;
+});
+const prismaBlockUpdateMock = jest.fn(() => {
+  return EXAMPLE_BLOCK;
+});
 const prismaBlockFindManyMock = jest.fn(() => {
   return [EXAMPLE_BLOCK];
 });
@@ -95,6 +123,8 @@ const prismaBlockVersionUpdateMock = jest.fn(() => {
 describe('BlockService', () => {
   let service: BlockService;
   prismaBlockFindOneMock.mockClear();
+  prismaBlockUpdateMock.mockClear();
+  prismaBlockFindFirstMock.mockClear();
   prismaBlockFindManyMock.mockClear();
   prismaBlockVersionCreateMock.mockClear();
   prismaBlockVersionFindManyMock.mockClear();
@@ -110,7 +140,9 @@ describe('BlockService', () => {
           useClass: jest.fn(() => ({
             block: {
               findUnique: prismaBlockFindOneMock,
-              findMany: prismaBlockFindManyMock
+              findFirst: prismaBlockFindFirstMock,
+              findMany: prismaBlockFindManyMock,
+              update: prismaBlockUpdateMock
             },
             blockVersion: {
               create: prismaBlockVersionCreateMock,
@@ -133,26 +165,28 @@ describe('BlockService', () => {
   });
 
   it('creates block correctly', async () => {
-    const result = await service.create<BlockType>({
-      data: {
-        app: {
-          connect: {
-            id: EXAMPLE_BLOCK.appId
-          }
-        },
-        blockType: EnumBlockType[EXAMPLE_BLOCK.blockType],
-        displayName: EXAMPLE_BLOCK.displayName,
-        description: EXAMPLE_BLOCK.description,
-        inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
-        outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
-        ...EXAMPLE_BLOCK_SETTINGS
-      }
-    });
+    const result = await service.create<BlockType>(
+      {
+        data: {
+          app: {
+            connect: {
+              id: EXAMPLE_BLOCK.appId
+            }
+          },
+          blockType: EnumBlockType[EXAMPLE_BLOCK.blockType],
+          displayName: EXAMPLE_BLOCK.displayName,
+          description: EXAMPLE_BLOCK.description,
+          inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
+          outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
+          ...EXAMPLE_BLOCK_SETTINGS
+        }
+      },
+      EXAMPLE_USER
+    );
     expect(result).toEqual(EXAMPLE_IBLOCK);
     expect(prismaBlockVersionCreateMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockVersionCreateMock).toHaveBeenCalledWith({
       data: {
-        label: NEW_VERSION_LABEL,
         versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
         block: {
           create: {
@@ -164,12 +198,26 @@ describe('BlockService', () => {
             blockType: EXAMPLE_BLOCK.blockType,
             description: EXAMPLE_BLOCK.description,
             displayName: EXAMPLE_BLOCK.displayName,
+            lockedAt: expect.any(Date),
+            lockedByUser: {
+              connect: {
+                id: EXAMPLE_USER_ID
+              }
+            },
+
             parentBlock: undefined
           }
         },
-        inputParameters: EXAMPLE_BLOCK_VERSION.inputParameters,
-        outputParameters: EXAMPLE_BLOCK_VERSION.outputParameters,
-        settings: EXAMPLE_BLOCK_VERSION.settings
+        settings: EXAMPLE_BLOCK_VERSION.settings,
+        commit: undefined,
+        displayName: EXAMPLE_BLOCK.displayName,
+        description: EXAMPLE_BLOCK.description,
+        inputParameters: {
+          params: EXAMPLE_BLOCK_INPUT_LIST
+        },
+        outputParameters: {
+          params: EXAMPLE_BLOCK_INPUT_LIST
+        }
       },
       include: {
         block: {
@@ -186,8 +234,7 @@ describe('BlockService', () => {
     const result = await service.findOne({
       where: {
         id: EXAMPLE_BLOCK.id
-      },
-      version: EXAMPLE_BLOCK_VERSION.versionNumber
+      }
     });
     expect(result).toEqual(EXAMPLE_IBLOCK);
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledTimes(1);
@@ -214,12 +261,16 @@ describe('BlockService', () => {
     prismaBlockVersionCreateMock.mockClear();
     const result = await service.createVersion({
       data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
         block: {
           connect: {
             id: EXAMPLE_BLOCK.id
           }
-        },
-        label: NEW_VERSION_LABEL
+        }
       }
     });
     expect(result).toEqual(EXAMPLE_BLOCK_VERSION);
@@ -228,50 +279,56 @@ describe('BlockService', () => {
     expect(prismaBlockVersionFindManyMock).toHaveBeenCalledWith({
       where: {
         block: { id: EXAMPLE_BLOCK.id }
+      },
+      orderBy: {
+        versionNumber: Prisma.SortOrder.asc
       }
     });
 
     expect(prismaBlockVersionCreateMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockVersionCreateMock).toHaveBeenCalledWith({
       data: {
-        label: NEW_VERSION_LABEL,
+        displayName: EXAMPLE_BLOCK_VERSION.displayName,
+        description: EXAMPLE_BLOCK_VERSION.description,
+        inputParameters: EXAMPLE_BLOCK_VERSION.inputParameters,
+        outputParameters: EXAMPLE_BLOCK_VERSION.outputParameters,
+        settings: EXAMPLE_BLOCK_VERSION.settings,
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
         versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber + 1,
         block: {
           connect: {
             id: EXAMPLE_BLOCK.id
           }
-        },
-        inputParameters: EXAMPLE_BLOCK_VERSION.inputParameters,
-        outputParameters: EXAMPLE_BLOCK_VERSION.outputParameters,
-        settings: EXAMPLE_BLOCK_VERSION.settings
-      },
-      select: {
-        block: true,
-        createdAt: true,
-        id: true,
-        label: true,
-        updatedAt: true,
-        versionNumber: true
+        }
       }
     });
   });
 
   it('updates block correctly', async () => {
-    const result = await service.update<BlockType>({
-      where: {
-        id: EXAMPLE_BLOCK.appId
+    const result = await service.update<BlockType>(
+      {
+        where: {
+          id: EXAMPLE_BLOCK.appId
+        },
+        data: {
+          displayName: EXAMPLE_BLOCK.displayName,
+          description: EXAMPLE_BLOCK.description,
+          ...EXAMPLE_BLOCK_SETTINGS
+        }
       },
-      data: {
-        displayName: EXAMPLE_BLOCK.displayName,
-        description: EXAMPLE_BLOCK.description,
-        ...EXAMPLE_BLOCK_SETTINGS
-      }
-    });
+      EXAMPLE_USER
+    );
     expect(result).toEqual(EXAMPLE_IBLOCK);
     expect(prismaBlockVersionUpdateMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockVersionUpdateMock).toHaveBeenCalledWith({
       data: {
         settings: EXAMPLE_BLOCK_SETTINGS,
+        displayName: EXAMPLE_BLOCK.displayName,
+        description: EXAMPLE_BLOCK.description,
         block: {
           update: {
             displayName: EXAMPLE_BLOCK.displayName,
@@ -337,20 +394,10 @@ describe('BlockService', () => {
 
   it('should get many versions', async () => {
     const args = {};
-    const returnArgs = {
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        versionNumber: true,
-        label: true,
-        block: true
-      }
-    };
+
     expect(await service.getVersions(args)).toEqual([EXAMPLE_BLOCK_VERSION]);
     expect(prismaBlockVersionFindManyMock).toBeCalledTimes(1);
-    expect(prismaBlockVersionFindManyMock).toBeCalledWith(returnArgs);
+    expect(prismaBlockVersionFindManyMock).toBeCalledWith(args);
   });
 
   it('should get a parent block when one is provided', async () => {

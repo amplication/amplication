@@ -6,6 +6,13 @@ const appInfo: AppInfo = {
   version: "0.1.3",
   id: "ckl0ow1xj00763cjnch10k6mc",
   url: "https://app.amplication.com/ckl0ow1xj00763cjnch10k6mc",
+  settings: {
+    dbHost: "localhost",
+    dbName: "db-name",
+    dbPort: 5433,
+    dbPassword: "1234",
+    dbUser: "testUsername",
+  },
 };
 
 export default appInfo;

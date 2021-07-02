@@ -8,6 +8,7 @@ import { PermissionsModule } from 'src/core/permissions/permissions.module';
 import { UserModule } from 'src/core/user/user.module';
 import { AppRoleModule } from 'src/core/appRole/appRole.module';
 import { AppModule } from 'src/core/app/app.module'; // eslint-disable-line import/no-cycle
+import { AppSettingsModule } from 'src/core/appSettings/appSettings.module'; // eslint-disable-line import/no-cycle
 import { BuildService } from './build.service';
 import { BuildResolver } from './build.resolver';
 import { BuildController } from './build.controller';
@@ -34,7 +35,8 @@ import { GithubModule } from '../github/github.module';
     StorageOptionsModule,
     DeploymentModule,
     GithubModule,
-    forwardRef(() => AppModule)
+    forwardRef(() => AppModule),
+    AppSettingsModule
   ],
   providers: [BuildService, BuildResolver],
   exports: [BuildService, BuildResolver],
