@@ -37,7 +37,7 @@
     "@storybook/addon-links": "6.1.9",
     "@storybook/cli": "6.1.14",
     "@storybook/node-logger": "6.1.9",
-    "@storybook/preset-create-react-app": "3.1.5",
+    "@storybook/preset-create-react-app": "3.1.7",
     "@storybook/react": "6.0.28",
     "@typescript-eslint/eslint-plugin": "4.6.1",
     "@typescript-eslint/parser": "4.6.1",
