@@ -110,7 +110,7 @@
     "@types/graphql-type-json": "0.3.2",
     "@types/jest": "26.0.15",
     "@types/normalize-path": "3.0.0",
-    "@types/supertest": "2.0.10",
+    "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "4.6.1",
     "@typescript-eslint/parser": "4.6.1",
     "babel-eslint": "10.1.0",
