@@ -46,7 +46,7 @@
   "proxy": "http://localhost:3000",
   "devDependencies": {
     "@testing-library/jest-dom": "5.11.6",
-    "@testing-library/react": "11.2.2",
+    "@testing-library/react": "11.2.7",
     "@testing-library/user-event": "12.5.0",
     "@types/jest": "26.0.16",
     "@types/lodash": "4.14.170",
