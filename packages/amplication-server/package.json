@@ -124,7 +124,7 @@
     "prettier": "1.19.1",
     "rimraf": "3.0.2",
     "ts-jest": "25.2.1",
-    "ts-loader": "6.2.1",
+    "ts-loader": "6.2.2",
     "ts-node": "8.6.2",
     "tsconfig-paths": "3.9.0",
     "type-graphql": "1.0.0-rc.3",
