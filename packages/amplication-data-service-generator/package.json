@@ -116,7 +116,7 @@
     "babel-eslint": "10.1.0",
     "base-64": "0.1.0",
     "cross-fetch": "3.0.6",
-    "docker-compose": "0.23.5",
+    "docker-compose": "0.23.12",
     "eslint": "7.17.0",
     "eslint-config-react-app": "6.0.0",
     "eslint-import-resolver-lerna": "2.0.0",
