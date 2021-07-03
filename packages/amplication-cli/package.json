@@ -65,7 +65,7 @@
   "devDependencies": {
     "@oclif/dev-cli": "1.26.0",
     "@oclif/test": "1.2.8",
-    "@types/node": "10.17.51",
+    "@types/node": "10.17.60",
     "@typescript-eslint/eslint-plugin": "2.21.0",
     "@typescript-eslint/parser": "2.21.0",
     "eslint": "5.16.0",
