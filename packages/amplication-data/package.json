@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "private": true,
   "main": "dist/index.js",
   "scripts": {

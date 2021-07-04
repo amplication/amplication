@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "0.6.5",
+  "version": "0.7.0",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -19,8 +19,8 @@
     "update-test-data-service-snapshot": "jest -u src/tests/create-data-service.spec.ts"
   },
   "dependencies": {
-    "@amplication/data": "^0.6.4",
-    "@amplication/design-system": "^0.6.5",
+    "@amplication/data": "^0.7.0",
+    "@amplication/design-system": "^0.7.0",
     "@apollo/client": "3.3.19",
     "@babel/parser": "7.12.11",
     "@extra-set/difference": "2.2.4",
@@ -61,6 +61,7 @@
     "axios": "0.21.1",
     "bcrypt": "5.0.0",
     "camel-case": "4.1.2",
+    "class-transformer": "0.4.0",
     "class-validator": "0.12.2",
     "express": "4.17.1",
     "fast-glob": "3.2.6",
@@ -101,8 +102,7 @@
     "type-fest": "1.1.2",
     "typescript": "3.9.7",
     "web-vitals": "0.2.4",
-    "winston": "3.3.3",
-    "class-transformer": "0.4.0"
+    "winston": "3.3.3"
   },
   "devDependencies": {
     "@apollo/client": "3.3.19",
