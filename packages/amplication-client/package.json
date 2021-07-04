@@ -77,7 +77,7 @@
     "typescript": "3.7.5",
     "use-debounce": "3.4.3",
     "xlsx": "0.16.9",
-    "yaml": "1.10.0"
+    "yaml": "1.10.2"
   },
   "scripts": {
     "start": "react-app-rewired start",
