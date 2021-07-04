@@ -60,7 +60,7 @@
     "apollo-server-express": "2.19.0",
     "axios": "0.21.1",
     "bcrypt": "5.0.0",
-    "camel-case": "4.1.1",
+    "camel-case": "4.1.2",
     "class-validator": "0.12.2",
     "express": "4.17.1",
     "fast-glob": "3.2.6",
