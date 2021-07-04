@@ -99,7 +99,7 @@
     "prisma": "2.19.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "6.5.4",
-    "semver": "7.3.2",
+    "semver": "7.3.5",
     "supertest": "4.0.2",
     "tar-stream": "2.1.4",
     "type-fest": "0.15.1",
