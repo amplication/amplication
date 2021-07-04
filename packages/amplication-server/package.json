@@ -80,7 +80,7 @@
     "cuid": "2.1.8",
     "date-fns": "2.16.1",
     "dockerode": "3.2.1",
-    "get-stream": "6.0.0",
+    "get-stream": "6.0.1",
     "graphql": "14.6.0",
     "graphql-type-json": "0.3.2",
     "lodash.get": "4.4.2",
