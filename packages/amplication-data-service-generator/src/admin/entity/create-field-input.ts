@@ -93,5 +93,5 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.Username]: (field) =>
     jsxElement`<TextInput label="${field.displayName}" source="${field.name}" />`,
   [EnumDataType.Password]: (field) =>
-    jsxElement`<PasswordInput label="${field.displayName}" source="${field.name}" disabled />`,
+    jsxElement`<PasswordInput label="${field.displayName}" source="${field.name}" />`,
 };

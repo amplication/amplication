@@ -9,7 +9,7 @@ import { formatError } from "../util/error";
 
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
-import { EnumCompareType } from "./PendingChangeDiff";
+import { EnumCompareType } from "./PendingChangeDiffEntity";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { MultiStateToggle } from "@amplication/design-system";
 

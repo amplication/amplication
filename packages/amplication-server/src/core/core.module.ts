@@ -21,6 +21,7 @@ import { CommitModule } from './commit/commit.module';
 import { SystemModule } from './system/system.module';
 import { GithubModule } from './github/github.module';
 import { MailModule } from './mail/mail.module';
+import { AppSettingsModule } from './appSettings/appSettings.module';
 @Module({
   imports: [
     AccountModule,
@@ -42,7 +43,8 @@ import { MailModule } from './mail/mail.module';
     CommitModule,
     SystemModule,
     GithubModule,
-    MailModule
+    MailModule,
+    AppSettingsModule
   ],
   providers: [],
   exports: [
@@ -63,7 +65,8 @@ import { MailModule } from './mail/mail.module';
     EnvironmentModule,
     CommitModule,
     GithubModule,
-    MailModule
+    MailModule,
+    AppSettingsModule
   ]
 })
 export class CoreModule {}

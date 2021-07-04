@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BlockTypeService } from './blockType.service';
 import { BlockService } from './block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { IBlock, BlockInputOutput, Block } from 'src/models';
+import { IBlock, BlockInputOutput, Block, User } from 'src/models';
 import { FindManyBlockTypeArgs, CreateBlockArgs, UpdateBlockArgs } from './dto';
-import { FindOneWithVersionArgs } from 'src/dto';
+import { FindOneArgs } from 'src/dto';
 
 const EXAMPLE_IBLOCK_ID = 'exampleIblockId';
 const EXAMPLE_DISPLAY_NAME = 'exampleDisplayName';
@@ -20,6 +20,8 @@ const EXAMPLE_BLOCK_INPUT_OUTPUT: BlockInputOutput = {
 };
 const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_BLOCK_TYPE = EnumBlockType.ConnectorRestApi;
+const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 
 const EXAMPLE_BLOCK: Block = {
   id: EXAMPLE_BLOCK_ID,
@@ -41,6 +43,18 @@ const EXAMPLE_IBLOCK: IBlock = {
   versionNumber: EXAMPLE_VERSION_NUMBER,
   inputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT],
   outputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT]
+};
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  workspace: {
+    id: EXAMPLE_WORKSPACE_ID,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: 'example_workspace_name'
+  }
 };
 
 const blockServiceFindOneMock = jest.fn(() => {
@@ -100,9 +114,8 @@ describe('BlockTypeService', () => {
   });
 
   it('should find a block service', async () => {
-    const args: FindOneWithVersionArgs = {
-      where: { id: EXAMPLE_IBLOCK_ID },
-      version: EXAMPLE_VERSION_NUMBER
+    const args: FindOneArgs = {
+      where: { id: EXAMPLE_IBLOCK_ID }
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_IBLOCK);
     expect(blockServiceFindOneMock).toBeCalledTimes(1);
@@ -133,9 +146,9 @@ describe('BlockTypeService', () => {
         blockType: service.blockType
       }
     };
-    expect(await service.create(args)).toEqual(EXAMPLE_IBLOCK);
+    expect(await service.create(args, EXAMPLE_USER)).toEqual(EXAMPLE_IBLOCK);
     expect(blockServiceCreateMock).toBeCalledTimes(1);
-    expect(blockServiceCreateMock).toBeCalledWith(createArgs);
+    expect(blockServiceCreateMock).toBeCalledWith(createArgs, EXAMPLE_USER);
   });
 
   it('should update a block service', async () => {
@@ -143,8 +156,8 @@ describe('BlockTypeService', () => {
       data: {},
       where: { id: EXAMPLE_IBLOCK_ID }
     };
-    expect(await service.update(args)).toEqual(EXAMPLE_IBLOCK);
+    expect(await service.update(args, EXAMPLE_USER)).toEqual(EXAMPLE_IBLOCK);
     expect(blockServiceUpdateMock).toBeCalledTimes(1);
-    expect(blockServiceUpdateMock).toBeCalledWith({ ...args });
+    expect(blockServiceUpdateMock).toBeCalledWith(args, EXAMPLE_USER);
   });
 });

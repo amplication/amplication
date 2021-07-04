@@ -45,6 +45,7 @@ model User {
   commits               Commit[]
   deployments           Deployment[]
   lockedEntitis         Entity[]
+  lockedBlocks          Block[]
   userRoles             UserRole[]
   isOwner               Boolean      @default(false)
   sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
@@ -131,6 +132,7 @@ model Commit {
   user           User            @relation(fields: [userId], references: [id])
   builds         Build[]
   entityVersions EntityVersion[]
+  blockVersions  BlockVersion[]
   releases       Release[]
 }
 
@@ -235,18 +237,22 @@ model EntityField {
 }
 
 model Block {
-  id            String         @id @default(cuid())
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  appId         String
-  parentBlockId String?
-  blockType     EnumBlockType
-  displayName   String
-  description   String?
-  app           App            @relation(fields: [appId], references: [id])
-  parentBlock   Block?         @relation("BlockToBlock", fields: [parentBlockId], references: [id])
-  blocks        Block[]        @relation("BlockToBlock")
-  versions      BlockVersion[]
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  appId          String
+  parentBlockId  String?
+  blockType      EnumBlockType
+  displayName    String
+  description    String?
+  lockedByUserId String?
+  lockedAt       DateTime?
+  deletedAt      DateTime?
+  lockedByUser   User?          @relation(fields: [lockedByUserId], references: [id])
+  app            App            @relation(fields: [appId], references: [id])
+  parentBlock    Block?         @relation("BlockToBlock", fields: [parentBlockId], references: [id])
+  blocks         Block[]        @relation("BlockToBlock")
+  versions       BlockVersion[]
 
   @@unique([appId, displayName])
 }
@@ -257,10 +263,14 @@ model BlockVersion {
   updatedAt        DateTime @updatedAt
   blockId          String
   versionNumber    Int
-  label            String
+  displayName      String   @default("")
+  description      String?
   inputParameters  Json?
   outputParameters Json?
   settings         Json
+  commitId         String?
+  deleted          Boolean?
+  commit           Commit?  @relation(fields: [commitId], references: [id])
   block            Block    @relation(fields: [blockId], references: [id])
   builds           Build[]
 

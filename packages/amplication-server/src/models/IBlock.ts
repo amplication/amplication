@@ -17,6 +17,8 @@ export abstract class IBlock {
   })
   createdAt!: Date;
 
+  appId?: string;
+
   @Field(() => Date, {
     nullable: false,
     description: undefined
@@ -64,4 +66,16 @@ export abstract class IBlock {
     description: undefined
   })
   outputParameters!: BlockInputOutput[];
+
+  @Field(() => String, {
+    nullable: true,
+    description: undefined
+  })
+  lockedByUserId?: string;
+
+  @Field(() => Date, {
+    nullable: true,
+    description: undefined
+  })
+  lockedAt?: Date;
 }

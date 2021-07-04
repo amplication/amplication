@@ -1,8 +1,8 @@
-import { JsonObject, JsonArray } from 'type-fest';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Block } from './Block';
-import { BlockInputOutput } from './BlockInputOutput';
-
+import { GraphQLJSONObject } from 'graphql-type-json';
+import { JsonValue } from 'type-fest';
+import { Commit } from '../models/Commit'; // eslint-disable-line import/no-cycle
+import { Block } from './Block'; // eslint-disable-line import/no-cycle
 @ObjectType({
   isAbstract: true,
   description: undefined
@@ -26,6 +26,18 @@ export class BlockVersion {
   })
   updatedAt!: Date;
 
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  displayName!: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: undefined
+  })
+  description?: string;
+
   @Field(() => Block, {
     nullable: false,
     description: undefined
@@ -38,19 +50,21 @@ export class BlockVersion {
   })
   versionNumber!: number;
 
-  @Field(() => String, {
-    nullable: false,
+  commitId?: string | null;
+
+  @Field(() => Commit, {
+    nullable: true,
     description: undefined
   })
-  label!: string;
+  commit?: Commit;
 
-  settings?: JsonObject;
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+    description: undefined
+  })
+  settings?: JsonValue;
 
-  inputParameters?: {
-    params: BlockInputOutput[] & JsonArray;
-  };
+  inputParameters?: JsonValue;
 
-  outputParameters?: {
-    params: BlockInputOutput[] & JsonArray;
-  };
+  outputParameters?: JsonValue;
 }

@@ -2,7 +2,10 @@ import React from "react";
 
 import * as models from "../models";
 import PendingChange from "./PendingChange";
-import PendingChangeDiff, { EnumCompareType } from "./PendingChangeDiff";
+import PendingChangeDiffEntity, {
+  EnumCompareType,
+} from "./PendingChangeDiffEntity";
+import PendingChangeDiffBlock from "./PendingChangeDiffBlock";
 import { PanelCollapsible } from "@amplication/design-system";
 
 import "./PendingChangeWithCompare.scss";
@@ -26,12 +29,21 @@ const PendingChangeWithCompare = ({
       className={CLASS_NAME}
       headerContent={<PendingChange change={change} />}
     >
-      <PendingChangeDiff
-        key={change.resourceId}
-        change={change}
-        compareType={compareType}
-        splitView={splitView}
-      />
+      {change.resourceType === models.EnumPendingChangeResourceType.Entity ? (
+        <PendingChangeDiffEntity
+          key={change.resourceId}
+          change={change}
+          compareType={compareType}
+          splitView={splitView}
+        />
+      ) : (
+        <PendingChangeDiffBlock
+          key={change.resourceId}
+          change={change}
+          compareType={compareType}
+          splitView={splitView}
+        />
+      )}
     </PanelCollapsible>
   );
 };

@@ -9,7 +9,7 @@ import { formatError } from "../util/error";
 import { UserAndTime, MultiStateToggle } from "@amplication/design-system";
 
 import useNavigationTabs from "../Layout/UseNavigationTabs";
-import { EnumCompareType } from "./PendingChangeDiff";
+import { EnumCompareType } from "./PendingChangeDiffEntity";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { TruncatedId } from "../Components/TruncatedId";
 import { ClickableId } from "../Components/ClickableId";

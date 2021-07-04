@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { FindOneWithVersionArgs } from 'src/dto';
-import { IBlock } from 'src/models';
+import { FindOneArgs } from 'src/dto';
+import { IBlock, User } from 'src/models';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockService } from '../block/block.service';
 import {
@@ -8,7 +8,7 @@ import {
   FindManyBlockTypeArgs,
   UpdateBlockArgs
 } from '../block/dto';
-
+import { UserEntity } from 'src/decorators/user.decorator';
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
@@ -21,7 +21,7 @@ export abstract class BlockTypeService<
   @Inject()
   private readonly blockService: BlockService;
 
-  async findOne(args: FindOneWithVersionArgs): Promise<T | null> {
+  async findOne(args: FindOneArgs): Promise<T | null> {
     return this.blockService.findOne<T>(args);
   }
 
@@ -29,19 +29,25 @@ export abstract class BlockTypeService<
     return this.blockService.findManyByBlockType(args, this.blockType);
   }
 
-  async create(args: CreateArgs): Promise<T> {
-    return this.blockService.create<T>({
-      ...args,
-      data: {
-        ...args.data,
-        blockType: this.blockType
-      }
-    });
+  async create(args: CreateArgs, @UserEntity() user: User): Promise<T> {
+    return this.blockService.create<T>(
+      {
+        ...args,
+        data: {
+          ...args.data,
+          blockType: this.blockType
+        }
+      },
+      user
+    );
   }
 
-  async update(args: UpdateArgs): Promise<T> {
-    return this.blockService.update<T>({
-      ...args
-    });
+  async update(args: UpdateArgs, @UserEntity() user: User): Promise<T> {
+    return this.blockService.update<T>(
+      {
+        ...args
+      },
+      user
+    );
   }
 }

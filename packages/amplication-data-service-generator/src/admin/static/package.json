@@ -1,23 +1,23 @@
 {
   "name": "admin-template",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "private": true,
   "dependencies": {
-    "@apollo/client": "^3.3.18",
-    "@material-ui/core": "^4.11.4",
-    "gql": "^1.1.2",
-    "graphql": "^14.7.0",
-    "graphql-tag": "^2.12.4",
-    "lodash": "^4.17.21",
-    "pluralize": "^7.0.0",
-    "ra-data-graphql-amplication": "^0.0.6",
-    "react": "^16.8.0",
-    "react-admin": "^3.15.0",
-    "react-apollo": "^3.1.5",
-    "react-dom": "^16.8.0",
+    "@apollo/client": "3.3.18",
+    "@material-ui/core": "4.11.4",
+    "gql": "1.1.2",
+    "graphql": "14.7.0",
+    "graphql-tag": "2.12.4",
+    "lodash": "4.17.21",
+    "pluralize": "7.0.0",
+    "ra-data-graphql-amplication": "0.0.6",
+    "react": "16.14.0",
+    "react-admin": "3.15.1",
+    "react-apollo": "3.1.5",
+    "react-dom": "16.14.0",
     "react-scripts": "4.0.3",
-    "typescript": "^4.1.2",
-    "web-vitals": "^1.0.1"
+    "typescript": "4.2.4",
+    "web-vitals": "1.1.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -45,13 +45,13 @@
   },
   "proxy": "http://localhost:3000",
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
-    "@types/lodash": "^4.14.169",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.8.0",
-    "@types/react-dom": "^17.0.0"
+    "@testing-library/jest-dom": "5.11.6",
+    "@testing-library/react": "11.2.7",
+    "@testing-library/user-event": "12.5.0",
+    "@types/jest": "26.0.16",
+    "@types/lodash": "4.14.170",
+    "@types/node": "12.20.15",
+    "@types/react": "16.14.10",
+    "@types/react-dom": "17.0.0"
   }
 }
