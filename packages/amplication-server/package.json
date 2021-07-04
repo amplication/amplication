@@ -53,7 +53,7 @@
     "@octokit/rest": "18.0.6",
     "@prisma/client": "2.19.0",
     "@slynova/flydrive": "1.0.3",
-    "@slynova/flydrive-gcs": "1.0.2",
+    "@slynova/flydrive-gcs": "1.0.3",
     "@types/adm-zip": "0.4.33",
     "@types/bcrypt": "3.0.1",
     "@types/dockerode": "2.5.34",
