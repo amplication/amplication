@@ -38,7 +38,7 @@ const EXAMPLE_USER: User = {
     updatedAt: new Date(),
     name: 'example_workspace_name'
   },
-  isOwner:true
+  isOwner: true
 };
 
 const EXAMPLE_BLOCK: Block = {
