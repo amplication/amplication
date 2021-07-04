@@ -70,7 +70,7 @@
     "@typescript-eslint/parser": "2.21.0",
     "eslint": "5.16.0",
     "eslint-config-oclif": "3.1.0",
-    "eslint-config-oclif-typescript": "0.1.0",
+    "eslint-config-oclif-typescript": "0.2.0",
     "eslint-import-resolver-lerna": "1.1.1",
     "eslint-plugin-import": "2.22.1",
     "ts-node": "8.10.2",
