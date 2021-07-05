@@ -7,7 +7,6 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { OAuthApp } from '@octokit/oauth-app';
 
-export const GCS_BUCKET_VAR = 'GCS_BUCKET';
 const GITHUB_FILE_TYPE = 'file';
 const GITHUB_FILE_ENCODING = 'base64';
 
