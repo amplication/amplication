@@ -41,6 +41,7 @@ import { GithubRepo } from '../github/dto/githubRepo';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
+import { prepareDeletedItemName } from '../../util/softDelete';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -321,11 +322,24 @@ export class AppService {
   }
 
   async apps(args: FindManyAppArgs): Promise<App[]> {
-    return this.prisma.app.findMany(args);
+    return this.prisma.app.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null
+      }
+    });
   }
 
   async deleteApp(args: FindOneArgs): Promise<App | null> {
-    return this.prisma.app.delete(args);
+    const app = await this.prisma.app.findFirst({ where: args.where });
+    return this.prisma.app.update({
+      where: args.where,
+      data: {
+        name: prepareDeletedItemName(app.name, app.id),
+        deletedAt: new Date()
+      }
+    });
   }
 
   async updateApp(args: UpdateOneAppArgs): Promise<App | null> {
