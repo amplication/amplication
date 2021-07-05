@@ -120,7 +120,7 @@
     "eslint": "7.17.0",
     "eslint-config-react-app": "6.0.0",
     "eslint-import-resolver-lerna": "2.0.0",
-    "eslint-plugin-flowtype": "5.2.0",
+    "eslint-plugin-flowtype": "5.8.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jest": "24.1.3",
     "eslint-plugin-jsx-a11y": "6.4.1",
