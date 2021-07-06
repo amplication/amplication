@@ -328,7 +328,7 @@ export class AppService {
       where: {
         id: args.where.id,
         deletedAt: null
-      },
+      }
     });
   }
 
@@ -845,7 +845,7 @@ export class AppService {
     const app = await this.app({
       where: {
         id: appId
-      },
+      }
     });
 
     if (isEmpty(app)) {

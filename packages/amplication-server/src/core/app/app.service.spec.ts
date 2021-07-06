@@ -5,7 +5,7 @@ import {
   INITIAL_COMMIT_MESSAGE,
   DEFAULT_APP_COLOR,
   DEFAULT_APP_DATA,
-  INVALID_APP_ID,
+  INVALID_APP_ID
 } from './app.service';
 
 import { PrismaService } from 'nestjs-prisma';
@@ -825,8 +825,8 @@ describe('AppService', () => {
     const args = {
       where: {
         deletedAt: null,
-        id: EXAMPLE_APP_ID,
-      },
+        id: EXAMPLE_APP_ID
+      }
     };
     expect(await service.app(args)).toEqual(EXAMPLE_APP);
     expect(prismaAppFindOneMock).toBeCalledTimes(1);
@@ -837,8 +837,8 @@ describe('AppService', () => {
     const args = {
       where: {
         deletedAt: null,
-        id: EXAMPLE_APP_ID,
-      },
+        id: EXAMPLE_APP_ID
+      }
     };
     expect(await service.apps(args)).toEqual([EXAMPLE_APP]);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
@@ -855,7 +855,7 @@ describe('AppService', () => {
       data: {
         deletedAt: dateSpy.mock.instances[0],
         name: prepareDeletedItemName(EXAMPLE_APP.name, EXAMPLE_APP.id)
-      },
+      }
     });
   });
 
