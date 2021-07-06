@@ -3,6 +3,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { Commit } from 'src/models';
 import { CommitService } from './commit.service';
 import { EntityService } from '../entity/entity.service';
+import { BlockService } from '../block/block.service';
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -38,6 +39,10 @@ describe('CommitService', () => {
         },
         {
           provide: EntityService,
+          useValue: {}
+        },
+        {
+          provide: BlockService,
           useValue: {}
         },
         CommitService

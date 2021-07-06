@@ -59,7 +59,7 @@ function ApplicationHome({ match }: Props) {
           </div>
           <div>
             <InnerTabLink to={`/${applicationId}/update`} icon="settings">
-              General Settings
+              App Settings
             </InnerTabLink>
           </div>
           <div>

@@ -17,7 +17,7 @@ import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
-import { AppRole } from 'src/models';
+import { AppRole, User } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
@@ -32,6 +32,8 @@ import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service'; // eslint-disable-line import/no-cycle
+import { UserService } from '../user/user.service'; // eslint-disable-line import/no-cycle
+import { AppSettingsService } from '../appSettings/appSettings.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
 import { ActionStep } from '../action/dto';
 import { createZipFileFromModules } from './zip';
@@ -155,6 +157,9 @@ export class BuildService {
     private readonly githubService: GithubService,
     @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
+    private readonly appSettingsService: AppSettingsService,
+    private readonly userService: UserService,
+
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -163,6 +168,12 @@ export class BuildService {
 
   async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
     const appId = args.data.app.connect.id;
+
+    const user = await this.userService.findUser({
+      where: {
+        id: args.data.createdBy.connect.id
+      }
+    });
 
     /**@todo: set version based on release when applicable */
     const commitId = args.data.commit.connect.id;
@@ -203,7 +214,7 @@ export class BuildService {
       buildId: build.id
     });
     logger.info(JOB_STARTED_LOG);
-    const tarballURL = await this.generate(build);
+    const tarballURL = await this.generate(build, user);
     if (!skipPublish) {
       await this.buildDockerImage(build, tarballURL);
     }
@@ -355,7 +366,7 @@ export class BuildService {
    * Generates code for given build and saves it to storage
    * @param build build to generate code for
    */
-  private async generate(build: Build): Promise<string> {
+  private async generate(build: Build, user: User): Promise<string> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
@@ -364,6 +375,12 @@ export class BuildService {
         const entities = await this.getOrderedEntities(build.id);
         const roles = await this.getAppRoles(build);
         const app = await this.appService.app({ where: { id: build.appId } });
+        const appSettings = await this.appSettingsService.getAppSettingsValues(
+          {
+            where: { id: build.appId }
+          },
+          user
+        );
         const [
           dataServiceGeneratorLogger,
           logPromises
@@ -381,7 +398,8 @@ export class BuildService {
             description: app.description,
             version: build.version,
             id: build.appId,
-            url
+            url,
+            settings: appSettings
           },
           dataServiceGeneratorLogger
         );

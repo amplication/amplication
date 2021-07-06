@@ -3,12 +3,28 @@ import { BlockService } from 'src/core/block/block.service';
 import { ConnectorRestApiCallService } from './connectorRestApiCall.service';
 import { ConnectorRestApiCall } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { User } from 'src/models';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
 const EXAMPLE_NAME = 'Example Connector REST API Call';
 const EXAMPLE_URL = 'http://example.com';
 const EXAMPLE_APP_ID = 'ExampleApp';
+
+const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  workspace: {
+    id: EXAMPLE_WORKSPACE_ID,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: 'example_workspace_name'
+  }
+};
 
 const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApiCall = {
   id: 'ExampleConnectorRestApiCall',
@@ -67,8 +83,7 @@ describe('ConnectorRestApiCallService', () => {
   it('should find one', async () => {
     expect(
       await service.findOne({
-        where: { id: EXAMPLE_CONNECTOR_REST_API_CALL.id },
-        version: EXAMPLE_CONNECTOR_REST_API_CALL.versionNumber
+        where: { id: EXAMPLE_CONNECTOR_REST_API_CALL.id }
       })
     ).toBe(EXAMPLE_CONNECTOR_REST_API_CALL);
     expect(findOneMock).toBeCalledTimes(1);
@@ -83,33 +98,39 @@ describe('ConnectorRestApiCallService', () => {
 
   it('should create', async () => {
     expect(
-      await service.create({
-        data: {
-          inputParameters: EXAMPLE_INPUT_PARAMETERS,
-          outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-          displayName: EXAMPLE_NAME,
-          url: EXAMPLE_URL,
-          app: {
-            connect: {
-              id: EXAMPLE_APP_ID
+      await service.create(
+        {
+          data: {
+            inputParameters: EXAMPLE_INPUT_PARAMETERS,
+            outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
+            displayName: EXAMPLE_NAME,
+            url: EXAMPLE_URL,
+            app: {
+              connect: {
+                id: EXAMPLE_APP_ID
+              }
             }
           }
-        }
-      })
+        },
+        EXAMPLE_USER
+      )
     ).toEqual(EXAMPLE_CONNECTOR_REST_API_CALL);
     expect(createMock).toBeCalledTimes(1);
   });
 
   it('should update', async () => {
     expect(
-      await service.update({
-        data: {
-          displayName: EXAMPLE_NAME
+      await service.update(
+        {
+          data: {
+            displayName: EXAMPLE_NAME
+          },
+          where: {
+            id: EXAMPLE_CONNECTOR_REST_API_CALL.id
+          }
         },
-        where: {
-          id: EXAMPLE_CONNECTOR_REST_API_CALL.id
-        }
-      })
+        EXAMPLE_USER
+      )
     ).toEqual(EXAMPLE_CONNECTOR_REST_API_CALL);
     expect(updateMock).toBeCalledTimes(1);
   });

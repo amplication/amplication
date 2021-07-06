@@ -3,7 +3,7 @@ import entities from "./entities";
 import roles from "./roles";
 import appInfo from "./appInfo";
 
-const MODULE_EXTENSIONS_TO_SNAPSHOT = [".ts", ".tsx", ".prisma"];
+const MODULE_EXTENSIONS_TO_SNAPSHOT = [".ts", ".tsx", ".prisma", ".env"];
 
 describe("createDataService", () => {
   test("creates app as expected", async () => {

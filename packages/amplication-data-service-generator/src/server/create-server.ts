@@ -11,6 +11,7 @@ import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
+import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
 import { BASE_DIRECTORY } from "./constants";
 
@@ -67,10 +68,13 @@ export async function createServerModules(
 
   logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(entities, roles);
+  const dotEnvModule = await createDotEnvModule(appInfo);
+
   return [
     ...staticModules,
     ...formattedModules,
     prismaSchemaModule,
     grantsModule,
+    dotEnvModule,
   ];
 }

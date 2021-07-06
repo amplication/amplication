@@ -9,6 +9,7 @@ import { validateHTMLColorHex } from 'validate-color';
 import { App, User, Commit } from 'src/models';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
+import { BlockService } from '../block/block.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
 import {
   SAMPLE_APP_DATA,
@@ -30,6 +31,7 @@ import {
   AppValidationErrorTypes,
   AppCreateWithEntitiesInput
 } from './dto';
+
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
 import { AppGenerationConfig } from '@amplication/data-service-generator';
@@ -65,6 +67,7 @@ export class AppService {
   constructor(
     private readonly prisma: PrismaService,
     private entityService: EntityService,
+    private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
     private readonly githubService: GithubService
@@ -400,8 +403,12 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
-    /**@todo: do the same for Blocks */
-    return this.entityService.getChangedEntities(appId, user.id);
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(appId, user.id),
+      this.blockService.getChangedBlocks(appId, user.id)
+    ]);
+
+    return [...changedEntities, ...changedBlocks];
   }
 
   async commit(
@@ -429,11 +436,10 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
-    /**@todo: do the same for Blocks */
-    const changedEntities = await this.entityService.getChangedEntities(
-      appId,
-      userId
-    );
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(appId, userId),
+      this.blockService.getChangedBlocks(appId, userId)
+    ]);
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
@@ -459,6 +465,32 @@ export class AppService {
         const releasePromise = this.entityService.releaseLock(
           change.resourceId
         );
+
+        return [
+          versionPromise.then(() => null),
+          releasePromise.then(() => null)
+        ];
+      })
+    );
+
+    await Promise.all(
+      changedBlocks.flatMap(change => {
+        const versionPromise = this.blockService.createVersion({
+          data: {
+            commit: {
+              connect: {
+                id: commit.id
+              }
+            },
+            block: {
+              connect: {
+                id: change.resourceId
+              }
+            }
+          }
+        });
+
+        const releasePromise = this.blockService.releaseLock(change.resourceId);
 
         return [
           versionPromise.then(() => null),
@@ -521,26 +553,29 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
-    /**@todo: do the same for Blocks */
-    const changedEntities = await this.entityService.getChangedEntities(
-      appId,
-      userId
-    );
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(appId, userId),
+      this.blockService.getChangedBlocks(appId, userId)
+    ]);
 
-    if (isEmpty(changedEntities)) {
+    if (isEmpty(changedEntities) && isEmpty(changedBlocks)) {
       throw new Error(
         `There are no pending changes for user ${userId} in app ${appId}`
       );
     }
 
-    await Promise.all(
-      changedEntities.map(change => {
-        return this.entityService.discardPendingChanges(
-          change.resourceId,
-          userId
-        );
-      })
-    );
+    const entityPromises = changedEntities.map(change => {
+      return this.entityService.discardPendingChanges(
+        change.resourceId,
+        userId
+      );
+    });
+    const blockPromises = changedBlocks.map(change => {
+      return this.blockService.discardPendingChanges(change.resourceId, userId);
+    });
+
+    await Promise.all(blockPromises);
+    await Promise.all(entityPromises);
 
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
@@ -548,7 +583,7 @@ export class AppService {
     return true;
   }
 
-  async startAuthorizeAppWithGithub(appId: string) {
+  async startAuthorizeAppWithGithub(appId: string): Promise<string> {
     return this.githubService.getOAuthAppAuthorizationUrl(appId);
   }
 

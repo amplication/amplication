@@ -7,4 +7,3 @@ export { IntFilter } from './IntFilter';
 export { WhereParentIdInput } from './WhereParentIdInput';
 export { ConnectManyUniqueInput } from './ConnectManyUniqueInput';
 export { FindOneArgs } from './FindOneArgs';
-export { FindOneWithVersionArgs } from './FindOneWithVersionArgs';
