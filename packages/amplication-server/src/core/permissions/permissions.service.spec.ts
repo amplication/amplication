@@ -92,6 +92,7 @@ describe('PermissionsService', () => {
     };
     const countArgs = {
       where: {
+        deletedAt: null,
         id: args.resourceId,
         workspace: {
           id: EXAMPLE_WORKSPACE_ID
@@ -119,6 +120,7 @@ describe('PermissionsService', () => {
       where: {
         id: args.resourceId,
         app: {
+          deletedAt: null,
           workspace: {
             id: EXAMPLE_WORKSPACE_ID
           }

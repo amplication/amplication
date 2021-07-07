@@ -94,4 +94,7 @@ export class App {
     nullable: true
   })
   githubLastMessage?: string;
+
+  // no need to expose to GraphQL
+  deletedAt?: Date;
 }
