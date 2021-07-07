@@ -10,7 +10,7 @@ export const GitHubLoginButton = () => {
     <a
       href={
         isEmpty(REACT_APP_GITHUB_CONTROLLER_LOGIN_URL)
-          ? "/login"
+          ? "/github"
           : REACT_APP_GITHUB_CONTROLLER_LOGIN_URL
       }
       className="github-login-button"

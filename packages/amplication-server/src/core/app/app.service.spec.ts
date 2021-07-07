@@ -4,7 +4,8 @@ import {
   AppService,
   INITIAL_COMMIT_MESSAGE,
   DEFAULT_APP_COLOR,
-  DEFAULT_APP_DATA
+  DEFAULT_APP_DATA,
+  INVALID_APP_ID
 } from './app.service';
 
 import { PrismaService } from 'nestjs-prisma';
@@ -36,6 +37,7 @@ import { BlockService } from '../block/block.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { QueryMode } from 'src/enums/QueryMode';
+import { prepareDeletedItemName } from '../../util/softDelete';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
@@ -56,7 +58,8 @@ const EXAMPLE_APP: App = {
   updatedAt: new Date(),
   name: EXAMPLE_APP_NAME,
   description: EXAMPLE_APP_DESCRIPTION,
-  githubSyncEnabled: false
+  githubSyncEnabled: false,
+  deletedAt: null
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -275,6 +278,7 @@ describe('AppService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             app: {
               create: prismaAppCreateMock,
+              findFirst: prismaAppFindOneMock,
               findUnique: prismaAppFindOneMock,
               findMany: prismaAppFindManyMock,
               delete: prismaAppDeleteMock,
@@ -363,6 +367,7 @@ describe('AppService', () => {
     };
     const findManyArgs = {
       where: {
+        deletedAt: null,
         id: EXAMPLE_APP_ID,
         workspace: {
           users: {
@@ -495,6 +500,7 @@ describe('AppService', () => {
     };
     const findManyArgs = {
       where: {
+        deletedAt: null,
         id: EXAMPLE_APP_ID,
         workspace: {
           users: {
@@ -655,6 +661,7 @@ describe('AppService', () => {
     };
     const findManyArgs = {
       where: {
+        deletedAt: null,
         id: EXAMPLE_APP_ID,
         workspace: {
           users: {
@@ -750,6 +757,7 @@ describe('AppService', () => {
       [
         {
           where: {
+            deletedAt: null,
             name: {
               mode: QueryMode.Insensitive,
               startsWith: SAMPLE_APP_DATA.name
@@ -815,14 +823,24 @@ describe('AppService', () => {
   });
 
   it('should find an app', async () => {
-    const args = { where: { id: EXAMPLE_APP_ID } };
+    const args = {
+      where: {
+        deletedAt: null,
+        id: EXAMPLE_APP_ID
+      }
+    };
     expect(await service.app(args)).toEqual(EXAMPLE_APP);
     expect(prismaAppFindOneMock).toBeCalledTimes(1);
     expect(prismaAppFindOneMock).toBeCalledWith(args);
   });
 
   it('should find many apps', async () => {
-    const args = { where: { id: EXAMPLE_APP_ID } };
+    const args = {
+      where: {
+        deletedAt: null,
+        id: EXAMPLE_APP_ID
+      }
+    };
     expect(await service.apps(args)).toEqual([EXAMPLE_APP]);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(args);
@@ -830,9 +848,16 @@ describe('AppService', () => {
 
   it('should delete an app', async () => {
     const args = { where: { id: EXAMPLE_APP_ID } };
+    const dateSpy = jest.spyOn(global, 'Date');
     expect(await service.deleteApp(args)).toEqual(EXAMPLE_APP);
-    expect(prismaAppDeleteMock).toBeCalledTimes(1);
-    expect(prismaAppDeleteMock).toBeCalledWith(args);
+    expect(prismaAppUpdateMock).toBeCalledTimes(1);
+    expect(prismaAppUpdateMock).toBeCalledWith({
+      ...args,
+      data: {
+        deletedAt: dateSpy.mock.instances[0],
+        name: prepareDeletedItemName(EXAMPLE_APP.name, EXAMPLE_APP.id)
+      }
+    });
   });
 
   it('should update an app', async () => {
@@ -855,6 +880,7 @@ describe('AppService', () => {
     };
     const findManyArgs = {
       where: {
+        deletedAt: null,
         id: EXAMPLE_APP_ID,
         workspace: {
           users: {
@@ -948,5 +974,34 @@ describe('AppService', () => {
     );
     expect(buildServiceCreateMock).toBeCalledTimes(1);
     expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs, false);
+  });
+
+  describe('deleted apps', () => {
+    beforeEach(() => {
+      EXAMPLE_APP.deletedAt = new Date();
+      prismaAppFindOneMock.mockImplementationOnce(() => {
+        throw new Error(INVALID_APP_ID);
+      });
+    });
+    afterEach(() => {
+      EXAMPLE_APP.deletedAt = null;
+    });
+
+    it('should fail to fetch a deleted app', async () => {
+      const args = { where: { id: EXAMPLE_APP_ID } };
+      await expect(service.app(args)).rejects.toThrow(
+        new Error(INVALID_APP_ID)
+      );
+    });
+
+    it('should fail to update a deleted app', async () => {
+      const args = {
+        data: { name: EXAMPLE_APP_NAME },
+        where: { id: EXAMPLE_APP_ID }
+      };
+      await expect(service.updateApp(args)).rejects.toThrow(
+        new Error(INVALID_APP_ID)
+      );
+    });
   });
 });

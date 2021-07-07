@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, Reference, useMutation, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { Link } from "react-router-dom";
@@ -22,11 +22,51 @@ type TData = {
   apps: Array<models.App>;
 };
 
+type TDeleteData = {
+  deleteApp: models.App;
+};
+
 const CLASS_NAME = "application-list";
 
 function ApplicationList() {
   const { trackEvent } = useTracking();
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [error, setError] = useState<Error | null>(null);
+
+  const clearError = useCallback(() => {
+    setError(null);
+  }, [setError]);
+
+  const [deleteApp] = useMutation<TDeleteData>(DELETE_APP, {
+    update(cache, { data }) {
+      if (!data) return;
+      const deletedAppId = data.deleteApp.id;
+
+      cache.modify({
+        fields: {
+          apps(existingAppRefs, { readField }) {
+            return existingAppRefs.filter(
+              (appRef: Reference) => deletedAppId !== readField("id", appRef)
+            );
+          },
+        },
+      });
+    },
+  });
+
+  const handleDelete = useCallback(
+    (app) => {
+      trackEvent({
+        eventName: "deleteApp",
+      });
+      deleteApp({
+        variables: {
+          appId: app.id,
+        },
+      }).catch(setError);
+    },
+    [deleteApp, setError, trackEvent]
+  );
 
   const handleSearchChange = useCallback(
     (value) => {
@@ -35,15 +75,19 @@ function ApplicationList() {
     [setSearchPhrase]
   );
 
-  const { data, error, loading } = useQuery<TData>(GET_APPLICATIONS, {
-    variables: {
-      whereName:
-        searchPhrase !== ""
-          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-          : undefined,
-    },
-  });
-  const errorMessage = formatError(error);
+  const { data, error: errorLoading, loading } = useQuery<TData>(
+    GET_APPLICATIONS,
+    {
+      variables: {
+        whereName:
+          searchPhrase !== ""
+            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+            : undefined,
+      },
+    }
+  );
+  const errorMessage =
+    formatError(errorLoading) || (error && formatError(error));
 
   const handleNewAppClick = useCallback(() => {
     trackEvent({
@@ -86,11 +130,21 @@ function ApplicationList() {
         </div>
       ) : (
         data?.apps.map((app) => {
-          return <ApplicationListItem key={app.id} app={app} />;
+          return (
+            <ApplicationListItem
+              key={app.id}
+              app={app}
+              onDelete={handleDelete}
+            />
+          );
         })
       )}
 
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(error || errorLoading)}
+        message={errorMessage}
+        onClose={clearError}
+      />
     </div>
   );
 }
@@ -130,6 +184,14 @@ export const GET_APPLICATIONS = gql`
           }
         }
       }
+    }
+  }
+`;
+
+const DELETE_APP = gql`
+  mutation deleteApp($appId: String!) {
+    deleteApp(where: { id: $appId }) {
+      id
     }
   }
 `;
