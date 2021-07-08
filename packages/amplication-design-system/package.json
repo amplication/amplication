@@ -53,7 +53,7 @@
     "react-is": "16.13.1",
     "react-scripts": "3.4.4",
     "rollup": "2.52.8",
-    "rollup-plugin-copy": "3.3.0",
+    "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-postcss": "3.1.8",
     "rollup-plugin-typescript2": "0.30.0",
     "sass": "1.29.0"
