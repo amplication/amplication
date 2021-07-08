@@ -23,7 +23,7 @@
     "@amplication/design-system": "^0.7.0",
     "@apollo/client": "3.3.19",
     "@babel/parser": "7.12.11",
-    "@extra-set/difference": "2.2.4",
+    "@extra-set/difference": "2.2.11",
     "@nestjs/common": "7.5.1",
     "@nestjs/config": "0.6.1",
     "@nestjs/core": "7.5.1",
