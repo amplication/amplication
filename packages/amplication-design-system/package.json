@@ -56,7 +56,7 @@
     "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-postcss": "3.1.8",
     "rollup-plugin-typescript2": "0.30.0",
-    "sass": "1.29.0"
+    "sass": "1.35.2"
   },
   "eslintConfig": {
     "extends": "react-app",
