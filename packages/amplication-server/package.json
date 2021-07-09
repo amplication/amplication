@@ -68,7 +68,7 @@
     "@types/node": "13.7.4",
     "@types/passport": "1.0.6",
     "@types/passport-github": "1.1.5",
-    "@types/passport-jwt": "3.0.5",
+    "@types/passport-jwt": "3.0.6",
     "@types/tar-stream": "2.1.0",
     "@types/triple-beam": "1.3.2",
     "adm-zip": "0.4.16",
