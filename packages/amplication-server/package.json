@@ -126,10 +126,7 @@
     "ts-jest": "27.0.3",
     "ts-loader": "6.2.2",
     "ts-node": "9.1.1",
-    "tsconfig-paths": "3.9.0",
-    "type-graphql": "1.0.0-rc.3",
-    "typegraphql-prisma": "0.2.3",
-    "typegraphql-prisma-nestjs": "0.100.701"
+    "tsconfig-paths": "3.9.0"
   },
   "jest": {
     "moduleFileExtensions": [
