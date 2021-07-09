@@ -52,7 +52,7 @@
     "@types/passport-http": "0.3.8",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "2.1.5",
-    "@types/react": "16.14.10",
+    "@types/react": "16.14.11",
     "@types/react-dom": "16.9.13",
     "@types/react-router-dom": "5.1.7",
     "@types/replace-ext": "2.0.0",
