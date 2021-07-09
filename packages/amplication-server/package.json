@@ -127,7 +127,7 @@
     "ts-loader": "6.2.2",
     "ts-node": "9.1.1",
     "tsconfig-paths": "3.9.0",
-    "type-graphql": "1.0.0-rc.3",
+    "type-graphql": "1.1.1",
     "typegraphql-prisma": "0.2.3",
     "typegraphql-prisma-nestjs": "0.100.701"
   },
