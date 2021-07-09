@@ -128,7 +128,7 @@
     "ts-node": "9.1.1",
     "tsconfig-paths": "3.9.0",
     "type-graphql": "1.0.0-rc.3",
-    "typegraphql-prisma": "0.2.3",
+    "typegraphql-prisma": "0.14.6",
     "typegraphql-prisma-nestjs": "0.100.701"
   },
   "jest": {
