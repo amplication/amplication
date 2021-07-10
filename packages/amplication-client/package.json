@@ -34,7 +34,7 @@
     "@types/react-lazylog": "4.5.1",
     "@types/react-router-dom": "5.1.8",
     "@types/react-tracking": "7.0.4",
-    "@types/semver": "7.3.6",
+    "@types/semver": "7.3.7",
     "ajv-errors": "3.0.0",
     "amplitude-js": "7.1.1",
     "capital-case": "1.0.4",

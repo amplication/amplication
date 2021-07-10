@@ -56,7 +56,7 @@
     "@types/react-dom": "16.9.14",
     "@types/react-router-dom": "5.1.8",
     "@types/replace-ext": "2.0.0",
-    "@types/semver": "7.3.6",
+    "@types/semver": "7.3.7",
     "apollo-server-express": "2.19.0",
     "axios": "0.21.1",
     "bcrypt": "5.0.0",
