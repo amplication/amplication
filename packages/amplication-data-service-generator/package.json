@@ -48,7 +48,7 @@
     "@types/lodash.pick": "4.4.6",
     "@types/lodash.uniqby": "4.7.6",
     "@types/lodash.zip": "4.2.6",
-    "@types/morgan": "1.9.2",
+    "@types/morgan": "1.9.3",
     "@types/passport-http": "0.3.9",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "2.1.5",
