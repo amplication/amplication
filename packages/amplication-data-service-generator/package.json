@@ -64,7 +64,7 @@
     "class-transformer": "0.4.0",
     "class-validator": "0.12.2",
     "express": "4.17.1",
-    "fast-glob": "3.2.6",
+    "fast-glob": "3.2.7",
     "formik": "2.2.9",
     "graphql-type-json": "0.3.2",
     "lodash.countby": "4.6.0",
