@@ -126,7 +126,7 @@
     "ts-jest": "27.0.3",
     "ts-loader": "6.2.2",
     "ts-node": "9.1.1",
-    "tsconfig-paths": "3.9.0"
+    "tsconfig-paths": "3.10.1"
   },
   "jest": {
     "moduleFileExtensions": [
