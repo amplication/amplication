@@ -90,7 +90,7 @@
     "lodash.set": "4.3.2",
     "nest-morgan": "1.0.1",
     "nest-winston": "1.5.0",
-    "nestjs-prisma": "0.6.0-dev.2",
+    "nestjs-prisma": "0.12.0",
     "octokit-plugin-create-pull-request": "3.9.3",
     "passport": "0.4.1",
     "passport-github2": "0.1.12",

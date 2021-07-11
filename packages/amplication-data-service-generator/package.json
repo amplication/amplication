@@ -80,7 +80,7 @@
     "morgan": "1.10.0",
     "nest-access-control": "2.0.2",
     "nest-morgan": "1.0.1",
-    "nestjs-prisma": "0.7.0",
+    "nestjs-prisma": "0.12.0",
     "param-case": "3.0.4",
     "pascal-case": "3.1.2",
     "passport": "0.4.1",
