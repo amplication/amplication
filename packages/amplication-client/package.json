@@ -40,7 +40,7 @@
     "capital-case": "1.0.4",
     "chalk-pipe": "4.0.0",
     "classnames": "2.3.1",
-    "date-fns": "2.15.0",
+    "date-fns": "2.22.1",
     "deepdash-es": "5.2.1",
     "downloadjs": "1.4.7",
     "events": "3.1.0",

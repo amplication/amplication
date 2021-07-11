@@ -78,7 +78,7 @@
     "class-transformer": "0.3.1",
     "class-validator": "0.12.2",
     "cuid": "2.1.8",
-    "date-fns": "2.16.1",
+    "date-fns": "2.22.1",
     "dockerode": "3.2.1",
     "get-stream": "6.0.1",
     "graphql": "14.6.0",
