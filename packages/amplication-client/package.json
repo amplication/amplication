@@ -41,7 +41,7 @@
     "chalk-pipe": "4.0.0",
     "classnames": "2.3.1",
     "date-fns": "2.22.1",
-    "deepdash-es": "5.2.1",
+    "deepdash-es": "5.3.9",
     "downloadjs": "1.4.7",
     "events": "3.1.0",
     "formik": "2.2.9",
