@@ -30,7 +30,7 @@
     "@nestjs/graphql": "7.9.1",
     "@nestjs/passport": "7.1.6",
     "@nestjs/platform-express": "7.6.18",
-    "@nestjs/serve-static": "2.1.4",
+    "@nestjs/serve-static": "2.2.2",
     "@nestjs/swagger": "4.8.0",
     "@nestjs/testing": "7.6.18",
     "@prisma/client": "2.19.0",
