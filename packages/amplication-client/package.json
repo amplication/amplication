@@ -43,7 +43,7 @@
     "date-fns": "2.22.1",
     "deepdash-es": "5.3.9",
     "downloadjs": "1.4.7",
-    "events": "3.1.0",
+    "events": "3.3.0",
     "formik": "2.2.9",
     "graphql": "15.0.0",
     "lodash.debounce": "4.0.8",
