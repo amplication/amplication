@@ -4,6 +4,10 @@
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
+    },
+    {
+      "matchDatasources": ["docker"],
+      "automerge": false
     }
   ]
 }
