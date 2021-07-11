@@ -36,7 +36,7 @@
     "@types/react-tracking": "7.0.4",
     "@types/semver": "7.3.7",
     "ajv-errors": "3.0.0",
-    "amplitude-js": "7.1.1",
+    "amplitude-js": "7.4.4",
     "capital-case": "1.0.4",
     "chalk-pipe": "4.0.0",
     "classnames": "2.2.6",
