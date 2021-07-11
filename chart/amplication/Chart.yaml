@@ -5,7 +5,7 @@ description: A Helm chart for Amplication.
 dependencies:
 - name: postgresql
   alias: "postgres"
-  version: "10.3.12"
+  version: "10.5.2"
   repository: "https://charts.bitnami.com/bitnami"
   condition: postgres.install
 # A chart can be either an 'application' or a 'library' chart.

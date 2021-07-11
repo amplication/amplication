@@ -5,9 +5,10 @@ import appInfo from "./appInfo";
 
 const MODULE_EXTENSIONS_TO_SNAPSHOT = [".ts", ".tsx", ".prisma", ".env"];
 
+jest.setTimeout(100000);
+
 describe("createDataService", () => {
   test("creates app as expected", async () => {
-    jest.setTimeout(100000);
     const modules = await createDataService(entities, roles, appInfo);
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
