@@ -74,7 +74,7 @@
     "sass": "1.35.2",
     "semver": "7.3.5",
     "styled-components": "5.1.1",
-    "typescript": "3.7.5",
+    "typescript": "3.9.10",
     "use-debounce": "3.4.3",
     "xlsx": "0.16.9",
     "yaml": "1.10.2"
