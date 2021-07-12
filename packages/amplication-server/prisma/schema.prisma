@@ -22,13 +22,14 @@ model Account {
 }
 
 model Workspace {
-  id          String       @id @default(cuid())
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  name        String       @unique
-  apps        App[]
-  users       User[]
-  invitations Invitation[]
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  name          String         @unique
+  apps          App[]
+  users         User[]
+  invitations   Invitation[]
+  subscriptions Subscription[]
 }
 
 model User {
@@ -463,4 +464,30 @@ model Invitation {
 
 
   @@unique([workspaceId, email])
+}
+
+enum EnumSubscriptionPlan {
+  Pro
+  Business
+  Enterprise
+}
+
+enum EnumSubscriptionStatus {
+  Active
+  Trailing
+  PastDue
+  Paused
+  Deleted
+}
+
+model Subscription {
+  id               String                 @id @default(cuid())
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  workspaceId      String
+  workspace        Workspace              @relation(fields: [workspaceId], references: [id])
+  subscriptionPlan EnumSubscriptionPlan
+  status           EnumSubscriptionStatus
+  subscriptionData Json
+
 }
