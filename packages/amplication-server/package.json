@@ -98,7 +98,7 @@
     "pluralize": "8.0.0",
     "prisma": "2.19.0",
     "reflect-metadata": "0.1.13",
-    "rxjs": "6.5.4",
+    "rxjs": "6.6.7",
     "semver": "7.3.5",
     "supertest": "4.0.2",
     "tar-stream": "2.1.4",
