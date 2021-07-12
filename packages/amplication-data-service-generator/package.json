@@ -97,7 +97,7 @@
     "recast": "0.20.4",
     "reflect-metadata": "0.1.13",
     "replace-ext": "2.0.0",
-    "rxjs": "6.6.3",
+    "rxjs": "6.6.7",
     "semver": "7.3.5",
     "type-fest": "1.1.2",
     "typescript": "3.9.7",
