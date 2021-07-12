@@ -5,7 +5,7 @@
   "dependencies": {
     "@amplication/data": "^0.7.0",
     "@amplication/design-system": "^0.7.0",
-    "@apollo/client": "3.3.16",
+    "@apollo/client": "3.3.21",
     "@extra-set/difference": "2.2.3",
     "@primer/components": "19.1.1",
     "@rmwc/circular-progress": "6.1.4",
