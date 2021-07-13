@@ -3,8 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { FindOneArgs } from 'src/dto';
 import { Subscription } from './dto/Subscription';
 import { PrismaService } from 'nestjs-prisma';
-import { CreateSubscriptionInput } from './dto';
-import { Prisma } from '@prisma/client';
+import { SubscriptionData } from './dto';
+import { CreateSubscriptionInput } from './dto/CreateSubscriptionInput';
+import { Prisma, Subscription as PrismaSubscription } from '@prisma/client';
 
 @Injectable()
 export class SubscriptionService {
@@ -14,24 +15,38 @@ export class SubscriptionService {
   ) {}
 
   async getSubscription(args: FindOneArgs): Promise<Subscription | null> {
-    return this.prisma.subscription.findUnique(args);
+    return this.transformPrismaObject(
+      await this.prisma.subscription.findUnique(args)
+    );
+  }
+
+  private transformPrismaObject(
+    subscription: PrismaSubscription | null
+  ): Subscription | null {
+    if (!subscription) return null;
+    return {
+      ...subscription,
+      subscriptionData: (subscription.subscriptionData as unknown) as SubscriptionData
+    };
   }
 
   async createSubscription(
     data: CreateSubscriptionInput
   ): Promise<Subscription> {
-    return this.prisma.subscription.create({
-      data: {
-        workspace: {
-          connect: {
-            id: data.workspaceId
-          }
-        },
-        status: data.status,
-        subscriptionPlan: data.plan,
-        subscriptionData: (data.subscriptionData as unknown) as Prisma.InputJsonValue
-      }
-    });
+    return this.transformPrismaObject(
+      await this.prisma.subscription.create({
+        data: {
+          workspace: {
+            connect: {
+              id: data.workspaceId
+            }
+          },
+          status: data.status,
+          subscriptionPlan: data.plan,
+          subscriptionData: (data.subscriptionData as unknown) as Prisma.InputJsonValue
+        }
+      })
+    );
   }
 
   // async updateSubscription(): Promise<Subscription> {

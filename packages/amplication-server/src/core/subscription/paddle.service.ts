@@ -11,8 +11,15 @@ import {
 } from './dto/SubscriptionData';
 import { PaddleCreateSubscriptionEvent } from './dto/PaddleCreateSubscriptionEvent';
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from './dto';
+import { Subscription } from './dto/Subscription';
 
 const PADDLE_PUBLIC_KEY_VAR = 'PADDLE_PUBLIC_KEY';
+
+export const ERR_BAD_SIGNATURE = 'Bad signature or public key';
+export const ERR_NO_WORKSPACE_ID = 'Cannot find workspace ID on the event data';
+export const ERR_INVALID_PADDLE_EVENT = 'Unsupported Paddle event';
+export const ERR_INVALID_PADDLE_STATUS = 'Invalid paddle status';
+export const ERR_INVALID_PADDLE_PLAN_ID = 'Unknown Paddle plan id';
 
 const PADDLE_PLAN_ID_TO_SUBSCRIPTION_PLAN: {
   [key: string]: EnumSubscriptionPlan;
@@ -22,7 +29,6 @@ const PADDLE_PLAN_ID_TO_SUBSCRIPTION_PLAN: {
   ['13780']: EnumSubscriptionPlan.Pro, //sandbox
   ['13781']: EnumSubscriptionPlan.Business //sandbox
 };
-
 @Injectable()
 export class PaddleService {
   constructor(
@@ -31,9 +37,7 @@ export class PaddleService {
   ) {}
 
   // Verify Paddle webhook data using our public key
-  private async verifyPaddleWebhook(
-    paddleEvent: PaddleEvent
-  ): Promise<boolean> {
+  private verifyPaddleWebhook(paddleEvent: PaddleEvent): boolean {
     const signature = paddleEvent.p_signature;
     const keys = Object.keys(paddleEvent)
       .filter(k => k !== 'p_signature')
@@ -50,11 +54,9 @@ export class PaddleService {
       verifier.write(serialized);
       verifier.end();
 
-      return verifier.verify(
-        this.configService.get(PADDLE_PUBLIC_KEY_VAR),
-        signature,
-        'base64'
-      );
+      const publicKey = this.configService.get(PADDLE_PUBLIC_KEY_VAR);
+
+      return verifier.verify(publicKey, signature, 'base64');
     } catch (err) {
       return false;
     }
@@ -63,18 +65,19 @@ export class PaddleService {
   private getWorkspaceIdFromEvent(paddleEvent: PaddleEvent): string {
     const { passthrough } = paddleEvent;
 
-    const passthroughData: PaddlePassthroughData = JSON.parse(passthrough);
+    const decoded = passthrough.replace(/\\/g, '');
+    const passthroughData: PaddlePassthroughData = JSON.parse(decoded);
 
     if (!passthroughData.workspaceId) {
-      throw new Error('Cannot find workspace ID on the event data');
+      throw new Error(ERR_NO_WORKSPACE_ID);
     }
 
     return passthroughData.workspaceId;
   }
 
-  async handlePaddleWebhook(paddleEvent: PaddleEvent): Promise<void> {
+  async handlePaddleWebhook(paddleEvent: PaddleEvent): Promise<Subscription> {
     if (!this.verifyPaddleWebhook(paddleEvent)) {
-      throw new Error('Bad signature or public key'); // Webhook was not sent from Paddle
+      throw new Error(ERR_BAD_SIGNATURE); // Webhook was not sent from Paddle
     }
 
     switch (paddleEvent.alert_name) {
@@ -90,14 +93,14 @@ export class PaddleService {
       //   return this.cancelSubscription(paddleEvent);
       // }
       default: {
-        throw new Error('Unsupported Paddle event');
+        throw new Error(ERR_INVALID_PADDLE_EVENT);
       }
     }
   }
 
   private async createSubscription(
     paddleEvent: PaddleCreateSubscriptionEvent
-  ): Promise<void> {
+  ): Promise<Subscription> {
     const workspaceId = this.getWorkspaceIdFromEvent(paddleEvent);
     const data: SubscriptionData = {
       paddleEmail: paddleEvent.email,
@@ -114,7 +117,7 @@ export class PaddleService {
       paddleCancelUrl: paddleEvent.cancel_url
     };
 
-    await this.subscriptionService.createSubscription({
+    return this.subscriptionService.createSubscription({
       workspaceId,
       plan: this.convertPaddlePlanToSubscriptionPlan(
         data.paddleSubscriptionPlanId
@@ -124,7 +127,6 @@ export class PaddleService {
       ),
       subscriptionData: data
     });
-    return;
   }
 
   // async updateSubscription(paddleEvent: PaddleEvent): Promise<void> {
@@ -152,7 +154,7 @@ export class PaddleService {
       case 'deleted':
         return EnumPaddleSubscriptionStatus.Deleted;
       default:
-        throw new Error('Invalid paddle status');
+        throw new Error(ERR_INVALID_PADDLE_STATUS);
     }
   }
 
@@ -160,7 +162,7 @@ export class PaddleService {
     paddlePlanId: string
   ): EnumSubscriptionPlan {
     const plan = PADDLE_PLAN_ID_TO_SUBSCRIPTION_PLAN[paddlePlanId];
-    if (!plan) throw new Error('Unknown Paddle plan id');
+    if (!plan) throw new Error(ERR_INVALID_PADDLE_PLAN_ID);
     return plan;
   }
 

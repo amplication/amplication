@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { JsonValue } from 'type-fest';
 import { Workspace } from 'src/models/Workspace'; // eslint-disable-line import/no-cycle
+import { SubscriptionData } from '.';
 
 @ObjectType({
   isAbstract: true,
@@ -31,5 +31,5 @@ export class Subscription {
   })
   workspace?: Workspace;
 
-  subscriptionData!: JsonValue;
+  subscriptionData!: SubscriptionData;
 }
