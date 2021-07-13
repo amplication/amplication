@@ -8,18 +8,18 @@ import { EnumPaddleSubscriptionStatus } from './dto/SubscriptionData';
 
 /* eslint-disable @typescript-eslint/naming-convention*/
 const PADDLE_CREATE_EVENT: PaddleCreateSubscriptionEvent = {
-  alert_id: '101712024',
+  alert_id: '1237350276',
   alert_name: 'subscription_created',
   cancel_url:
     'https://checkout.paddle.com/subscription/cancel?user=3&subscription=3&hash=2af27b46e1685c8502cebd06c69155518e41c662',
   checkout_id: '5-942b025bda4167d-595bc41aba',
   currency: 'USD',
   email: 'yhill@example.net',
-  event_time: '2021-07-13 06:20:46',
+  event_time: '2021-07-13 08:11:46',
   linked_subscriptions: '6, 2, 8',
   marketing_consent: '',
   next_bill_date: '2021-07-25',
-  passthrough: '{\\"workspaceId\\": \\"exampleWorkspaceId\\"}',
+  passthrough: '{"workspaceId": "exampleWorkspaceId"}',
   quantity: '7',
   source: 'Order',
   status: 'trialing',
@@ -30,7 +30,7 @@ const PADDLE_CREATE_EVENT: PaddleCreateSubscriptionEvent = {
     'https://checkout.paddle.com/subscription/update?user=6&subscription=4&hash=57af6e8564b2899080cd34e0e3d16a3430eb61d9',
   user_id: '9',
   p_signature:
-    'i3AtRZo0rcusGooQprhhm5eNhAfBwRKlmcw+R8aP/aO5HBnVJ/IENIDSmKQexXdMzFbs3FqVweYBh+SDXMgvH1fbI60O1CNzHGQNOktOY6AM0ZwxeD44uB95UICgC6jHu8WwAiJYTYKBkIcP8oOb9IPjn9Xv51g30mftIa3Jnn1W5nlDeeUc+OMwdZ9JVA+OuCrUKhp5Z/5JbDDfACofVbx59WoxNQSjEQ45E0imx44BS/9uh4A5/QUH0UxQcXmGVxicPqnoLj+8li6n1nsvacmHvmJavZqBT8Yf/zv2m2BaaaWruDoonLopxCSVooHI4/FP8JHXkVaMFAVcSNuO4OLsVPMbWB+KZ5COwLbltrZ2aQHtRwYrudK0yuExpEQfM3z2rIciMaCqmiP2Veh5kvdjYDpj8b/Yppa1HqfwtRpN8HPurG6HgCWN2kvTJWhRrnEDuGRuzXG6oWL6Q5Z2BQ/78sWW5rONTww0ouKqrABd5CssL9Lv8z8vMvy3tQEN8cVhUjGzG/StirSPXYJscLIvRLLWuoBO8Evxh5XF5Ybi5MUQS4aiwJzAcLcq3nifwJJ4lDiE7kcXw1A57CSZ255bIf0zztrjUfrD+5yOBx/76lHP2TujGaQcfkfAM5RFzCPlHM05CL35Ut8ps49Be81SYjidRfqX46rZ6bSOYFA='
+    'nu4HyEzJD/USnDJton8USCVir4xRA/MwixrVcCgTzdbr4NERJWOSo0ui7EKTeYEEXOkYO7ZBwumfGCdsW9fttkPOlhWnnaqIBiEeag/0tR4omQlxOFedaBzaLFwFH3wwKd9ZfxwuOT4Bgd4SI1oVdZUuGlRRCneb/LOEr5rkRdo5vWvs3fOJmHGmVRlLv8AXVHXuuA2oicUTSLKcmbz2J/E1y+8EBTXYuwt+boT14/J1iHzcJN6cMCr8eaPab01f6N/OhCpjfgrHe8kT6weVFTiew4H2bF5YPH341A8KISZRd0GNt+cqogo5ugBQ/Ek/Tybl1wm4kgdjGhx75tqSYc/7Y/YzDa6lkvYUIFFA0mqvKpqVUWii9dnpTNId6VAbcjBhkhjSWbxsbM2nyhafjFgkFmx8AL0J4v+xhFuMLygI0O/DfnK5/4LEc+3OquYXzHkTT7K6IxUCTHRyZIhGAizldhFup8BkOJO52leoCHyDEJTrupo9r174PijARpIZn/pSdW6p9/0d6xr9e6WYIOQl6YwjEVG0wUeY8dHc0SxMipURm1Ty5THfrstJowbCSByVgGhvP/NsHDv/nLL/NpDIvZzawQWz6KFlHCn8WOTkky8s3nGWgebrY6ip0xGbvpnDWYE3edLb1aSvEJqO/uF96LJXECRaN/Fum9w7An4='
 };
 /* eslint-enable */
 
@@ -52,20 +52,8 @@ const EXAMPLE_SUBSCRIPTION: Subscription = {
   updatedAt: new Date()
 };
 
-const EXAMPLE_PADDLE_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAuauiaSn0a6MJieg0WFb4
-5cM8J8eKXTf7FtZ4Uo7bq9krZoUZclPcDo+Ez19z66twK5yzCvtiS4bepzR5eJFj
-YMiFeaBWKrENntCrL59m3amDeWL8HxMIBDq+uGm61tL0NsrQQzz+6Itppv/AJfAG
-em53e8He/KP5MYhPkEQrPKyOmxAPusv69pz8UpqFofdOP93N7kAZ3rgioRhsRjze
-xtMA3H7QxrTD1tPcEdoCBd5hmErwu98/V8ShfjQJZR/5LCjC1t3Fc5UCzGvgen4p
-38NyolgwMS51cytMfpKjahV6QNsvOK9bCEKdPtk6GnEumj2jOkF/XcWFdjrfdlxS
-1pVSYT13ORVSALv1pz2ActTeVadwUwWx/kGAizgvo4v/ZOU1Edjsmws4dFxaJbJE
-LOqDmJCnQPRFOKARz8YSCtQe4go6URaJfYv/oYqHHJIRAoFGHo+8ehIJFsk1p9ui
-/79p4ia5/8bxIv0yBWT8KJYzEsnasG3JhHr9RGRN07nPOk0zOtCGzS3AQoO8o5pQ
-E/ojJ9zix2R5hLVYhCGhG5qMwi70iDa4g5ytCS4OkIvkzaSt/yhq7hL4CorT9UiP
-EIWgAhEPJldEUSHLFAcEg5IP2j3xozcEcyF9lDpU4lw2FvScF9u2Y3vLScwtDz5H
-cTUD7KNcecgRaQ1m1tRAwV8CAwEAAQ==
------END PUBLIC KEY-----`;
+const EXAMPLE_PADDLE_PUBLIC_KEY =
+  'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUF1YXVpYVNuMGE2TUppZWcwV0ZiNAo1Y004SjhlS1hUZjdGdFo0VW83YnE5a3Jab1VaY2xQY0RvK0V6MTl6NjZ0d0s1eXpDdnRpUzRiZXB6UjVlSkZqCllNaUZlYUJXS3JFTm50Q3JMNTltM2FtRGVXTDhIeE1JQkRxK3VHbTYxdEwwTnNyUVF6eis2SXRwcHYvQUpmQUcKZW01M2U4SGUvS1A1TVloUGtFUXJQS3lPbXhBUHVzdjY5cHo4VXBxRm9mZE9QOTNON2tBWjNyZ2lvUmhzUmp6ZQp4dE1BM0g3UXhyVEQxdFBjRWRvQ0JkNWhtRXJ3dTk4L1Y4U2hmalFKWlIvNUxDakMxdDNGYzVVQ3pHdmdlbjRwCjM4TnlvbGd3TVM1MWN5dE1mcEtqYWhWNlFOc3ZPSzliQ0VLZFB0azZHbkV1bWoyak9rRi9YY1dGZGpyZmRseFMKMXBWU1lUMTNPUlZTQUx2MXB6MkFjdFRlVmFkd1V3V3gva0dBaXpndm80di9aT1UxRWRqc213czRkRnhhSmJKRQpMT3FEbUpDblFQUkZPS0FSejhZU0N0UWU0Z282VVJhSmZZdi9vWXFISEpJUkFvRkdIbys4ZWhJSkZzazFwOXVpCi83OXA0aWE1LzhieEl2MHlCV1Q4S0pZekVzbmFzRzNKaEhyOVJHUk4wN25QT2swek90Q0d6UzNBUW9POG81cFEKRS9vako5eml4MlI1aExWWWhDR2hHNXFNd2k3MGlEYTRnNXl0Q1M0T2tJdmt6YVN0L3locTdoTDRDb3JUOVVpUApFSVdnQWhFUEpsZEVVU0hMRkFjRWc1SVAyajN4b3pjRWN5RjlsRHBVNGx3MkZ2U2NGOXUyWTN2TFNjd3REejVICmNUVUQ3S05jZWNnUmFRMW0xdFJBd1Y4Q0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ==';
 
 const subscriptionCreateSubscriptionMock = jest.fn(() => EXAMPLE_SUBSCRIPTION);
 const configServiceGetMock = jest.fn(() => EXAMPLE_PADDLE_PUBLIC_KEY);

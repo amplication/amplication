@@ -13,7 +13,7 @@ import { PaddleCreateSubscriptionEvent } from './dto/PaddleCreateSubscriptionEve
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from './dto';
 import { Subscription } from './dto/Subscription';
 
-const PADDLE_PUBLIC_KEY_VAR = 'PADDLE_PUBLIC_KEY';
+const PADDLE_BASE64_PUBLIC_KEY_VAR = 'PADDLE_BASE_64_PUBLIC_KEY';
 
 export const ERR_BAD_SIGNATURE = 'Bad signature or public key';
 export const ERR_NO_WORKSPACE_ID = 'Cannot find workspace ID on the event data';
@@ -54,10 +54,15 @@ export class PaddleService {
       verifier.write(serialized);
       verifier.end();
 
-      const publicKey = this.configService.get(PADDLE_PUBLIC_KEY_VAR);
+      const publicKey = this.configService.get(PADDLE_BASE64_PUBLIC_KEY_VAR);
 
-      return verifier.verify(publicKey, signature, 'base64');
+      //the public key is saved in the .env file at base64 encoded value
+      const buff = Buffer.from(publicKey, 'base64');
+      const decodedPublicKey = buff.toString('utf8');
+
+      return verifier.verify(decodedPublicKey, signature, 'base64');
     } catch (err) {
+      console.error(err);
       return false;
     }
   }
