@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { createSubscription as createPaddleSubscription } from "../util/paddle";
 import "./PlanListItem.scss";
 
 const ACTION_CHECKOUT = "checkout";
@@ -35,8 +36,6 @@ function PlanListItem({
   onPurchaseSuccess,
 }: Props) {
   const { trackEvent } = useTracking();
-  //@ts-ignore
-  const Paddle = window.Paddle;
 
   const handleClick = useCallback(() => {
     trackEvent({
@@ -44,13 +43,9 @@ function PlanListItem({
       productId: plan.productId,
     });
     if (plan.action === ACTION_CHECKOUT && plan.productId > 0) {
-      Paddle.Checkout.open({
-        product: plan.productId,
-        passthrough: JSON.parse(JSON.stringify({ workspaceId: workspaceId })),
-        successCallback: onPurchaseSuccess,
-      });
+      createPaddleSubscription(plan.productId, workspaceId, onPurchaseSuccess);
     }
-  }, [trackEvent, Paddle.Checkout, plan, workspaceId, onPurchaseSuccess]);
+  }, [trackEvent, plan, workspaceId, onPurchaseSuccess]);
 
   const isCurrentSubscription =
     currentSubscription?.subscriptionPlan === plan.name;

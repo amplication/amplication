@@ -14,3 +14,18 @@ export function init() {
     Paddle.Setup({ vendor: +REACT_APP_PADDLE_VENDOR_ID }); //use + since vendor_id must be integer
   }
 }
+
+export function createSubscription(
+  productId: number,
+  workspaceId: string,
+  onSuccess: () => void
+) {
+  //@ts-ignore
+  const Paddle = window.Paddle;
+
+  Paddle.Checkout.open({
+    product: productId,
+    passthrough: JSON.parse(JSON.stringify({ workspaceId: workspaceId })),
+    successCallback: onSuccess,
+  });
+}
