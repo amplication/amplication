@@ -34,7 +34,7 @@ export class SubscriptionService {
       ...subscription,
       cancelUrl: data.paddleCancelUrl,
       updateUrl: data.paddleUpdateUrl,
-      nextBillDate: data.paddleNextBillDate,
+      nextBillDate: new Date(data.paddleNextBillDate),
       price: data.paddleUnitPrice,
       subscriptionData: data
     };
