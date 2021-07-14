@@ -49,6 +49,11 @@ variable "sendgrid_invitation_template_id" {
   type = string
 }
 
+# paddle
+variable "paddle_base_64_public_key" {
+  type = string
+}
+
 # Cloud SQL
 
 variable "database_tier" {

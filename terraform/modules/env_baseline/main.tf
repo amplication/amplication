@@ -317,6 +317,11 @@ resource "google_cloud_run_service" "default" {
           name  = "REACT_APP_PADDLE_VENDOR_ID"
           value = var.paddle_vendor_id
         }
+        env {
+          name  = "PADDLE_BASE_64_PUBLIC_KEY"
+          value = var.paddle_base_64_public_key
+        }
+
         resources {
           limits = {
             cpu    = "4"

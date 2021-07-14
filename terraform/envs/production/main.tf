@@ -23,6 +23,7 @@ module "env" {
   paddle_vendor_id                 = var.paddle_vendor_id
   sendgrid_from_address            = var.sendgrid_from_address
   sendgrid_invitation_template_id  = var.sendgrid_invitation_template_id
+  paddle_base_64_public_key        = var.paddle_base_64_public_key
   database_tier                    = var.database_tier
   image_id                         = var.image_id
   bcrypt_salt_or_rounds            = var.bcrypt_salt_or_rounds
