@@ -264,7 +264,7 @@ export type Block = {
   app?: Maybe<App>;
   parentBlock?: Maybe<Block>;
   displayName: Scalars['String'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   blockType: EnumBlockType;
   versionNumber?: Maybe<Scalars['Float']>;
   lockedByUserId?: Maybe<Scalars['String']>;
@@ -320,6 +320,8 @@ export type BlockVersion = {
   id: Scalars['String'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  displayName: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   block: Block;
   versionNumber: Scalars['Int'];
   commit?: Maybe<Commit>;
@@ -1093,6 +1095,27 @@ export enum EnumPendingChangeResourceType {
   Block = 'Block',
 }
 
+export enum EnumSubscriptionPlan {
+  Pro = 'Pro',
+  Business = 'Business',
+  Enterprise = 'Enterprise',
+}
+
+export enum EnumSubscriptionStatus {
+  Active = 'Active',
+  Trailing = 'Trailing',
+  PastDue = 'PastDue',
+  Paused = 'Paused',
+  Deleted = 'Deleted',
+}
+
+export type EnumSubscriptionStatusFilter = {
+  equals?: Maybe<EnumSubscriptionStatus>;
+  not?: Maybe<EnumSubscriptionStatus>;
+  in?: Maybe<Array<EnumSubscriptionStatus>>;
+  notIn?: Maybe<Array<EnumSubscriptionStatus>>;
+};
+
 export enum EnumWorkspaceMemberType {
   User = 'User',
   Invitation = 'Invitation',
@@ -1108,6 +1131,10 @@ export type Environment = {
   name: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   address: Scalars['String'];
+};
+
+export type FindSubscriptionsInput = {
+  status?: Maybe<EnumSubscriptionStatusFilter>;
 };
 
 export type GithubRepo = {
@@ -1187,6 +1214,9 @@ export type Mutation = {
   updateWorkspace?: Maybe<Workspace>;
   createWorkspace?: Maybe<Workspace>;
   inviteUser?: Maybe<Invitation>;
+  revokeInvitation?: Maybe<Invitation>;
+  resendInvitation?: Maybe<Invitation>;
+  deleteUser?: Maybe<User>;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
   updateEntity?: Maybe<Entity>;
@@ -1252,6 +1282,18 @@ export type MutationCreateWorkspaceArgs = {
 
 export type MutationInviteUserArgs = {
   data: InviteUserInput;
+};
+
+export type MutationRevokeInvitationArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationResendInvitationArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationDeleteUserArgs = {
+  where: WhereUniqueInput;
 };
 
 export type MutationCreateOneEntityArgs = {
@@ -1524,6 +1566,7 @@ export type Query = {
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
+  subscriptions?: Maybe<Array<Subscription>>;
 };
 
 export type QueryWorkspaceArgs = {
@@ -1662,6 +1705,10 @@ export type QueryEntityPagesArgs = {
   take?: Maybe<Scalars['Int']>;
 };
 
+export type QuerySubscriptionsArgs = {
+  where: FindSubscriptionsInput;
+};
+
 export enum QueryMode {
   Default = 'Default',
   Insensitive = 'Insensitive',
@@ -1700,6 +1747,20 @@ export type StringFilter = {
   startsWith?: Maybe<Scalars['String']>;
   endsWith?: Maybe<Scalars['String']>;
   mode?: Maybe<QueryMode>;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  id: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  workspace?: Maybe<Workspace>;
+  subscriptionPlan: EnumSubscriptionPlan;
+  status: EnumSubscriptionStatus;
+  cancelUrl?: Maybe<Scalars['String']>;
+  updateUrl?: Maybe<Scalars['String']>;
+  nextBillDate?: Maybe<Scalars['DateTime']>;
+  price?: Maybe<Scalars['Float']>;
 };
 
 export type UpdateAccountInput = {
