@@ -5,7 +5,11 @@ import { Subscription } from './dto/Subscription';
 import { PrismaService } from 'nestjs-prisma';
 import { SubscriptionData } from './dto';
 import { CreateSubscriptionInput } from './dto/CreateSubscriptionInput';
-import { Prisma, Subscription as PrismaSubscription } from '@prisma/client';
+import {
+  EnumSubscriptionStatus,
+  Prisma,
+  Subscription as PrismaSubscription
+} from '@prisma/client';
 import { UpdateSubscriptionInput } from './dto/UpdateSubscriptionInput';
 
 @Injectable()
@@ -23,6 +27,24 @@ export class SubscriptionService {
     return subs.map(sub => {
       return this.transformPrismaObject(sub);
     });
+  }
+
+  async getCurrentSubscription(
+    workspaceId: string
+  ): Promise<Subscription | null> {
+    const sub = await this.prisma.subscription.findFirst({
+      where: {
+        workspaceId: workspaceId,
+        status: {
+          not: EnumSubscriptionStatus.Deleted
+        }
+      },
+      orderBy: {
+        createdAt: Prisma.SortOrder.asc
+      }
+    });
+
+    return this.transformPrismaObject(sub);
   }
 
   private async getSubscriptionByPaddleSubscriptionId(

@@ -27,6 +27,7 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { WorkspaceService } from './workspace.service';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { Subscription } from '../subscription/dto/Subscription';
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -148,5 +149,10 @@ export class WorkspaceResolver {
     return this.workspaceService.findMembers({
       where: { id: currentUser.workspace.id }
     });
+  }
+
+  @ResolveField(() => Subscription, { nullable: true })
+  async subscription(@Parent() workspace: Workspace): Promise<Subscription> {
+    return this.workspaceService.getSubscription(workspace.id);
   }
 }
