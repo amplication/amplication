@@ -1235,6 +1235,7 @@ type Query {
   appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  subscriptions(where: FindSubscriptionsInput!): [Subscription!]
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
@@ -1243,7 +1244,6 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
-  subscriptions(where: FindSubscriptionsInput!): [Subscription!]
 }
 
 enum QueryMode {
@@ -1337,6 +1337,7 @@ type Workspace {
   name: String!
   apps: [App!]!
   users: [User!]!
+  subscription: Subscription
 }
 
 input WorkspaceCreateInput {

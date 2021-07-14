@@ -1558,6 +1558,7 @@ export type Query = {
   appValidateBeforeCommit: AppValidationResult;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
+  subscriptions?: Maybe<Array<Subscription>>;
   me: User;
   userApiTokens: Array<ApiToken>;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
@@ -1566,7 +1567,6 @@ export type Query = {
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
-  subscriptions?: Maybe<Array<Subscription>>;
 };
 
 export type QueryWorkspaceArgs = {
@@ -1672,6 +1672,10 @@ export type QueryCommitsArgs = {
   skip?: Maybe<Scalars["Int"]>;
 };
 
+export type QuerySubscriptionsArgs = {
+  where: FindSubscriptionsInput;
+};
+
 export type QueryConnectorRestApiArgs = {
   where: WhereUniqueInput;
 };
@@ -1703,10 +1707,6 @@ export type QueryEntityPagesArgs = {
   orderBy?: Maybe<EntityPageOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
   take?: Maybe<Scalars["Int"]>;
-};
-
-export type QuerySubscriptionsArgs = {
-  where: FindSubscriptionsInput;
 };
 
 export enum QueryMode {
@@ -1804,6 +1804,7 @@ export type Workspace = {
   name: Scalars["String"];
   apps: Array<App>;
   users: Array<User>;
+  subscription?: Maybe<Subscription>;
 };
 
 export type WorkspaceCreateInput = {
