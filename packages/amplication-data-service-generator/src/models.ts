@@ -1109,13 +1109,6 @@ export enum EnumSubscriptionStatus {
   Deleted = "Deleted",
 }
 
-export type EnumSubscriptionStatusFilter = {
-  equals?: Maybe<EnumSubscriptionStatus>;
-  not?: Maybe<EnumSubscriptionStatus>;
-  in?: Maybe<Array<EnumSubscriptionStatus>>;
-  notIn?: Maybe<Array<EnumSubscriptionStatus>>;
-};
-
 export enum EnumWorkspaceMemberType {
   User = "User",
   Invitation = "Invitation",
@@ -1131,10 +1124,6 @@ export type Environment = {
   name: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   address: Scalars["String"];
-};
-
-export type FindSubscriptionsInput = {
-  status?: Maybe<EnumSubscriptionStatusFilter>;
 };
 
 export type GithubRepo = {
@@ -1558,7 +1547,6 @@ export type Query = {
   appValidateBeforeCommit: AppValidationResult;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
-  subscriptions?: Maybe<Array<Subscription>>;
   me: User;
   userApiTokens: Array<ApiToken>;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
@@ -1672,10 +1660,6 @@ export type QueryCommitsArgs = {
   skip?: Maybe<Scalars["Int"]>;
 };
 
-export type QuerySubscriptionsArgs = {
-  where: FindSubscriptionsInput;
-};
-
 export type QueryConnectorRestApiArgs = {
   where: WhereUniqueInput;
 };
@@ -1758,6 +1742,7 @@ export type Subscription = {
   workspaceId: Scalars["String"];
   subscriptionPlan: EnumSubscriptionPlan;
   status: EnumSubscriptionStatus;
+  cancellationEffectiveDate?: Maybe<Scalars["DateTime"]>;
   cancelUrl?: Maybe<Scalars["String"]>;
   updateUrl?: Maybe<Scalars["String"]>;
   nextBillDate?: Maybe<Scalars["DateTime"]>;

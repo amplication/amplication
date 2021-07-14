@@ -1016,13 +1016,6 @@ enum EnumSubscriptionStatus {
   Deleted
 }
 
-input EnumSubscriptionStatusFilter {
-  equals: EnumSubscriptionStatus
-  not: EnumSubscriptionStatus
-  in: [EnumSubscriptionStatus!]
-  notIn: [EnumSubscriptionStatus!]
-}
-
 enum EnumWorkspaceMemberType {
   User
   Invitation
@@ -1037,10 +1030,6 @@ type Environment {
   name: String!
   description: String
   address: String!
-}
-
-input FindSubscriptionsInput {
-  status: EnumSubscriptionStatusFilter
 }
 
 type GithubRepo {
@@ -1235,7 +1224,6 @@ type Query {
   appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
-  subscriptions(where: FindSubscriptionsInput!): [Subscription!]
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
@@ -1294,6 +1282,7 @@ type Subscription {
   workspaceId: String!
   subscriptionPlan: EnumSubscriptionPlan!
   status: EnumSubscriptionStatus!
+  cancellationEffectiveDate: DateTime
   cancelUrl: String
   updateUrl: String
   nextBillDate: DateTime

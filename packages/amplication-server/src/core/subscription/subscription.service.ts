@@ -19,7 +19,7 @@ export class SubscriptionService {
     private readonly configService: ConfigService
   ) {}
 
-  async getSubscription(
+  private async getSubscriptions(
     args: FindSubscriptionsArgs
   ): Promise<Subscription[] | null> {
     const subs = await this.prisma.subscription.findMany(args);
@@ -35,12 +35,20 @@ export class SubscriptionService {
     const sub = await this.prisma.subscription.findFirst({
       where: {
         workspaceId: workspaceId,
-        status: {
-          not: EnumSubscriptionStatus.Deleted
-        }
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [
+          {
+            cancellationEffectiveDate: {
+              gt: new Date()
+            }
+          },
+          {
+            cancellationEffectiveDate: null
+          }
+        ]
       },
       orderBy: {
-        createdAt: Prisma.SortOrder.asc
+        createdAt: Prisma.SortOrder.desc
       }
     });
 
@@ -51,7 +59,7 @@ export class SubscriptionService {
     workspaceId: string,
     paddleSubscriptionId: string
   ): Promise<Subscription> {
-    const subscriptions = await this.getSubscription({
+    const subscriptions = await this.getSubscriptions({
       where: {
         workspace: {
           id: workspaceId
@@ -74,7 +82,9 @@ export class SubscriptionService {
       ...subscription,
       cancelUrl: data.paddleCancelUrl,
       updateUrl: data.paddleUpdateUrl,
-      nextBillDate: new Date(data.paddleNextBillDate),
+      nextBillDate: data.paddleNextBillDate
+        ? new Date(data.paddleNextBillDate)
+        : null,
       price: data.paddleUnitPrice,
       subscriptionData: data
     };
@@ -122,6 +132,11 @@ export class SubscriptionService {
       );
     }
 
+    const cancellationEffectiveDate =
+      data.status === EnumSubscriptionStatus.Deleted
+        ? data.subscriptionData.paddleCancellationEffectiveDate
+        : null;
+
     return this.transformPrismaObject(
       await this.prisma.subscription.update({
         where: {
@@ -130,6 +145,7 @@ export class SubscriptionService {
         data: {
           status: data.status,
           subscriptionPlan: data.plan,
+          cancellationEffectiveDate: cancellationEffectiveDate,
           subscriptionData: (data.subscriptionData as unknown) as Prisma.InputJsonValue
         }
       })

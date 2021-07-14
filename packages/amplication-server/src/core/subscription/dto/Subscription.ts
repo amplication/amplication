@@ -53,6 +53,12 @@ export class Subscription {
   })
   status: keyof typeof EnumSubscriptionStatus;
 
+  @Field(() => Date, {
+    nullable: true,
+    description: undefined
+  })
+  cancellationEffectiveDate?: Date | null;
+
   @Field(() => String, {
     nullable: true,
     description: undefined
