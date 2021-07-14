@@ -34,8 +34,12 @@ variable "github_app_auth_redirect_uri" {
   type = string
 }
 
-# Amplitude
+# paddle
+variable "paddle_vendor_id" {
+  type = string
+}
 
+# Amplitude
 variable "amplitude_api_key" {
   type = string
 }

@@ -30,6 +30,10 @@ variable "github_app_auth_scope" {
   type = string
 }
 
+# paddle
+variable "paddle_vendor_id" {
+  type = string
+}
 variable "github_app_auth_redirect_uri" {
   type = string
 }

@@ -11,6 +11,8 @@ github_redirect_uri = "https://staging.amplication.com/github/callback"
 github_app_auth_scope       = "user:email,repo,read:org"
 github_app_auth_redirect_uri = "https://staging.amplication.com/github-auth-app/callback/{appId}"
 
+# paddle - sandbox
+paddle_vendor_id = "2673"
 
 # Amplitude
 amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"

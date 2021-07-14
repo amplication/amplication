@@ -20,6 +20,7 @@ module "env" {
   github_app_auth_scope            = var.github_app_auth_scope
   github_app_auth_redirect_uri     = var.github_app_auth_redirect_uri
   amplitude_api_key                = var.amplitude_api_key
+  paddle_vendor_id                 = var.paddle_vendor_id
   sendgrid_from_address            = var.sendgrid_from_address
   sendgrid_invitation_template_id  = var.sendgrid_invitation_template_id
   database_tier                    = var.database_tier
