@@ -7,7 +7,10 @@ import "./Subscription.scss";
 import * as models from "../models";
 import PlanList from "../Plans/PlanList";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { cancelSubscription as cancelPaddleSubscription } from "../util/paddle";
+import {
+  cancelSubscription as cancelPaddleSubscription,
+  updateSubscription as updatePaddleSubscription,
+} from "../util/paddle";
 
 const CLASS_NAME = "subscription";
 
@@ -54,6 +57,22 @@ function Subscription() {
     }
   }, [trackEvent, onTransactionSuccess, currentSubscription]);
 
+  const handleUpdateSubscription = useCallback(() => {
+    if (currentSubscription && currentSubscription.updateUrl) {
+      trackEvent({
+        eventName: "updateSubscription",
+        productId: currentSubscription.workspaceId,
+        cancelUrl: currentSubscription.updateUrl,
+      });
+
+      updatePaddleSubscription(
+        currentSubscription.updateUrl,
+        currentSubscription.workspaceId,
+        onTransactionSuccess
+      );
+    }
+  }, [trackEvent, onTransactionSuccess, currentSubscription]);
+
   //cleanup polling
   useEffect(() => {
     if (subscriptionsData && subscriptionsData.subscriptions.length > 0) {
@@ -92,8 +111,14 @@ function Subscription() {
           >
             Cancel Subscription
           </Button>
-          <br />
-          {currentSubscription?.updateUrl}
+          <Button
+            className={`${CLASS_NAME}__cancel`}
+            buttonStyle={EnumButtonStyle.Secondary}
+            onClick={handleUpdateSubscription}
+            icon="edit"
+          >
+            Update payment details
+          </Button>
         </div>
       ) : (
         <PlanList onPurchaseSuccess={onTransactionSuccess} />
