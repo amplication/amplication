@@ -5,6 +5,7 @@ import { SubscriptionService } from './subscription.service';
 import { PaddleCreateSubscriptionEvent } from './dto/PaddleCreateSubscriptionEvent';
 import { Subscription } from './dto/Subscription';
 import { EnumPaddleSubscriptionStatus } from './dto/SubscriptionData';
+import { EnumSubscriptionPlan, EnumSubscriptionStatus } from '@prisma/client';
 
 /* eslint-disable @typescript-eslint/naming-convention*/
 const PADDLE_CREATE_EVENT: PaddleCreateSubscriptionEvent = {
@@ -47,8 +48,11 @@ const EXAMPLE_SUBSCRIPTION: Subscription = {
     paddleCancellationEffectiveDate: null,
     paddlePausedFrom: null,
     paddleUpdateUrl: PADDLE_CREATE_EVENT.update_url,
-    paddleCancelUrl: PADDLE_CREATE_EVENT.cancel_url
+    paddleCancelUrl: PADDLE_CREATE_EVENT.cancel_url,
+    paddleUnitPrice: +PADDLE_CREATE_EVENT.unit_price
   },
+  subscriptionPlan: EnumSubscriptionPlan.Business,
+  status: EnumSubscriptionStatus.Active,
   updatedAt: new Date()
 };
 
