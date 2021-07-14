@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { FindOneArgs } from 'src/dto';
+import { FindSubscriptionsArgs } from './dto/FindSubscriptionsArgs';
 import { Subscription } from './dto/Subscription';
 import { PrismaService } from 'nestjs-prisma';
 import { SubscriptionData } from './dto';
@@ -14,19 +14,29 @@ export class SubscriptionService {
     private readonly configService: ConfigService
   ) {}
 
-  async getSubscription(args: FindOneArgs): Promise<Subscription | null> {
-    return this.transformPrismaObject(
-      await this.prisma.subscription.findUnique(args)
-    );
+  async getSubscription(
+    args: FindSubscriptionsArgs
+  ): Promise<Subscription[] | null> {
+    const subs = await this.prisma.subscription.findMany(args);
+
+    return subs.map(sub => {
+      return this.transformPrismaObject(sub);
+    });
   }
 
   private transformPrismaObject(
     subscription: PrismaSubscription | null
   ): Subscription | null {
     if (!subscription) return null;
+    const data = (subscription.subscriptionData as unknown) as SubscriptionData;
+
     return {
       ...subscription,
-      subscriptionData: (subscription.subscriptionData as unknown) as SubscriptionData
+      cancelUrl: data.paddleCancelUrl,
+      updateUrl: data.paddleUpdateUrl,
+      nextBillDate: data.paddleNextBillDate,
+      price: data.paddleUnitPrice,
+      subscriptionData: data
     };
   }
 

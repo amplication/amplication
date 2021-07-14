@@ -6,6 +6,7 @@ import { SubscriptionService } from './subscription.service';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
 import { PaddleController } from './paddle.controller';
+import { SubscriptionResolver } from './subscription.resolver';
 @Module({
   imports: [
     PrismaModule,
@@ -13,8 +14,8 @@ import { PaddleController } from './paddle.controller';
     PermissionsModule,
     GoogleSecretsManagerModule
   ],
-  providers: [PaddleService, SubscriptionService],
+  providers: [PaddleService, SubscriptionService, SubscriptionResolver],
   controllers: [PaddleController],
-  exports: [PaddleService, SubscriptionService]
+  exports: [PaddleService, SubscriptionService, SubscriptionResolver]
 })
 export class SubscriptionModule {}

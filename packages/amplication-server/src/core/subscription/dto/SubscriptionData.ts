@@ -26,4 +26,6 @@ export class SubscriptionData {
   paddleUpdateUrl: string;
 
   paddleCancelUrl: string;
+
+  paddleUnitPrice: number;
 }

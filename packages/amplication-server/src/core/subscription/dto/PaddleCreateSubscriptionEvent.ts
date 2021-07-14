@@ -7,9 +7,11 @@ export class PaddleCreateSubscriptionEvent extends PaddleEvent {
 
   next_bill_date: string;
 
-  cancel_url?: string;
+  cancel_url: string;
 
-  update_url?: string;
+  update_url: string;
+
+  unit_price: string;
 
   [key: string]: unknown;
 }

@@ -1002,6 +1002,27 @@ enum EnumPendingChangeResourceType {
   Block
 }
 
+enum EnumSubscriptionPlan {
+  Pro
+  Business
+  Enterprise
+}
+
+enum EnumSubscriptionStatus {
+  Active
+  Trailing
+  PastDue
+  Paused
+  Deleted
+}
+
+input EnumSubscriptionStatusFilter {
+  equals: EnumSubscriptionStatus
+  not: EnumSubscriptionStatus
+  in: [EnumSubscriptionStatus!]
+  notIn: [EnumSubscriptionStatus!]
+}
+
 enum EnumWorkspaceMemberType {
   User
   Invitation
@@ -1016,6 +1037,10 @@ type Environment {
   name: String!
   description: String
   address: String!
+}
+
+input FindSubscriptionsInput {
+  status: EnumSubscriptionStatusFilter
 }
 
 type GithubRepo {
@@ -1218,6 +1243,7 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  subscriptions(where: FindSubscriptionsInput!): [Subscription!]
 }
 
 enum QueryMode {
@@ -1258,6 +1284,19 @@ input StringFilter {
   startsWith: String
   endsWith: String
   mode: QueryMode
+}
+
+type Subscription {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  workspace: Workspace
+  subscriptionPlan: EnumSubscriptionPlan!
+  status: EnumSubscriptionStatus!
+  cancelUrl: String
+  updateUrl: String
+  nextBillDate: DateTime
+  price: Float
 }
 
 input UpdateAccountInput {

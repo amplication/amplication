@@ -119,7 +119,8 @@ export class PaddleService {
       paddleCancellationEffectiveDate: null,
       paddlePausedFrom: null,
       paddleUpdateUrl: paddleEvent.update_url,
-      paddleCancelUrl: paddleEvent.cancel_url
+      paddleCancelUrl: paddleEvent.cancel_url,
+      paddleUnitPrice: +paddleEvent.unit_price
     };
 
     return this.subscriptionService.createSubscription({
