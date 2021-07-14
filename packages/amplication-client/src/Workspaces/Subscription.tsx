@@ -1,6 +1,6 @@
 import "@rmwc/snackbar/styles";
 import React, { useMemo, useCallback, useEffect, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { useTracking } from "../util/analytics";
 import "./Subscription.scss";
@@ -13,13 +13,13 @@ import {
 } from "../util/paddle";
 import { EnumPanelStyle, Panel } from "@amplication/design-system";
 import { format } from "date-fns";
+import { GET_CURRENT_WORKSPACE } from "./WorkspaceSelector";
 
 const CLASS_NAME = "subscription";
 
-type TSubscriptionsData = {
-  subscriptions: models.Subscription[];
+type TData = {
+  currentWorkspace: models.Workspace;
 };
-
 const POLL_INTERVAL = 2000;
 
 function Subscription() {
@@ -28,9 +28,9 @@ function Subscription() {
   );
   const { trackEvent } = useTracking();
 
-  const { data: subscriptionsData, startPolling, stopPolling } = useQuery<
-    TSubscriptionsData
-  >(GET_ACTIVE_SUBSCRIPTIONS);
+  const { data, startPolling, stopPolling } = useQuery<TData>(
+    GET_CURRENT_WORKSPACE
+  );
 
   const onTransactionSuccess = useCallback(() => {
     setTransactionCompleted(true);
@@ -38,10 +38,9 @@ function Subscription() {
   }, [startPolling]);
 
   const currentSubscription = useMemo(() => {
-    if (!subscriptionsData || subscriptionsData.subscriptions.length === 0)
-      return null;
-    return subscriptionsData.subscriptions[0];
-  }, [subscriptionsData]);
+    if (!data || !data.currentWorkspace.subscription) return null;
+    return data.currentWorkspace.subscription;
+  }, [data]);
 
   const handleCancelSubscription = useCallback(() => {
     if (currentSubscription && currentSubscription.cancelUrl) {
@@ -77,17 +76,21 @@ function Subscription() {
 
   //cleanup polling
   useEffect(() => {
-    if (subscriptionsData && subscriptionsData.subscriptions.length > 0) {
+    if (data && data.currentWorkspace.subscription) {
       stopPolling();
       setTransactionCompleted(false);
     }
     return () => {
       stopPolling();
     };
-  }, [stopPolling, subscriptionsData]);
+  }, [stopPolling, data]);
 
   const nextBillDate = currentSubscription?.nextBillDate
     ? new Date(currentSubscription?.nextBillDate)
+    : undefined;
+
+  const cancellationEffectiveDate = currentSubscription?.cancellationEffectiveDate
+    ? new Date(currentSubscription?.cancellationEffectiveDate)
     : undefined;
 
   return (
@@ -104,14 +107,22 @@ function Subscription() {
         <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
           <div className={`${CLASS_NAME}__row`}>
             <h3>{currentSubscription?.subscriptionPlan} Plan</h3>
-            <div>
-              Your plan will be automatically renewed on{" "}
-              {nextBillDate && format(nextBillDate, "PP")}.<br /> It will be
-              charged as one payment of ${currentSubscription?.price}.
-            </div>
+            {nextBillDate && (
+              <div>
+                Your plan will be automatically renewed on{" "}
+                {format(nextBillDate, "PP")}.<br /> It will be charged as one
+                payment of ${currentSubscription?.price}.
+              </div>
+            )}
             {currentSubscription?.status !==
               models.EnumSubscriptionStatus.Active &&
               currentSubscription?.status}{" "}
+            {cancellationEffectiveDate && (
+              <div>
+                Your plan was canceled and will terminate on{" "}
+                {format(cancellationEffectiveDate, "PP")}
+              </div>
+            )}
             <br />
             <br />
             <Button
@@ -140,18 +151,3 @@ function Subscription() {
 }
 
 export default Subscription;
-
-export const GET_ACTIVE_SUBSCRIPTIONS = gql`
-  query getActiveSubscriptions {
-    subscriptions(where: { status: { not: Deleted } }) {
-      id
-      workspaceId
-      subscriptionPlan
-      status
-      nextBillDate
-      cancelUrl
-      updateUrl
-      price
-    }
-  }
-`;
