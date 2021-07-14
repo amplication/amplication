@@ -5,9 +5,17 @@ $empty-state-image-size: 120px;
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
+  }
 
-    .search-field {
-      width: var(--form-field-long);
+  &__processing {
+    @include pageTitle;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    & .rmwc-circular-progress {
+      margin-top: var(--double-spacing);
     }
   }
 }

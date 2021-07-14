@@ -22,6 +22,7 @@ type Props = {
   currentSubscription: models.Subscription | null;
   workspaceId: string;
   disabled: boolean;
+  onPurchaseSuccess: () => void;
 };
 
 const CLASS_NAME = "plan-list-item";
@@ -31,6 +32,7 @@ function PlanListItem({
   currentSubscription,
   workspaceId,
   disabled,
+  onPurchaseSuccess,
 }: Props) {
   const { trackEvent } = useTracking();
   //@ts-ignore
@@ -45,9 +47,10 @@ function PlanListItem({
       Paddle.Checkout.open({
         product: plan.productId,
         passthrough: JSON.parse(JSON.stringify({ workspaceId: workspaceId })),
+        successCallback: onPurchaseSuccess,
       });
     }
-  }, [trackEvent, Paddle.Checkout, plan, workspaceId]);
+  }, [trackEvent, Paddle.Checkout, plan, workspaceId, onPurchaseSuccess]);
 
   const isCurrentSubscription =
     currentSubscription?.subscriptionPlan === plan.name;

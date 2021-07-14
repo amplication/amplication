@@ -16,7 +16,11 @@ type TSubscriptionsData = {
   subscriptions: models.Subscription[];
 };
 
-function PlanList() {
+type Props = {
+  onPurchaseSuccess: () => void;
+};
+
+function PlanList({ onPurchaseSuccess }: Props) {
   const { data, loading } = useQuery<TData>(GET_CURRENT_WORKSPACE);
 
   const { data: subscriptionsData } = useQuery<TSubscriptionsData>(
@@ -39,6 +43,7 @@ function PlanList() {
             plan={plan}
             workspaceId={data?.currentWorkspace.id || ""}
             disabled={loading}
+            onPurchaseSuccess={onPurchaseSuccess}
           />
         );
       })}
