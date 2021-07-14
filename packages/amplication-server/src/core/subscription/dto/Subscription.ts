@@ -35,6 +35,12 @@ export class Subscription {
   })
   workspace?: Workspace;
 
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  workspaceId: string;
+
   @Field(() => EnumSubscriptionPlan, {
     nullable: false,
     description: undefined

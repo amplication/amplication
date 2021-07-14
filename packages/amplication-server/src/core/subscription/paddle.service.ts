@@ -10,6 +10,7 @@ import {
   EnumPaddleSubscriptionStatus
 } from './dto/SubscriptionData';
 import { PaddleCreateSubscriptionEvent } from './dto/PaddleCreateSubscriptionEvent';
+import { PaddleCancelSubscriptionEvent } from './dto/PaddleCancelSubscriptionEvent';
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from './dto';
 import { Subscription } from './dto/Subscription';
 
@@ -94,9 +95,11 @@ export class PaddleService {
       // case 'subscription_updated': {
       //   return this.updateSubscription(paddleEvent);
       // }
-      // case 'subscription_cancelled': {
-      //   return this.cancelSubscription(paddleEvent);
-      // }
+      case 'subscription_cancelled': {
+        return this.cancelSubscription(
+          paddleEvent as PaddleCancelSubscriptionEvent
+        );
+      }
       default: {
         throw new Error(ERR_INVALID_PADDLE_EVENT);
       }
@@ -135,15 +138,39 @@ export class PaddleService {
     });
   }
 
-  // async updateSubscription(paddleEvent: PaddleEvent): Promise<void> {
-  //   const workspaceId = this.getWorkspaceIdFromEvent(paddleEvent);
-  //   return this.subscriptionService.createSubscription(workspaceId);
-  // }
+  private async cancelSubscription(
+    paddleEvent: PaddleCancelSubscriptionEvent
+  ): Promise<Subscription> {
+    const workspaceId = this.getWorkspaceIdFromEvent(paddleEvent);
+    const data: SubscriptionData = {
+      paddleEmail: paddleEvent.email,
+      paddleUserId: paddleEvent.user_id,
+      paddleSubscriptionId: paddleEvent.subscription_id,
+      paddleSubscriptionPlanId: paddleEvent.subscription_plan_id,
+      paddleSubscriptionStatus: this.convertPaddleStatusStringToEnum(
+        paddleEvent.status
+      ),
+      paddleCancellationEffectiveDate: new Date(
+        paddleEvent.cancellation_effective_date
+      ),
+      paddleNextBillDate: null,
+      paddlePausedFrom: null,
+      paddleUpdateUrl: null,
+      paddleCancelUrl: null,
+      paddleUnitPrice: +paddleEvent.unit_price
+    };
 
-  // async cancelSubscription(paddleEvent: PaddleEvent): Promise<void> {
-  //   const workspaceId = this.getWorkspaceIdFromEvent(paddleEvent);
-  //   return this.subscriptionService.createSubscription(workspaceId);
-  // }
+    return this.subscriptionService.updateSubscription({
+      workspaceId,
+      plan: this.convertPaddlePlanToSubscriptionPlan(
+        data.paddleSubscriptionPlanId
+      ),
+      status: this.convertPaddleStatusToSubscriptionStatus(
+        data.paddleSubscriptionStatus
+      ),
+      subscriptionData: data
+    });
+  }
 
   private convertPaddleStatusStringToEnum(
     paddleStatus: string

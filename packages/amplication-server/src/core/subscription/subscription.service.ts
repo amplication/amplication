@@ -6,6 +6,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { SubscriptionData } from './dto';
 import { CreateSubscriptionInput } from './dto/CreateSubscriptionInput';
 import { Prisma, Subscription as PrismaSubscription } from '@prisma/client';
+import { UpdateSubscriptionInput } from './dto/UpdateSubscriptionInput';
 
 @Injectable()
 export class SubscriptionService {
@@ -21,6 +22,23 @@ export class SubscriptionService {
 
     return subs.map(sub => {
       return this.transformPrismaObject(sub);
+    });
+  }
+
+  private async getSubscriptionByPaddleSubscriptionId(
+    workspaceId: string,
+    paddleSubscriptionId: string
+  ): Promise<Subscription> {
+    const subscriptions = await this.getSubscription({
+      where: {
+        workspace: {
+          id: workspaceId
+        }
+      }
+    });
+
+    return subscriptions.find(sub => {
+      return sub.subscriptionData.paddleSubscriptionId === paddleSubscriptionId;
     });
   }
 
@@ -43,6 +61,15 @@ export class SubscriptionService {
   async createSubscription(
     data: CreateSubscriptionInput
   ): Promise<Subscription> {
+    const subscriptionToUpdate = await this.getSubscriptionByPaddleSubscriptionId(
+      data.workspaceId,
+      data.subscriptionData.paddleSubscriptionId
+    );
+
+    if (subscriptionToUpdate) {
+      return this.updateSubscription(data);
+    }
+
     return this.transformPrismaObject(
       await this.prisma.subscription.create({
         data: {
@@ -59,11 +86,31 @@ export class SubscriptionService {
     );
   }
 
-  // async updateSubscription(): Promise<Subscription> {
-  //   return this.prisma.subscription.findUnique(args);
-  // }
+  async updateSubscription(
+    data: UpdateSubscriptionInput
+  ): Promise<Subscription> {
+    const subscriptionToUpdate = await this.getSubscriptionByPaddleSubscriptionId(
+      data.workspaceId,
+      data.subscriptionData.paddleSubscriptionId
+    );
 
-  // async cancelSubscription(): Promise<Subscription> {
-  //   return this.prisma.subscription.findUnique(args);
-  // }
+    if (!subscriptionToUpdate) {
+      throw new Error(
+        `Can't find subscription to update for workspace ID ${data.workspaceId} and paddle subscription ID ${data.subscriptionData.paddleSubscriptionId}`
+      );
+    }
+
+    return this.transformPrismaObject(
+      await this.prisma.subscription.update({
+        where: {
+          id: subscriptionToUpdate.id
+        },
+        data: {
+          status: data.status,
+          subscriptionPlan: data.plan,
+          subscriptionData: (data.subscriptionData as unknown) as Prisma.InputJsonValue
+        }
+      })
+    );
+  }
 }

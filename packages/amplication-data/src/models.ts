@@ -1755,6 +1755,7 @@ export type Subscription = {
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
   workspace?: Maybe<Workspace>;
+  workspaceId: Scalars["String"];
   subscriptionPlan: EnumSubscriptionPlan;
   status: EnumSubscriptionStatus;
   cancelUrl?: Maybe<Scalars["String"]>;

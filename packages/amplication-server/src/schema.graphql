@@ -1291,6 +1291,7 @@ type Subscription {
   createdAt: DateTime!
   updatedAt: DateTime!
   workspace: Workspace
+  workspaceId: String!
   subscriptionPlan: EnumSubscriptionPlan!
   status: EnumSubscriptionStatus!
   cancelUrl: String

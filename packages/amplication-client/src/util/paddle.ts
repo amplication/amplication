@@ -29,3 +29,18 @@ export function createSubscription(
     successCallback: onSuccess,
   });
 }
+
+export function cancelSubscription(
+  cancelUrl: string,
+  workspaceId: string,
+  onSuccess: () => void
+) {
+  //@ts-ignore
+  const Paddle = window.Paddle;
+
+  Paddle.Checkout.open({
+    override: cancelUrl,
+    passthrough: JSON.parse(JSON.stringify({ workspaceId: workspaceId })),
+    successCallback: onSuccess,
+  });
+}
