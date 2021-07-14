@@ -481,13 +481,14 @@ enum EnumSubscriptionStatus {
 }
 
 model Subscription {
-  id               String                 @id @default(cuid())
-  createdAt        DateTime               @default(now())
-  updatedAt        DateTime               @updatedAt
-  workspaceId      String
-  workspace        Workspace              @relation(fields: [workspaceId], references: [id])
-  subscriptionPlan EnumSubscriptionPlan
-  status           EnumSubscriptionStatus
-  subscriptionData Json
+  id                        String                 @id @default(cuid())
+  createdAt                 DateTime               @default(now())
+  updatedAt                 DateTime               @updatedAt
+  workspaceId               String
+  workspace                 Workspace              @relation(fields: [workspaceId], references: [id])
+  subscriptionPlan          EnumSubscriptionPlan
+  status                    EnumSubscriptionStatus
+  subscriptionData          Json
+  cancellationEffectiveDate DateTime?
 
 }
