@@ -591,6 +591,7 @@ type EntityField {
   dataType: EnumDataType!
   properties: JSONObject
   required: Boolean!
+  unique: Boolean!
   searchable: Boolean!
   description: String
   position: Int
@@ -608,6 +609,7 @@ input EntityFieldCreateInput {
   dataType: EnumDataType!
   properties: JSONObject!
   required: Boolean!
+  unique: Boolean!
   searchable: Boolean!
   description: String!
   entity: WhereParentIdInput!
@@ -629,6 +631,7 @@ input EntityFieldOrderByInput {
   displayName: SortOrder
   dataType: SortOrder
   required: SortOrder
+  unique: SortOrder
   searchable: SortOrder
   description: SortOrder
   position: SortOrder
@@ -640,6 +643,7 @@ input EntityFieldUpdateInput {
   dataType: EnumDataType
   properties: JSONObject
   required: Boolean
+  unique: Boolean
   searchable: Boolean
   description: String
   position: Int
@@ -654,6 +658,7 @@ input EntityFieldWhereInput {
   displayName: StringFilter
   dataType: EnumDataTypeFilter
   required: BooleanFilter
+  unique: BooleanFilter
   searchable: BooleanFilter
   description: StringFilter
 }

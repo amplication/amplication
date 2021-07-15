@@ -135,9 +135,10 @@ const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
 
 const BASE_FIELD: Pick<
   EntityField,
-  'required' | 'searchable' | 'description'
+  'required' | 'searchable' | 'description' | 'unique'
 > = {
   required: false,
+  unique: false,
   searchable: true,
   description: ''
 };
