@@ -62,6 +62,10 @@ const GET_WORKSPACES = gql`
     workspaces {
       id
       name
+      subscription {
+        id
+        subscriptionPlan
+      }
     }
   }
 `;

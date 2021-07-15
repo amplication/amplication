@@ -313,6 +313,14 @@ resource "google_cloud_run_service" "default" {
           name  = "SENDGRID_API_KEY_SECRET_NAME"
           value = data.google_secret_manager_secret_version.sendgrid_api_key_secret.name
         }
+        env {
+          name  = "REACT_APP_PADDLE_VENDOR_ID"
+          value = var.paddle_vendor_id
+        }
+        env {
+          name  = "PADDLE_BASE_64_PUBLIC_KEY"
+          value = var.paddle_base_64_public_key
+        }
 
         resources {
           limits = {

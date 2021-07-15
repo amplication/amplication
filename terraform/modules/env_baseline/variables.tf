@@ -30,6 +30,10 @@ variable "github_app_auth_scope" {
   type = string
 }
 
+# paddle
+variable "paddle_vendor_id" {
+  type = string
+}
 variable "github_app_auth_redirect_uri" {
   type = string
 }
@@ -45,6 +49,11 @@ variable "sendgrid_from_address" {
 }
 
 variable "sendgrid_invitation_template_id" {
+  type = string
+}
+
+# paddle
+variable "paddle_base_64_public_key" {
   type = string
 }
 

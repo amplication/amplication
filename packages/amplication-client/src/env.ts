@@ -10,6 +10,7 @@ function get(name: string): string | undefined {
 
 export const NODE_ENV = get("NODE_ENV");
 export const REACT_APP_GITHUB_CLIENT_ID = get("REACT_APP_GITHUB_CLIENT_ID");
+export const REACT_APP_PADDLE_VENDOR_ID = get("REACT_APP_PADDLE_VENDOR_ID");
 export const REACT_APP_AMPLITUDE_API_KEY = get("REACT_APP_AMPLITUDE_API_KEY");
 export const REACT_APP_FEATURE_FLAGS = get("REACT_APP_FEATURE_FLAGS");
 export const REACT_APP_GITHUB_CONTROLLER_LOGIN_URL = get(

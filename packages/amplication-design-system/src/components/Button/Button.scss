@@ -48,6 +48,25 @@ $split-icon-font-size: 20px;
     }
   }
 
+  &.amp-button--danger {
+    background-color: var(--negative);
+    color: var(--static-white);
+    border: 1px solid var(--negative);
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--negative-dark);
+      border-color: var(--negative-dark);
+    }
+
+    &[disabled] {
+      background-color: var(--black20);
+      color: var(--white);
+      border: none;
+    }
+  }
+
   &.amp-button--call-to-action {
     background-color: var(--black90);
     color: var(--white);

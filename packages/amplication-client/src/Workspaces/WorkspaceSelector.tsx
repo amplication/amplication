@@ -122,6 +122,17 @@ export const GET_CURRENT_WORKSPACE = gql`
     currentWorkspace {
       id
       name
+      subscription {
+        id
+        workspaceId
+        subscriptionPlan
+        status
+        nextBillDate
+        cancelUrl
+        updateUrl
+        price
+        cancellationEffectiveDate
+      }
     }
   }
 `;

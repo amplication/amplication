@@ -18,10 +18,12 @@ import { FindOneArgs } from 'src/dto';
 import { Role } from 'src/enums/Role';
 import { UserService } from '../user/user.service';
 import { MailService } from '../mail/mail.service';
+import { SubscriptionService } from '../subscription/subscription.service';
 import cuid from 'cuid';
 import { addDays } from 'date-fns';
 import { isEmpty } from 'lodash';
 import { EnumWorkspaceMemberType } from './dto/EnumWorkspaceMemberType';
+import { Subscription } from '../subscription/dto/Subscription';
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -30,7 +32,8 @@ export class WorkspaceService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -361,5 +364,9 @@ export class WorkspaceService {
     }
 
     return this.userService.delete(args.where.id);
+  }
+
+  async getSubscription(workspaceId: string): Promise<Subscription | null> {
+    return await this.subscriptionService.getCurrentSubscription(workspaceId);
   }
 }

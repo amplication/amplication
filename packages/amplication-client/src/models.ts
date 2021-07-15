@@ -264,7 +264,7 @@ export type Block = {
   app?: Maybe<App>;
   parentBlock?: Maybe<Block>;
   displayName: Scalars["String"];
-  description: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   blockType: EnumBlockType;
   versionNumber?: Maybe<Scalars["Float"]>;
   lockedByUserId?: Maybe<Scalars["String"]>;
@@ -320,6 +320,8 @@ export type BlockVersion = {
   id: Scalars["String"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
+  displayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   block: Block;
   versionNumber: Scalars["Int"];
   commit?: Maybe<Commit>;
@@ -1093,6 +1095,20 @@ export enum EnumPendingChangeResourceType {
   Block = "Block",
 }
 
+export enum EnumSubscriptionPlan {
+  Pro = "Pro",
+  Business = "Business",
+  Enterprise = "Enterprise",
+}
+
+export enum EnumSubscriptionStatus {
+  Active = "Active",
+  Trailing = "Trailing",
+  PastDue = "PastDue",
+  Paused = "Paused",
+  Deleted = "Deleted",
+}
+
 export enum EnumWorkspaceMemberType {
   User = "User",
   Invitation = "Invitation",
@@ -1187,6 +1203,9 @@ export type Mutation = {
   updateWorkspace?: Maybe<Workspace>;
   createWorkspace?: Maybe<Workspace>;
   inviteUser?: Maybe<Invitation>;
+  revokeInvitation?: Maybe<Invitation>;
+  resendInvitation?: Maybe<Invitation>;
+  deleteUser?: Maybe<User>;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
   updateEntity?: Maybe<Entity>;
@@ -1252,6 +1271,18 @@ export type MutationCreateWorkspaceArgs = {
 
 export type MutationInviteUserArgs = {
   data: InviteUserInput;
+};
+
+export type MutationRevokeInvitationArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationResendInvitationArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationDeleteUserArgs = {
+  where: WhereUniqueInput;
 };
 
 export type MutationCreateOneEntityArgs = {
@@ -1702,6 +1733,22 @@ export type StringFilter = {
   mode?: Maybe<QueryMode>;
 };
 
+export type Subscription = {
+  __typename?: "Subscription";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  workspace?: Maybe<Workspace>;
+  workspaceId: Scalars["String"];
+  subscriptionPlan: EnumSubscriptionPlan;
+  status: EnumSubscriptionStatus;
+  cancellationEffectiveDate?: Maybe<Scalars["DateTime"]>;
+  cancelUrl?: Maybe<Scalars["String"]>;
+  updateUrl?: Maybe<Scalars["String"]>;
+  nextBillDate?: Maybe<Scalars["DateTime"]>;
+  price?: Maybe<Scalars["Float"]>;
+};
+
 export type UpdateAccountInput = {
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
@@ -1742,6 +1789,7 @@ export type Workspace = {
   name: Scalars["String"];
   apps: Array<App>;
   users: Array<User>;
+  subscription?: Maybe<Subscription>;
 };
 
 export type WorkspaceCreateInput = {

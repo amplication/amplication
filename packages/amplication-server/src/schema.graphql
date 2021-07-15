@@ -1002,6 +1002,20 @@ enum EnumPendingChangeResourceType {
   Block
 }
 
+enum EnumSubscriptionPlan {
+  Pro
+  Business
+  Enterprise
+}
+
+enum EnumSubscriptionStatus {
+  Active
+  Trailing
+  PastDue
+  Paused
+  Deleted
+}
+
 enum EnumWorkspaceMemberType {
   User
   Invitation
@@ -1260,6 +1274,21 @@ input StringFilter {
   mode: QueryMode
 }
 
+type Subscription {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  workspace: Workspace
+  workspaceId: String!
+  subscriptionPlan: EnumSubscriptionPlan!
+  status: EnumSubscriptionStatus!
+  cancellationEffectiveDate: DateTime
+  cancelUrl: String
+  updateUrl: String
+  nextBillDate: DateTime
+  price: Float
+}
+
 input UpdateAccountInput {
   firstName: String
   lastName: String
@@ -1297,6 +1326,7 @@ type Workspace {
   name: String!
   apps: [App!]!
   users: [User!]!
+  subscription: Subscription
 }
 
 input WorkspaceCreateInput {
