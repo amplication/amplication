@@ -53,7 +53,8 @@ const EXAMPLE_SUBSCRIPTION: Subscription = {
   },
   subscriptionPlan: EnumSubscriptionPlan.Business,
   status: EnumSubscriptionStatus.Active,
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  workspaceId: 'ExampleWorkspaceId'
 };
 
 const EXAMPLE_PADDLE_PUBLIC_KEY =

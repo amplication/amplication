@@ -10,6 +10,7 @@ import { MailService } from '../mail/mail.service';
 import { Workspace, Account, User } from 'src/models';
 import { Role } from 'src/enums/Role';
 import { DeleteUserArgs } from './dto';
+import { SubscriptionService } from '../subscription/subscription.service';
 
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
@@ -151,6 +152,10 @@ describe('WorkspaceService', () => {
             generatePassword: passwordServiceGeneratePasswordMock,
             hashPassword: passwordServiceHashPasswordMock
           }))
+        },
+        {
+          provide: SubscriptionService,
+          useClass: jest.fn().mockImplementation(() => ({}))
         }
       ]
     }).compile();
