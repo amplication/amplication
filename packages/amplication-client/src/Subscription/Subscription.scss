@@ -18,4 +18,24 @@ $empty-state-image-size: 120px;
       margin-top: var(--double-spacing);
     }
   }
+
+  &__row {
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__info {
+    color: var(--black80);
+  }
+  hr {
+    border: none;
+    border-top: $border-black10;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+
+  h3 {
+    .amp-icon {
+      margin-right: var(--default-spacing-small);
+    }
+  }
 }

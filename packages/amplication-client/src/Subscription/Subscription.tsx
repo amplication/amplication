@@ -13,7 +13,9 @@ import {
 } from "../util/paddle";
 import { EnumPanelStyle, Panel } from "@amplication/design-system";
 import { format } from "date-fns";
-import { GET_CURRENT_WORKSPACE } from "./WorkspaceSelector";
+import { GET_CURRENT_WORKSPACE } from "../Workspaces/WorkspaceSelector";
+import { SubscriptionStatus } from "./SubscriptionStatus";
+import { Icon } from "@rmwc/icon";
 
 const CLASS_NAME = "subscription";
 
@@ -107,41 +109,62 @@ function Subscription() {
         <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
           <div className={`${CLASS_NAME}__row`}>
             <h3>{currentSubscription?.subscriptionPlan} Plan</h3>
+            <SubscriptionStatus status={currentSubscription?.status} />
+          </div>
+          <div className={`${CLASS_NAME}__row`}>
             {nextBillDate && (
-              <div>
-                Your plan will be automatically renewed on{" "}
+              <div className={`${CLASS_NAME}__info`}>
+                Your subscription will be automatically renewed on{" "}
                 {format(nextBillDate, "PP")}.<br /> It will be charged as one
                 payment of ${currentSubscription?.price}.
               </div>
             )}
-            {currentSubscription?.status !==
-              models.EnumSubscriptionStatus.Active &&
-              currentSubscription?.status}{" "}
+
             {cancellationEffectiveDate && (
-              <div>
+              <div className={`${CLASS_NAME}__info`}>
                 Your plan was canceled and will terminate on{" "}
                 {format(cancellationEffectiveDate, "PP")}
               </div>
             )}
-            <br />
-            <br />
-            <Button
-              className={`${CLASS_NAME}__cancel`}
-              buttonStyle={EnumButtonStyle.Secondary}
-              onClick={handleCancelSubscription}
-              icon="trash_2"
-            >
-              Cancel Subscription
-            </Button>
-            <Button
-              className={`${CLASS_NAME}__cancel`}
-              buttonStyle={EnumButtonStyle.Secondary}
-              onClick={handleUpdateSubscription}
-              icon="edit"
-            >
-              Update payment details
-            </Button>
           </div>
+          {!cancellationEffectiveDate && (
+            <>
+              <div className={`${CLASS_NAME}__row`}>
+                <Button
+                  className={`${CLASS_NAME}__edit`}
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={handleUpdateSubscription}
+                  icon="edit"
+                >
+                  Update payment details
+                </Button>
+              </div>
+
+              <hr />
+              <h3>
+                <Icon icon="trash_2" />
+                Cancel Subscription
+              </h3>
+              <div className={`${CLASS_NAME}__row`}>
+                <div className={`${CLASS_NAME}__info`}>
+                  All future payments will be canceled and your plan will
+                  downgrade to the Amplication free community plan at the end of
+                  your current subscription period.
+                </div>
+              </div>
+
+              <div className={`${CLASS_NAME}__row`}>
+                <Button
+                  className={`${CLASS_NAME}__cancel`}
+                  buttonStyle={EnumButtonStyle.Danger}
+                  onClick={handleCancelSubscription}
+                  icon="trash_2"
+                >
+                  Cancel Subscription
+                </Button>
+              </div>
+            </>
+          )}
         </Panel>
       ) : (
         <PlanList onPurchaseSuccess={onTransactionSuccess} />

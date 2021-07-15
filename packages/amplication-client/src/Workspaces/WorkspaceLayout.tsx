@@ -7,7 +7,7 @@ import * as models from "../models";
 import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import ApplicationList from "./ApplicationList";
-import Subscription from "./Subscription";
+import Subscription from "../Subscription/Subscription";
 import MemberList from "./MemberList";
 import InnerTabLink from "../Layout/InnerTabLink";
 import WorkspaceSelector from "./WorkspaceSelector";
