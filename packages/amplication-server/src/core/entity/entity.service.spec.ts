@@ -81,6 +81,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   dataType: EnumDataType.SingleLineText,
   properties: null,
   required: true,
+  unique: false,
   searchable: true,
   description: 'example field'
 };
@@ -148,6 +149,7 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
   name: 'exampleEntityFieldName',
   displayName: 'Example Entity Field Display Name',
   required: false,
+  unique: false,
   searchable: false,
   description: '',
   dataType: EnumDataType.SingleLineText,
