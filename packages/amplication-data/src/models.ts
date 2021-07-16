@@ -320,8 +320,6 @@ export type BlockVersion = {
   id: Scalars["String"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
-  displayName: Scalars["String"];
-  description?: Maybe<Scalars["String"]>;
   block: Block;
   versionNumber: Scalars["Int"];
   commit?: Maybe<Commit>;
