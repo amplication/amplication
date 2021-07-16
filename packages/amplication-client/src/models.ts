@@ -268,7 +268,7 @@ export type Block = {
   app?: Maybe<App>;
   parentBlock?: Maybe<Block>;
   displayName: Scalars["String"];
-  description?: Scalars["String"];
+  description: Scalars["String"];
   blockType: EnumBlockType;
   versionNumber?: Maybe<Scalars["Float"]>;
   lockedByUserId?: Maybe<Scalars["String"]>;
