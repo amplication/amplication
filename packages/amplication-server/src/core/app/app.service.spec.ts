@@ -122,6 +122,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   permanentId: 'SampleFieldPermanentId',
   properties: {},
   required: false,
+  unique: false,
   searchable: false
 };
 
