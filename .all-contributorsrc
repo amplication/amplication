@@ -77,6 +77,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "tupe12334",
+      "name": "tupe12334",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61761153?v=4",
+      "profile": "https://github.com/tupe12334",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
