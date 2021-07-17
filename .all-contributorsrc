@@ -115,6 +115,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "yam-golombek",
+      "name": "yam-golombek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/71834570?v=4",
+      "profile": "https://github.com/yam-golombek",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
