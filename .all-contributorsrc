@@ -136,6 +136,17 @@
         "test",
         "content"
       ]
+    },
+    {
+      "login": "TimDurward",
+      "name": "Tim Durward",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11514270?v=4",
+      "profile": "http://Timdurward.github.io",
+      "contributions": [
+        "code",
+        "infra",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
