@@ -13,6 +13,7 @@ export enum EnumButtonStyle {
   Secondary = "secondary",
   CallToAction = "call-to-action",
   Clear = "clear",
+  Danger = "danger",
 }
 
 type ButtonProps = {

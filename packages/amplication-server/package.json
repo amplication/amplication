@@ -99,6 +99,7 @@
     "passport": "0.4.1",
     "passport-github2": "0.1.12",
     "passport-jwt": "4.0.0",
+    "php-serialize": "^4.0.2",
     "pluralize": "8.0.0",
     "prisma": "2.19.0",
     "reflect-metadata": "0.1.13",

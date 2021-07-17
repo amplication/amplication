@@ -79,6 +79,9 @@ function WorkspaceForm() {
           }}
         </Formik>
       )}
+      <label className={`${CLASS_NAME}__label`}>workspace ID </label>
+      <div>{data?.currentWorkspace.id}</div>
+
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

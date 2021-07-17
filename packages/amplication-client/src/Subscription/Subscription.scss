@@ -1,0 +1,41 @@
+@import "../style/index.scss";
+$empty-state-image-size: 120px;
+
+.subscription {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--large-spacing);
+  }
+
+  &__processing {
+    @include pageTitle;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    & .rmwc-circular-progress {
+      margin-top: var(--double-spacing);
+    }
+  }
+
+  &__row {
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__info {
+    color: var(--black80);
+  }
+  hr {
+    border: none;
+    border-top: $border-black10;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+
+  h3 {
+    .amp-icon {
+      margin-right: var(--default-spacing-small);
+    }
+  }
+}
