@@ -1,6 +1,6 @@
 <p align="center">
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-16-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
   <a href="https://amplication.com" target="_blank">
     <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
@@ -141,6 +141,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/yonantan"><img src="https://avatars.githubusercontent.com/u/9935021?v=4?s=100" width="100px;" alt=""/><br /><sub><b>yonantan</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=yonantan" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/hermanramaniuk"><img src="https://avatars.githubusercontent.com/u/82475478?v=4?s=100" width="100px;" alt=""/><br /><sub><b>hermanramaniuk</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=hermanramaniuk" title="Code">💻</a> <a href="https://github.com/amplication/amplication/commits?author=hermanramaniuk" title="Tests">⚠️</a></td>
   </tr>
 </table>
 
