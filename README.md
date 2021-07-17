@@ -1,6 +1,6 @@
 <p align="center">
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-19-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
   <a href="https://amplication.com" target="_blank">
     <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
@@ -145,6 +145,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://www.linkedin.com/profile/view?id=AAIAABLBfC4BE232yLpsGEF-dPR_QMXNvqrVucM&trk=nav_responsive_tab_profile_pic"><img src="https://avatars.githubusercontent.com/u/8780812?v=4?s=100" width="100px;" alt=""/><br /><sub><b>George Cameron</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=georgewritescode" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/Leeyaacov"><img src="https://avatars.githubusercontent.com/u/65485193?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Leeyaacov</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=Leeyaacov" title="Documentation">📖</a> <a href="#design-Leeyaacov" title="Design">🎨</a> <a href="#content-Leeyaacov" title="Content">🖋</a></td>
     <td align="center"><a href="https://github.com/noctifer20"><img src="https://avatars.githubusercontent.com/u/18212378?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mikayel Ohanjanyan </b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=noctifer20" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/lalit8347"><img src="https://avatars.githubusercontent.com/u/74647848?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Lalit C.</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=lalit8347" title="Code">💻</a></td>
   </tr>
 </table>
 
