@@ -147,6 +147,15 @@
         "infra",
         "doc"
       ]
+    },
+    {
+      "login": "yonantan",
+      "name": "yonantan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9935021?v=4",
+      "profile": "https://github.com/yonantan",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
