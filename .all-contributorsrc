@@ -1,5 +1,22 @@
 {
   "files": [
     "README.md"
-  ]
+  ],
+  "projectName": "amplication",
+  "projectOwner": "amplication",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true,
+  "contributors": [
+    {
+      "login": "yuval-hazaz",
+      "name": "Yuval Hazaz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43705455?v=4",
+      "profile": "https://amplication.com/",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
 }
