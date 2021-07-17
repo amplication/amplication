@@ -13,6 +13,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "belkind27",
+      "name": "Roy Belkind",
+      "avatar_url": "https://avatars.githubusercontent.com/u/71218434?v=4",
+      "profile": "https://github.com/belkind27",
+      "contributions": [
+        "test",
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
