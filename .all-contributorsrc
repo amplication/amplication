@@ -231,6 +231,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "kpk-pl",
+      "name": "Krzysztof Kapusta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/53126011?v=4",
+      "profile": "http://kapustakrzysztof.pl",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
