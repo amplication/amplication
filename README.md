@@ -107,6 +107,5 @@ Amplication is an open source project. We are committed to a fully transparent d
 
 Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
 
-## Contributors ✨
 
 
