@@ -49,7 +49,7 @@
     "@nestjs/platform-express": "7.6.18",
     "@nestjs/serve-static": "2.2.2",
     "@octokit/core": "3.5.1",
-    "@octokit/oauth-app": "2.0.3",
+    "@octokit/oauth-app": "2.1.0",
     "@octokit/rest": "18.0.6",
     "@prisma/client": "2.19.0",
     "@slynova/flydrive": "1.0.3",
