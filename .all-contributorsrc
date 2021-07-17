@@ -47,6 +47,18 @@
         "bug",
         "content"
       ]
+    },
+    {
+      "login": "meeroslava",
+      "name": "meeroslava",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20791516?v=4",
+      "profile": "https://github.com/meeroslava",
+      "contributions": [
+        "code",
+        "test",
+        "bug",
+        "content"
+      ]
     }
   ],
   "contributorsPerLine": 7,
