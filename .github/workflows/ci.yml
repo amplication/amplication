@@ -10,13 +10,14 @@ on:
       - "**.md"
       - ".github/workflows/**.yml"
       - "renovate.json"
+      - ".all-contributorsrc"
   pull_request:
     branches: [master]
     paths-ignore:
       - "**.md"
       - ".github/workflows/**.yml"
       - "renovate.json"
-
+      - ".all-contributorsrc"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -62,18 +63,18 @@ jobs:
       # E2E tests to run on merge to master
       - name: Generate test data service
         run: npm run generate-test-data-service
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
+        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
       - name: Install test data service's dependencies
         working-directory: packages/amplication-data-service-generator/generated/server
         run: npm ci && npm run prisma:generate
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
+        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
       - name: Run test data service's tests
         working-directory: packages/amplication-data-service-generator/generated/server
         run: npm test
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
+        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
       - name: Run Data Service Generator E2E test
         run: npm run test:e2e -- --scope @amplication/data-service-generator
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci')
+        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
   deploy:
     needs: build
     runs-on: ubuntu-latest
