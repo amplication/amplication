@@ -240,6 +240,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "erichodges",
+      "name": "Eric Hodges",
+      "avatar_url": "https://avatars.githubusercontent.com/u/14981329?v=4",
+      "profile": "https://github.com/erichodges",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
