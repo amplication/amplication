@@ -105,6 +105,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "petarvujovic98",
+      "name": "Petar Vujović",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36507050?v=4",
+      "profile": "http://petarvujović",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
