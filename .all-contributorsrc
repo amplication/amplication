@@ -35,6 +35,18 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "alonram",
+      "name": "Alon Ram",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40050499?v=4",
+      "profile": "https://github.com/alonram",
+      "contributions": [
+        "code",
+        "test",
+        "bug",
+        "content"
+      ]
     }
   ],
   "contributorsPerLine": 7,
