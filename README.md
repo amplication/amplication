@@ -1,6 +1,6 @@
 <p align="center">
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
   <a href="https://amplication.com" target="_blank">
     <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
@@ -136,6 +136,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/m3llo96"><img src="https://avatars.githubusercontent.com/u/66171850?v=4?s=100" width="100px;" alt=""/><br /><sub><b>m3llo96</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=m3llo96" title="Documentation">📖</a></td>
     <td align="center"><a href="http://petarvujović"><img src="https://avatars.githubusercontent.com/u/36507050?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Petar Vujović</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=petarvujovic98" title="Code">💻</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Apetarvujovic98" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/yam-golombek"><img src="https://avatars.githubusercontent.com/u/71834570?v=4?s=100" width="100px;" alt=""/><br /><sub><b>yam-golombek</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=yam-golombek" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://aniddan.com"><img src="https://avatars.githubusercontent.com/u/12671072?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Iddan Aaronsohn</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=iddan" title="Code">💻</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Aiddan" title="Bug reports">🐛</a> <a href="https://github.com/amplication/amplication/commits?author=iddan" title="Tests">⚠️</a> <a href="#content-iddan" title="Content">🖋</a></td>
   </tr>
 </table>
 

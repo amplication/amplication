@@ -124,6 +124,18 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "iddan",
+      "name": "Iddan Aaronsohn",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12671072?v=4",
+      "profile": "http://aniddan.com",
+      "contributions": [
+        "code",
+        "bug",
+        "test",
+        "content"
+      ]
     }
   ],
   "contributorsPerLine": 7,
