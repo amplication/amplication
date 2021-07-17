@@ -1,7 +1,5 @@
 <p align="center">
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-26-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+
   <a href="https://amplication.com" target="_blank">
     <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
   </a>
@@ -22,7 +20,9 @@
   </a>
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
 </p>
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 Amplication is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
 
 Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React
