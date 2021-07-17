@@ -1,6 +1,6 @@
 <p align="center">
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-22-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-23-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
   <a href="https://amplication.com" target="_blank">
     <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
@@ -150,6 +150,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/liyachun01"><img src="https://avatars.githubusercontent.com/u/7907204?v=4?s=100" width="100px;" alt=""/><br /><sub><b>liyachun</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=liyachun01" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/isabr85"><img src="https://avatars.githubusercontent.com/u/11903954?v=4?s=100" width="100px;" alt=""/><br /><sub><b>isabr85</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=isabr85" title="Documentation">📖</a></td>
   </tr>
 </table>
 
