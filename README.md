@@ -106,3 +106,7 @@ In case a similar feature request already exists, don't forget to leave a "+1". 
 Amplication is an open source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
 
 Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
+
+## Contributors ✨
+
+
