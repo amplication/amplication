@@ -1,4 +1,5 @@
 <p align="center">
+
   <a href="https://amplication.com" target="_blank">
     <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
   </a>
@@ -20,6 +21,14 @@
   <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
 </p>
 
+<div align="center">
+
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-29-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+  </div>
+  
 Amplication is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
 
 Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React
@@ -106,3 +115,74 @@ In case a similar feature request already exists, don't forget to leave a "+1". 
 Amplication is an open source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
 
 Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
+
+
+## Sponsors ✨
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [Become a sponsor](https://commerce.coinbase.com/checkout/8d425faa-9e2a-4393-a029-4f7ed68c3e02)
+
+
+<table>
+  <tr>
+    <td align="center"><a href="https://digitalcopilote.io/"><img src="https://user-images.githubusercontent.com/43705455/126038318-fd8e927a-443b-45ba-9983-8e6449b6c024.png" width="100px;" alt=""/><br /><a href="https://digitalcopilote.io/">Digital Copilote</a></td>
+   
+  </tr>
+  </table>
+
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://amplication.com/"><img src="https://avatars.githubusercontent.com/u/43705455?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Yuval Hazaz</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=yuval-hazaz" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/belkind27"><img src="https://avatars.githubusercontent.com/u/71218434?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Roy Belkind</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=belkind27" title="Tests">⚠️</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Abelkind27" title="Bug reports">🐛</a> <a href="https://github.com/amplication/amplication/commits?author=belkind27" title="Code">💻</a></td>
+    <td align="center"><a href="http://cegla.me"><img src="https://avatars.githubusercontent.com/u/62651890?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Gal Cegla</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=GalCegla" title="Tests">⚠️</a> <a href="https://github.com/amplication/amplication/issues?q=author%3AGalCegla" title="Bug reports">🐛</a> <a href="https://github.com/amplication/amplication/commits?author=GalCegla" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/alonram"><img src="https://avatars.githubusercontent.com/u/40050499?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alon Ram</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=alonram" title="Code">💻</a> <a href="https://github.com/amplication/amplication/commits?author=alonram" title="Tests">⚠️</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Aalonram" title="Bug reports">🐛</a> <a href="#content-alonram" title="Content">🖋</a></td>
+    <td align="center"><a href="https://github.com/meeroslava"><img src="https://avatars.githubusercontent.com/u/20791516?v=4?s=100" width="100px;" alt=""/><br /><sub><b>meeroslava</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=meeroslava" title="Code">💻</a> <a href="https://github.com/amplication/amplication/commits?author=meeroslava" title="Tests">⚠️</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Ameeroslava" title="Bug reports">🐛</a> <a href="#content-meeroslava" title="Content">🖋</a></td>
+    <td align="center"><a href="https://github.com/udanna"><img src="https://avatars.githubusercontent.com/u/8627181?v=4?s=100" width="100px;" alt=""/><br /><sub><b>danna</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=udanna" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/almogbhl"><img src="https://avatars.githubusercontent.com/u/32982671?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Almog Langleben</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=almogbhl" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/tupe12334"><img src="https://avatars.githubusercontent.com/u/61761153?v=4?s=100" width="100px;" alt=""/><br /><sub><b>tupe12334</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=tupe12334" title="Code">💻</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Atupe12334" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/gabrielmoncea"><img src="https://avatars.githubusercontent.com/u/39256258?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Gabriel Moncea</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=gabrielmoncea" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/m3llo96"><img src="https://avatars.githubusercontent.com/u/66171850?v=4?s=100" width="100px;" alt=""/><br /><sub><b>m3llo96</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=m3llo96" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://petarvujović"><img src="https://avatars.githubusercontent.com/u/36507050?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Petar Vujović</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=petarvujovic98" title="Code">💻</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Apetarvujovic98" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/yam-golombek"><img src="https://avatars.githubusercontent.com/u/71834570?v=4?s=100" width="100px;" alt=""/><br /><sub><b>yam-golombek</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=yam-golombek" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://aniddan.com"><img src="https://avatars.githubusercontent.com/u/12671072?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Iddan Aaronsohn</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=iddan" title="Code">💻</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Aiddan" title="Bug reports">🐛</a> <a href="#content-iddan" title="Content">🖋</a></td>
+    <td align="center"><a href="http://Timdurward.github.io"><img src="https://avatars.githubusercontent.com/u/11514270?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tim Durward</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=TimDurward" title="Code">💻</a> <a href="#infra-TimDurward" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/amplication/amplication/commits?author=TimDurward" title="Documentation">📖</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/yonantan"><img src="https://avatars.githubusercontent.com/u/9935021?v=4?s=100" width="100px;" alt=""/><br /><sub><b>yonantan</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=yonantan" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/hermanramaniuk"><img src="https://avatars.githubusercontent.com/u/82475478?v=4?s=100" width="100px;" alt=""/><br /><sub><b>hermanramaniuk</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=hermanramaniuk" title="Code">💻</a> <a href="https://github.com/amplication/amplication/commits?author=hermanramaniuk" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://www.linkedin.com/profile/view?id=AAIAABLBfC4BE232yLpsGEF-dPR_QMXNvqrVucM&trk=nav_responsive_tab_profile_pic"><img src="https://avatars.githubusercontent.com/u/8780812?v=4?s=100" width="100px;" alt=""/><br /><sub><b>George Cameron</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=georgewritescode" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/Leeyaacov"><img src="https://avatars.githubusercontent.com/u/65485193?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Leeyaacov</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=Leeyaacov" title="Documentation">📖</a> <a href="#design-Leeyaacov" title="Design">🎨</a> <a href="#content-Leeyaacov" title="Content">🖋</a></td>
+    <td align="center"><a href="https://github.com/noctifer20"><img src="https://avatars.githubusercontent.com/u/18212378?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mikayel Ohanjanyan </b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=noctifer20" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/lalit8347"><img src="https://avatars.githubusercontent.com/u/74647848?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Lalit C.</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=lalit8347" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/dabelh"><img src="https://avatars.githubusercontent.com/u/67220861?v=4?s=100" width="100px;" alt=""/><br /><sub><b>dabelh</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=dabelh" title="Tests">⚠️</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/liyachun01"><img src="https://avatars.githubusercontent.com/u/7907204?v=4?s=100" width="100px;" alt=""/><br /><sub><b>liyachun</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=liyachun01" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/isabr85"><img src="https://avatars.githubusercontent.com/u/11903954?v=4?s=100" width="100px;" alt=""/><br /><sub><b>isabr85</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=isabr85" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://kapustakrzysztof.pl"><img src="https://avatars.githubusercontent.com/u/53126011?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Krzysztof Kapusta</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=kpk-pl" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/erichodges"><img src="https://avatars.githubusercontent.com/u/14981329?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Eric Hodges</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=erichodges" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://0xflotus.github.io"><img src="https://avatars.githubusercontent.com/u/26602940?v=4?s=100" width="100px;" alt=""/><br /><sub><b>0xflotus</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=0xflotus" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/MatanForU"><img src="https://avatars.githubusercontent.com/u/8940907?v=4?s=100" width="100px;" alt=""/><br /><sub><b>MatanForU</b></sub></a><br /><a href="#design-MatanForU" title="Design">🎨</a></td>
+    <td align="center"><a href="https://www.enotriacoe.com"><img src="https://avatars.githubusercontent.com/u/56024126?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Richard Weaver</b></sub></a><br /><a href="#ideas-richardweaver" title="Ideas, Planning, & Feedback">🤔</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/NullF0rest"><img src="https://avatars.githubusercontent.com/u/40210694?v=4?s=100" width="100px;" alt=""/><br /><sub><b>NullF0rest</b></sub></a><br /><a href="#ideas-NullF0rest" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/sandbox-apps"><img src="https://avatars.githubusercontent.com/u/86398599?v=4?s=100" width="100px;" alt=""/><br /><sub><b>sandbox-apps</b></sub></a><br /><a href="#ideas-sandbox-apps" title="Ideas, Planning, & Feedback">🤔</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
