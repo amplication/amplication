@@ -156,6 +156,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "hermanramaniuk",
+      "name": "hermanramaniuk",
+      "avatar_url": "https://avatars.githubusercontent.com/u/82475478?v=4",
+      "profile": "https://github.com/hermanramaniuk",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
