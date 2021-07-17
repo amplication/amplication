@@ -2,14 +2,11 @@ import { google } from "@google-cloud/cloudbuild/build/protos/protos";
 import { BuildRequest } from "../types";
 import {
   createConfig,
-  createBuildArgParameter,
   createBuildStep,
   createBuildTags,
-  createCacheFromParameter,
   CLOUD_BUILDERS_DOCKER_IMAGE,
-  createTagParameter,
   createImageId,
-  createCacheFromPullStep,
+  createDestinationParameter,
 } from "./config";
 import { GCS_HOST } from "./gcs.util";
 
@@ -44,7 +41,6 @@ describe("createConfig", () => {
     const image = createImageId(EXAMPLE_TAG, EXAMPLE_PROJECT_ID);
     expect(createConfig(EXAMPLE_BUILD_REQUEST, EXAMPLE_PROJECT_ID)).toEqual({
       steps: [createBuildStep(EXAMPLE_BUILD_REQUEST, [image])],
-      images: [image],
       source: {
         storageSource: {
           bucket: EXAMPLE_BUCKET,
@@ -52,25 +48,9 @@ describe("createConfig", () => {
         },
       },
       tags: createBuildTags(EXAMPLE_TAGS),
-    });
-  });
-  test("creates config with cache from pull step", () => {
-    const image = createImageId(EXAMPLE_TAG, EXAMPLE_PROJECT_ID);
-    expect(
-      createConfig(EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM, EXAMPLE_PROJECT_ID)
-    ).toEqual({
-      steps: [
-        createCacheFromPullStep(EXAMPLE_CACHE_FROM_IMAGE),
-        createBuildStep(EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM, [image]),
-      ],
-      images: [image],
-      source: {
-        storageSource: {
-          bucket: EXAMPLE_BUCKET,
-          object: EXAMPLE_OBJECT,
-        },
+      options: {
+        machineType: "N1_HIGHCPU_8",
       },
-      tags: createBuildTags(EXAMPLE_TAGS),
     });
   });
 });
@@ -87,48 +67,15 @@ describe("createBuildStep", () => {
       EXAMPLE_BUILD_REQUEST,
       {
         name: CLOUD_BUILDERS_DOCKER_IMAGE,
-        args: ["build", createTagParameter(image), "."],
-      },
-    ],
-    [
-      "With build args",
-      EXAMPLE_BUILD_REQUEST_WITH_ARGS,
-      {
-        name: CLOUD_BUILDERS_DOCKER_IMAGE,
         args: [
-          "build",
-          createTagParameter(image),
-          createBuildArgParameter(
-            EXAMPLE_BUILD_ARG_NAME,
-            EXAMPLE_BUILD_ARG_VALUE
-          ),
-          ".",
-        ],
-      },
-    ],
-    [
-      "With cache from",
-      EXAMPLE_BUILD_REQUEST_WITH_CACHE_FROM,
-      {
-        name: CLOUD_BUILDERS_DOCKER_IMAGE,
-        args: [
-          "build",
-          createTagParameter(image),
-          createCacheFromParameter(EXAMPLE_CACHE_FROM_IMAGE),
-          ".",
+          createDestinationParameter(image),
+          "--cache=true",
+          "--cache-ttl=12h",
         ],
       },
     ],
   ];
   test.each(cases)("%s", (name, request, expected) => {
     expect(createBuildStep(request, [image])).toEqual(expected);
-  });
-});
-
-describe("createBuildArgParameter", () => {
-  test("creates build arg parameter", () => {
-    expect(
-      createBuildArgParameter(EXAMPLE_BUILD_ARG_NAME, EXAMPLE_BUILD_ARG_VALUE)
-    ).toBe(`--build-arg=${EXAMPLE_BUILD_ARG_NAME}=${EXAMPLE_BUILD_ARG_VALUE}`);
   });
 });

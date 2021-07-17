@@ -10,13 +10,14 @@ on:
       - "**.md"
       - ".github/workflows/**.yml"
       - "renovate.json"
+      - ".all-contributorsrc"
   pull_request:
     branches: [master]
     paths-ignore:
       - "**.md"
       - ".github/workflows/**.yml"
       - "renovate.json"
-
+      - ".all-contributorsrc"
 jobs:
   build:
     runs-on: ubuntu-latest

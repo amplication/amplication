@@ -3,8 +3,10 @@ import { BuildRequest } from "../types";
 import { parseGCSObjectURL } from "./gcs.util";
 
 export const GCR_HOST = "gcr.io";
-export const CLOUD_BUILDERS_DOCKER_IMAGE = "gcr.io/cloud-builders/docker";
+export const CLOUD_BUILDERS_DOCKER_IMAGE =
+  "gcr.io/kaniko-project/executor:latest";
 export const DEFAULT_TAGS = ["container-builder"];
+export const DESTINATION_ARG = "destination";
 
 export function createConfig(
   request: BuildRequest,
@@ -14,11 +16,7 @@ export function createConfig(
   const { bucket, object } = parseGCSObjectURL(request.url);
   const images = request.tags.map((tag) => createImageId(tag, projectId));
   return {
-    steps: [
-      ...cacheFrom.map((image) => createCacheFromPullStep(image)),
-      createBuildStep(request, images),
-    ],
-    images,
+    steps: [createBuildStep(request, images)],
     source: {
       storageSource: {
         bucket,
@@ -26,6 +24,9 @@ export function createConfig(
       },
     },
     tags: createBuildTags(request.tags),
+    options: {
+      machineType: "N1_HIGHCPU_8",
+    },
   };
 }
 
@@ -37,45 +38,15 @@ export function createBuildStep(
   request: BuildRequest,
   images: string[]
 ): google.devtools.cloudbuild.v1.IBuildStep {
-  const tagParameters = images.map(createTagParameter);
-  const { args = {}, cacheFrom = [] } = request;
-  const buildArgParameters = Object.entries(args).map(([name, value]) =>
-    createBuildArgParameter(name, value)
-  );
-  const cacheFromParameters = cacheFrom.map(createCacheFromParameter);
+  const destinationParameters = images.map(createDestinationParameter);
   return {
     name: CLOUD_BUILDERS_DOCKER_IMAGE,
-    args: [
-      "build",
-      ...tagParameters,
-      ...buildArgParameters,
-      ...cacheFromParameters,
-      ".",
-    ],
+    args: [...destinationParameters, "--cache=true", "--cache-ttl=12h"],
   };
 }
 
-export function createTagParameter(tag: string): string {
-  return `--tag=${tag}`;
-}
-
-export function createBuildArgParameter(name: string, value: string): string {
-  return `--build-arg=${name}=${value}`;
-}
-
-export function createCacheFromParameter(image: string): string {
-  return `--cache-from=${image}`;
-}
-
-export function createCacheFromPullStep(
-  image: string
-): google.devtools.cloudbuild.v1.IBuildStep {
-  return {
-    name: CLOUD_BUILDERS_DOCKER_IMAGE,
-    entrypoint: "bash",
-    args: ["-c", `docker pull ${image} || exit 0`],
-    waitFor: [],
-  };
+export function createDestinationParameter(image: string): string {
+  return `--${DESTINATION_ARG}=${image}`;
 }
 
 export function createBuildTags(tags: string[]): string[] {
