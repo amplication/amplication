@@ -213,6 +213,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "liyachun01",
+      "name": "liyachun",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7907204?v=4",
+      "profile": "https://github.com/liyachun01",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
