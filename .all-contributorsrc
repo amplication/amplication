@@ -266,6 +266,15 @@
       "contributions": [
         "design"
       ]
+    },
+    {
+      "login": "richardweaver",
+      "name": "Richard Weaver",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56024126?v=4",
+      "profile": "https://www.enotriacoe.com",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
