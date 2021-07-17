@@ -8,7 +8,7 @@ import {
   IProvider,
 } from "../types";
 import { defaultLogger } from "../logging";
-import { createConfig, createImageId } from "./config";
+import { createConfig, createImageId, DESTINATION_ARG } from "./config";
 import { InvalidBuildProviderState } from "../builder/InvalidBuildProviderState";
 
 type StatusQuery = {
@@ -81,7 +81,7 @@ export class CloudBuildProvider implements IProvider {
       case EnumCloudBuildStatus.Success:
         return {
           status: EnumBuildStatus.Completed,
-          images: build.images as string[],
+          images: this.getImagesFromBuild(build),
         };
 
       default:
@@ -93,5 +93,19 @@ export class CloudBuildProvider implements IProvider {
 
   createImageId(tag: string): string {
     return createImageId(tag, this.projectId);
+  }
+
+  getImagesFromBuild(build: google.devtools.cloudbuild.v1.IBuild): string[] {
+    const args = build.steps && build.steps.length && build.steps[0].args;
+    if (args) {
+      const destinations = args.filter((destination) =>
+        destination.startsWith(`--${DESTINATION_ARG}`)
+      );
+
+      return destinations.map((destination) =>
+        destination.replace(`--${DESTINATION_ARG}=`, "")
+      );
+    }
+    return [];
   }
 }

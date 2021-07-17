@@ -6,6 +6,7 @@ export const GCR_HOST = "gcr.io";
 export const CLOUD_BUILDERS_DOCKER_IMAGE =
   "gcr.io/kaniko-project/executor:latest";
 export const DEFAULT_TAGS = ["container-builder"];
+export const DESTINATION_ARG = "destination";
 
 export function createConfig(
   request: BuildRequest,
@@ -45,7 +46,7 @@ export function createBuildStep(
 }
 
 export function createDestinationParameter(image: string): string {
-  return `--destination=${image}`;
+  return `--${DESTINATION_ARG}=${image}`;
 }
 
 export function createBuildTags(tags: string[]): string[] {
