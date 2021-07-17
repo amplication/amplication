@@ -68,6 +68,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "almogbhl",
+      "name": "Almog Langleben",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32982671?v=4",
+      "profile": "https://github.com/almogbhl",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
