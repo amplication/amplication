@@ -293,7 +293,16 @@
       "contributions": [
         "ideas"
       ]
-
+    },
+    {
+      "login": "vimota",
+      "name": "Victor Mota",
+      "avatar_url": "https://avatars.githubusercontent.com/u/865701?v=4",
+      "profile": "https://github.com/vimota",
+      "contributions": [
+        "example",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
