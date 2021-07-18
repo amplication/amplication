@@ -7,7 +7,7 @@ import * as models from "../models";
 import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import ApplicationList from "./ApplicationList";
-import Subscription from "../Subscription/Subscription";
+//import Subscription from "../Subscription/Subscription";
 import MemberList from "./MemberList";
 import InnerTabLink from "../Layout/InnerTabLink";
 import WorkspaceSelector from "./WorkspaceSelector";
@@ -54,9 +54,9 @@ function WorkspaceLayout({ match }: Props) {
             <InnerTabLink to={`/workspace/members`} icon="users">
               Workspace Members
             </InnerTabLink>
-            <InnerTabLink to={`/workspace/plans`} icon="file_text">
+            {/* <InnerTabLink to={`/workspace/plans`} icon="file_text">
               Workspace Plan
-            </InnerTabLink>
+            </InnerTabLink> */}
           </div>
         </MenuItemWithFixedPanel>
       </MainLayout.Menu>
@@ -74,9 +74,9 @@ function WorkspaceLayout({ match }: Props) {
             <Switch>
               <Route exact path="/workspace/members" component={MemberList} />
             </Switch>
-            <Switch>
+            {/* <Switch>
               <Route exact path="/workspace/plans" component={Subscription} />
-            </Switch>
+            </Switch> */}
 
             <Switch>
               <Route exact path="/" component={ApplicationList} />
