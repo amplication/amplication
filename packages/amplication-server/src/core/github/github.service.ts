@@ -6,6 +6,10 @@ import { GithubFile } from './dto/githubFile';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { OAuthApp } from '@octokit/oauth-app';
+
+//@octokit/openapi-types constantly fails with linting error "Unable to resolve path to module '@octokit/openapi-types'."
+// We currently ignore it and should look deeper into the root cause
+// eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
 
 const GITHUB_FILE_TYPE = 'file';
