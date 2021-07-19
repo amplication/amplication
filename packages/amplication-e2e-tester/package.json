@@ -22,7 +22,7 @@
     "@types/puppeteer": "3.0.6",
     "@typescript-eslint/eslint-plugin": "4.28.3",
     "@typescript-eslint/parser": "4.28.3",
-    "eslint": "7.17.0",
+    "eslint": "7.31.0",
     "eslint-plugin-import": "2.23.4",
     "prettier": "2.1.2",
     "ts-jest": "27.0.3"
