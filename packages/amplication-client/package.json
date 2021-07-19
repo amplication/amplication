@@ -76,7 +76,7 @@
     "styled-components": "5.1.1",
     "typescript": "3.9.10",
     "use-debounce": "3.4.3",
-    "xlsx": "0.16.9",
+    "xlsx": "0.17.0",
     "yaml": "1.10.2"
   },
   "scripts": {
