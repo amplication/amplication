@@ -17,7 +17,7 @@
     "@rmwc/tabs": "6.1.4",
     "@rooks/use-window-size": "3.6.0",
     "@testing-library/jest-dom": "4.2.4",
-    "@testing-library/react": "9.5.0",
+    "@testing-library/react": "12.0.0",
     "@testing-library/user-event": "7.2.1",
     "@types/amplitude-js": "5.11.2",
     "@types/chalk-pipe": "2.0.0",
