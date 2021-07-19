@@ -7,8 +7,12 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { OAuthApp } from '@octokit/oauth-app';
 
+//@octokit/openapi-types constantly fails with linting error "Unable to resolve path to module '@octokit/openapi-types'."
+// We currently ignore it and should look deeper into the root cause
+// eslint-disable-next-line import/no-unresolved
+import { components } from '@octokit/openapi-types';
+
 const GITHUB_FILE_TYPE = 'file';
-const GITHUB_FILE_ENCODING = 'base64';
 
 export const GITHUB_CLIENT_ID_VAR = 'GITHUB_CLIENT_ID';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -17,6 +21,8 @@ export const GITHUB_APP_AUTH_REDIRECT_URI_VAR = 'GITHUB_APP_AUTH_REDIRECT_URI';
 export const GITHUB_APP_AUTH_SCOPE_VAR = 'GITHUB_APP_AUTH_SCOPE';
 export const MISSING_CLIENT_SECRET_ERROR = `Must provide either ${GITHUB_CLIENT_SECRET_VAR} or ${GITHUB_SECRET_SECRET_NAME_VAR}`;
 export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encoding received`;
+
+type DirectoryItem = components['schemas']['content-directory'][number];
 
 @Injectable()
 export class GithubService {
@@ -71,21 +77,21 @@ export class GithubService {
       ref: baseBranchName ? baseBranchName : undefined
     });
 
-    if (
-      content.data.encoding === GITHUB_FILE_ENCODING &&
-      content.data.type === GITHUB_FILE_TYPE
-    ) {
-      // Convert base64 results to UTF-8 string
-      const buff = Buffer.from(content.data.content, 'base64');
+    if (!Array.isArray(content)) {
+      const item = content.data as DirectoryItem;
 
-      const file: GithubFile = {
-        content: buff.toString('utf-8'),
-        htmlUrl: content.data.html_url,
-        name: content.data.name,
-        path: content.data.path
-      };
+      if (item.type === GITHUB_FILE_TYPE) {
+        // Convert base64 results to UTF-8 string
+        const buff = Buffer.from(item.content, 'base64');
 
-      return file;
+        const file: GithubFile = {
+          content: buff.toString('utf-8'),
+          htmlUrl: item.html_url,
+          name: item.name,
+          path: item.path
+        };
+        return file;
+      }
     }
 
     throw new Error(UNEXPECTED_FILE_TYPE_OR_ENCODING);
