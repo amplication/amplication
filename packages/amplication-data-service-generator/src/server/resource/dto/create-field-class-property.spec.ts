@@ -54,6 +54,7 @@ const EXAMPLE_OPTIONAL_ENTITY_FIELD: EntityField = {
   description: "Example optional entity field description",
   dataType: EnumDataType.Id,
   required: false,
+  unique: false,
   searchable: false,
 };
 const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
@@ -64,6 +65,7 @@ const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
   description: "Example list entity field description",
   dataType: EnumDataType.Roles,
   required: true,
+  unique: false,
   searchable: false,
 };
 

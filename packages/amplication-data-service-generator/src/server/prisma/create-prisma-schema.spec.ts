@@ -27,6 +27,7 @@ const EXAMPLE_FIELD: EntityField = {
   dataType: EnumDataType.SingleLineText,
   properties: {},
   required: true,
+  unique: false,
   description: "",
   displayName: "Example Field",
   searchable: true,
@@ -37,6 +38,7 @@ const EXAMPLE_UNREQUIRED_FIELD: EntityField = {
   name: "ExampleUnrequiredField",
   displayName: "Example Unrequired Field",
   required: false,
+  unique: false,
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -76,6 +78,7 @@ const EXAMPLE_LOOKUP_ENTITY: Entity = {
       permanentId: "EXAMPLE_LOOKUP_PERMANENT_FIELD_ID",
       dataType: EnumDataType.Lookup,
       required: true,
+      unique: false,
       searchable: false,
       name: EXAMPLE_LOOKUP_FIELD_NAME,
       displayName: "Example Lookup Field",
@@ -385,6 +388,7 @@ describe("createPrismaFields", () => {
       displayName: "Example Field Display Name",
       dataType,
       required: true,
+      unique: false,
       searchable: false,
       properties,
     };

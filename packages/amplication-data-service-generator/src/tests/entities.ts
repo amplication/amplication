@@ -37,6 +37,7 @@ const USER: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -45,6 +46,7 @@ const USER: Entity = {
       name: "name",
       displayName: "Name",
       required: true,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.SingleLineText,
     },
@@ -54,6 +56,7 @@ const USER: Entity = {
       name: "bio",
       displayName: "Bio",
       required: true,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.MultiLineText,
     },
@@ -63,6 +66,7 @@ const USER: Entity = {
       name: "email",
       displayName: "Email",
       required: true,
+      unique: true,
       searchable: false,
       dataType: EnumDataType.Email,
     },
@@ -72,6 +76,7 @@ const USER: Entity = {
       name: "age",
       displayName: "Age",
       required: true,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.WholeNumber,
     },
@@ -81,6 +86,7 @@ const USER: Entity = {
       name: "birthDate",
       displayName: "Birth Date",
       required: true,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.DateTime,
       properties: { dataOnly: false },
@@ -91,6 +97,7 @@ const USER: Entity = {
       name: "score",
       displayName: "Score",
       required: true,
+      unique: false,
       searchable: false,
       dataType: EnumDataType.DecimalNumber,
     },
@@ -101,6 +108,7 @@ const USER: Entity = {
       name: "manager",
       displayName: "Manager",
       required: false,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.Lookup,
       properties: {
@@ -115,6 +123,7 @@ const USER: Entity = {
       name: "employees",
       displayName: "Employees",
       required: false,
+      unique: false,
       searchable: false,
       dataType: EnumDataType.Lookup,
       properties: {
@@ -129,6 +138,7 @@ const USER: Entity = {
       name: "organizations",
       displayName: "Organizations",
       required: false,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.Lookup,
       properties: {
@@ -143,6 +153,7 @@ const USER: Entity = {
       name: "interests",
       displayName: "Interests",
       required: true,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.MultiSelectOptionSet,
       properties: {
@@ -158,6 +169,7 @@ const USER: Entity = {
       name: "priority",
       displayName: "Priority",
       required: true,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.OptionSet,
       properties: {
@@ -174,6 +186,7 @@ const USER: Entity = {
       name: "isCurious",
       displayName: "Is Curious",
       required: true,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.Boolean,
     },
@@ -183,6 +196,7 @@ const USER: Entity = {
       name: "location",
       displayName: "Location",
       required: true,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.GeographicLocation,
     },
@@ -192,6 +206,7 @@ const USER: Entity = {
       name: "extendedProperties",
       displayName: "Extended Properties",
       required: true,
+      unique: false,
       searchable: true,
       dataType: EnumDataType.Json,
     },
@@ -244,6 +259,7 @@ const ORDER: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -254,6 +270,7 @@ const ORDER: Entity = {
       dataType: EnumDataType.CreatedAt,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -264,6 +281,7 @@ const ORDER: Entity = {
       dataType: EnumDataType.UpdatedAt,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -277,6 +295,7 @@ const ORDER: Entity = {
         relatedFieldId: CUSTOMER_ORDERS_FIELD_ID,
       },
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -302,6 +321,7 @@ const ORDER: Entity = {
         ],
       },
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -319,6 +339,7 @@ const ORDER: Entity = {
         ],
       },
       required: false,
+      unique: false,
       searchable: true,
     },
   ],
@@ -370,6 +391,7 @@ const ORGANIZATION: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -380,6 +402,7 @@ const ORGANIZATION: Entity = {
       dataType: EnumDataType.CreatedAt,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -390,6 +413,7 @@ const ORGANIZATION: Entity = {
       dataType: EnumDataType.UpdatedAt,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -400,6 +424,7 @@ const ORGANIZATION: Entity = {
       dataType: EnumDataType.SingleLineText,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -414,6 +439,7 @@ const ORGANIZATION: Entity = {
         allowMultipleSelection: true,
       },
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -428,6 +454,7 @@ const ORGANIZATION: Entity = {
         allowMultipleSelection: true,
       },
       required: true,
+      unique: false,
       searchable: true,
     },
     // Additional lookup field to the same entity
@@ -443,6 +470,7 @@ const ORGANIZATION: Entity = {
         allowMultipleSelection: true,
       },
       required: true,
+      unique: false,
       searchable: true,
     },
   ],
@@ -494,6 +522,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -504,6 +533,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.CreatedAt,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -514,6 +544,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.UpdatedAt,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -524,6 +555,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.Email,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -534,6 +566,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.SingleLineText,
       properties: {},
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -544,6 +577,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.SingleLineText,
       properties: {},
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -554,6 +588,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.Boolean,
       properties: {},
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -567,6 +602,7 @@ const CUSTOMER: Entity = {
         dateOnly: true,
       },
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -581,6 +617,7 @@ const CUSTOMER: Entity = {
         precision: 2,
       },
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -594,6 +631,7 @@ const CUSTOMER: Entity = {
         maximumValue: 20,
       },
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -604,6 +642,7 @@ const CUSTOMER: Entity = {
       dataType: EnumDataType.GeographicLocation,
       properties: {},
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -616,6 +655,7 @@ const CUSTOMER: Entity = {
         maxLength: 500,
       },
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -645,6 +685,7 @@ const CUSTOMER: Entity = {
         ],
       },
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -674,6 +715,7 @@ const CUSTOMER: Entity = {
         ],
       },
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -688,6 +730,7 @@ const CUSTOMER: Entity = {
         allowMultipleSelection: false,
       },
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -702,6 +745,7 @@ const CUSTOMER: Entity = {
         allowMultipleSelection: false,
       },
       required: false,
+      unique: false,
       searchable: true,
     },
     {
@@ -716,6 +760,7 @@ const CUSTOMER: Entity = {
         allowMultipleSelection: true,
       },
       required: false,
+      unique: false,
       searchable: true,
     },
   ],
@@ -767,6 +812,7 @@ const EMPTY: Entity = {
       dataType: EnumDataType.Id,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -777,6 +823,7 @@ const EMPTY: Entity = {
       dataType: EnumDataType.CreatedAt,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
     {
@@ -787,6 +834,7 @@ const EMPTY: Entity = {
       dataType: EnumDataType.UpdatedAt,
       properties: {},
       required: true,
+      unique: false,
       searchable: true,
     },
   ],
