@@ -129,7 +129,7 @@
     ]
   },
   "devDependencies": {
-    "@types/ajv-errors": "1.0.3",
+    "@types/ajv-errors": "2.0.0",
     "@types/lodash.debounce": "4.0.6",
     "@types/react-beautiful-dnd": "13.1.1",
     "prettier": "2.0.5",
