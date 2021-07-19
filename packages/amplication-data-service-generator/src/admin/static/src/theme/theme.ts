@@ -1,7 +1,5 @@
 import { defaultTheme } from "react-admin";
-import createMuiTheme, {
-  ThemeOptions,
-} from "@material-ui/core/styles/createMuiTheme";
+import { createTheme, ThemeOptions } from "@material-ui/core/styles";
 import { merge } from "lodash";
 import createPalette from "@material-ui/core/styles/createPalette";
 
@@ -32,4 +30,4 @@ const themeOptions: ThemeOptions = {
   palette,
 };
 
-export const theme = createMuiTheme(merge({}, defaultTheme, themeOptions));
+export const theme = createTheme(merge({}, defaultTheme, themeOptions));
