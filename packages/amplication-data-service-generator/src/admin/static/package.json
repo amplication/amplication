@@ -47,7 +47,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "5.11.6",
     "@testing-library/react": "11.2.7",
-    "@testing-library/user-event": "12.8.3",
+    "@testing-library/user-event": "13.2.0",
     "@types/jest": "26.0.16",
     "@types/lodash": "4.14.171",
     "@types/node": "12.20.16",
