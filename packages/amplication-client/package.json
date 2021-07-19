@@ -55,7 +55,7 @@
     "react": "16.14.0",
     "react-animate-height": "2.0.23",
     "react-beautiful-dnd": "13.1.0",
-    "react-command-palette": "0.13.0-0",
+    "react-command-palette": "0.16.2",
     "react-compound-timer": "1.2.0",
     "react-device-detect": "1.17.0",
     "react-diff-viewer": "3.1.1",
