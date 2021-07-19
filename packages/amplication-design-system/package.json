@@ -49,7 +49,7 @@
     "eslint-plugin-react": "7.24.0",
     "eslint-plugin-react-hooks": "4.2.0",
     "formik": "2.2.9",
-    "prettier": "2.1.2",
+    "prettier": "2.3.2",
     "react-is": "16.13.1",
     "react-scripts": "3.4.4",
     "rollup": "2.53.2",
