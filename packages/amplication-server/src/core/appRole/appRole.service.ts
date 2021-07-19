@@ -5,7 +5,7 @@ import { PrismaService } from 'nestjs-prisma';
 import {
   CreateAppRoleArgs,
   FindManyAppRoleArgs,
-  UpdateOneAppRoleArgs
+  UpdateOneAppRoleArgs,
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 

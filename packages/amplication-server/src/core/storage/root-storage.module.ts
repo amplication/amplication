@@ -6,5 +6,5 @@ import { StorageOptionsService } from './storage-options.service';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const RootStorageModule = StorageModule.forRootAsync({
   imports: [StorageOptionsModule, ConfigModule],
-  useClass: StorageOptionsService
+  useClass: StorageOptionsService,
 });

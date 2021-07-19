@@ -21,5 +21,5 @@ export { AppCreateWithEntitiesInput } from './AppCreateWithEntitiesInput';
 export { CreateAppWithEntitiesArgs } from './CreateAppWithEntitiesArgs';
 export {
   AppValidationResult,
-  AppValidationErrorTypes
+  AppValidationErrorTypes,
 } from './AppValidationResult';

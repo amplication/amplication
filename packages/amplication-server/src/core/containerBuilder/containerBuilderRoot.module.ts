@@ -8,7 +8,7 @@ import { DockerService } from '../docker/docker.service';
 
 export enum ContainerBuilderProvider {
   Docker = 'docker',
-  CloudBuild = 'cloud-build'
+  CloudBuild = 'cloud-build',
 }
 
 export const CONTAINER_BUILDER_DEFAULT_VAR = 'CONTAINER_BUILDER_DEFAULT';
@@ -32,10 +32,10 @@ export const ContainerBuilderRootModule = ContainerBuilderModule.forRootAsync({
       default: containerBuilderDefault,
       providers: {
         [ContainerBuilderProvider.Docker]: new DockerProvider(docker),
-        [ContainerBuilderProvider.CloudBuild]: cloudBuildProvider
-      }
+        [ContainerBuilderProvider.CloudBuild]: cloudBuildProvider,
+      },
     };
   },
   inject: [ConfigService, DockerService],
-  imports: [ConfigModule, DockerModule]
+  imports: [ConfigModule, DockerModule],
 });

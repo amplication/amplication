@@ -4,7 +4,7 @@ import { WhereParentIdInput, WhereUniqueInput } from 'src/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityUpdatePermissionRolesInput {
   @Field(() => EnumEntityAction, { nullable: false })
@@ -12,19 +12,19 @@ export class EntityUpdatePermissionRolesInput {
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   entity!: WhereParentIdInput;
 
   @Field(() => [WhereUniqueInput], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   deleteRoles?: WhereUniqueInput[];
 
   @Field(() => [WhereUniqueInput], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   addRoles?: WhereUniqueInput[];
 }

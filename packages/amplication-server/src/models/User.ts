@@ -5,47 +5,47 @@ import { UserRole } from './UserRole'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class User {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
   @Field(() => Account, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   account?: Account;
 
   @Field(() => Workspace, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   workspace?: Workspace;
 
   @Field(() => [UserRole], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   userRoles?: UserRole[] | null;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   isOwner?: boolean;
 }

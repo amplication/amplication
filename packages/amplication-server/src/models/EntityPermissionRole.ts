@@ -9,36 +9,36 @@ import { EnumEntityAction } from 'src/enums/EnumEntityAction';
  */
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityPermissionRole {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   entityVersionId!: string;
 
   @Field(() => EnumEntityAction, {
-    nullable: false
+    nullable: false,
   })
   action!: keyof typeof EnumEntityAction;
 
   @Field(() => EntityPermission, {
-    nullable: true
+    nullable: true,
   })
   entityPermission?: EntityPermission;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   appRoleId!: string;
 
   @Field(() => AppRole, {
-    nullable: false
+    nullable: false,
   })
   appRole: AppRole;
 }

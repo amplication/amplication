@@ -3,36 +3,36 @@ import { InputType, Field } from '@nestjs/graphql';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class DeploymentOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   id?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   createdAt?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   userId?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   status?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   message?: SortOrder | null | undefined;
 }

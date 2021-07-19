@@ -19,7 +19,7 @@ const EXAMPLE_ACCOUNT: Account = {
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
   currentUserId: EXAMPLE_CURRENT_USER_ID,
-  githubId: null
+  githubId: null,
 };
 
 const prismaAccountCreateMock = jest.fn(() => {
@@ -48,11 +48,11 @@ describe('AccountService', () => {
             account: {
               create: prismaAccountCreateMock,
               findUnique: prismaAccountFindOneMock,
-              update: prismaAccountUpdateMock
-            }
-          }))
-        }
-      ]
+              update: prismaAccountUpdateMock,
+            },
+          })),
+        },
+      ],
     }).compile();
 
     service = module.get<AccountService>(AccountService);
@@ -68,8 +68,8 @@ describe('AccountService', () => {
         email: EXAMPLE_EMAIL,
         firstName: EXAMPLE_FIRST_NAME,
         lastName: EXAMPLE_LAST_NAME,
-        password: EXAMPLE_PASSWORD
-      }
+        password: EXAMPLE_PASSWORD,
+      },
     };
     expect(service.createAccount(args)).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountCreateMock).toBeCalledTimes(1);
@@ -80,8 +80,8 @@ describe('AccountService', () => {
     const args = {
       where: {
         id: EXAMPLE_ACCOUNT_ID,
-        email: EXAMPLE_EMAIL
-      }
+        email: EXAMPLE_EMAIL,
+      },
     };
     expect(service.findAccount(args)).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountFindOneMock).toBeCalledTimes(1);
@@ -93,8 +93,8 @@ describe('AccountService', () => {
       where: { id: EXAMPLE_ACCOUNT_ID },
       data: {
         firstName: EXAMPLE_FIRST_NAME,
-        lastName: EXAMPLE_LAST_NAME
-      }
+        lastName: EXAMPLE_LAST_NAME,
+      },
     };
     expect(service.updateAccount(args)).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountUpdateMock).toBeCalledTimes(1);
@@ -104,19 +104,19 @@ describe('AccountService', () => {
   it('should set the current user', () => {
     const args = {
       accountId: EXAMPLE_ACCOUNT_ID,
-      userId: EXAMPLE_CURRENT_USER_ID
+      userId: EXAMPLE_CURRENT_USER_ID,
     };
     const returnArgs = {
       data: {
         currentUser: {
           connect: {
-            id: args.userId
-          }
-        }
+            id: args.userId,
+          },
+        },
       },
       where: {
-        id: args.accountId
-      }
+        id: args.accountId,
+      },
     };
     expect(service.setCurrentUser(args.accountId, args.userId)).toEqual(
       EXAMPLE_ACCOUNT
@@ -128,13 +128,13 @@ describe('AccountService', () => {
   it('should set a password', async () => {
     const args = {
       accountId: EXAMPLE_ACCOUNT_ID,
-      password: EXAMPLE_PASSWORD
+      password: EXAMPLE_PASSWORD,
     };
     const returnArgs = {
       data: {
-        password: args.password
+        password: args.password,
       },
-      where: { id: args.accountId }
+      where: { id: args.accountId },
     };
     expect(await service.setPassword(args.accountId, args.password)).toEqual(
       EXAMPLE_ACCOUNT

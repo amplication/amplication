@@ -7,7 +7,7 @@ import {
   DELETE_ONE_USER_ENTITY_ERROR_MESSAGE,
   EntityPendingChange,
   EntityService,
-  NAME_VALIDATION_ERROR_MESSAGE
+  NAME_VALIDATION_ERROR_MESSAGE,
 } from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
@@ -16,13 +16,13 @@ import { FindManyEntityArgs } from './dto';
 import {
   CURRENT_VERSION_NUMBER,
   DEFAULT_PERMISSIONS,
-  USER_ENTITY_NAME
+  USER_ENTITY_NAME,
 } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 import {
   EnumPendingChangeAction,
-  EnumPendingChangeResourceType
+  EnumPendingChangeResourceType,
 } from '../app/dto';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
@@ -43,7 +43,7 @@ const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  message: EXAMPLE_MESSAGE
+  message: EXAMPLE_MESSAGE,
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -56,18 +56,18 @@ const EXAMPLE_ENTITY: Entity = {
   pluralDisplayName: 'exampleEntities',
   description: 'example entity',
   lockedByUserId: undefined,
-  lockedAt: null
+  lockedAt: null,
 };
 
 const EXAMPLE_LOCKED_ENTITY: Entity = {
   ...EXAMPLE_ENTITY,
   lockedByUserId: EXAMPLE_USER_ID,
-  lockedAt: new Date()
+  lockedAt: new Date(),
 };
 
 const EXAMPLE_USER_ENTITY: Entity = {
   ...EXAMPLE_ENTITY,
-  name: USER_ENTITY_NAME
+  name: USER_ENTITY_NAME,
 };
 
 const EXAMPLE_ENTITY_FIELD: EntityField = {
@@ -82,7 +82,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   properties: null,
   required: true,
   searchable: true,
-  description: 'example field'
+  description: 'example field',
 };
 
 const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
@@ -95,7 +95,7 @@ const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
   name: 'exampleEntity',
   displayName: 'example entity',
   pluralDisplayName: 'exampleEntities',
-  description: 'example entity'
+  description: 'example entity',
 };
 
 const EXAMPLE_ENTITY_PENDING_CHANGE_CREATE: EntityPendingChange = {
@@ -103,26 +103,26 @@ const EXAMPLE_ENTITY_PENDING_CHANGE_CREATE: EntityPendingChange = {
   action: EnumPendingChangeAction.Create,
   resourceType: EnumPendingChangeResourceType.Entity,
   versionNumber: 1,
-  resource: EXAMPLE_ENTITY
+  resource: EXAMPLE_ENTITY,
 };
 const EXAMPLE_DELETED_ENTITY = {
   ...EXAMPLE_ENTITY,
   versions: [EXAMPLE_CURRENT_ENTITY_VERSION],
-  deletedAt: new Date()
+  deletedAt: new Date(),
 };
 const EXAMPLE_ENTITY_PENDING_CHANGE_DELETE: EntityPendingChange = {
   resourceId: EXAMPLE_ENTITY.id,
   action: EnumPendingChangeAction.Delete,
   resourceType: EnumPendingChangeResourceType.Entity,
   versionNumber: 1,
-  resource: EXAMPLE_DELETED_ENTITY
+  resource: EXAMPLE_DELETED_ENTITY,
 };
 const EXAMPLE_ENTITY_PENDING_CHANGE_UPDATE: EntityPendingChange = {
   resourceId: EXAMPLE_ENTITY.id,
   action: EnumPendingChangeAction.Update,
   resourceType: EnumPendingChangeResourceType.Entity,
   versionNumber: 1,
-  resource: EXAMPLE_ENTITY
+  resource: EXAMPLE_ENTITY,
 };
 
 const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
@@ -139,9 +139,9 @@ const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
   fields: [
     {
       ...EXAMPLE_ENTITY_FIELD,
-      entityVersionId: EXAMPLE_LAST_ENTITY_VERSION_ID
-    }
-  ]
+      entityVersionId: EXAMPLE_LAST_ENTITY_VERSION_ID,
+    },
+  ],
 };
 
 const EXAMPLE_ENTITY_FIELD_DATA = {
@@ -152,23 +152,23 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
   description: '',
   dataType: EnumDataType.SingleLineText,
   properties: {
-    maxLength: 42
+    maxLength: 42,
   },
   entityVersion: {
     connect: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       entityId_versionNumber: {
         entityId: EXAMPLE_ENTITY_ID,
-        versionNumber: CURRENT_VERSION_NUMBER
-      }
-    }
-  }
+        versionNumber: CURRENT_VERSION_NUMBER,
+      },
+    },
+  },
 };
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 };
 
 const EXAMPLE_ENTITY_WHERE_PARENT_ID = { connect: { id: 'EXAMPLE_ID' } };
@@ -197,17 +197,17 @@ const prismaEntityVersionFindOneMock = jest.fn(
   (args: Prisma.EntityVersionFindUniqueArgs) => {
     const entityVersionList = [
       EXAMPLE_CURRENT_ENTITY_VERSION,
-      EXAMPLE_LAST_ENTITY_VERSION
+      EXAMPLE_LAST_ENTITY_VERSION,
     ];
 
-    const version = entityVersionList.find(item => item.id == args.where.id);
+    const version = entityVersionList.find((item) => item.id == args.where.id);
 
     if (args.include?.fields) {
       version.fields = [
         {
           ...EXAMPLE_ENTITY_FIELD,
-          entityVersionId: version.id
-        }
+          entityVersionId: version.id,
+        },
       ];
     }
 
@@ -216,8 +216,8 @@ const prismaEntityVersionFindOneMock = jest.fn(
     }
 
     return {
-      then: resolve => resolve(version),
-      commit: () => EXAMPLE_COMMIT
+      then: (resolve) => resolve(version),
+      commit: () => EXAMPLE_COMMIT,
     };
   }
 );
@@ -227,7 +227,7 @@ const prismaEntityVersionFindManyMock = jest.fn(
     if (args.include?.entity) {
       return [
         { ...EXAMPLE_CURRENT_ENTITY_VERSION, entity: EXAMPLE_LOCKED_ENTITY },
-        { ...EXAMPLE_LAST_ENTITY_VERSION, entity: EXAMPLE_LOCKED_ENTITY }
+        { ...EXAMPLE_LAST_ENTITY_VERSION, entity: EXAMPLE_LOCKED_ENTITY },
       ];
     } else {
       return [EXAMPLE_CURRENT_ENTITY_VERSION, EXAMPLE_LAST_ENTITY_VERSION];
@@ -239,7 +239,7 @@ const prismaEntityVersionCreateMock = jest.fn(
   (args: Prisma.EntityVersionCreateArgs) => {
     return {
       ...EXAMPLE_LAST_ENTITY_VERSION,
-      versionNumber: args.data.versionNumber
+      versionNumber: args.data.versionNumber,
     };
   }
 );
@@ -256,7 +256,7 @@ const prismaEntityFieldFindFirstMock = jest.fn(
     if (args?.include?.entityVersion) {
       return {
         ...EXAMPLE_ENTITY_FIELD,
-        entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
+        entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION,
       };
     }
     return EXAMPLE_ENTITY_FIELD;
@@ -289,34 +289,34 @@ describe('EntityService', () => {
               findMany: prismaEntityFindManyMock,
               create: prismaEntityCreateMock,
               delete: prismaEntityDeleteMock,
-              update: prismaEntityUpdateMock
+              update: prismaEntityUpdateMock,
             },
             entityVersion: {
               findMany: prismaEntityVersionFindManyMock,
               create: prismaEntityVersionCreateMock,
               update: prismaEntityVersionUpdateMock,
-              findUnique: prismaEntityVersionFindOneMock
+              findUnique: prismaEntityVersionFindOneMock,
             },
             entityField: {
               findFirst: prismaEntityFieldFindFirstMock,
               create: prismaEntityFieldCreateMock,
               update: prismaEntityFieldUpdateMock,
-              findMany: prismaEntityFieldFindManyMock
+              findMany: prismaEntityFieldFindManyMock,
             },
             entityPermission: {
-              findMany: prismaEntityPermissionFindManyMock
+              findMany: prismaEntityPermissionFindManyMock,
             },
             entityPermissionField: {
               deleteMany: prismaEntityPermissionFieldDeleteManyMock,
-              findMany: prismaEntityPermissionFieldFindManyMock
+              findMany: prismaEntityPermissionFieldFindManyMock,
             },
             entityPermissionRole: {
-              deleteMany: prismaEntityPermissionRoleDeleteManyMock
-            }
-          }))
+              deleteMany: prismaEntityPermissionRoleDeleteManyMock,
+            },
+          })),
         },
-        EntityService
-      ]
+        EntityService,
+      ],
     }).compile();
 
     service = module.get<EntityService>(EntityService);
@@ -331,13 +331,13 @@ describe('EntityService', () => {
     [
       EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME,
       [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME],
-      [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME]
+      [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME],
     ],
     [
       EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME,
       [EXAMPLE_ENTITY_FIELD_NAME, EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME],
-      [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME]
-    ]
+      [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME],
+    ],
   ])(
     '.validateAllFieldsExist(%v, %v)',
     async (entityId, fieldNames, expected) => {
@@ -350,17 +350,17 @@ describe('EntityService', () => {
   it('should find one entity', async () => {
     const args = {
       where: {
-        id: EXAMPLE_ENTITY_ID
+        id: EXAMPLE_ENTITY_ID,
       },
-      version: EXAMPLE_CURRENT_ENTITY_VERSION.versionNumber
+      version: EXAMPLE_CURRENT_ENTITY_VERSION.versionNumber,
     };
     expect(await service.entity(args)).toEqual(EXAMPLE_ENTITY);
     expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
     expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: args.where.id,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
   });
 
@@ -372,8 +372,8 @@ describe('EntityService', () => {
       ...args,
       where: {
         ...args.where,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
   });
 
@@ -385,10 +385,10 @@ describe('EntityService', () => {
           displayName: EXAMPLE_ENTITY.displayName,
           description: EXAMPLE_ENTITY.description,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
-          app: { connect: { id: EXAMPLE_ENTITY.appId } }
-        }
+          app: { connect: { id: EXAMPLE_ENTITY.appId } },
+        },
       },
-      user: EXAMPLE_USER
+      user: EXAMPLE_USER,
     };
     const newEntityArgs = {
       data: {
@@ -396,8 +396,8 @@ describe('EntityService', () => {
         lockedAt: expect.any(Date),
         lockedByUser: {
           connect: {
-            id: createArgs.user.id
-          }
+            id: createArgs.user.id,
+          },
         },
         versions: {
           create: {
@@ -408,11 +408,11 @@ describe('EntityService', () => {
             pluralDisplayName: createArgs.args.data.pluralDisplayName,
             description: createArgs.args.data.description,
             permissions: {
-              create: DEFAULT_PERMISSIONS
-            }
-          }
-        }
-      }
+              create: DEFAULT_PERMISSIONS,
+            },
+          },
+        },
+      },
     };
 
     expect(
@@ -426,9 +426,9 @@ describe('EntityService', () => {
   it('should delete one entity', async () => {
     const deleteArgs = {
       args: {
-        where: { id: EXAMPLE_ENTITY_ID }
+        where: { id: EXAMPLE_ENTITY_ID },
       },
-      user: EXAMPLE_USER
+      user: EXAMPLE_USER,
     };
 
     const updateArgs = {
@@ -450,15 +450,15 @@ describe('EntityService', () => {
               // eslint-disable-next-line @typescript-eslint/naming-convention
               entityId_versionNumber: {
                 entityId: deleteArgs.args.where.id,
-                versionNumber: CURRENT_VERSION_NUMBER
-              }
+                versionNumber: CURRENT_VERSION_NUMBER,
+              },
             },
             data: {
-              deleted: true
-            }
-          }
-        }
-      }
+              deleted: true,
+            },
+          },
+        },
+      },
     };
     expect(
       await service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
@@ -468,8 +468,8 @@ describe('EntityService', () => {
     expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: EXAMPLE_ENTITY_ID,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
 
     expect(prismaEntityUpdateMock).toBeCalledTimes(2);
@@ -479,9 +479,9 @@ describe('EntityService', () => {
   it('should throw an exception when trying to delete user entity', async () => {
     const deleteArgs = {
       args: {
-        where: { id: EXAMPLE_ENTITY_ID }
+        where: { id: EXAMPLE_ENTITY_ID },
       },
-      user: EXAMPLE_USER
+      user: EXAMPLE_USER,
     };
 
     prismaEntityUpdateMock.mockImplementationOnce(() => EXAMPLE_USER_ENTITY);
@@ -494,8 +494,8 @@ describe('EntityService', () => {
     expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: EXAMPLE_ENTITY_ID,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
 
     expect(prismaEntityUpdateMock).toBeCalledTimes(1);
@@ -509,10 +509,10 @@ describe('EntityService', () => {
           name: EXAMPLE_ENTITY.name,
           displayName: EXAMPLE_ENTITY.displayName,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
-          description: EXAMPLE_ENTITY.description
-        }
+          description: EXAMPLE_ENTITY.description,
+        },
       },
-      user: EXAMPLE_USER
+      user: EXAMPLE_USER,
     };
 
     expect(
@@ -529,18 +529,18 @@ describe('EntityService', () => {
               // eslint-disable-next-line  @typescript-eslint/naming-convention
               entityId_versionNumber: {
                 entityId: updateArgs.args.where.id,
-                versionNumber: CURRENT_VERSION_NUMBER
-              }
+                versionNumber: CURRENT_VERSION_NUMBER,
+              },
             },
             data: {
               name: updateArgs.args.data.name,
               displayName: updateArgs.args.data.displayName,
               pluralDisplayName: updateArgs.args.data.pluralDisplayName,
-              description: updateArgs.args.data.description
-            }
-          }
-        }
-      }
+              description: updateArgs.args.data.description,
+            },
+          },
+        },
+      },
     });
   });
 
@@ -548,7 +548,7 @@ describe('EntityService', () => {
     const entity = {
       entityId: EXAMPLE_ENTITY_ID,
       versionNumber: EXAMPLE_CURRENT_ENTITY_VERSION.versionNumber,
-      args: { where: {} }
+      args: { where: {} },
     };
     const returnArgs = {
       ...entity.args,
@@ -556,12 +556,12 @@ describe('EntityService', () => {
         ...entity.args.where,
         entityVersion: {
           entityId: entity.entityId,
-          versionNumber: entity.versionNumber
-        }
-      }
+          versionNumber: entity.versionNumber,
+        },
+      },
     };
     expect(await service.getFields(entity.entityId, entity.args)).toEqual([
-      EXAMPLE_ENTITY_FIELD
+      EXAMPLE_ENTITY_FIELD,
     ]);
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFieldFindManyMock).toBeCalledWith(returnArgs);
@@ -571,16 +571,16 @@ describe('EntityService', () => {
     const args = {
       data: {
         commit: { connect: { id: EXAMPLE_LAST_ENTITY_VERSION.commitId } },
-        entity: { connect: { id: EXAMPLE_ENTITY_ID } }
-      }
+        entity: { connect: { id: EXAMPLE_ENTITY_ID } },
+      },
     };
     const entityVersionFindManyArgs = {
       where: {
-        entity: { id: EXAMPLE_ENTITY_ID }
+        entity: { id: EXAMPLE_ENTITY_ID },
       },
       orderBy: {
-        versionNumber: Prisma.SortOrder.asc
-      }
+        versionNumber: Prisma.SortOrder.asc,
+      },
     };
 
     const nextVersionNumber = EXAMPLE_LAST_ENTITY_VERSION.versionNumber + 1;
@@ -592,28 +592,28 @@ describe('EntityService', () => {
         description: EXAMPLE_ENTITY.description,
         commit: {
           connect: {
-            id: args.data.commit.connect.id
-          }
+            id: args.data.commit.connect.id,
+          },
         },
         versionNumber: nextVersionNumber,
         entity: {
           connect: {
-            id: args.data.entity.connect.id
-          }
-        }
-      }
+            id: args.data.entity.connect.id,
+          },
+        },
+      },
     };
 
     const names = pick(EXAMPLE_LAST_ENTITY_VERSION, [
       'name',
       'displayName',
       'pluralDisplayName',
-      'description'
+      'description',
     ]);
 
     const entityVersionFindSourceArgs = {
       where: {
-        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
       },
       include: {
         fields: true,
@@ -623,46 +623,46 @@ describe('EntityService', () => {
             permissionFields: {
               include: {
                 permissionRoles: true,
-                field: true
-              }
-            }
-          }
-        }
-      }
+                field: true,
+              },
+            },
+          },
+        },
+      },
     };
     const entityVersionFindTargetArgs = {
       where: {
-        id: EXAMPLE_LAST_ENTITY_VERSION_ID
-      }
+        id: EXAMPLE_LAST_ENTITY_VERSION_ID,
+      },
     };
 
     const updateEntityVersionWithFieldsArgs = {
       where: {
-        id: EXAMPLE_LAST_ENTITY_VERSION_ID
+        id: EXAMPLE_LAST_ENTITY_VERSION_ID,
       },
       data: {
         entity: {
           update: {
             ...names,
-            deletedAt: null
-          }
+            deletedAt: null,
+          },
         },
         ...names,
         fields: {
-          create: [omit(EXAMPLE_ENTITY_FIELD, ['id', 'entityVersionId'])]
-        }
-      }
+          create: [omit(EXAMPLE_ENTITY_FIELD, ['id', 'entityVersionId'])],
+        },
+      },
     };
 
     const updateEntityVersionWithPermissionsArgs = {
       where: {
-        id: EXAMPLE_LAST_ENTITY_VERSION_ID
+        id: EXAMPLE_LAST_ENTITY_VERSION_ID,
       },
       data: {
         permissions: {
-          create: []
-        }
-      }
+          create: [],
+        },
+      },
     };
     expect(await service.createVersion(args)).toEqual(
       EXAMPLE_CURRENT_ENTITY_VERSION
@@ -680,39 +680,39 @@ describe('EntityService', () => {
     expect(prismaEntityVersionFindOneMock).toBeCalledTimes(2);
     expect(prismaEntityVersionFindOneMock.mock.calls).toEqual([
       [entityVersionFindSourceArgs],
-      [entityVersionFindTargetArgs]
+      [entityVersionFindTargetArgs],
     ]);
 
     expect(prismaEntityVersionUpdateMock).toBeCalledTimes(2);
     expect(prismaEntityVersionUpdateMock.mock.calls).toEqual([
       [updateEntityVersionWithFieldsArgs],
-      [updateEntityVersionWithPermissionsArgs]
+      [updateEntityVersionWithPermissionsArgs],
     ]);
   });
 
   it('should discard pending changes', async () => {
     const entityVersionFindManyArgs = {
       where: {
-        entity: { id: EXAMPLE_ENTITY_ID }
+        entity: { id: EXAMPLE_ENTITY_ID },
       },
       orderBy: {
-        versionNumber: Prisma.SortOrder.asc
+        versionNumber: Prisma.SortOrder.asc,
       },
       include: {
-        entity: true
-      }
+        entity: true,
+      },
     };
 
     const names = pick(EXAMPLE_LAST_ENTITY_VERSION, [
       'name',
       'displayName',
       'pluralDisplayName',
-      'description'
+      'description',
     ]);
 
     const entityVersionFindSourceArgs = {
       where: {
-        id: EXAMPLE_LAST_ENTITY_VERSION_ID
+        id: EXAMPLE_LAST_ENTITY_VERSION_ID,
       },
       include: {
         fields: true,
@@ -722,46 +722,46 @@ describe('EntityService', () => {
             permissionFields: {
               include: {
                 permissionRoles: true,
-                field: true
-              }
-            }
-          }
-        }
-      }
+                field: true,
+              },
+            },
+          },
+        },
+      },
     };
     const entityVersionFindTargetArgs = {
       where: {
-        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
-      }
+        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
+      },
     };
 
     const updateEntityVersionWithFieldsArgs = {
       where: {
-        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
       },
       data: {
         entity: {
           update: {
             ...names,
-            deletedAt: null
-          }
+            deletedAt: null,
+          },
         },
         ...names,
         fields: {
-          create: [omit(EXAMPLE_ENTITY_FIELD, ['id', 'entityVersionId'])]
-        }
-      }
+          create: [omit(EXAMPLE_ENTITY_FIELD, ['id', 'entityVersionId'])],
+        },
+      },
     };
 
     const updateEntityVersionWithPermissionsArgs = {
       where: {
-        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
       },
       data: {
         permissions: {
-          create: []
-        }
-      }
+          create: [],
+        },
+      },
     };
     expect(
       await service.discardPendingChanges(EXAMPLE_ENTITY_ID, EXAMPLE_USER_ID)
@@ -774,7 +774,7 @@ describe('EntityService', () => {
     expect(prismaEntityVersionFindOneMock).toBeCalledTimes(2);
     expect(prismaEntityVersionFindOneMock.mock.calls).toEqual([
       [entityVersionFindSourceArgs],
-      [entityVersionFindTargetArgs]
+      [entityVersionFindTargetArgs],
     ]);
 
     expect(prismaEntityVersionUpdateMock).toBeCalledTimes(3);
@@ -782,24 +782,24 @@ describe('EntityService', () => {
       [
         {
           where: {
-            id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+            id: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
           },
           data: {
             fields: {
               deleteMany: {
-                entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID
-              }
+                entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
+              },
             },
             permissions: {
               deleteMany: {
-                entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID
-              }
-            }
-          }
-        }
+                entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
+              },
+            },
+          },
+        },
       ],
       [updateEntityVersionWithFieldsArgs],
-      [updateEntityVersionWithPermissionsArgs]
+      [updateEntityVersionWithPermissionsArgs],
     ]);
   });
 
@@ -807,7 +807,7 @@ describe('EntityService', () => {
     const args = {};
     expect(await service.getVersions(args)).toEqual([
       EXAMPLE_CURRENT_ENTITY_VERSION,
-      EXAMPLE_LAST_ENTITY_VERSION
+      EXAMPLE_LAST_ENTITY_VERSION,
     ]);
     expect(prismaEntityVersionFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityVersionFindManyMock).toBeCalledWith(args);
@@ -816,14 +816,14 @@ describe('EntityService', () => {
   it('should validate that entity ID exists in the current app and is persistent', async () => {
     const args = {
       entityId: EXAMPLE_ENTITY_ID,
-      appId: EXAMPLE_ENTITY.appId
+      appId: EXAMPLE_ENTITY.appId,
     };
     const findManyArgs = {
       where: {
         id: args.entityId,
         app: { id: args.appId },
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     };
     expect(await service.isEntityInSameApp(args.entityId, args.appId)).toEqual(
       true
@@ -835,20 +835,20 @@ describe('EntityService', () => {
   it('should validate that all listed field names exist in entity and return a set of non-matching field names', async () => {
     const args = {
       entityId: EXAMPLE_ENTITY_ID,
-      fieldNames: [EXAMPLE_ENTITY_FIELD_NAME]
+      fieldNames: [EXAMPLE_ENTITY_FIELD_NAME],
     };
     const uniqueNames = new Set(args.fieldNames);
     const findManyArgs = {
       where: {
         name: {
-          in: Array.from(uniqueNames)
+          in: Array.from(uniqueNames),
         },
         entityVersion: {
           entityId: args.entityId,
-          versionNumber: EXAMPLE_CURRENT_ENTITY_VERSION.versionNumber
-        }
+          versionNumber: EXAMPLE_CURRENT_ENTITY_VERSION.versionNumber,
+        },
       },
-      select: { name: true }
+      select: { name: true },
     };
     expect(
       await service.validateAllFieldsExist(args.entityId, args.fieldNames)
@@ -870,7 +870,7 @@ describe('EntityService', () => {
   it('should acquire a lock', async () => {
     const lockArgs = {
       args: { where: { id: EXAMPLE_ENTITY_ID } },
-      user: EXAMPLE_USER
+      user: EXAMPLE_USER,
     };
     const entityId = lockArgs.args.where.id;
     expect(await service.acquireLock(lockArgs.args, lockArgs.user)).toEqual(
@@ -880,22 +880,22 @@ describe('EntityService', () => {
     expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: entityId,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
     expect(prismaEntityUpdateMock).toBeCalledTimes(1);
     expect(prismaEntityUpdateMock).toBeCalledWith({
       where: {
-        id: entityId
+        id: entityId,
       },
       data: {
         lockedByUser: {
           connect: {
-            id: lockArgs.user.id
-          }
+            id: lockArgs.user.id,
+          },
         },
-        lockedAt: expect.any(Date)
-      }
+        lockedAt: expect.any(Date),
+      },
     });
   });
 
@@ -903,14 +903,14 @@ describe('EntityService', () => {
     const entityId = EXAMPLE_ENTITY_ID;
     const updateArgs = {
       where: {
-        id: entityId
+        id: entityId,
       },
       data: {
         lockedByUser: {
-          disconnect: true
+          disconnect: true,
         },
-        lockedAt: null
-      }
+        lockedAt: null,
+      },
     };
     expect(await service.releaseLock(entityId)).toEqual(EXAMPLE_ENTITY);
     expect(prismaEntityUpdateMock).toBeCalledTimes(1);
@@ -923,8 +923,8 @@ describe('EntityService', () => {
         {
           data: {
             ...EXAMPLE_ENTITY_FIELD_DATA,
-            entity: { connect: { id: EXAMPLE_ENTITY_ID } }
-          }
+            entity: { connect: { id: EXAMPLE_ENTITY_ID } },
+          },
         },
         EXAMPLE_USER
       )
@@ -933,8 +933,8 @@ describe('EntityService', () => {
     expect(prismaEntityFieldCreateMock).toBeCalledWith({
       data: {
         ...EXAMPLE_ENTITY_FIELD_DATA,
-        permanentId: expect.any(String)
-      }
+        permanentId: expect.any(String),
+      },
     });
   });
   it('should fail to create entity field with bad name', async () => {
@@ -944,8 +944,8 @@ describe('EntityService', () => {
           data: {
             ...EXAMPLE_ENTITY_FIELD_DATA,
             name: 'Foo Bar',
-            entity: { connect: { id: EXAMPLE_ENTITY_ID } }
-          }
+            entity: { connect: { id: EXAMPLE_ENTITY_ID } },
+          },
         },
         EXAMPLE_USER
       )
@@ -954,7 +954,7 @@ describe('EntityService', () => {
   it('should update entity field', async () => {
     const args = {
       where: { id: EXAMPLE_ENTITY_FIELD.id },
-      data: EXAMPLE_ENTITY_FIELD_DATA
+      data: EXAMPLE_ENTITY_FIELD_DATA,
     };
     expect(await service.updateField(args, EXAMPLE_USER)).toEqual(
       EXAMPLE_ENTITY_FIELD
@@ -968,8 +968,8 @@ describe('EntityService', () => {
       where: {
         entityId: EXAMPLE_ENTITY_ID,
         action: EXAMPLE_ACTION,
-        fieldPermanentId: EXAMPLE_ENTITY_FIELD.permanentId
-      }
+        fieldPermanentId: EXAMPLE_ENTITY_FIELD.permanentId,
+      },
     };
     const user = EXAMPLE_USER;
     await expect(
@@ -979,8 +979,8 @@ describe('EntityService', () => {
     expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: args.where.entityId,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
     expect(prismaEntityPermissionFieldFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityPermissionFieldFindManyMock).toBeCalledWith({
@@ -988,12 +988,12 @@ describe('EntityService', () => {
         permission: {
           entityVersion: {
             entityId: args.where.entityId,
-            versionNumber: CURRENT_VERSION_NUMBER
+            versionNumber: CURRENT_VERSION_NUMBER,
           },
-          action: args.where.action
+          action: args.where.action,
         },
-        fieldPermanentId: args.where.fieldPermanentId
-      }
+        fieldPermanentId: args.where.fieldPermanentId,
+      },
     });
   });
 
@@ -1003,8 +1003,8 @@ describe('EntityService', () => {
         {
           data: {
             displayName: 'EXAMPLE_DISPLAY_NAME',
-            entity: { connect: { id: 'EXAMPLE_ID' } }
-          }
+            entity: { connect: { id: 'EXAMPLE_ID' } },
+          },
         },
         EXAMPLE_USER
       )
@@ -1019,8 +1019,8 @@ describe('EntityService', () => {
         {
           data: {
             displayName: EXAMPLE_DATE_DISPLAY_NAME,
-            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-          }
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID,
+          },
         },
         EXAMPLE_ENTITY
       )
@@ -1029,8 +1029,8 @@ describe('EntityService', () => {
       name: camelCase(EXAMPLE_DATE_DISPLAY_NAME),
       properties: {
         timeZone: 'localTime',
-        dateOnly: false
-      }
+        dateOnly: false,
+      },
     });
   });
   it('create field of description', async () => {
@@ -1041,8 +1041,8 @@ describe('EntityService', () => {
         {
           data: {
             displayName: EXAMPLE_DESCRIPTION_DISPLAY_NAME,
-            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-          }
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID,
+          },
         },
         EXAMPLE_ENTITY
       )
@@ -1050,8 +1050,8 @@ describe('EntityService', () => {
       dataType: EnumDataType.MultiLineText,
       name: camelCase(EXAMPLE_DESCRIPTION_DISPLAY_NAME),
       properties: {
-        maxLength: 1000
-      }
+        maxLength: 1000,
+      },
     });
   });
   it('create field of email', async () => {
@@ -1061,15 +1061,15 @@ describe('EntityService', () => {
         {
           data: {
             displayName: EXAMPLE_EMAIL_DISPLAY_NAME,
-            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-          }
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID,
+          },
         },
         EXAMPLE_ENTITY
       )
     ).toEqual({
       dataType: EnumDataType.Email,
       name: camelCase(EXAMPLE_EMAIL_DISPLAY_NAME),
-      properties: {}
+      properties: {},
     });
   });
   it('create field of status', async () => {
@@ -1079,15 +1079,15 @@ describe('EntityService', () => {
         {
           data: {
             displayName: EXAMPLE_STATUS_DISPLAY_NAME,
-            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-          }
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID,
+          },
         },
         EXAMPLE_ENTITY
       )
     ).toEqual({
       dataType: EnumDataType.OptionSet,
       name: camelCase(EXAMPLE_STATUS_DISPLAY_NAME),
-      properties: { options: [{ label: 'Option 1', value: 'Option1' }] }
+      properties: { options: [{ label: 'Option 1', value: 'Option1' }] },
     });
   });
   it('create field of boolean', async () => {
@@ -1097,15 +1097,15 @@ describe('EntityService', () => {
         {
           data: {
             displayName: EXAMPLE_BOOLEAN_DISPLAY_NAME,
-            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-          }
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID,
+          },
         },
         EXAMPLE_ENTITY
       )
     ).toEqual({
       dataType: EnumDataType.Boolean,
       name: camelCase(EXAMPLE_BOOLEAN_DISPLAY_NAME),
-      properties: {}
+      properties: {},
     });
   });
   it('create single field of lookup', async () => {
@@ -1119,8 +1119,8 @@ describe('EntityService', () => {
         {
           data: {
             displayName: query,
-            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-          }
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID,
+          },
         },
         EXAMPLE_ENTITY
       )
@@ -1128,17 +1128,17 @@ describe('EntityService', () => {
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: relatedEntity.id,
-        allowMultipleSelection: false
+        allowMultipleSelection: false,
       },
-      name: camelCase(relatedEntity.displayName)
+      name: camelCase(relatedEntity.displayName),
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith({
       where: {
         ...createEntityNamesWhereInput(name, EXAMPLE_ENTITY.appId),
-        deletedAt: null
+        deletedAt: null,
       },
-      take: 1
+      take: 1,
     });
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFieldFindManyMock).toBeCalledWith({
@@ -1146,9 +1146,9 @@ describe('EntityService', () => {
         name,
         entityVersion: {
           entityId: EXAMPLE_ENTITY_ID,
-          versionNumber: CURRENT_VERSION_NUMBER
-        }
-      }
+          versionNumber: CURRENT_VERSION_NUMBER,
+        },
+      },
     });
   });
   it('create field of plural lookup', async () => {
@@ -1161,8 +1161,8 @@ describe('EntityService', () => {
         {
           data: {
             displayName: query,
-            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID
-          }
+            entity: EXAMPLE_ENTITY_WHERE_PARENT_ID,
+          },
         },
         EXAMPLE_ENTITY
       )
@@ -1170,9 +1170,9 @@ describe('EntityService', () => {
       dataType: EnumDataType.Lookup,
       properties: {
         relatedEntityId: relatedEntity.id,
-        allowMultipleSelection: true
+        allowMultipleSelection: true,
       },
-      name: camelCase(query)
+      name: camelCase(query),
     });
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
@@ -1181,8 +1181,8 @@ describe('EntityService', () => {
     prismaEntityFindManyMock.mockImplementationOnce(() => [
       {
         ...EXAMPLE_ENTITY,
-        versions: [EXAMPLE_CURRENT_ENTITY_VERSION]
-      }
+        versions: [EXAMPLE_CURRENT_ENTITY_VERSION],
+      },
     ]);
     expect(
       await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
@@ -1194,9 +1194,9 @@ describe('EntityService', () => {
         ...EXAMPLE_ENTITY,
         versions: [
           EXAMPLE_CURRENT_ENTITY_VERSION,
-          EXAMPLE_CURRENT_ENTITY_VERSION
-        ]
-      }
+          EXAMPLE_CURRENT_ENTITY_VERSION,
+        ],
+      },
     ]);
     expect(
       await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
@@ -1204,7 +1204,7 @@ describe('EntityService', () => {
   });
   it('pending changed entities "delete"', async () => {
     prismaEntityFindManyMock.mockImplementationOnce(() => [
-      EXAMPLE_DELETED_ENTITY
+      EXAMPLE_DELETED_ENTITY,
     ]);
     expect(
       await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)

@@ -3,16 +3,16 @@ import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
 import { EnumDeploymentStatusFilter } from './EnumDeploymentStatusFilter';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class DeploymentWhereInput {
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   id?: StringFilter | null | undefined;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   createdAt?: DateTimeFilter | null | undefined;
 
@@ -23,18 +23,18 @@ export class DeploymentWhereInput {
   environment?: WhereUniqueInput;
 
   @Field(() => EnumDeploymentStatusFilter, {
-    nullable: true
+    nullable: true,
   })
   status?: EnumDeploymentStatusFilter | null | undefined;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true
+    nullable: true,
   })
   createdBy?: WhereUniqueInput | null | undefined;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   message?: StringFilter | null;
 }

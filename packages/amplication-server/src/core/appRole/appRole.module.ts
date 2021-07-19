@@ -8,6 +8,6 @@ import { AppRoleResolver } from './appRole.resolver';
 @Module({
   imports: [PrismaModule, PermissionsModule, EntityModule],
   providers: [AppRoleService, AppRoleResolver],
-  exports: [AppRoleService, AppRoleResolver]
+  exports: [AppRoleService, AppRoleResolver],
 })
 export class AppRoleModule {}

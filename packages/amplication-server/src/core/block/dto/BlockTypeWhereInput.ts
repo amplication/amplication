@@ -3,48 +3,48 @@ import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class BlockTypeWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => WhereUniqueInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   app?: WhereUniqueInput | null;
 
   @Field(() => WhereUniqueInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   parentBlock?: WhereUniqueInput | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: StringFilter | null;
 

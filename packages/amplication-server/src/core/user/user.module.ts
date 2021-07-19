@@ -7,6 +7,6 @@ import { PermissionsModule } from '../permissions/permissions.module';
 @Module({
   imports: [PrismaModule, PermissionsModule],
   providers: [UserService, UserResolver],
-  exports: [UserService, UserResolver]
+  exports: [UserService, UserResolver],
 })
 export class UserModule {}

@@ -22,8 +22,8 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService.getAuthUser({
       account: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [{ githubId: profile.id }, { email: email }]
-      }
+        OR: [{ githubId: profile.id }, { email: email }],
+      },
     });
     if (!user) {
       return this.authService.createGitHubUser(profile, email);

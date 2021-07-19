@@ -13,7 +13,7 @@ const EXAMPLE_APP_ROLE: AppRole = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_APP_ROLE_NAME,
-  displayName: EXAMPLE_APP_ROLE_DISPLAY_NAME
+  displayName: EXAMPLE_APP_ROLE_DISPLAY_NAME,
 };
 
 const prismaAppRoleCreateMock = jest.fn(() => {
@@ -48,11 +48,11 @@ describe('AppRoleService', () => {
               findUnique: prismaAppRoleFindOneMock,
               findMany: prismaAppRoleFindManyMock,
               delete: prismaAppRoleDeleteMock,
-              update: prismaAppRoleUpdateMock
-            }
-          }))
-        }
-      ]
+              update: prismaAppRoleUpdateMock,
+            },
+          })),
+        },
+      ],
     }).compile();
 
     service = module.get<AppRoleService>(AppRoleService);
@@ -68,8 +68,8 @@ describe('AppRoleService', () => {
         name: EXAMPLE_APP_ROLE_NAME,
         description: EXAMPLE_APP_ROLE_DESCRIPTION,
         displayName: EXAMPLE_APP_ROLE_DISPLAY_NAME,
-        app: { connect: { id: EXAMPLE_APP_ROLE_ID } }
-      }
+        app: { connect: { id: EXAMPLE_APP_ROLE_ID } },
+      },
     };
     expect(await service.createAppRole(args)).toEqual(EXAMPLE_APP_ROLE);
     expect(prismaAppRoleCreateMock).toBeCalledTimes(1);
@@ -100,7 +100,7 @@ describe('AppRoleService', () => {
   it('should update an app role', async () => {
     const args = {
       data: { displayName: EXAMPLE_APP_ROLE_DISPLAY_NAME },
-      where: { id: EXAMPLE_APP_ROLE_ID }
+      where: { id: EXAMPLE_APP_ROLE_ID },
     };
     expect(await service.updateAppRole(args)).toEqual(EXAMPLE_APP_ROLE);
     expect(prismaAppRoleUpdateMock).toBeCalledTimes(1);

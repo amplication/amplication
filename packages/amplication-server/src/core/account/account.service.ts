@@ -24,13 +24,13 @@ export class AccountService {
       data: {
         currentUser: {
           connect: {
-            id: userId
-          }
-        }
+            id: userId,
+          },
+        },
       },
       where: {
-        id: accountId
-      }
+        id: accountId,
+      },
     });
   }
 
@@ -39,19 +39,19 @@ export class AccountService {
       where: {
         users: {
           some: {
-            accountId: accountId
-          }
-        }
-      }
+            accountId: accountId,
+          },
+        },
+      },
     });
   }
 
   async setPassword(accountId: string, password: string): Promise<Account> {
     return this.prisma.account.update({
       data: {
-        password
+        password,
       },
-      where: { id: accountId }
+      where: { id: accountId },
     });
   }
 }

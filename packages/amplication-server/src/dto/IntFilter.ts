@@ -2,54 +2,54 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class IntFilter {
   @Field(() => Int, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   equals?: number | null;
 
   @Field(() => Int, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   not?: number | null;
 
   @Field(() => [Int], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   in?: number[] | null;
 
   @Field(() => [Int], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   notIn?: number[] | null;
 
   @Field(() => Int, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lt?: number | null;
 
   @Field(() => Int, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lte?: number | null;
 
   @Field(() => Int, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   gt?: number | null;
 
   @Field(() => Int, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   gte?: number | null;
 }

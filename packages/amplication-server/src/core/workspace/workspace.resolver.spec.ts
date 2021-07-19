@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { gql } from 'apollo-server-express';
 import {
   ApolloServerTestClient,
-  createTestClient
+  createTestClient,
 } from 'apollo-server-testing';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
@@ -28,14 +28,14 @@ const EXAMPLE_EMAIL = 'exampleEmail';
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
   id: EXAMPLE_WORKSPACE_ID,
   name: EXAMPLE_WORKSPACE_NAME,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 };
 
 const EXAMPLE_APP: App = {
@@ -44,11 +44,11 @@ const EXAMPLE_APP: App = {
   description: EXAMPLE_APP_DESCRIPTION,
   createdAt: new Date(),
   updatedAt: new Date(),
-  githubSyncEnabled: false
+  githubSyncEnabled: false,
 };
 
 const GET_WORKSPACE_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     workspace(where: { id: $id }) {
       id
       name
@@ -59,7 +59,7 @@ const GET_WORKSPACE_QUERY = gql`
 `;
 
 const GET_APPS_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     workspace(where: { id: $id }) {
       apps {
         id
@@ -74,7 +74,7 @@ const GET_APPS_QUERY = gql`
 `;
 
 const DELETE_WORKSPACE_MUTATION = gql`
-  mutation($id: String!) {
+  mutation ($id: String!) {
     deleteWorkspace(where: { id: $id }) {
       id
       name
@@ -85,7 +85,7 @@ const DELETE_WORKSPACE_MUTATION = gql`
 `;
 
 const UPDATE_WORKSPACE_MUTATION = gql`
-  mutation($id: String!) {
+  mutation ($id: String!) {
     updateWorkspace(data: {}, where: { id: $id }) {
       id
       name
@@ -96,7 +96,7 @@ const UPDATE_WORKSPACE_MUTATION = gql`
 `;
 
 const INVITE_USER_MUTATION = gql`
-  mutation($email: String!) {
+  mutation ($email: String!) {
     inviteUser(data: { email: $email }) {
       id
       createdAt
@@ -128,29 +128,29 @@ describe('WorkspaceResolver', () => {
             getWorkspace: workspaceServiceGetWorkspaceMock,
             deleteWorkspace: workspaceServiceDeleteWorkspaceMock,
             updateWorkspace: workspaceServiceUpdateWorkspaceMock,
-            inviteUser: workspaceServiceInviteUserMock
-          }))
+            inviteUser: workspaceServiceInviteUserMock,
+          })),
         },
         {
           provide: AppService,
           useClass: jest.fn(() => ({
-            apps: appServiceAppsMock
-          }))
+            apps: appServiceAppsMock,
+          })),
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useClass: jest.fn(() => ({
-            error: jest.fn()
-          }))
+            error: jest.fn(),
+          })),
         },
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            get: jest.fn()
-          }))
-        }
+            get: jest.fn(),
+          })),
+        },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })]
+      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -165,26 +165,26 @@ describe('WorkspaceResolver', () => {
   it('should get an workspace', async () => {
     const res = await apolloClient.query({
       query: GET_WORKSPACE_QUERY,
-      variables: { id: EXAMPLE_WORKSPACE_ID }
+      variables: { id: EXAMPLE_WORKSPACE_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       workspace: {
         ...EXAMPLE_WORKSPACE,
         createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString(),
+      },
     });
     expect(workspaceServiceGetWorkspaceMock).toBeCalledTimes(1);
     expect(workspaceServiceGetWorkspaceMock).toBeCalledWith({
-      where: { id: EXAMPLE_WORKSPACE_ID }
+      where: { id: EXAMPLE_WORKSPACE_ID },
     });
   });
 
   it('should get an workspace apps', async () => {
     const res = await apolloClient.query({
       query: GET_APPS_QUERY,
-      variables: { id: EXAMPLE_WORKSPACE_ID }
+      variables: { id: EXAMPLE_WORKSPACE_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -193,72 +193,72 @@ describe('WorkspaceResolver', () => {
           {
             ...EXAMPLE_APP,
             createdAt: EXAMPLE_APP.createdAt.toISOString(),
-            updatedAt: EXAMPLE_APP.updatedAt.toISOString()
-          }
-        ]
-      }
+            updatedAt: EXAMPLE_APP.updatedAt.toISOString(),
+          },
+        ],
+      },
     });
     expect(appServiceAppsMock).toBeCalledTimes(1);
     expect(appServiceAppsMock).toBeCalledWith({
-      where: { workspace: { id: EXAMPLE_WORKSPACE_ID } }
+      where: { workspace: { id: EXAMPLE_WORKSPACE_ID } },
     });
   });
 
   it('should delete an workspace', async () => {
     const res = await apolloClient.mutate({
       mutation: DELETE_WORKSPACE_MUTATION,
-      variables: { id: EXAMPLE_WORKSPACE_ID }
+      variables: { id: EXAMPLE_WORKSPACE_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       deleteWorkspace: {
         ...EXAMPLE_WORKSPACE,
         createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString(),
+      },
     });
     expect(workspaceServiceDeleteWorkspaceMock).toBeCalledTimes(1);
     expect(workspaceServiceDeleteWorkspaceMock).toBeCalledWith({
-      where: { id: EXAMPLE_WORKSPACE_ID }
+      where: { id: EXAMPLE_WORKSPACE_ID },
     });
   });
 
   it('should update an workspace', async () => {
     const res = await apolloClient.mutate({
       mutation: UPDATE_WORKSPACE_MUTATION,
-      variables: { id: EXAMPLE_WORKSPACE_ID }
+      variables: { id: EXAMPLE_WORKSPACE_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       updateWorkspace: {
         ...EXAMPLE_WORKSPACE,
         createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString(),
+      },
     });
     expect(workspaceServiceUpdateWorkspaceMock).toBeCalledTimes(1);
     expect(workspaceServiceUpdateWorkspaceMock).toBeCalledWith({
       data: {},
-      where: { id: EXAMPLE_WORKSPACE_ID }
+      where: { id: EXAMPLE_WORKSPACE_ID },
     });
   });
 
   it('should invite a user', async () => {
     const res = await apolloClient.mutate({
       mutation: INVITE_USER_MUTATION,
-      variables: { email: EXAMPLE_EMAIL }
+      variables: { email: EXAMPLE_EMAIL },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       inviteUser: {
         ...EXAMPLE_USER,
         createdAt: EXAMPLE_USER.createdAt.toISOString(),
-        updatedAt: EXAMPLE_USER.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_USER.updatedAt.toISOString(),
+      },
     });
     expect(workspaceServiceInviteUserMock).toBeCalledTimes(1);
     expect(workspaceServiceInviteUserMock).toBeCalledWith(EXAMPLE_USER, {
-      data: { email: EXAMPLE_EMAIL }
+      data: { email: EXAMPLE_EMAIL },
     });
   });
 });

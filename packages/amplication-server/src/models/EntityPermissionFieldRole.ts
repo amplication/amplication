@@ -4,31 +4,31 @@ import { EntityPermissionRole } from './EntityPermissionRole'; // eslint-disable
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityPermissionFieldRole {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   entityPermissionFieldId!: string;
 
   @Field(() => EntityPermissionField, {
-    nullable: true
+    nullable: true,
   })
   entityPermissionField?: EntityPermissionField;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   entityPermissionRoleId!: string;
 
   @Field(() => EntityPermissionRole, {
-    nullable: true
+    nullable: true,
   })
   entityPermissionRole?: EntityPermissionRole;
 }

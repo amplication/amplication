@@ -2,7 +2,7 @@ import {
   Injectable,
   ConflictException,
   forwardRef,
-  Inject
+  Inject,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { subDays } from 'date-fns';
@@ -21,7 +21,7 @@ import {
   ApiToken,
   CreateApiTokenArgs,
   JwtDto,
-  EnumTokenType
+  EnumTokenType,
 } from './dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { FindOneArgs } from 'src/dto';
@@ -38,13 +38,13 @@ const TOKEN_EXPIRY_DAYS = 30;
 const AUTH_USER_INCLUDE = {
   account: true,
   userRoles: true,
-  workspace: true
+  workspace: true,
 };
 
 const WORKSPACE_INCLUDE = {
   users: {
-    include: AUTH_USER_INCLUDE
-  }
+    include: AUTH_USER_INCLUDE,
+  },
 };
 
 @Injectable()
@@ -70,8 +70,8 @@ export class AuthService {
         lastName: '',
         /** @todo store null */
         password: '',
-        githubId: payload.id
-      }
+        githubId: payload.id,
+      },
     });
 
     const workspace = await this.createWorkspace(payload.id, account);
@@ -89,12 +89,12 @@ export class AuthService {
     const account = await this.accountService.updateAccount({
       where: { id: user.account.id },
       data: {
-        githubId: profile.id
-      }
+        githubId: profile.id,
+      },
     });
     return {
       ...user,
-      account
+      account,
     };
   }
 
@@ -109,9 +109,9 @@ export class AuthService {
           email: payload.email,
           firstName: payload.firstName,
           lastName: payload.lastName,
-          password: hashedPassword
+          password: hashedPassword,
           //role: 'USER'
-        }
+        },
       });
 
       const workspace = await this.createWorkspace(
@@ -132,13 +132,13 @@ export class AuthService {
   async login(email: string, password: string): Promise<string> {
     const account = await this.prismaService.account.findUnique({
       where: {
-        email
+        email,
       },
       include: {
         currentUser: {
-          include: { workspace: true, userRoles: true, account: true }
-        }
-      }
+          include: { workspace: true, userRoles: true, account: true },
+        },
+      },
     });
 
     if (!account) {
@@ -164,18 +164,18 @@ export class AuthService {
     const users = (await this.userService.findUsers({
       where: {
         workspace: {
-          id: workspaceId
+          id: workspaceId,
         },
         account: {
-          id: accountId
-        }
+          id: accountId,
+        },
       },
       include: {
         userRoles: true,
         account: true,
-        workspace: true
+        workspace: true,
       },
-      take: 1
+      take: 1,
     })) as AuthUser[];
 
     if (!users.length) {
@@ -194,9 +194,9 @@ export class AuthService {
   async createApiToken(args: CreateApiTokenArgs): Promise<ApiToken> {
     const user = await this.prismaService.user.findUnique({
       where: {
-        id: args.data.user.connect.id
+        id: args.data.user.connect.id,
       },
-      include: { workspace: true, userRoles: true, account: true }
+      include: { workspace: true, userRoles: true, account: true },
     });
 
     if (!user) {
@@ -216,8 +216,8 @@ export class AuthService {
         id: tokenId,
         lastAccessAt: new Date(),
         previewChars,
-        token: hashedToken
-      }
+        token: hashedToken,
+      },
     });
 
     apiToken.token = token;
@@ -240,12 +240,12 @@ export class AuthService {
         userId: args.userId,
         id: args.tokenId,
         lastAccessAt: {
-          gt: lastAccessThreshold
-        }
+          gt: lastAccessThreshold,
+        },
       },
       data: {
-        lastAccessAt: new Date()
-      }
+        lastAccessAt: new Date(),
+      },
     });
 
     if (apiToken.count === 1) {
@@ -257,7 +257,7 @@ export class AuthService {
   async deleteApiToken(args: FindOneArgs): Promise<ApiToken> {
     return this.prismaService.apiToken.delete({
       where: {
-        id: args.where.id
+        id: args.where.id,
       },
       select: {
         id: true,
@@ -266,15 +266,15 @@ export class AuthService {
         name: true,
         previewChars: true,
         lastAccessAt: true,
-        userId: true
-      }
+        userId: true,
+      },
     });
   }
 
   async getUserApiTokens(args: FindOneArgs): Promise<ApiToken[]> {
     const apiTokens = await this.prismaService.apiToken.findMany({
       where: {
-        userId: args.where.id
+        userId: args.where.id,
       },
       select: {
         id: true,
@@ -283,11 +283,11 @@ export class AuthService {
         name: true,
         previewChars: true,
         lastAccessAt: true,
-        userId: true
+        userId: true,
       },
       orderBy: {
-        createdAt: Prisma.SortOrder.desc
-      }
+        createdAt: Prisma.SortOrder.desc,
+      },
     });
 
     return apiTokens;
@@ -318,14 +318,14 @@ export class AuthService {
    * @returns new JWT token
    */
   async prepareToken(user: AuthUser): Promise<string> {
-    const roles = user.userRoles.map(role => role.role);
+    const roles = user.userRoles.map((role) => role.role);
 
     const payload: JwtDto = {
       accountId: user.account.id,
       userId: user.id,
       roles,
       workspaceId: user.workspace.id,
-      type: EnumTokenType.User
+      type: EnumTokenType.User,
     };
     return this.jwtService.sign(payload);
   }
@@ -336,7 +336,7 @@ export class AuthService {
    * @returns new JWT token
    */
   async prepareApiToken(user: AuthUser, tokenId: string): Promise<string> {
-    const roles = user.userRoles.map(role => role.role);
+    const roles = user.userRoles.map((role) => role.role);
 
     const payload: JwtDto = {
       accountId: user.account.id,
@@ -344,7 +344,7 @@ export class AuthService {
       roles,
       workspaceId: user.workspace.id,
       type: EnumTokenType.ApiToken,
-      tokenId: tokenId
+      tokenId: tokenId,
     };
 
     return this.jwtService.sign(payload);
@@ -356,9 +356,9 @@ export class AuthService {
       include: {
         account: true,
         userRoles: true,
-        workspace: true
+        workspace: true,
       },
-      take: 1
+      take: 1,
     });
     if (matchingUsers.length === 0) {
       return null;
@@ -373,10 +373,10 @@ export class AuthService {
   ): Promise<Workspace & { users: AuthUser[] }> {
     const workspace = await this.workspaceService.createWorkspace(account.id, {
       data: {
-        name
+        name,
       },
-      include: WORKSPACE_INCLUDE
+      include: WORKSPACE_INCLUDE,
     });
-    return (workspace as unknown) as Workspace & { users: AuthUser[] };
+    return workspace as unknown as Workspace & { users: AuthUser[] };
   }
 }

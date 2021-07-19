@@ -4,9 +4,9 @@ export enum EnumActionStepStatus {
   Waiting = 'Waiting',
   Running = 'Running',
   Failed = 'Failed',
-  Success = 'Success'
+  Success = 'Success',
 }
 
 registerEnumType(EnumActionStepStatus, {
-  name: 'EnumActionStepStatus'
+  name: 'EnumActionStepStatus',
 });

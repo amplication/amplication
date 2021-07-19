@@ -19,9 +19,9 @@ import { EnvironmentModule } from '../environment/environment.module';
     PermissionsModule,
     ActionModule,
     UserModule,
-    EnvironmentModule
+    EnvironmentModule,
   ],
   providers: [DeploymentService, DeploymentResolver],
-  exports: [DeploymentService, DeploymentResolver]
+  exports: [DeploymentService, DeploymentResolver],
 })
 export class DeploymentModule {}

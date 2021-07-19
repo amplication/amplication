@@ -21,18 +21,18 @@ describe('SystemController', () => {
         {
           provide: BuildService,
           useClass: jest.fn(() => ({
-            updateRunningBuildsStatus: mockUpdateRunningBuildsStatus
-          }))
+            updateRunningBuildsStatus: mockUpdateRunningBuildsStatus,
+          })),
         },
         {
           provide: DeploymentService,
           useClass: jest.fn(() => ({
             updateRunningDeploymentsStatus: mockUpdateRunningDeploymentsStatus,
-            destroyStaledDeployments: mockDestroyStaledDeployments
-          }))
-        }
+            destroyStaledDeployments: mockDestroyStaledDeployments,
+          })),
+        },
       ],
-      controllers: [SystemController]
+      controllers: [SystemController],
     }).compile();
 
     app = moduleRef.createNestApplication();

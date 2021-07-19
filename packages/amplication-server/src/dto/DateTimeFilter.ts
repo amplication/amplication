@@ -2,54 +2,54 @@ import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class DateTimeFilter {
   @Field(() => Date, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   equals?: Date | null;
 
   @Field(() => Date, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   not?: Date | null;
 
   @Field(() => [Date], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   in?: Date[] | null;
 
   @Field(() => [Date], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   notIn?: Date[] | null;
 
   @Field(() => Date, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lt?: Date | null;
 
   @Field(() => Date, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lte?: Date | null;
 
   @Field(() => Date, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   gt?: Date | null;
 
   @Field(() => Date, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   gte?: Date | null;
 }

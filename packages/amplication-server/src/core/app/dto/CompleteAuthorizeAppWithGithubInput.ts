@@ -1,16 +1,16 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class CompleteAuthorizeAppWithGithubInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   code!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   state!: string;
 }

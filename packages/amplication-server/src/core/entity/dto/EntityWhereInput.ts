@@ -4,60 +4,60 @@ import { EntityFieldFilter } from './EntityFieldFilter';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   name?: StringFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   pluralDisplayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: StringFilter | null;
 
   @Field(() => EntityFieldFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   fields?: EntityFieldFilter | null;
 
   @Field(() => WhereUniqueInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   app?: WhereUniqueInput | null;
 }

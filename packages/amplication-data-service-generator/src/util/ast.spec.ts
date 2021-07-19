@@ -92,9 +92,8 @@ describe("transformTemplateLiteralToStringLiteral", () => {
     ];
     const expressions = [] as namedTypes.StringLiteral[];
     const templateLiteral = builders.templateLiteral(quasis, expressions);
-    const stringLiteral = transformTemplateLiteralToStringLiteral(
-      templateLiteral
-    );
+    const stringLiteral =
+      transformTemplateLiteralToStringLiteral(templateLiteral);
     expect(stringLiteral.value).toBe("Hello");
   });
   test("Single qusie and string literal", () => {
@@ -103,9 +102,8 @@ describe("transformTemplateLiteralToStringLiteral", () => {
     ];
     const expressions = [builders.stringLiteral("World")];
     const templateLiteral = builders.templateLiteral(quasis, expressions);
-    const stringLiteral = transformTemplateLiteralToStringLiteral(
-      templateLiteral
-    );
+    const stringLiteral =
+      transformTemplateLiteralToStringLiteral(templateLiteral);
     expect(stringLiteral.value).toBe("Hello, World");
   });
   test("Two quasis and string literal", () => {
@@ -115,9 +113,8 @@ describe("transformTemplateLiteralToStringLiteral", () => {
     ];
     const expressions = [builders.stringLiteral("World")];
     const templateLiteral = builders.templateLiteral(quasis, expressions);
-    const stringLiteral = transformTemplateLiteralToStringLiteral(
-      templateLiteral
-    );
+    const stringLiteral =
+      transformTemplateLiteralToStringLiteral(templateLiteral);
     expect(stringLiteral.value).toBe("Hello, World!");
   });
 });

@@ -8,6 +8,6 @@ import { UserModule } from '../user/user.module';
 @Module({
   imports: [PrismaModule, UserModule, PermissionsModule],
   providers: [BlockService, BlockResolver],
-  exports: [BlockService, BlockResolver]
+  exports: [BlockService, BlockResolver],
 })
 export class BlockModule {}

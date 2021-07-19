@@ -28,14 +28,14 @@ export class CommitResolver {
   async user(@Parent() commit: Commit) {
     return this.userService.findUser({
       where: {
-        id: commit.userId
-      }
+        id: commit.userId,
+      },
     });
   }
 
   @Query(() => Commit, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.CommitId, 'where.id')
   async commit(@Args() args: FindOneCommitArgs): Promise<Commit> {
@@ -44,7 +44,7 @@ export class CommitResolver {
 
   @Query(() => [Commit], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async commits(@Args() args: FindManyCommitArgs): Promise<Commit[]> {
@@ -61,9 +61,9 @@ export class CommitResolver {
       where: {
         ...args.where,
         commit: {
-          id: commit.id
-        }
-      }
+          id: commit.id,
+        },
+      },
     });
   }
 

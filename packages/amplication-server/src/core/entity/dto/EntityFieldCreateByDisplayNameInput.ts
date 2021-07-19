@@ -4,24 +4,24 @@ import { EnumDataType } from 'src/enums/EnumDataType';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityFieldCreateByDisplayNameInput {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => EnumDataType, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   dataType?: keyof typeof EnumDataType | null;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   entity!: WhereParentIdInput;
 }

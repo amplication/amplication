@@ -10,9 +10,9 @@ import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.mo
     PrismaModule,
     ConfigModule,
     PermissionsModule,
-    GoogleSecretsManagerModule
+    GoogleSecretsManagerModule,
   ],
   providers: [GithubService],
-  exports: [GithubService]
+  exports: [GithubService],
 })
 export class GithubModule {}

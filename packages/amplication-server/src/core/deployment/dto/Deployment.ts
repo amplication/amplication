@@ -8,18 +8,18 @@ import { Action } from '../../action/dto/Action'; // eslint-disable-line import/
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class Deployment {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
@@ -28,7 +28,7 @@ export class Deployment {
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   userId!: string;
 
@@ -45,7 +45,7 @@ export class Deployment {
   environmentId!: string;
 
   @Field(() => EnumDeploymentStatus, {
-    nullable: false
+    nullable: false,
   })
   status!: EnumDeploymentStatus;
 
@@ -56,7 +56,7 @@ export class Deployment {
   actionId: string;
 
   @Field(() => Action, {
-    nullable: true
+    nullable: true,
   })
   action?: Action;
 

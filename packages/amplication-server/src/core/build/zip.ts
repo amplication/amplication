@@ -6,7 +6,7 @@ export async function createZipFileFromModules(
 ): Promise<Buffer> {
   const zip = new AdmZip();
   await Promise.all(
-    modules.map(module =>
+    modules.map((module) =>
       zip.addFile(module.path, Buffer.from(module.code, 'utf8'))
     )
   );

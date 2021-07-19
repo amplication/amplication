@@ -12,41 +12,41 @@ import { EnumEntityPermissionType } from './../enums/EnumEntityPermissionType';
  * for specific fields.
  */
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityPermission {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   entityVersionId!: string;
 
   @Field(() => EntityVersion, {
-    nullable: true
+    nullable: true,
   })
   entityVersion?: EntityVersion;
 
   @Field(() => EnumEntityAction, {
-    nullable: false
+    nullable: false,
   })
   action!: keyof typeof EnumEntityAction;
 
   @Field(() => EnumEntityPermissionType, {
-    nullable: false
+    nullable: false,
   })
   type!: keyof typeof EnumEntityPermissionType;
 
   @Field(() => [EntityPermissionRole], {
-    nullable: true
+    nullable: true,
   })
   permissionRoles?: EntityPermissionRole[] | null;
 
   @Field(() => [EntityPermissionField], {
-    nullable: true
+    nullable: true,
   })
   permissionFields?: EntityPermissionField[] | null;
 }

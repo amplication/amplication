@@ -13,7 +13,7 @@ const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   userId: EXAMPLE_USER_ID,
   message: EXAMPLE_MESSAGE,
-  createdAt: new Date()
+  createdAt: new Date(),
 };
 
 const prismaCommitFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
@@ -33,20 +33,20 @@ describe('CommitService', () => {
           useClass: jest.fn(() => ({
             commit: {
               findUnique: prismaCommitFindOneMock,
-              findMany: prismaCommitFindManyMock
-            }
-          }))
+              findMany: prismaCommitFindManyMock,
+            },
+          })),
         },
         {
           provide: EntityService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: BlockService,
-          useValue: {}
+          useValue: {},
         },
-        CommitService
-      ]
+        CommitService,
+      ],
     }).compile();
 
     service = module.get<CommitService>(CommitService);

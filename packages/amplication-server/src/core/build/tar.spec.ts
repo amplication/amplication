@@ -7,16 +7,16 @@ import { createTarGzFileFromModules } from './tar';
 jest.mock('tar');
 const tarPackEntryEndMock = jest.fn();
 const tarPackEntryMock = jest.fn(() => ({
-  end: tarPackEntryEndMock
+  end: tarPackEntryEndMock,
 }));
 const tarPackFinalizeMock = jest.fn();
-const tarPackPipeMock = jest.fn(function() {
+const tarPackPipeMock = jest.fn(function () {
   return this;
 });
 const MOCK_PACK = {
   entry: tarPackEntryMock,
   finalize: tarPackFinalizeMock,
-  pipe: tarPackPipeMock
+  pipe: tarPackPipeMock,
 };
 // eslint-disable-next-line
 // @ts-ignore
@@ -44,8 +44,8 @@ describe('createTarFileFromModules', () => {
     const modules = [
       {
         path: EXAMPLE_PATH,
-        code: EXAMPLE_CODE
-      }
+        code: EXAMPLE_CODE,
+      },
     ];
     await expect(createTarGzFileFromModules(modules)).resolves.toBe(
       EXAMPLE_BUFFER

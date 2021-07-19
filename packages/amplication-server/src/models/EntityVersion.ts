@@ -6,66 +6,66 @@ import { EntityPermission } from './EntityPermission'; // eslint-disable-line im
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityVersion {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   entityId: string;
 
   @Field(() => Entity, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   entity?: Entity;
 
   @Field(() => Int, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   versionNumber!: number;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   name!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   pluralDisplayName!: string;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: string;
 
@@ -73,19 +73,19 @@ export class EntityVersion {
 
   @Field(() => Commit, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   commit?: Commit;
 
   @Field(() => [EntityField], {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   fields?: EntityField[] | null;
 
   @Field(() => [EntityPermission], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   permissions?: EntityPermission[] | null;
 }

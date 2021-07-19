@@ -3,6 +3,6 @@ import { BlockOrderByInput } from '../../block/dto/BlockOrderByInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class ConnectorRestApiOrderByInput extends BlockOrderByInput {}

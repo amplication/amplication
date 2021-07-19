@@ -5,9 +5,9 @@ export enum EnumEntityAction {
   Create = 'Create',
   Update = 'Update',
   Delete = 'Delete',
-  Search = 'Search'
+  Search = 'Search',
 }
 registerEnumType(EnumEntityAction, {
   name: 'EnumEntityAction',
-  description: undefined
+  description: undefined,
 });

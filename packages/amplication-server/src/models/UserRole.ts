@@ -4,24 +4,24 @@ import { Role } from '../enums/Role';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class UserRole {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
@@ -29,7 +29,7 @@ export class UserRole {
 
   @Field(() => Role, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   role!: string;
 }

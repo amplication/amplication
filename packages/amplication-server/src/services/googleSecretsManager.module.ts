@@ -3,6 +3,6 @@ import { GoogleSecretsManagerService } from './googleSecretsManager.service';
 
 @Module({
   providers: [GoogleSecretsManagerService],
-  exports: [GoogleSecretsManagerService]
+  exports: [GoogleSecretsManagerService],
 })
 export class GoogleSecretsManagerModule {}

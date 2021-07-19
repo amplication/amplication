@@ -41,45 +41,42 @@ fs.promises = {
 };
 
 describe("getReactAppEnv", () => {
-  const cases: Array<[
-    string,
-    Record<string, string>,
-    Record<string, string>
-  ]> = [
+  const cases: Array<[string, Record<string, string>, Record<string, string>]> =
     [
-      "Single react app env var",
-      { [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE },
-      { [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE },
-    ],
-    [
-      "Single react app env var and non react app env var",
-      {
-        [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE,
-        [EXAMPLE_NON_REACT_APP_VAR]: EXAMPLE_VALUE,
-      },
-      { [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE },
-    ],
-    [
-      "Single react app env var and non react app env var",
-      {
-        [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE,
-        [EXAMPLE_NON_REACT_APP_VAR]: EXAMPLE_VALUE,
-      },
-      { [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE },
-    ],
-    [
-      "Two react app env vars and non react app env var",
-      {
-        [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE,
-        [REACT_APP_OTHER_EXAMPLE_VAR]: EXAMPLE_VALUE,
-        [EXAMPLE_NON_REACT_APP_VAR]: EXAMPLE_VALUE,
-      },
-      {
-        [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE,
-        [REACT_APP_OTHER_EXAMPLE_VAR]: EXAMPLE_VALUE,
-      },
-    ],
-  ];
+      [
+        "Single react app env var",
+        { [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE },
+        { [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE },
+      ],
+      [
+        "Single react app env var and non react app env var",
+        {
+          [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE,
+          [EXAMPLE_NON_REACT_APP_VAR]: EXAMPLE_VALUE,
+        },
+        { [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE },
+      ],
+      [
+        "Single react app env var and non react app env var",
+        {
+          [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE,
+          [EXAMPLE_NON_REACT_APP_VAR]: EXAMPLE_VALUE,
+        },
+        { [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE },
+      ],
+      [
+        "Two react app env vars and non react app env var",
+        {
+          [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE,
+          [REACT_APP_OTHER_EXAMPLE_VAR]: EXAMPLE_VALUE,
+          [EXAMPLE_NON_REACT_APP_VAR]: EXAMPLE_VALUE,
+        },
+        {
+          [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE,
+          [REACT_APP_OTHER_EXAMPLE_VAR]: EXAMPLE_VALUE,
+        },
+      ],
+    ];
   test.each(cases)("%s", (name, environment, expected) => {
     expect(getReactAppEnv(environment)).toEqual(expected);
   });

@@ -3,48 +3,48 @@ import { DateTimeFilter, StringFilter, WhereUniqueInput } from 'src/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class AppRoleWhereInput {
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   id?: string | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   name?: StringFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: StringFilter | null;
 
   @Field(() => WhereUniqueInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   app?: WhereUniqueInput | null;
 }

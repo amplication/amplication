@@ -2,7 +2,7 @@ import { InputType, Field } from '@nestjs/graphql';
 import { WhereParentIdInput } from 'src/dto';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class BuildCreateInput {
   // Do not expose, injected by the context

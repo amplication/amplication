@@ -15,7 +15,7 @@ import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import {
   BuildResult,
-  EnumBuildStatus as ContainerBuildStatus
+  EnumBuildStatus as ContainerBuildStatus,
 } from '@amplication/container-builder/dist/';
 import { AppRole, User } from 'src/models';
 import { Build } from './dto/Build';
@@ -77,28 +77,28 @@ export const ENTITIES_INCLUDE = {
     include: {
       permissionRoles: {
         include: {
-          appRole: true
-        }
+          appRole: true,
+        },
       },
       permissionFields: {
         include: {
           field: true,
           permissionRoles: {
             include: {
-              appRole: true
-            }
-          }
-        }
-      }
-    }
-  }
+              appRole: true,
+            },
+          },
+        },
+      },
+    },
+  },
 };
 export const ACTION_INCLUDE = {
   action: {
     include: {
-      steps: true
-    }
-  }
+      steps: true,
+    },
+  },
 };
 
 const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
@@ -107,7 +107,7 @@ const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   error: EnumActionLogLevel.Error,
   warn: EnumActionLogLevel.Warning,
   info: EnumActionLogLevel.Info,
-  debug: EnumActionLogLevel.Debug
+  debug: EnumActionLogLevel.Debug,
 };
 
 const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
@@ -123,20 +123,20 @@ export function createInitialStepData(version: string, message: string) {
         {
           level: EnumActionLogLevel.Info,
           message: 'create build generation task',
-          meta: {}
+          meta: {},
         },
         {
           level: EnumActionLogLevel.Info,
           message: `Build Version: ${version}`,
-          meta: {}
+          meta: {},
         },
         {
           level: EnumActionLogLevel.Info,
           message: `Build message: ${message}`,
-          meta: {}
-        }
-      ]
-    }
+          meta: {},
+        },
+      ],
+    },
   };
 }
 
@@ -171,8 +171,8 @@ export class BuildService {
 
     const user = await this.userService.findUser({
       where: {
-        id: args.data.createdBy.connect.id
-      }
+        id: args.data.createdBy.connect.id,
+      },
     });
 
     /**@todo: set version based on release when applicable */
@@ -180,7 +180,7 @@ export class BuildService {
     const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
-      where: { app: { id: appId } }
+      where: { app: { id: appId } },
     });
 
     const build = await this.prisma.build.create({
@@ -191,27 +191,27 @@ export class BuildService {
 
         createdAt: new Date(),
         blockVersions: {
-          connect: []
+          connect: [],
         },
         entityVersions: {
-          connect: latestEntityVersions.map(version => ({ id: version.id }))
+          connect: latestEntityVersions.map((version) => ({ id: version.id })),
         },
         action: {
           create: {
             steps: {
-              create: createInitialStepData(version, args.data.message)
-            }
-          } //create action record
-        }
+              create: createInitialStepData(version, args.data.message),
+            },
+          }, //create action record
+        },
       },
       include: {
         commit: true,
-        app: true
-      }
+        app: true,
+      },
     });
 
     const logger = this.logger.child({
-      buildId: build.id
+      buildId: build.id,
     });
     logger.info(JOB_STARTED_LOG);
     const tarballURL = await this.generate(build, user);
@@ -246,35 +246,35 @@ export class BuildService {
     const builds = await this.prisma.build.findMany({
       where: {
         containerStatusUpdatedAt: {
-          lt: lastUpdateThreshold
+          lt: lastUpdateThreshold,
         },
         action: {
           steps: {
             some: {
               status: {
-                equals: EnumActionStepStatus.Running
+                equals: EnumActionStepStatus.Running,
               },
               name: {
-                equals: BUILD_DOCKER_IMAGE_STEP_NAME
-              }
-            }
-          }
-        }
+                equals: BUILD_DOCKER_IMAGE_STEP_NAME,
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        createdAt: Prisma.SortOrder.asc
+        createdAt: Prisma.SortOrder.asc,
       },
-      include: ACTION_INCLUDE
+      include: ACTION_INCLUDE,
     });
 
-    const groups = groupBy(builds, build => build.appId);
+    const groups = groupBy(builds, (build) => build.appId);
 
     //In case we have multiple builds for the same app run them one after the other based on creation time
     await Promise.all(
       Object.entries(groups).map(async ([appId, groupBuilds]) => {
         for (const build of groupBuilds) {
           const stepBuildDocker = build.action.steps.find(
-            step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
+            (step) => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
           );
           try {
             const result = await this.containerBuilderService.getStatus(
@@ -303,14 +303,14 @@ export class BuildService {
     const [generateStep] = await this.prisma.build
       .findUnique({
         where: {
-          id: buildId
-        }
+          id: buildId,
+        },
       })
       .action()
       .steps({
         where: {
-          name: GENERATE_STEP_NAME
-        }
+          name: GENERATE_STEP_NAME,
+        },
       });
 
     return generateStep;
@@ -319,18 +319,18 @@ export class BuildService {
   async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
     const build = await this.prisma.build.findUnique({
       where: {
-        id: buildId
+        id: buildId,
       },
-      include: ACTION_INCLUDE
+      include: ACTION_INCLUDE,
     });
 
     if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
     const steps = build.action.steps;
 
-    if (steps.every(step => step.status === EnumActionStepStatus.Success))
+    if (steps.every((step) => step.status === EnumActionStepStatus.Success))
       return EnumBuildStatus.Completed;
 
-    if (steps.some(step => step.status === EnumActionStepStatus.Failed))
+    if (steps.some((step) => step.status === EnumActionStepStatus.Failed))
       return EnumBuildStatus.Failed;
 
     return EnumBuildStatus.Running;
@@ -371,20 +371,18 @@ export class BuildService {
       build.actionId,
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
-      async step => {
+      async (step) => {
         const entities = await this.getOrderedEntities(build.id);
         const roles = await this.getAppRoles(build);
         const app = await this.appService.app({ where: { id: build.appId } });
         const appSettings = await this.appSettingsService.getAppSettingsValues(
           {
-            where: { id: build.appId }
+            where: { id: build.appId },
           },
           user
         );
-        const [
-          dataServiceGeneratorLogger,
-          logPromises
-        ] = this.createDataServiceLogger(build, step);
+        const [dataServiceGeneratorLogger, logPromises] =
+          this.createDataServiceLogger(build, step);
 
         const host = this.configService.get(HOST_VAR);
 
@@ -399,7 +397,7 @@ export class BuildService {
             version: build.version,
             id: build.appId,
             url,
-            settings: appSettings
+            settings: appSettings,
           },
           dataServiceGeneratorLogger
         );
@@ -434,7 +432,7 @@ export class BuildService {
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_NAME,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-      async step => {
+      async (step) => {
         await this.actionService.logInfo(
           step,
           BUILD_DOCKER_IMAGE_STEP_START_LOG
@@ -447,7 +445,7 @@ export class BuildService {
         const result = await this.containerBuilderService.build({
           tags: [tag, latestTag],
           cacheFrom: [latestImageId],
-          url: tarballURL
+          url: tarballURL,
         });
         await this.handleContainerBuilderResult(build, step, result);
       },
@@ -466,7 +464,7 @@ export class BuildService {
           step,
           BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
           {
-            images: result.images
+            images: result.images,
           }
         );
         await this.actionService.complete(step, EnumActionStepStatus.Success);
@@ -475,9 +473,9 @@ export class BuildService {
           where: { id: build.id },
           data: {
             images: {
-              set: result.images
-            }
-          }
+              set: result.images,
+            },
+          },
         });
         if (this.deploymentService.canDeploy) {
           await this.deploymentService.autoDeployToSandbox(build);
@@ -499,8 +497,8 @@ export class BuildService {
           where: { id: build.id },
           data: {
             containerStatusQuery: result.statusQuery,
-            containerStatusUpdatedAt: new Date()
-          }
+            containerStatusUpdatedAt: new Date(),
+          },
         });
         break;
     }
@@ -512,7 +510,7 @@ export class BuildService {
   ): Promise<Deployment[]> {
     return this.deploymentService.findMany({
       ...args,
-      where: { ...args?.where, build: { id: buildId } }
+      where: { ...args?.where, build: { id: buildId } },
     });
   }
 
@@ -520,9 +518,9 @@ export class BuildService {
     return this.appRoleService.getAppRoles({
       where: {
         app: {
-          id: build.appId
-        }
-      }
+          id: build.appId,
+        },
+      },
     });
   }
 
@@ -532,7 +530,7 @@ export class BuildService {
   ): [winston.Logger, Array<Promise<void>>] {
     const transport = new winston.transports.Console();
     const logPromises: Array<Promise<void>> = [];
-    transport.on('logged', info => {
+    transport.on('logged', (info) => {
       logPromises.push(this.createLog(step, info));
     });
     return [
@@ -540,10 +538,10 @@ export class BuildService {
         format: this.logger.format,
         transports: [transport],
         defaultMeta: {
-          buildId: build.id
-        }
+          buildId: build.id,
+        },
       }),
-      logPromises
+      logPromises,
     ];
   }
 
@@ -561,10 +559,12 @@ export class BuildService {
     const tarFilePath = getBuildTarGzFilePath(build.id);
     const disk = this.storageService.getDisk();
     await Promise.all([
-      createZipFileFromModules(modules).then(zip => disk.put(zipFilePath, zip)),
-      createTarGzFileFromModules(modules).then(tar =>
+      createZipFileFromModules(modules).then((zip) =>
+        disk.put(zipFilePath, zip)
+      ),
+      createTarGzFileFromModules(modules).then((tar) =>
         disk.put(tarFilePath, tar)
-      )
+      ),
     ]);
     return this.getFileURL(disk, tarFilePath);
   }
@@ -593,7 +593,7 @@ export class BuildService {
         build.actionId,
         PUSH_TO_GITHUB_STEP_NAME,
         PUSH_TO_GITHUB_STEP_MESSAGE,
-        async step => {
+        async (step) => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
             const prUrl = await this.githubService.createPullRequest(
@@ -678,15 +678,15 @@ ${url}
       where: {
         builds: {
           some: {
-            id: buildId
-          }
-        }
+            id: buildId,
+          },
+        },
       },
-      include: ENTITIES_INCLUDE
+      include: ENTITIES_INCLUDE,
     });
     return orderBy(
       entities,
-      entity => entity.createdAt
+      (entity) => entity.createdAt
     ) as DataServiceGenerator.Entity[];
   }
 }

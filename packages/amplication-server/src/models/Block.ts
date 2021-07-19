@@ -5,31 +5,31 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class Block {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
   /** @todo: do we need the App property on the block? should we allow navigation from Block to App? */
   @Field(() => App, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   app?: App;
 
@@ -38,7 +38,7 @@ export class Block {
 
   @Field(() => Block, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   parentBlock?: Block;
 
@@ -47,42 +47,42 @@ export class Block {
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: string;
 
   @Field(() => EnumBlockType, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   blockType: keyof typeof EnumBlockType;
 
   @Field(() => Number, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   versionNumber?: number;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lockedByUserId?: string;
 
   @Field(() => Date, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lockedAt?: Date;
 
   @Field(() => [BlockVersion], {
-    nullable: true
+    nullable: true,
   })
   versions?: BlockVersion[] | null;
 }

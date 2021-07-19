@@ -3,30 +3,30 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EnumBlockTypeFilter {
   @Field(() => EnumBlockType, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   equals?: typeof EnumBlockType[keyof typeof EnumBlockType] | null;
 
   @Field(() => EnumBlockType, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   not?: typeof EnumBlockType[keyof typeof EnumBlockType] | null;
 
   @Field(() => [EnumBlockType], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   in?: typeof EnumBlockType[keyof typeof EnumBlockType][] | null;
 
   @Field(() => [EnumBlockType], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   notIn?: typeof EnumBlockType[keyof typeof EnumBlockType][] | null;
 }

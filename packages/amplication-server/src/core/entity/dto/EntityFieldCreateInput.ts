@@ -6,60 +6,60 @@ import { WhereParentIdInput } from 'src/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityFieldCreateInput {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   name!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => EnumDataType, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   dataType!: keyof typeof EnumDataType;
 
   @Field(() => GraphQLJSONObject, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   properties!: JsonObject;
 
   @Field(() => Boolean, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   required!: boolean;
 
   @Field(() => Boolean, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   searchable!: boolean;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   description!: string;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   entity!: WhereParentIdInput;
 
   @Field(() => Int, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   position?: number | null;
 }

@@ -7,6 +7,6 @@ import { EntityModule } from 'src/core/entity/entity.module';
 @Module({
   imports: [BlockModule, EntityModule],
   providers: [EntityPageService, EntityPageResolver],
-  exports: [EntityPageService, EntityPageResolver]
+  exports: [EntityPageService, EntityPageResolver],
 })
 export class EntityPageModule {}

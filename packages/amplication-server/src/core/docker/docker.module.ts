@@ -3,6 +3,6 @@ import { DockerService } from './docker.service';
 
 @Module({
   providers: [DockerService],
-  exports: [DockerService]
+  exports: [DockerService],
 })
 export class DockerModule {}

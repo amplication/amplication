@@ -47,7 +47,7 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
 
   // Checks if any of the required roles exist in the user role list
   private matchRoles(rolesToMatch: string[], userRoles: string[]): boolean {
-    return rolesToMatch.some(r => userRoles.includes(r));
+    return rolesToMatch.some((r) => userRoles.includes(r));
   }
 
   // This method is required for the interface - do not delete it.
@@ -66,7 +66,7 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     const expectedRoles = this.getExpectedRoles(handler);
 
     if (expectedRoles) {
-      const currentUserRoles = currentUser.userRoles.map(r => r.role);
+      const currentUserRoles = currentUser.userRoles.map((r) => r.role);
       return this.matchRoles(expectedRoles, currentUserRoles);
     }
 

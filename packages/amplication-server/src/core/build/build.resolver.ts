@@ -5,7 +5,7 @@ import {
   Resolver,
   Query,
   Parent,
-  ResolveField
+  ResolveField,
 } from '@nestjs/graphql';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';

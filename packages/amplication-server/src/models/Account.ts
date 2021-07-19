@@ -3,48 +3,48 @@ import { User } from './User'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class Account {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   email!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   firstName!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   lastName!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   password!: string;
 
@@ -53,7 +53,7 @@ export class Account {
   currentUser?: User | null;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   githubId?: string | null;
 }

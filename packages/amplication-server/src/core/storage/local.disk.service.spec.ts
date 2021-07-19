@@ -15,11 +15,11 @@ describe('LocalDiskService', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: configServiceGetMock
-          }
+            get: configServiceGetMock,
+          },
         },
-        LocalDiskService
-      ]
+        LocalDiskService,
+      ],
     }).compile();
     service = module.get<LocalDiskService>(LocalDiskService);
     jest.clearAllMocks();
@@ -29,8 +29,8 @@ describe('LocalDiskService', () => {
     expect(service.getDisk()).toEqual({
       driver: DriverType.LOCAL,
       config: {
-        root: EXAMPLE_ROOT
-      }
+        root: EXAMPLE_ROOT,
+      },
     });
     expect(configServiceGetMock).toBeCalledTimes(1);
     expect(configServiceGetMock).toBeCalledWith(LOCAL_DISK_ROOT_VAR);

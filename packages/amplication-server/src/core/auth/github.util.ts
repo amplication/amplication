@@ -7,10 +7,10 @@ export const GITHUB_USER_EMAILS_ROUTE = 'GET /user/emails';
  */
 export async function getEmail(accessToken: string): Promise<string> {
   const octokit = new Octokit({
-    auth: accessToken
+    auth: accessToken,
   });
   const {
-    data: [result]
+    data: [result],
   } = await octokit.request(GITHUB_USER_EMAILS_ROUTE);
 
   return (result as { email: string }).email;

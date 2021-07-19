@@ -2,7 +2,7 @@ import {
   Injectable,
   CallHandler,
   ExecutionContext,
-  NestInterceptor
+  NestInterceptor,
 } from '@nestjs/common';
 import set from 'lodash.set';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';

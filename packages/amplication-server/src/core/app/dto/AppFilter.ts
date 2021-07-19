@@ -3,24 +3,24 @@ import { AppWhereInput } from './AppWhereInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class AppFilter {
   @Field(() => AppWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   every?: AppWhereInput | null;
 
   @Field(() => AppWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   some?: AppWhereInput | null;
 
   @Field(() => AppWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   none?: AppWhereInput | null;
 }

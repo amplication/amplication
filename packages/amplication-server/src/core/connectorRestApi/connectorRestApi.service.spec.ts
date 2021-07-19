@@ -3,7 +3,7 @@ import { BlockService } from 'src/core/block/block.service';
 import { ConnectorRestApiService } from './connectorRestApi.service';
 import {
   ConnectorRestApi,
-  EnumConnectorRestApiAuthenticationType
+  EnumConnectorRestApiAuthenticationType,
 } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { User } from 'src/models';
@@ -24,8 +24,8 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name'
-  }
+    name: 'example_workspace_name',
+  },
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApi = {
@@ -41,7 +41,7 @@ const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApi = {
   versionNumber: 0,
   authenticationType: EnumConnectorRestApiAuthenticationType.None,
   privateKeyAuthenticationSettings: null,
-  httpBasicAuthenticationSettings: null
+  httpBasicAuthenticationSettings: null,
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];
@@ -67,12 +67,12 @@ describe('ConnectorRestApiService', () => {
             create: createMock,
             findOne: findOneMock,
             findManyByBlockType: findManyByBlockTypeMock,
-            update: updateMock
-          }))
+            update: updateMock,
+          })),
         },
-        ConnectorRestApiService
+        ConnectorRestApiService,
       ],
-      imports: []
+      imports: [],
     }).compile();
 
     service = module.get<ConnectorRestApiService>(ConnectorRestApiService);
@@ -85,7 +85,7 @@ describe('ConnectorRestApiService', () => {
   it('should find one', async () => {
     expect(
       await service.findOne({
-        where: { id: EXAMPLE_CONNECTOR_REST_API_CALL.id }
+        where: { id: EXAMPLE_CONNECTOR_REST_API_CALL.id },
       })
     ).toBe(EXAMPLE_CONNECTOR_REST_API_CALL);
     expect(findOneMock).toBeCalledTimes(1);
@@ -111,10 +111,10 @@ describe('ConnectorRestApiService', () => {
             httpBasicAuthenticationSettings: null,
             app: {
               connect: {
-                id: EXAMPLE_APP_ID
-              }
-            }
-          }
+                id: EXAMPLE_APP_ID,
+              },
+            },
+          },
         },
         EXAMPLE_USER
       )
@@ -127,11 +127,11 @@ describe('ConnectorRestApiService', () => {
       await service.update(
         {
           data: {
-            displayName: EXAMPLE_NAME
+            displayName: EXAMPLE_NAME,
           },
           where: {
-            id: EXAMPLE_CONNECTOR_REST_API_CALL.id
-          }
+            id: EXAMPLE_CONNECTOR_REST_API_CALL.id,
+          },
         },
         EXAMPLE_USER
       )

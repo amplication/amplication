@@ -2,12 +2,12 @@ import { Field, InputType } from '@nestjs/graphql';
 import { WhereParentIdInput } from 'src/dto';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class PendingChangesDiscardInput {
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   app!: WhereParentIdInput;
 

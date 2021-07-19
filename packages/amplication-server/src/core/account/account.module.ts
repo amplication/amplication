@@ -9,6 +9,6 @@ import { PermissionsModule } from '../permissions/permissions.module';
 @Module({
   imports: [ConfigModule, PrismaModule, PermissionsModule],
   providers: [AccountService, PasswordService, AccountResolver],
-  exports: [AccountService, PasswordService, AccountResolver]
+  exports: [AccountService, PasswordService, AccountResolver],
 })
 export class AccountModule {}

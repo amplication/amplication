@@ -7,24 +7,24 @@ import { HttpBasicAuthenticationSettings } from './HttpBasicAuthenticationSettin
 @ObjectType({
   implements: IBlock,
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class ConnectorRestApi extends IBlock {
   @Field(() => EnumConnectorRestApiAuthenticationType, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   authenticationType!: keyof typeof EnumConnectorRestApiAuthenticationType;
 
   @Field(() => PrivateKeyAuthenticationSettings, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings | null;
 
   @Field(() => HttpBasicAuthenticationSettings, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings | null;
 }

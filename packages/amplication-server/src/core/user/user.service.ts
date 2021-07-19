@@ -21,10 +21,10 @@ export class UserService {
     const existingRole = await this.prisma.userRole.findMany({
       where: {
         user: {
-          id: args.where.id
+          id: args.where.id,
         },
-        role: args.data.role
-      }
+        role: args.data.role,
+      },
     });
 
     //if the role already exist do nothing and return the user
@@ -32,8 +32,8 @@ export class UserService {
       const roleData: Prisma.UserRoleCreateArgs = {
         data: {
           role: args.data.role,
-          user: { connect: { id: args.where.id } }
-        }
+          user: { connect: { id: args.where.id } },
+        },
       };
 
       await this.prisma.userRole.create(roleData);
@@ -41,8 +41,8 @@ export class UserService {
 
     return this.prisma.user.findUnique({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
   }
 
@@ -50,25 +50,25 @@ export class UserService {
     const existingRole = await this.prisma.userRole.findMany({
       where: {
         user: {
-          id: args.where.id
+          id: args.where.id,
         },
-        role: args.data.role
-      }
+        role: args.data.role,
+      },
     });
 
     //if the role already exist do nothing and return the user
     if (existingRole && existingRole.length) {
       await this.prisma.userRole.delete({
         where: {
-          id: existingRole[0].id
-        }
+          id: existingRole[0].id,
+        },
       });
     }
 
     return this.prisma.user.findUnique({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
   }
 
@@ -76,9 +76,9 @@ export class UserService {
     return this.prisma.userRole.findMany({
       where: {
         user: {
-          id
-        }
-      }
+          id,
+        },
+      },
     });
   }
 
@@ -86,8 +86,8 @@ export class UserService {
     return this.prisma.user
       .findUnique({
         where: {
-          id
-        }
+          id,
+        },
       })
       .account();
   }

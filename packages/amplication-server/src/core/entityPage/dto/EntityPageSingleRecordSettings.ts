@@ -4,16 +4,16 @@ import { IEntityPageSettings } from './IEntityPageSettings';
 @ObjectType({
   isAbstract: true,
   description: undefined,
-  implements: [IEntityPageSettings]
+  implements: [IEntityPageSettings],
 })
 @InputType('EntityPageSingleRecordSettingsInput', {
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityPageSingleRecordSettings extends IEntityPageSettings {
   @Field(() => Boolean, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   allowUpdate!: boolean;
 }

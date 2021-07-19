@@ -7,6 +7,6 @@ import { PermissionsModule } from '../permissions/permissions.module';
 @Module({
   imports: [BlockModule, PermissionsModule],
   providers: [AppSettingsService, AppSettingsResolver],
-  exports: [AppSettingsService, AppSettingsResolver]
+  exports: [AppSettingsService, AppSettingsResolver],
 })
 export class AppSettingsModule {}

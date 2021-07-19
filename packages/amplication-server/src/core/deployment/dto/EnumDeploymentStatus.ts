@@ -4,9 +4,9 @@ export enum EnumDeploymentStatus {
   Waiting = 'Waiting',
   Completed = 'Completed',
   Failed = 'Failed',
-  Removed = 'Removed'
+  Removed = 'Removed',
 }
 
 registerEnumType(EnumDeploymentStatus, {
-  name: 'EnumDeploymentStatus'
+  name: 'EnumDeploymentStatus',
 });

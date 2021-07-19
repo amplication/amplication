@@ -7,7 +7,7 @@ import { BlockTypeService } from './blockType.service';
 import {
   FindManyBlockArgs,
   CreateBlockArgs,
-  UpdateBlockArgs
+  UpdateBlockArgs,
 } from '../block/dto';
 import { UserEntity } from 'src/decorators/user.decorator';
 
@@ -37,7 +37,7 @@ export function BlockTypeResolver<
     @Query(() => classRef, {
       name: classRef.name,
       nullable: true,
-      description: undefined
+      description: undefined,
     })
     @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
     async findOne(@Args() args: FindOneArgs): Promise<T | null> {
@@ -47,7 +47,7 @@ export function BlockTypeResolver<
     @Query(() => [classRef], {
       name: findManyName,
       nullable: false,
-      description: undefined
+      description: undefined,
     })
     @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
     async findMany(
@@ -59,7 +59,7 @@ export function BlockTypeResolver<
     @Mutation(() => classRef, {
       name: createName,
       nullable: false,
-      description: undefined
+      description: undefined,
     })
     @AuthorizeContext(
       AuthorizableResourceParameter.AppId,
@@ -75,7 +75,7 @@ export function BlockTypeResolver<
     @Mutation(() => classRef, {
       name: updateName,
       nullable: false,
-      description: undefined
+      description: undefined,
     })
     @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
     async [updateName](

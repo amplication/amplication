@@ -3,36 +3,36 @@ import { WhereParentIdInput } from 'src/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityCreateInput {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   name!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   pluralDisplayName!: string;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: string;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   app!: WhereParentIdInput;
 }

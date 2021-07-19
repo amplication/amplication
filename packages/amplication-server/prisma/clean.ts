@@ -3,7 +3,7 @@
 import { PrismaClient } from '@prisma/client';
 
 if (require.main === module) {
-  clean().catch(error => {
+  clean().catch((error) => {
     console.error(error);
     process.exit(1);
   });
@@ -39,7 +39,7 @@ async function getTables(prisma: PrismaClient): Promise<string[]> {
   const results: Array<{
     tablename: string;
   }> = await prisma.$queryRaw`SELECT tablename from pg_tables where schemaname = 'public';`;
-  return results.map(result => result.tablename);
+  return results.map((result) => result.tablename);
 }
 
 async function getTypes(prisma: PrismaClient): Promise<string[]> {
@@ -51,5 +51,5 @@ FROM pg_type t
 JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
 WHERE n.nspname = 'public';
 `;
-  return results.map(result => result.typname);
+  return results.map((result) => result.typname);
 }

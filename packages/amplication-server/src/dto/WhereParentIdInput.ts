@@ -3,12 +3,12 @@ import { WhereUniqueInput } from '../dto/WhereUniqueInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class WhereParentIdInput {
   @Field(() => WhereUniqueInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   connect: WhereUniqueInput;
 }

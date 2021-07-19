@@ -7,40 +7,40 @@ import { ValidateIf, IsNotEmpty } from 'class-validator';
 
 @ObjectType({
   isAbstract: true,
-  implements: [IBlock]
+  implements: [IBlock],
 })
 export class EntityPage extends IBlock {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   entityId!: string;
 
   @Field(() => EnumEntityPageType, {
-    nullable: false
+    nullable: false,
   })
   pageType: EnumEntityPageType;
 
   @Field(() => EntityPageSingleRecordSettings, {
-    nullable: true
+    nullable: true,
   })
   singleRecordSettings?: EntityPageSingleRecordSettings & JsonValue;
 
   @Field(() => EntityPageListSettings, {
-    nullable: true
+    nullable: true,
   })
   listSettings?: EntityPageListSettings & JsonValue;
 
   @Field(() => Boolean, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   showAllFields!: boolean;
 
-  @ValidateIf(o => !o.showAllFields)
+  @ValidateIf((o) => !o.showAllFields)
   @IsNotEmpty()
   @Field(() => [String], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   showFieldList?: string[];
 }

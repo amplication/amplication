@@ -39,9 +39,9 @@ describe("create new entity test", () => {
         )
       ).click();
       const entityName = createRandomName();
-      await (await page.waitForXPath('//input[@name="displayName"]')).type(
-        entityName
-      );
+      await (
+        await page.waitForXPath('//input[@name="displayName"]')
+      ).type(entityName);
       await (
         await page.waitForXPath(
           `//button[contains(text(),'${BUTTON_CREATE_ENTITY}')]`

@@ -72,9 +72,10 @@ export const DataGrid = ({
   showSearch,
   filters,
 }: Props) => {
-  const fieldsByName = useMemo(() => keyBy(fields, (field) => field.name), [
-    fields,
-  ]);
+  const fieldsByName = useMemo(
+    () => keyBy(fields, (field) => field.name),
+    [fields]
+  );
 
   const handleFilterChange = useCallback(
     ({ filterName, value }: FilterChangeData) => {

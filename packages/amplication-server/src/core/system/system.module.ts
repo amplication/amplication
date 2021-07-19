@@ -5,6 +5,6 @@ import { DeploymentModule } from '../deployment/deployment.module';
 
 @Module({
   imports: [BuildModule, DeploymentModule],
-  controllers: [SystemController]
+  controllers: [SystemController],
 })
 export class SystemModule {}

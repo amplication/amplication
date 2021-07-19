@@ -2,24 +2,24 @@ import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class AppRoleUpdateInput {
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   name?: string | null;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: string | null;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 }

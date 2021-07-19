@@ -25,7 +25,7 @@ export class CommitService {
   async getChanges(commitId: string): Promise<PendingChange[]> {
     const [changedBlocks, changedEntities] = await Promise.all([
       this.blockService.getChangedBlocksByCommit(commitId),
-      this.entityService.getChangedEntitiesByCommit(commitId)
+      this.entityService.getChangedEntitiesByCommit(commitId),
     ]);
 
     return [...changedBlocks, ...changedEntities];

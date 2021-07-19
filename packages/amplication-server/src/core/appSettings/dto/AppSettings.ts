@@ -4,31 +4,31 @@ import { IBlock } from 'src/models';
 @ObjectType({
   implements: IBlock,
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class AppSettings extends IBlock {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   dbHost!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   dbName!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   dbUser!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   dbPassword!: string;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: false,
   })
   dbPort!: number;
 }

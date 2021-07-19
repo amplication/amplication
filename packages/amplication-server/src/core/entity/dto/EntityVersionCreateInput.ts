@@ -3,18 +3,18 @@ import { WhereParentIdInput } from 'src/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityVersionCreateInput {
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   commit!: WhereParentIdInput;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   entity!: WhereParentIdInput;
 }

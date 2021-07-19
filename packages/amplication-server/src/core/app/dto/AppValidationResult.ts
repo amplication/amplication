@@ -4,17 +4,17 @@ export enum AppValidationErrorTypes {
   CannotMergeCodeToGitHubBreakingChanges = 'CannotMergeCodeToGitHubBreakingChanges',
   CannotMergeCodeToGitHubInvalidAppId = 'CannotMergeCodeToGitHubInvalidAppId',
   DataServiceGeneratorVersionMissing = 'DataServiceGeneratorVersionMissing',
-  DataServiceGeneratorVersionInvalid = 'DataServiceGeneratorVersionInvalid'
+  DataServiceGeneratorVersionInvalid = 'DataServiceGeneratorVersionInvalid',
 }
 
 registerEnumType(AppValidationErrorTypes, {
   name: 'AppValidationErrorTypes',
-  description: undefined
+  description: undefined,
 });
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class AppValidationResult {
   @Field(() => Boolean)

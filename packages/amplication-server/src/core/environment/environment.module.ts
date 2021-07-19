@@ -6,6 +6,6 @@ import { EnvironmentService } from './environment.service';
 @Module({
   imports: [PrismaModule, PermissionsModule],
   providers: [EnvironmentService],
-  exports: [EnvironmentService]
+  exports: [EnvironmentService],
 })
 export class EnvironmentModule {}

@@ -40,9 +40,9 @@ describe("commit change test", () => {
         )
       ).click();
       const entityName = createRandomName();
-      await (await page.waitForXPath('//input[@name="displayName"]')).type(
-        entityName
-      );
+      await (
+        await page.waitForXPath('//input[@name="displayName"]')
+      ).type(entityName);
       await (
         await page.waitForXPath(
           `//button[contains(text(),'${BUTTON_CREATE_ENTITY}')]`
@@ -50,9 +50,9 @@ describe("commit change test", () => {
       ).click();
       await page.waitForNavigation();
       const message = createRandomName();
-      await (await page.waitForXPath('//textarea[@name="message"]')).type(
-        message
-      );
+      await (
+        await page.waitForXPath('//textarea[@name="message"]')
+      ).type(message);
       await (
         await page.waitForXPath(
           `//button[@type="submit" and contains(text(),'${BUTTON_COMMIT_CHANGES}')]`

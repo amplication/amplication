@@ -13,10 +13,10 @@ export enum EnumBlockType {
   Layout = 'Layout',
   CanvasPage = 'CanvasPage',
   EntityPage = 'EntityPage',
-  Document = 'Document'
+  Document = 'Document',
 }
 
 registerEnumType(EnumBlockType, {
   name: 'EnumBlockType',
-  description: undefined
+  description: undefined,
 });

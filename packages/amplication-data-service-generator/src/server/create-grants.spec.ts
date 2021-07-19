@@ -72,15 +72,16 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: EntityPermission = {
     },
   ],
 };
-const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD_WITH_NO_ROLES: EntityPermission = {
-  ...EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION,
-  permissionFields: [
-    {
-      field: EXAMPLE_FIELD,
-      permissionRoles: null,
-    },
-  ],
-};
+const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD_WITH_NO_ROLES: EntityPermission =
+  {
+    ...EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION,
+    permissionFields: [
+      {
+        field: EXAMPLE_FIELD,
+        permissionRoles: null,
+      },
+    ],
+  };
 const EXAMPLE_ROLE_CREATE_GRANT: Grant = {
   action: CREATE_ANY,
   attributes: ALL_ATTRIBUTES_ALLOWED,

@@ -25,7 +25,7 @@ export class AccountResolver {
   ): Promise<Account> {
     return this.accountService.updateAccount({
       where: { id: user.account.id },
-      data: newAccountData
+      data: newAccountData,
     });
   }
 

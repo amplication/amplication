@@ -2,28 +2,28 @@ import { Field, InputType } from '@nestjs/graphql';
 import { WhereParentIdInput } from 'src/dto';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class AppRoleCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   description!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   app!: WhereParentIdInput;
 }

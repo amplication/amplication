@@ -4,8 +4,8 @@ export enum EnumActionLogLevel {
   Error = 'Error',
   Warning = 'Warning',
   Info = 'Info',
-  Debug = 'Debug'
+  Debug = 'Debug',
 }
 registerEnumType(EnumActionLogLevel, {
-  name: 'EnumActionLogLevel'
+  name: 'EnumActionLogLevel',
 });

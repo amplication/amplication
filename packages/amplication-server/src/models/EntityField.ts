@@ -6,30 +6,30 @@ import { EnumDataType } from './../enums/EnumDataType';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityField {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   permanentId!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
@@ -39,49 +39,49 @@ export class EntityField {
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   name!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => EnumDataType, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   dataType!: keyof typeof EnumDataType;
 
   @Field(() => GraphQLJSONObject, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   properties!: JsonValue;
 
   @Field(() => Boolean, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   required!: boolean;
 
   @Field(() => Boolean, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   searchable!: boolean;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description: string;
 
   @Field(() => Int, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   position?: number;
 }

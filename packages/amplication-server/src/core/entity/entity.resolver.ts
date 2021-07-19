@@ -4,7 +4,7 @@ import {
   Query,
   Resolver,
   Parent,
-  ResolveField
+  ResolveField,
 } from '@nestjs/graphql';
 import { UseFilters, UseGuards } from '@nestjs/common';
 import {
@@ -13,7 +13,7 @@ import {
   EntityVersion,
   EntityPermission,
   EntityPermissionField,
-  User
+  User,
 } from 'src/models';
 import { FindOneArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
@@ -41,7 +41,7 @@ import {
   CreateOneEntityFieldArgs,
   CreateOneEntityFieldByDisplayNameArgs,
   UpdateOneEntityFieldArgs,
-  CreateDefaultRelatedFieldArgs
+  CreateDefaultRelatedFieldArgs,
 } from './dto';
 import { EntityService } from './entity.service';
 
@@ -55,7 +55,7 @@ export class EntityResolver {
   ) {}
 
   @Query(() => Entity, {
-    nullable: true
+    nullable: true,
   })
   @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   async entity(@Args() args: FindOneEntityArgs): Promise<Entity | null> {
@@ -63,7 +63,7 @@ export class EntityResolver {
   }
 
   @Query(() => [Entity], {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
@@ -71,7 +71,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => Entity, {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
   async createOneEntity(
@@ -82,7 +82,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => Entity, {
-    nullable: true
+    nullable: true,
   })
   @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   async deleteEntity(
@@ -93,7 +93,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => Entity, {
-    nullable: true
+    nullable: true,
   })
   @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   async updateEntity(
@@ -104,7 +104,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => Entity, {
-    nullable: true
+    nullable: true,
   })
   @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   @InjectContextValue(InjectableResourceParameter.UserId, 'userId')
@@ -142,8 +142,8 @@ export class EntityResolver {
       ...args,
       where: {
         ...args.where,
-        entity: { id: entity.id }
-      }
+        entity: { id: entity.id },
+      },
     });
   }
 
@@ -152,8 +152,8 @@ export class EntityResolver {
     if (entity.lockedByUserId) {
       return this.userService.findUser({
         where: {
-          id: entity.lockedByUserId
-        }
+          id: entity.lockedByUserId,
+        },
       });
     } else {
       return null;

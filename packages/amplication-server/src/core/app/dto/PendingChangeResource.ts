@@ -11,5 +11,5 @@ export const PendingChangeResource = createUnionType({
       return Block;
     }
     return Entity;
-  }
+  },
 });

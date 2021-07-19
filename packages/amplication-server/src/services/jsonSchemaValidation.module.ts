@@ -3,6 +3,6 @@ import { JsonSchemaValidationService } from './jsonSchemaValidation.service';
 
 @Module({
   providers: [JsonSchemaValidationService],
-  exports: [JsonSchemaValidationService]
+  exports: [JsonSchemaValidationService],
 })
 export class JsonSchemaValidationModule {}

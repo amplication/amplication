@@ -5,7 +5,7 @@ import {
   Resolver,
   Query,
   Parent,
-  ResolveField
+  ResolveField,
 } from '@nestjs/graphql';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
@@ -61,7 +61,7 @@ export class DeploymentResolver {
   @ResolveField(() => Environment)
   environment(@Parent() deployment: Deployment): Promise<Environment> {
     return this.environmentService.findOne({
-      where: { id: deployment.environmentId }
+      where: { id: deployment.environmentId },
     });
   }
 

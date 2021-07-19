@@ -18,7 +18,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   id: EXAMPLE_WORKSPACE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  name: EXAMPLE_WORKSPACE_NAME
+  name: EXAMPLE_WORKSPACE_NAME,
 };
 
 const EXAMPLE_COUNT = 1;
@@ -29,7 +29,7 @@ const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  workspace: EXAMPLE_WORKSPACE
+  workspace: EXAMPLE_WORKSPACE,
 };
 
 const prismaAppCountMock = jest.fn(() => {
@@ -52,14 +52,14 @@ describe('PermissionsService', () => {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
             app: {
-              count: prismaAppCountMock
+              count: prismaAppCountMock,
             },
             appRole: {
-              count: prismaAppRoleCountMock
-            }
-          }))
-        }
-      ]
+              count: prismaAppRoleCountMock,
+            },
+          })),
+        },
+      ],
     }).compile();
 
     service = module.get<PermissionsService>(PermissionsService);
@@ -73,7 +73,7 @@ describe('PermissionsService', () => {
     const args = {
       user: EXAMPLE_USER,
       resourceType: AuthorizableResourceParameter.WorkspaceId,
-      resourceId: EXAMPLE_WORKSPACE_ID
+      resourceId: EXAMPLE_WORKSPACE_ID,
     };
     expect(
       await service.validateAccess(
@@ -88,16 +88,16 @@ describe('PermissionsService', () => {
     const args = {
       user: EXAMPLE_USER,
       resourceType: AuthorizableResourceParameter.AppId,
-      resourceId: EXAMPLE_APP_ID
+      resourceId: EXAMPLE_APP_ID,
     };
     const countArgs = {
       where: {
         deletedAt: null,
         id: args.resourceId,
         workspace: {
-          id: EXAMPLE_WORKSPACE_ID
-        }
-      }
+          id: EXAMPLE_WORKSPACE_ID,
+        },
+      },
     };
     expect(
       await service.validateAccess(
@@ -114,7 +114,7 @@ describe('PermissionsService', () => {
     const args = {
       user: EXAMPLE_USER,
       resourceType: AuthorizableResourceParameter.AppRoleId,
-      resourceId: EXAMPLE_APP_ROLE_ID
+      resourceId: EXAMPLE_APP_ROLE_ID,
     };
     const countArgs = {
       where: {
@@ -122,10 +122,10 @@ describe('PermissionsService', () => {
         app: {
           deletedAt: null,
           workspace: {
-            id: EXAMPLE_WORKSPACE_ID
-          }
-        }
-      }
+            id: EXAMPLE_WORKSPACE_ID,
+          },
+        },
+      },
     };
     expect(
       await service.validateAccess(
@@ -142,7 +142,7 @@ describe('PermissionsService', () => {
     const args = {
       user: EXAMPLE_USER,
       resourceType: UNEXPECTED_RESOURCE_TYPE,
-      resourceId: UNEXPECTED_RESOURCE_ID
+      resourceId: UNEXPECTED_RESOURCE_ID,
     };
     await expect(
       service.validateAccess(args.user, args.resourceType, args.resourceId)

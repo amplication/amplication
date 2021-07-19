@@ -6,7 +6,7 @@ import { SetMetadata } from '@nestjs/common';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import {
   AUTHORIZE_CONTEXT,
-  AuthorizeContextParameters
+  AuthorizeContextParameters,
 } from 'src/guards/gql-auth.guard';
 
 /**
@@ -21,5 +21,5 @@ export const AuthorizeContext = (
 ) =>
   SetMetadata<string, AuthorizeContextParameters>(AUTHORIZE_CONTEXT, {
     parameterType,
-    parameterPath
+    parameterPath,
   });

@@ -3,7 +3,7 @@ import * as NestJsGraphQL from '@nestjs/graphql';
 import {
   InjectContextInterceptor,
   InjectContextValueParameters,
-  INJECT_CONTEXT_VALUE
+  INJECT_CONTEXT_VALUE,
 } from './inject-context.interceptor';
 import { Reflector } from '@nestjs/core';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
@@ -11,11 +11,11 @@ import { InjectableResourceParameter } from 'src/enums/InjectableResourceParamet
 const EXAMPLE_HANDLER = () => null;
 const EXAMPLE_INJECT_CONTEXT_VALUE_PARAMETERS: InjectContextValueParameters = {
   parameterPath: 'data.workspace.connect.id',
-  parameterType: InjectableResourceParameter.WorkspaceId
+  parameterType: InjectableResourceParameter.WorkspaceId,
 };
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
-const reflectorGetMock = jest.fn(metadataKey => {
+const reflectorGetMock = jest.fn((metadataKey) => {
   switch (metadataKey) {
     case INJECT_CONTEXT_VALUE:
       return EXAMPLE_INJECT_CONTEXT_VALUE_PARAMETERS;
@@ -38,11 +38,11 @@ describe('InjectContextInterceptor', () => {
         {
           provide: Reflector,
           useClass: jest.fn(() => ({
-            get: reflectorGetMock
-          }))
+            get: reflectorGetMock,
+          })),
         },
-        InjectContextInterceptor
-      ]
+        InjectContextInterceptor,
+      ],
     }).compile();
 
     interceptor = module.get<InjectContextInterceptor>(
@@ -54,34 +54,34 @@ describe('InjectContextInterceptor', () => {
     const request = {
       user: {
         workspace: {
-          id: EXAMPLE_WORKSPACE_ID
-        }
-      }
+          id: EXAMPLE_WORKSPACE_ID,
+        },
+      },
     };
     const requestArgs: {
       data: { name: string; workspace?: { connect: { id: string } } };
     } = {
-      data: { name: 'Foo' }
+      data: { name: 'Foo' },
     };
     // eslint-disable-next-line
     // @ts-ignore
     NestJsGraphQL.GqlExecutionContext.create.mockReturnValue({
       getContext() {
         return {
-          req: request
+          req: request,
         };
       },
       getArgs() {
         return requestArgs;
-      }
+      },
     });
     const context: any = {
       getHandler() {
         return EXAMPLE_HANDLER;
-      }
+      },
     };
     const next = {
-      handle: handleMock
+      handle: handleMock,
     };
     interceptor.intercept(context, next);
     expect(reflectorGetMock).toBeCalledTimes(1);

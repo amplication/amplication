@@ -3,47 +3,47 @@ import {
   DateTimeFilter,
   StringFilter,
   IntFilter,
-  WhereUniqueInput
+  WhereUniqueInput,
 } from 'src/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class BlockVersionWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => IntFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   versionNumber?: IntFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   label?: StringFilter | null;
 
   @Field(() => WhereUniqueInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   block: WhereUniqueInput;
 }

@@ -4,7 +4,7 @@ import {
   Query,
   Resolver,
   ResolveField,
-  Parent
+  Parent,
 } from '@nestjs/graphql';
 import {
   CreateOneAppArgs,
@@ -17,7 +17,7 @@ import {
   PendingChange,
   AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
-  CreateAppWithEntitiesArgs
+  CreateAppWithEntitiesArgs,
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { App, Entity, User, Commit } from 'src/models';
@@ -63,7 +63,7 @@ export class AppResolver {
 
   @Query(() => [App], {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   @Roles('ORGANIZATION_ADMIN')
   @InjectContextValue(
@@ -81,7 +81,7 @@ export class AppResolver {
   ): Promise<Entity[]> {
     return this.entityService.entities({
       ...args,
-      where: { ...args.where, app: { id: app.id } }
+      where: { ...args.where, app: { id: app.id } },
     });
   }
 
@@ -92,14 +92,14 @@ export class AppResolver {
   ): Promise<Build[]> {
     return this.buildService.findMany({
       ...args,
-      where: { ...args.where, app: { id: app.id } }
+      where: { ...args.where, app: { id: app.id } },
     });
   }
 
   @ResolveField(() => [Environment])
   async environments(@Parent() app: App): Promise<Environment[]> {
     return this.environmentService.findMany({
-      where: { app: { id: app.id } }
+      where: { app: { id: app.id } },
     });
   }
 
@@ -131,7 +131,7 @@ export class AppResolver {
 
   @Mutation(() => App, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async deleteApp(@Args() args: FindOneArgs): Promise<App | null> {
@@ -140,7 +140,7 @@ export class AppResolver {
 
   @Mutation(() => App, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async updateApp(@Args() args: UpdateOneAppArgs): Promise<App | null> {
@@ -149,7 +149,7 @@ export class AppResolver {
 
   @Mutation(() => Commit, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
   @InjectContextValue(
@@ -162,7 +162,7 @@ export class AppResolver {
 
   @Mutation(() => Boolean, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
   @InjectContextValue(
@@ -176,7 +176,7 @@ export class AppResolver {
   }
 
   @Query(() => [PendingChange], {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async pendingChanges(
@@ -187,7 +187,7 @@ export class AppResolver {
   }
 
   @Mutation(() => AuthorizeAppWithGithubResult, {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async startAuthorizeAppWithGithub(
@@ -195,12 +195,12 @@ export class AppResolver {
     @UserEntity() user: User
   ): Promise<AuthorizeAppWithGithubResult> {
     return {
-      url: await this.appService.startAuthorizeAppWithGithub(args.where.id)
+      url: await this.appService.startAuthorizeAppWithGithub(args.where.id),
     };
   }
 
   @Mutation(() => App, {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async completeAuthorizeAppWithGithub(
@@ -211,7 +211,7 @@ export class AppResolver {
   }
 
   @Mutation(() => App, {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async removeAuthorizeAppWithGithub(
@@ -222,7 +222,7 @@ export class AppResolver {
   }
 
   @Query(() => [GithubRepo], {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async appAvailableGithubRepos(
@@ -232,7 +232,7 @@ export class AppResolver {
   }
 
   @Mutation(() => App, {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async appEnableSyncWithGithubRepo(
@@ -242,7 +242,7 @@ export class AppResolver {
   }
 
   @Mutation(() => App, {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async appDisableSyncWithGithubRepo(@Args() args: FindOneArgs): Promise<App> {
@@ -250,7 +250,7 @@ export class AppResolver {
   }
 
   @Query(() => AppValidationResult, {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async appValidateBeforeCommit(

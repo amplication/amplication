@@ -42,7 +42,7 @@ import { AppSettingsModule } from './appSettings/appSettings.module';
     CommitModule,
     SystemModule,
     GithubModule,
-    AppSettingsModule
+    AppSettingsModule,
   ],
   providers: [],
   exports: [
@@ -63,7 +63,7 @@ import { AppSettingsModule } from './appSettings/appSettings.module';
     EnvironmentModule,
     CommitModule,
     GithubModule,
-    AppSettingsModule
-  ]
+    AppSettingsModule,
+  ],
 })
 export class CoreModule {}

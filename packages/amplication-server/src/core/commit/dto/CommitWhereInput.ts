@@ -2,16 +2,16 @@ import { Field, InputType } from '@nestjs/graphql';
 import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class CommitWhereInput {
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   createdAt?: DateTimeFilter | null;
 
@@ -19,12 +19,12 @@ export class CommitWhereInput {
   app?: WhereUniqueInput;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true
+    nullable: true,
   })
   user?: WhereUniqueInput | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   message?: StringFilter | null;
 }

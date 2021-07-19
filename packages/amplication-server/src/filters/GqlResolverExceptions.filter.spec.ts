@@ -11,7 +11,7 @@ import {
   InternalServerError,
   PRISMA_CODE_UNIQUE_KEY_VIOLATION,
   RequestData,
-  UniqueKeyException
+  UniqueKeyException,
 } from './GqlResolverExceptions.filter';
 
 const winstonErrorMock = jest.fn();
@@ -33,13 +33,13 @@ const EXAMPLE_IP = 'EXAMPLE_IP';
 const EXAMPLE_USER_ID = 'EXAMPLE_USER_ID';
 const EXAMPLE_REQUEST = {
   hostname: EXAMPLE_HOSTNAME,
-  ip: EXAMPLE_IP
+  ip: EXAMPLE_IP,
 };
 const EXAMPLE_BODY = {
-  query: EXAMPLE_QUERY
+  query: EXAMPLE_QUERY,
 };
 const EXAMPLE_USER = {
-  id: EXAMPLE_USER_ID
+  id: EXAMPLE_USER_ID,
 };
 
 describe('GqlResolverExceptionsFilter', () => {
@@ -50,19 +50,19 @@ describe('GqlResolverExceptionsFilter', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: configServiceGetMock
-          }
+            get: configServiceGetMock,
+          },
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
             error: winstonErrorMock,
-            info: winstonInfoMock
-          }
+            info: winstonInfoMock,
+          },
         },
-        GqlResolverExceptionsFilter
+        GqlResolverExceptionsFilter,
       ],
-      imports: null
+      imports: null,
     }).compile();
 
     filter = module.get<GqlResolverExceptionsFilter>(
@@ -73,13 +73,15 @@ describe('GqlResolverExceptionsFilter', () => {
 
     jest.clearAllMocks();
   });
-  const cases: Array<[
-    string,
-    Error,
-    Error,
-    [string, { requestData: RequestData | null }] | [Error] | null,
-    [string, { requestData: RequestData | null }] | null
-  ]> = [
+  const cases: Array<
+    [
+      string,
+      Error,
+      Error,
+      [string, { requestData: RequestData | null }] | [Error] | null,
+      [string, { requestData: RequestData | null }] | null
+    ]
+  > = [
     [
       'PrismaClientKnownRequestError unique key',
       new Prisma.PrismaClientKnownRequestError(
@@ -90,30 +92,30 @@ describe('GqlResolverExceptionsFilter', () => {
       ),
       new UniqueKeyException(EXAMPLE_FIELDS),
       null,
-      [new UniqueKeyException(EXAMPLE_FIELDS).message, { requestData: null }]
+      [new UniqueKeyException(EXAMPLE_FIELDS).message, { requestData: null }],
     ],
     [
       'PrismaClientKnownRequestError unknown',
       EXAMPLE_PRISMA_UNKNOWN_ERROR,
       new InternalServerError(),
       [EXAMPLE_PRISMA_UNKNOWN_ERROR],
-      null
+      null,
     ],
     [
       'AmplicationError',
       new AmplicationError(EXAMPLE_ERROR_MESSAGE),
       new ApolloError(EXAMPLE_ERROR_MESSAGE),
       null,
-      [EXAMPLE_ERROR_MESSAGE, { requestData: null }]
+      [EXAMPLE_ERROR_MESSAGE, { requestData: null }],
     ],
     [
       'HttpException',
       new NotFoundException(EXAMPLE_ERROR_MESSAGE),
       new ApolloError(EXAMPLE_ERROR_MESSAGE),
       null,
-      [EXAMPLE_ERROR_MESSAGE, { requestData: null }]
+      [EXAMPLE_ERROR_MESSAGE, { requestData: null }],
     ],
-    ['Error', EXAMPLE_ERROR, new InternalServerError(), [EXAMPLE_ERROR], null]
+    ['Error', EXAMPLE_ERROR, new InternalServerError(), [EXAMPLE_ERROR], null],
   ];
   test.each(cases)('%s', (name, exception, expected, errorArgs, infoArgs) => {
     const host = {} as ArgumentsHost;
@@ -138,8 +140,8 @@ describe('createRequestData', () => {
         query: EXAMPLE_QUERY,
         hostname: EXAMPLE_HOSTNAME,
         ip: EXAMPLE_IP,
-        userId: EXAMPLE_USER_ID
-      }
+        userId: EXAMPLE_USER_ID,
+      },
     ],
     [
       'without body',
@@ -148,8 +150,8 @@ describe('createRequestData', () => {
         query: undefined,
         hostname: EXAMPLE_HOSTNAME,
         ip: EXAMPLE_IP,
-        userId: EXAMPLE_USER_ID
-      }
+        userId: EXAMPLE_USER_ID,
+      },
     ],
     [
       'without user',
@@ -158,8 +160,8 @@ describe('createRequestData', () => {
         query: EXAMPLE_QUERY,
         hostname: EXAMPLE_HOSTNAME,
         ip: EXAMPLE_IP,
-        userId: undefined
-      }
+        userId: undefined,
+      },
     ],
     [
       'without user any body',
@@ -168,9 +170,9 @@ describe('createRequestData', () => {
         hostname: EXAMPLE_HOSTNAME,
         ip: EXAMPLE_IP,
         query: undefined,
-        userId: undefined
-      }
-    ]
+        userId: undefined,
+      },
+    ],
   ];
   test.each(cases)('%s', (name, req, expected) => {
     expect(createRequestData(req)).toEqual(expected);

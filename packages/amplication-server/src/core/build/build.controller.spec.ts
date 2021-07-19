@@ -28,11 +28,11 @@ describe('BuildController', () => {
         {
           provide: BuildService,
           useClass: jest.fn(() => ({
-            download: downloadMock
-          }))
-        }
+            download: downloadMock,
+          })),
+        },
       ],
-      controllers: [BuildController]
+      controllers: [BuildController],
     }).compile();
 
     app = moduleRef.createNestApplication();
@@ -57,7 +57,7 @@ describe('BuildController', () => {
       .expect({
         statusCode: HttpStatus.NOT_FOUND,
         message: error.message,
-        error: 'Not Found'
+        error: 'Not Found',
       });
   });
 
@@ -72,7 +72,7 @@ describe('BuildController', () => {
       .expect({
         statusCode: HttpStatus.NOT_FOUND,
         message: error.message,
-        error: 'Not Found'
+        error: 'Not Found',
       });
   });
 
@@ -90,7 +90,7 @@ describe('BuildController', () => {
       .expect({
         statusCode: HttpStatus.BAD_REQUEST,
         message: error.message,
-        error: 'Bad Request'
+        error: 'Bad Request',
       });
   });
 });

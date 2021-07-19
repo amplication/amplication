@@ -34,11 +34,11 @@ describe('PasswordService', () => {
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            get: configServiceGetMock
-          }))
-        }
+            get: configServiceGetMock,
+          })),
+        },
       ],
-      imports: []
+      imports: [],
     }).compile();
 
     service = module.get<PasswordService>(PasswordService);
@@ -55,7 +55,7 @@ describe('PasswordService', () => {
   it('should validate a password', async () => {
     const args = {
       password: EXAMPLE_PASSWORD,
-      hashedPassword: EXAMPLE_HASHED_PASSWORD
+      hashedPassword: EXAMPLE_HASHED_PASSWORD,
     };
     expect(
       await service.validatePassword(args.password, args.hashedPassword)

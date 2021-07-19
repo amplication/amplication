@@ -11,9 +11,9 @@ import { ActionResolver } from './action.resolver';
     ExceptionFiltersModule,
     GqlAuthModule,
     PrismaModule,
-    PermissionsModule
+    PermissionsModule,
   ],
   providers: [ActionService, ActionResolver],
-  exports: [ActionService, ActionResolver]
+  exports: [ActionService, ActionResolver],
 })
 export class ActionModule {}

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
   EnvironmentService,
-  DEFAULT_ENVIRONMENT_NAME
+  DEFAULT_ENVIRONMENT_NAME,
 } from './environment.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Environment } from './dto';
@@ -22,7 +22,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   updatedAt: new Date(),
   name: EXAMPLE_ENVIRONMENT_NAME,
   address: EXAMPLE_ENVIRONMENT_ADDRESS,
-  appId: EXAMPLE_APP_ID
+  appId: EXAMPLE_APP_ID,
 };
 
 const prismaEnvironmentCreateMock = jest.fn(() => {
@@ -58,11 +58,11 @@ describe('EnvironmentService', () => {
               create: prismaEnvironmentCreateMock,
               findUnique: prismaEnvironmentFindOneMock,
               update: prismaEnvironmentUpdateMock,
-              findMany: prismaEnvironmentFindManyMock
-            }
-          }))
-        }
-      ]
+              findMany: prismaEnvironmentFindManyMock,
+            },
+          })),
+        },
+      ],
     }).compile();
 
     service = module.get<EnvironmentService>(EnvironmentService);
@@ -78,8 +78,8 @@ describe('EnvironmentService', () => {
         name: EXAMPLE_ENVIRONMENT_NAME,
         description: EXAMPLE_ENVIRONMENT_DESCRIPTION,
         address: EXAMPLE_ENVIRONMENT_ADDRESS,
-        app: { connect: { id: EXAMPLE_APP_ID } }
-      }
+        app: { connect: { id: EXAMPLE_APP_ID } },
+      },
     };
     expect(await service.createEnvironment(args)).toEqual(EXAMPLE_ENVIRONMENT);
     expect(prismaEnvironmentCreateMock).toBeCalledTimes(1);
@@ -91,8 +91,8 @@ describe('EnvironmentService', () => {
       data: {
         name: DEFAULT_ENVIRONMENT_NAME,
         address: EXAMPLE_CUID,
-        app: { connect: { id: EXAMPLE_APP_ID } }
-      }
+        app: { connect: { id: EXAMPLE_APP_ID } },
+      },
     };
     expect(await service.createDefaultEnvironment(EXAMPLE_APP_ID)).toEqual(
       EXAMPLE_ENVIRONMENT
@@ -124,10 +124,10 @@ describe('EnvironmentService', () => {
       take: 1,
       where: {
         app: {
-          id: EXAMPLE_APP_ID
+          id: EXAMPLE_APP_ID,
         },
-        name: { equals: SANDBOX_ENVIRONMENT }
-      }
+        name: { equals: SANDBOX_ENVIRONMENT },
+      },
     });
   });
 });

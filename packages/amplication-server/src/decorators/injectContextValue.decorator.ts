@@ -2,7 +2,7 @@ import { SetMetadata } from '@nestjs/common';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import {
   INJECT_CONTEXT_VALUE,
-  InjectContextValueParameters
+  InjectContextValueParameters,
 } from 'src/interceptors/inject-context.interceptor';
 
 /**
@@ -17,5 +17,5 @@ export const InjectContextValue = (
 ) =>
   SetMetadata<string, InjectContextValueParameters>(INJECT_CONTEXT_VALUE, {
     parameterType,
-    parameterPath
+    parameterPath,
   });

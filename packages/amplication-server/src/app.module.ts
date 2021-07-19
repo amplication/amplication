@@ -15,7 +15,7 @@ import { RootStorageModule } from './core/storage/root-storage.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.local', '.env']
+      envFilePath: ['.env.local', '.env'],
     }),
 
     ServeStaticModule.forRoot({
@@ -26,7 +26,7 @@ import { RootStorageModule } from './core/storage/root-storage.module';
         '..',
         'amplication-client',
         'build'
-      )
+      ),
     }),
 
     RootWinstonModule,
@@ -38,25 +38,25 @@ import { RootStorageModule } from './core/storage/root-storage.module';
         debug: configService.get('GRAPHQL_DEBUG') === '1',
         playground: configService.get('PLAYGROUND_ENABLE') === '1',
         context: ({ req }: { req: Request }) => ({
-          req
-        })
+          req,
+        }),
       }),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
 
     RootStorageModule,
 
     MorganModule,
 
-    CoreModule
+    CoreModule,
   ],
   controllers: [],
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: InjectContextInterceptor
-    }
-  ]
+      useClass: InjectContextInterceptor,
+    },
+  ],
 })
 export class AppModule implements OnApplicationShutdown {
   onApplicationShutdown(signal: string) {

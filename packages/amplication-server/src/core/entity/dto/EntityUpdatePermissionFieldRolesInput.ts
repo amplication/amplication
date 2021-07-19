@@ -3,24 +3,24 @@ import { WhereParentIdInput, WhereUniqueInput } from 'src/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityUpdatePermissionFieldRolesInput {
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   permissionField!: WhereParentIdInput;
 
   @Field(() => [WhereUniqueInput], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   deletePermissionRoles?: WhereUniqueInput[];
 
   @Field(() => [WhereUniqueInput], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   addPermissionRoles?: WhereUniqueInput[];
 }

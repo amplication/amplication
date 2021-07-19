@@ -6,24 +6,24 @@ import { Environment } from '../core/environment/dto/Environment'; // eslint-dis
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class App {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
@@ -31,36 +31,36 @@ export class App {
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   name!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   description!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   color?: string;
 
   @Field(() => [Entity], {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   entities?: Entity[];
 
   @Field(() => [Environment], {
-    nullable: false
+    nullable: false,
   })
   environments?: Environment[];
 
   @Field(() => [Build], {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   builds?: Build[];
 
@@ -68,7 +68,7 @@ export class App {
   githubToken?: string;
 
   @Field(() => Date, {
-    nullable: true
+    nullable: true,
   })
   githubTokenCreatedDate?: Date;
 
@@ -76,22 +76,22 @@ export class App {
   githubSyncEnabled: boolean;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   githubRepo?: string;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   githubBranch?: string;
 
   @Field(() => Date, {
-    nullable: true
+    nullable: true,
   })
   githubLastSync?: Date;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   githubLastMessage?: string;
 

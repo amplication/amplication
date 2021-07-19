@@ -3,24 +3,24 @@ import { App } from 'src/models'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class Environment {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
@@ -31,12 +31,12 @@ export class Environment {
   appId!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name: string;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   description?: string;
 

@@ -16,7 +16,7 @@ const EXAMPLE_BLOCK_ID = 'exampleBlockId';
 const EXAMPLE_INPUT_OUTPUT_NAME = 'exampleInputOutputName';
 
 const EXAMPLE_BLOCK_INPUT_OUTPUT: BlockInputOutput = {
-  name: EXAMPLE_INPUT_OUTPUT_NAME
+  name: EXAMPLE_INPUT_OUTPUT_NAME,
 };
 const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_BLOCK_TYPE = EnumBlockType.ConnectorRestApi;
@@ -29,7 +29,7 @@ const EXAMPLE_BLOCK: Block = {
   updatedAt: new Date(),
   displayName: EXAMPLE_DISPLAY_NAME,
   blockType: EXAMPLE_BLOCK_TYPE,
-  appId: EXAMPLE_APP_ID
+  appId: EXAMPLE_APP_ID,
 };
 
 const EXAMPLE_IBLOCK: IBlock = {
@@ -42,7 +42,7 @@ const EXAMPLE_IBLOCK: IBlock = {
   blockType: EXAMPLE_BLOCK_TYPE,
   versionNumber: EXAMPLE_VERSION_NUMBER,
   inputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT],
-  outputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT]
+  outputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT],
 };
 
 const EXAMPLE_USER: User = {
@@ -53,8 +53,8 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name'
-  }
+    name: 'example_workspace_name',
+  },
 };
 
 const blockServiceFindOneMock = jest.fn(() => {
@@ -91,31 +91,32 @@ describe('BlockTypeService', () => {
             findOne: blockServiceFindOneMock,
             findManyByBlockType: blockServiceFindManyByBlockTypeMock,
             create: blockServiceCreateMock,
-            update: blockServiceUpdateMock
-          }))
+            update: blockServiceUpdateMock,
+          })),
         },
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        BlockTypeService
+        BlockTypeService,
       ],
-      imports: []
+      imports: [],
     }).compile();
 
-    service = module.get<
-      BlockTypeService<
-        IBlock,
-        FindManyBlockTypeArgs,
-        CreateBlockArgs,
-        UpdateBlockArgs
-      >
-    >(BlockTypeService);
+    service =
+      module.get<
+        BlockTypeService<
+          IBlock,
+          FindManyBlockTypeArgs,
+          CreateBlockArgs,
+          UpdateBlockArgs
+        >
+      >(BlockTypeService);
 
     service.blockType = EnumBlockType.ConnectorRestApi;
   });
 
   it('should find a block service', async () => {
     const args: FindOneArgs = {
-      where: { id: EXAMPLE_IBLOCK_ID }
+      where: { id: EXAMPLE_IBLOCK_ID },
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_IBLOCK);
     expect(blockServiceFindOneMock).toBeCalledTimes(1);
@@ -136,15 +137,15 @@ describe('BlockTypeService', () => {
     const args: CreateBlockArgs = {
       data: {
         displayName: EXAMPLE_DISPLAY_NAME,
-        app: { connect: { id: EXAMPLE_APP_ID } }
-      }
+        app: { connect: { id: EXAMPLE_APP_ID } },
+      },
     };
     const createArgs = {
       ...args,
       data: {
         ...args.data,
-        blockType: service.blockType
-      }
+        blockType: service.blockType,
+      },
     };
     expect(await service.create(args, EXAMPLE_USER)).toEqual(EXAMPLE_IBLOCK);
     expect(blockServiceCreateMock).toBeCalledTimes(1);
@@ -154,7 +155,7 @@ describe('BlockTypeService', () => {
   it('should update a block service', async () => {
     const args: UpdateBlockArgs = {
       data: {},
-      where: { id: EXAMPLE_IBLOCK_ID }
+      where: { id: EXAMPLE_IBLOCK_ID },
     };
     expect(await service.update(args, EXAMPLE_USER)).toEqual(EXAMPLE_IBLOCK);
     expect(blockServiceUpdateMock).toBeCalledTimes(1);

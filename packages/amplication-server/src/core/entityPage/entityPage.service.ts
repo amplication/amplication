@@ -71,7 +71,7 @@ export class EntityPageService extends BlockTypeService<
         args.data.entityId,
         args.data.showAllFields,
         args.data.showFieldList
-      )
+      ),
     ]);
 
     return super.create(args, user);

@@ -5,44 +5,44 @@ import { BlockInputOutput } from 'src/models';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export abstract class BlockCreateInput implements JsonObject {
   [key: string]: JsonValue;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: string;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   app!: WhereParentIdInput & JsonValue;
 
   @Field(() => WhereParentIdInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   parentBlock?: WhereParentIdInput & JsonValue;
 
   @Field(() => [BlockInputOutput], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   inputParameters?: BlockInputOutput[] & JsonArray;
 
   @Field(() => [BlockInputOutput], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   outputParameters?: BlockInputOutput[] & JsonArray;
 }

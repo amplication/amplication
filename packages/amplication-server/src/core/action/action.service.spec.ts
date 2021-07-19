@@ -12,7 +12,7 @@ const EXAMPLE_ACTION_ID = 'exampleActionId';
 const EXAMPLE_ACTION_STEP_ID = 'exampleActionStepId';
 const EXAMPLE_ACTION: Action = {
   id: EXAMPLE_ACTION_ID,
-  createdAt: new Date()
+  createdAt: new Date(),
 };
 
 const EXAMPLE_ACTION_STEP: ActionStep = {
@@ -22,7 +22,7 @@ const EXAMPLE_ACTION_STEP: ActionStep = {
   message: 'ExampleActionMessage',
   status: EnumActionStepStatus.Running,
   completedAt: null,
-  logs: null
+  logs: null,
 };
 const EXAMPLE_MESSAGE = 'Example message';
 const EXAMPLE_STEP_NAME = 'ExampleStepName';
@@ -49,25 +49,25 @@ describe('ActionService', () => {
           provide: PrismaService,
           useValue: {
             action: {
-              findUnique: prismaActionFindOneMock
+              findUnique: prismaActionFindOneMock,
             },
             actionStep: {
               findMany: prismaActionStepFindManyMock,
               create: prismaActionStepCreateMock,
-              update: prismaActionStepUpdateMock
+              update: prismaActionStepUpdateMock,
             },
             actionLog: {
-              create: prismaActionLogCreateMock
-            }
-          }
+              create: prismaActionLogCreateMock,
+            },
+          },
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useClass: jest.fn(() => ({
-            error: jest.fn()
-          }))
-        }
-      ]
+            error: jest.fn(),
+          })),
+        },
+      ],
     }).compile();
 
     service = module.get<ActionService>(ActionService);
@@ -80,15 +80,15 @@ describe('ActionService', () => {
   test('finds one action', async () => {
     const args: FindOneActionArgs = {
       where: {
-        id: EXAMPLE_ACTION_ID
-      }
+        id: EXAMPLE_ACTION_ID,
+      },
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_ACTION);
   });
 
   test('gets action steps', async () => {
     expect(await service.getSteps(EXAMPLE_ACTION_ID)).toEqual([
-      EXAMPLE_ACTION_STEP
+      EXAMPLE_ACTION_STEP,
     ]);
   });
 
@@ -107,9 +107,9 @@ describe('ActionService', () => {
         name: EXAMPLE_STEP_NAME,
         message: EXAMPLE_MESSAGE,
         action: {
-          connect: { id: EXAMPLE_ACTION_ID }
-        }
-      }
+          connect: { id: EXAMPLE_ACTION_ID },
+        },
+      },
     });
   });
 
@@ -120,13 +120,13 @@ describe('ActionService', () => {
     expect(prismaActionStepUpdateMock).toBeCalledTimes(1);
     expect(prismaActionStepUpdateMock).toBeCalledWith({
       where: {
-        id: EXAMPLE_ACTION_STEP_ID
+        id: EXAMPLE_ACTION_STEP_ID,
       },
       data: {
         status: EXAMPLE_STATUS,
-        completedAt: expect.any(Date)
+        completedAt: expect.any(Date),
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
   });
 
@@ -141,10 +141,10 @@ describe('ActionService', () => {
         message: EXAMPLE_MESSAGE,
         meta: {},
         step: {
-          connect: { id: EXAMPLE_ACTION_STEP_ID }
-        }
+          connect: { id: EXAMPLE_ACTION_STEP_ID },
+        },
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
   });
 
@@ -166,19 +166,19 @@ describe('ActionService', () => {
         name: EXAMPLE_STEP_NAME,
         message: EXAMPLE_MESSAGE,
         action: {
-          connect: { id: EXAMPLE_ACTION_ID }
-        }
-      }
+          connect: { id: EXAMPLE_ACTION_ID },
+        },
+      },
     });
     expect(prismaActionStepUpdateMock).toBeCalledWith({
       where: {
-        id: EXAMPLE_ACTION_STEP_ID
+        id: EXAMPLE_ACTION_STEP_ID,
       },
       data: {
         status: EXAMPLE_STATUS,
-        completedAt: expect.any(Date)
+        completedAt: expect.any(Date),
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
   });
 
@@ -201,9 +201,9 @@ describe('ActionService', () => {
         name: EXAMPLE_STEP_NAME,
         message: EXAMPLE_MESSAGE,
         action: {
-          connect: { id: EXAMPLE_ACTION_ID }
-        }
-      }
+          connect: { id: EXAMPLE_ACTION_ID },
+        },
+      },
     });
     expect(prismaActionLogCreateMock).toBeCalledTimes(1);
     expect(prismaActionLogCreateMock).toBeCalledWith({
@@ -212,21 +212,21 @@ describe('ActionService', () => {
         message: EXAMPLE_ERROR.toString(),
         meta: {},
         step: {
-          connect: { id: EXAMPLE_ACTION_STEP_ID }
-        }
+          connect: { id: EXAMPLE_ACTION_STEP_ID },
+        },
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
     expect(prismaActionStepUpdateMock).toBeCalledTimes(1);
     expect(prismaActionStepUpdateMock).toBeCalledWith({
       where: {
-        id: EXAMPLE_ACTION_STEP_ID
+        id: EXAMPLE_ACTION_STEP_ID,
       },
       data: {
         status: EnumActionStepStatus.Failed,
-        completedAt: expect.any(Date)
+        completedAt: expect.any(Date),
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
   });
 
@@ -241,10 +241,10 @@ describe('ActionService', () => {
         message: EXAMPLE_MESSAGE,
         meta: {},
         step: {
-          connect: { id: EXAMPLE_ACTION_STEP_ID }
-        }
+          connect: { id: EXAMPLE_ACTION_STEP_ID },
+        },
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
   });
 });

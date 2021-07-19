@@ -4,30 +4,30 @@ import { WorkspaceWhereInput } from 'src/core/workspace/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class UserWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => WorkspaceWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   workspace?: WorkspaceWhereInput | null;
 }

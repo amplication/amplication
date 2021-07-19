@@ -534,9 +534,7 @@ export type ConnectorRestApiCreateInput = {
   inputParameters?: Maybe<Array<BlockInputOutputInput>>;
   outputParameters?: Maybe<Array<BlockInputOutputInput>>;
   authenticationType: EnumConnectorRestApiAuthenticationType;
-  privateKeyAuthenticationSettings?: Maybe<
-    PrivateKeyAuthenticationSettingsInput
-  >;
+  privateKeyAuthenticationSettings?: Maybe<PrivateKeyAuthenticationSettingsInput>;
   httpBasicAuthenticationSettings?: Maybe<HttpBasicAuthenticationSettingsInput>;
 };
 

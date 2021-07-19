@@ -14,7 +14,7 @@ const EXAMPLE_USER_ROLE: UserRole = {
   id: EXAMPLE_ROLE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  role: Role.User
+  role: Role.User,
 };
 
 const EXAMPLE_FIRST_NAME = 'ExampleFirstName';
@@ -31,7 +31,7 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  githubId: null
+  githubId: null,
 };
 
 const EXAMPLE_USER: User = {
@@ -39,12 +39,12 @@ const EXAMPLE_USER: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   userRoles: [EXAMPLE_USER_ROLE],
-  account: EXAMPLE_ACCOUNT
+  account: EXAMPLE_ACCOUNT,
 };
 
 const prismaUserFindOneMock = jest.fn(() => ({
-  then: resolve => resolve(EXAMPLE_USER),
-  account: () => EXAMPLE_ACCOUNT
+  then: (resolve) => resolve(EXAMPLE_USER),
+  account: () => EXAMPLE_ACCOUNT,
 }));
 
 const prismaUserFindManyMock = jest.fn(() => {
@@ -85,17 +85,17 @@ describe('UserService', () => {
           useClass: jest.fn(() => ({
             user: {
               findUnique: prismaUserFindOneMock,
-              findMany: prismaUserFindManyMock
+              findMany: prismaUserFindManyMock,
             },
             userRole: {
               findUnique: prismaUserRoleFindOneMock,
               findMany: prismaUserRoleFindManyMock,
               create: prismaUserRoleCreateMock,
-              delete: prismaUserRoleDeleteMock
-            }
-          }))
-        }
-      ]
+              delete: prismaUserRoleDeleteMock,
+            },
+          })),
+        },
+      ],
     }).compile();
 
     service = module.get<UserService>(UserService);
@@ -122,21 +122,21 @@ describe('UserService', () => {
   it('should assign one role to a user', async () => {
     const args = {
       data: { role: NON_EXISTING_ROLE },
-      where: { id: EXAMPLE_ROLE_ID }
+      where: { id: EXAMPLE_ROLE_ID },
     };
     const findOneArgs: FindOneArgs = {
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     };
     const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
-      where: { user: { id: EXAMPLE_ROLE_ID }, role: args.data.role }
+      where: { user: { id: EXAMPLE_ROLE_ID }, role: args.data.role },
     };
     const roleData: Prisma.UserRoleCreateArgs = {
       data: {
         role: args.data.role,
-        user: { connect: { id: args.where.id } }
-      }
+        user: { connect: { id: args.where.id } },
+      },
     };
     expect(await service.assignRole(args)).toEqual(EXAMPLE_USER);
     expect(prismaUserFindOneMock).toBeCalledTimes(1);
@@ -150,18 +150,18 @@ describe('UserService', () => {
   it('should not assign a role to a user with existing role', async () => {
     const args = {
       data: { role: EXISTING_ROLE },
-      where: { id: EXAMPLE_USER_ID }
+      where: { id: EXAMPLE_USER_ID },
     };
     const findOneArgs: FindOneArgs = {
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     };
     const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
       where: {
         user: { id: EXAMPLE_USER_ID },
-        role: args.data.role
-      }
+        role: args.data.role,
+      },
     };
     expect(await service.assignRole(args)).toEqual(EXAMPLE_USER);
     expect(prismaUserFindOneMock).toBeCalledTimes(1);
@@ -174,18 +174,18 @@ describe('UserService', () => {
   it('should remove one role from a user', async () => {
     const args = {
       data: { role: EXISTING_ROLE },
-      where: { id: EXAMPLE_USER_ID }
+      where: { id: EXAMPLE_USER_ID },
     };
     const findOneArgs: FindOneArgs = {
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     };
     const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
       where: {
         user: { id: EXAMPLE_USER_ID },
-        role: args.data.role
-      }
+        role: args.data.role,
+      },
     };
     expect(await service.removeRole(args)).toEqual(EXAMPLE_USER);
     expect(prismaUserFindOneMock).toBeCalledTimes(1);
@@ -194,25 +194,25 @@ describe('UserService', () => {
     expect(prismaUserRoleFindManyMock).toBeCalledWith(findManyRolesArgs);
     expect(prismaUserRoleDeleteMock).toBeCalledTimes(1);
     expect(prismaUserRoleDeleteMock).toBeCalledWith({
-      where: { id: EXAMPLE_ROLE_ID }
+      where: { id: EXAMPLE_ROLE_ID },
     });
   });
 
   it('should not remove an already removed role from a user', async () => {
     const args = {
       data: { role: NON_EXISTING_ROLE },
-      where: { id: EXAMPLE_USER_ID }
+      where: { id: EXAMPLE_USER_ID },
     };
     const findOneArgs: FindOneArgs = {
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     };
     const findManyRolesArgs: Prisma.UserRoleFindManyArgs = {
       where: {
         user: { id: EXAMPLE_USER_ID },
-        role: args.data.role
-      }
+        role: args.data.role,
+      },
     };
     expect(await service.removeRole(args)).toEqual(EXAMPLE_USER);
     expect(prismaUserFindOneMock).toBeCalledTimes(1);
@@ -224,10 +224,10 @@ describe('UserService', () => {
 
   it('should find many roles', async () => {
     const args: Prisma.UserRoleFindManyArgs = {
-      where: { user: { id: EXAMPLE_ROLE_ID } }
+      where: { user: { id: EXAMPLE_ROLE_ID } },
     };
     expect(await service.getRoles(EXAMPLE_ROLE_ID)).toEqual([
-      EXAMPLE_USER_ROLE
+      EXAMPLE_USER_ROLE,
     ]);
     expect(prismaUserRoleFindManyMock).toBeCalledTimes(1);
     expect(prismaUserRoleFindManyMock).toBeCalledWith(args);

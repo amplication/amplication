@@ -15,9 +15,9 @@ import { CommitService } from './commit.service';
     PermissionsModule,
     BuildModule,
     EntityModule,
-    BlockModule
+    BlockModule,
   ],
   providers: [CommitService, CommitResolver],
-  exports: [CommitService, CommitResolver]
+  exports: [CommitService, CommitResolver],
 })
 export class CommitModule {}

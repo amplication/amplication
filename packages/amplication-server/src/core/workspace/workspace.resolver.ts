@@ -4,12 +4,12 @@ import {
   Query,
   Resolver,
   Parent,
-  ResolveField
+  ResolveField,
 } from '@nestjs/graphql';
 import {
   UpdateOneWorkspaceArgs,
   InviteUserArgs,
-  CreateOneWorkspaceArgs
+  CreateOneWorkspaceArgs,
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
@@ -34,7 +34,7 @@ export class WorkspaceResolver {
 
   @Query(() => Workspace, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
   async workspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
@@ -43,7 +43,7 @@ export class WorkspaceResolver {
 
   @Query(() => Workspace, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   async currentWorkspace(
     @UserEntity() currentUser: User
@@ -54,13 +54,13 @@ export class WorkspaceResolver {
   @ResolveField(() => [App])
   async apps(@Parent() workspace: Workspace): Promise<App[]> {
     return this.appService.apps({
-      where: { workspace: { id: workspace.id } }
+      where: { workspace: { id: workspace.id } },
     });
   }
 
   @Mutation(() => Workspace, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
   async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
@@ -69,7 +69,7 @@ export class WorkspaceResolver {
 
   @Mutation(() => Workspace, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
   async updateWorkspace(
@@ -80,7 +80,7 @@ export class WorkspaceResolver {
 
   @Mutation(() => Workspace, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   async createWorkspace(
     @UserEntity() currentUser: User,
@@ -91,7 +91,7 @@ export class WorkspaceResolver {
 
   @Mutation(() => User, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   async inviteUser(
     @UserEntity() currentUser: User,

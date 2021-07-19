@@ -12,8 +12,8 @@ describe('WinstonConfigService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WinstonConfigService,
-        { provide: ConfigService, useValue: { get: getMock } }
-      ]
+        { provide: ConfigService, useValue: { get: getMock } },
+      ],
     }).compile();
 
     service = module.get<WinstonConfigService>(WinstonConfigService);
@@ -23,7 +23,7 @@ describe('WinstonConfigService', () => {
     expect(service.createWinstonModuleOptions()).toEqual({
       level: LEVEL,
       format: service.developmentFormat,
-      transports: [expect.any(winston.transports.Console)]
+      transports: [expect.any(winston.transports.Console)],
     });
   });
 
@@ -32,7 +32,7 @@ describe('WinstonConfigService', () => {
     expect(service.createWinstonModuleOptions()).toEqual({
       level: LEVEL,
       format: service.productionFormat,
-      transports: [expect.any(winston.transports.Console)]
+      transports: [expect.any(winston.transports.Console)],
     });
   });
 });

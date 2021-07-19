@@ -5,9 +5,9 @@ export enum EnumConnectorRestApiAuthenticationType {
   PrivateKey = 'PrivateKey',
   HttpBasicAuthentication = 'HttpBasicAuthentication',
   OAuth2PasswordFlow = 'OAuth2PasswordFlow',
-  OAuth2UserAgentFlow = 'OAuth2UserAgentFlow'
+  OAuth2UserAgentFlow = 'OAuth2UserAgentFlow',
 }
 registerEnumType(EnumConnectorRestApiAuthenticationType, {
   name: 'EnumConnectorRestApiAuthenticationType',
-  description: undefined
+  description: undefined,
 });

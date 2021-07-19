@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { gql } from 'apollo-server-express';
 import {
   ApolloServerTestClient,
-  createTestClient
+  createTestClient,
 } from 'apollo-server-testing';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
@@ -32,28 +32,28 @@ const EXAMPLE_ACCOUNT: Account = {
   email: EXAMPLE_EMAIL,
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
-  password: EXAMPLE_PASSWORD
+  password: EXAMPLE_PASSWORD,
 };
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  account: EXAMPLE_ACCOUNT
+  account: EXAMPLE_ACCOUNT,
 };
 
 const EXAMPLE_USER_WITHOUT_ACCOUNT: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 };
 
 const EXAMPLE_AUTH: Auth = {
-  token: EXAMPLE_TOKEN
+  token: EXAMPLE_TOKEN,
 };
 
 const SIGNUP_MUTATION = gql`
-  mutation(
+  mutation (
     $email: String!
     $password: String!
     $firstName: String!
@@ -75,7 +75,7 @@ const SIGNUP_MUTATION = gql`
 `;
 
 const LOGIN_MUTATION = gql`
-  mutation($email: String!, $password: String!) {
+  mutation ($email: String!, $password: String!) {
     login(data: { email: $email, password: $password }) {
       token
     }
@@ -83,7 +83,7 @@ const LOGIN_MUTATION = gql`
 `;
 
 const CHANGE_PASSWORD_MUTATION = gql`
-  mutation($oldPassword: String!, $newPassword: String!) {
+  mutation ($oldPassword: String!, $newPassword: String!) {
     changePassword(
       data: { oldPassword: $oldPassword, newPassword: $newPassword }
     ) {
@@ -99,7 +99,7 @@ const CHANGE_PASSWORD_MUTATION = gql`
 `;
 
 const SET_WORKSPACE_MUTATION = gql`
-  mutation($id: String!) {
+  mutation ($id: String!) {
     setCurrentWorkspace(data: { id: $id }) {
       token
     }
@@ -138,23 +138,23 @@ describe('AuthResolver', () => {
             signup: authServiceSignUpMock,
             login: authServiceLoginMock,
             changePassword: authServiceChangePasswordMock,
-            setCurrentWorkspace: setCurrentWorkspaceMock
-          }))
+            setCurrentWorkspace: setCurrentWorkspaceMock,
+          })),
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useClass: jest.fn(() => ({
-            error: jest.fn()
-          }))
+            error: jest.fn(),
+          })),
         },
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            get: jest.fn()
-          }))
-        }
+            get: jest.fn(),
+          })),
+        },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })]
+      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -168,15 +168,15 @@ describe('AuthResolver', () => {
 
   it('should return current user', async () => {
     const res = await apolloClient.query({
-      query: ME_QUERY
+      query: ME_QUERY,
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       me: {
         id: EXAMPLE_USER.id,
         createdAt: EXAMPLE_USER.createdAt.toISOString(),
-        updatedAt: EXAMPLE_USER.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_USER.updatedAt.toISOString(),
+      },
     });
   });
 
@@ -186,39 +186,39 @@ describe('AuthResolver', () => {
       password: EXAMPLE_PASSWORD,
       firstName: EXAMPLE_FIRST_NAME,
       lastName: EXAMPLE_LAST_NAME,
-      workspaceName: EXAMPLE_WORKSPACE_NAME
+      workspaceName: EXAMPLE_WORKSPACE_NAME,
     };
     const res = await apolloClient.mutate({
       mutation: SIGNUP_MUTATION,
-      variables: variables
+      variables: variables,
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       signup: {
-        ...EXAMPLE_AUTH
-      }
+        ...EXAMPLE_AUTH,
+      },
     });
     expect(authServiceSignUpMock).toBeCalledTimes(1);
     expect(authServiceSignUpMock).toBeCalledWith({
       ...variables,
-      email: variables.email.toLowerCase()
+      email: variables.email.toLowerCase(),
     });
   });
 
   it('should login', async () => {
     const variables = {
       email: EXAMPLE_EMAIL,
-      password: EXAMPLE_PASSWORD
+      password: EXAMPLE_PASSWORD,
     };
     const res = await apolloClient.mutate({
       mutation: LOGIN_MUTATION,
-      variables: variables
+      variables: variables,
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       login: {
-        ...EXAMPLE_AUTH
-      }
+        ...EXAMPLE_AUTH,
+      },
     });
     expect(authServiceLoginMock).toBeCalledTimes(1);
     expect(authServiceLoginMock).toBeCalledWith(
@@ -232,16 +232,16 @@ describe('AuthResolver', () => {
       mutation: CHANGE_PASSWORD_MUTATION,
       variables: {
         oldPassword: EXAMPLE_PASSWORD,
-        newPassword: EXAMPLE_PASSWORD
-      }
+        newPassword: EXAMPLE_PASSWORD,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       changePassword: {
         ...EXAMPLE_ACCOUNT,
         createdAt: EXAMPLE_ACCOUNT.createdAt.toISOString(),
-        updatedAt: EXAMPLE_ACCOUNT.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_ACCOUNT.updatedAt.toISOString(),
+      },
     });
     expect(authServiceChangePasswordMock).toBeCalledTimes(1);
     expect(authServiceChangePasswordMock).toBeCalledWith(
@@ -254,13 +254,13 @@ describe('AuthResolver', () => {
   it('set set the current workspace', async () => {
     const res = await apolloClient.mutate({
       mutation: SET_WORKSPACE_MUTATION,
-      variables: { id: EXAMPLE_WORKSPACE_ID }
+      variables: { id: EXAMPLE_WORKSPACE_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       setCurrentWorkspace: {
-        ...EXAMPLE_AUTH
-      }
+        ...EXAMPLE_AUTH,
+      },
     });
     expect(setCurrentWorkspaceMock).toBeCalledTimes(1);
     expect(setCurrentWorkspaceMock).toBeCalledWith(
@@ -275,7 +275,7 @@ describe('AuthResolver', () => {
     );
     const res = await apolloClient.mutate({
       mutation: SET_WORKSPACE_MUTATION,
-      variables: { id: EXAMPLE_WORKSPACE_ID }
+      variables: { id: EXAMPLE_WORKSPACE_ID },
     });
     expect(res.errors).toEqual([new GraphQLError('User has no account')]);
     expect(res.data).toEqual(null);

@@ -3,30 +3,30 @@ import { EnumDeploymentStatus } from './EnumDeploymentStatus';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EnumDeploymentStatusFilter {
   @Field(() => EnumDeploymentStatus, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   equals?: keyof typeof EnumDeploymentStatus | null | undefined;
 
   @Field(() => EnumDeploymentStatus, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   not?: keyof typeof EnumDeploymentStatus | null | undefined;
 
   @Field(() => [EnumDeploymentStatus], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   in?: Array<keyof typeof EnumDeploymentStatus> | null | undefined;
 
   @Field(() => [EnumDeploymentStatus], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   notIn?: Array<keyof typeof EnumDeploymentStatus> | null | undefined;
 }

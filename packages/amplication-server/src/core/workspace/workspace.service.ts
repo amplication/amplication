@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 import {
   FindManyWorkspaceArgs,
   UpdateOneWorkspaceArgs,
-  InviteUserArgs
+  InviteUserArgs,
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { Role } from 'src/enums/Role';
@@ -63,17 +63,17 @@ export class WorkspaceService {
             isOwner: true,
             userRoles: {
               create: {
-                role: Role.OrganizationAdmin
-              }
-            }
-          }
-        }
+                role: Role.OrganizationAdmin,
+              },
+            },
+          },
+        },
       },
       include: {
         ...args.include,
         // Include users by default, allow to bypass it for including additional user links
-        users: args?.include?.users || true
-      }
+        users: args?.include?.users || true,
+      },
     });
 
     return workspace;
@@ -86,15 +86,15 @@ export class WorkspaceService {
     const { workspace } = currentUser;
 
     const account = await this.accountService.findAccount({
-      where: { email: args.data.email }
+      where: { email: args.data.email },
     });
 
     if (account) {
       const existingUsers = await this.prisma.user.findMany({
         where: {
           account: { id: account.id },
-          workspace: { id: workspace.id }
-        }
+          workspace: { id: workspace.id },
+        },
       });
 
       if (existingUsers.length) {
@@ -112,8 +112,8 @@ export class WorkspaceService {
           firstName: '',
           lastName: '',
           email: args.data.email,
-          password: hashedPassword
-        }
+          password: hashedPassword,
+        },
       });
     }
 
@@ -125,10 +125,10 @@ export class WorkspaceService {
         isOwner: false,
         userRoles: {
           create: {
-            role: Role.OrganizationAdmin
-          }
-        }
-      }
+            role: Role.OrganizationAdmin,
+          },
+        },
+      },
     });
 
     return user;

@@ -33,21 +33,21 @@ export class GithubService {
 
   async listRepoForAuthenticatedUser(token: string): Promise<GithubRepo[]> {
     const octokit = new Octokit({
-      auth: token
+      auth: token,
     });
 
     const results = await octokit.repos.listForAuthenticatedUser({
       type: 'all',
       sort: 'updated',
-      direction: 'desc'
+      direction: 'desc',
     });
 
-    return results.data.map(repo => ({
+    return results.data.map((repo) => ({
       name: repo.name,
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin
+      admin: repo.permissions.admin,
     }));
   }
 
@@ -67,14 +67,14 @@ export class GithubService {
     token: string
   ): Promise<GithubFile> {
     const octokit = new Octokit({
-      auth: token
+      auth: token,
     });
 
     const content = await octokit.repos.getContent({
       owner: userName,
       repo: repoName,
       path,
-      ref: baseBranchName ? baseBranchName : undefined
+      ref: baseBranchName ? baseBranchName : undefined,
     });
 
     if (!Array.isArray(content)) {
@@ -88,7 +88,7 @@ export class GithubService {
           content: buff.toString('utf-8'),
           htmlUrl: item.html_url,
           name: item.name,
-          path: item.path
+          path: item.path,
         };
         return file;
       }
@@ -111,7 +111,7 @@ export class GithubService {
 
     const TOKEN = token;
     const octokit = new myOctokit({
-      auth: TOKEN
+      auth: TOKEN,
     });
 
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
@@ -119,16 +119,16 @@ export class GithubService {
       /^server\/src\/[^\/]+\/.+\.controller.ts$/,
       /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
       /^server\/src\/[^\/]+\/.+\.service.ts$/,
-      /^server\/src\/[^\/]+\/.+\.module.ts$/
+      /^server\/src\/[^\/]+\/.+\.module.ts$/,
     ];
 
     const authFolder = 'server/src/auth';
 
     const files = Object.fromEntries(
-      modules.map(module => {
+      modules.map((module) => {
         if (
           !module.path.startsWith(authFolder) &&
-          doNotOverride.some(rx => rx.test(module.path))
+          doNotOverride.some((rx) => rx.test(module.path))
         ) {
           return [
             module.path,
@@ -137,7 +137,7 @@ export class GithubService {
               if (exists) return null;
 
               return module.code;
-            }
+            },
           ];
         }
 
@@ -178,9 +178,9 @@ export class GithubService {
           //       .toUpperCase();
           //   }
           // },
-          commit: commitName
-        }
-      ]
+          commit: commitName,
+        },
+      ],
     });
 
     return pr.data.html_url;
@@ -191,7 +191,7 @@ export class GithubService {
 
     const app = new OAuthApp({
       clientId: clientID,
-      clientSecret: clientSecret
+      clientSecret: clientSecret,
     });
 
     const redirectURL: string = this.configService
@@ -203,7 +203,7 @@ export class GithubService {
       redirectUrl: redirectURL,
       state:
         'state123' /**@todo: generate unique URL and save it for later check */,
-      scopes: scope
+      scopes: scope,
     });
 
     return url;
@@ -217,12 +217,12 @@ export class GithubService {
 
     const app = new OAuthApp({
       clientId: clientID,
-      clientSecret: clientSecret
+      clientSecret: clientSecret,
     });
 
     const { token } = await app.createToken({
       state: state,
-      code: code
+      code: code,
     });
 
     return token;

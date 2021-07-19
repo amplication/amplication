@@ -6,6 +6,6 @@ import { BlockModule } from '../block/block.module';
 @Module({
   imports: [BlockModule],
   providers: [ConnectorRestApiService, ConnectorRestApiResolver],
-  exports: [ConnectorRestApiService, ConnectorRestApiResolver]
+  exports: [ConnectorRestApiService, ConnectorRestApiResolver],
 })
 export class ConnectorRestApiModule {}

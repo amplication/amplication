@@ -3,24 +3,24 @@ import { EntityWhereInput } from './EntityWhereInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityFilter {
   @Field(() => EntityWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   every?: EntityWhereInput | null;
 
   @Field(() => EntityWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   some?: EntityWhereInput | null;
 
   @Field(() => EntityWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   none?: EntityWhereInput | null;
 }

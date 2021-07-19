@@ -2,7 +2,7 @@ import { TestingModule } from '@nestjs/testing';
 import { GraphQLModule } from '@nestjs/graphql';
 import {
   ApolloServerTestClient,
-  createTestClient
+  createTestClient,
 } from 'apollo-server-testing';
 
 /**

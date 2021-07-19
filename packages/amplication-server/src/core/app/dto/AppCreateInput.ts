@@ -1,21 +1,21 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class AppCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   description!: string;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   color?: string;
 

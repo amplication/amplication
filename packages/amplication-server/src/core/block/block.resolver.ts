@@ -23,7 +23,7 @@ export class BlockResolver {
 
   @Query(() => [Block], {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async blocks(@Args() args: FindManyBlockArgs): Promise<Block[]> {
@@ -32,7 +32,7 @@ export class BlockResolver {
 
   @Query(() => Block, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
   async block(@Args() args: FindOneArgs): Promise<Block> {
@@ -54,8 +54,8 @@ export class BlockResolver {
       ...args,
       where: {
         ...args.where,
-        block: { id: entity.id }
-      }
+        block: { id: entity.id },
+      },
     });
   }
 
@@ -64,8 +64,8 @@ export class BlockResolver {
     if (block.lockedByUserId) {
       return this.userService.findUser({
         where: {
-          id: block.lockedByUserId
-        }
+          id: block.lockedByUserId,
+        },
       });
     } else {
       return null;

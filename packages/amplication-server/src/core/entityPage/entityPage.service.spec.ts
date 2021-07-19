@@ -24,7 +24,7 @@ const EXAMPLE_SINGLE_RECORD_SETTINGS: EntityPageSingleRecordSettings &
   JsonValue = {
   allowCreation: true,
   allowDeletion: true,
-  allowUpdate: true
+  allowUpdate: true,
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -38,15 +38,15 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name'
-  }
+    name: 'example_workspace_name',
+  },
 };
 
 const EXAMPLE_LIST_SETTINGS: EntityPageListSettings & JsonValue = {
   allowCreation: true,
   allowDeletion: true,
   enableSearch: false,
-  navigateToPageId: 'ExamplePageId'
+  navigateToPageId: 'ExamplePageId',
 };
 
 const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
@@ -64,7 +64,7 @@ const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
   pageType: EnumEntityPageType.SingleRecord,
   listSettings: null,
   singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
-  showAllFields: true
+  showAllFields: true,
 };
 
 const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
@@ -81,7 +81,7 @@ const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
   entityId: EXAMPLE_ENTITY_ID,
   pageType: EnumEntityPageType.List,
   listSettings: EXAMPLE_LIST_SETTINGS,
-  showAllFields: true
+  showAllFields: true,
 };
 
 const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
@@ -95,9 +95,9 @@ const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
   singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
   app: {
     connect: {
-      id: EXAMPLE_APP_ID
-    }
-  }
+      id: EXAMPLE_APP_ID,
+    },
+  },
 };
 
 const LIST_CREATE_INPUT: EntityPageCreateInput = {
@@ -111,14 +111,14 @@ const LIST_CREATE_INPUT: EntityPageCreateInput = {
   listSettings: EXAMPLE_LIST_SETTINGS,
   app: {
     connect: {
-      id: EXAMPLE_APP_ID
-    }
-  }
+      id: EXAMPLE_APP_ID,
+    },
+  },
 };
 
 const EXAMPLE_ENTITY_PAGES = [EXAMPLE_SINGLE_RECORD_ENTITY_PAGE];
 
-const createMock = jest.fn(args => {
+const createMock = jest.fn((args) => {
   switch (args.data.displayName) {
     case EXAMPLE_SINGLE_RECORD_NAME:
       return EXAMPLE_SINGLE_RECORD_ENTITY_PAGE;
@@ -155,19 +155,19 @@ describe('EntityPageService', () => {
             create: createMock,
             findOne: findOneMock,
             findManyByBlockType: findManyByBlockTypeMock,
-            update: updateMock
-          }))
+            update: updateMock,
+          })),
         },
         {
           provide: EntityService,
           useClass: jest.fn(() => ({
             isEntityInSameApp: isEntityInSameAppMock,
-            validateAllFieldsExist: validateAllFieldsExistMock
-          }))
+            validateAllFieldsExist: validateAllFieldsExistMock,
+          })),
         },
-        EntityPageService
+        EntityPageService,
       ],
-      imports: []
+      imports: [],
     }).compile();
 
     service = module.get<EntityPageService>(EntityPageService);
@@ -180,7 +180,7 @@ describe('EntityPageService', () => {
   it('should find one', async () => {
     const args = {
       where: { id: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.id },
-      version: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.versionNumber
+      version: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.versionNumber,
     };
     expect(await service.findOne(args)).toBe(EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
     expect(findOneMock).toBeCalledTimes(1);
@@ -198,7 +198,7 @@ describe('EntityPageService', () => {
 
   it('should create single record entity page', async () => {
     const args = {
-      data: SINGLE_RECORD_CREATE_INPUT
+      data: SINGLE_RECORD_CREATE_INPUT,
     };
     expect(await service.create(args, EXAMPLE_USER)).toEqual(
       EXAMPLE_SINGLE_RECORD_ENTITY_PAGE
@@ -209,7 +209,7 @@ describe('EntityPageService', () => {
 
   it('should create list entity page', async () => {
     const args = {
-      data: LIST_CREATE_INPUT
+      data: LIST_CREATE_INPUT,
     };
     expect(await service.create(args, EXAMPLE_USER)).toEqual(
       EXAMPLE_LIST_ENTITY_PAGE
@@ -223,9 +223,9 @@ describe('EntityPageService', () => {
       data: {
         entityId: EXAMPLE_ENTITY_ID,
         pageType: EnumEntityPageType.List,
-        showAllFields: true
+        showAllFields: true,
       },
-      where: { id: EXAMPLE_ENTITY_ID }
+      where: { id: EXAMPLE_ENTITY_ID },
     };
     expect(await service.update(args, EXAMPLE_USER)).toEqual(
       EXAMPLE_LIST_ENTITY_PAGE

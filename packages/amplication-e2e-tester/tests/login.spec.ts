@@ -24,23 +24,23 @@ describe("login test", () => {
       const userEmail = createRandomName() + "@example.com";
       await (await page.waitForXPath("//input[@name='email']")).type(userEmail);
       const userPassword = createRandomName();
-      await (await page.waitForXPath("//input[@name='password']")).type(
-        userPassword
-      );
-      await (await page.waitForXPath("//input[@name='confirmPassword']")).type(
-        userPassword
-      );
+      await (
+        await page.waitForXPath("//input[@name='password']")
+      ).type(userPassword);
+      await (
+        await page.waitForXPath("//input[@name='confirmPassword']")
+      ).type(userPassword);
       const userFirstName = createRandomName();
-      await (await page.waitForXPath("//input[@name='firstName']")).type(
-        userFirstName
-      );
+      await (
+        await page.waitForXPath("//input[@name='firstName']")
+      ).type(userFirstName);
       const userLastName = createRandomName();
-      await (await page.waitForXPath("//input[@name='lastName']")).type(
-        userLastName
-      );
-      await (await page.waitForXPath("//input[@name='workspaceName']")).type(
-        userLastName
-      );
+      await (
+        await page.waitForXPath("//input[@name='lastName']")
+      ).type(userLastName);
+      await (
+        await page.waitForXPath("//input[@name='workspaceName']")
+      ).type(userLastName);
       await (
         await page.waitForXPath(
           `//button[contains(text(),'${LOGIN_CONTINUE_BUTTON_CONTENT}')]`
@@ -52,9 +52,9 @@ describe("login test", () => {
       ).click();
       await page.waitForNavigation();
       await (await page.waitForXPath("//input[@name='email']")).type(userEmail);
-      await (await page.waitForXPath('//input[@name="password"]')).type(
-        userPassword
-      );
+      await (
+        await page.waitForXPath('//input[@name="password"]')
+      ).type(userPassword);
       await (
         await page.waitForXPath(
           `//button[contains(text(),'${LOGIN_CONTINUE_BUTTON_CONTENT}')]`

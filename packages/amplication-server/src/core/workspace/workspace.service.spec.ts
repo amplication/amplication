@@ -31,14 +31,14 @@ const EXAMPLE_ACCOUNT: Account = {
   email: EXAMPLE_EMAIL,
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
-  password: EXAMPLE_PASSWORD
+  password: EXAMPLE_PASSWORD,
 };
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  account: EXAMPLE_ACCOUNT
+  account: EXAMPLE_ACCOUNT,
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
@@ -46,7 +46,7 @@ const EXAMPLE_WORKSPACE: Workspace = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_WORKSPACE_NAME,
-  users: [EXAMPLE_USER]
+  users: [EXAMPLE_USER],
 };
 
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
@@ -105,35 +105,35 @@ describe('WorkspaceService', () => {
               findMany: prismaWorkspaceFindManyMock,
               delete: prismaWorkspaceDeleteMock,
               update: prismaWorkspaceUpdateMock,
-              create: prismaWorkspaceCreateMock
+              create: prismaWorkspaceCreateMock,
             },
             user: {
               findMany: prismaUserFindManyMock,
-              create: prismaUserCreateMock
-            }
-          }))
+              create: prismaUserCreateMock,
+            },
+          })),
         },
         {
           provide: AppService,
           useClass: jest.fn().mockImplementation(() => ({
-            createSampleApp: appCreateSampleAppMock
-          }))
+            createSampleApp: appCreateSampleAppMock,
+          })),
         },
         {
           provide: AccountService,
           useClass: jest.fn().mockImplementation(() => ({
             findAccount: accountServiceFindAccountMock,
-            createAccount: accountServiceCreateAccountMock
-          }))
+            createAccount: accountServiceCreateAccountMock,
+          })),
         },
         {
           provide: PasswordService,
           useClass: jest.fn().mockImplementation(() => ({
             generatePassword: passwordServiceGeneratePasswordMock,
-            hashPassword: passwordServiceHashPasswordMock
-          }))
-        }
-      ]
+            hashPassword: passwordServiceHashPasswordMock,
+          })),
+        },
+      ],
     }).compile();
 
     service = module.get<WorkspaceService>(WorkspaceService);
@@ -167,7 +167,7 @@ describe('WorkspaceService', () => {
   it('should update an workspace', async () => {
     const args = {
       data: {},
-      where: { id: EXAMPLE_WORKSPACE_ID }
+      where: { id: EXAMPLE_WORKSPACE_ID },
     };
     expect(await service.updateWorkspace(args)).toEqual(EXAMPLE_WORKSPACE);
     expect(prismaWorkspaceUpdateMock).toBeCalledTimes(1);
@@ -179,9 +179,9 @@ describe('WorkspaceService', () => {
       accountId: EXAMPLE_ACCOUNT_ID,
       args: {
         data: {
-          name: EXAMPLE_WORKSPACE_NAME
-        }
-      }
+          name: EXAMPLE_WORKSPACE_NAME,
+        },
+      },
     };
     const prismaArgs = {
       ...args.args,
@@ -192,16 +192,16 @@ describe('WorkspaceService', () => {
             account: { connect: { id: args.accountId } },
             userRoles: {
               create: {
-                role: Role.OrganizationAdmin
-              }
+                role: Role.OrganizationAdmin,
+              },
             },
-            isOwner: true
-          }
-        }
+            isOwner: true,
+          },
+        },
       },
       include: {
-        users: true
-      }
+        users: true,
+      },
     };
     expect(await service.createWorkspace(args.accountId, args.args)).toEqual(
       EXAMPLE_WORKSPACE
@@ -214,10 +214,10 @@ describe('WorkspaceService', () => {
   it.skip('should throw conflict exception if invited user is already in the workspace', async () => {
     const functionArgs = {
       currentUser: EXAMPLE_USER,
-      args: { data: { email: EXAMPLE_EMAIL } }
+      args: { data: { email: EXAMPLE_EMAIL } },
     };
     const accountArgs = {
-      where: { email: EXAMPLE_EMAIL }
+      where: { email: EXAMPLE_EMAIL },
     };
 
     await expect(
@@ -237,24 +237,24 @@ describe('WorkspaceService', () => {
 
     const functionArgs = {
       currentUser: EXAMPLE_USER,
-      args: { data: { email: EXAMPLE_NONEXISTING_EMAIL } }
+      args: { data: { email: EXAMPLE_NONEXISTING_EMAIL } },
     };
     const accountArgs = {
-      where: { email: EXAMPLE_NONEXISTING_EMAIL }
+      where: { email: EXAMPLE_NONEXISTING_EMAIL },
     };
     const userCreateArgs = {
       data: {
         workspace: { connect: { id: EXAMPLE_WORKSPACE_ID } },
-        account: { connect: { id: EXAMPLE_ACCOUNT_ID } }
-      }
+        account: { connect: { id: EXAMPLE_ACCOUNT_ID } },
+      },
     };
     const createAccountArgs = {
       data: {
         firstName: '',
         lastName: '',
         email: functionArgs.args.data.email,
-        password: EXAMPLE_NEW_PASSWORD
-      }
+        password: EXAMPLE_NEW_PASSWORD,
+      },
     };
     expect(
       await service.inviteUser(functionArgs.currentUser, functionArgs.args)

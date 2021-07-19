@@ -27,9 +27,9 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET')
+        secret: configService.get('JWT_SECRET'),
       }),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
     AccountModule, // (AccountService, PasswordService)
     PrismaModule, // (PrismaService)
@@ -37,7 +37,7 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
     ExceptionFiltersModule,
     WorkspaceModule,
     UserModule,
-    GoogleSecretsManagerModule
+    GoogleSecretsManagerModule,
   ],
   providers: [
     AuthService,
@@ -59,13 +59,13 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
         }
         return new GitHubStrategy(authService, options);
       },
-      inject: [AuthService, ConfigService, GoogleSecretsManagerService]
+      inject: [AuthService, ConfigService, GoogleSecretsManagerService],
     },
     GqlAuthGuard,
     AuthResolver,
-    GitHubStrategyConfigService
+    GitHubStrategyConfigService,
   ],
   controllers: [AuthController],
-  exports: [GqlAuthGuard, AuthService, AuthResolver]
+  exports: [GqlAuthGuard, AuthService, AuthResolver],
 })
 export class AuthModule {}

@@ -7,7 +7,7 @@ import {
   FindManyAppRoleArgs,
   UpdateOneAppRoleArgs,
   FindOneAppRoleArgs,
-  DeleteAppRoleArgs
+  DeleteAppRoleArgs,
 } from './dto';
 import { AppRole } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
@@ -19,7 +19,7 @@ export class AppRoleResolver {
   constructor(private readonly appRoleService: AppRoleService) {}
   @Query(() => AppRole, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
   async appRole(@Args() args: FindOneAppRoleArgs): Promise<AppRole | null> {
@@ -28,7 +28,7 @@ export class AppRoleResolver {
 
   @Query(() => [AppRole], {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async appRoles(@Args() args: FindManyAppRoleArgs): Promise<AppRole[]> {
@@ -37,7 +37,7 @@ export class AppRoleResolver {
 
   @Mutation(() => AppRole, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
   async createAppRole(@Args() args: CreateAppRoleArgs): Promise<AppRole> {
@@ -46,7 +46,7 @@ export class AppRoleResolver {
 
   @Mutation(() => AppRole, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
   async deleteAppRole(
@@ -57,7 +57,7 @@ export class AppRoleResolver {
 
   @Mutation(() => AppRole, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
   async updateAppRole(

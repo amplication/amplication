@@ -3,12 +3,12 @@ import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class ConnectorRestApiCallCreateInput extends BlockCreateInput {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   url!: string;
 }

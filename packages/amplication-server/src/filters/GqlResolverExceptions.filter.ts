@@ -44,7 +44,7 @@ export function createRequestData(req: Request): RequestData {
     query: req.body?.query,
     hostname: req.hostname,
     ip: req.ip,
-    userId: user?.id
+    userId: user?.id,
   };
 }
 

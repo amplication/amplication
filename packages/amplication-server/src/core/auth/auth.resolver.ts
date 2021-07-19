@@ -7,7 +7,7 @@ import {
   ChangePasswordArgs,
   SetCurrentWorkspaceArgs,
   CreateApiTokenArgs,
-  ApiToken
+  ApiToken,
 } from './dto';
 
 import { AuthService } from './auth.service';
@@ -51,8 +51,8 @@ export class AuthResolver {
   ): Promise<ApiToken> {
     args.data.user = {
       connect: {
-        id: user.id
-      }
+        id: user.id,
+      },
     };
     return this.authService.createApiToken(args);
   }

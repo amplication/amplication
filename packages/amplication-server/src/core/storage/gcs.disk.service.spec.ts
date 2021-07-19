@@ -15,11 +15,11 @@ describe('GCSDiskService', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: configServiceGetMock
-          }
+            get: configServiceGetMock,
+          },
         },
-        GCSDiskService
-      ]
+        GCSDiskService,
+      ],
     }).compile();
     service = module.get<GCSDiskService>(GCSDiskService);
     jest.clearAllMocks();
@@ -30,8 +30,8 @@ describe('GCSDiskService', () => {
       driver: DriverType.GCS,
       config: {
         bucket: EXAMPLE_BUCKET_NAME,
-        keyFilename: ''
-      }
+        keyFilename: '',
+      },
     });
     expect(configServiceGetMock).toBeCalledTimes(1);
     expect(configServiceGetMock).toBeCalledWith(GCS_BUCKET_VAR);

@@ -15,13 +15,8 @@ export class AppSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<AppSettingsValues> {
-    const {
-      dbHost,
-      dbName,
-      dbPassword,
-      dbPort,
-      dbUser
-    } = await this.getAppSettingsBlock(args, user);
+    const { dbHost, dbName, dbPassword, dbPort, dbUser } =
+      await this.getAppSettingsBlock(args, user);
 
     return {
       dbHost,
@@ -29,7 +24,7 @@ export class AppSettingsService {
       dbPassword,
       dbPort,
       dbUser,
-      appId: args.where.id
+      appId: args.where.id,
     };
   }
 
@@ -37,18 +32,17 @@ export class AppSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<AppSettings> {
-    const [appSettings] = await this.blockService.findManyByBlockType<
-      AppSettings
-    >(
-      {
-        where: {
-          app: {
-            id: args.where.id
-          }
-        }
-      },
-      EnumBlockType.AppSettings
-    );
+    const [appSettings] =
+      await this.blockService.findManyByBlockType<AppSettings>(
+        {
+          where: {
+            app: {
+              id: args.where.id,
+            },
+          },
+        },
+        EnumBlockType.AppSettings
+      );
 
     if (isEmpty(appSettings)) {
       return this.createDefaultAppSettings(args.where.id, user);
@@ -63,7 +57,7 @@ export class AppSettingsService {
   ): Promise<AppSettings> {
     const appSettingsBlock = await this.getAppSettingsBlock(
       {
-        where: { id: args.where.id }
+        where: { id: args.where.id },
       },
       user
     );
@@ -71,9 +65,9 @@ export class AppSettingsService {
     return this.blockService.update<AppSettings>(
       {
         where: {
-          id: appSettingsBlock.id
+          id: appSettingsBlock.id,
         },
-        data: args.data
+        data: args.data,
       },
       user
     );
@@ -88,12 +82,12 @@ export class AppSettingsService {
         data: {
           app: {
             connect: {
-              id: appId
-            }
+              id: appId,
+            },
           },
           ...DEFAULT_APP_SETTINGS,
-          blockType: EnumBlockType.AppSettings
-        }
+          blockType: EnumBlockType.AppSettings,
+        },
       },
       user
     );

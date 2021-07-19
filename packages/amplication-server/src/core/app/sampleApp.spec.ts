@@ -8,7 +8,7 @@ import {
   TASK_ENTITY,
   TASK_PROJECT_FIELD,
   USER_PROJECTS_FIELD,
-  USER_TASKS_FIELD
+  USER_TASKS_FIELD,
 } from './sampleApp';
 
 const EXAMPLE_USER_ENTITY_ID = 'EXAMPLE_USER_ENTITY_ID';
@@ -35,8 +35,8 @@ describe('createSampleAppEntities', () => {
               properties: {
                 ...PROJECT_OWNER_FIELD.properties,
                 relatedEntityId: EXAMPLE_USER_ENTITY_ID,
-                relatedFieldId: EXAMPLE_CUID
-              }
+                relatedFieldId: EXAMPLE_CUID,
+              },
             },
             {
               ...PROJECT_TASKS_FIELD,
@@ -44,10 +44,10 @@ describe('createSampleAppEntities', () => {
               properties: {
                 ...PROJECT_TASKS_FIELD.properties,
                 relatedEntityId: EXAMPLE_CUID,
-                relatedFieldId: EXAMPLE_CUID
-              }
-            }
-          ]
+                relatedFieldId: EXAMPLE_CUID,
+              },
+            },
+          ],
         },
         {
           ...TASK_ENTITY,
@@ -60,8 +60,8 @@ describe('createSampleAppEntities', () => {
               properties: {
                 ...TASK_PROJECT_FIELD.properties,
                 relatedEntityId: EXAMPLE_CUID,
-                relatedFieldId: EXAMPLE_CUID
-              }
+                relatedFieldId: EXAMPLE_CUID,
+              },
             },
             {
               ...TASK_ASSIGNED_TO_FIELD,
@@ -69,11 +69,11 @@ describe('createSampleAppEntities', () => {
               properties: {
                 ...TASK_ASSIGNED_TO_FIELD.properties,
                 relatedEntityId: EXAMPLE_USER_ENTITY_ID,
-                relatedFieldId: EXAMPLE_CUID
-              }
-            }
-          ]
-        }
+                relatedFieldId: EXAMPLE_CUID,
+              },
+            },
+          ],
+        },
       ],
       userEntityFields: [
         {
@@ -82,8 +82,8 @@ describe('createSampleAppEntities', () => {
           properties: {
             ...USER_PROJECTS_FIELD.properties,
             relatedEntityId: EXAMPLE_CUID,
-            relatedFieldId: EXAMPLE_CUID
-          }
+            relatedFieldId: EXAMPLE_CUID,
+          },
         },
         {
           ...USER_TASKS_FIELD,
@@ -91,10 +91,10 @@ describe('createSampleAppEntities', () => {
           properties: {
             ...USER_TASKS_FIELD.properties,
             relatedEntityId: EXAMPLE_CUID,
-            relatedFieldId: EXAMPLE_CUID
-          }
-        }
-      ]
+            relatedFieldId: EXAMPLE_CUID,
+          },
+        },
+      ],
     });
   });
 });

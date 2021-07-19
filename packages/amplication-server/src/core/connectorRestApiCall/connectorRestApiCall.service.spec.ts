@@ -22,8 +22,8 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name'
-  }
+    name: 'example_workspace_name',
+  },
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApiCall = {
@@ -37,7 +37,7 @@ const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApiCall = {
   displayName: EXAMPLE_NAME,
   parentBlock: null,
   url: EXAMPLE_URL,
-  versionNumber: 0
+  versionNumber: 0,
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];
@@ -63,12 +63,12 @@ describe('ConnectorRestApiCallService', () => {
             create: createMock,
             findOne: findOneMock,
             findManyByBlockType: findManyByBlockTypeMock,
-            update: updateMock
-          }))
+            update: updateMock,
+          })),
         },
-        ConnectorRestApiCallService
+        ConnectorRestApiCallService,
       ],
-      imports: []
+      imports: [],
     }).compile();
 
     service = module.get<ConnectorRestApiCallService>(
@@ -83,7 +83,7 @@ describe('ConnectorRestApiCallService', () => {
   it('should find one', async () => {
     expect(
       await service.findOne({
-        where: { id: EXAMPLE_CONNECTOR_REST_API_CALL.id }
+        where: { id: EXAMPLE_CONNECTOR_REST_API_CALL.id },
       })
     ).toBe(EXAMPLE_CONNECTOR_REST_API_CALL);
     expect(findOneMock).toBeCalledTimes(1);
@@ -107,10 +107,10 @@ describe('ConnectorRestApiCallService', () => {
             url: EXAMPLE_URL,
             app: {
               connect: {
-                id: EXAMPLE_APP_ID
-              }
-            }
-          }
+                id: EXAMPLE_APP_ID,
+              },
+            },
+          },
         },
         EXAMPLE_USER
       )
@@ -123,11 +123,11 @@ describe('ConnectorRestApiCallService', () => {
       await service.update(
         {
           data: {
-            displayName: EXAMPLE_NAME
+            displayName: EXAMPLE_NAME,
           },
           where: {
-            id: EXAMPLE_CONNECTOR_REST_API_CALL.id
-          }
+            id: EXAMPLE_CONNECTOR_REST_API_CALL.id,
+          },
         },
         EXAMPLE_USER
       )

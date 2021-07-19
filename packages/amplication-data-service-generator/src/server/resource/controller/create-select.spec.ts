@@ -43,12 +43,9 @@ const EXAMPLE_LOOKUP_ENTITY: Entity = {
   permissions: [],
 };
 describe("createSelect", () => {
-  const cases: Array<[
-    string,
-    NamedClassDeclaration,
-    Entity,
-    namedTypes.ObjectExpression
-  ]> = [
+  const cases: Array<
+    [string, NamedClassDeclaration, Entity, namedTypes.ObjectExpression]
+  > = [
     [
       "adds true property for scalar field",
       createEntityDTO(EXAMPLE_ENTITY),

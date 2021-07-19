@@ -2,31 +2,31 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class AppSettingsUpdateInput extends BlockUpdateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   dbHost!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   dbName!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   dbUser!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   dbPassword!: string;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: false,
   })
   dbPort!: number;
 }

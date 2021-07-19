@@ -13,28 +13,28 @@ const EXAMPLE_PROFILE: Profile = {
   provider: 'github',
   profileUrl: 'https://github.com/example',
   id: 'example',
-  displayName: 'Example User'
+  displayName: 'Example User',
 };
 const EXAMPLE_USER = {
   account: {
-    id: 'EXAMPLE_ACCOUNT_ID'
-  }
+    id: 'EXAMPLE_ACCOUNT_ID',
+  },
 };
 const EXAMPLE_USER_WITH_GITHUB_ID = {
   ...EXAMPLE_USER,
-  githubId: EXAMPLE_PROFILE.id
+  githubId: EXAMPLE_PROFILE.id,
 };
 const GET_AUTH_USER_WHERE = {
   account: {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    OR: [{ githubId: EXAMPLE_PROFILE.id }, { email: EXAMPLE_EMAIL }]
-  }
+    OR: [{ githubId: EXAMPLE_PROFILE.id }, { email: EXAMPLE_EMAIL }],
+  },
 };
 
 jest.mock('@octokit/rest');
 
 Octokit.prototype.request = jest.fn(() => ({
-  data: [{ email: EXAMPLE_EMAIL }]
+  data: [{ email: EXAMPLE_EMAIL }],
 }));
 
 const getAuthUserMock = jest.fn();
@@ -49,11 +49,11 @@ describe('GithubStrategy', () => {
     const authService = {
       getAuthUser: getAuthUserMock,
       createGitHubUser: createGitHubUserMock,
-      updateGitHubUser: updateGitHubUserMock
+      updateGitHubUser: updateGitHubUserMock,
     } as unknown;
     const options: StrategyOptions = {
       clientID: 'EXAMPLE_CLIENT_ID',
-      clientSecret: 'EXAMPLE_CLIENT_SECRET'
+      clientSecret: 'EXAMPLE_CLIENT_SECRET',
     };
 
     strategy = new GitHubStrategy(authService as AuthService, options);

@@ -6,18 +6,18 @@ import { PendingChange } from '../core/app/dto/PendingChange'; // eslint-disable
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class Commit {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
@@ -25,29 +25,29 @@ export class Commit {
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   userId!: string;
 
   @Field(() => User, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   user?: User;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   message!: string;
 
   @Field(() => [Build], {
-    nullable: true
+    nullable: true,
   })
   builds?: Build[] | null;
 
   @Field(() => [PendingChange], {
-    nullable: true
+    nullable: true,
   })
   changes?: PendingChange[] | null;
 }

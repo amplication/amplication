@@ -28,7 +28,7 @@ export class GitHubStrategyConfigService {
       clientID,
       clientSecret,
       callbackURL,
-      scope
+      scope,
     };
   }
   private async getSecret(): Promise<string> {

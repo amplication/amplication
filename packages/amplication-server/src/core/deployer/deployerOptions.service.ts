@@ -6,7 +6,7 @@ import { GCPProviderService } from './gcpProvider.service';
 
 export enum DeployerProvider {
   Docker = 'docker',
-  GCP = 'gcp'
+  GCP = 'gcp',
 }
 
 export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
@@ -26,8 +26,8 @@ export class DeployerOptionsService implements DeployerOptions {
       default: deployerDefault,
       providers: {
         [DeployerProvider.Docker]: dockerProviderService.getProvider(),
-        [DeployerProvider.GCP]: gcpProviderService.getProvider()
-      }
+        [DeployerProvider.GCP]: gcpProviderService.getProvider(),
+      },
     });
   }
 }

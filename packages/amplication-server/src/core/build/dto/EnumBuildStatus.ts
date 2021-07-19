@@ -4,9 +4,9 @@ export enum EnumBuildStatus {
   Running = 'Running',
   Completed = 'Completed',
   Failed = 'Failed',
-  Invalid = 'Invalid'
+  Invalid = 'Invalid',
 }
 
 registerEnumType(EnumBuildStatus, {
-  name: 'EnumBuildStatus'
+  name: 'EnumBuildStatus',
 });

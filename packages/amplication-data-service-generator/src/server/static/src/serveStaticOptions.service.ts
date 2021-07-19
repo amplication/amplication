@@ -16,7 +16,8 @@ const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
 
 @Injectable()
 export class ServeStaticOptionsService
-  implements ServeStaticModuleOptionsFactory {
+  implements ServeStaticModuleOptionsFactory
+{
   private readonly logger = new Logger(ServeStaticOptionsService.name);
 
   constructor(private readonly configService: ConfigService) {}

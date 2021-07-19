@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { gql } from 'apollo-server-express';
 import {
   ApolloServerTestClient,
-  createTestClient
+  createTestClient,
 } from 'apollo-server-testing';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
@@ -24,17 +24,17 @@ const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   userId: EXAMPLE_USER_ID,
   message: EXAMPLE_MESSAGE,
-  createdAt: new Date()
+  createdAt: new Date(),
 };
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 };
 
 const USER_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     commit(where: { id: $id }) {
       user {
         id
@@ -46,7 +46,7 @@ const USER_QUERY = gql`
 `;
 
 const FIND_ONE_COMMIT_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     commit(where: { id: $id }) {
       id
       userId
@@ -88,33 +88,33 @@ describe('CommitService', () => {
           provide: CommitService,
           useClass: jest.fn(() => ({
             findOne: commitServiceFindOneMock,
-            findMany: commitServiceFindManyMock
-          }))
+            findMany: commitServiceFindManyMock,
+          })),
         },
         {
           provide: UserService,
           useClass: jest.fn(() => ({
-            findUser: userServiceFindUserMock
-          }))
+            findUser: userServiceFindUserMock,
+          })),
         },
         {
           provide: BuildService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useClass: jest.fn(() => ({
-            error: jest.fn()
-          }))
+            error: jest.fn(),
+          })),
         },
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            get: jest.fn()
-          }))
-        }
+            get: jest.fn(),
+          })),
+        },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })]
+      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -130,8 +130,8 @@ describe('CommitService', () => {
     const res = await apolloClient.query({
       query: USER_QUERY,
       variables: {
-        id: EXAMPLE_COMMIT_ID
-      }
+        id: EXAMPLE_COMMIT_ID,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -139,47 +139,47 @@ describe('CommitService', () => {
         user: {
           ...EXAMPLE_USER,
           createdAt: EXAMPLE_USER.createdAt.toISOString(),
-          updatedAt: EXAMPLE_USER.updatedAt.toISOString()
-        }
-      }
+          updatedAt: EXAMPLE_USER.updatedAt.toISOString(),
+        },
+      },
     });
     expect(userServiceFindUserMock).toBeCalledTimes(1);
     expect(userServiceFindUserMock).toBeCalledWith({
-      where: { id: EXAMPLE_USER_ID }
+      where: { id: EXAMPLE_USER_ID },
     });
   });
 
   it('should find one Commit', async () => {
     const res = await apolloClient.query({
       query: FIND_ONE_COMMIT_QUERY,
-      variables: { id: EXAMPLE_COMMIT_ID }
+      variables: { id: EXAMPLE_COMMIT_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       commit: {
         ...EXAMPLE_COMMIT,
-        createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
-      }
+        createdAt: EXAMPLE_COMMIT.createdAt.toISOString(),
+      },
     });
     expect(commitServiceFindOneMock).toBeCalledTimes(1);
     expect(commitServiceFindOneMock).toBeCalledWith({
-      where: { id: EXAMPLE_COMMIT_ID }
+      where: { id: EXAMPLE_COMMIT_ID },
     });
   });
 
   it('should find many Commits', async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_COMMIT_QUERY,
-      variables: {}
+      variables: {},
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       commits: [
         {
           ...EXAMPLE_COMMIT,
-          createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
-        }
-      ]
+          createdAt: EXAMPLE_COMMIT.createdAt.toISOString(),
+        },
+      ],
     });
     expect(commitServiceFindManyMock).toBeCalledTimes(1);
     expect(commitServiceFindManyMock).toBeCalledWith({});

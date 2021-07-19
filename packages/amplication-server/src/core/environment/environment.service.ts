@@ -5,7 +5,7 @@ import cuid from 'cuid';
 import {
   Environment,
   CreateEnvironmentArgs,
-  FindManyEnvironmentArgs
+  FindManyEnvironmentArgs,
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
@@ -24,25 +24,25 @@ export class EnvironmentService {
       data: {
         app: {
           connect: {
-            id: appId
-          }
+            id: appId,
+          },
         },
         address: cuid(),
-        name: DEFAULT_ENVIRONMENT_NAME
-      }
+        name: DEFAULT_ENVIRONMENT_NAME,
+      },
     });
   }
   async getDefaultEnvironment(appId: string): Promise<Environment | null> {
     const environments = await this.findMany({
       where: {
         app: {
-          id: appId
+          id: appId,
         },
         name: {
-          equals: DEFAULT_ENVIRONMENT_NAME
-        }
+          equals: DEFAULT_ENVIRONMENT_NAME,
+        },
       },
-      take: 1
+      take: 1,
     });
 
     return environments[0];

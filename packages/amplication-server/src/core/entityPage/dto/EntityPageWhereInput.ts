@@ -3,6 +3,6 @@ import { BlockTypeWhereInput } from '../../block/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityPageWhereInput extends BlockTypeWhereInput {}

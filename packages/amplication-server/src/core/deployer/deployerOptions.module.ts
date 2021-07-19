@@ -9,9 +9,9 @@ import { GCPProviderService } from './gcpProvider.service';
   providers: [
     DeployerOptionsService,
     GCPProviderService,
-    DockerProviderService
+    DockerProviderService,
   ],
   imports: [ConfigModule, DockerModule],
-  exports: [DeployerOptionsService, GCPProviderService, DockerProviderService]
+  exports: [DeployerOptionsService, GCPProviderService, DockerProviderService],
 })
 export class DeployerOptionsModule {}

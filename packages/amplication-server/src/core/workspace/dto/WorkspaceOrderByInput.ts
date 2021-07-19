@@ -3,30 +3,30 @@ import { SortOrder } from 'src/enums/SortOrder';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class WorkspaceOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   id?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   createdAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   updatedAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   name?: SortOrder | null;
 }

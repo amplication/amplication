@@ -16,7 +16,7 @@ export class AppSettingsResolver {
 
   @Mutation(() => AppSettings, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async updateAppSettings(
@@ -27,7 +27,7 @@ export class AppSettingsResolver {
   }
 
   @Query(() => AppSettings, {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async appSettings(

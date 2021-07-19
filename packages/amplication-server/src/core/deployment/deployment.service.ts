@@ -61,9 +61,9 @@ export const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
 export const ACTION_INCLUDE = {
   action: {
     include: {
-      steps: true
-    }
-  }
+      steps: true,
+    },
+  },
 };
 
 const MAX_DESTROY_PER_CYCLE = 2;
@@ -85,25 +85,25 @@ export function createInitialStepData(
         {
           level: EnumActionLogLevel.Info,
           message: 'Create deployment task',
-          meta: {}
+          meta: {},
         },
         {
           level: EnumActionLogLevel.Info,
           message: `Deploy to environment: ${environment}`,
-          meta: {}
+          meta: {},
         },
         {
           level: EnumActionLogLevel.Info,
           message: `version: ${version}`,
-          meta: {}
+          meta: {},
         },
         {
           level: EnumActionLogLevel.Info,
           message: `message: ${message}`,
-          meta: {}
-        }
-      ]
-    }
+          meta: {},
+        },
+      ],
+    },
   };
 }
 
@@ -124,36 +124,35 @@ export class DeploymentService {
   }
 
   async autoDeployToSandbox(build: Build): Promise<Deployment> {
-    const sandboxEnvironment = await this.environmentService.getDefaultEnvironment(
-      build.appId
-    );
+    const sandboxEnvironment =
+      await this.environmentService.getDefaultEnvironment(build.appId);
 
     const deployment = (await this.prisma.deployment.create({
       data: {
         build: {
           connect: {
-            id: build.id
-          }
+            id: build.id,
+          },
         },
         createdBy: {
           connect: {
-            id: build.userId
-          }
+            id: build.userId,
+          },
         },
         environment: {
           connect: {
-            id: sandboxEnvironment.id
-          }
+            id: sandboxEnvironment.id,
+          },
         },
         message: AUTO_DEPLOY_MESSAGE,
         status: EnumDeploymentStatus.Waiting,
         createdAt: new Date(),
         action: {
           connect: {
-            id: build.actionId
-          }
-        }
-      }
+            id: build.actionId,
+          },
+        },
+      },
     })) as Deployment;
 
     await this.deploy(deployment.id);
@@ -178,11 +177,11 @@ export class DeploymentService {
                 args.data.message,
                 /** @todo replace with environment name */
                 args.data.environment.connect.id
-              )
-            }
-          }
-        }
-      }
+              ),
+            },
+          },
+        },
+      },
     })) as Deployment;
 
     await this.deploy(deployment.id);
@@ -213,19 +212,21 @@ export class DeploymentService {
     const deployments = await this.findMany({
       where: {
         statusUpdatedAt: {
-          lt: lastUpdateThreshold
+          lt: lastUpdateThreshold,
         },
         status: {
-          equals: EnumDeploymentStatus.Waiting
-        }
+          equals: EnumDeploymentStatus.Waiting,
+        },
       },
-      include: ACTION_INCLUDE
+      include: ACTION_INCLUDE,
     });
     await Promise.all(
-      deployments.map(async deployment => {
+      deployments.map(async (deployment) => {
         const steps = await this.actionService.getSteps(deployment.actionId);
-        const deployStep = steps.find(step => step.name === DEPLOY_STEP_NAME);
-        const destroyStep = steps.find(step => step.name === DESTROY_STEP_NAME);
+        const deployStep = steps.find((step) => step.name === DEPLOY_STEP_NAME);
+        const destroyStep = steps.find(
+          (step) => step.name === DESTROY_STEP_NAME
+        );
 
         const currentStep = destroyStep || deployStep; //when destroy step exist it is the current one
         try {
@@ -266,13 +267,13 @@ export class DeploymentService {
   async deploy(deploymentId: string): Promise<void> {
     const deployment = (await this.prisma.deployment.findUnique({
       where: { id: deploymentId },
-      include: DEPLOY_DEPLOYMENT_INCLUDE
+      include: DEPLOY_DEPLOYMENT_INCLUDE,
     })) as Deployment & { build: Build; environment: Environment };
     await this.actionService.run(
       deployment.actionId,
       DEPLOY_STEP_NAME,
       DEPLOY_STEP_MESSAGE,
-      async step => {
+      async (step) => {
         const { build, environment } = deployment;
         const { appId } = build;
         const [imageId] = build.images;
@@ -322,22 +323,22 @@ export class DeploymentService {
           }
           await this.prisma.environment.update({
             where: {
-              id: deployment.environmentId
+              id: deployment.environmentId,
             },
             data: {
-              address: result.url
-            }
+              address: result.url,
+            },
           });
 
           //mark previous active deployments as removed
           await this.prisma.deployment.updateMany({
             where: {
               environmentId: deployment.environmentId,
-              status: EnumDeploymentStatus.Completed
+              status: EnumDeploymentStatus.Completed,
             },
             data: {
-              status: EnumDeploymentStatus.Removed
-            }
+              status: EnumDeploymentStatus.Removed,
+            },
           });
 
           return this.updateStatus(
@@ -357,8 +358,8 @@ export class DeploymentService {
           data: {
             statusQuery: result.statusQuery,
             statusUpdatedAt: new Date(),
-            status: EnumDeploymentStatus.Waiting
-          }
+            status: EnumDeploymentStatus.Waiting,
+          },
         });
     }
   }
@@ -373,7 +374,7 @@ export class DeploymentService {
   ): Promise<Deployment> {
     return this.update({
       where: { id: deploymentId },
-      data: { status }
+      data: { status },
     });
   }
 
@@ -395,7 +396,7 @@ export class DeploymentService {
 
     const backendConfiguration = {
       bucket: terraformStateBucket,
-      prefix: appId
+      prefix: appId,
     };
     const variables = {
       [TERRAFORM_APP_ID_VARIABLE]: appId,
@@ -403,7 +404,7 @@ export class DeploymentService {
       [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
       [GCP_TERRAFORM_REGION_VARIABLE]: region,
       [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance,
-      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain
+      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain,
     };
     return this.deployerService.deploy(
       gcpDeployConfiguration,
@@ -428,18 +429,18 @@ export class DeploymentService {
         deployments: {
           some: {
             createdAt: {
-              lt: lastDeployThreshold
+              lt: lastDeployThreshold,
             },
             status: {
-              equals: EnumDeploymentStatus.Completed
-            }
-          }
-        }
+              equals: EnumDeploymentStatus.Completed,
+            },
+          },
+        },
       },
-      take: MAX_DESTROY_PER_CYCLE
+      take: MAX_DESTROY_PER_CYCLE,
     });
     await Promise.all(
-      environments.map(async environment => {
+      environments.map(async (environment) => {
         return this.destroy(environment.id);
       })
     );
@@ -449,12 +450,12 @@ export class DeploymentService {
     const deployment = (await this.prisma.deployment.findFirst({
       where: {
         environmentId: environmentId,
-        status: EnumDeploymentStatus.Completed
+        status: EnumDeploymentStatus.Completed,
       },
       orderBy: {
-        createdAt: Prisma.SortOrder.desc
+        createdAt: Prisma.SortOrder.desc,
       },
-      include: DEPLOY_DEPLOYMENT_INCLUDE
+      include: DEPLOY_DEPLOYMENT_INCLUDE,
     })) as Deployment & { build: Build; environment: Environment };
 
     if (!deployment) return;
@@ -462,7 +463,7 @@ export class DeploymentService {
       deployment.actionId,
       DESTROY_STEP_NAME,
       DESTROY_STEP_MESSAGE,
-      async step => {
+      async (step) => {
         const { build, environment } = deployment;
         const { appId } = build;
         const [imageId] = build.images;
@@ -512,7 +513,7 @@ export class DeploymentService {
 
     const backendConfiguration = {
       bucket: terraformStateBucket,
-      prefix: appId
+      prefix: appId,
     };
     const variables = {
       [TERRAFORM_APP_ID_VARIABLE]: appId,
@@ -520,7 +521,7 @@ export class DeploymentService {
       [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
       [GCP_TERRAFORM_REGION_VARIABLE]: region,
       [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance,
-      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain
+      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain,
     };
     return this.deployerService.destroy(
       gcpDeployConfiguration,

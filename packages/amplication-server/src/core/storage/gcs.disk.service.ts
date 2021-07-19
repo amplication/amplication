@@ -16,8 +16,8 @@ export class GCSDiskService {
       driver: DriverType.GCS,
       config: {
         bucket,
-        keyFilename: ''
-      }
+        keyFilename: '',
+      },
     };
   }
 }

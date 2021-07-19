@@ -16,7 +16,7 @@ export class SystemController {
     await Promise.all([
       this.buildService.updateRunningBuildsStatus(),
       this.deploymentService.updateRunningDeploymentsStatus(),
-      this.deploymentService.destroyStaledDeployments()
+      this.deploymentService.destroyStaledDeployments(),
     ]);
   }
 }

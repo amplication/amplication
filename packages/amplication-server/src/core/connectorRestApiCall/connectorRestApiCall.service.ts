@@ -3,7 +3,7 @@ import { BlockTypeService } from '../block/blockType.service';
 import {
   ConnectorRestApiCall,
   CreateConnectorRestApiCallArgs,
-  FindManyConnectorRestApiCallArgs
+  FindManyConnectorRestApiCallArgs,
 } from './dto/';
 import { UpdateBlockArgs } from '../block/dto/UpdateBlockArgs';
 

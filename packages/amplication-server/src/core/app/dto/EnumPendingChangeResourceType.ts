@@ -2,9 +2,9 @@ import { registerEnumType } from '@nestjs/graphql';
 
 export enum EnumPendingChangeResourceType {
   Entity = 'Entity',
-  Block = 'Block'
+  Block = 'Block',
 }
 
 registerEnumType(EnumPendingChangeResourceType, {
-  name: 'EnumPendingChangeResourceType'
+  name: 'EnumPendingChangeResourceType',
 });

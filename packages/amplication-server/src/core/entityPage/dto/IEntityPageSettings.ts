@@ -5,13 +5,13 @@ import { InterfaceType, Field, InputType } from '@nestjs/graphql';
 export abstract class IEntityPageSettings {
   @Field(() => Boolean, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   allowCreation!: boolean;
 
   @Field(() => Boolean, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   allowDeletion!: boolean;
 }

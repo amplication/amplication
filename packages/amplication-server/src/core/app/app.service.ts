@@ -14,7 +14,7 @@ import { USER_ENTITY_NAME } from '../entity/constants';
 import {
   SAMPLE_APP_DATA,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  createSampleAppEntities
+  createSampleAppEntities,
 } from './sampleApp';
 import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
 import {
@@ -29,7 +29,7 @@ import {
   AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
   AppValidationErrorTypes,
-  AppCreateWithEntitiesInput
+  AppCreateWithEntitiesInput,
 } from './dto';
 
 import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
@@ -47,7 +47,7 @@ import { prepareDeletedItemName } from '../../util/softDelete';
 
 const USER_APP_ROLE = {
   name: 'user',
-  displayName: 'User'
+  displayName: 'User',
 };
 
 export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
@@ -55,7 +55,7 @@ export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
 
 export const DEFAULT_APP_COLOR = '#20A4F3';
 export const DEFAULT_APP_DATA = {
-  color: DEFAULT_APP_COLOR
+  color: DEFAULT_APP_COLOR,
 };
 
 export const INVALID_APP_ID = 'Invalid appId';
@@ -88,13 +88,13 @@ export class AppService {
         ...args.data,
         workspace: {
           connect: {
-            id: user.workspace?.id
-          }
+            id: user.workspace?.id,
+          },
         },
         roles: {
-          create: USER_APP_ROLE
-        }
-      }
+          create: USER_APP_ROLE,
+        },
+      },
     });
 
     await this.entityService.createDefaultEntities(app.id, user);
@@ -107,16 +107,16 @@ export class AppService {
           data: {
             app: {
               connect: {
-                id: app.id
-              }
+                id: app.id,
+              },
             },
             message: INITIAL_COMMIT_MESSAGE,
             user: {
               connect: {
-                id: user.id
-              }
-            }
-          }
+                id: user.id,
+              },
+            },
+          },
         },
         true
       );
@@ -132,14 +132,14 @@ export class AppService {
   async createSampleApp(user: User): Promise<App> {
     const app = await this.createApp(
       {
-        data: SAMPLE_APP_DATA
+        data: SAMPLE_APP_DATA,
       },
       user
     );
 
     const userEntity = await this.entityService.findFirst({
       where: { name: USER_ENTITY_NAME, appId: app.id },
-      select: { id: true }
+      select: { id: true },
     });
 
     const sampleAppData = createSampleAppEntities(userEntity.id);
@@ -159,16 +159,16 @@ export class AppService {
       data: {
         app: {
           connect: {
-            id: app.id
-          }
+            id: app.id,
+          },
         },
         message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
         user: {
           connect: {
-            id: user.id
-          }
-        }
-      }
+            id: user.id,
+          },
+        },
+      },
     });
 
     return app;
@@ -184,7 +184,7 @@ export class AppService {
   ): Promise<App> {
     if (
       data.entities.find(
-        entity => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
+        (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
       )
     ) {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
@@ -194,20 +194,20 @@ export class AppService {
       where: {
         name: {
           mode: QueryMode.Insensitive,
-          startsWith: data.app.name
+          startsWith: data.app.name,
         },
         workspaceId: user.workspace.id,
-        deletedAt: null
+        deletedAt: null,
       },
       select: {
-        name: true
-      }
+        name: true,
+      },
     });
 
     const appName = data.app.name;
     let index = 1;
     while (
-      existingApps.find(app => {
+      existingApps.find((app) => {
         return app.name.toLowerCase() === data.app.name.toLowerCase();
       })
     ) {
@@ -217,7 +217,7 @@ export class AppService {
 
     const app = await this.createApp(
       {
-        data: data.app
+        data: data.app,
       },
       user
     );
@@ -228,7 +228,7 @@ export class AppService {
 
     for (const { entity, index } of data.entities.map((entity, index) => ({
       index,
-      entity
+      entity,
     }))) {
       const displayName = entity.name.trim();
 
@@ -241,20 +241,20 @@ export class AppService {
           data: {
             app: {
               connect: {
-                id: app.id
-              }
+                id: app.id,
+              },
             },
             displayName: displayName,
             name: name,
-            pluralDisplayName: pluralDisplayName
-          }
+            pluralDisplayName: pluralDisplayName,
+          },
         },
         user
       );
 
       newEntities[index] = {
         entityId: newEntity.id,
-        name: newEntity.name
+        name: newEntity.name,
       };
 
       for (const entityField of entity.fields) {
@@ -263,12 +263,12 @@ export class AppService {
             data: {
               entity: {
                 connect: {
-                  id: newEntity.id
-                }
+                  id: newEntity.id,
+                },
               },
               displayName: entityField.name,
-              dataType: entityField.dataType
-            }
+              dataType: entityField.dataType,
+            },
           },
           user
         );
@@ -278,7 +278,7 @@ export class AppService {
     //after all entities were created, create the relation fields
     for (const { entity, index } of data.entities.map((entity, index) => ({
       index,
-      entity
+      entity,
     }))) {
       if (entity.relationsToEntityIndex) {
         for (const relationToIndex of entity.relationsToEntityIndex) {
@@ -287,12 +287,12 @@ export class AppService {
               data: {
                 entity: {
                   connect: {
-                    id: newEntities[index].entityId
-                  }
+                    id: newEntities[index].entityId,
+                  },
                 },
                 displayName: newEntities[relationToIndex].name,
-                dataType: EnumDataType.Lookup
-              }
+                dataType: EnumDataType.Lookup,
+              },
             },
             user
           );
@@ -306,16 +306,16 @@ export class AppService {
           data: {
             app: {
               connect: {
-                id: app.id
-              }
+                id: app.id,
+              },
             },
             message: data.commitMessage,
             user: {
               connect: {
-                id: user.id
-              }
-            }
-          }
+                id: user.id,
+              },
+            },
+          },
         });
       } catch {} //ignore - return the new app and the message will be available on the build log
     }
@@ -327,8 +327,8 @@ export class AppService {
     return this.prisma.app.findFirst({
       where: {
         id: args.where.id,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
   }
 
@@ -337,16 +337,16 @@ export class AppService {
       ...args,
       where: {
         ...args.where,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
   }
 
   async deleteApp(args: FindOneArgs): Promise<App | null> {
     const app = await this.app({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     if (isEmpty(app)) {
@@ -357,16 +357,16 @@ export class AppService {
       where: args.where,
       data: {
         name: prepareDeletedItemName(app.name, app.id),
-        deletedAt: new Date()
-      }
+        deletedAt: new Date(),
+      },
     });
   }
 
   async updateApp(args: UpdateOneAppArgs): Promise<App | null> {
     const app = await this.app({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     if (isEmpty(app)) {
@@ -392,11 +392,11 @@ export class AppService {
         workspace: {
           users: {
             some: {
-              id: user.id
-            }
-          }
-        }
-      }
+              id: user.id,
+            },
+          },
+        },
+      },
     });
 
     if (isEmpty(app)) {
@@ -405,7 +405,7 @@ export class AppService {
 
     const [changedEntities, changedBlocks] = await Promise.all([
       this.entityService.getChangedEntities(appId, user.id),
-      this.blockService.getChangedBlocks(appId, user.id)
+      this.blockService.getChangedBlocks(appId, user.id),
     ]);
 
     return [...changedEntities, ...changedBlocks];
@@ -425,11 +425,11 @@ export class AppService {
         workspace: {
           users: {
             some: {
-              id: userId
-            }
-          }
-        }
-      }
+              id: userId,
+            },
+          },
+        },
+      },
     });
 
     if (isEmpty(app)) {
@@ -438,7 +438,7 @@ export class AppService {
 
     const [changedEntities, changedBlocks] = await Promise.all([
       this.entityService.getChangedEntities(appId, userId),
-      this.blockService.getChangedBlocks(appId, userId)
+      this.blockService.getChangedBlocks(appId, userId),
     ]);
 
     /**@todo: consider discarding locked objects that have no actual changes */
@@ -446,20 +446,20 @@ export class AppService {
     const commit = await this.prisma.commit.create(args);
 
     await Promise.all(
-      changedEntities.flatMap(change => {
+      changedEntities.flatMap((change) => {
         const versionPromise = this.entityService.createVersion({
           data: {
             commit: {
               connect: {
-                id: commit.id
-              }
+                id: commit.id,
+              },
             },
             entity: {
               connect: {
-                id: change.resourceId
-              }
-            }
-          }
+                id: change.resourceId,
+              },
+            },
+          },
         });
 
         const releasePromise = this.entityService.releaseLock(
@@ -468,33 +468,33 @@ export class AppService {
 
         return [
           versionPromise.then(() => null),
-          releasePromise.then(() => null)
+          releasePromise.then(() => null),
         ];
       })
     );
 
     await Promise.all(
-      changedBlocks.flatMap(change => {
+      changedBlocks.flatMap((change) => {
         const versionPromise = this.blockService.createVersion({
           data: {
             commit: {
               connect: {
-                id: commit.id
-              }
+                id: commit.id,
+              },
             },
             block: {
               connect: {
-                id: change.resourceId
-              }
-            }
-          }
+                id: change.resourceId,
+              },
+            },
+          },
         });
 
         const releasePromise = this.blockService.releaseLock(change.resourceId);
 
         return [
           versionPromise.then(() => null),
-          releasePromise.then(() => null)
+          releasePromise.then(() => null),
         ];
       })
     );
@@ -507,21 +507,21 @@ export class AppService {
         data: {
           app: {
             connect: {
-              id: appId
-            }
+              id: appId,
+            },
           },
           commit: {
             connect: {
-              id: commit.id
-            }
+              id: commit.id,
+            },
           },
           createdBy: {
             connect: {
-              id: userId
-            }
+              id: userId,
+            },
           },
-          message: args.data.message
-        }
+          message: args.data.message,
+        },
       },
       skipPublish
     );
@@ -542,11 +542,11 @@ export class AppService {
         workspace: {
           users: {
             some: {
-              id: userId
-            }
-          }
-        }
-      }
+              id: userId,
+            },
+          },
+        },
+      },
     });
 
     if (isEmpty(app)) {
@@ -555,7 +555,7 @@ export class AppService {
 
     const [changedEntities, changedBlocks] = await Promise.all([
       this.entityService.getChangedEntities(appId, userId),
-      this.blockService.getChangedBlocks(appId, userId)
+      this.blockService.getChangedBlocks(appId, userId),
     ]);
 
     if (isEmpty(changedEntities) && isEmpty(changedBlocks)) {
@@ -564,13 +564,13 @@ export class AppService {
       );
     }
 
-    const entityPromises = changedEntities.map(change => {
+    const entityPromises = changedEntities.map((change) => {
       return this.entityService.discardPendingChanges(
         change.resourceId,
         userId
       );
     });
-    const blockPromises = changedBlocks.map(change => {
+    const blockPromises = changedBlocks.map((change) => {
       return this.blockService.discardPendingChanges(change.resourceId, userId);
     });
 
@@ -592,8 +592,8 @@ export class AppService {
   ): Promise<App> {
     const app = await this.app({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     if (isEmpty(app)) {
@@ -610,16 +610,16 @@ export class AppService {
       where: args.where,
       data: {
         githubToken: token,
-        githubTokenCreatedDate: new Date()
-      }
+        githubTokenCreatedDate: new Date(),
+      },
     });
   }
 
   async removeAuthorizeAppWithGithub(args: FindOneArgs): Promise<App> {
     const app = await this.app({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     if (isEmpty(app)) {
@@ -638,8 +638,8 @@ export class AppService {
         githubTokenCreatedDate: null,
         githubSyncEnabled: false,
         githubRepo: null,
-        githubBranch: null
-      }
+        githubBranch: null,
+      },
     });
   }
 
@@ -648,8 +648,8 @@ export class AppService {
   ): Promise<GithubRepo[]> {
     const app = await this.app({
       where: {
-        id: args.where.app.id
-      }
+        id: args.where.app.id,
+      },
     });
 
     if (isEmpty(app)) {
@@ -679,8 +679,8 @@ export class AppService {
 
     const app = await this.app({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     if (isEmpty(app)) {
@@ -731,7 +731,7 @@ export class AppService {
 
     return {
       isValid,
-      messages
+      messages,
     };
   }
 
@@ -740,8 +740,8 @@ export class AppService {
   ): Promise<AppGenerationConfig | null> {
     const app = await this.app({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     if (isEmpty(app)) {
@@ -784,8 +784,8 @@ export class AppService {
   ): Promise<App> {
     const app = await this.app({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     if (isEmpty(app)) {
@@ -809,16 +809,16 @@ export class AppService {
       where: args.where,
       data: {
         ...args.data,
-        githubSyncEnabled: true
-      }
+        githubSyncEnabled: true,
+      },
     });
   }
 
   async disableSyncWithGithubRepo(args: FindOneArgs): Promise<App> {
     const app = await this.app({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     if (isEmpty(app)) {
@@ -836,16 +836,16 @@ export class AppService {
         githubRepo: null, //reset the repo and branch to allow the user to set another branch when needed
         githubBranch: null,
         githubSyncEnabled: false,
-        githubLastSync: null
-      }
+        githubLastSync: null,
+      },
     });
   }
 
   async reportSyncMessage(appId: string, message: string): Promise<App> {
     const app = await this.app({
       where: {
-        id: appId
-      }
+        id: appId,
+      },
     });
 
     if (isEmpty(app)) {
@@ -855,12 +855,12 @@ export class AppService {
     //directly update with prisma since we don't want to expose these fields for regular updates
     return this.prisma.app.update({
       where: {
-        id: appId
+        id: appId,
       },
       data: {
         githubLastMessage: message,
-        githubLastSync: new Date()
-      }
+        githubLastSync: new Date(),
+      },
     });
   }
 }

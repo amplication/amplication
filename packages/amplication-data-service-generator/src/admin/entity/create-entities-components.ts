@@ -12,18 +12,16 @@ export async function createEntitiesComponents(
 ): Promise<Record<string, EntityComponents>> {
   return Object.fromEntries(
     await Promise.all(
-      entities.map(
-        async (entity): Promise<[string, EntityComponents]> => {
-          const components = await createEntityComponents(
-            entity,
-            dtos,
-            entityToDirectory,
-            entityToTitleComponent,
-            entityNameToEntity
-          );
-          return [entity.name, components];
-        }
-      )
+      entities.map(async (entity): Promise<[string, EntityComponents]> => {
+        const components = await createEntityComponents(
+          entity,
+          dtos,
+          entityToDirectory,
+          entityToTitleComponent,
+          entityNameToEntity
+        );
+        return [entity.name, components];
+      })
     )
   );
 }

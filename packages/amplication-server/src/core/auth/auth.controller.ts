@@ -5,7 +5,7 @@ import {
   Get,
   Res,
   Req,
-  UseFilters
+  UseFilters,
 } from '@nestjs/common';
 import { MorganInterceptor } from 'nest-morgan';
 import { AuthGuard } from '@nestjs/passport';

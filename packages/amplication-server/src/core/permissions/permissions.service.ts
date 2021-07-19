@@ -20,10 +20,10 @@ export class PermissionsService {
         app: {
           deletedAt: null,
           workspace: {
-            id: workspace.id
-          }
-        }
-      }
+            id: workspace.id,
+          },
+        },
+      },
     };
 
     if (resourceType === AuthorizableResourceParameter.WorkspaceId) {
@@ -35,9 +35,9 @@ export class PermissionsService {
           deletedAt: null,
           id: resourceId,
           workspace: {
-            id: workspace.id
-          }
-        }
+            id: workspace.id,
+          },
+        },
       });
       return matching === 1;
     }
@@ -45,8 +45,8 @@ export class PermissionsService {
       const matching = await this.prisma.apiToken.count({
         where: {
           id: resourceId,
-          userId: user.id
-        }
+          userId: user.id,
+        },
       });
       return matching === 1;
     }
@@ -62,11 +62,11 @@ export class PermissionsService {
                   build: {
                     app: {
                       deletedAt: null,
-                      workspaceId: workspace.id
-                    }
-                  }
-                }
-              }
+                      workspaceId: workspace.id,
+                    },
+                  },
+                },
+              },
             },
             {
               id: resourceId,
@@ -74,13 +74,13 @@ export class PermissionsService {
                 some: {
                   app: {
                     deletedAt: null,
-                    workspaceId: workspace.id
-                  }
-                }
-              }
-            }
-          ]
-        }
+                    workspaceId: workspace.id,
+                  },
+                },
+              },
+            },
+          ],
+        },
       });
       return matching === 1;
     }
@@ -91,10 +91,10 @@ export class PermissionsService {
           environment: {
             app: {
               deletedAt: null,
-              workspaceId: workspace.id
-            }
-          }
-        }
+              workspaceId: workspace.id,
+            },
+          },
+        },
       });
       return matching === 1;
     }
@@ -106,11 +106,11 @@ export class PermissionsService {
             entity: {
               app: {
                 deletedAt: null,
-                workspaceId: workspace.id
-              }
-            }
-          }
-        }
+                workspaceId: workspace.id,
+              },
+            },
+          },
+        },
       });
       return matching === 1;
     }
@@ -125,12 +125,12 @@ export class PermissionsService {
               entity: {
                 app: {
                   deletedAt: null,
-                  workspaceId: workspace.id
-                }
-              }
-            }
-          }
-        }
+                  workspaceId: workspace.id,
+                },
+              },
+            },
+          },
+        },
       });
       return matching === 1;
     }

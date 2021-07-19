@@ -3,30 +3,30 @@ import { EnumDataType } from 'src/enums/EnumDataType';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EnumDataTypeFilter {
   @Field(() => EnumDataType, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   equals?: keyof typeof EnumDataType | null;
 
   @Field(() => EnumDataType, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   not?: keyof typeof EnumDataType | null;
 
   @Field(() => [EnumDataType], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   in?: Array<keyof typeof EnumDataType | null>;
 
   @Field(() => [EnumDataType], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   notIn?: Array<keyof typeof EnumDataType | null>;
 }

@@ -22,8 +22,8 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name'
-  }
+    name: 'example_workspace_name',
+  },
 };
 
 const EXAMPLE_APP_SETTINGS: AppSettings = {
@@ -41,7 +41,7 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   dbName: 'myDb',
   dbPassword: '1234',
   dbPort: 5432,
-  dbUser: 'admin'
+  dbUser: 'admin',
 };
 
 const createMock = jest.fn(() => {
@@ -67,12 +67,12 @@ describe('AppSettingsService', () => {
             create: createMock,
             findOne: findOneMock,
             findManyByBlockType: findManyByBlockTypeMock,
-            update: updateMock
-          }))
+            update: updateMock,
+          })),
         },
-        AppSettingsService
+        AppSettingsService,
       ],
-      imports: []
+      imports: [],
     }).compile();
 
     service = module.get<AppSettingsService>(AppSettingsService);
@@ -86,7 +86,7 @@ describe('AppSettingsService', () => {
     expect(
       await service.getAppSettingsBlock(
         {
-          where: { id: EXAMPLE_APP_ID }
+          where: { id: EXAMPLE_APP_ID },
         },
         EXAMPLE_USER
       )
@@ -99,7 +99,7 @@ describe('AppSettingsService', () => {
       await service.createDefaultAppSettings(EXAMPLE_APP_ID, EXAMPLE_USER)
     ).toEqual({
       ...EXAMPLE_APP_SETTINGS,
-      ...DEFAULT_APP_SETTINGS
+      ...DEFAULT_APP_SETTINGS,
     });
     expect(createMock).toBeCalledTimes(1);
   });
@@ -109,11 +109,11 @@ describe('AppSettingsService', () => {
       await service.updateAppSettings(
         {
           data: {
-            ...EXAMPLE_APP_SETTINGS
+            ...EXAMPLE_APP_SETTINGS,
           },
           where: {
-            id: EXAMPLE_APP_ID
-          }
+            id: EXAMPLE_APP_ID,
+          },
         },
         EXAMPLE_USER
       )

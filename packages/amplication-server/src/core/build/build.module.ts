@@ -36,10 +36,10 @@ import { GithubModule } from '../github/github.module';
     DeploymentModule,
     GithubModule,
     forwardRef(() => AppModule),
-    AppSettingsModule
+    AppSettingsModule,
   ],
   providers: [BuildService, BuildResolver],
   exports: [BuildService, BuildResolver],
-  controllers: [BuildController]
+  controllers: [BuildController],
 })
 export class BuildModule {}

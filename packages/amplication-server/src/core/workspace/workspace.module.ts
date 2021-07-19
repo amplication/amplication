@@ -9,6 +9,6 @@ import { AppModule } from '../app/app.module';
 @Module({
   imports: [PrismaModule, AccountModule, PermissionsModule, AppModule],
   providers: [WorkspaceService, WorkspaceResolver],
-  exports: [WorkspaceService, WorkspaceResolver]
+  exports: [WorkspaceService, WorkspaceResolver],
 })
 export class WorkspaceModule {}

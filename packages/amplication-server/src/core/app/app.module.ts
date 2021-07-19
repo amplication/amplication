@@ -21,9 +21,9 @@ import { GithubModule } from '../github/github.module';
     EnvironmentModule,
     CommitModule,
     GithubModule,
-    BlockModule
+    BlockModule,
   ],
   providers: [AppService, AppResolver],
-  exports: [AppService, AppResolver]
+  exports: [AppService, AppResolver],
 })
 export class AppModule {}

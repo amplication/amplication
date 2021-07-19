@@ -15,8 +15,8 @@ export class LocalDiskService {
     return {
       driver: DriverType.LOCAL,
       config: {
-        root
-      }
+        root,
+      },
     };
   }
 }

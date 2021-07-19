@@ -28,5 +28,5 @@ export const DEFAULT_APP_SETTINGS: AppSettingsValuesExtended = {
   dbName: '',
   dbUser: 'admin',
   dbPassword: 'admin',
-  dbPort: 5432
+  dbPort: 5432,
 };

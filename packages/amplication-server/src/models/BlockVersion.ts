@@ -5,48 +5,48 @@ import { Commit } from '../models/Commit'; // eslint-disable-line import/no-cycl
 import { Block } from './Block'; // eslint-disable-line import/no-cycle
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class BlockVersion {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: string;
 
   @Field(() => Block, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   block?: Block;
 
   @Field(() => Int, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   versionNumber!: number;
 
@@ -54,13 +54,13 @@ export class BlockVersion {
 
   @Field(() => Commit, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   commit?: Commit;
 
   @Field(() => GraphQLJSONObject, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   settings?: JsonValue;
 

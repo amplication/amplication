@@ -6,7 +6,7 @@ import { BlockService } from '../block/block.service';
 import {
   CreateBlockArgs,
   FindManyBlockTypeArgs,
-  UpdateBlockArgs
+  UpdateBlockArgs,
 } from '../block/dto';
 import { UserEntity } from 'src/decorators/user.decorator';
 @Injectable()
@@ -35,8 +35,8 @@ export abstract class BlockTypeService<
         ...args,
         data: {
           ...args.data,
-          blockType: this.blockType
-        }
+          blockType: this.blockType,
+        },
       },
       user
     );
@@ -45,7 +45,7 @@ export abstract class BlockTypeService<
   async update(args: UpdateArgs, @UserEntity() user: User): Promise<T> {
     return this.blockService.update<T>(
       {
-        ...args
+        ...args,
       },
       user
     );

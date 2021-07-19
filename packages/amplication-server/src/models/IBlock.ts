@@ -7,13 +7,13 @@ import { BlockInputOutput } from './BlockInputOutput';
 export abstract class IBlock {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
@@ -21,61 +21,61 @@ export abstract class IBlock {
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
   @Field(() => Block, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   parentBlock!: Block | null;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   description!: string;
 
   @Field(() => EnumBlockType, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   blockType!: keyof typeof EnumBlockType;
 
   @Field(() => Number, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   versionNumber!: number;
 
   @Field(() => [BlockInputOutput], {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   inputParameters!: BlockInputOutput[];
 
   @Field(() => [BlockInputOutput], {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   outputParameters!: BlockInputOutput[];
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lockedByUserId?: string;
 
   @Field(() => Date, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lockedAt?: Date;
 }

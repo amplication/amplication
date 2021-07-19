@@ -10,18 +10,18 @@ import { JsonValue } from 'type-fest';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class Build {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
@@ -36,13 +36,13 @@ export class Build {
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   userId!: string;
 
   @Field(() => EnumBuildStatus, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   status?: keyof typeof EnumBuildStatus;
 
@@ -54,7 +54,7 @@ export class Build {
   entityVersions?: EntityVersion[] | null | undefined;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   version: string;
 
@@ -65,12 +65,12 @@ export class Build {
   actionId: string;
 
   @Field(() => Action, {
-    nullable: true
+    nullable: true,
   })
   action?: Action;
 
   @Field(() => [Deployment], {
-    nullable: true
+    nullable: true,
   })
   deployments?: Deployment[];
 

@@ -3,24 +3,24 @@ import { AppRoleWhereInput } from './AppRoleWhereInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class AppRoleFilter {
   @Field(() => AppRoleWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   every?: AppRoleWhereInput | null;
 
   @Field(() => AppRoleWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   some?: AppRoleWhereInput | null;
 
   @Field(() => AppRoleWhereInput, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   none?: AppRoleWhereInput | null;
 }

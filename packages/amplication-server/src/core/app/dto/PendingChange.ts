@@ -7,36 +7,36 @@ import { PendingChangeResource } from './PendingChangeResource'; // eslint-disab
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class PendingChange {
   @Field(() => EnumPendingChangeAction, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   action: EnumPendingChangeAction;
 
   @Field(() => EnumPendingChangeResourceType, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   resourceType: EnumPendingChangeResourceType;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   resourceId!: string;
 
   @Field(() => PendingChangeResource, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   resource: Entity | Block;
 
   @Field(() => Int, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   versionNumber!: number;
 }

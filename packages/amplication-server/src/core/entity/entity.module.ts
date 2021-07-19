@@ -12,9 +12,9 @@ import { UserModule } from '../user/user.module';
     PrismaModule,
     PermissionsModule,
     UserModule,
-    JsonSchemaValidationModule
+    JsonSchemaValidationModule,
   ],
   providers: [EntityService, EntityResolver, EntityVersionResolver],
-  exports: [EntityService, EntityResolver, EntityVersionResolver]
+  exports: [EntityService, EntityResolver, EntityVersionResolver],
 })
 export class EntityModule {}

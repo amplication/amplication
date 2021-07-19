@@ -5,6 +5,6 @@ import { PrismaModule } from 'nestjs-prisma';
 @Module({
   imports: [PrismaModule],
   providers: [PermissionsService],
-  exports: [PermissionsService]
+  exports: [PermissionsService],
 })
 export class PermissionsModule {}

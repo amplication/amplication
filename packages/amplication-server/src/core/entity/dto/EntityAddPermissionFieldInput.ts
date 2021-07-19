@@ -4,7 +4,7 @@ import { WhereParentIdInput } from 'src/dto';
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class EntityAddPermissionFieldInput {
   @Field(() => EnumEntityAction, { nullable: false })
@@ -12,13 +12,13 @@ export class EntityAddPermissionFieldInput {
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   fieldName: string;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   entity!: WhereParentIdInput;
 }

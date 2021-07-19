@@ -4,12 +4,12 @@ import { IBlock } from 'src/models';
 @ObjectType({
   implements: IBlock,
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class ConnectorRestApiCall extends IBlock {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   url!: string;
 }

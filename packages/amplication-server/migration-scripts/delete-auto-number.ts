@@ -6,8 +6,8 @@ async function main() {
   const client = new PrismaClient();
   await client.entityField.deleteMany({
     where: {
-      dataType: EnumDataType.AutoNumber
-    }
+      dataType: EnumDataType.AutoNumber,
+    },
   });
   await client.$disconnect();
 }

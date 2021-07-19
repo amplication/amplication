@@ -32,9 +32,8 @@ export async function createDataServiceImpl(
   logger.info("Creating application...");
   const timer = logger.startTimer();
 
-  const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
-    entities
-  );
+  const [entitiesWithUserEntity, userEntity] =
+    createUserEntityIfNotExist(entities);
   const normalizedEntities = resolveLookupFields(entitiesWithUserEntity);
 
   logger.info("Creating DTOs...");
@@ -107,7 +106,8 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             );
           }
 
-          const relatedFieldProperties = relatedField.properties as types.Lookup;
+          const relatedFieldProperties =
+            relatedField.properties as types.Lookup;
 
           const isOneToOne =
             !fieldProperties.allowMultipleSelection &&

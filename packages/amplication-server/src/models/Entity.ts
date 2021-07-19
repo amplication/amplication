@@ -7,94 +7,94 @@ import { EntityPermission } from './EntityPermission'; // eslint-disable-line im
 
 @ObjectType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class Entity {
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   updatedAt!: Date;
 
   @Field(() => App, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   app?: App;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   appId: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   name!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   displayName!: string;
 
   @Field(() => String, {
     nullable: false,
-    description: undefined
+    description: undefined,
   })
   pluralDisplayName!: string;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   description?: string;
 
   @Field(() => [EntityVersion], {
-    nullable: true
+    nullable: true,
   })
   versions?: EntityVersion[] | null;
 
   @Field(() => [EntityField], {
-    nullable: true
+    nullable: true,
   })
   fields?: EntityField[] | null;
 
   @Field(() => [EntityPermission], {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   permissions?: EntityPermission[] | null;
 
   @Field(() => String, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lockedByUserId?: string;
 
   @Field(() => User, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lockedByUser?: User;
 
   @Field(() => Date, {
     nullable: true,
-    description: undefined
+    description: undefined,
   })
   lockedAt?: Date;
 }

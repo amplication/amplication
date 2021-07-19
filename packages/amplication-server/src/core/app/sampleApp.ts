@@ -7,13 +7,13 @@ import cuid from 'cuid';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import {
   DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
-  INITIAL_ENTITY_FIELDS
+  INITIAL_ENTITY_FIELDS,
 } from '../entity/constants';
 import { BulkEntityData, BulkEntityFieldData } from '../entity/entity.service';
 
 export const SAMPLE_APP_DATA = {
   description: 'Sample App for task management',
-  name: 'My sample app'
+  name: 'My sample app',
 };
 
 export const CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE = 'Create sample entities';
@@ -26,8 +26,8 @@ export const PROJECT_OWNER_FIELD: BulkEntityFieldData = {
   searchable: false,
   description: '',
   properties: {
-    allowMultipleSelection: false
-  }
+    allowMultipleSelection: false,
+  },
 };
 
 export const USER_PROJECTS_FIELD: BulkEntityFieldData = {
@@ -38,8 +38,8 @@ export const USER_PROJECTS_FIELD: BulkEntityFieldData = {
   searchable: false,
   description: 'The list of projects owned by the user',
   properties: {
-    allowMultipleSelection: true
-  }
+    allowMultipleSelection: true,
+  },
 };
 
 export const PROJECT_ENTITY: BulkEntityData = {
@@ -57,8 +57,8 @@ export const PROJECT_ENTITY: BulkEntityData = {
       searchable: false,
       description: '',
       properties: {
-        maxLength: 2000
-      }
+        maxLength: 2000,
+      },
     },
     {
       displayName: 'Name',
@@ -68,8 +68,8 @@ export const PROJECT_ENTITY: BulkEntityData = {
       searchable: false,
       description: '',
       properties: {
-        maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
-      }
+        maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
+      },
     },
     {
       displayName: 'Start Date',
@@ -80,8 +80,8 @@ export const PROJECT_ENTITY: BulkEntityData = {
       description: '',
       properties: {
         dateOnly: true,
-        timeZone: 'localTime'
-      }
+        timeZone: 'localTime',
+      },
     },
     {
       displayName: 'Due Date',
@@ -92,10 +92,10 @@ export const PROJECT_ENTITY: BulkEntityData = {
       description: '',
       properties: {
         dateOnly: true,
-        timeZone: 'localTime'
-      }
-    }
-  ]
+        timeZone: 'localTime',
+      },
+    },
+  ],
 };
 
 export const TASK_PROJECT_FIELD: BulkEntityFieldData = {
@@ -106,8 +106,8 @@ export const TASK_PROJECT_FIELD: BulkEntityFieldData = {
   searchable: true,
   description: '',
   properties: {
-    allowMultipleSelection: false
-  }
+    allowMultipleSelection: false,
+  },
 };
 
 export const PROJECT_TASKS_FIELD: BulkEntityFieldData = {
@@ -118,8 +118,8 @@ export const PROJECT_TASKS_FIELD: BulkEntityFieldData = {
   searchable: false,
   description: 'The list of tasks in this project',
   properties: {
-    allowMultipleSelection: true
-  }
+    allowMultipleSelection: true,
+  },
 };
 
 export const TASK_ASSIGNED_TO_FIELD: BulkEntityFieldData = {
@@ -130,8 +130,8 @@ export const TASK_ASSIGNED_TO_FIELD: BulkEntityFieldData = {
   searchable: false,
   description: 'The user who is currently assigned to this task',
   properties: {
-    allowMultipleSelection: false
-  }
+    allowMultipleSelection: false,
+  },
 };
 
 export const USER_TASKS_FIELD: BulkEntityFieldData = {
@@ -142,8 +142,8 @@ export const USER_TASKS_FIELD: BulkEntityFieldData = {
   searchable: false,
   description: 'The list of tasks assigned to the user',
   properties: {
-    allowMultipleSelection: true
-  }
+    allowMultipleSelection: true,
+  },
 };
 
 export const TASK_ENTITY: BulkEntityData = {
@@ -162,8 +162,8 @@ export const TASK_ENTITY: BulkEntityData = {
       description: 'The estimated time in days',
       properties: {
         maximumValue: 9999999,
-        minimumValue: 0
-      }
+        minimumValue: 0,
+      },
     },
     {
       displayName: 'Start Date',
@@ -174,8 +174,8 @@ export const TASK_ENTITY: BulkEntityData = {
       description: '',
       properties: {
         dateOnly: true,
-        timeZone: 'localTime'
-      }
+        timeZone: 'localTime',
+      },
     },
     {
       displayName: 'Status',
@@ -188,26 +188,26 @@ export const TASK_ENTITY: BulkEntityData = {
         options: [
           {
             label: 'New',
-            value: 'new'
+            value: 'new',
           },
           {
             label: 'Pending',
-            value: 'pending'
+            value: 'pending',
           },
           {
             label: 'On Hold',
-            value: 'onHold'
+            value: 'onHold',
           },
           {
             label: 'Ongoing',
-            value: 'ongoing'
+            value: 'ongoing',
           },
           {
             label: 'Done',
-            value: 'done'
-          }
-        ]
-      }
+            value: 'done',
+          },
+        ],
+      },
     },
     {
       displayName: 'Title',
@@ -217,10 +217,10 @@ export const TASK_ENTITY: BulkEntityData = {
       searchable: true,
       description: '',
       properties: {
-        maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
-      }
-    }
-  ]
+        maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
+      },
+    },
+  ],
 };
 
 /**
@@ -228,9 +228,7 @@ export const TASK_ENTITY: BulkEntityData = {
  * @param userEntityId the ID of the user entity in the database
  * @returns entities to create for the sample app
  */
-export function createSampleAppEntities(
-  userEntityId: string
-): {
+export function createSampleAppEntities(userEntityId: string): {
   entities: BulkEntityData[];
   userEntityFields: (BulkEntityFieldData & { permanentId: string })[];
 } {
@@ -255,8 +253,8 @@ export function createSampleAppEntities(
         properties: {
           ...USER_PROJECTS_FIELD.properties,
           relatedEntityId: projectEntityId,
-          relatedFieldId: projectOwnerFieldId
-        }
+          relatedFieldId: projectOwnerFieldId,
+        },
       },
       {
         ...USER_TASKS_FIELD,
@@ -264,9 +262,9 @@ export function createSampleAppEntities(
         properties: {
           ...USER_TASKS_FIELD.properties,
           relatedEntityId: taskEntityId,
-          relatedFieldId: taskAssignedToFieldId
-        }
-      }
+          relatedFieldId: taskAssignedToFieldId,
+        },
+      },
     ],
     entities: [
       {
@@ -280,8 +278,8 @@ export function createSampleAppEntities(
             properties: {
               ...PROJECT_OWNER_FIELD.properties,
               relatedEntityId: userEntityId,
-              relatedFieldId: userProjectsFieldId
-            }
+              relatedFieldId: userProjectsFieldId,
+            },
           },
           {
             ...PROJECT_TASKS_FIELD,
@@ -289,10 +287,10 @@ export function createSampleAppEntities(
             properties: {
               ...PROJECT_TASKS_FIELD.properties,
               relatedEntityId: taskEntityId,
-              relatedFieldId: taskProjectFieldId
-            }
-          }
-        ]
+              relatedFieldId: taskProjectFieldId,
+            },
+          },
+        ],
       },
       {
         ...TASK_ENTITY,
@@ -305,8 +303,8 @@ export function createSampleAppEntities(
             properties: {
               ...TASK_PROJECT_FIELD.properties,
               relatedEntityId: projectEntityId,
-              relatedFieldId: projectTasksFieldId
-            }
+              relatedFieldId: projectTasksFieldId,
+            },
           },
           {
             ...TASK_ASSIGNED_TO_FIELD,
@@ -314,11 +312,11 @@ export function createSampleAppEntities(
             properties: {
               ...TASK_ASSIGNED_TO_FIELD.properties,
               relatedEntityId: userEntityId,
-              relatedFieldId: userTasksFieldId
-            }
-          }
-        ]
-      }
-    ]
+              relatedFieldId: userTasksFieldId,
+            },
+          },
+        ],
+      },
+    ],
   };
 }

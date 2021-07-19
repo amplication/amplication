@@ -13,7 +13,7 @@ describe('JsonSchemaValidationService', () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [JsonSchemaValidationService],
-      imports: []
+      imports: [],
     }).compile();
 
     service = module.get<JsonSchemaValidationService>(
@@ -27,7 +27,7 @@ describe('JsonSchemaValidationService', () => {
     });
     const args = {
       schema: {},
-      data: {}
+      data: {},
     };
     expect(await service.validateSchema(args.schema, args.data)).toEqual(
       new SchemaValidationResult(true)
@@ -45,7 +45,7 @@ describe('JsonSchemaValidationService', () => {
     });
     const args = {
       schema: {},
-      data: {}
+      data: {},
     };
     expect(await service.validateSchema(args.schema, args.data)).toEqual(
       new SchemaValidationResult(false, 'Error: Invalid')
