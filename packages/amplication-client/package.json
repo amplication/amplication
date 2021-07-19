@@ -73,7 +73,7 @@
     "react-xarrows": "1.7.1",
     "sass": "1.35.2",
     "semver": "7.3.5",
-    "styled-components": "5.1.1",
+    "styled-components": "5.3.0",
     "typescript": "3.9.10",
     "use-debounce": "3.4.3",
     "xlsx": "0.16.9",
