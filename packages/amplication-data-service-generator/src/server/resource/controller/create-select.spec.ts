@@ -26,6 +26,7 @@ const EXAMPLE_LOOKUP_FIELD: EntityField = {
   permanentId: "EXAMPLE_LOOKUP_PERMANENT_FIELD_ID",
   dataType: EnumDataType.Lookup,
   required: true,
+  unique: false,
   searchable: false,
   name: "exampleLookupFieldName",
   displayName: "Example Lookup Field",

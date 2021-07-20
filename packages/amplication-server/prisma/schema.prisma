@@ -221,6 +221,7 @@ model EntityField {
   displayName     String
   dataType        EnumDataType
   properties      Json
+  unique          Boolean                 @default(false)
   required        Boolean
   searchable      Boolean
   description     String

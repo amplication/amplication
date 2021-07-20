@@ -60,6 +60,12 @@ export class EntityFieldWhereInput {
     nullable: true,
     description: undefined
   })
+  unique?: BooleanFilter | null;
+
+  @Field(() => BooleanFilter, {
+    nullable: true,
+    description: undefined
+  })
   searchable?: BooleanFilter | null;
 
   @Field(() => StringFilter, {

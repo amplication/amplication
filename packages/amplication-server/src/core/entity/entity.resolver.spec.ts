@@ -64,6 +64,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   displayName: EXAMPLE_DISPLAY_NAME,
   dataType: EnumDataType.SingleLineText,
   required: false,
+  unique: false,
   searchable: true,
   description: 'exampleDescription',
   properties: {}
@@ -178,6 +179,7 @@ const FIND_MANY_FIELDS_QUERY = gql`
         displayName
         dataType
         required
+        unique
         searchable
         description
         properties
@@ -312,6 +314,7 @@ const ADD_ENTITY_PERM_FIELD_MUTATION = gql`
         displayName
         dataType
         required
+        unique
         searchable
         description
         properties
@@ -346,6 +349,7 @@ const DELETE_ENTITY_PERM_FIELD_MUTATION = gql`
         displayName
         dataType
         required
+        unique
         searchable
         description
         properties
@@ -372,6 +376,7 @@ const UPDATE_ENTITY_PERM_FIELD_ROLES_MUTATION = gql`
         displayName
         dataType
         required
+        unique
         searchable
         description
         properties
@@ -387,6 +392,7 @@ const CREATE_ENTITY_FIELD_MUTATION = gql`
     $dataType: EnumDataType!
     $properties: JSONObject!
     $required: Boolean!
+    $unique: Boolean!
     $searchable: Boolean!
     $description: String!
     $entity: String!
@@ -398,6 +404,7 @@ const CREATE_ENTITY_FIELD_MUTATION = gql`
         dataType: $dataType
         properties: $properties
         required: $required
+        unique: $unique
         searchable: $searchable
         description: $description
         entity: { connect: { id: $entity } }
@@ -411,6 +418,7 @@ const CREATE_ENTITY_FIELD_MUTATION = gql`
       displayName
       dataType
       required
+      unique
       searchable
       description
       properties
@@ -434,6 +442,7 @@ const CREATE_ENTITY_FIELD_BY_DISPLAY_NAME_MUTATION = gql`
       displayName
       dataType
       required
+      unique
       searchable
       description
       properties
@@ -452,6 +461,7 @@ const DELETE_ENTITY_FIELD_MUTATION = gql`
       displayName
       dataType
       required
+      unique
       searchable
       description
       properties
@@ -470,6 +480,7 @@ const UPDATE_ENTITY_FIELD_MUTATION = gql`
       displayName
       dataType
       required
+      unique
       searchable
       description
       properties
@@ -505,6 +516,7 @@ const GET_VERSION_FIELDS_QUERY = gql`
           displayName
           dataType
           required
+          unique
           searchable
           description
           properties
@@ -984,6 +996,7 @@ describe('EntityResolver', () => {
       dataType: EXAMPLE_ENTITY_FIELD.dataType,
       properties: EXAMPLE_ENTITY_FIELD.properties,
       required: EXAMPLE_ENTITY_FIELD.required,
+      unique: EXAMPLE_ENTITY_FIELD.unique,
       searchable: EXAMPLE_ENTITY_FIELD.searchable,
       description: EXAMPLE_ENTITY_FIELD.description,
       entity: EXAMPLE_ID

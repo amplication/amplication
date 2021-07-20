@@ -110,6 +110,7 @@ export const GET_FIELDS = gql`
         name
         dataType
         required
+        unique
         searchable
         description
         properties

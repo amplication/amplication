@@ -668,6 +668,7 @@ export type EntityField = {
   dataType: EnumDataType;
   properties?: Maybe<Scalars["JSONObject"]>;
   required: Scalars["Boolean"];
+  unique: Scalars["Boolean"];
   searchable: Scalars["Boolean"];
   description?: Maybe<Scalars["String"]>;
   position?: Maybe<Scalars["Int"]>;
@@ -684,6 +685,7 @@ export type EntityFieldCreateInput = {
   displayName: Scalars["String"];
   dataType: EnumDataType;
   properties: Scalars["JSONObject"];
+  unique: Scalars["Boolean"];
   required: Scalars["Boolean"];
   searchable: Scalars["Boolean"];
   description: Scalars["String"];
@@ -706,6 +708,7 @@ export type EntityFieldOrderByInput = {
   displayName?: Maybe<SortOrder>;
   dataType?: Maybe<SortOrder>;
   required?: Maybe<SortOrder>;
+  unique?: Maybe<SortOrder>;
   searchable?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
   position?: Maybe<SortOrder>;
@@ -717,6 +720,7 @@ export type EntityFieldUpdateInput = {
   dataType?: Maybe<EnumDataType>;
   properties?: Maybe<Scalars["JSONObject"]>;
   required?: Maybe<Scalars["Boolean"]>;
+  unique?: Maybe<Scalars["Boolean"]>;
   searchable?: Maybe<Scalars["Boolean"]>;
   description?: Maybe<Scalars["String"]>;
   position?: Maybe<Scalars["Int"]>;
@@ -731,6 +735,7 @@ export type EntityFieldWhereInput = {
   displayName?: Maybe<StringFilter>;
   dataType?: Maybe<EnumDataTypeFilter>;
   required?: Maybe<BooleanFilter>;
+  unique?: Maybe<BooleanFilter>;
   searchable?: Maybe<BooleanFilter>;
   description?: Maybe<StringFilter>;
 };

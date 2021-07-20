@@ -15,6 +15,7 @@ export const USER_NAME_FIELD: EntityField = {
   displayName: "Username",
   dataType: EnumDataType.Username,
   required: true,
+  unique: true,
   searchable: false,
 };
 
@@ -25,6 +26,7 @@ export const USER_PASSWORD_FIELD: EntityField = {
   displayName: "Password",
   dataType: EnumDataType.Password,
   required: true,
+  unique: false,
   searchable: false,
 };
 
@@ -35,6 +37,7 @@ export const USER_ROLES_FIELD: EntityField = {
   displayName: "Roles",
   dataType: EnumDataType.Roles,
   required: true,
+  unique: false,
   searchable: false,
   properties: {},
 };
@@ -46,6 +49,7 @@ const USER_ID_FIELD: EntityField = {
   displayName: "Id",
   dataType: EnumDataType.Id,
   required: true,
+  unique: false,
   searchable: false,
 };
 
