@@ -177,6 +177,7 @@ export const GET_ENTITY_VERSION = gql`
           dataType
           properties
           required
+          unique
           searchable
         }
       }
