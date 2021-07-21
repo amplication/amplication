@@ -103,6 +103,12 @@ export const EntityFieldListItem = ({
             Required
           </span>
         )}
+        {entityField.unique && (
+          <span className={`${CLASS_NAME}__property`}>
+            <Icon icon="check" />
+            Unique
+          </span>
+        )}
         {entityField.searchable && (
           <span className={`${CLASS_NAME}__property`}>
             <Icon icon="check" />
