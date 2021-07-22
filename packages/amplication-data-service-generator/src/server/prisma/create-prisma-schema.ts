@@ -93,7 +93,8 @@ export function createPrismaFields(
           name,
           PrismaSchemaDSL.ScalarType.String,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }
@@ -103,7 +104,8 @@ export function createPrismaFields(
           name,
           PrismaSchemaDSL.ScalarType.String,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }
@@ -113,7 +115,8 @@ export function createPrismaFields(
           name,
           PrismaSchemaDSL.ScalarType.String,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }
@@ -123,7 +126,8 @@ export function createPrismaFields(
           name,
           PrismaSchemaDSL.ScalarType.Int,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }
@@ -133,7 +137,8 @@ export function createPrismaFields(
           name,
           PrismaSchemaDSL.ScalarType.DateTime,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }
@@ -143,7 +148,8 @@ export function createPrismaFields(
           name,
           PrismaSchemaDSL.ScalarType.Float,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }
@@ -153,7 +159,8 @@ export function createPrismaFields(
           name,
           PrismaSchemaDSL.ScalarType.Boolean,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }
@@ -163,7 +170,8 @@ export function createPrismaFields(
           name,
           PrismaSchemaDSL.ScalarType.String,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }
@@ -173,7 +181,8 @@ export function createPrismaFields(
           name,
           PrismaSchemaDSL.ScalarType.Json,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }
@@ -233,7 +242,8 @@ export function createPrismaFields(
           scalarRelationFieldName,
           PrismaSchemaDSL.ScalarType.String,
           false,
-          field.required
+          field.required,
+          field.unique
         ),
       ];
     }

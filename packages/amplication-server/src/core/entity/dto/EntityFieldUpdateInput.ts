@@ -42,6 +42,12 @@ export class EntityFieldUpdateInput {
     nullable: true,
     description: undefined
   })
+  unique?: boolean | null;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: undefined
+  })
   searchable?: boolean | null;
 
   @Field(() => String, {

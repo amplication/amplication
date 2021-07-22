@@ -58,6 +58,12 @@ export class EntityFieldOrderByInput {
     nullable: true,
     description: undefined
   })
+  unique?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
   searchable?: SortOrder | null;
 
   @Field(() => SortOrder, {

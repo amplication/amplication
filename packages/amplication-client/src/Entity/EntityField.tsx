@@ -230,6 +230,7 @@ const GET_ENTITY_FIELD = gql`
         dataType
         properties
         required
+        unique
         searchable
         description
       }
@@ -258,6 +259,7 @@ const UPDATE_ENTITY_FIELD = gql`
       dataType
       properties
       required
+      unique
       searchable
       description
     }

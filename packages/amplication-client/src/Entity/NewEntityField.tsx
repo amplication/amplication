@@ -159,6 +159,7 @@ const CREATE_ENTITY_FIELD = gql`
       name
       dataType
       required
+      unique
       searchable
       description
       properties
@@ -173,6 +174,7 @@ const NEW_ENTITY_FIELD_FRAGMENT = gql`
     name
     dataType
     required
+    unique
     searchable
     description
     properties

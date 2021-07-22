@@ -43,6 +43,12 @@ export class EntityFieldCreateInput {
     nullable: false,
     description: undefined
   })
+  unique!: boolean;
+
+  @Field(() => Boolean, {
+    nullable: false,
+    description: undefined
+  })
   searchable!: boolean;
 
   @Field(() => String, {

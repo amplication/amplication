@@ -59,6 +59,7 @@ const EXAMPLE_FIELD: EntityField = {
   displayName: "Example Field",
   name: "exampleField",
   required: true,
+  unique: true,
   searchable: false,
   properties: {},
   description: "Example Field Description",

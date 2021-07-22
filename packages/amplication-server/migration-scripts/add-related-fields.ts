@@ -115,6 +115,7 @@ async function main() {
       try {
         relatedField = await client.entityField.create({
           data: {
+            unique: false,
             required: false,
             searchable: false,
             description: '',
@@ -140,6 +141,7 @@ async function main() {
       } catch (error) {
         relatedField = await client.entityField.create({
           data: {
+            unique: false,
             required: false,
             searchable: false,
             description: '',

@@ -191,6 +191,7 @@ export const GET_ENTITY = gql`
         id
         name
         displayName
+        unique
         required
         searchable
         dataType
@@ -220,6 +221,7 @@ const UPDATE_ENTITY = gql`
         name
         displayName
         required
+        unique
         searchable
         dataType
         description
