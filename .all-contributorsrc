@@ -303,6 +303,15 @@
         "example",
         "ideas"
       ]
+    },
+    {
+      "login": "Kelz29",
+      "name": "Kelello",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25604678?v=4",
+      "profile": "https://github.com/Kelz29",
+      "contributions": [
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7,
