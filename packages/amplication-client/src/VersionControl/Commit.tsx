@@ -56,6 +56,7 @@ const Commit = ({ applicationId, noChanges }: Props) => {
         },
       },
     ],
+    errorPolicy: "all",
   });
 
   const handleSubmit = useCallback(
