@@ -33,14 +33,15 @@ const keyMap = {
 
 const Commit = ({ applicationId, noChanges }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
-
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onError: () => {
       pendingChangesContext.setCommitRunning(false);
+      pendingChangesContext.setIsError(true);
       pendingChangesContext.reset();
     },
     onCompleted: () => {
       pendingChangesContext.setCommitRunning(false);
+      pendingChangesContext.setIsError(false);
     },
     refetchQueries: [
       {
@@ -56,7 +57,6 @@ const Commit = ({ applicationId, noChanges }: Props) => {
         },
       },
     ],
-    errorPolicy: "all",
   });
 
   const handleSubmit = useCallback(
@@ -69,6 +69,7 @@ const Commit = ({ applicationId, noChanges }: Props) => {
         },
       }).catch(console.error);
       resetForm(INITIAL_VALUES);
+      pendingChangesContext.setIsError(false);
       pendingChangesContext.reset();
     },
     [applicationId, commit, pendingChangesContext]
