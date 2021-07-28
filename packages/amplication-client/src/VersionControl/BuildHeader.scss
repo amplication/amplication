@@ -21,4 +21,10 @@
       color: var(--black40);
     }
   }
+  .error-message {
+    color: rgb(255, 72, 72);
+  }
+  .error-message:hover {
+    text-decoration: underline;
+  }
 }

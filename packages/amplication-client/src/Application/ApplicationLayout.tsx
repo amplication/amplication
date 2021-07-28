@@ -59,6 +59,7 @@ function ApplicationLayout({ match }: Props) {
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
 
   const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
     EnumFixedPanelKeys.PendingChanges
@@ -147,11 +148,19 @@ function ApplicationLayout({ match }: Props) {
     },
     [setCommitRunning]
   );
+  const setIsErrorCallback = useCallback(
+    (onError: boolean) => {
+      setIsError(onError);
+    },
+    [setIsError]
+  );
 
   const pendingChangesContextValue = useMemo(
     () => ({
       pendingChanges,
       commitRunning,
+      isError,
+      setIsError: setIsErrorCallback,
       setCommitRunning: setCommitRunningCallback,
       addEntity,
       addBlock,
@@ -161,11 +170,13 @@ function ApplicationLayout({ match }: Props) {
     [
       pendingChanges,
       commitRunning,
+      isError,
       addEntity,
       addBlock,
       addChange,
       resetPendingChanges,
       setCommitRunningCallback,
+      setIsErrorCallback,
     ]
   );
 
