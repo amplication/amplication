@@ -49,8 +49,6 @@ export function identity(userId: string, props: EventProps) {
 
 export function page(name?: string, props?: EventProps) {
   if (REACT_APP_AMPLITUDE_API_KEY) {
-    console.log("page", name);
-
     //@ts-ignore
     const analytics = window.analytics;
     analytics.page(name, props);
