@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 import React from "react";
-import { Switch, Route, match } from "react-router-dom";
+import { Switch, match } from "react-router-dom";
 import MainLayout from "../Layout/MainLayout";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import * as models from "../models";
@@ -11,6 +11,7 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import WorkspaceSelector from "./WorkspaceSelector";
 import WorkspaceForm from "./WorkspaceForm";
 import PageContent from "../Layout/PageContent";
+import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import "./WorkspaceLayout.scss";
 
 export type ApplicationData = {
@@ -55,15 +56,14 @@ function WorkspaceLayout({ match }: Props) {
         <div className={`${CLASS_NAME}__app-container`}>
           <PageContent className={CLASS_NAME}>
             <Switch>
-              <Route
-                exact
-                path="/workspace/settings"
-                component={WorkspaceForm}
-              />
+              <RouteWithAnalytics exact path="/workspace/settings">
+                <WorkspaceForm />
+              </RouteWithAnalytics>
             </Switch>
-
             <Switch>
-              <Route exact path="/" component={ApplicationList} />
+              <RouteWithAnalytics exact path="/">
+                <ApplicationList />
+              </RouteWithAnalytics>
             </Switch>
           </PageContent>
         </div>
