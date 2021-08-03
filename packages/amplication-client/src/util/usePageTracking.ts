@@ -7,6 +7,7 @@ const usePageTracking = () => {
 
   useEffect(() => {
     analytics.page(match.path, { path: match.path });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return null;
