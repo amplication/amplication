@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 
 import ApplicationLayout from "./Application/ApplicationLayout";
@@ -13,6 +13,7 @@ import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import AuthAppWithGithubCallback from "./Settings/AuthAppWithGithubCallback";
+import RouteWithAnalytics from "./Layout/RouteWithAnalytics";
 
 const context = {
   source: "amplication-client",
@@ -45,8 +46,12 @@ function App() {
     <ThemeProvider>
       <NavigationTabsProvider>
         <Switch>
-          <Route path="/login" component={Login} />
-          <Route path="/signup" component={Signup} />
+          <RouteWithAnalytics path="/login">
+            <Login />
+          </RouteWithAnalytics>
+          <RouteWithAnalytics path="/signup">
+            <Signup />
+          </RouteWithAnalytics>
           <PrivateRoute
             exact
             path="/github-auth-app/callback/:application"

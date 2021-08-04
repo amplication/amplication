@@ -1,10 +1,11 @@
 import React from "react";
-import { Switch, Route, match } from "react-router-dom";
+import { Switch, match } from "react-router-dom";
 
 import { CommitList } from "./CommitList";
 import CommitPage from "./CommitPage";
 
 import useNavigationTabs from "../Layout/UseNavigationTabs";
+import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 
 type Props = {
   match: match<{ application: string }>;
@@ -18,8 +19,15 @@ function Entities({ match }: Props) {
 
   return (
     <Switch>
-      <Route exact path="/:application/commits/" component={CommitList} />
-      <Route path="/:application/commits/:commitId" component={CommitPage} />
+      <RouteWithAnalytics
+        exact
+        path="/:application/commits/"
+        component={CommitList}
+      />
+      <RouteWithAnalytics
+        path="/:application/commits/:commitId"
+        component={CommitPage}
+      />
     </Switch>
   );
 }

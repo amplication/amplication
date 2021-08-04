@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import { Switch, Route, match, useLocation } from "react-router-dom";
+import { Switch, match, useLocation } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -16,6 +16,7 @@ import { ENTITY_ACTIONS } from "./constants";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import { useTracking, track } from "../util/analytics";
 import InnerTabLink from "../Layout/InnerTabLink";
+import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 
 import "./Entity.scss";
 
@@ -129,35 +130,27 @@ const Entity = ({ match }: Props) => {
         <span>can't find</span> /**@todo: Show formatted error message */
       ) : (
         <Switch>
-          <Route
-            path="/:application/entities/:entityId/permissions"
-            component={() => (
-              <PermissionsForm
-                entityId={entityId}
-                applicationId={application}
-                availableActions={ENTITY_ACTIONS}
-                objectDisplayName={data.entity.pluralDisplayName}
-              />
-            )}
-          />
-          <Route
-            path="/:application/entities/:entityId/fields/:fieldId"
-            component={EntityField}
-          />
-          <Route
-            path="/:application/entities/:entityId/fields/"
-            component={() => <EntityFieldList entityId={data.entity.id} />}
-          />
-          <Route
-            path="/:application/entities/:entityId"
-            component={() => (
-              <EntityForm
-                entity={data.entity}
-                applicationId={application}
-                onSubmit={handleSubmit}
-              />
-            )}
-          />
+          <RouteWithAnalytics path="/:application/entities/:entityId/permissions">
+            <PermissionsForm
+              entityId={entityId}
+              applicationId={application}
+              availableActions={ENTITY_ACTIONS}
+              objectDisplayName={data.entity.pluralDisplayName}
+            />
+          </RouteWithAnalytics>
+          <RouteWithAnalytics path="/:application/entities/:entityId/fields/:fieldId">
+            <EntityField />
+          </RouteWithAnalytics>
+          <RouteWithAnalytics path="/:application/entities/:entityId/fields/">
+            <EntityFieldList entityId={data.entity.id} />
+          </RouteWithAnalytics>
+          <RouteWithAnalytics path="/:application/entities/:entityId">
+            <EntityForm
+              entity={data.entity}
+              applicationId={application}
+              onSubmit={handleSubmit}
+            />
+          </RouteWithAnalytics>
         </Switch>
       )}
 

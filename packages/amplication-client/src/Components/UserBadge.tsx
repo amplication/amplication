@@ -8,7 +8,7 @@ import useAuthenticated from "../authentication/use-authenticated";
 import { UserAvatar } from "@amplication/design-system";
 
 import "./UserBadge.scss";
-import { setUserId, identifySetOnce } from "../util/analytics";
+import { identity } from "../util/analytics";
 
 type TData = {
   me: {
@@ -25,8 +25,10 @@ function UserBadge() {
 
   useEffect(() => {
     if (data) {
-      setUserId(data.me.account.id);
-      identifySetOnce({ key: "signupDate", value: new Date() });
+      identity(data.me.account.id, {
+        createdAt: data.me.account.createdAt,
+        email: data.me.account.email,
+      });
     }
   }, [data]);
 
@@ -55,6 +57,7 @@ const GET_USER = gql`
         email
         firstName
         lastName
+        createdAt
       }
     }
   }
