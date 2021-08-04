@@ -6,7 +6,13 @@ const usePageTracking = () => {
   const match = useRouteMatch();
 
   useEffect(() => {
-    analytics.page(match.path, { path: match.path });
+    const url = `${window.location.origin}${match.path}`;
+    const path = match.path.replaceAll(":", "");
+    analytics.page(path.replaceAll("/", "-"), {
+      path,
+      url,
+      params: match.params,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
