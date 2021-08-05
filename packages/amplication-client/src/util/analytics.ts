@@ -1,5 +1,4 @@
 import * as reactTracking from "react-tracking";
-import amplitude from "amplitude-js";
 import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
 
 export interface Event {
@@ -21,54 +20,37 @@ export const useTracking: () => Omit<
 export function dispatch(event: Partial<Event>) {
   if (REACT_APP_AMPLITUDE_API_KEY) {
     const { eventName, ...rest } = event;
-    amplitude.getInstance().logEvent(eventName || MISSING_EVENT_NAME, rest);
+
+    //@ts-ignore
+    const analytics = window.analytics;
+    analytics.track(eventName || MISSING_EVENT_NAME, rest);
   }
 }
 
 export function init() {
   if (REACT_APP_AMPLITUDE_API_KEY) {
-    amplitude.getInstance().init(REACT_APP_AMPLITUDE_API_KEY, undefined, {
-      saveParamsReferrerOncePerSession: false,
-      includeReferrer: true,
-      includeUtm: true,
-      includeGclid: true,
-    });
+    //@ts-ignore
+    const analytics = window.analytics;
+    analytics.load(REACT_APP_AMPLITUDE_API_KEY);
   }
 }
 
-export function setUserId(userId: string) {
-  if (REACT_APP_AMPLITUDE_API_KEY) {
-    amplitude.getInstance().setUserId(userId);
-  }
-}
-
-type IdentitySetProps = {
-  key: string;
-  value: boolean | number | string | any[] | object;
+type EventProps = {
+  [key: string]: unknown;
 };
 
-export function identifySet({ key, value }: IdentitySetProps) {
+export function identity(userId: string, props: EventProps) {
   if (REACT_APP_AMPLITUDE_API_KEY) {
-    const identify = new amplitude.Identify().set(key, value);
-    amplitude.getInstance().identify(identify);
+    //@ts-ignore
+    const analytics = window.analytics;
+    analytics.identify(userId, props);
   }
 }
 
-export function identifySetOnce({ key, value }: IdentitySetProps) {
+export function page(name?: string, props?: EventProps) {
   if (REACT_APP_AMPLITUDE_API_KEY) {
-    const identify = new amplitude.Identify().setOnce(key, value);
-    amplitude.getInstance().identify(identify);
-  }
-}
-
-type IdentityAddProps = {
-  key: string;
-  value: number | string;
-};
-
-export function identifyAdd({ key, value }: IdentityAddProps) {
-  if (REACT_APP_AMPLITUDE_API_KEY) {
-    const identify = new amplitude.Identify().add(key, value);
-    amplitude.getInstance().identify(identify);
+    //@ts-ignore
+    const analytics = window.analytics;
+    analytics.page(name, props);
   }
 }

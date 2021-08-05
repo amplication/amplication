@@ -1,5 +1,6 @@
 import React from "react";
 import { Switch, Route, match } from "react-router-dom";
+import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 
 import { EntityList } from "./EntityList";
 import "./Entities.scss";
@@ -13,7 +14,11 @@ type Props = {
 function Entities({ match }: Props) {
   return (
     <Switch>
-      <Route exact path="/:application/entities/" component={EntityList} />
+      <RouteWithAnalytics
+        exact
+        path="/:application/entities/"
+        component={EntityList}
+      />
       <Route path="/:application/entities/:entityId" component={Entity} />
     </Switch>
   );
