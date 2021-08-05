@@ -14,8 +14,8 @@ github_app_auth_redirect_uri = "https://staging-oc.amplication.com/github-auth-a
 # paddle - sandbox
 paddle_vendor_id = "2673"
 
-# Amplitude
-amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"
+# Amplitude (segment write key)
+amplitude_api_key = "aVqxCAcXOdCx5DPI41s6EmwsSCB8Kjz6"
 
 # Sendgrid
 sendgrid_from_address = "team@amplication.com"

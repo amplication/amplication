@@ -13,8 +13,8 @@ github_app_auth_redirect_uri = "https://app.amplication.com/github-auth-app/call
 # paddle - prod
 paddle_vendor_id = "131992"
 
-# Amplitude
-amplitude_api_key = "d6c2950cd60b91196e678f9a3a7ac705"
+# Amplitude (segment write key)
+amplitude_api_key = "P5sO0VHJJlCrBz9bPYhFgN94VwyTyxPO"
 
 # Sendgrid
 sendgrid_from_address = "team@amplication.com"
