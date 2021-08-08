@@ -1,5 +1,5 @@
 import * as common from "@nestjs/common";
-import * as gqlBasicAuthGuard from "../auth/gqlBasicAuth.guard";
+import * as gqlDefaultAuthGuard from "../auth/gqlDefaultAuth.guard";
 import * as gqlACGuard from "../auth/gqlAC.guard";
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { ApolloError } from "apollo-server-express";
@@ -24,7 +24,10 @@ export class AuthResolver {
   }
 
   @Query(() => UserInfo)
-  @common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+  @common.UseGuards(
+    gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+    gqlACGuard.GqlACGuard
+  )
   async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
     return userInfo;
   }
