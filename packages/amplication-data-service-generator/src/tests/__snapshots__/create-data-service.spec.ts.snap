@@ -2561,7 +2561,7 @@ import { PasswordService } from \\"./password.service\\";
 export class AuthModule {}
 ",
   "server/src/auth/auth.resolver.ts": "import * as common from \\"@nestjs/common\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { Args, Mutation, Resolver, Query } from \\"@nestjs/graphql\\";
 import { ApolloError } from \\"apollo-server-express\\";
@@ -2586,7 +2586,10 @@ export class AuthResolver {
   }
 
   @Query(() => UserInfo)
-  @common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+  @common.UseGuards(
+    gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+    gqlACGuard.GqlACGuard
+  )
   async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
     return userInfo;
   }
@@ -2717,6 +2720,10 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
+  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basicAuth.guard\\";
+
+export class DefaultAuthGuard extends BasicAuthGuard {}
+",
   "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
 import { ACGuard } from \\"nest-access-control\\";
@@ -2742,6 +2749,10 @@ export class GqlBasicAuthGuard extends BasicAuthGuard {
     return ctx.getContext<{ req: Request }>().req;
   }
 }
+",
+  "server/src/auth/gqlDefaultAuth.guard.ts": "import { GqlBasicAuthGuard } from \\"./gqlBasicAuth.guard\\";
+
+export class GqlDefaultAuthGuard extends GqlBasicAuthGuard {}
 ",
   "server/src/auth/gqlUserData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
@@ -4098,7 +4109,7 @@ describe(\\"Customer\\", () => {
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
@@ -4121,7 +4132,10 @@ export class CustomerControllerBase {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -4200,7 +4214,10 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -4261,7 +4278,10 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -4321,7 +4341,10 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -4413,7 +4436,10 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -4469,7 +4495,10 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -4514,7 +4543,10 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -4556,7 +4588,10 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -4598,7 +4633,10 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -4662,7 +4700,7 @@ export class CustomerModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -4680,7 +4718,10 @@ import { Organization } from \\"../../organization/base/Organization\\";
 import { CustomerService } from \\"../customer.service\\";
 
 @graphql.Resolver(() => Customer)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class CustomerResolverBase {
   constructor(
     protected readonly service: CustomerService,
@@ -5061,14 +5102,17 @@ export class CustomerModule {}
   "server/src/customer/customer.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { CustomerResolverBase } from \\"./base/customer.resolver.base\\";
 import { Customer } from \\"./base/Customer\\";
 import { CustomerService } from \\"./customer.service\\";
 
 @graphql.Resolver(() => Customer)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class CustomerResolver extends CustomerResolverBase {
   constructor(
     protected readonly service: CustomerService,
@@ -5437,7 +5481,7 @@ describe(\\"Empty\\", () => {
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
@@ -5458,7 +5502,10 @@ export class EmptyControllerBase {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -5500,7 +5547,10 @@ export class EmptyControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -5538,7 +5588,10 @@ export class EmptyControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -5575,7 +5628,10 @@ export class EmptyControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -5630,7 +5686,10 @@ export class EmptyControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -5685,7 +5744,7 @@ export class EmptyModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -5698,7 +5757,10 @@ import { Empty } from \\"./Empty\\";
 import { EmptyService } from \\"../empty.service\\";
 
 @graphql.Resolver(() => Empty)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class EmptyResolverBase {
   constructor(
     protected readonly service: EmptyService,
@@ -5865,14 +5927,17 @@ export class EmptyModule {}
   "server/src/empty/empty.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { EmptyResolverBase } from \\"./base/empty.resolver.base\\";
 import { Empty } from \\"./base/Empty\\";
 import { EmptyService } from \\"./empty.service\\";
 
 @graphql.Resolver(() => Empty)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class EmptyResolver extends EmptyResolverBase {
   constructor(
     protected readonly service: EmptyService,
@@ -6522,7 +6587,7 @@ describe(\\"Order\\", () => {
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
@@ -6543,7 +6608,10 @@ export class OrderControllerBase {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -6600,7 +6668,10 @@ export class OrderControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -6647,7 +6718,10 @@ export class OrderControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -6693,7 +6767,10 @@ export class OrderControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -6763,7 +6840,10 @@ export class OrderControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -6827,7 +6907,7 @@ export class OrderModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -6843,7 +6923,10 @@ import { Customer } from \\"../../customer/base/Customer\\";
 import { OrderService } from \\"../order.service\\";
 
 @graphql.Resolver(() => Order)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class OrderResolverBase {
   constructor(
     protected readonly service: OrderService,
@@ -7139,14 +7222,17 @@ export class OrderModule {}
   "server/src/order/order.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { OrderResolverBase } from \\"./base/order.resolver.base\\";
 import { Order } from \\"./base/Order\\";
 import { OrderService } from \\"./order.service\\";
 
 @graphql.Resolver(() => Order)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class OrderResolver extends OrderResolverBase {
   constructor(
     protected readonly service: OrderService,
@@ -7628,7 +7714,7 @@ describe(\\"Organization\\", () => {
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
@@ -7653,7 +7739,10 @@ export class OrganizationControllerBase {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -7696,7 +7785,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -7735,7 +7827,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -7773,7 +7868,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -7829,7 +7927,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -7863,7 +7964,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -7917,7 +8021,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -7959,7 +8066,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8001,7 +8111,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8043,7 +8156,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8102,7 +8218,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8144,7 +8263,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8186,7 +8308,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8228,7 +8353,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8287,7 +8415,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8329,7 +8460,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8371,7 +8505,10 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -8435,7 +8572,7 @@ export class OrganizationModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -8454,7 +8591,10 @@ import { Customer } from \\"../../customer/base/Customer\\";
 import { OrganizationService } from \\"../organization.service\\";
 
 @graphql.Resolver(() => Organization)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class OrganizationResolverBase {
   constructor(
     protected readonly service: OrganizationService,
@@ -8817,14 +8957,17 @@ export class OrganizationModule {}
   "server/src/organization/organization.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { OrganizationResolverBase } from \\"./base/organization.resolver.base\\";
 import { Organization } from \\"./base/Organization\\";
 import { OrganizationService } from \\"./organization.service\\";
 
 @graphql.Resolver(() => Organization)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class OrganizationResolver extends OrganizationResolverBase {
   constructor(
     protected readonly service: OrganizationService,
@@ -10076,7 +10219,7 @@ describe(\\"User\\", () => {
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../../auth/basicAuth.guard\\";
+import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
@@ -10099,7 +10242,10 @@ export class UserControllerBase {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10167,7 +10313,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10223,7 +10372,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10278,7 +10430,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10359,7 +10514,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10410,7 +10568,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10464,7 +10625,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10506,7 +10670,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10548,7 +10715,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10590,7 +10760,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Get(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10627,7 +10800,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Post(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10669,7 +10845,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Patch(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10711,7 +10890,10 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.UseGuards(
+    defaultAuthGuard.DefaultAuthGuard,
+    nestAccessControl.ACGuard
+  )
   @common.Delete(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10775,7 +10957,7 @@ export class UserModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -10792,7 +10974,10 @@ import { Organization } from \\"../../organization/base/Organization\\";
 import { UserService } from \\"../user.service\\";
 
 @graphql.Resolver(() => User)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class UserResolverBase {
   constructor(
     protected readonly service: UserService,
@@ -11189,14 +11374,17 @@ export class UserModule {}
   "server/src/user/user.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { UserResolverBase } from \\"./base/user.resolver.base\\";
 import { User } from \\"./base/User\\";
 import { UserService } from \\"./user.service\\";
 
 @graphql.Resolver(() => User)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class UserResolver extends UserResolverBase {
   constructor(
     protected readonly service: UserService,
