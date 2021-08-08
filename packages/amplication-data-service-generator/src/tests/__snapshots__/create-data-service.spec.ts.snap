@@ -3928,7 +3928,7 @@ import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { CustomerController } from \\"../customer.controller\\";
 import { CustomerService } from \\"../customer.service\\";
@@ -4040,7 +4040,7 @@ describe(\\"Customer\\", () => {
       controllers: [CustomerController],
       imports: [MorganModule.forRoot(), ACLModule],
     })
-      .overrideGuard(BasicAuthGuard)
+      .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
@@ -5339,7 +5339,7 @@ import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { EmptyController } from \\"../empty.controller\\";
 import { EmptyService } from \\"../empty.service\\";
@@ -5415,7 +5415,7 @@ describe(\\"Empty\\", () => {
       controllers: [EmptyController],
       imports: [MorganModule.forRoot(), ACLModule],
     })
-      .overrideGuard(BasicAuthGuard)
+      .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
@@ -6445,7 +6445,7 @@ import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { OrderController } from \\"../order.controller\\";
 import { OrderService } from \\"../order.service\\";
@@ -6521,7 +6521,7 @@ describe(\\"Order\\", () => {
       controllers: [OrderController],
       imports: [MorganModule.forRoot(), ACLModule],
     })
-      .overrideGuard(BasicAuthGuard)
+      .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
@@ -7568,7 +7568,7 @@ import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { OrganizationController } from \\"../organization.controller\\";
 import { OrganizationService } from \\"../organization.service\\";
@@ -7648,7 +7648,7 @@ describe(\\"Organization\\", () => {
       controllers: [OrganizationController],
       imports: [MorganModule.forRoot(), ACLModule],
     })
-      .overrideGuard(BasicAuthGuard)
+      .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
@@ -10044,7 +10044,7 @@ import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
-import { BasicAuthGuard } from \\"../../auth/basicAuth.guard\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { UserController } from \\"../user.controller\\";
 import { UserService } from \\"../user.service\\";
@@ -10156,7 +10156,7 @@ describe(\\"User\\", () => {
       controllers: [UserController],
       imports: [MorganModule.forRoot(), ACLModule],
     })
-      .overrideGuard(BasicAuthGuard)
+      .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
