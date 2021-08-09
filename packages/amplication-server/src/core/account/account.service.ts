@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { Prisma, Account } from '@prisma/client';
 import { Workspace } from 'src/models';
-import { SegmentAnalyticsService } from 'src/services/segmentAnalytics/segmentAnalytics.service';
+import {
+  SegmentAnalyticsService,
+  EnumEventType
+} from 'src/services/segmentAnalytics/segmentAnalytics.service';
 @Injectable()
 export class AccountService {
   constructor(
@@ -18,6 +21,10 @@ export class AccountService {
       email: account.email,
       firstName: account.firstName,
       lastName: account.lastName
+    });
+    await this.analytics.track({
+      userId: account.id,
+      event: EnumEventType.Signup
     });
     return account;
   }

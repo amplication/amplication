@@ -26,6 +26,9 @@ const EXAMPLE_ACCOUNT: Account = {
 const segmentAnalyticsIdentifyMock = jest.fn(() => {
   return;
 });
+const segmentAnalyticsTrackMock = jest.fn(() => {
+  return;
+});
 
 const prismaAccountCreateMock = jest.fn(() => {
   return EXAMPLE_ACCOUNT;
@@ -49,7 +52,8 @@ describe('AccountService', () => {
         {
           provide: SegmentAnalyticsService,
           useClass: jest.fn(() => ({
-            identify: segmentAnalyticsIdentifyMock
+            identify: segmentAnalyticsIdentifyMock,
+            track: segmentAnalyticsTrackMock
           }))
         },
         AccountService,
@@ -86,6 +90,7 @@ describe('AccountService', () => {
     expect(prismaAccountCreateMock).toBeCalledTimes(1);
     expect(prismaAccountCreateMock).toBeCalledWith(args);
     expect(segmentAnalyticsIdentifyMock).toBeCalledTimes(1);
+    expect(segmentAnalyticsTrackMock).toBeCalledTimes(1);
     expect(segmentAnalyticsIdentifyMock).toBeCalledWith({
       userId: EXAMPLE_ACCOUNT_ID,
       createdAt: expect.any(Date),
