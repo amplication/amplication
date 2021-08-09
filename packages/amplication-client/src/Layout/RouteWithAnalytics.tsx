@@ -33,7 +33,8 @@ function RouteWithAnalyticsContent({
   children: React.ReactNode;
 }) {
   usePageTracking();
-  return <div>{children}</div>;
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  return <>{children}</>;
 }
 
 export default RouteWithAnalytics;
