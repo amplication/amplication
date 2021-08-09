@@ -10,9 +10,9 @@ import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
-
+import { match } from "react-router-dom";
 type Props = {
-  applicationId: string;
+  match: match<{ application: string }>;
 };
 
 type TData = {
@@ -47,7 +47,9 @@ const FORM_SCHEMA = {
 
 const CLASS_NAME = "application-settings-form";
 
-function ApplicationSettingsForm({ applicationId }: Props) {
+function ApplicationSettingsForm({ match }: Props) {
+  const applicationId = match.params.application;
+  
   const { data, error } = useQuery<{
     appSettings: models.AppSettings;
   }>(GET_APP_SETTINGS, {

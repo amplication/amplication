@@ -2,6 +2,10 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -264,7 +268,7 @@ export type Block = {
   app?: Maybe<App>;
   parentBlock?: Maybe<Block>;
   displayName: Scalars["String"];
-  description: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   blockType: EnumBlockType;
   versionNumber?: Maybe<Scalars["Float"]>;
   lockedByUserId?: Maybe<Scalars["String"]>;
@@ -320,6 +324,8 @@ export type BlockVersion = {
   id: Scalars["String"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
+  displayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   block: Block;
   versionNumber: Scalars["Int"];
   commit?: Maybe<Commit>;
@@ -685,8 +691,8 @@ export type EntityFieldCreateInput = {
   displayName: Scalars["String"];
   dataType: EnumDataType;
   properties: Scalars["JSONObject"];
-  unique: Scalars["Boolean"];
   required: Scalars["Boolean"];
+  unique: Scalars["Boolean"];
   searchable: Scalars["Boolean"];
   description: Scalars["String"];
   entity: WhereParentIdInput;
