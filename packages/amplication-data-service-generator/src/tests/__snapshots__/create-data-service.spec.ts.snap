@@ -2352,10 +2352,29 @@ WHERE n.nspname = 'public';
   return results.map((result) => result.typname);
 }
 ",
+  "server/scripts/customSeed.ts": "import { PrismaClient } from \\"@prisma/client\\";
+
+export async function customSeed() {
+  const client = new PrismaClient();
+  const username = \\"admin\\";
+
+  //replace this sample code to populate your database
+  //with data that is required for your application to start
+  await client.user.update({
+    where: { username: username },
+    data: {
+      username,
+    },
+  });
+
+  client.$disconnect();
+}
+",
   "server/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
+import { customSeed } from \\"./customSeed\\";
 import { EnumUserPriority } from \\"../src/user/base/EnumUserPriority\\";
 
 if (require.main === module) {
@@ -2401,6 +2420,10 @@ async function seed(bcryptSalt: Salt) {
     create: data,
   });
   client.$disconnect();
+
+  console.info(\\"Seeding database with custom seed...\\");
+  customSeed();
+
   console.info(\\"Seeded database successfully\\");
 }
 ",
