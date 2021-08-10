@@ -20,7 +20,7 @@ import useNavigationTabs from "../Layout/UseNavigationTabs";
 import InnerTabLink from "../Layout/InnerTabLink";
 import { ApiTokenList } from "../Settings/ApiTokenList";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
-import ApplicationSettingsForm from "./ApplicationSettingsForm";
+import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms";
 import ApplicationAuthSettingForm from "./ApplicationAuthSettingForm";
 
 type Props = {
@@ -132,7 +132,7 @@ function ApplicationHome({ match }: Props) {
                 />
                 <RouteWithAnalytics
                   path="/:application/db/update"
-                  component={ApplicationSettingsForm}
+                  component={ApplicationDatabaseSettingsForms}
                 />
                 <RouteWithAnalytics
                   path="/:application/auth/update"

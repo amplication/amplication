@@ -15,7 +15,6 @@ import { COLORS } from "./constants";
 import { ColorSelectButton } from "../Components/ColorSelectButton";
 import { useTracking } from "../util/analytics";
 import { GET_APPLICATION } from "./ApplicationHome";
-// import ApplicationSettingsForm from "./ApplicationSettingsForm";
 import "./ApplicationForm.scss";
 
 type Props = {
@@ -122,7 +121,7 @@ function ApplicationForm({ match }: Props) {
             }}
           </Formik>
          
-          {/* <ApplicationSettingsForm applicationId={applicationId} /> */}
+          
           <div>
             <hr />
             <h3>

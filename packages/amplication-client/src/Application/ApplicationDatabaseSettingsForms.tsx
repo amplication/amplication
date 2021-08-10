@@ -45,9 +45,9 @@ const FORM_SCHEMA = {
   },
 };
 
-const CLASS_NAME = "application-settings-form";
+const CLASS_NAME = "ApplicationDatabaseSettingsForm.scss";
 
-function ApplicationSettingsForm({ match }: Props) {
+function ApplicationDatabaseSettingsForms({ match }: Props) {
   const applicationId = match.params.application;
   
   const { data, error } = useQuery<{
@@ -143,7 +143,7 @@ function ApplicationSettingsForm({ match }: Props) {
   );
 }
 
-export default ApplicationSettingsForm;
+export default ApplicationDatabaseSettingsForms;
 
 const UPDATE_APP_SETTINGS = gql`
   mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {

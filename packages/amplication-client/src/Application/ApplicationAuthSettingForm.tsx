@@ -5,12 +5,13 @@ import { Form, Formik } from "formik";
 import React from "react";
 
 import { match } from "react-router-dom";
-import "./ApplicationForm.scss";
+
+import "./ApplicationAuthSettingForm.scss"
 type Props = {
   match: match<{ application: string }>;
 };
 
-const CLASS_NAME = "application-form";
+const CLASS_NAME = "application-auth-settings-form";
 
 function ApplicationAuthSettingForm({ match }: Props) {
 
@@ -18,27 +19,51 @@ function ApplicationAuthSettingForm({ match }: Props) {
     <div className={CLASS_NAME}>
       
         <Formik
-      
-              initialValues={{}}
-      
+        initialValues={{
+          http: true,
+          jwt:false,
+          authentication_method: "http",
+              }}
               onSubmit={() => { }}
         >
-          {(formik) => {
+        {(formik) => {
+          
             return (
               <Form>
-                <h3>Authentication Providers</h3>
-               
+                <h3>Authentication Providers</h3> 
+                    
                 
-                    <TextField name="dbHost" autoComplete="off" label="Default Provider" value={ "Basic HTTP"}/>
-                  <ToggleField
+                <select name="authentication_method" onChange={(e) => {
+                  if (e.target.value === "http") {
+                    formik.setFieldValue("http", true);
+                    formik.setFieldValue("jwt", false);
+                  }
+                  else {
+                    formik.setFieldValue("jwt", true);
+                    formik.setFieldValue("http", false);
+                  }
+                  formik.handleChange(e)
+                }
+                }>
+                  <option selected value="http">Basic HTTP</option>
+                  <option value="jwt">JWT</option>
+                </select>
+                <div style={{marginTop :"10px"}}>
+                <ToggleField
                     name="http"
                     label="Basic HTTP"
-                    />
-                    <br />
+                    disabled={!false}
+                    
+                  />
+                  </div>
+                  <div style={{marginTop :"10px"}}>
                         <ToggleField
                     name="jwt"
                     label="JWT"
-              />
+                    disabled={!false}
+                    
+                  />
+                  </div>
                 
                     <hr />
 
