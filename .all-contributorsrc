@@ -321,6 +321,24 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "regicsolutions",
+      "name": "regicsolutions",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6157895?v=4",
+      "profile": "https://github.com/regicsolutions",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "exsilium",
+      "name": "Sten Feldman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2134238?v=4",
+      "profile": "https://sten.pw",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
