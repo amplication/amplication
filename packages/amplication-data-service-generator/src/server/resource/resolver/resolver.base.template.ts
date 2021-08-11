@@ -3,7 +3,7 @@ import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
-import * as gqlBasicAuthGuard from "../../auth/gqlBasicAuth.guard";
+import * as gqlDefaultAuthGuard from "../../auth/gqlDefaultAuth.guard";
 // @ts-ignore
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 // @ts-ignore
@@ -59,7 +59,10 @@ declare interface SERVICE {
 declare const ENTITY_NAME: string;
 
 @graphql.Resolver(() => ENTITY)
-@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+@common.UseGuards(
+  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
+  gqlACGuard.GqlACGuard
+)
 export class RESOLVER_BASE {
   constructor(
     protected readonly service: SERVICE,
