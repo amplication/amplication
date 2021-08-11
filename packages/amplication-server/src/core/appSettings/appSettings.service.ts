@@ -20,7 +20,10 @@ export class AppSettingsService {
       dbName,
       dbPassword,
       dbPort,
-      dbUser
+      dbUser,
+      authProvider,
+      appUserName,
+      appPassword
     } = await this.getAppSettingsBlock(args, user);
 
     return {
@@ -29,7 +32,10 @@ export class AppSettingsService {
       dbPassword,
       dbPort,
       dbUser,
-      appId: args.where.id
+      appId: args.where.id,
+      authProvider,
+      appUserName,
+      appPassword
     };
   }
 
