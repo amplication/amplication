@@ -15,7 +15,6 @@ import { COLORS } from "./constants";
 import { ColorSelectButton } from "../Components/ColorSelectButton";
 import { useTracking } from "../util/analytics";
 import { GET_APPLICATION } from "./ApplicationHome";
-import ApplicationSettingsForm from "./ApplicationSettingsForm";
 import "./ApplicationForm.scss";
 
 type Props = {
@@ -107,9 +106,9 @@ function ApplicationForm({ match }: Props) {
             {(formik) => {
               return (
                 <Form>
-                  <h3>General Settings</h3>
+                  <h3>App Settings</h3>
                   <FormikAutoSave debounceMS={1000} />
-                  <TextField name="name" label="Application Name" />
+                  <TextField name="name" label="Name" />
                   <TextField
                     autoComplete="off"
                     textarea
@@ -121,8 +120,8 @@ function ApplicationForm({ match }: Props) {
               );
             }}
           </Formik>
-          <hr />
-          <ApplicationSettingsForm applicationId={applicationId} />
+         
+          
           <div>
             <hr />
             <h3>

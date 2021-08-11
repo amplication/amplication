@@ -1,0 +1,35 @@
+@import "../style/index.scss";
+
+.application-auth-settings-form {
+  h1 {
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+  padding: var(--double-spacing);
+
+  hr {
+    border: none;
+    border-top: $border-black10;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+
+  select {
+    appearance: none;
+    border: 0;
+    outline: 0;
+    width: 20em;
+    height: 3em;
+
+    color: #fff;
+    box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    background-color: var(--white);
+    border: $border-black20;
+    border-radius: var(--form-elements-border-radius);
+    font: inherit;
+    font-size: var(--normal-font-size);
+    padding: calc(var(--default-spacing) / 2) var(--default-spacing);
+    box-sizing: border-box;
+  }
+}
