@@ -36,7 +36,7 @@ export class AppSettingsUpdateInput extends BlockUpdateInput {
     defaultValue: EnumAuthProviderType.Http
   })
   authProvider: EnumAuthProviderType;
-  
+
   @Field(() => String, {
     nullable: false,
     defaultValue: 'admin'
@@ -48,5 +48,4 @@ export class AppSettingsUpdateInput extends BlockUpdateInput {
     defaultValue: 'admin'
   })
   appPassword!: string;
-
 }

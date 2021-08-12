@@ -38,7 +38,7 @@ export class AppSettings extends IBlock {
     defaultValue: EnumAuthProviderType.Http
   })
   authProvider!: EnumAuthProviderType;
-  
+
   @Field(() => String, {
     nullable: false,
     defaultValue: 'admin'
