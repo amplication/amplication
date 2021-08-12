@@ -181,9 +181,9 @@ input AppSettingsUpdateInput {
   dbUser: String!
   dbPassword: String!
   dbPort: Int!
-  authProvider: AuthProviderType = Http
-  appUserName: String = "admin"
-  appPassword: String = "admin"
+  authProvider: AuthProviderType!
+  appUserName: String!
+  appPassword: String!
 }
 
 input AppUpdateInput {

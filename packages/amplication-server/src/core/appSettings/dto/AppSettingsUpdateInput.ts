@@ -32,20 +32,17 @@ export class AppSettingsUpdateInput extends BlockUpdateInput {
   dbPort!: number;
 
   @Field(() => EnumAuthProviderType, {
-    nullable: false,
-    defaultValue: EnumAuthProviderType.Http
+    nullable: false
   })
   authProvider: EnumAuthProviderType;
 
   @Field(() => String, {
-    nullable: false,
-    defaultValue: 'admin'
+    nullable: false
   })
   appUserName!: string;
 
   @Field(() => String, {
-    nullable: false,
-    defaultValue: 'admin'
+    nullable: false
   })
   appPassword!: string;
 }
