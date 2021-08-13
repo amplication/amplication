@@ -5,6 +5,7 @@ import { AppSettings } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS } from './constants';
 import { User } from 'src/models';
+import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -41,7 +42,10 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   dbName: 'myDb',
   dbPassword: '1234',
   dbPort: 5432,
-  dbUser: 'admin'
+  dbUser: 'admin',
+  authProvider: EnumAuthProviderType.Http,
+  appUserName: 'admin',
+  appPassword: 'admin'
 };
 
 const createMock = jest.fn(() => {
