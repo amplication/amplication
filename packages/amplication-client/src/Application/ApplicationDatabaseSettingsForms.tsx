@@ -72,7 +72,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
 
   const handleSubmit = useCallback(
     (data: models.AppSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser } = data;
+      const { dbHost, dbName, dbPassword, dbPort, dbUser,authProvider,appUserName,appPassword  } = data;
       trackEvent({
         eventName: "updateAppSettings",
       });
@@ -84,6 +84,9 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
             dbPassword,
             dbPort,
             dbUser,
+            authProvider,
+            appUserName,
+            appPassword
           },
           appId: applicationId,
         },
@@ -154,6 +157,9 @@ const UPDATE_APP_SETTINGS = gql`
       dbUser
       dbPassword
       dbPort
+      authProvider
+      appUserName
+      appPassword 
     }
   }
 `;
@@ -167,6 +173,9 @@ const GET_APP_SETTINGS = gql`
       dbUser
       dbPassword
       dbPort
+      authProvider
+      appUserName
+      appPassword 
     }
   }
 `;

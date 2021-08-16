@@ -32,4 +32,8 @@
     padding: calc(var(--default-spacing) / 2) var(--default-spacing);
     box-sizing: border-box;
   }
+
+  .application-auth-settings-form__space {
+    margin-top: 10px;
+  }
 }

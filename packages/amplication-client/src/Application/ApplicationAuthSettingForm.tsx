@@ -1,64 +1,141 @@
-import { TextField, ToggleField } from "@amplication/design-system";
-
+import { Snackbar, TextField, ToggleField } from "@amplication/design-system";
+import { gql,  useMutation,  useQuery } from "@apollo/client";
+import * as models from "../models";
 import "@rmwc/snackbar/styles";
-import { Form, Formik } from "formik";
-import React from "react";
+import { Field, Form, Formik } from "formik";
+import React, { useCallback, useContext } from "react";
 
 import { match } from "react-router-dom";
 
 import "./ApplicationAuthSettingForm.scss"
+import FormikAutoSave from "../util/formikAutoSave";
+import { validate } from "../util/formikValidateJsonSchema";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { useTracking } from "react-tracking";
+import { formatError } from "../util/error";
+
 type Props = {
   match: match<{ application: string }>;
+};
+type TData = {
+  updateAppSettings: models.AppSettings;
+};
+
+const FORM_SCHEMA = {
+  required: ["authProvider","appUserName","appPassword"],
+  properties: {
+    authProvider: {
+      type: "string",
+      minLength: 2,
+    },
+    appUserName: {
+      type: "string",
+      minLength: 2,
+    },
+    appPassword: {
+      type: "string",
+      minLength: 5,
+    }
+  },
 };
 
 const CLASS_NAME = "application-auth-settings-form";
 
 function ApplicationAuthSettingForm({ match }: Props) {
+  const applicationId = match.params.application;
+
+  const { data  , error} = useQuery<{
+    appSettings: models.AppSettings;
+  }>(GET_APP_SETTINGS, {
+    variables: {
+      id: applicationId,
+    },
+  });
+
+  
+
+
+  const pendingChangesContext = useContext(PendingChangesContext);
+
+  const { trackEvent } = useTracking();
+
+  const [updateAppSettings, { error: updateError }] = useMutation<TData>(
+    UPDATE_APP_SETTINGS,
+    {
+      onCompleted: (data) => {
+        pendingChangesContext.addBlock(data.updateAppSettings.id);
+      },
+    }
+  );
+
+  const handleSubmit = useCallback(
+    (data: models.AppSettings) => {
+      const { dbHost, dbName, dbPassword, dbPort, dbUser,authProvider,appUserName,appPassword  } = data;
+      trackEvent({
+        eventName: "updateAppSettings",
+      });
+      updateAppSettings({
+        variables: {
+          data: {
+            dbHost,
+            dbName,
+            dbPassword,
+            dbPort,
+            dbUser,
+            authProvider,
+            appUserName,
+            appPassword
+          },
+          appId: applicationId,
+        },
+      }).catch(console.error);
+    },
+    [updateAppSettings, applicationId, trackEvent]
+  );
+
+  const errorMessage = formatError(error || updateError);
 
   return (
     <div className={CLASS_NAME}>
-      
+      {data?.appSettings && (
         <Formik
         initialValues={{
-          http: true,
-          jwt:false,
-          authentication_method: "http",
-              }}
-              onSubmit={() => { }}
+            ...data.appSettings,
+            Http: data.appSettings.authProvider === "Http",
+            Jwt : data.appSettings.authProvider === "Jwt",
+          }}
+          validate={(values: models.AppSettings) =>
+            validate(values, FORM_SCHEMA)
+          }
+          enableReinitialize
+          onSubmit={handleSubmit}
         >
         {(formik) => {
           
             return (
               <Form>
+                <FormikAutoSave debounceMS={2000} />
                 <h3>Authentication Providers</h3> 
                     
                 
-                <select name="authentication_method" onChange={(e) => {
-                  if (e.target.value === "http") {
-                    formik.setFieldValue("http", true);
-                    formik.setFieldValue("jwt", false);
-                  }
-                  else {
-                    formik.setFieldValue("jwt", true);
-                    formik.setFieldValue("http", false);
-                  }
-                  formik.handleChange(e)
-                }
-                }>
-                  <option selected value="http">Basic HTTP</option>
-                  <option value="jwt">JWT</option>
-                </select>
-                <div style={{marginTop :"10px"}}>
+                <Field name="authProvider" as="select">
+                  <option value="Http" >Basic HTTP</option>
+                  <option value="Jwt" >JWT</option>
+                </Field>
+
+
+               
+                <div className={`${CLASS_NAME}__space`}>
                 <ToggleField
-                    name="http"
+                    name="Http"
                     label="Basic HTTP"
                     disabled={!false}
                     
                   />
                   </div>
-                  <div style={{marginTop :"10px"}}>
+                  <div className={`${CLASS_NAME}__space`}>
                         <ToggleField
-                    name="jwt"
+                    name="Jwt"
                     label="JWT"
                     disabled={!false}
                     
@@ -71,13 +148,12 @@ function ApplicationAuthSettingForm({ match }: Props) {
               
             
                 <TextField
-                  name="dbName"
+                  name="appUserName"
                   autoComplete="off"
                   label="App Default User Name"
                 />
                 <TextField
-                  name="dbPort"
-                  type="number"
+                  name="appPassword"
                   autoComplete="off"
                   label="App Default Password"
                 />
@@ -86,9 +162,43 @@ function ApplicationAuthSettingForm({ match }: Props) {
             );
           }}
         </Formik>
-     
+      )}
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 }
 
 export default ApplicationAuthSettingForm;
+
+
+const UPDATE_APP_SETTINGS = gql`
+  mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
+    updateAppSettings(data: $data, where: { id: $appId }) {
+      id
+      dbHost
+      dbName
+      dbUser
+      dbPassword
+      dbPort
+      authProvider
+      appUserName
+      appPassword
+    }
+  }
+`;
+
+const GET_APP_SETTINGS = gql`
+  query appSettings($id: String!) {
+    appSettings(where: { id: $id }) {
+      id
+      dbHost
+      dbName
+      dbUser
+      dbPassword
+      dbPort
+      authProvider
+      appUserName
+      appPassword
+    }
+  }
+`;
