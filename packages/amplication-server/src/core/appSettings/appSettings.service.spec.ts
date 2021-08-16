@@ -94,7 +94,7 @@ describe('AppSettingsService', () => {
         },
         EXAMPLE_USER
       )
-    ).toBe(EXAMPLE_APP_SETTINGS);
+    ).toEqual(EXAMPLE_APP_SETTINGS);
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
   });
 
