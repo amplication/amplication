@@ -101,8 +101,8 @@ function ApplicationAuthSettingForm({ match }: Props) {
         <Formik
         initialValues={{
             ...data.appSettings,
-            Http: data.appSettings.authProvider === "Http",
-            Jwt : data.appSettings.authProvider === "Jwt",
+            Http: data.appSettings.authProvider === models.EnumAuthProvider.Http,
+            Jwt : data.appSettings.authProvider === models.EnumAuthProvider.Jwt,
           }}
           validate={(values: models.AppSettings) =>
             validate(values, FORM_SCHEMA)
@@ -114,13 +114,20 @@ function ApplicationAuthSettingForm({ match }: Props) {
           
             return (
               <Form>
+                
                 <FormikAutoSave debounceMS={2000} />
                 <h3>Authentication Providers</h3> 
-                    
+                
+                <p>
+                  All the below settings will appear in clear text in the
+                  generated app. <br />
+                  It should only be used for the development environment
+                  variables and should not include sensitive data.
+                </p>
                 
                 <Field name="authProvider" as="select">
-                  <option value="Http" >Basic HTTP</option>
-                  <option value="Jwt" >JWT</option>
+                  <option value={models.EnumAuthProvider.Http} >Basic HTTP</option>
+                  <option value={models.EnumAuthProvider.Jwt} >JWT</option>
                 </Field>
 
 

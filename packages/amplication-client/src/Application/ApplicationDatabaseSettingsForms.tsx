@@ -45,8 +45,6 @@ const FORM_SCHEMA = {
   },
 };
 
-const CLASS_NAME = "ApplicationDatabaseSettingsForm.scss";
-
 function ApplicationDatabaseSettingsForms({ match }: Props) {
   const applicationId = match.params.application;
   
@@ -97,7 +95,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
 
   const errorMessage = formatError(error || updateError);
   return (
-    <div className={CLASS_NAME}>
+    <div >
       {data?.appSettings && (
         <Formik
           initialValues={data.appSettings}

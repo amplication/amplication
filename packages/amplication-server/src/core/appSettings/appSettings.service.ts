@@ -63,7 +63,7 @@ export class AppSettingsService {
 
     return {
       ...appSettings,
-      authProvider: appSettings.authProvider || EnumAuthProviderType.Http,
+      authProvider: appSettings.authProvider || EnumAuthProviderType.Jwt,
       appUserName: appSettings.appUserName || DEFAULT_APP_SETTINGS.appUserName,
       appPassword: appSettings.appPassword || DEFAULT_APP_SETTINGS.appPassword
     };

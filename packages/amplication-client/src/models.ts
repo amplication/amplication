@@ -211,6 +211,11 @@ export type AppSettings = IBlock & {
   appPassword: Scalars["String"];
 };
 
+export enum EnumAuthProvider {
+  Http = "Http",
+  Jwt = "Jwt",
+}
+
 export type AppSettingsUpdateInput = {
   displayName?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
