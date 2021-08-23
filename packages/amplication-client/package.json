@@ -52,6 +52,7 @@
     "lodash.keyby": "4.6.0",
     "lodash.omit": "4.5.0",
     "pluralize": "8.0.0",
+    "query-string": "^4.3.4",
     "react": "16.14.0",
     "react-animate-height": "2.0.23",
     "react-beautiful-dnd": "13.1.0",
