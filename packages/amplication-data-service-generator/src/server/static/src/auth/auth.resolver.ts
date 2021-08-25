@@ -6,7 +6,7 @@ import { ApolloError } from 'apollo-server-express';
 import { AuthService } from './auth.service';
 import { UserInfo } from './UserInfo';
 import { LoginArgs } from './LoginArgs';
-import { UserData } from './gqlUserData.decorator';
+import { userData } from './gqlUserData.decorator';
 
 @Resolver(UserInfo)
 export class AuthResolver {
@@ -28,7 +28,7 @@ export class AuthResolver {
     gqlDefaultAuthGuard.GqlDefaultAuthGuard,
     gqlACGuard.GqlACGuard
   )
-  async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
+  async userInfo(@userData() userInfo: UserInfo): Promise<UserInfo> {
     return userInfo;
   }
 }

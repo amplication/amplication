@@ -10,6 +10,6 @@ export function getUser(executionContext: ExecutionContext): UserInfo {
   return gqlExecutionContext.getContext().req.user;
 }
 
-export const UserData = createParamDecorator((data, ctx: ExecutionContext) =>
+export const userData = createParamDecorator((data, ctx: ExecutionContext) =>
   getUser(ctx)
 );
