@@ -15,7 +15,11 @@
     "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up seed",
     "prisma:generate": "prisma generate",
     "docker:db": "docker-compose -f docker-compose.db.yml up -d",
-    "docker:build": "docker build ."
+    "docker:build": "docker build .",
+    "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
+    "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\"",
+    "lint": "eslint --cache .",
+    "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
     "@nestjs/common": "7.6.18",
