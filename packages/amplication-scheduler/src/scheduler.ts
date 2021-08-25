@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
 import fetch from "node-fetch";
-import { Config } from "./config";
+import { Config } from "./config"; // getting after npm run build:generate-types from config.schema.json
 
 export function createJob(config: Config): CronJob {
   return new CronJob(

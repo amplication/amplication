@@ -174,7 +174,7 @@ export class BuildService {
         id: args.data.createdBy.connect.id
       }
     });
-
+    //TODO
     /**@todo: set version based on release when applicable */
     const commitId = args.data.commit.connect.id;
     const version = commitId.slice(commitId.length - 8);
@@ -335,7 +335,11 @@ export class BuildService {
 
     return EnumBuildStatus.Running;
   }
-
+  /**
+   *
+   * Give the ReadableStream of the build zip file
+   * @returns the zip file of the build
+   */
   async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
     const build = await this.findOne(args);
     const { id } = args.where;
@@ -364,6 +368,7 @@ export class BuildService {
 
   /**
    * Generates code for given build and saves it to storage
+   * the connection between the server and the DSG (Data Service Generator)
    * @param build build to generate code for
    */
   private async generate(build: Build, user: User): Promise<string> {
