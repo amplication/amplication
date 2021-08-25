@@ -1,6 +1,6 @@
-import { ExecutionContext } from "@nestjs/common";
-import { GqlExecutionContext } from "@nestjs/graphql";
-import { ACGuard } from "nest-access-control";
+import { ExecutionContext } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import { ACGuard } from 'nest-access-control';
 
 export class GqlACGuard<User extends any = any> extends ACGuard<User> {
   async getUser(context: ExecutionContext): Promise<User> {

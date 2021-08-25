@@ -1,4 +1,4 @@
-import { QueryMode } from "./QueryMode";
+import { QueryMode } from './QueryMode';
 export class StringNullableFilter {
   equals?: string | null;
   in?: string[] | null;

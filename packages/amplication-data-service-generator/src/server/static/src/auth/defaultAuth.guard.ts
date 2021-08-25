@@ -1,3 +1,3 @@
-import { BasicAuthGuard } from "./basicAuth.guard";
+import { BasicAuthGuard } from './basicAuth.guard';
 
 export class DefaultAuthGuard extends BasicAuthGuard {}

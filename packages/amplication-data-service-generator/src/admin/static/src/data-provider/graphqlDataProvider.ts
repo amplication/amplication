@@ -1,10 +1,10 @@
-import buildGraphQLProvider from "ra-data-graphql-amplication";
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "../auth-provider/ra-auth-basic-http";
+import buildGraphQLProvider from 'ra-data-graphql-amplication';
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import { CREDENTIALS_LOCAL_STORAGE_ITEM } from '../auth-provider/ra-auth-basic-http';
 
 const httpLink = createHttpLink({
-  uri: "/graphql",
+  uri: '/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -12,7 +12,7 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      authorization: token ? token : "",
+      authorization: token ? token : '',
     },
   };
 });

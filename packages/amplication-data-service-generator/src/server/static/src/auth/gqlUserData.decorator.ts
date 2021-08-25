@@ -1,6 +1,6 @@
-import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import { GqlExecutionContext } from "@nestjs/graphql";
-import { UserInfo } from "./UserInfo";
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import { UserInfo } from './UserInfo';
 
 /**
  * Access the user data from the request object i.e `req.user`.

@@ -1,7 +1,7 @@
-import { Injectable, ExecutionContext } from "@nestjs/common";
-import { GqlExecutionContext } from "@nestjs/graphql";
-import type { Request } from "express";
-import { BasicAuthGuard } from "./basicAuth.guard";
+import { Injectable, ExecutionContext } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import type { Request } from 'express';
+import { BasicAuthGuard } from './basicAuth.guard';
 
 @Injectable()
 export class GqlBasicAuthGuard extends BasicAuthGuard {

@@ -1,22 +1,22 @@
-import * as React from "react";
-import { useState } from "react";
-import { useLogin, useNotify, Notification, defaultTheme } from "react-admin";
-import { ThemeProvider } from "@material-ui/styles";
-import { createMuiTheme } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
-import "./login.scss";
+import * as React from 'react';
+import { useState } from 'react';
+import { useLogin, useNotify, Notification, defaultTheme } from 'react-admin';
+import { ThemeProvider } from '@material-ui/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
+import { Button } from '@material-ui/core';
+import './login.scss';
 
-const CLASS_NAME = "login-page";
+const CLASS_NAME = 'login-page';
 
 const Login = ({ theme }: { theme?: object }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const login = useLogin();
   const notify = useNotify();
   const submit = (e: any) => {
     e.preventDefault();
     login({ username, password }).catch(() =>
-      notify("Invalid email or password")
+      notify('Invalid email or password')
     );
   };
 

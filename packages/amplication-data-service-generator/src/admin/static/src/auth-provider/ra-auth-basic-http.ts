@@ -1,9 +1,9 @@
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client/core";
-import { createBasicAuthorizationHeader } from "./basic-auth.util";
-import { AuthProvider } from "react-admin";
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core';
+import { createBasicAuthorizationHeader } from './basic-auth.util';
+import { AuthProvider } from 'react-admin';
 
-export const CREDENTIALS_LOCAL_STORAGE_ITEM = "credentials";
-const USER_DATA_LOCAL_STORAGE_ITEM = "userData";
+export const CREDENTIALS_LOCAL_STORAGE_ITEM = 'credentials';
+const USER_DATA_LOCAL_STORAGE_ITEM = 'userData';
 
 type TData = {
   login: {
@@ -28,7 +28,7 @@ const LOGIN = gql`
 const basicHttpAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
-      uri: "/graphql",
+      uri: '/graphql',
       cache: new InMemoryCache(),
     });
 
@@ -71,10 +71,10 @@ const basicHttpAuthProvider: AuthProvider = {
       ? Promise.resolve()
       : Promise.reject();
   },
-  getPermissions: () => Promise.reject("Unknown method"),
+  getPermissions: () => Promise.reject('Unknown method'),
   getIdentity: () => {
     const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
-    const userData: TData = JSON.parse(str || "");
+    const userData: TData = JSON.parse(str || '');
 
     return Promise.resolve({
       id: userData.login.username,

@@ -1,8 +1,8 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { QueryMode } from "./QueryMode";
-import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional } from "class-validator";
-import { Type } from "class-transformer";
+import { Field, InputType } from '@nestjs/graphql';
+import { QueryMode } from './QueryMode';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
 
 @InputType({
   isAbstract: true,
@@ -120,7 +120,7 @@ export class StringNullableFilter {
 
   @ApiProperty({
     required: false,
-    enum: ["Default", "Insensitive"],
+    enum: ['Default', 'Insensitive'],
   })
   @IsOptional()
   @Field(() => QueryMode, {

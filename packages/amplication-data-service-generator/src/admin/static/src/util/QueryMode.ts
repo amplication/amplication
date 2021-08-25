@@ -1,4 +1,4 @@
 export enum QueryMode {
-  Default = "default",
-  Insensitive = "insensitive",
+  Default = 'default',
+  Insensitive = 'insensitive',
 }

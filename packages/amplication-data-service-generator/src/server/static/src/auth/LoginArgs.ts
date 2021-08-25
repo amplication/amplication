@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { Credentials } from "./Credentials";
+import { ArgsType, Field } from '@nestjs/graphql';
+import { Credentials } from './Credentials';
 
 @ArgsType()
 export class LoginArgs {

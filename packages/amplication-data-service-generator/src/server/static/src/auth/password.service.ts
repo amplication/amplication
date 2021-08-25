@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import { hash, compare } from "bcrypt";
-import { ConfigService } from "@nestjs/config";
+import { Injectable } from '@nestjs/common';
+import { hash, compare } from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 /** Salt or number of rounds to generate a salt */
 export type Salt = string | number;
 
-const BCRYPT_SALT_VAR = "BCRYPT_SALT";
+const BCRYPT_SALT_VAR = 'BCRYPT_SALT';
 const UNDEFINED_SALT_OR_ROUNDS_ERROR = `${BCRYPT_SALT_VAR} is not defined`;
 const SALT_OR_ROUNDS_TYPE_ERROR = `${BCRYPT_SALT_VAR} must be a positive integer or text`;
 

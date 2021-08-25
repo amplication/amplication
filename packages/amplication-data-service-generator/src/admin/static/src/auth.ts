@@ -1,11 +1,11 @@
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 
 export type Credentials = {
   username: string;
   password: string;
 };
 
-const CREDENTIALS_LOCAL_STORAGE_ITEM = "credentials";
+const CREDENTIALS_LOCAL_STORAGE_ITEM = 'credentials';
 
 const eventEmitter = new EventEmitter();
 
@@ -14,7 +14,7 @@ export function isAuthenticated(): boolean {
 }
 
 export function listen(listener: (authenticated: boolean) => void): void {
-  eventEmitter.on("change", () => {
+  eventEmitter.on('change', () => {
     listener(isAuthenticated());
   });
 }

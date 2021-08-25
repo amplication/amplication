@@ -1,5 +1,5 @@
-import * as common from "@nestjs/common";
-import { ApiProperty } from "@nestjs/swagger";
+import * as common from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ForbiddenException extends common.ForbiddenException {
   @ApiProperty()

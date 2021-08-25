@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { PasswordService } from "./password.service";
+import { Injectable } from '@nestjs/common';
+import { PasswordService } from './password.service';
 // @ts-ignore
 // eslint-disable-next-line
-import { UserService } from "../user/user.service";
-import { UserInfo } from "./UserInfo";
+import { UserService } from '../user/user.service';
+import { UserInfo } from './UserInfo';
 
 @Injectable()
 export class AuthService {
