@@ -1,10 +1,6 @@
 @import "../style/index.scss";
 
 .application-auth-settings-form {
-  h1 {
-    margin-top: var(--double-spacing);
-    margin-bottom: var(--double-spacing);
-  }
   padding: var(--double-spacing);
 
   hr {
@@ -31,5 +27,9 @@
     font-size: var(--normal-font-size);
     padding: calc(var(--default-spacing) / 2) var(--default-spacing);
     box-sizing: border-box;
+  }
+
+  .application-auth-settings-form__space {
+    margin-top: calc(var(--double-spacing) / 2);
   }
 }
