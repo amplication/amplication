@@ -30,6 +30,7 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
     'import/no-cycle': 'error',
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/naming-convention': [
