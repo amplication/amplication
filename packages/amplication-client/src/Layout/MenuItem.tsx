@@ -26,6 +26,10 @@ const NON_URL = "non-url";
 const DIRECTION = "e";
 const ICON_SIZE = "xlarge";
 
+/**
+ *
+ * @title is for the aria-label of the badge
+ */
 const MenuItem = ({
   to,
   title,
