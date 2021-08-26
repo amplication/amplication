@@ -43,7 +43,7 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   dbPassword: '1234',
   dbPort: 5432,
   dbUser: 'admin',
-  authProvider: EnumAuthProviderType.Http,
+  authProvider: EnumAuthProviderType.Jwt,
   appUserName: 'admin',
   appPassword: 'admin'
 };
@@ -94,7 +94,7 @@ describe('AppSettingsService', () => {
         },
         EXAMPLE_USER
       )
-    ).toBe(EXAMPLE_APP_SETTINGS);
+    ).toEqual(EXAMPLE_APP_SETTINGS);
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
   });
 
