@@ -6,6 +6,8 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
 import { isEmpty } from 'lodash';
 import { User } from 'src/models';
+import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+
 @Injectable()
 export class AppSettingsService {
   @Inject()
@@ -55,12 +57,16 @@ export class AppSettingsService {
       },
       EnumBlockType.AppSettings
     );
-
     if (isEmpty(appSettings)) {
       return this.createDefaultAppSettings(args.where.id, user);
     }
 
-    return appSettings;
+    return {
+      ...appSettings,
+      authProvider: appSettings.authProvider || EnumAuthProviderType.Jwt,
+      appUserName: appSettings.appUserName || DEFAULT_APP_SETTINGS.appUserName,
+      appPassword: appSettings.appPassword || DEFAULT_APP_SETTINGS.appPassword
+    };
   }
 
   async updateAppSettings(
