@@ -104,17 +104,6 @@ const App = (): React.ReactElement => {
 
 export default App;
 ",
-  "admin-ui/src/Components/Pagination.tsx": "import React from \\"react\\";
-import { Pagination as RAPagination, PaginationProps } from \\"react-admin\\";
-
-const PAGINATION_OPTIONS = [10, 25, 50, 100, 200];
-
-const Pagination = (props: PaginationProps) => (
-  <RAPagination rowsPerPageOptions={PAGINATION_OPTIONS} {...props} />
-);
-
-export default Pagination;
-",
   "admin-ui/src/Login.tsx": "import * as React from \\"react\\";
 import { useState } from \\"react\\";
 import { useLogin, useNotify, Notification, defaultTheme } from \\"react-admin\\";
@@ -917,6 +906,17 @@ export function getCredentials(): Credentials | null {
 export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
+",
+  "admin-ui/src/components/Pagination.tsx": "import React from \\"react\\";
+import { Pagination as RAPagination, PaginationProps } from \\"react-admin\\";
+
+const PAGINATION_OPTIONS = [10, 25, 50, 100, 200];
+
+const Pagination = (props: PaginationProps) => (
+  <RAPagination rowsPerPageOptions={PAGINATION_OPTIONS} {...props} />
+);
+
+export default Pagination;
 ",
   "admin-ui/src/customer/CustomerCreate.tsx": "import * as React from \\"react\\";
 
@@ -2435,6 +2435,7 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
+import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
@@ -2451,6 +2452,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     EmptyModule,
     ACLModule,
     AuthModule,
+    SecretsManagerModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
@@ -9065,6 +9067,39 @@ export async function transformStringFieldUpdateInput<
     return (await transform(input)) as T;
   }
   return input;
+}
+",
+  "server/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from \\"@nestjs/config\\";
+
+export class SecretsManagerServiceBase {
+  constructor(protected readonly configService: ConfigService) {}
+  getSecret<T>(key: string): T {
+    const value = this.configService.get(key);
+    return value;
+  }
+  constants = {
+    JWT_SECRET: \\"JWT_SECRET\\",
+  };
+}
+",
+  "server/src/providers/secrets/secretsManager.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { SecretsManagerService } from \\"./secretsManager.service\\";
+
+@Module({
+  providers: [SecretsManagerService],
+  exports: [SecretsManagerService],
+})
+export class SecretsManagerModule {}
+",
+  "server/src/providers/secrets/secretsManager.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { ConfigService } from \\"@nestjs/config\\";
+import { SecretsManagerServiceBase } from \\"./base/secretsManager.service.base\\";
+
+@Injectable()
+export class SecretsManagerService extends SecretsManagerServiceBase {
+  constructor(protected readonly configService: ConfigService) {
+    super(configService);
+  }
 }
 ",
   "server/src/serveStaticOptions.service.ts": "import * as path from \\"path\\";
