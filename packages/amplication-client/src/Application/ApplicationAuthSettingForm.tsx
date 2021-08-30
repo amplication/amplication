@@ -133,10 +133,10 @@ function ApplicationAuthSettingForm({ match }: Props) {
                 </p>
 
                 <Field name="authProvider" as="select">
-                  <option value={models.EnumAuthProvider.Http}>
+                  <option value={models.EnumAuthProviderType.Http}>
                     Basic HTTP
                   </option>
-                  <option value={models.EnumAuthProvider.Jwt}>JWT</option>
+                  <option value={models.EnumAuthProviderType.Jwt}>JWT</option>
                 </Field>
 
                 <div className={`${CLASS_NAME}__space`}>
