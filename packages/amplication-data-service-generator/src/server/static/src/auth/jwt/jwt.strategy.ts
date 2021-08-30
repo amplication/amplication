@@ -1,18 +1,23 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { jwtConstants } from "./constants";
 import { UserInfo } from "../UserInfo";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from "../../user/user.service";
+import { SecretsManagerService } from "../../providers/secrets/secretsManager.service";
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private userService: UserService) {
+  constructor(
+    private userService: UserService,
+    private secretsService: SecretsManagerService
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: jwtConstants.secret,
+      secretOrKey: secretsService.getSecret(
+        secretsService.constants.JWT_SECRET
+      ),
     });
   }
 
