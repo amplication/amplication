@@ -1,3 +1,4 @@
+import { EnumAuthProviderType } from "../models";
 import { AppInfo } from "../types";
 
 const appInfo: AppInfo = {
@@ -12,6 +13,9 @@ const appInfo: AppInfo = {
     dbPort: 5433,
     dbPassword: "1234",
     dbUser: "testUsername",
+    appPassword: "admin",
+    appUserName: "admin",
+    authProvider: EnumAuthProviderType.Http,
   },
 };
 
