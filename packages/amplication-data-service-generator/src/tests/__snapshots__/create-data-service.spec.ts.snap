@@ -9077,9 +9077,6 @@ export class SecretsManagerServiceBase {
     const value = this.configService.get(key);
     return value;
   }
-  constants = {
-    JWT_SECRET: \\"JWT_SECRET\\",
-  };
 }
 ",
   "server/src/providers/secrets/secretsManager.module.ts": "import { Module } from \\"@nestjs/common\\";
