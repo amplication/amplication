@@ -5,7 +5,7 @@ import { AppSettings } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS } from './constants';
 import { User } from 'src/models';
-import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+import { AuthProviderType } from './dto/EnumAuthenticationProviderType';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -43,7 +43,7 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   dbPassword: '1234',
   dbPort: 5432,
   dbUser: 'admin',
-  authProvider: EnumAuthProviderType.Jwt,
+  authProvider: AuthProviderType.Jwt,
   appUserName: 'admin',
   appPassword: 'admin'
 };

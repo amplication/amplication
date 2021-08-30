@@ -1,6 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
-import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
+import { AuthProviderType } from './EnumAuthenticationProviderType';
 
 @InputType({
   isAbstract: true
@@ -31,10 +31,10 @@ export class AppSettingsUpdateInput extends BlockUpdateInput {
   })
   dbPort!: number;
 
-  @Field(() => EnumAuthProviderType, {
+  @Field(() => AuthProviderType, {
     nullable: false
   })
-  authProvider: EnumAuthProviderType;
+  authProvider: AuthProviderType;
 
   @Field(() => String, {
     nullable: false

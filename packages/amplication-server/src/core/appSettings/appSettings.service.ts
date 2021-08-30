@@ -6,7 +6,7 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
 import { isEmpty } from 'lodash';
 import { User } from 'src/models';
-import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+import { AuthProviderType } from './dto/EnumAuthenticationProviderType';
 
 @Injectable()
 export class AppSettingsService {
@@ -63,7 +63,7 @@ export class AppSettingsService {
 
     return {
       ...appSettings,
-      authProvider: appSettings.authProvider || EnumAuthProviderType.Jwt,
+      authProvider: appSettings.authProvider || AuthProviderType.Jwt,
       appUserName: appSettings.appUserName || DEFAULT_APP_SETTINGS.appUserName,
       appPassword: appSettings.appPassword || DEFAULT_APP_SETTINGS.appPassword
     };

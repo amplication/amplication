@@ -53,7 +53,7 @@ import { GithubService } from '../github/github.service';
 import { AppSettingsService } from '../appSettings/appSettings.service';
 
 import { AppSettingsValues } from '../appSettings/constants';
-import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { AuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -99,7 +99,7 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   dbPort: 5432,
   dbUser: 'admin',
   appId: EXAMPLE_APP_ID,
-  authProvider: EnumAuthProviderType.Jwt,
+  authProvider: AuthProviderType.Jwt,
   appUserName: 'admin',
   appPassword: 'admin'
 };

@@ -1,6 +1,6 @@
 import { Field, ObjectType, Int } from '@nestjs/graphql';
 import { IBlock } from 'src/models';
-import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
+import { AuthProviderType } from './EnumAuthenticationProviderType';
 
 @ObjectType({
   implements: IBlock,
@@ -33,10 +33,10 @@ export class AppSettings extends IBlock {
   })
   dbPort!: number;
 
-  @Field(() => EnumAuthProviderType, {
+  @Field(() => AuthProviderType, {
     nullable: false
   })
-  authProvider!: EnumAuthProviderType;
+  authProvider!: AuthProviderType;
 
   @Field(() => String, {
     nullable: false

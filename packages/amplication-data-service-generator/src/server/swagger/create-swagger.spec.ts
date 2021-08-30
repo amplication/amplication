@@ -1,3 +1,4 @@
+import { AuthProviderType } from "../../models";
 import { AppInfo } from "../../types";
 import {
   createDescription,
@@ -18,6 +19,9 @@ const EXAMPLE_APP_INFO: AppInfo = {
     dbPort: 5432,
     dbPassword: "admin",
     dbUser: "admin",
+    authProvider: AuthProviderType.Http,
+    appPassword: "admin",
+    appUserName: "admin",
   },
 };
 
