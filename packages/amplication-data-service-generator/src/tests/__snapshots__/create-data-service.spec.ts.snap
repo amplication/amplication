@@ -2435,7 +2435,6 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
-import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
@@ -2452,7 +2451,6 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     EmptyModule,
     ACLModule,
     AuthModule,
-    SecretsManagerModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
@@ -9067,36 +9065,6 @@ export async function transformStringFieldUpdateInput<
     return (await transform(input)) as T;
   }
   return input;
-}
-",
-  "server/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from \\"@nestjs/config\\";
-
-export class SecretsManagerServiceBase {
-  constructor(protected readonly configService: ConfigService) {}
-  getSecret<T>(key: string): T {
-    const value = this.configService.get(key);
-    return value;
-  }
-}
-",
-  "server/src/providers/secrets/secretsManager.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { SecretsManagerService } from \\"./secretsManager.service\\";
-
-@Module({
-  providers: [SecretsManagerService],
-  exports: [SecretsManagerService],
-})
-export class SecretsManagerModule {}
-",
-  "server/src/providers/secrets/secretsManager.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { ConfigService } from \\"@nestjs/config\\";
-import { SecretsManagerServiceBase } from \\"./base/secretsManager.service.base\\";
-
-@Injectable()
-export class SecretsManagerService extends SecretsManagerServiceBase {
-  constructor(protected readonly configService: ConfigService) {
-    super(configService);
-  }
 }
 ",
   "server/src/serveStaticOptions.service.ts": "import * as path from \\"path\\";
