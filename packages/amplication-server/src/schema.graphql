@@ -169,8 +169,6 @@ type AppSettings implements IBlock {
   dbPassword: String!
   dbPort: Int!
   authProvider: AuthProviderType!
-  appUserName: String!
-  appPassword: String!
 }
 
 input AppSettingsUpdateInput {
