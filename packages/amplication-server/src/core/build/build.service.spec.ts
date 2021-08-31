@@ -54,6 +54,7 @@ import { AppSettingsService } from '../appSettings/appSettings.service';
 
 import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { EnumJwtTimeScaleType } from '../appSettings/dto/EnumJwtTimeScaleType';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -101,7 +102,8 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   appId: EXAMPLE_APP_ID,
   authProvider: EnumAuthProviderType.Jwt,
   appUserName: 'admin',
-  appPassword: 'admin'
+  appPassword: 'admin',
+  jwtExpireTimeScale: EnumJwtTimeScaleType.Day
 };
 
 const EXAMPLE_COMMIT: Commit = {

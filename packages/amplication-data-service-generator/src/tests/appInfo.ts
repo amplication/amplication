@@ -1,3 +1,4 @@
+import { AuthProviderType, EnumJwtTimeScaleType } from "../models";
 import { AppInfo } from "../types";
 
 const appInfo: AppInfo = {
@@ -12,6 +13,10 @@ const appInfo: AppInfo = {
     dbPort: 5433,
     dbPassword: "1234",
     dbUser: "testUsername",
+    jwtExpireTimeScale: EnumJwtTimeScaleType.Day,
+    authProvider: AuthProviderType.Http,
+    appUserName: "admin",
+    appPassword: "admin",
   },
 };
 

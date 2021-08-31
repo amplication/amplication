@@ -6,6 +6,7 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS } from './constants';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+import { EnumJwtTimeScaleType } from './dto/EnumJwtTimeScaleType';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -45,7 +46,8 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   dbUser: 'admin',
   authProvider: EnumAuthProviderType.Jwt,
   appUserName: 'admin',
-  appPassword: 'admin'
+  appPassword: 'admin',
+  jwtExpireTimeScale: EnumJwtTimeScaleType.Day
 };
 
 const createMock = jest.fn(() => {

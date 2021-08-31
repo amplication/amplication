@@ -1,6 +1,7 @@
 import { AppSettings } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+import { EnumJwtTimeScaleType } from './dto/EnumJwtTimeScaleType';
 
 export type AppSettingsValues = Omit<
   AppSettingsValuesExtended,
@@ -32,5 +33,6 @@ export const DEFAULT_APP_SETTINGS: AppSettingsValuesExtended = {
   dbPort: 5432,
   authProvider: EnumAuthProviderType.Jwt,
   appUserName: 'admin',
-  appPassword: 'admin'
+  appPassword: 'admin',
+  jwtExpireTimeScale: EnumJwtTimeScaleType.Day
 };

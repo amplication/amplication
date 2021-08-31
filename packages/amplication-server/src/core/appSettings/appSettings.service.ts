@@ -25,7 +25,8 @@ export class AppSettingsService {
       dbUser,
       authProvider,
       appUserName,
-      appPassword
+      appPassword,
+      jwtExpireTimeScale
     } = await this.getAppSettingsBlock(args, user);
 
     return {
@@ -37,7 +38,8 @@ export class AppSettingsService {
       appId: args.where.id,
       authProvider,
       appUserName,
-      appPassword
+      appPassword,
+      jwtExpireTimeScale
     };
   }
 
