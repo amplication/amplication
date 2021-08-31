@@ -207,8 +207,6 @@ export type AppSettings = IBlock & {
   dbPassword: Scalars["String"];
   dbPort: Scalars["Int"];
   authProvider: EnumAuthProviderType;
-  appUserName: Scalars["String"];
-  appPassword: Scalars["String"];
 };
 
 export type AppSettingsUpdateInput = {
