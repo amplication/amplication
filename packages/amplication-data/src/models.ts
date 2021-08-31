@@ -206,6 +206,10 @@ export type AppSettings = IBlock & {
   dbUser: Scalars["String"];
   dbPassword: Scalars["String"];
   dbPort: Scalars["Int"];
+  authProvider: AuthProviderType;
+  appUserName: Scalars["String"];
+  appPassword: Scalars["String"];
+  jwtExpireTimeScale: EnumJwtTimeScaleType;
 };
 
 export type AppSettingsUpdateInput = {
@@ -216,6 +220,9 @@ export type AppSettingsUpdateInput = {
   dbUser: Scalars["String"];
   dbPassword: Scalars["String"];
   dbPort: Scalars["Int"];
+  authProvider: AuthProviderType;
+  appUserName: Scalars["String"];
+  appPassword: Scalars["String"];
 };
 
 export type AppUpdateInput = {
@@ -250,6 +257,11 @@ export type Auth = {
   /** JWT Bearer token */
   token: Scalars["String"];
 };
+
+export enum AuthProviderType {
+  Http = "Http",
+  Jwt = "Jwt",
+}
 
 export type AuthorizeAppWithGithubResult = {
   __typename?: "AuthorizeAppWithGithubResult";
@@ -1087,6 +1099,14 @@ export enum EnumEntityPermissionType {
   AllRoles = "AllRoles",
   Granular = "Granular",
   Disabled = "Disabled",
+}
+
+export enum EnumJwtTimeScaleType {
+  Minutes = "Minutes",
+  Hours = "Hours",
+  Day = "Day",
+  Weeks = "Weeks",
+  Years = "Years",
 }
 
 export enum EnumPendingChangeAction {

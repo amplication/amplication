@@ -171,6 +171,7 @@ type AppSettings implements IBlock {
   authProvider: AuthProviderType!
   appUserName: String!
   appPassword: String!
+  jwtExpireTimeScale: EnumJwtTimeScaleType!
 }
 
 input AppSettingsUpdateInput {
@@ -1001,6 +1002,14 @@ enum EnumEntityPermissionType {
   AllRoles
   Granular
   Disabled
+}
+
+enum EnumJwtTimeScaleType {
+  Minutes
+  Hours
+  Day
+  Weeks
+  Years
 }
 
 enum EnumPendingChangeAction {

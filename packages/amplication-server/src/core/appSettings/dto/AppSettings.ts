@@ -1,6 +1,7 @@
 import { Field, ObjectType, Int } from '@nestjs/graphql';
 import { IBlock } from 'src/models';
 import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
+import { EnumJwtTimeScaleType } from './EnumJwtTimeScaleType';
 
 @ObjectType({
   implements: IBlock,
@@ -47,4 +48,9 @@ export class AppSettings extends IBlock {
     nullable: false
   })
   appPassword!: string;
+
+  @Field(() => EnumJwtTimeScaleType, {
+    nullable: false
+  })
+  jwtExpireTimeScale!: EnumJwtTimeScaleType;
 }
