@@ -104,17 +104,6 @@ const App = (): React.ReactElement => {
 
 export default App;
 ",
-  "admin-ui/src/Components/Pagination.tsx": "import React from \\"react\\";
-import { Pagination as RAPagination, PaginationProps } from \\"react-admin\\";
-
-const PAGINATION_OPTIONS = [10, 25, 50, 100, 200];
-
-const Pagination = (props: PaginationProps) => (
-  <RAPagination rowsPerPageOptions={PAGINATION_OPTIONS} {...props} />
-);
-
-export default Pagination;
-",
   "admin-ui/src/Login.tsx": "import * as React from \\"react\\";
 import { useState } from \\"react\\";
 import { useLogin, useNotify, Notification, defaultTheme } from \\"react-admin\\";
@@ -917,6 +906,17 @@ export function getCredentials(): Credentials | null {
 export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
+",
+  "admin-ui/src/components/Pagination.tsx": "import React from \\"react\\";
+import { Pagination as RAPagination, PaginationProps } from \\"react-admin\\";
+
+const PAGINATION_OPTIONS = [10, 25, 50, 100, 200];
+
+const Pagination = (props: PaginationProps) => (
+  <RAPagination rowsPerPageOptions={PAGINATION_OPTIONS} {...props} />
+);
+
+export default Pagination;
 ",
   "admin-ui/src/customer/CustomerCreate.tsx": "import * as React from \\"react\\";
 
