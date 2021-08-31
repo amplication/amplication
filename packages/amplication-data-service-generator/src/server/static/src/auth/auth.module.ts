@@ -9,18 +9,22 @@ import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
 import { BasicStrategy } from "./basic.strategy";
 import { PasswordService } from "./password.service";
-import { jwtConstants } from "./jwt/constants";
 import { JwtStrategy } from "./jwt/jwt.strategy";
+import { SecretsManagerModule } from "../providers/secrets/secretsManager.module";
+import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
 
-// const JWT_SECRET = "JWT_SECRET";
+export const JWT_SECRET = "JWT_SECRET";
 @Module({
   imports: [
     forwardRef(() => UserModule),
     PassportModule,
-    JwtModule.register({
-      //TODO add connection to env file
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: "2d" },
+    SecretsManagerModule,
+    JwtModule.registerAsync({
+      imports: [SecretsManagerModule],
+      useFactory: async (secretsService: SecretsManagerService) => ({
+        secret: secretsService.getSecret<string>(JWT_SECRET),
+        signOptions: { expiresIn: "2d" },
+      }),
     }),
   ],
   providers: [
