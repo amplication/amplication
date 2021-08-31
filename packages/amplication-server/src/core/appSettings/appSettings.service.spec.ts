@@ -47,7 +47,8 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   authProvider: EnumAuthProviderType.Jwt,
   appUserName: 'admin',
   appPassword: 'admin',
-  jwtExpireTimeScale: EnumJwtTimeScaleType.Day
+  jwtExpireTimeScale: EnumJwtTimeScaleType.Day,
+  jwtExpireTimeLength: 2
 };
 
 const createMock = jest.fn(() => {

@@ -23,6 +23,7 @@ const EXAMPLE_APP_INFO: AppInfo = {
     appUserName: "admin",
     appPassword: "admin",
     authProvider: AuthProviderType.Http,
+    jwtExpireTimeLength: 2,
   },
 };
 

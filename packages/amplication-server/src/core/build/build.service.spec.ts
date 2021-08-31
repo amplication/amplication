@@ -103,7 +103,8 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   authProvider: EnumAuthProviderType.Jwt,
   appUserName: 'admin',
   appPassword: 'admin',
-  jwtExpireTimeScale: EnumJwtTimeScaleType.Day
+  jwtExpireTimeScale: EnumJwtTimeScaleType.Day,
+  jwtExpireTimeLength: 2
 };
 
 const EXAMPLE_COMMIT: Commit = {

@@ -14,6 +14,7 @@ const appInfo: AppInfo = {
     dbPassword: "1234",
     dbUser: "testUsername",
     jwtExpireTimeScale: EnumJwtTimeScaleType.Day,
+    jwtExpireTimeLength: 2,
     authProvider: AuthProviderType.Http,
     appUserName: "admin",
     appPassword: "admin",
