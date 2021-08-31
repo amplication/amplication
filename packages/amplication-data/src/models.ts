@@ -210,6 +210,7 @@ export type AppSettings = IBlock & {
   appUserName: Scalars["String"];
   appPassword: Scalars["String"];
   jwtExpireTimeScale: EnumJwtTimeScaleType;
+  jwtExpireTimeLength: Scalars["Float"];
 };
 
 export type AppSettingsUpdateInput = {
