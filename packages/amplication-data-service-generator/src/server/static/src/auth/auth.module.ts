@@ -13,7 +13,7 @@ import { JwtStrategy } from "./jwt/jwt.strategy";
 import { SecretsManagerModule } from "../providers/secrets/secretsManager.module";
 import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
 
-export const JWT_SECRET = "JWT_SECRET";
+export const JWT_SECRET_KEY = "JWT_SECRET_KEY";
 @Module({
   imports: [
     forwardRef(() => UserModule),
@@ -22,7 +22,7 @@ export const JWT_SECRET = "JWT_SECRET";
     JwtModule.registerAsync({
       imports: [SecretsManagerModule],
       useFactory: async (secretsService: SecretsManagerService) => ({
-        secret: secretsService.getSecret<string>(JWT_SECRET),
+        secret: secretsService.getSecret<string>(JWT_SECRET_KEY),
         signOptions: { expiresIn: "2d" },
       }),
     }),

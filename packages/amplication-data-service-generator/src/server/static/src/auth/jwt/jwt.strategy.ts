@@ -6,7 +6,7 @@ import { UserInfo } from "../UserInfo";
 // eslint-disable-next-line
 import { UserService } from "../../user/user.service";
 import { SecretsManagerService } from "../../providers/secrets/secretsManager.service";
-import { JWT_SECRET } from "../auth.module";
+import { JWT_SECRET_KEY } from "../auth.module";
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: secretsService.getSecret<string>(JWT_SECRET),
+      secretOrKey: secretsService.getSecret<string>(JWT_SECRET_KEY),
     });
   }
 
