@@ -206,6 +206,7 @@ export type AppSettings = IBlock & {
   dbUser: Scalars["String"];
   dbPassword: Scalars["String"];
   dbPort: Scalars["Int"];
+  authProvider: EnumAuthProviderType;
 };
 
 export type AppSettingsUpdateInput = {
@@ -216,6 +217,9 @@ export type AppSettingsUpdateInput = {
   dbUser: Scalars["String"];
   dbPassword: Scalars["String"];
   dbPort: Scalars["Int"];
+  authProvider: EnumAuthProviderType;
+  appUserName: Scalars["String"];
+  appPassword: Scalars["String"];
 };
 
 export type AppUpdateInput = {
@@ -987,6 +991,11 @@ export enum EnumActionStepStatus {
   Running = "Running",
   Failed = "Failed",
   Success = "Success",
+}
+
+export enum EnumAuthProviderType {
+  Http = "Http",
+  Jwt = "Jwt",
 }
 
 export enum EnumBlockType {
