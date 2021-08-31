@@ -53,4 +53,9 @@ export class AppSettings extends IBlock {
     nullable: false
   })
   jwtExpireTimeScale!: EnumJwtTimeScaleType;
+
+  @Field(() => Number, {
+    nullable: false
+  })
+  jwtExpireTimeLength!: number;
 }

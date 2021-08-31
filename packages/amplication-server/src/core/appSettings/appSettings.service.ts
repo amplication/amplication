@@ -26,7 +26,8 @@ export class AppSettingsService {
       authProvider,
       appUserName,
       appPassword,
-      jwtExpireTimeScale
+      jwtExpireTimeScale,
+      jwtExpireTimeLength
     } = await this.getAppSettingsBlock(args, user);
 
     return {
@@ -39,7 +40,8 @@ export class AppSettingsService {
       authProvider,
       appUserName,
       appPassword,
-      jwtExpireTimeScale
+      jwtExpireTimeScale,
+      jwtExpireTimeLength
     };
   }
 

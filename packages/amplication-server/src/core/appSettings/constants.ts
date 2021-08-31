@@ -34,5 +34,6 @@ export const DEFAULT_APP_SETTINGS: AppSettingsValuesExtended = {
   authProvider: EnumAuthProviderType.Jwt,
   appUserName: 'admin',
   appPassword: 'admin',
-  jwtExpireTimeScale: EnumJwtTimeScaleType.Day
+  jwtExpireTimeScale: EnumJwtTimeScaleType.Day,
+  jwtExpireTimeLength: 2
 };

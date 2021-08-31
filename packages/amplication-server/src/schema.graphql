@@ -172,6 +172,7 @@ type AppSettings implements IBlock {
   appUserName: String!
   appPassword: String!
   jwtExpireTimeScale: EnumJwtTimeScaleType!
+  jwtExpireTimeLength: Float!
 }
 
 input AppSettingsUpdateInput {
