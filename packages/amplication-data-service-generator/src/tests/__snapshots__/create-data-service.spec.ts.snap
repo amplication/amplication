@@ -1100,7 +1100,7 @@ import {
   ReferenceField,
 } from \\"react-admin\\";
 
-import Pagination from \\"../Components/Pagination\\";
+import Pagination from \\"../components/Pagination\\";
 import { ORGANIZATION_TITLE_FIELD } from \\"../organization/OrganizationTitle\\";
 
 export const CustomerList = (props: ListProps): React.ReactElement => {
@@ -1296,7 +1296,7 @@ export const EmptyEdit = (props: EditProps): React.ReactElement => {
 ",
   "admin-ui/src/empty/EmptyList.tsx": "import * as React from \\"react\\";
 import { List, Datagrid, ListProps, TextField, DateField } from \\"react-admin\\";
-import Pagination from \\"../Components/Pagination\\";
+import Pagination from \\"../components/Pagination\\";
 
 export const EmptyList = (props: ListProps): React.ReactElement => {
   return (
@@ -1463,7 +1463,7 @@ import {
   DateField,
   ReferenceField,
 } from \\"react-admin\\";
-import Pagination from \\"../Components/Pagination\\";
+import Pagination from \\"../components/Pagination\\";
 import { CUSTOMER_TITLE_FIELD } from \\"../customer/CustomerTitle\\";
 
 export const OrderList = (props: ListProps): React.ReactElement => {
@@ -1561,7 +1561,7 @@ export const OrganizationEdit = (props: EditProps): React.ReactElement => {
 ",
   "admin-ui/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
 import { List, Datagrid, ListProps, TextField, DateField } from \\"react-admin\\";
-import Pagination from \\"../Components/Pagination\\";
+import Pagination from \\"../components/Pagination\\";
 
 export const OrganizationList = (props: ListProps): React.ReactElement => {
   return (
@@ -1950,7 +1950,7 @@ import {
   ReferenceField,
   BooleanField,
 } from \\"react-admin\\";
-import Pagination from \\"../Components/Pagination\\";
+import Pagination from \\"../components/Pagination\\";
 import { USER_TITLE_FIELD } from \\"./UserTitle\\";
 
 export const UserList = (props: ListProps): React.ReactElement => {
