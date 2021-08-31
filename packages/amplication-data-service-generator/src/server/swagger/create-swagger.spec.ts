@@ -1,3 +1,4 @@
+import { EnumAuthProviderType } from "../../models";
 import { AppInfo } from "../../types";
 import {
   createDescription,
@@ -18,6 +19,7 @@ const EXAMPLE_APP_INFO: AppInfo = {
     dbPort: 5432,
     dbPassword: "admin",
     dbUser: "admin",
+    authProvider: EnumAuthProviderType.Http,
   },
 };
 
