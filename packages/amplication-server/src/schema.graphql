@@ -180,8 +180,6 @@ input AppSettingsUpdateInput {
   dbPassword: String!
   dbPort: Int!
   authProvider: EnumAuthProviderType!
-  appUserName: String!
-  appPassword: String!
 }
 
 input AppUpdateInput {

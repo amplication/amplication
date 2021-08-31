@@ -218,8 +218,6 @@ export type AppSettingsUpdateInput = {
   dbPassword: Scalars['String'];
   dbPort: Scalars['Int'];
   authProvider: EnumAuthProviderType;
-  appUserName: Scalars['String'];
-  appPassword: Scalars['String'];
 };
 
 export type AppUpdateInput = {
