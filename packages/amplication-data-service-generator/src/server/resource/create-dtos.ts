@@ -41,6 +41,10 @@ export type DTOs = {
   [entity: string]: EntityEnumDTOs & EntityDTOs;
 };
 
+/**
+ * creating all the DTOs files in the base (only the DTOs)
+ *
+ */
 export function createDTOModules(dtos: DTOs): Module[] {
   const dtoNameToPath = getDTONameToPath(dtos);
   return Object.values(dtos).flatMap((entityDTOs) =>
