@@ -2777,7 +2777,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
-  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basicAuth.guard\\";
+  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./BasicAuthGuard\\";
 
 export class DefaultAuthGuard extends BasicAuthGuard {}
 ",
