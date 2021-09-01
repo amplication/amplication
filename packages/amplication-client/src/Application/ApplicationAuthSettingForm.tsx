@@ -1,13 +1,13 @@
 import { Snackbar, TextField, ToggleField } from "@amplication/design-system";
-import { gql,  useMutation,  useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import * as models from "../models";
 import "@rmwc/snackbar/styles";
-import { Field, Form, Formik } from "formik";
+import { Form, Formik } from "formik";
 import React, { useCallback, useContext } from "react";
 
 import { match } from "react-router-dom";
 
-import "./ApplicationAuthSettingForm.scss"
+import "./ApplicationAuthSettingForm.scss";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
@@ -22,7 +22,7 @@ type TData = {
 };
 
 const FORM_SCHEMA = {
-  required: ["authProvider","appUserName","appPassword"],
+  required: ["authProvider", "appUserName", "appPassword"],
   properties: {
     authProvider: {
       type: "string",
@@ -35,7 +35,7 @@ const FORM_SCHEMA = {
     appPassword: {
       type: "string",
       minLength: 5,
-    }
+    },
   },
 };
 
@@ -44,16 +44,13 @@ const CLASS_NAME = "application-auth-settings-form";
 function ApplicationAuthSettingForm({ match }: Props) {
   const applicationId = match.params.application;
 
-  const { data  , error} = useQuery<{
+  const { data, error } = useQuery<{
     appSettings: models.AppSettings;
   }>(GET_APP_SETTINGS, {
     variables: {
       id: applicationId,
     },
   });
-
-  
-
 
   const pendingChangesContext = useContext(PendingChangesContext);
 
@@ -70,7 +67,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
 
   const handleSubmit = useCallback(
     (data: models.AppSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser,authProvider,appUserName,appPassword  } = data;
+      const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
       trackEvent({
         eventName: "updateAppSettings",
       });
@@ -83,8 +80,6 @@ function ApplicationAuthSettingForm({ match }: Props) {
             dbPort,
             dbUser,
             authProvider,
-            appUserName,
-            appPassword
           },
           appId: applicationId,
         },
@@ -99,61 +94,41 @@ function ApplicationAuthSettingForm({ match }: Props) {
     <div className={CLASS_NAME}>
       {data?.appSettings && (
         <Formik
-        initialValues={{
-            ...data.appSettings,
-            Http: data.appSettings.authProvider === models.EnumAuthProvider.Http,
-            Jwt : data.appSettings.authProvider === models.EnumAuthProvider.Jwt,
-          }}
+          initialValues={data.appSettings}
           validate={(values: models.AppSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize
           onSubmit={handleSubmit}
         >
-        {(formik) => {
-          
+          {(formik) => {
             return (
               <Form>
-                
                 <FormikAutoSave debounceMS={2000} />
-                <h3>Authentication Providers</h3> 
-                
+                <h3>Authentication Providers</h3>
+
                 <p>
                   All the below settings will appear in clear text in the
                   generated app. <br />
                   It should only be used for the development environment
                   variables and should not include sensitive data.
                 </p>
-                
-                <Field name="authProvider" as="select">
-                  <option value={models.EnumAuthProvider.Http} >Basic HTTP</option>
-                  <option value={models.EnumAuthProvider.Jwt} >JWT</option>
-                </Field>
 
-
-               
                 <div className={`${CLASS_NAME}__space`}>
-                <ToggleField
+                  <ToggleField
                     name="Http"
                     label="Basic HTTP"
                     disabled={!false}
-                    
                   />
-                  </div>
-                  <div className={`${CLASS_NAME}__space`}>
-                        <ToggleField
-                    name="Jwt"
-                    label="JWT"
-                    disabled={!false}
-                    
-                  />
-                  </div>
-                
-                    <hr />
+                </div>
+                <div className={`${CLASS_NAME}__space`}>
+                  <ToggleField name="Jwt" label="JWT" disabled={!false} />
+                </div>
 
-                    <h3>Default Credentials</h3>
-              
-            
+                <hr />
+
+                <h3>Default Credentials</h3>
+
                 <TextField
                   name="appUserName"
                   autoComplete="off"
@@ -164,7 +139,6 @@ function ApplicationAuthSettingForm({ match }: Props) {
                   autoComplete="off"
                   label="App Default Password"
                 />
-               
               </Form>
             );
           }}
@@ -176,7 +150,6 @@ function ApplicationAuthSettingForm({ match }: Props) {
 }
 
 export default ApplicationAuthSettingForm;
-
 
 const UPDATE_APP_SETTINGS = gql`
   mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {

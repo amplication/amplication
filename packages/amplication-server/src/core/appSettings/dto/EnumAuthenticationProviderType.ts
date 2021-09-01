@@ -6,5 +6,5 @@ export enum EnumAuthProviderType {
 }
 
 registerEnumType(EnumAuthProviderType, {
-  name: 'AuthProviderType'
+  name: 'EnumAuthProviderType'
 });
