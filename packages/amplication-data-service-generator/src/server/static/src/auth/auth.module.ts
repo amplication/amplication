@@ -12,8 +12,10 @@ import { PasswordService } from "./password.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
 import { SecretsManagerModule } from "../providers/secrets/secretsManager.module";
 import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
+import { ConfigService } from "@nestjs/config";
 
 export const JWT_SECRET_KEY = "JWT_SECRET_KEY";
+export const JWT_EXPIRATION = "JWT_EXPIRATION";
 @Module({
   imports: [
     forwardRef(() => UserModule),
@@ -21,9 +23,12 @@ export const JWT_SECRET_KEY = "JWT_SECRET_KEY";
     SecretsManagerModule,
     JwtModule.registerAsync({
       imports: [SecretsManagerModule],
-      useFactory: async (secretsService: SecretsManagerService) => ({
+      useFactory: async (
+        secretsService: SecretsManagerService,
+        configService: ConfigService
+      ) => ({
         secret: secretsService.getSecret<string>(JWT_SECRET_KEY),
-        signOptions: { expiresIn: "2d" },
+        signOptions: { expiresIn: configService.get(JWT_EXPIRATION) },
       }),
     }),
   ],
