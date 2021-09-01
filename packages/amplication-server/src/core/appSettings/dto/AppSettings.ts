@@ -37,14 +37,4 @@ export class AppSettings extends IBlock {
     nullable: false
   })
   authProvider!: EnumAuthProviderType;
-
-  @Field(() => String, {
-    nullable: false
-  })
-  appUserName!: string;
-
-  @Field(() => String, {
-    nullable: false
-  })
-  appPassword!: string;
 }
