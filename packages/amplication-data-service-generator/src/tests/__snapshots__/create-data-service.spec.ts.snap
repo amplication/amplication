@@ -2180,7 +2180,8 @@ POSTGRESQL_PORT=5433
 POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
 BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${appId}
-",
+JWT_SECRET_KEY=Change_ME!!!
+JWT_EXPIRATION=2d # more options in https://github.com/nestjs/jwt#jwtservicedecodetoken-string-options-decodeoptions-object--string",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
@@ -2434,7 +2435,7 @@ import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
-import { AuthModule } from \\"./auth/auth.module\\";
+import { JWT_SECRET_KEY, JWT_EXPIRATION, AuthModule } from \\"./auth/auth.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
@@ -2451,6 +2452,8 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     CustomerModule,
     EmptyModule,
     ACLModule,
+    JWT_SECRET_KEY,
+    JWT_EXPIRATION,
     AuthModule,
     SecretsManagerModule,
     MorganModule,
@@ -2518,6 +2521,8 @@ export class UserInfo implements Partial<User> {
   username!: string;
   @Field(() => [String])
   roles!: string[];
+  @Field(() => String)
+  accessToken?: string;
 }
 ",
   "server/src/auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
@@ -2568,6 +2573,7 @@ export class AuthController {
 ",
   "server/src/auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
+import { JwtModule } from \\"@nestjs/jwt\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
@@ -2576,10 +2582,36 @@ import { AuthResolver } from \\"./auth.resolver\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
 import { PasswordService } from \\"./password.service\\";
+import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
+import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
+import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
+import { ConfigService } from \\"@nestjs/config\\";
 
+export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
+export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
 @Module({
-  imports: [forwardRef(() => UserModule), PassportModule],
-  providers: [AuthService, BasicStrategy, PasswordService, AuthResolver],
+  imports: [
+    forwardRef(() => UserModule),
+    PassportModule,
+    SecretsManagerModule,
+    JwtModule.registerAsync({
+      imports: [SecretsManagerModule],
+      useFactory: async (
+        secretsService: SecretsManagerService,
+        configService: ConfigService
+      ) => ({
+        secret: secretsService.getSecret<string>(JWT_SECRET_KEY),
+        signOptions: { expiresIn: configService.get(JWT_EXPIRATION) },
+      }),
+    }),
+  ],
+  providers: [
+    AuthService,
+    BasicStrategy,
+    PasswordService,
+    AuthResolver,
+    JwtStrategy,
+  ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],
 })
@@ -2811,6 +2843,60 @@ export const UserRoles = createParamDecorator(
     return data ? request.user[data] : request.user.roles;
   }
 );
+",
+  "server/src/auth/jwt/guards/gqlJwtAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
+import { GqlExecutionContext } from \\"@nestjs/graphql\\";
+import type { Request } from \\"express\\";
+import { JwtAuthGuard } from \\"./jwt-auth.guard\\";
+
+@Injectable()
+export class GqlJwtAuthGuard extends JwtAuthGuard {
+  // This method is required for the interface - do not delete it.
+  getRequest(context: ExecutionContext): Request {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext<{ req: Request }>().req;
+  }
+}
+",
+  "server/src/auth/jwt/guards/jwt-auth.guard.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { AuthGuard } from \\"@nestjs/passport\\";
+
+@Injectable()
+export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
+",
+  "server/src/auth/jwt/jwt.strategy.ts": "import { ExtractJwt, Strategy } from \\"passport-jwt\\";
+import { PassportStrategy } from \\"@nestjs/passport\\";
+import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
+import { UserInfo } from \\"../UserInfo\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { UserService } from \\"../../user/user.service\\";
+import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
+import { JWT_SECRET_KEY } from \\"../auth.module\\";
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor(
+    private userService: UserService,
+    private secretsService: SecretsManagerService
+  ) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: secretsService.getSecret<string>(JWT_SECRET_KEY),
+    });
+  }
+
+  async validate(payload: UserInfo): Promise<UserInfo> {
+    const { username } = payload;
+    const user = await this.userService.findOne({
+      where: { username },
+    });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
+}
 ",
   "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
 import { Test, TestingModule } from \\"@nestjs/testing\\";
