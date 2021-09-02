@@ -14,6 +14,7 @@ import { readFile, relativeImportPath } from "../../../util/module";
 type AuthGuardMetaData = {
   path: string;
   fileName: string;
+  className: string;
 };
 
 export async function createDefaultGuard(
@@ -24,32 +25,34 @@ export async function createDefaultGuard(
   );
   const modulePath = `${AUTH_PATH}/defaultAuth.guard.ts`;
 
-  const guardFile = await readFile(defaultAuthGuardPath);
-  const { fileName, path } = getMetaDataForAuthGuard(authProvider);
-  const baseGuardIdentifier = builders.identifier(fileName);
-  interpolate(guardFile, {
+  const templateGuardFile = await readFile(defaultAuthGuardPath);
+  const { path, className } = getMetaDataForAuthGuard(authProvider);
+  const baseGuardIdentifier = builders.identifier(className);
+  interpolate(templateGuardFile, {
     GUARD: baseGuardIdentifier,
   });
   const baseGuardImport = importNames(
     [baseGuardIdentifier],
     relativeImportPath(modulePath, path)
   );
-  addImports(guardFile, [baseGuardImport]);
-  removeTSClassDeclares(guardFile);
-  return { path: modulePath, code: print(guardFile).code };
+  addImports(templateGuardFile, [baseGuardImport]);
+  removeTSClassDeclares(templateGuardFile);
+  return { path: modulePath, code: print(templateGuardFile).code };
 }
 function getMetaDataForAuthGuard(
   setAuthGuard: EnumAuthProviderType
 ): AuthGuardMetaData {
-  const data: AuthGuardMetaData = { fileName: "", path: "" };
+  const data: AuthGuardMetaData = { fileName: "", path: "", className: "" };
   switch (setAuthGuard) {
     case EnumAuthProviderType.Http:
-      data.fileName = "BasicAuthGuard";
-      data.path = `${AUTH_PATH}/${data.fileName}.ts`;
+      data.className = "BasicAuthGuard";
+      data.fileName = "basicAuth";
+      data.path = `${AUTH_PATH}/${data.fileName}.guard.ts`;
       break;
     case EnumAuthProviderType.Jwt:
-      data.fileName = "JwtAuthGuard";
-      data.path = `${AUTH_PATH}/jwt/${data.fileName}.ts`;
+      data.fileName = "jwt-auth";
+      data.className = "JwtAuthGuard";
+      data.path = `${AUTH_PATH}/jwt/${data.fileName}.guard.ts`;
       break;
     default:
       break;
