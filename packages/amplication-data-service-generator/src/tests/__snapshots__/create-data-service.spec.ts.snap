@@ -2435,7 +2435,7 @@ import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
-import { JWT_SECRET_KEY, JWT_EXPIRATION, AuthModule } from \\"./auth/auth.module\\";
+import { AuthModule } from \\"./auth/auth.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
@@ -2452,8 +2452,6 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     CustomerModule,
     EmptyModule,
     ACLModule,
-    JWT_SECRET_KEY,
-    JWT_EXPIRATION,
     AuthModule,
     SecretsManagerModule,
     MorganModule,
@@ -2586,9 +2584,8 @@ import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
 import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
 import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
 import { ConfigService } from \\"@nestjs/config\\";
+import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
 
-export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
-export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
 @Module({
   imports: [
     forwardRef(() => UserModule),
@@ -2872,7 +2869,7 @@ import { UserInfo } from \\"../UserInfo\\";
 // eslint-disable-next-line
 import { UserService } from \\"../../user/user.service\\";
 import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
-import { JWT_SECRET_KEY } from \\"../auth.module\\";
+import { JWT_SECRET_KEY } from \\"../../constants\\";
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -3030,6 +3027,9 @@ export function parseSalt(value: string | undefined): Salt {
   }
   return rounds;
 }
+",
+  "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
+export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
 ",
   "server/src/customer/base/CreateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
