@@ -1,5 +1,6 @@
 import { builders } from "ast-types";
 import { print } from "recast";
+import { AUTH_PATH } from "../../constants";
 import { EnumAuthProviderType } from "../../../models";
 import { Module } from "../../../types";
 import {
@@ -9,7 +10,6 @@ import {
   removeTSClassDeclares,
 } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { authPath } from "../createAuth";
 
 type AuthGuardMetaData = {
   path: string;
@@ -22,7 +22,7 @@ export async function createDefaultGuard(
   const defaultAuthGuardPath = require.resolve(
     "./defaultAuth.guard.template.ts"
   );
-  const modulePath = `${authPath}/defaultAuth.guard.ts`;
+  const modulePath = `${AUTH_PATH}/defaultAuth.guard.ts`;
 
   const guardFile = await readFile(defaultAuthGuardPath);
   const { fileName, path } = getMetaDataForAuthGuard(authProvider);
@@ -45,11 +45,11 @@ function getMetaDataForAuthGuard(
   switch (setAuthGuard) {
     case EnumAuthProviderType.Http:
       data.fileName = "BasicAuthGuard";
-      data.path = `${authPath}/${data.fileName}.ts`;
+      data.path = `${AUTH_PATH}/${data.fileName}.ts`;
       break;
     case EnumAuthProviderType.Jwt:
       data.fileName = "JwtAuthGuard";
-      data.path = `${authPath}/jwt/${data.fileName}.ts`;
+      data.path = `${AUTH_PATH}/jwt/${data.fileName}.ts`;
       break;
     default:
       break;
