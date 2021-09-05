@@ -2770,11 +2770,11 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "server/src/auth/basic/guard/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
+  "server/src/auth/basic/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
-  "server/src/auth/basic/guard/gqlBasicAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
+  "server/src/auth/basic/gqlBasicAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
 import type { Request } from \\"express\\";
 import { BasicAuthGuard } from \\"./basicAuth.guard\\";
@@ -2804,7 +2804,7 @@ export class GqlACGuard<User extends any = any> extends ACGuard<User> {
   }
 }
 ",
-  "server/src/auth/gqlDefaultAuth.guard.ts": "import { GqlBasicAuthGuard } from \\"./basic/guard/gqlBasicAuth.guard\\";
+  "server/src/auth/gqlDefaultAuth.guard.ts": "import { GqlBasicAuthGuard } from \\"./basic/gqlBasicAuth.guard\\";
 
 export class GqlDefaultAuthGuard extends GqlBasicAuthGuard {}
 ",
@@ -2841,7 +2841,7 @@ export const UserRoles = createParamDecorator(
   }
 );
 ",
-  "server/src/auth/jwt/guards/gqlJwtAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
+  "server/src/auth/jwt/gqlJwtAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
 import type { Request } from \\"express\\";
 import { JwtAuthGuard } from \\"./jwtAuth.guard\\";
@@ -2854,10 +2854,6 @@ export class GqlJwtAuthGuard extends JwtAuthGuard {
     return ctx.getContext<{ req: Request }>().req;
   }
 }
-",
-  "server/src/auth/jwt/guards/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
 ",
   "server/src/auth/jwt/jwt.strategy.ts": "import { ExtractJwt, Strategy } from \\"passport-jwt\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
@@ -2892,6 +2888,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return user;
   }
 }
+",
+  "server/src/auth/jwt/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
+
+export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
 ",
   "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
 import { Test, TestingModule } from \\"@nestjs/testing\\";
