@@ -1,3 +1,3 @@
-import { GqlBasicAuthGuard } from "./gqlBasicAuth.guard";
+import { GqlBasicAuthGuard } from "./basic/guard/gqlBasicAuth.guard";
 
 export class GqlDefaultAuthGuard extends GqlBasicAuthGuard {}

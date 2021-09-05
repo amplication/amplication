@@ -47,10 +47,10 @@ function getMetaDataForAuthGuard(
     case EnumAuthProviderType.Http:
       data.className = "BasicAuthGuard";
       data.fileName = "basicAuth";
-      data.path = `${AUTH_PATH}/${data.fileName}.guard.ts`;
+      data.path = `${AUTH_PATH}/basic/${data.fileName}.guard.ts`;
       break;
     case EnumAuthProviderType.Jwt:
-      data.fileName = "jwt-auth";
+      data.fileName = "jwtAuth";
       data.className = "JwtAuthGuard";
       data.path = `${AUTH_PATH}/jwt/${data.fileName}.guard.ts`;
       break;
