@@ -1,51 +1,37 @@
-import { TextField } from "@amplication/design-system";
+import { Snackbar, ToggleField } from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { Form, Formik } from "formik";
 import React, { useCallback, useContext } from "react";
-import * as models from "../../../models";
-import { useTracking } from "../../../util/analytics";
-import { formatError } from "../../../util/error";
-import FormikAutoSave from "../../../util/formikAutoSave";
-import { validate } from "../../../util/formikValidateJsonSchema";
-import PendingChangesContext from "../../../VersionControl/PendingChangesContext";
 import { match } from "react-router-dom";
+import { useTracking } from "react-tracking";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import FormikAutoSave from "../util/formikAutoSave";
+import { validate } from "../util/formikValidateJsonSchema";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import "./ApplicationAuthSettingForm.scss";
+
 type Props = {
   match: match<{ application: string }>;
 };
-
 type TData = {
   updateAppSettings: models.AppSettings;
 };
 
 const FORM_SCHEMA = {
-  required: ["dbHost", "dbUser", "dbPassword", "dbPort"],
+  required: ["authProvider"],
   properties: {
-    dbHost: {
+    authProvider: {
       type: "string",
       minLength: 2,
-    },
-    dbUser: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPassword: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPort: {
-      type: "integer",
-      minLength: 4,
-      maxLength: 5,
-    },
-    dbName: {
-      type: "string",
     },
   },
 };
 
-function ApplicationDatabaseSettingsForms({ match }: Props) {
+const CLASS_NAME = "application-auth-settings-form";
+
+function ApplicationAuthSettingForm({ match }: Props) {
   const applicationId = match.params.application;
 
   const { data, error } = useQuery<{
@@ -55,6 +41,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
       id: applicationId,
     },
   });
+
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const { trackEvent } = useTracking();
@@ -92,8 +79,9 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
   );
 
   const errorMessage = formatError(error || updateError);
+
   return (
-    <div>
+    <div className={CLASS_NAME}>
       {data?.appSettings && (
         <Formik
           initialValues={data.appSettings}
@@ -106,32 +94,30 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
           {(formik) => {
             return (
               <Form>
-                <h3>DB Settings</h3>
+                <FormikAutoSave debounceMS={2000} />
+                <h3>Authentication Providers</h3>
+
                 <p>
                   All the below settings will appear in clear text in the
                   generated app. <br />
                   It should only be used for the development environment
                   variables and should not include sensitive data.
                 </p>
-                <FormikAutoSave debounceMS={2000} />
-                <TextField name="dbHost" autoComplete="off" label="Host" />
-                <TextField
-                  name="dbName"
-                  autoComplete="off"
-                  label="Database Name"
-                />
-                <TextField
-                  name="dbPort"
-                  type="number"
-                  autoComplete="off"
-                  label="Port"
-                />
-                <TextField name="dbUser" autoComplete="off" label="User" />
-                <TextField
-                  name="dbPassword"
-                  autoComplete="off"
-                  label="Password"
-                />
+
+                <div className={`${CLASS_NAME}__space`}>
+                  <ToggleField
+                    name="Http"
+                    label="Basic HTTP"
+                    disabled={!false}
+                  />
+                </div>
+                <div className={`${CLASS_NAME}__space`}>
+                  <ToggleField name="Jwt" label="JWT" disabled={!false} />
+                </div>
+
+                <hr />
+
+                <h3>Default Credentials</h3>
               </Form>
             );
           }}
@@ -142,7 +128,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
   );
 }
 
-export default ApplicationDatabaseSettingsForms;
+export default ApplicationAuthSettingForm;
 
 const UPDATE_APP_SETTINGS = gql`
   mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
