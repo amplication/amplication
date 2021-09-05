@@ -21,7 +21,7 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import { ApiTokenList } from "../Settings/ApiTokenList";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import ApplicationDatabaseSettingsForms from "./forms/db/ApplicationDatabaseSettingsForms";
-import ApplicationAuthSettingForm from "./forms/Auth/ApplicationAuthSettingForm";
+import ApplicationAuthSettingForm from "./forms/auth/ApplicationAuthSettingForm";
 
 type Props = {
   match: match<{ application: string }>;
