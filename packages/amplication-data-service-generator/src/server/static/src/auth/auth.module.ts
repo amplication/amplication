@@ -22,6 +22,7 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../constants";
     SecretsManagerModule,
     JwtModule.registerAsync({
       imports: [SecretsManagerModule],
+      inject: [SecretsManagerService, ConfigService],
       useFactory: async (
         secretsService: SecretsManagerService,
         configService: ConfigService

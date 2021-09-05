@@ -45,8 +45,8 @@ function getMetaDataForAuthGuard(
   const data: AuthGuardMetaData = { fileName: "", path: "", className: "" };
   switch (setAuthGuard) {
     case EnumAuthProviderType.Http:
-      data.className = "BasicAuthGuard";
       data.fileName = "basicAuth";
+      data.className = "BasicAuthGuard";
       data.path = `${AUTH_PATH}/basic/${data.fileName}.guard.ts`;
       break;
     case EnumAuthProviderType.Jwt:
@@ -55,6 +55,10 @@ function getMetaDataForAuthGuard(
       data.path = `${AUTH_PATH}/jwt/${data.fileName}.guard.ts`;
       break;
     default:
+      throw new Error(
+        `Not found any meta data for auth guard - ${setAuthGuard}`
+      );
+
       break;
   }
   return data;
