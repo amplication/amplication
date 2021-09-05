@@ -20,8 +20,8 @@ import useNavigationTabs from "../Layout/UseNavigationTabs";
 import InnerTabLink from "../Layout/InnerTabLink";
 import { ApiTokenList } from "../Settings/ApiTokenList";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
-import ApplicationDatabaseSettingsForms from "./forms/db/ApplicationDatabaseSettingsForms";
-import ApplicationAuthSettingForm from "./forms/auth/ApplicationAuthSettingForm";
+import ApplicationDatabaseSettingsForms from "./forms1/db/ApplicationDatabaseSettingsForms";
+import ApplicationAuthSettingForm from "./forms1/auth1/ApplicationAuthSettingForm";
 
 type Props = {
   match: match<{ application: string }>;
