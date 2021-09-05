@@ -2578,7 +2578,7 @@ import { UserModule } from \\"../user/user.module\\";
 import { AuthController } from \\"./auth.controller\\";
 import { AuthResolver } from \\"./auth.resolver\\";
 import { AuthService } from \\"./auth.service\\";
-import { BasicStrategy } from \\"./basic.strategy\\";
+import { BasicStrategy } from \\"./basic/basic.strategy\\";
 import { PasswordService } from \\"./password.service\\";
 import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
 import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
@@ -2749,11 +2749,11 @@ export class AuthService {
   }
 }
 ",
-  "server/src/auth/basic.strategy.ts": "import { BasicStrategy as Strategy } from \\"passport-http\\";
+  "server/src/auth/basic/basic.strategy.ts": "import { BasicStrategy as Strategy } from \\"passport-http\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
-import { AuthService } from \\"./auth.service\\";
-import { UserInfo } from \\"./UserInfo\\";
+import { AuthService } from \\"../auth.service\\";
+import { UserInfo } from \\"../UserInfo\\";
 
 @Injectable()
 export class BasicStrategy extends PassportStrategy(Strategy) {
@@ -2770,11 +2770,25 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "server/src/auth/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
+  "server/src/auth/basic/guard/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
-  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basicAuth.guard\\";
+  "server/src/auth/basic/guard/gqlBasicAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
+import { GqlExecutionContext } from \\"@nestjs/graphql\\";
+import type { Request } from \\"express\\";
+import { BasicAuthGuard } from \\"./basicAuth.guard\\";
+
+@Injectable()
+export class GqlBasicAuthGuard extends BasicAuthGuard {
+  // This method is required for the interface - do not delete it.
+  getRequest(context: ExecutionContext): Request {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext<{ req: Request }>().req;
+  }
+}
+",
+  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
 
 export class DefaultAuthGuard extends BasicAuthGuard {}
 ",
@@ -2790,21 +2804,7 @@ export class GqlACGuard<User extends any = any> extends ACGuard<User> {
   }
 }
 ",
-  "server/src/auth/gqlBasicAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import type { Request } from \\"express\\";
-import { BasicAuthGuard } from \\"./basicAuth.guard\\";
-
-@Injectable()
-export class GqlBasicAuthGuard extends BasicAuthGuard {
-  // This method is required for the interface - do not delete it.
-  getRequest(context: ExecutionContext): Request {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext<{ req: Request }>().req;
-  }
-}
-",
-  "server/src/auth/gqlDefaultAuth.guard.ts": "import { GqlBasicAuthGuard } from \\"./gqlBasicAuth.guard\\";
+  "server/src/auth/gqlDefaultAuth.guard.ts": "import { GqlBasicAuthGuard } from \\"./basic/guard/gqlBasicAuth.guard\\";
 
 export class GqlDefaultAuthGuard extends GqlBasicAuthGuard {}
 ",
@@ -2844,7 +2844,7 @@ export const UserRoles = createParamDecorator(
   "server/src/auth/jwt/guards/gqlJwtAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
 import type { Request } from \\"express\\";
-import { JwtAuthGuard } from \\"./jwt-auth.guard\\";
+import { JwtAuthGuard } from \\"./jwtAuth.guard\\";
 
 @Injectable()
 export class GqlJwtAuthGuard extends JwtAuthGuard {
@@ -2855,10 +2855,8 @@ export class GqlJwtAuthGuard extends JwtAuthGuard {
   }
 }
 ",
-  "server/src/auth/jwt/guards/jwt-auth.guard.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
+  "server/src/auth/jwt/guards/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
 
-@Injectable()
 export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
 ",
   "server/src/auth/jwt/jwt.strategy.ts": "import { ExtractJwt, Strategy } from \\"passport-jwt\\";
