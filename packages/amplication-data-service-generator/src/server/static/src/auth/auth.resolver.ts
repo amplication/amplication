@@ -7,10 +7,14 @@ import { AuthService } from "./auth.service";
 import { UserInfo } from "./UserInfo";
 import { LoginArgs } from "./LoginArgs";
 import { UserData } from "./gqlUserData.decorator";
+import { JwtService } from "@nestjs/jwt";
 
 @Resolver(UserInfo)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private jwtService: JwtService
+  ) {}
   @Mutation(() => UserInfo)
   async login(@Args() args: LoginArgs): Promise<UserInfo> {
     const user = await this.authService.validateUser(
@@ -20,7 +24,11 @@ export class AuthResolver {
     if (!user) {
       throw new ApolloError("The passed credentials are incorrect");
     }
-    return user;
+    const payload = { username: user.username };
+    return {
+      accessToken: this.jwtService.sign(payload), //signs username payload
+      ...user,
+    };
   }
 
   @Query(() => UserInfo)
