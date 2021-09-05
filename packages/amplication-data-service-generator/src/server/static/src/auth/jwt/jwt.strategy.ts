@@ -6,7 +6,7 @@ import { UserInfo } from "../UserInfo";
 // eslint-disable-next-line
 import { UserService } from "../../user/user.service";
 import { SecretsManagerService } from "../../providers/secrets/secretsManager.service";
-import { JWT_SECRET_KEY } from "../auth.module";
+import { JWT_SECRET_KEY } from "../../constants";
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
