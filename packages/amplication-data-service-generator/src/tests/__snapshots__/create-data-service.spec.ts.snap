@@ -2616,7 +2616,7 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
 })
 export class AuthModule {}
 ",
-  "server/src/auth/auth.resolver.ts": "import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuthGuard.guard\\";
+  "server/src/auth/auth.resolver.ts": "import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth\\";
 import * as common from \\"@nestjs/common\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { Args, Mutation, Resolver, Query } from \\"@nestjs/graphql\\";
@@ -2808,7 +2808,7 @@ export class GqlACGuard<User extends any = any> extends ACGuard<User> {
   }
 }
 ",
-  "server/src/auth/gqlDefaultAuthGuard.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
+  "server/src/auth/gqlDefaultAuth.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
 import type { Request } from \\"express\\";
 // @ts-ignore
