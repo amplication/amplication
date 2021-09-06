@@ -1,18 +1,16 @@
-import { Snackbar, TextField, ToggleField } from "@amplication/design-system";
+import { Snackbar, ToggleField } from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import * as models from "../models";
 import "@rmwc/snackbar/styles";
 import { Form, Formik } from "formik";
 import React, { useCallback, useContext } from "react";
-
 import { match } from "react-router-dom";
-
-import "./ApplicationAuthSettingForm.scss";
+import { useTracking } from "react-tracking";
+import * as models from "../models";
+import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
-import { useTracking } from "react-tracking";
-import { formatError } from "../util/error";
+import "./ApplicationAuthSettingForm.scss";
 
 type Props = {
   match: match<{ application: string }>;
@@ -22,19 +20,11 @@ type TData = {
 };
 
 const FORM_SCHEMA = {
-  required: ["authProvider", "appUserName", "appPassword"],
+  required: ["authProvider"],
   properties: {
     authProvider: {
       type: "string",
       minLength: 2,
-    },
-    appUserName: {
-      type: "string",
-      minLength: 2,
-    },
-    appPassword: {
-      type: "string",
-      minLength: 5,
     },
   },
 };
@@ -128,17 +118,6 @@ function ApplicationAuthSettingForm({ match }: Props) {
                 <hr />
 
                 <h3>Default Credentials</h3>
-
-                <TextField
-                  name="appUserName"
-                  autoComplete="off"
-                  label="App Default User Name"
-                />
-                <TextField
-                  name="appPassword"
-                  autoComplete="off"
-                  label="App Default Password"
-                />
               </Form>
             );
           }}
@@ -161,8 +140,6 @@ const UPDATE_APP_SETTINGS = gql`
       dbPassword
       dbPort
       authProvider
-      appUserName
-      appPassword
     }
   }
 `;
@@ -177,8 +154,6 @@ const GET_APP_SETTINGS = gql`
       dbPassword
       dbPort
       authProvider
-      appUserName
-      appPassword
     }
   }
 `;
