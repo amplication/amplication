@@ -1,6 +1,4 @@
-// @ts-ignore
-// eslint-disable-next-line
-import { GqlDefaultAuthGuard } from "./defaultAuth.guard";
+import { GqlDefaultAuthGuard } from "./gqlDefaultAuthGuard.guard";
 import * as common from "@nestjs/common";
 import * as gqlACGuard from "../auth/gqlAC.guard";
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
