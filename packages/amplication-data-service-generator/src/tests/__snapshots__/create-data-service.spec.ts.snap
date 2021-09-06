@@ -2181,7 +2181,8 @@ POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
 BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${appId}
 JWT_SECRET_KEY=Change_ME!!!
-JWT_EXPIRATION=2d # more options in https://github.com/nestjs/jwt#jwtservicedecodetoken-string-options-decodeoptions-object--string",
+# more options in https://github.com/nestjs/jwt#jwtservicedecodetoken-string-options-decodeoptions-object--string
+JWT_EXPIRATION=2d",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
@@ -2593,6 +2594,7 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
     SecretsManagerModule,
     JwtModule.registerAsync({
       imports: [SecretsManagerModule],
+      inject: [SecretsManagerService, ConfigService],
       useFactory: async (
         secretsService: SecretsManagerService,
         configService: ConfigService
@@ -2614,8 +2616,10 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
 })
 export class AuthModule {}
 ",
-  "server/src/auth/auth.resolver.ts": "import * as common from \\"@nestjs/common\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+  "server/src/auth/auth.resolver.ts": "// @ts-ignore
+// eslint-disable-next-line
+import { GqlDefaultAuthGuard } from \\"./defaultAuth.guard\\";
+import * as common from \\"@nestjs/common\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { Args, Mutation, Resolver, Query } from \\"@nestjs/graphql\\";
 import { ApolloError } from \\"apollo-server-express\\";
@@ -2623,10 +2627,14 @@ import { AuthService } from \\"./auth.service\\";
 import { UserInfo } from \\"./UserInfo\\";
 import { LoginArgs } from \\"./LoginArgs\\";
 import { UserData } from \\"./gqlUserData.decorator\\";
+import { JwtService } from \\"@nestjs/jwt\\";
 
 @Resolver(UserInfo)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private jwtService: JwtService
+  ) {}
   @Mutation(() => UserInfo)
   async login(@Args() args: LoginArgs): Promise<UserInfo> {
     const user = await this.authService.validateUser(
@@ -2636,14 +2644,15 @@ export class AuthResolver {
     if (!user) {
       throw new ApolloError(\\"The passed credentials are incorrect\\");
     }
-    return user;
+    const payload = { username: user.username };
+    return {
+      accessToken: this.jwtService.sign(payload), //signs username payload
+      ...user,
+    };
   }
 
   @Query(() => UserInfo)
-  @common.UseGuards(
-    gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-    gqlACGuard.GqlACGuard
-  )
+  @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
   async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
     return userInfo;
   }
@@ -2774,23 +2783,20 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
-  "server/src/auth/basic/gqlBasicAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
+  "server/src/auth/defaultAuth.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import type { Request } from \\"express\\";
-import { BasicAuthGuard } from \\"./basicAuth.guard\\";
+import { Request } from \\"express\\";
+import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
 
-@Injectable()
-export class GqlBasicAuthGuard extends BasicAuthGuard {
+export class DefaultAuthGuard extends BasicAuthGuard {}
+
+export class GqlDefaultAuthGuard extends DefaultAuthGuard {
   // This method is required for the interface - do not delete it.
   getRequest(context: ExecutionContext): Request {
     const ctx = GqlExecutionContext.create(context);
     return ctx.getContext<{ req: Request }>().req;
   }
 }
-",
-  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
-
-export class DefaultAuthGuard extends BasicAuthGuard {}
 ",
   "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
@@ -2803,10 +2809,6 @@ export class GqlACGuard<User extends any = any> extends ACGuard<User> {
     return request.user;
   }
 }
-",
-  "server/src/auth/gqlDefaultAuth.guard.ts": "import { GqlBasicAuthGuard } from \\"./basic/gqlBasicAuth.guard\\";
-
-export class GqlDefaultAuthGuard extends GqlBasicAuthGuard {}
 ",
   "server/src/auth/gqlUserData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
@@ -2841,20 +2843,6 @@ export const UserRoles = createParamDecorator(
   }
 );
 ",
-  "server/src/auth/jwt/gqlJwtAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import type { Request } from \\"express\\";
-import { JwtAuthGuard } from \\"./jwtAuth.guard\\";
-
-@Injectable()
-export class GqlJwtAuthGuard extends JwtAuthGuard {
-  // This method is required for the interface - do not delete it.
-  getRequest(context: ExecutionContext): Request {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext<{ req: Request }>().req;
-  }
-}
-",
   "server/src/auth/jwt/jwt.strategy.ts": "import { ExtractJwt, Strategy } from \\"passport-jwt\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
@@ -2868,7 +2856,7 @@ import { JWT_SECRET_KEY } from \\"../../constants\\";
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private userService: UserService,
-    private secretsService: SecretsManagerService
+    secretsService: SecretsManagerService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
