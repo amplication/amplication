@@ -47,7 +47,7 @@ const FORM_SCHEMA = {
 
 function ApplicationDatabaseSettingsForms({ match }: Props) {
   const applicationId = match.params.application;
-  
+
   const { data, error } = useQuery<{
     appSettings: models.AppSettings;
   }>(GET_APP_SETTINGS, {
@@ -70,7 +70,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
 
   const handleSubmit = useCallback(
     (data: models.AppSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser,authProvider,appUserName,appPassword  } = data;
+      const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
       trackEvent({
         eventName: "updateAppSettings",
       });
@@ -83,8 +83,6 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
             dbPort,
             dbUser,
             authProvider,
-            appUserName,
-            appPassword
           },
           appId: applicationId,
         },
@@ -95,7 +93,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
 
   const errorMessage = formatError(error || updateError);
   return (
-    <div >
+    <div>
       {data?.appSettings && (
         <Formik
           initialValues={data.appSettings}
@@ -156,8 +154,6 @@ const UPDATE_APP_SETTINGS = gql`
       dbPassword
       dbPort
       authProvider
-      appUserName
-      appPassword 
     }
   }
 `;
@@ -172,8 +168,6 @@ const GET_APP_SETTINGS = gql`
       dbPassword
       dbPort
       authProvider
-      appUserName
-      appPassword 
     }
   }
 `;

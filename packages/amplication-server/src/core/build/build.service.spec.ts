@@ -99,7 +99,7 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   dbPort: 5432,
   dbUser: 'admin',
   appId: EXAMPLE_APP_ID,
-  authProvider: EnumAuthProviderType.Jwt
+  authProvider: EnumAuthProviderType.Http
 };
 
 const EXAMPLE_COMMIT: Commit = {
