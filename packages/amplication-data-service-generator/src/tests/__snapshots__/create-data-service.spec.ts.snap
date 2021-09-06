@@ -4797,7 +4797,7 @@ export class CustomerModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -4815,10 +4815,7 @@ import { Organization } from \\"../../organization/base/Organization\\";
 import { CustomerService } from \\"../customer.service\\";
 
 @graphql.Resolver(() => Customer)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class CustomerResolverBase {
   constructor(
     protected readonly service: CustomerService,
@@ -5199,17 +5196,14 @@ export class CustomerModule {}
   "server/src/customer/customer.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { CustomerResolverBase } from \\"./base/customer.resolver.base\\";
 import { Customer } from \\"./base/Customer\\";
 import { CustomerService } from \\"./customer.service\\";
 
 @graphql.Resolver(() => Customer)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class CustomerResolver extends CustomerResolverBase {
   constructor(
     protected readonly service: CustomerService,
@@ -5841,7 +5835,7 @@ export class EmptyModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -5854,10 +5848,7 @@ import { Empty } from \\"./Empty\\";
 import { EmptyService } from \\"../empty.service\\";
 
 @graphql.Resolver(() => Empty)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class EmptyResolverBase {
   constructor(
     protected readonly service: EmptyService,
@@ -6024,17 +6015,14 @@ export class EmptyModule {}
   "server/src/empty/empty.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { EmptyResolverBase } from \\"./base/empty.resolver.base\\";
 import { Empty } from \\"./base/Empty\\";
 import { EmptyService } from \\"./empty.service\\";
 
 @graphql.Resolver(() => Empty)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class EmptyResolver extends EmptyResolverBase {
   constructor(
     protected readonly service: EmptyService,
@@ -7004,7 +6992,7 @@ export class OrderModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -7020,10 +7008,7 @@ import { Customer } from \\"../../customer/base/Customer\\";
 import { OrderService } from \\"../order.service\\";
 
 @graphql.Resolver(() => Order)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class OrderResolverBase {
   constructor(
     protected readonly service: OrderService,
@@ -7319,17 +7304,14 @@ export class OrderModule {}
   "server/src/order/order.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { OrderResolverBase } from \\"./base/order.resolver.base\\";
 import { Order } from \\"./base/Order\\";
 import { OrderService } from \\"./order.service\\";
 
 @graphql.Resolver(() => Order)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class OrderResolver extends OrderResolverBase {
   constructor(
     protected readonly service: OrderService,
@@ -8669,7 +8651,7 @@ export class OrganizationModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -8688,10 +8670,7 @@ import { Customer } from \\"../../customer/base/Customer\\";
 import { OrganizationService } from \\"../organization.service\\";
 
 @graphql.Resolver(() => Organization)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class OrganizationResolverBase {
   constructor(
     protected readonly service: OrganizationService,
@@ -9054,17 +9033,14 @@ export class OrganizationModule {}
   "server/src/organization/organization.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { OrganizationResolverBase } from \\"./base/organization.resolver.base\\";
 import { Organization } from \\"./base/Organization\\";
 import { OrganizationService } from \\"./organization.service\\";
 
 @graphql.Resolver(() => Organization)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class OrganizationResolver extends OrganizationResolverBase {
   constructor(
     protected readonly service: OrganizationService,
@@ -11084,7 +11060,7 @@ export class UserModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -11101,10 +11077,7 @@ import { Organization } from \\"../../organization/base/Organization\\";
 import { UserService } from \\"../user.service\\";
 
 @graphql.Resolver(() => User)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class UserResolverBase {
   constructor(
     protected readonly service: UserService,
@@ -11501,17 +11474,14 @@ export class UserModule {}
   "server/src/user/user.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/defaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { UserResolverBase } from \\"./base/user.resolver.base\\";
 import { User } from \\"./base/User\\";
 import { UserService } from \\"./user.service\\";
 
 @graphql.Resolver(() => User)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class UserResolver extends UserResolverBase {
   constructor(
     protected readonly service: UserService,
