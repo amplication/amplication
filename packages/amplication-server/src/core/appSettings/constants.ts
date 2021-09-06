@@ -30,5 +30,5 @@ export const DEFAULT_APP_SETTINGS: AppSettingsValuesExtended = {
   dbUser: 'admin',
   dbPassword: 'admin',
   dbPort: 5432,
-  authProvider: EnumAuthProviderType.Jwt
+  authProvider: EnumAuthProviderType.Http
 };
