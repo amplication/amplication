@@ -18,6 +18,7 @@ export class GCPProviderService {
     const bucket = this.configService.get(GCS_BUCKET_VAR);
     return new GCPProvider(
       new CloudBuildClient(),
+      //@ts-ignore
       new Storage(),
       gcpAppsProjectId,
       /** @todo prefix results */

@@ -59,7 +59,7 @@ export class AppSettingsService {
 
     return {
       ...appSettings,
-      authProvider: appSettings.authProvider || EnumAuthProviderType.Jwt
+      authProvider: appSettings.authProvider || EnumAuthProviderType.Http
     };
   }
 
