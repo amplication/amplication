@@ -1,4 +1,4 @@
-import { GqlDefaultAuthGuard } from "./gqlDefaultAuthGuard.guard";
+import { GqlDefaultAuthGuard } from "./gqlDefaultAuth";
 import * as common from "@nestjs/common";
 import * as gqlACGuard from "../auth/gqlAC.guard";
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
