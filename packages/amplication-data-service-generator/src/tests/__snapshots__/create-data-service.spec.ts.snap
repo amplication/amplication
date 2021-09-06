@@ -2616,9 +2616,7 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
 })
 export class AuthModule {}
 ",
-  "server/src/auth/auth.resolver.ts": "// @ts-ignore
-// eslint-disable-next-line
-import { GqlDefaultAuthGuard } from \\"./defaultAuth.guard\\";
+  "server/src/auth/auth.resolver.ts": "import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuthGuard.guard\\";
 import * as common from \\"@nestjs/common\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { Args, Mutation, Resolver, Query } from \\"@nestjs/graphql\\";
@@ -2807,6 +2805,21 @@ export class GqlACGuard<User extends any = any> extends ACGuard<User> {
     const ctx = GqlExecutionContext.create(context);
     const request = ctx.getContext<{ req: { user: User } }>().req;
     return request.user;
+  }
+}
+",
+  "server/src/auth/gqlDefaultAuthGuard.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
+import { GqlExecutionContext } from \\"@nestjs/graphql\\";
+import type { Request } from \\"express\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { DefaultAuthGuard } from \\"./defaultAuth.guard\\";
+
+export class GqlDefaultAuthGuard extends DefaultAuthGuard {
+  // This method is required for the interface - do not delete it.
+  getRequest(context: ExecutionContext): Request {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext<{ req: Request }>().req;
   }
 }
 ",
@@ -4797,7 +4810,7 @@ export class CustomerModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuthGuard.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -5835,7 +5848,7 @@ export class EmptyModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuthGuard.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -6992,7 +7005,7 @@ export class OrderModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuthGuard.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -8651,7 +8664,7 @@ export class OrganizationModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuthGuard.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -11060,7 +11073,7 @@ export class UserModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuthGuard.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
