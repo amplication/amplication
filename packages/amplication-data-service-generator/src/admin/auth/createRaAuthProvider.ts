@@ -1,9 +1,16 @@
-import { readFile, relativeImportPath } from "../../util/module";
-import { Module } from "../../types";
-import { resolve } from "path";
-import { interpolate, importNames } from "../../util/ast";
 import { builders } from "ast-types";
+import { resolve } from "path";
+import { print } from "recast";
 import { EnumAuthProviderType } from "../../models";
+import { Module } from "../../types";
+import {
+  addImports,
+  importNames,
+  interpolate,
+  removeTSVariableDeclares,
+} from "../../util/ast";
+import { readFile, relativeImportPath } from "../../util/module";
+import { AUTH_PROVIDER_PATH } from "../constants";
 
 type AuthProviderMetadata = {
   baseProviderObjectName: string;
@@ -13,32 +20,45 @@ type AuthProviderMetadata = {
 export async function createRaAuthProvider(
   authProvider: EnumAuthProviderType
 ): Promise<Module> {
+  const modulePath = `${AUTH_PROVIDER_PATH}/ra-auth.ts`;
   const templatePath = resolve(__dirname, "templates", "ra-auth.template.ts");
-  const { baseProviderObjectName } = getMetadataForRABaseAuthProvider(
+  const { baseProviderObjectName, basePath } = getMetadataForRABaseAuthProvider(
     authProvider
   );
   const baseRaAuth = builders.identifier(baseProviderObjectName);
-  const file = await readFile(templatePath);
-  interpolate(file, {
-    AUTH_PROVIDER: builders.identifier(baseProviderObjectName),
+  const templateFile = await readFile(templatePath);
+  interpolate(templateFile, {
+    AUTH_PROVIDER: baseRaAuth,
   });
   const baseRaAuthImport = importNames(
     [baseRaAuth],
-    relativeImportPath(modulePath, path)
+    relativeImportPath(modulePath, basePath)
   );
+  addImports(templateFile, [baseRaAuthImport]);
+  removeTSVariableDeclares(templateFile);
+  return { path: modulePath, code: print(templateFile).code };
 }
 
 function getMetadataForRABaseAuthProvider(
   authProvider: EnumAuthProviderType
 ): AuthProviderMetadata {
+  const data: AuthProviderMetadata = {
+    basePath: "",
+    baseProviderObjectName: "",
+  };
   switch (authProvider) {
     case "Jwt":
-      return { baseProviderObjectName: "jwtAuthProvider" };
+      data.baseProviderObjectName = "jwtAuthProvider";
+      data.basePath = `${AUTH_PROVIDER_PATH}/bearer/ra-auth-bearer.ts`;
+      break;
     case "Http":
-      return { baseProviderObjectName: "basicHttpAuthProvider" };
+      data.baseProviderObjectName = "basicHttpAuthProvider";
+      data.basePath = `${AUTH_PROVIDER_PATH}/ra-auth-basic-http.ts`;
+      break;
     default:
       throw new Error(
         `Send unknown auth provider in CreateRaAuthProvider named: ${authProvider}`
       );
   }
+  return data;
 }

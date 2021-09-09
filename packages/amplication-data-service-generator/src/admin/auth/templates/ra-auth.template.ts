@@ -2,4 +2,4 @@ import { AuthProvider } from "react-admin";
 
 declare const AUTH_PROVIDER: AuthProvider;
 
-const defaultAuthProvider: AuthProvider = AUTH_PROVIDER;
+export const reactAdminAuthProvider: AuthProvider = AUTH_PROVIDER;

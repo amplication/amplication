@@ -3,7 +3,7 @@ import { Admin, DataProvider, Resource } from "react-admin";
 //@ts-ignore
 import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
 //@ts-ignore
-import basicHttpAuthProvider from "./auth-provider/ra-auth-basic-http";
+import { reactAdminAuthProvider } from "./auth-provider/ra-auth";
 //@ts-ignore
 import { theme } from "./theme/theme";
 //@ts-ignore
@@ -34,7 +34,7 @@ const App = (): React.ReactElement => {
       <Admin
         title={APP_NAME}
         dataProvider={dataProvider}
-        authProvider={basicHttpAuthProvider}
+        authProvider={reactAdminAuthProvider}
         theme={theme}
         dashboard={Dashboard}
         loginPage={Login}
