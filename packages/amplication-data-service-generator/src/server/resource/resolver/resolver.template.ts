@@ -2,7 +2,7 @@ import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
-import { GqlDefaultAuthGuard } from "../auth/defaultAuth.guard";
+import { GqlDefaultAuthGuard } from "../auth/gqlDefaultAuth.guard";
 // @ts-ignore
 import * as gqlACGuard from "../auth/gqlAC.guard";
 

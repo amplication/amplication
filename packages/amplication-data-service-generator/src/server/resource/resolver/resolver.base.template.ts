@@ -3,7 +3,7 @@ import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuthGuard.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 // @ts-ignore
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 // @ts-ignore
