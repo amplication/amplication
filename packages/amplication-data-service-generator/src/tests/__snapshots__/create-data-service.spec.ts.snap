@@ -2181,7 +2181,6 @@ POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
 BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${appId}
 JWT_SECRET_KEY=Change_ME!!!
-# more options in https://github.com/nestjs/jwt#jwtservicedecodetoken-string-options-decodeoptions-object--string
 JWT_EXPIRATION=2d",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
