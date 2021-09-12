@@ -1236,7 +1236,7 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
 
 export const CUSTOMER_TITLE_FIELD = \\"firstName\\";
 
-export const CustomerTitle = (record: TCustomer) => {
+export const CustomerTitle = (record: TCustomer): string => {
   return record.firstName || record.id;
 };
 ",
@@ -1341,7 +1341,7 @@ export const EmptyShow = (props: ShowProps): React.ReactElement => {
 
 export const EMPTY_TITLE_FIELD = \\"id\\";
 
-export const EmptyTitle = (record: TEmpty) => {
+export const EmptyTitle = (record: TEmpty): string => {
   return record.id || record.id;
 };
 ",
@@ -1529,7 +1529,7 @@ export const OrderShow = (props: ShowProps): React.ReactElement => {
 
 export const ORDER_TITLE_FIELD = \\"id\\";
 
-export const OrderTitle = (record: TOrder) => {
+export const OrderTitle = (record: TOrder): string => {
   return record.id || record.id;
 };
 ",
@@ -1711,7 +1711,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
 
 export const ORGANIZATION_TITLE_FIELD = \\"name\\";
 
-export const OrganizationTitle = (record: TOrganization) => {
+export const OrganizationTitle = (record: TOrganization): string => {
   return record.name || record.id;
 };
 ",
@@ -2026,7 +2026,7 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 
 export const USER_TITLE_FIELD = \\"username\\";
 
-export const UserTitle = (record: TUser) => {
+export const UserTitle = (record: TUser): string => {
   return record.username || record.id;
 };
 ",
