@@ -38,20 +38,25 @@ function updatePackageJSON(module: Module, update: Record<string, any>) {
   };
 }
 
-function updatePackageLockJSON(module: Module, update: Record<string, any>) {
+function updatePackageLockJSON(
+  module: Module,
+  update: Record<string, any>
+): Module {
   const lock = JSON.parse(module.code);
-  const pkg = lock.packages[""];
+
+  //TODO why we need that?
+  // const pkg = lock.packages[""];
 
   Object.assign(lock, update);
-  Object.assign(pkg, update);
+  // Object.assign(pkg, update);
 
   if (!semver.valid(lock.version)) {
     delete lock.version;
   }
 
-  if (!semver.valid(pkg.version)) {
-    delete pkg.version;
-  }
+  // if (!semver.valid(pkg.version)) {
+  //   delete pkg.version;
+  // }
 
   return {
     ...module,
