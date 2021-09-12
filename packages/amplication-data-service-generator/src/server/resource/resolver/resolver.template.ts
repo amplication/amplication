@@ -2,7 +2,7 @@ import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
-import * as gqlDefaultAuthGuard from "../auth/gqlDefaultAuth.guard";
+import { GqlDefaultAuthGuard } from "../auth/gqlDefaultAuth.guard";
 // @ts-ignore
 import * as gqlACGuard from "../auth/gqlAC.guard";
 
@@ -19,10 +19,7 @@ declare class RESOLVER_BASE {
 }
 
 @graphql.Resolver(() => ENTITY)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class RESOLVER extends RESOLVER_BASE {
   constructor(
     protected readonly service: SERVICE,

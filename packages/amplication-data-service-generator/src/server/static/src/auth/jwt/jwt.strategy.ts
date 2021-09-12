@@ -11,7 +11,7 @@ import { JWT_SECRET_KEY } from "../../constants";
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private userService: UserService,
-    private secretsService: SecretsManagerService
+    secretsService: SecretsManagerService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
