@@ -60,7 +60,7 @@
     "@types/replace-ext": "2.0.0",
     "@types/semver": "7.3.7",
     "apollo-server-express": "2.19.0",
-    "axios": "0.21.1",
+    "axios": "0.21.2",
     "bcrypt": "5.0.0",
     "camel-case": "4.1.2",
     "class-transformer": "0.4.0",
