@@ -21,8 +21,8 @@ COPY server/package.json server/package-lock.json ./server/
 COPY admin-ui/package.json admin-ui/package-lock.json ./admin-ui/
 
 # Install dependencies
-RUN cd server; npm ci --loglevel=$NPM_LOG_LEVEL;
-RUN cd admin-ui; npm ci --loglevel=$NPM_LOG_LEVEL;
+RUN cd server; npm ci --loglevel=$NPM_LOG_LEVEL --only=production;
+RUN cd admin-ui; npm ci --loglevel=$NPM_LOG_LEVEL --only=production;
 
 # Copy Prisma schema
 COPY server/prisma/schema.prisma ./server/prisma/
