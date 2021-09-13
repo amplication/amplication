@@ -38,28 +38,38 @@ function updatePackageJSON(module: Module, update: Record<string, any>) {
   };
 }
 
+/**
+ *
+ *
+ * @param update object that contain the update data to enter instead of the default data as name and version
+ * @returns the updated module
+ *
+ * In npm 7 and higher the package lock contains a packages section (lockfile v2)
+ * to see the npm docs of this update https://github.blog/2021-02-02-npm-7-is-now-generally-available/#changes-to-the-lockfile
+ */
 function updatePackageLockJSON(
   module: Module,
   update: Record<string, any>
 ): Module {
-  const lock = JSON.parse(module.code);
+  const lockfile = JSON.parse(module.code);
+  /**
+   * The v2 lockfile contains a package in the packages section that is a mirror of the project so we need to update the static data there also
+   */
+  const pkg = lockfile.packages[""];
 
-  //TODO why we need that?
-  // const pkg = lock.packages[""];
+  Object.assign(lockfile, update);
+  Object.assign(pkg, update);
 
-  Object.assign(lock, update);
-  // Object.assign(pkg, update);
-
-  if (!semver.valid(lock.version)) {
-    delete lock.version;
+  if (!semver.valid(lockfile.version)) {
+    delete lockfile.version;
   }
 
-  // if (!semver.valid(pkg.version)) {
-  //   delete pkg.version;
-  // }
+  if (!semver.valid(pkg.version)) {
+    delete pkg.version;
+  }
 
   return {
     ...module,
-    code: JSON.stringify(lock, null, 4),
+    code: JSON.stringify(lockfile, null, 4),
   };
 }
