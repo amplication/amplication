@@ -120,7 +120,6 @@ export async function createAdminModules(
     ...staticModules,
     ...publicFilesModules,
     ...formattedModules,
-    ...authModules,
     dotEnvModule,
   ];
 }
