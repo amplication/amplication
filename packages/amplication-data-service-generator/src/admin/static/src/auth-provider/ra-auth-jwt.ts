@@ -15,7 +15,7 @@ const LOGIN = gql`
   }
 `;
 
-export const authProvider: AuthProvider = {
+export const jwtAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
       uri: "/graphql",
@@ -70,7 +70,6 @@ export const authProvider: AuthProvider = {
     });
   },
 };
-export default authProvider;
 
 export function createBearerAuthorizationHeader(accessToken: string) {
   return `Bearer ${accessToken}`;

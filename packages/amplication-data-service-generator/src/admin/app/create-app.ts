@@ -53,7 +53,7 @@ export async function createAppModule(
     }
   );
   const authProviderImport = importNames(
-    [builders.identifier("authProvider")],
+    [builders.identifier(`${authProvider.toLowerCase()}AuthProvider`)],
     relativeImportPath(
       PATH,
       `${AUTH_PROVIDER_PATH}/ra-auth-${authProvider.toLowerCase()}.ts`
