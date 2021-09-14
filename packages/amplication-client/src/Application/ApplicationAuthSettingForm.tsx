@@ -98,15 +98,13 @@ function ApplicationAuthSettingForm({ match }: Props) {
                 <h3>Authentication Providers</h3>
 
                 <p>
-                  All the below settings will appear in clear text in the
-                  generated app. <br />
-                  It should only be used for the development environment
-                  variables and should not include sensitive data.
+                  Select the authentication method to be used in the generated
+                  app.
                 </p>
 
                 <div className={`${CLASS_NAME}__space`}>
                   <SelectField
-                    label="Auth provider"
+                    label="Authentication provider"
                     name="authProvider"
                     options={Object.keys(models.EnumAuthProviderType).map(
                       (authProvider) => ({
@@ -116,8 +114,6 @@ function ApplicationAuthSettingForm({ match }: Props) {
                     )}
                   />
                 </div>
-
-                <hr />
               </Form>
             );
           }}
