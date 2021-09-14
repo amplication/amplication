@@ -10,6 +10,8 @@ services:
     environment:
       POSTGRESQL_URL: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432"
       BCRYPT_SALT: "${BCRYPT_SALT}"
+      JWT_SECRET_KEY: "${JWT_SECRET_KEY}"
+      JWT_EXPIRATION: "${JWT_EXPIRATION}"
     depends_on:
       - migrate
   migrate:
