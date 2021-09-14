@@ -21,7 +21,7 @@ const LOGIN = gql`
   }
 `;
 
-export const basicHttpAuthProvider: AuthProvider = {
+export const authProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
       uri: "/graphql",
@@ -79,7 +79,7 @@ export const basicHttpAuthProvider: AuthProvider = {
     });
   },
 };
-export default basicHttpAuthProvider;
+export default authProvider;
 
 function createBasicAuthorizationHeader(
   username: string,

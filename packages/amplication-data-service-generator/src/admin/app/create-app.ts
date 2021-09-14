@@ -11,7 +11,7 @@ import {
 } from "../../util/ast";
 import { readFile, relativeImportPath } from "../../util/module";
 import { EntityComponents } from "../types";
-import { SRC_DIRECTORY } from "../constants";
+import { AUTH_PROVIDER_PATH, SRC_DIRECTORY } from "../constants";
 import { jsxElement, jsxFragment } from "../util";
 
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
@@ -22,6 +22,8 @@ export async function createAppModule(
   entityToPath: Record<string, string>,
   entitiesComponents: Record<string, EntityComponents>
 ): Promise<Module> {
+  const { settings } = appInfo;
+  const { authProvider } = settings;
   const file = await readFile(navigationTemplatePath);
   const resources = Object.entries(entitiesComponents).map(
     ([entityName, entityComponents]) => {
@@ -50,7 +52,14 @@ export async function createAppModule(
       });
     }
   );
-  addImports(file, [...entityImports]);
+  const authProviderImport = importNames(
+    [builders.identifier("authProvider")],
+    relativeImportPath(
+      PATH,
+      `${AUTH_PROVIDER_PATH}/ra-auth-${authProvider.toLowerCase()}.ts`
+    )
+  );
+  addImports(file, [...entityImports, authProviderImport]);
   return {
     path: PATH,
     code: print(file).code,
