@@ -53,7 +53,7 @@ function getMetadataForRABaseAuthProvider(
       break;
     case "Http":
       data.baseProviderObjectName = "basicHttpAuthProvider";
-      data.basePath = `${AUTH_PROVIDER_PATH}/ra-auth-basic-http.ts`;
+      data.basePath = `${AUTH_PROVIDER_PATH}/basic/ra-auth-basic-http.ts`;
       break;
     default:
       throw new Error(
