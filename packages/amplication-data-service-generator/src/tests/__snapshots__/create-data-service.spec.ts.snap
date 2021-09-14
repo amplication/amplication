@@ -12,7 +12,6 @@ BCRYPT_SALT=10
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
 import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
-import { reactAdminAuthProvider } from \\"./auth-provider/ra-auth\\";
 import { theme } from \\"./theme/theme\\";
 import Login from \\"./Login\\";
 import \\"./App.scss\\";
@@ -37,6 +36,7 @@ import { EmptyList } from \\"./empty/EmptyList\\";
 import { EmptyCreate } from \\"./empty/EmptyCreate\\";
 import { EmptyEdit } from \\"./empty/EmptyEdit\\";
 import { EmptyShow } from \\"./empty/EmptyShow\\";
+import { authProvider } from \\"./auth-provider/ra-auth-http\\";
 
 const App = (): React.ReactElement => {
   const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
@@ -57,7 +57,7 @@ const App = (): React.ReactElement => {
       <Admin
         title={\\"Sample Application\\"}
         dataProvider={dataProvider}
-        authProvider={reactAdminAuthProvider}
+        authProvider={authProvider}
         theme={theme}
         dashboard={Dashboard}
         loginPage={Login}
@@ -784,30 +784,18 @@ export type UserWhereInput = {
   id: string;
 };
 ",
-  "admin-ui/src/auth-provider/basic/basic-auth.util.ts": "export function createBasicAuthorizationHeader(
-  username: string,
-  password: string
-): string {
-  return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
-}
-",
-  "admin-ui/src/auth-provider/basic/ra-auth-basic-http.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
-import { createBasicAuthorizationHeader } from \\"./basic-auth.util\\";
+  "admin-ui/src/auth-provider/ra-auth-http.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
 import { AuthProvider } from \\"react-admin\\";
 import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
-} from \\"../../constants\\";
+} from \\"../constants\\";
+import { Credentials } from \\"../types\\";
 
 type TData = {
   login: {
     username: string;
   };
-};
-
-export type Credentials = {
-  username: string;
-  password: string;
 };
 
 const LOGIN = gql\`
@@ -819,7 +807,7 @@ const LOGIN = gql\`
   }
 \`;
 
-export const basicHttpAuthProvider: AuthProvider = {
+export const authProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
       uri: \\"/graphql\\",
@@ -877,25 +865,28 @@ export const basicHttpAuthProvider: AuthProvider = {
     });
   },
 };
+export default authProvider;
+
+function createBasicAuthorizationHeader(
+  username: string,
+  password: string
+): string {
+  return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
+}
 ",
-  "admin-ui/src/auth-provider/bearer/ra-auth-bearer.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
+  "admin-ui/src/auth-provider/ra-auth-jwt.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
 import { AuthProvider } from \\"react-admin\\";
 import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
-} from \\"../../constants\\";
-import { createBearerAuthorizationHeader } from \\"./ra-auth-bearer.util\\";
+} from \\"../constants\\";
+import { Credentials } from \\"../types\\";
 
 type TData = {
   login: {
     username: string;
     accessToken: string;
   };
-};
-
-export type Credentials = {
-  username: string;
-  password: string;
 };
 
 const LOGIN = gql\`
@@ -907,7 +898,7 @@ const LOGIN = gql\`
   }
 \`;
 
-export const jwtAuthProvider: AuthProvider = {
+export const authProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
       uri: \\"/graphql\\",
@@ -962,23 +953,15 @@ export const jwtAuthProvider: AuthProvider = {
     });
   },
 };
-",
-  "admin-ui/src/auth-provider/bearer/ra-auth-bearer.util.ts": "export function createBearerAuthorizationHeader(accessToken: string) {
+export default authProvider;
+
+export function createBearerAuthorizationHeader(accessToken: string) {
   return \`Bearer \${accessToken}\`;
 }
 ",
-  "admin-ui/src/auth-provider/ra-auth.ts": "import { AuthProvider } from \\"react-admin\\";
-import { basicHttpAuthProvider } from \\"./basic/ra-auth-basic-http\\";
-
-export const reactAdminAuthProvider: AuthProvider = basicHttpAuthProvider;
-",
   "admin-ui/src/auth.ts": "import { EventEmitter } from \\"events\\";
 import { CREDENTIALS_LOCAL_STORAGE_ITEM } from \\"./constants\\";
-
-export type Credentials = {
-  username: string;
-  password: string;
-};
+import { Credentials } from \\"./types\\";
 
 const eventEmitter = new EventEmitter();
 
@@ -1879,6 +1862,11 @@ const themeOptions: ThemeOptions = {
 };
 
 export const theme = createTheme(merge({}, defaultTheme, themeOptions));
+",
+  "admin-ui/src/types.ts": "export type Credentials = {
+  username: string;
+  password: string;
+};
 ",
   "admin-ui/src/user/EnumRoles.ts": "export enum EnumRoles {
   User = \\"user\\",
