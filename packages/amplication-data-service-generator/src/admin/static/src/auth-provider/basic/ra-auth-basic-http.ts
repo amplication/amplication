@@ -1,15 +1,14 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client/core";
+import { createBasicAuthorizationHeader } from "./basic-auth.util";
 import { AuthProvider } from "react-admin";
 import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
 } from "../../constants";
-import { createBearerAuthorizationHeader } from "./ra-auth-bearer.util";
 
 type TData = {
   login: {
     username: string;
-    accessToken: string;
   };
 };
 
@@ -22,12 +21,12 @@ const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
     login(credentials: { username: $username, password: $password }) {
       username
-      accessToken
+      roles
     }
   }
 `;
 
-export const jwtAuthProvider: AuthProvider = {
+export const basicHttpAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
       uri: "/graphql",
@@ -44,7 +43,10 @@ export const jwtAuthProvider: AuthProvider = {
     if (userData && userData.data?.login.username) {
       localStorage.setItem(
         CREDENTIALS_LOCAL_STORAGE_ITEM,
-        createBearerAuthorizationHeader(userData.data.login?.accessToken)
+        createBasicAuthorizationHeader(
+          credentials.username,
+          credentials.password
+        )
       );
       localStorage.setItem(
         USER_DATA_LOCAL_STORAGE_ITEM,
