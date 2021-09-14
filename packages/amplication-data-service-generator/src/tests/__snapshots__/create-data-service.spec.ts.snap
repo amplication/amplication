@@ -12,7 +12,7 @@ BCRYPT_SALT=10
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
 import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
-import basicHttpAuthProvider from \\"./auth-provider/ra-auth-basic-http\\";
+import { reactAdminAuthProvider } from \\"./auth-provider/ra-auth\\";
 import { theme } from \\"./theme/theme\\";
 import Login from \\"./Login\\";
 import \\"./App.scss\\";
@@ -57,7 +57,7 @@ const App = (): React.ReactElement => {
       <Admin
         title={\\"Sample Application\\"}
         dataProvider={dataProvider}
-        authProvider={basicHttpAuthProvider}
+        authProvider={reactAdminAuthProvider}
         theme={theme}
         dashboard={Dashboard}
         loginPage={Login}
@@ -784,19 +784,20 @@ export type UserWhereInput = {
   id: string;
 };
 ",
-  "admin-ui/src/auth-provider/basic-auth.util.ts": "export function createBasicAuthorizationHeader(
+  "admin-ui/src/auth-provider/basic/basic-auth.util.ts": "export function createBasicAuthorizationHeader(
   username: string,
   password: string
 ): string {
   return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
 }
 ",
-  "admin-ui/src/auth-provider/ra-auth-basic-http.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
+  "admin-ui/src/auth-provider/basic/ra-auth-basic-http.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
 import { createBasicAuthorizationHeader } from \\"./basic-auth.util\\";
 import { AuthProvider } from \\"react-admin\\";
-
-export const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
-const USER_DATA_LOCAL_STORAGE_ITEM = \\"userData\\";
+import {
+  CREDENTIALS_LOCAL_STORAGE_ITEM,
+  USER_DATA_LOCAL_STORAGE_ITEM,
+} from \\"../../constants\\";
 
 type TData = {
   login: {
@@ -818,7 +819,7 @@ const LOGIN = gql\`
   }
 \`;
 
-const basicHttpAuthProvider: AuthProvider = {
+export const basicHttpAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
       uri: \\"/graphql\\",
@@ -876,16 +877,108 @@ const basicHttpAuthProvider: AuthProvider = {
     });
   },
 };
-export default basicHttpAuthProvider;
 ",
-  "admin-ui/src/auth.ts": "import { EventEmitter } from \\"events\\";
+  "admin-ui/src/auth-provider/bearer/ra-auth-bearer.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
+import { AuthProvider } from \\"react-admin\\";
+import {
+  CREDENTIALS_LOCAL_STORAGE_ITEM,
+  USER_DATA_LOCAL_STORAGE_ITEM,
+} from \\"../../constants\\";
+import { createBearerAuthorizationHeader } from \\"./ra-auth-bearer.util\\";
+
+type TData = {
+  login: {
+    username: string;
+    accessToken: string;
+  };
+};
 
 export type Credentials = {
   username: string;
   password: string;
 };
 
-const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
+const LOGIN = gql\`
+  mutation login($username: String!, $password: String!) {
+    login(credentials: { username: $username, password: $password }) {
+      username
+      accessToken
+    }
+  }
+\`;
+
+export const jwtAuthProvider: AuthProvider = {
+  login: async (credentials: Credentials) => {
+    const apolloClient = new ApolloClient({
+      uri: \\"/graphql\\",
+      cache: new InMemoryCache(),
+    });
+
+    const userData = await apolloClient.mutate<TData>({
+      mutation: LOGIN,
+      variables: {
+        ...credentials,
+      },
+    });
+
+    if (userData && userData.data?.login.username) {
+      localStorage.setItem(
+        CREDENTIALS_LOCAL_STORAGE_ITEM,
+        createBearerAuthorizationHeader(userData.data.login?.accessToken)
+      );
+      localStorage.setItem(
+        USER_DATA_LOCAL_STORAGE_ITEM,
+        JSON.stringify(userData.data)
+      );
+      return Promise.resolve();
+    }
+    return Promise.reject();
+  },
+  logout: () => {
+    localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+    return Promise.resolve();
+  },
+  checkError: ({ status }: any) => {
+    if (status === 401 || status === 403) {
+      localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+      return Promise.reject();
+    }
+    return Promise.resolve();
+  },
+  checkAuth: () => {
+    return localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
+      ? Promise.resolve()
+      : Promise.reject();
+  },
+  getPermissions: () => Promise.reject(\\"Unknown method\\"),
+  getIdentity: () => {
+    const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
+    const userData: TData = JSON.parse(str || \\"\\");
+
+    return Promise.resolve({
+      id: userData.login.username,
+      fullName: userData.login.username,
+      avatar: undefined,
+    });
+  },
+};
+",
+  "admin-ui/src/auth-provider/bearer/ra-auth-bearer.util.ts": "export function createBearerAuthorizationHeader(accessToken: string) {
+  return \`Bearer \${accessToken}\`;
+}
+",
+  "admin-ui/src/auth-provider/ra-auth.ts": "import { AuthProvider } from \\"react-admin\\";
+import { basicHttpAuthProvider } from \\"./basic/ra-auth-basic-http\\";
+
+export const reactAdminAuthProvider: AuthProvider = basicHttpAuthProvider;
+",
+  "admin-ui/src/auth.ts": "import { EventEmitter } from \\"events\\";
+import { CREDENTIALS_LOCAL_STORAGE_ITEM } from \\"./constants\\";
+
+export type Credentials = {
+  username: string;
+  password: string;
+};
 
 const eventEmitter = new EventEmitter();
 
@@ -917,6 +1010,9 @@ export function getCredentials(): Credentials | null {
 export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
+",
+  "admin-ui/src/constants.ts": "export const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
+export const USER_DATA_LOCAL_STORAGE_ITEM = \\"userData\\";
 ",
   "admin-ui/src/customer/CustomerCreate.tsx": "import * as React from \\"react\\";
 
@@ -1243,7 +1339,7 @@ export const CustomerTitle = (record: TCustomer): string => {
   "admin-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
 import { ApolloClient, InMemoryCache, createHttpLink } from \\"@apollo/client\\";
 import { setContext } from \\"@apollo/client/link/context\\";
-import { CREDENTIALS_LOCAL_STORAGE_ITEM } from \\"../auth-provider/ra-auth-basic-http\\";
+import { CREDENTIALS_LOCAL_STORAGE_ITEM } from \\"../constants\\";
 
 const httpLink = createHttpLink({
   uri: \\"/graphql\\",
