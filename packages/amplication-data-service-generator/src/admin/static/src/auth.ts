@@ -1,10 +1,6 @@
 import { EventEmitter } from "events";
 import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "./constants";
-
-export type Credentials = {
-  username: string;
-  password: string;
-};
+import { Credentials } from "./types";
 
 const eventEmitter = new EventEmitter();
 

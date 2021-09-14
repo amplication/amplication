@@ -3,7 +3,7 @@ import { Admin, DataProvider, Resource } from "react-admin";
 //@ts-ignore
 import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
 //@ts-ignore
-import { reactAdminAuthProvider } from "./auth-provider/ra-auth";
+import authProvider from `./auth-provider/${AUTH_PROVIDER_PATH}`;
 //@ts-ignore
 import { theme } from "./theme/theme";
 //@ts-ignore
@@ -12,6 +12,7 @@ import "./App.scss";
 //@ts-ignore
 import Dashboard from "./pages/Dashboard";
 
+declare const AUTH_PROVIDER_PATH: string;
 declare const RESOURCES: React.ReactElement[];
 declare const APP_NAME = "my app name";
 
@@ -34,7 +35,7 @@ const App = (): React.ReactElement => {
       <Admin
         title={APP_NAME}
         dataProvider={dataProvider}
-        authProvider={reactAdminAuthProvider}
+        authProvider={authProvider}
         theme={theme}
         dashboard={Dashboard}
         loginPage={Login}

@@ -3,19 +3,14 @@ import { AuthProvider } from "react-admin";
 import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
-} from "../../constants";
-import { createBearerAuthorizationHeader } from "./ra-auth-bearer.util";
+} from "../constants";
+import { Credentials } from "../types";
 
 type TData = {
   login: {
     username: string;
     accessToken: string;
   };
-};
-
-export type Credentials = {
-  username: string;
-  password: string;
 };
 
 const LOGIN = gql`
@@ -82,3 +77,8 @@ export const jwtAuthProvider: AuthProvider = {
     });
   },
 };
+export default jwtAuthProvider;
+
+export function createBearerAuthorizationHeader(accessToken: string) {
+  return `Bearer ${accessToken}`;
+}

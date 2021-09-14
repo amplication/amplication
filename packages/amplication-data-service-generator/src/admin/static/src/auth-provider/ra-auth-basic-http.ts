@@ -1,20 +1,15 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client/core";
-import { createBasicAuthorizationHeader } from "./basic-auth.util";
 import { AuthProvider } from "react-admin";
 import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
-} from "../../constants";
+} from "../constants";
+import { Credentials } from "../types";
 
 type TData = {
   login: {
     username: string;
   };
-};
-
-export type Credentials = {
-  username: string;
-  password: string;
 };
 
 const LOGIN = gql`
@@ -84,3 +79,11 @@ export const basicHttpAuthProvider: AuthProvider = {
     });
   },
 };
+export default basicHttpAuthProvider;
+
+function createBasicAuthorizationHeader(
+  username: string,
+  password: string
+): string {
+  return `Basic ${btoa(`${username}:${password}`)}`;
+}
