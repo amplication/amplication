@@ -4,14 +4,7 @@ import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
 } from "../constants";
-import { Credentials } from "../types";
-
-type TData = {
-  login: {
-    username: string;
-    accessToken: string;
-  };
-};
+import { Credentials, TData } from "../types";
 
 const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
