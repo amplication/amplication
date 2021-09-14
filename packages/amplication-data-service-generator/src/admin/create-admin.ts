@@ -22,7 +22,6 @@ import { createEntityToDirectory } from "./create-entity-to-directory";
 import { createEnumRolesModule } from "./create-enum-roles";
 import { createRolesModule } from "./create-roles-module";
 import { createDotEnvModule } from "./create-dotenv";
-import { createAuthModules } from "./auth/createAuth";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -74,7 +73,6 @@ export async function createAdminModules(
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
   const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles);
-  const authModules = await createAuthModules(appInfo);
   // Create title components first so they are available when creating entity modules
   const entityToTitleComponent = await createEntityTitleComponents(
     entities,
