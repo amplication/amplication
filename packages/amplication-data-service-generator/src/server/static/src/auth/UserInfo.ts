@@ -9,4 +9,6 @@ export class UserInfo implements Partial<User> {
   username!: string;
   @Field(() => [String])
   roles!: string[];
+  @Field(() => String)
+  accessToken?: string;
 }

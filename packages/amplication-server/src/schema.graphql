@@ -168,9 +168,7 @@ type AppSettings implements IBlock {
   dbUser: String!
   dbPassword: String!
   dbPort: Int!
-  authProvider: AuthProviderType!
-  appUserName: String!
-  appPassword: String!
+  authProvider: EnumAuthProviderType!
 }
 
 input AppSettingsUpdateInput {
@@ -181,9 +179,7 @@ input AppSettingsUpdateInput {
   dbUser: String!
   dbPassword: String!
   dbPort: Int!
-  authProvider: AuthProviderType!
-  appUserName: String!
-  appPassword: String!
+  authProvider: EnumAuthProviderType!
 }
 
 input AppUpdateInput {
@@ -219,11 +215,6 @@ type Auth {
 
 type AuthorizeAppWithGithubResult {
   url: String!
-}
-
-enum AuthProviderType {
-  Http
-  Jwt
 }
 
 input AvailableGithubReposFindInput {
@@ -901,6 +892,11 @@ enum EnumActionStepStatus {
   Running
   Failed
   Success
+}
+
+enum EnumAuthProviderType {
+  Http
+  Jwt
 }
 
 enum EnumBlockType {

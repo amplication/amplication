@@ -32,6 +32,7 @@ export async function createDataServiceImpl(
   logger.info("Creating application...");
   const timer = logger.startTimer();
 
+  // make sure that the user table is existed if not it will crate one
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
     entities
   );

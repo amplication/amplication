@@ -26,6 +26,9 @@ import { createDotEnvModule } from "./create-dotenv";
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
 
+/**
+ * responsible of the Admin ui modules generation
+ */
 export async function createAdminModules(
   entities: Entity[],
   roles: Role[],
