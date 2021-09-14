@@ -37,7 +37,7 @@ import { EmptyList } from \\"./empty/EmptyList\\";
 import { EmptyCreate } from \\"./empty/EmptyCreate\\";
 import { EmptyEdit } from \\"./empty/EmptyEdit\\";
 import { EmptyShow } from \\"./empty/EmptyShow\\";
-import { authProvider } from \\"./auth-provider/ra-auth-http\\";
+import { httpAuthProvider } from \\"./auth-provider/ra-auth-http\\";
 
 const App = (): React.ReactElement => {
   const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
@@ -791,13 +791,7 @@ import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
 } from \\"../constants\\";
-import { Credentials } from \\"../types\\";
-
-type TData = {
-  login: {
-    username: string;
-  };
-};
+import { Credentials, TData } from \\"../types\\";
 
 const LOGIN = gql\`
   mutation login($username: String!, $password: String!) {
@@ -808,7 +802,7 @@ const LOGIN = gql\`
   }
 \`;
 
-export const authProvider: AuthProvider = {
+export const httpAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
       uri: \\"/graphql\\",
@@ -866,7 +860,6 @@ export const authProvider: AuthProvider = {
     });
   },
 };
-export default authProvider;
 
 function createBasicAuthorizationHeader(
   username: string,
@@ -881,14 +874,7 @@ import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
 } from \\"../constants\\";
-import { Credentials } from \\"../types\\";
-
-type TData = {
-  login: {
-    username: string;
-    accessToken: string;
-  };
-};
+import { Credentials, TData } from \\"../types\\";
 
 const LOGIN = gql\`
   mutation login($username: String!, $password: String!) {
@@ -899,7 +885,7 @@ const LOGIN = gql\`
   }
 \`;
 
-export const authProvider: AuthProvider = {
+export const jwtAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
       uri: \\"/graphql\\",
@@ -954,7 +940,6 @@ export const authProvider: AuthProvider = {
     });
   },
 };
-export default authProvider;
 
 export function createBearerAuthorizationHeader(accessToken: string) {
   return \`Bearer \${accessToken}\`;
@@ -1867,6 +1852,12 @@ export const theme = createTheme(merge({}, defaultTheme, themeOptions));
   "admin-ui/src/types.ts": "export type Credentials = {
   username: string;
   password: string;
+};
+export type TData = {
+  login: {
+    username: string;
+    accessToken: string;
+  };
 };
 ",
   "admin-ui/src/user/EnumRoles.ts": "export enum EnumRoles {
