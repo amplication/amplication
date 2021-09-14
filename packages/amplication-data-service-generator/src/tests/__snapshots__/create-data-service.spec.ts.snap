@@ -1236,8 +1236,8 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
 
 export const CUSTOMER_TITLE_FIELD = \\"firstName\\";
 
-export const CustomerTitle = (record: TCustomer) => {
-  return record.firstName;
+export const CustomerTitle = (record: TCustomer): string => {
+  return record.firstName || record.id;
 };
 ",
   "admin-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
@@ -1341,8 +1341,8 @@ export const EmptyShow = (props: ShowProps): React.ReactElement => {
 
 export const EMPTY_TITLE_FIELD = \\"id\\";
 
-export const EmptyTitle = (record: TEmpty) => {
-  return record.id;
+export const EmptyTitle = (record: TEmpty): string => {
+  return record.id || record.id;
 };
 ",
   "admin-ui/src/index.tsx": "import React from \\"react\\";
@@ -1529,8 +1529,8 @@ export const OrderShow = (props: ShowProps): React.ReactElement => {
 
 export const ORDER_TITLE_FIELD = \\"id\\";
 
-export const OrderTitle = (record: TOrder) => {
-  return record.id;
+export const OrderTitle = (record: TOrder): string => {
+  return record.id || record.id;
 };
 ",
   "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
@@ -1711,8 +1711,8 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
 
 export const ORGANIZATION_TITLE_FIELD = \\"name\\";
 
-export const OrganizationTitle = (record: TOrganization) => {
-  return record.name;
+export const OrganizationTitle = (record: TOrganization): string => {
+  return record.name || record.id;
 };
 ",
   "admin-ui/src/pages/Dashboard.tsx": "import * as React from \\"react\\";
@@ -2026,8 +2026,8 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 
 export const USER_TITLE_FIELD = \\"username\\";
 
-export const UserTitle = (record: TUser) => {
-  return record.username;
+export const UserTitle = (record: TUser): string => {
+  return record.username || record.id;
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [
