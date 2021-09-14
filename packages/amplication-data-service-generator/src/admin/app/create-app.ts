@@ -25,6 +25,10 @@ export async function createAppModule(
   const { settings } = appInfo;
   const { authProvider } = settings;
   const file = await readFile(navigationTemplatePath);
+  const authProviderName = authProvider.toLowerCase();
+  const authProviderIdentifier = builders.identifier(
+    `${authProviderName}AuthProvider`
+  );
   const resources = Object.entries(entitiesComponents).map(
     ([entityName, entityComponents]) => {
       return jsxElement`<Resource
@@ -39,6 +43,7 @@ export async function createAppModule(
   interpolate(file, {
     APP_NAME: builders.stringLiteral(appInfo.name),
     RESOURCES: jsxFragment`<>${resources}</>`,
+    AUTH_PROVIDER_NAME: authProviderIdentifier,
   });
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);
@@ -53,10 +58,10 @@ export async function createAppModule(
     }
   );
   const authProviderImport = importNames(
-    [builders.identifier(`${authProvider.toLowerCase()}AuthProvider`)],
+    [authProviderIdentifier],
     relativeImportPath(
       PATH,
-      `${AUTH_PROVIDER_PATH}/ra-auth-${authProvider.toLowerCase()}.ts`
+      `${AUTH_PROVIDER_PATH}/ra-auth-${authProviderName}.ts`
     )
   );
   addImports(file, [...entityImports, authProviderImport]);

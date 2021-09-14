@@ -10,7 +10,7 @@ import "./App.scss";
 //@ts-ignore
 import Dashboard from "./pages/Dashboard";
 
-declare const authProvider: any;
+declare const AUTH_PROVIDER_NAME: any;
 declare const RESOURCES: React.ReactElement[];
 declare const APP_NAME = "my app name";
 
@@ -33,7 +33,7 @@ const App = (): React.ReactElement => {
       <Admin
         title={APP_NAME}
         dataProvider={dataProvider}
-        authProvider={authProvider}
+        authProvider={AUTH_PROVIDER_NAME}
         theme={theme}
         dashboard={Dashboard}
         loginPage={Login}
