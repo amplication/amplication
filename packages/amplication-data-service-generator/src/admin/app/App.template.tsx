@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Admin, AuthProvider, DataProvider, Resource } from "react-admin";
+import { Admin, DataProvider, Resource } from "react-admin";
 //@ts-ignore
 import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
 //@ts-ignore
@@ -10,7 +10,7 @@ import "./App.scss";
 //@ts-ignore
 import Dashboard from "./pages/Dashboard";
 
-declare const authProvider: AuthProvider;
+declare const authProvider: any;
 declare const RESOURCES: React.ReactElement[];
 declare const APP_NAME = "my app name";
 
