@@ -111,6 +111,7 @@ describe("Data Service Generator", () => {
         COMPOSE_DOCKER_CLI_BUILD: "1",
         DOCKER_BUILDKIT: "1",
         JWT_SECRET_KEY: "Change_ME!!!",
+        JWT_EXPIRATION: "2d",
       },
     };
 
