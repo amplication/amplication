@@ -2,7 +2,8 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
-  ".env": "POSTGRESQL_USER=testUsername
+  ".env": "# The variables in this file are only used by docker-compose for local docker deployment
+POSTGRESQL_USER=testUsername
 POSTGRESQL_PASSWORD=1234
 POSTGRESQL_PORT=5433
 SERVER_PORT=3000
