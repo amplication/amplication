@@ -111,6 +111,8 @@ describe("Data Service Generator", () => {
         // See: https://www.docker.com/blog/faster-builds-in-compose-thanks-to-buildkit-support/
         COMPOSE_DOCKER_CLI_BUILD: "1",
         DOCKER_BUILDKIT: "1",
+        JWT_SECRET_KEY: "Change_ME!!!",
+        JWT_EXPIRATION: "2d",
       },
     };
 

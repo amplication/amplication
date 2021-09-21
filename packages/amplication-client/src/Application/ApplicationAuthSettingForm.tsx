@@ -1,4 +1,4 @@
-import { Snackbar, ToggleField } from "@amplication/design-system";
+import { SelectField, Snackbar } from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import "@rmwc/snackbar/styles";
 import { Form, Formik } from "formik";
@@ -98,26 +98,22 @@ function ApplicationAuthSettingForm({ match }: Props) {
                 <h3>Authentication Providers</h3>
 
                 <p>
-                  All the below settings will appear in clear text in the
-                  generated app. <br />
-                  It should only be used for the development environment
-                  variables and should not include sensitive data.
+                  Select the authentication method to be used in the generated
+                  app.
                 </p>
 
                 <div className={`${CLASS_NAME}__space`}>
-                  <ToggleField
-                    name="Http"
-                    label="Basic HTTP"
-                    disabled={!false}
+                  <SelectField
+                    label="Authentication provider"
+                    name="authProvider"
+                    options={Object.keys(models.EnumAuthProviderType).map(
+                      (authProvider) => ({
+                        label: authProvider,
+                        value: authProvider,
+                      })
+                    )}
                   />
                 </div>
-                <div className={`${CLASS_NAME}__space`}>
-                  <ToggleField name="Jwt" label="JWT" disabled={!false} />
-                </div>
-
-                <hr />
-
-                <h3>Default Credentials</h3>
               </Form>
             );
           }}
