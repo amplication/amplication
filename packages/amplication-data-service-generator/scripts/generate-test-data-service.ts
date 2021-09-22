@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
-import { createDataService, Module } from "..";
+import { AppInfo, createDataService, Module } from "..";
 import entities from "../src/tests/entities";
 import roles from "../src/tests/roles";
 import appInfo from "../src/tests/appInfo";
@@ -10,14 +10,15 @@ if (require.main === module) {
   if (!output) {
     throw new Error("OUTPUT is not defined");
   }
-  generateTestDataService(output).catch((error) => {
+  generateTestDataService(output, appInfo).catch((error) => {
     console.error(error);
     process.exit(1);
   });
 }
 
 export default async function generateTestDataService(
-  destination: string
+  destination: string,
+  appInfo: AppInfo
 ): Promise<void> {
   const modules = await createDataService(entities, roles, appInfo);
   await writeModules(modules, destination);
