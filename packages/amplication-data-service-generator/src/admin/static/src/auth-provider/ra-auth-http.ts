@@ -4,7 +4,7 @@ import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
 } from "../constants";
-import { Credentials, TData } from "../types";
+import { Credentials, LoginMutateResult } from "../types";
 
 const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
@@ -22,7 +22,7 @@ export const httpAuthProvider: AuthProvider = {
       cache: new InMemoryCache(),
     });
 
-    const userData = await apolloClient.mutate<TData>({
+    const userData = await apolloClient.mutate<LoginMutateResult>({
       mutation: LOGIN,
       variables: {
         ...credentials,
@@ -64,7 +64,7 @@ export const httpAuthProvider: AuthProvider = {
   getPermissions: () => Promise.reject("Unknown method"),
   getIdentity: () => {
     const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
-    const userData: TData = JSON.parse(str || "");
+    const userData: LoginMutateResult = JSON.parse(str || "");
 
     return Promise.resolve({
       id: userData.login.username,
