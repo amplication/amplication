@@ -16,7 +16,7 @@ import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import omit from "lodash.omit";
 import generateTestDataService from "../scripts/generate-test-data-service";
-import appInfo from "tests/appInfo";
+import appInfo from "../src/tests/appInfo";
 
 // Use when running the E2E multiple times to shorten build time
 const { NO_DELETE_IMAGE } = process.env;
