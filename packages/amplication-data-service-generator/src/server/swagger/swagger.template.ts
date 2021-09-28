@@ -6,6 +6,7 @@ declare const VERSION: string;
 
 export const swaggerPath = "api";
 
+//TODO dynamic auth by auth provider
 export const swaggerDocumentOptions = new DocumentBuilder()
   .setTitle(TITLE)
   .setDescription(DESCRIPTION)
