@@ -4298,7 +4298,7 @@ import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
 import { OrderWhereInput } from \\"../../order/base/OrderWhereInput\\";
 import { Order } from \\"../../order/base/Order\\";
-
+@swagger.ApiBasicAuth()
 export class CustomerControllerBase {
   constructor(
     protected readonly service: CustomerService,
@@ -5242,7 +5242,7 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerControllerBase } from \\"./base/customer.controller.base\\";
-@swagger.ApiBasicAuth()
+
 @swagger.ApiTags(\\"customers\\")
 @common.Controller(\\"customers\\")
 export class CustomerController extends CustomerControllerBase {
@@ -5661,7 +5661,7 @@ import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
-
+@swagger.ApiBasicAuth()
 export class EmptyControllerBase {
   constructor(
     protected readonly service: EmptyService,
@@ -6060,7 +6060,7 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { EmptyService } from \\"./empty.service\\";
 import { EmptyControllerBase } from \\"./base/empty.controller.base\\";
-@swagger.ApiBasicAuth()
+
 @swagger.ApiTags(\\"empties\\")
 @common.Controller(\\"empties\\")
 export class EmptyController extends EmptyControllerBase {
@@ -6760,7 +6760,7 @@ import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
-
+@swagger.ApiBasicAuth()
 export class OrderControllerBase {
   constructor(
     protected readonly service: OrderService,
@@ -7348,7 +7348,7 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderControllerBase } from \\"./base/order.controller.base\\";
-@swagger.ApiBasicAuth()
+
 @swagger.ApiTags(\\"orders\\")
 @common.Controller(\\"orders\\")
 export class OrderController extends OrderControllerBase {
@@ -7884,7 +7884,7 @@ import { UserWhereInput } from \\"../../user/base/UserWhereInput\\";
 import { User } from \\"../../user/base/User\\";
 import { CustomerWhereInput } from \\"../../customer/base/CustomerWhereInput\\";
 import { Customer } from \\"../../customer/base/Customer\\";
-
+@swagger.ApiBasicAuth()
 export class OrganizationControllerBase {
   constructor(
     protected readonly service: OrganizationService,
@@ -9076,7 +9076,7 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationControllerBase } from \\"./base/organization.controller.base\\";
-@swagger.ApiBasicAuth()
+
 @swagger.ApiTags(\\"organizations\\")
 @common.Controller(\\"organizations\\")
 export class OrganizationController extends OrganizationControllerBase {
@@ -10410,7 +10410,7 @@ import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
 import { OrganizationWhereInput } from \\"../../organization/base/OrganizationWhereInput\\";
 import { Organization } from \\"../../organization/base/Organization\\";
-
+@swagger.ApiBasicAuth()
 export class UserControllerBase {
   constructor(
     protected readonly service: UserService,
@@ -11516,7 +11516,7 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { UserService } from \\"./user.service\\";
 import { UserControllerBase } from \\"./base/user.controller.base\\";
-@swagger.ApiBasicAuth()
+
 @swagger.ApiTags(\\"users\\")
 @common.Controller(\\"users\\")
 export class UserController extends UserControllerBase {
