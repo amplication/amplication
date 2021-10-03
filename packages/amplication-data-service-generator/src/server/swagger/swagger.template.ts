@@ -3,15 +3,14 @@ import { DocumentBuilder } from "@nestjs/swagger";
 declare const TITLE: string;
 declare const DESCRIPTION: string;
 declare const VERSION: string;
-
 export const swaggerPath = "api";
 
-//TODO dynamic auth by auth provider
 export const swaggerDocumentOptions = new DocumentBuilder()
   .setTitle(TITLE)
   .setDescription(DESCRIPTION)
   .setVersion(VERSION)
-  .addBasicAuth()
+  //@ts-ignore
+  .AUTH_FUNCTION()
   .build();
 
 export const swaggerSetupOptions = {
