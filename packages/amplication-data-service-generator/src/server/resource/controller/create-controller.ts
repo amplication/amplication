@@ -55,7 +55,10 @@ export async function createControllerModules(
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
   const serviceId = createServiceId(entityType);
-
+  const swaggerAuthFunction =
+    authProvider === EnumAuthProviderType.Http
+      ? builders.identifier("ApiBasicAuth")
+      : builders.identifier("ApiBearerAuth");
   const mapping = {
     RESOURCE: builders.stringLiteral(resource),
     CONTROLLER: controllerId,
@@ -84,6 +87,8 @@ export async function createControllerModules(
     UPDATE_PATH: builders.stringLiteral("/:id"),
     DELETE_PATH: builders.stringLiteral("/:id"),
     WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
+
+    SWAGGER_API_AUTH_FUNCTION: swaggerAuthFunction,
   };
   return [
     await createControllerModule(
@@ -107,10 +112,6 @@ export async function createControllerModules(
       dtos,
       {
         ...mapping,
-        SWAGGER_API_AUTH_FUNCTION:
-          authProvider === EnumAuthProviderType.Http
-            ? builders.identifier("ApiBasicAuth")
-            : builders.identifier("ApiBearerAuth"),
       },
 
       controllerBaseId,
