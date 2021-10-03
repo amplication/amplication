@@ -5167,7 +5167,6 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerControllerBase } from \\"./base/customer.controller.base\\";
-
 @swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"customers\\")
 @common.Controller(\\"customers\\")
@@ -5986,7 +5985,6 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { EmptyService } from \\"./empty.service\\";
 import { EmptyControllerBase } from \\"./base/empty.controller.base\\";
-
 @swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"empties\\")
 @common.Controller(\\"empties\\")
@@ -7275,7 +7273,6 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderControllerBase } from \\"./base/order.controller.base\\";
-
 @swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"orders\\")
 @common.Controller(\\"orders\\")
@@ -9004,7 +9001,6 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationControllerBase } from \\"./base/organization.controller.base\\";
-
 @swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"organizations\\")
 @common.Controller(\\"organizations\\")
@@ -11445,7 +11441,6 @@ import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { UserService } from \\"./user.service\\";
 import { UserControllerBase } from \\"./base/user.controller.base\\";
-
 @swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"users\\")
 @common.Controller(\\"users\\")

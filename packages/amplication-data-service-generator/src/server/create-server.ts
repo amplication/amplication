@@ -39,7 +39,12 @@ export async function createServerModules(
 
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos);
-  const resourcesModules = await createResourcesModules(entities, dtos, logger);
+  const resourcesModules = await createResourcesModules(
+    appInfo,
+    entities,
+    dtos,
+    logger
+  );
 
   logger.info("Creating Auth module...");
   const authModules = await createAuthModules(appInfo);

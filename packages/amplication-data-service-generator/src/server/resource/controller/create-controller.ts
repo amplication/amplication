@@ -1,7 +1,7 @@
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
-import { Entity, EntityLookupField, Module } from "../../../types";
+import { Entity, EntityLookupField, Module, AppInfo } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
   interpolate,
@@ -27,6 +27,7 @@ import {
 } from "../service/create-service";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
+import { EnumAuthProviderType } from "../../../models";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
@@ -38,6 +39,7 @@ const controllerBaseTemplatePath = require.resolve(
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createControllerModules(
+  appInfo: AppInfo,
   resource: string,
   entityName: string,
   entityType: string,
@@ -45,6 +47,8 @@ export async function createControllerModules(
   entity: Entity,
   dtos: DTOs
 ): Promise<Module[]> {
+  const { settings } = appInfo;
+  const { authProvider } = settings;
   const entityDTOs = dtos[entity.name];
   const entityDTO = entityDTOs.entity;
 
@@ -89,7 +93,13 @@ export async function createControllerModules(
       entityServiceModule,
       entity,
       dtos,
-      mapping,
+      {
+        ...mapping,
+        SWAGGER_API_AUTH_FUNCTION:
+          authProvider === EnumAuthProviderType.Http
+            ? builders.identifier("ApiBasicAuth")
+            : builders.identifier("ApiBearerAuth"),
+      },
       controllerBaseId,
       serviceId,
       false

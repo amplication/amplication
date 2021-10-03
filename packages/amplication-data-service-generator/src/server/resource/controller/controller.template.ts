@@ -12,8 +12,8 @@ declare class CONTROLLER_BASE {
   constructor(service: SERVICE, rolesBuilder: nestAccessControl.RolesBuilder);
 }
 
-//TODO dynamic auth by auth provider
-@swagger.ApiBasicAuth()
+//@ts-ignore
+@swagger.SWAGGER_API_AUTH_FUNCTION()
 @swagger.ApiTags(RESOURCE)
 @common.Controller(RESOURCE)
 export class CONTROLLER extends CONTROLLER_BASE {
