@@ -73,7 +73,6 @@ export async function createAdminModules(
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
   const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles);
-
   // Create title components first so they are available when creating entity modules
   const entityToTitleComponent = await createEntityTitleComponents(
     entities,

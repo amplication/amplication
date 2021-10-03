@@ -1,7 +1,7 @@
 import buildGraphQLProvider from "ra-data-graphql-amplication";
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "../auth-provider/ra-auth-basic-http";
+import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "../constants";
 
 const httpLink = createHttpLink({
   uri: "/graphql",
