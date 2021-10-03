@@ -93,13 +93,7 @@ export async function createControllerModules(
       entityServiceModule,
       entity,
       dtos,
-      {
-        ...mapping,
-        SWAGGER_API_AUTH_FUNCTION:
-          authProvider === EnumAuthProviderType.Http
-            ? builders.identifier("ApiBasicAuth")
-            : builders.identifier("ApiBearerAuth"),
-      },
+      mapping,
       controllerBaseId,
       serviceId,
       false
@@ -111,7 +105,14 @@ export async function createControllerModules(
       entityServiceModule,
       entity,
       dtos,
-      mapping,
+      {
+        ...mapping,
+        SWAGGER_API_AUTH_FUNCTION:
+          authProvider === EnumAuthProviderType.Http
+            ? builders.identifier("ApiBasicAuth")
+            : builders.identifier("ApiBearerAuth"),
+      },
+
       controllerBaseId,
       serviceId,
       true
