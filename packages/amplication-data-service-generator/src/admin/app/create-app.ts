@@ -11,7 +11,7 @@ import {
 } from "../../util/ast";
 import { readFile, relativeImportPath } from "../../util/module";
 import { EntityComponents } from "../types";
-import { SRC_DIRECTORY } from "../constants";
+import { AUTH_PROVIDER_PATH, SRC_DIRECTORY } from "../constants";
 import { jsxElement, jsxFragment } from "../util";
 
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
@@ -22,7 +22,13 @@ export async function createAppModule(
   entityToPath: Record<string, string>,
   entitiesComponents: Record<string, EntityComponents>
 ): Promise<Module> {
+  const { settings } = appInfo;
+  const { authProvider } = settings;
   const file = await readFile(navigationTemplatePath);
+  const authProviderName = authProvider.toLowerCase();
+  const authProviderIdentifier = builders.identifier(
+    `${authProviderName}AuthProvider`
+  );
   const resources = Object.entries(entitiesComponents).map(
     ([entityName, entityComponents]) => {
       return jsxElement`<Resource
@@ -37,6 +43,7 @@ export async function createAppModule(
   interpolate(file, {
     APP_NAME: builders.stringLiteral(appInfo.name),
     RESOURCES: jsxFragment`<>${resources}</>`,
+    AUTH_PROVIDER_NAME: authProviderIdentifier,
   });
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);
@@ -50,7 +57,14 @@ export async function createAppModule(
       });
     }
   );
-  addImports(file, [...entityImports]);
+  const authProviderImport = importNames(
+    [authProviderIdentifier],
+    relativeImportPath(
+      PATH,
+      `${AUTH_PROVIDER_PATH}/ra-auth-${authProviderName}.ts`
+    )
+  );
+  addImports(file, [...entityImports, authProviderImport]);
   return {
     path: PATH,
     code: print(file).code,
