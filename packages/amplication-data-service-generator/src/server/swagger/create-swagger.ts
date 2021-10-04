@@ -32,7 +32,11 @@ export async function createSwagger(appInfo: AppInfo): Promise<Module> {
     TITLE: builders.stringLiteral(appInfo.name),
     DESCRIPTION: builders.stringLiteral(description),
     VERSION: builders.stringLiteral(appInfo.version),
-    AUTH_FUNCTION: getSwaggerAuthFunctionId(authProvider),
+    AUTH_FUNCTION: builders.identifier(
+      authProvider === EnumAuthProviderType.Http
+        ? "addBasicAuth"
+        : "addBearerAuth"
+    ),
   });
 
   removeTSVariableDeclares(file);
@@ -47,7 +51,7 @@ export async function createDescription(appInfo: AppInfo): Promise<string> {
   return [appInfo.description || "", INSTRUCTIONS].join(INSTRUCTIONS_BUFFER);
 }
 
-export function getSwaggerAuthFunctionId(
+export function getSwaggerAuthDecorationIdForClass(
   authProvider: EnumAuthProviderType
 ): namedTypes.Identifier {
   switch (authProvider) {
