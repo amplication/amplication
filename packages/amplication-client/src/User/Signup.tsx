@@ -112,7 +112,8 @@ const Signup = () => {
             autoComplete="workspace"
           />
 
-          <Button>Continue</Button>
+          <Button type="submit">Continue</Button>
+          
           <p className={`${CLASS_NAME}__signup`}>
             Already have an account? <Link to="/login">Sign In</Link>
           </p>
