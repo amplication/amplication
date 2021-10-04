@@ -3,7 +3,6 @@ import { AppInfo } from "../../types";
 import {
   createDescription,
   getInstructions,
-  INSTRUCTIONS,
   INSTRUCTIONS_BUFFER,
 } from "./create-swagger";
 
