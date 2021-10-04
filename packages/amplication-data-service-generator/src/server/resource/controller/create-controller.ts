@@ -55,10 +55,8 @@ export async function createControllerModules(
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
   const serviceId = createServiceId(entityType);
-  const swaggerAuthFunction =
-    authProvider === EnumAuthProviderType.Http
-      ? builders.identifier("ApiBasicAuth")
-      : builders.identifier("ApiBearerAuth");
+  const swaggerAuthFunction = getSwaggerAuthFunctionId(authProvider);
+
   const mapping = {
     RESOURCE: builders.stringLiteral(resource),
     CONTROLLER: controllerId,
@@ -110,10 +108,7 @@ export async function createControllerModules(
       entityServiceModule,
       entity,
       dtos,
-      {
-        ...mapping,
-      },
-
+      mapping,
       controllerBaseId,
       serviceId,
       true
@@ -241,4 +236,19 @@ async function createToManyRelationMethods(
   });
 
   return getMethods(getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID));
+}
+
+function getSwaggerAuthFunctionId(
+  authProvider: EnumAuthProviderType
+): namedTypes.Identifier {
+  switch (authProvider) {
+    case EnumAuthProviderType.Http:
+      return builders.identifier("ApiBasicAuth");
+    case EnumAuthProviderType.Jwt:
+      return builders.identifier("ApiBearerAuth");
+    default:
+      throw new Error(
+        "Not got valid auth provider to the getSwaggerAuthFunction"
+      );
+  }
 }
