@@ -1,0 +1,5 @@
+This is a sample blog built by Amplication and NextJs
+
+I use Amplication as the backend of my blog. That saves a lot of time because I don't need to write any lines of code to setup the CMS. UI is rendered from server side with NextJs ( template from Next.js tutorial. )
+
+View live demo [here](https://amplication-client-demo.vercel.app)
