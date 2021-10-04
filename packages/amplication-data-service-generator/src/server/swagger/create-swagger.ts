@@ -1,4 +1,4 @@
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { EnumAuthProviderType } from "../../models";
 import { print } from "recast";
 import { AppInfo, Module } from "../../types";
@@ -32,11 +32,7 @@ export async function createSwagger(appInfo: AppInfo): Promise<Module> {
     TITLE: builders.stringLiteral(appInfo.name),
     DESCRIPTION: builders.stringLiteral(description),
     VERSION: builders.stringLiteral(appInfo.version),
-    AUTH_FUNCTION: builders.identifier(
-      authProvider === EnumAuthProviderType.Http
-        ? "addBasicAuth"
-        : "addBearerAuth"
-    ),
+    AUTH_FUNCTION: getSwaggerAuthFunctionId(authProvider),
   });
 
   removeTSVariableDeclares(file);
@@ -49,4 +45,19 @@ export async function createSwagger(appInfo: AppInfo): Promise<Module> {
 
 export async function createDescription(appInfo: AppInfo): Promise<string> {
   return [appInfo.description || "", INSTRUCTIONS].join(INSTRUCTIONS_BUFFER);
+}
+
+export function getSwaggerAuthFunctionId(
+  authProvider: EnumAuthProviderType
+): namedTypes.Identifier {
+  switch (authProvider) {
+    case EnumAuthProviderType.Http:
+      return builders.identifier("ApiBasicAuth");
+    case EnumAuthProviderType.Jwt:
+      return builders.identifier("ApiBearerAuth");
+    default:
+      throw new Error(
+        "Not got valid auth provider to the getSwaggerAuthFunction"
+      );
+  }
 }

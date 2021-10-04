@@ -27,7 +27,7 @@ import {
 } from "../service/create-service";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
-import { EnumAuthProviderType } from "../../../models";
+import { getSwaggerAuthFunctionId } from "../../swagger/create-swagger";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
@@ -236,19 +236,4 @@ async function createToManyRelationMethods(
   });
 
   return getMethods(getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID));
-}
-
-function getSwaggerAuthFunctionId(
-  authProvider: EnumAuthProviderType
-): namedTypes.Identifier {
-  switch (authProvider) {
-    case EnumAuthProviderType.Http:
-      return builders.identifier("ApiBasicAuth");
-    case EnumAuthProviderType.Jwt:
-      return builders.identifier("ApiBearerAuth");
-    default:
-      throw new Error(
-        "Not got valid auth provider to the getSwaggerAuthFunction"
-      );
-  }
 }
