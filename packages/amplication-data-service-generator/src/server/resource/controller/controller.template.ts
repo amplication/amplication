@@ -12,7 +12,6 @@ declare class CONTROLLER_BASE {
   constructor(service: SERVICE, rolesBuilder: nestAccessControl.RolesBuilder);
 }
 
-@swagger.ApiBasicAuth()
 @swagger.ApiTags(RESOURCE)
 @common.Controller(RESOURCE)
 export class CONTROLLER extends CONTROLLER_BASE {

@@ -3,7 +3,7 @@ import { camelCase } from "camel-case";
 import { paramCase } from "param-case";
 import flatten from "lodash.flatten";
 import * as winston from "winston";
-import { Entity, Module } from "../../types";
+import { Entity, Module, AppInfo } from "../../types";
 import { validateEntityName } from "../../util/entity";
 import { DTOs } from "./create-dtos";
 import { createServiceModules } from "./service/create-service";
@@ -13,18 +13,22 @@ import { createControllerSpecModule } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 
 export async function createResourcesModules(
+  appInfo: AppInfo,
   entities: Entity[],
   dtos: DTOs,
   logger: winston.Logger
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
-    entities.map((entity) => createResourceModules(entity, dtos, logger))
+    entities.map((entity) =>
+      createResourceModules(appInfo, entity, dtos, logger)
+    )
   );
   const resourcesModules = flatten(resourceModuleLists);
   return resourcesModules;
 }
 
 async function createResourceModules(
+  appInfo: AppInfo,
   entity: Entity,
   dtos: DTOs,
   logger: winston.Logger
@@ -47,6 +51,7 @@ async function createResourceModules(
   const [serviceModule] = serviceModules;
 
   const controllerModules = await createControllerModules(
+    appInfo,
     resource,
     entityName,
     entityType,

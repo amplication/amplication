@@ -1,7 +1,12 @@
+import { builders, namedTypes } from "ast-types";
+import { EnumAuthProviderType } from "../../models";
 import { print } from "recast";
-import { builders } from "ast-types";
 import { AppInfo, Module } from "../../types";
-import { interpolate, removeTSVariableDeclares } from "../../util/ast";
+import {
+  interpolate,
+  removeTSIgnoreComments,
+  removeTSVariableDeclares,
+} from "../../util/ast";
 import { readFile } from "../../util/module";
 import { SRC_DIRECTORY } from "../constants";
 
@@ -18,6 +23,8 @@ Learn more in [our docs](https://docs.amplication.com)`;
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
 export async function createSwagger(appInfo: AppInfo): Promise<Module> {
+  const { settings } = appInfo;
+  const { authProvider } = settings;
   const file = await readFile(swaggerTemplatePath);
   const description = await createDescription(appInfo);
 
@@ -25,10 +32,15 @@ export async function createSwagger(appInfo: AppInfo): Promise<Module> {
     TITLE: builders.stringLiteral(appInfo.name),
     DESCRIPTION: builders.stringLiteral(description),
     VERSION: builders.stringLiteral(appInfo.version),
+    AUTH_FUNCTION: builders.identifier(
+      authProvider === EnumAuthProviderType.Http
+        ? "addBasicAuth"
+        : "addBearerAuth"
+    ),
   });
 
   removeTSVariableDeclares(file);
-
+  removeTSIgnoreComments(file);
   return {
     code: print(file).code,
     path: MODULE_PATH,
@@ -37,4 +49,19 @@ export async function createSwagger(appInfo: AppInfo): Promise<Module> {
 
 export async function createDescription(appInfo: AppInfo): Promise<string> {
   return [appInfo.description || "", INSTRUCTIONS].join(INSTRUCTIONS_BUFFER);
+}
+
+export function getSwaggerAuthDecorationIdForClass(
+  authProvider: EnumAuthProviderType
+): namedTypes.Identifier {
+  switch (authProvider) {
+    case EnumAuthProviderType.Http:
+      return builders.identifier("ApiBasicAuth");
+    case EnumAuthProviderType.Jwt:
+      return builders.identifier("ApiBearerAuth");
+    default:
+      throw new Error(
+        "Not got valid auth provider to the getSwaggerAuthFunction"
+      );
+  }
 }
