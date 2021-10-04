@@ -43,7 +43,9 @@ export async function createDescription(appInfo: AppInfo): Promise<string> {
   ].join(INSTRUCTIONS_BUFFER);
 }
 
-function getInstructionsAuthentication(authProvider: EnumAuthProviderType) {
+function getInstructionsAuthentication(
+  authProvider: EnumAuthProviderType
+): string {
   switch (authProvider) {
     case EnumAuthProviderType.Http:
       return "HTTP Basic";
@@ -53,12 +55,11 @@ function getInstructionsAuthentication(authProvider: EnumAuthProviderType) {
 }
 
 export function getInstructions(authProvider: EnumAuthProviderType): string {
-  const INSTRUCTIONS = `## Congratulations! Your application is ready.
+  return `## Congratulations! Your application is ready.
   
 Please note that all endpoints are secured with ${getInstructionsAuthentication(
     authProvider
   )} authentication.
 By default, your app comes with one user with the username "admin" and password "admin".
 Learn more in [our docs](https://docs.amplication.com)`;
-  return INSTRUCTIONS;
 }
