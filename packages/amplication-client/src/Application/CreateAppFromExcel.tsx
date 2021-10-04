@@ -322,7 +322,7 @@ export function CreateAppFromExcel() {
                 className={`${CLASS_NAME}__other-options__option`}
               >
                 <SvgThemeImage image={EnumImages.AddApp} />
-                <div>Start From Scratch</div>
+                <div>Start from Scratch</div>
               </Link>
               <Link
                 onClick={handleStartFromSample}
