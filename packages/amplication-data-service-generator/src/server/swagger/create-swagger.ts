@@ -46,7 +46,7 @@ export async function createDescription(appInfo: AppInfo): Promise<string> {
 function getInstructionsAuthentication(authProvider: EnumAuthProviderType) {
   switch (authProvider) {
     case EnumAuthProviderType.Http:
-      return "HTTP basic";
+      return "HTTP Basic";
     case EnumAuthProviderType.Jwt:
       return "JWT Bearer";
   }
