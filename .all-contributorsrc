@@ -339,6 +339,24 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "thucpn",
+      "name": "Thuc Pham",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51660321?v=4",
+      "profile": "http://knsblog.com",
+      "contributions": [
+        "example"
+      ]
+    },
+    {
+      "login": "CodyLacey",
+      "name": "Cody Lacey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29167666?v=4",
+      "profile": "http://codylacey.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

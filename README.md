@@ -24,7 +24,7 @@
 <div align="center">
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-35-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-37-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
@@ -182,6 +182,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/MatthiasWanner"><img src="https://avatars.githubusercontent.com/u/79398461?v=4?s=100" width="100px;" alt=""/><br /><sub><b>MatthiasWanner</b></sub></a><br /><a href="#ideas-MatthiasWanner" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/regicsolutions"><img src="https://avatars.githubusercontent.com/u/6157895?v=4?s=100" width="100px;" alt=""/><br /><sub><b>regicsolutions</b></sub></a><br /><a href="#ideas-regicsolutions" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://sten.pw"><img src="https://avatars.githubusercontent.com/u/2134238?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sten Feldman</b></sub></a><br /><a href="#ideas-exsilium" title="Ideas, Planning, & Feedback">🤔</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://knsblog.com"><img src="https://avatars.githubusercontent.com/u/51660321?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Thuc Pham</b></sub></a><br /><a href="#example-thucpn" title="Examples">💡</a></td>
+    <td align="center"><a href="http://codylacey.com"><img src="https://avatars.githubusercontent.com/u/29167666?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Cody Lacey</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=CodyLacey" title="Code">💻</a></td>
   </tr>
 </table>
 
