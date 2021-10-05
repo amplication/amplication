@@ -9,17 +9,10 @@ import {
 } from "../../util/ast";
 import { readFile } from "../../util/module";
 import { SRC_DIRECTORY } from "../constants";
-import { EnumAuthProviderType } from "../../models";
 
 const MODULE_PATH = `${SRC_DIRECTORY}/swagger.ts`;
 
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
-
-export const INSTRUCTIONS = `## Congratulations! Your application is ready.
-
-Please note that all endpoints are secured with HTTP basic authentication.
-By default, your app comes with one user with the username "admin" and password "admin".
-Learn more in [our docs](https://docs.amplication.com)`;
 
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
