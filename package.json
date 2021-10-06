@@ -21,6 +21,7 @@
     "setup:dev": "ts-node ./setup.ts"
   },
   "dependencies": {
+    "cli-spinners": "^2.6.1",
     "lerna": "3.22.1",
     "ora": "^6.0.1",
     "semver": "^6.3.0",
