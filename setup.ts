@@ -3,7 +3,9 @@ import { exec } from "child_process";
 import { createLogger, format, Logger, transports } from "winston";
 const { combine, colorize, simple } = format;
 
-async function main() {
+async function main(args: string[]) {
+  const [bin, file, detailed] = args;
+  const detailedValue = detailed.slice(detailed.indexOf("=") + 1) === "true";
   const logger = createLogger({
     transports: [new transports.Console()],
     format: combine(colorize(), simple()),
@@ -14,6 +16,9 @@ async function main() {
     "pre validation",
     "pre validation successfully!",
     preValidate
+  );
+  logger.warn(
+    "Starting npm run bootstrap its take a lot of time, be patient dont close the process in the middle"
   );
   await taskRunner.run("bootstrap", "lerna bootstrap", runBootstrap);
   await Promise.all([
@@ -48,10 +53,10 @@ class TasksRunner {
     try {
       this.logger.profile(taskName);
       await execFunction();
-      this.logger.info(`Finish the ${taskFinishMessage}`);
+      this.logger.info(`Finish the ${taskFinishMessage} ✅`);
       this.logger.profile(taskName, {
         level: "debug",
-        message: `Finish the ${taskFinishMessage} ✅`,
+        message: `Finish the ${taskFinishMessage}`,
       });
     } catch (error) {
       this.logger.error(error);
@@ -143,6 +148,8 @@ async function preValidate() {
   });
 }
 
+async function getAllPackageJSONFiles() {}
+
 if (require.main === module) {
-  main();
+  main(process.argv);
 }
