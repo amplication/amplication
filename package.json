@@ -32,8 +32,5 @@
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=7.0.0"
-  },
-  "bugs": {
-    "url": "https://github.com/amplication/amplication/issues"
   }
 }
