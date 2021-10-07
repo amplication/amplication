@@ -1,7 +1,7 @@
+import check from "check-node-version";
 import { exec } from "child_process";
-import { satisfies } from "semver";
 import { createLogger, format, Logger, transports } from "winston";
-const { printf, combine, colorize, simple } = format;
+const { combine, colorize, simple } = format;
 
 async function main() {
   const logger = createLogger({
@@ -9,28 +9,17 @@ async function main() {
     format: combine(colorize(), simple()),
   });
   logger.info("Start Setting up the project");
-  const nodeVersion = process.versions.node;
-  const { engines } = require("./package.json");
-  const { node, npm } = engines;
-  logger.profile("validation");
-  preValidate(logger, nodeVersion, node);
-  logger.profile("validation", {
-    message: "Finish pre validation successfully!",
-    level: "info",
-  });
   const taskRunner = new TasksRunner(logger);
+  await taskRunner.run(
+    "pre validation",
+    "pre validation successfully!",
+    preValidate
+  );
   await taskRunner.run("bootstrap", "lerna bootstrap", runBootstrap);
-  const prismaPromise = taskRunner.run(
-    "prisma",
-    "prisma generation",
-    runPrismaGenerate
-  );
-  const buildPromise = taskRunner.run(
-    "build",
-    "build of all the server dependencies",
-    runBuild
-  );
-  await Promise.all([prismaPromise, buildPromise]);
+  await Promise.all([
+    taskRunner.run("prisma", "prisma generation", runPrismaGenerate),
+    taskRunner.run("build", "build of all the server dependencies", runBuild),
+  ]);
   const generatePromise = taskRunner.run(
     "generate",
     "generate of all graphql schemas",
@@ -46,6 +35,7 @@ async function main() {
     "init of the docker and the seed",
     runInitDocker
   );
+  await Promise.all([generatePromise]);
 }
 
 class TasksRunner {
@@ -55,17 +45,21 @@ class TasksRunner {
     taskFinishMessage: string,
     execFunction: Function
   ) {
-    this.logger.profile(taskName);
-    await execFunction();
-    this.logger.info(`Finish the ${taskFinishMessage}`);
-    this.logger.profile(taskName, {
-      level: "debug",
-      message: `Finish the ${taskFinishMessage}`,
-    });
+    try {
+      this.logger.profile(taskName);
+      await execFunction();
+      this.logger.info(`Finish the ${taskFinishMessage}`);
+      this.logger.profile(taskName, {
+        level: "debug",
+        message: `Finish the ${taskFinishMessage} ✅`,
+      });
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 }
 
-//#region  functions
+//#region functions
 async function runBootstrap() {
   return new Promise((resolve, reject) => {
     const bootstrap = exec("npm run bootstrap", (error, stdout, stderr) => {
@@ -128,23 +122,27 @@ async function runInitDocker() {
   });
 }
 
-function preValidate(logger: Logger, nodeVersion, nodeRange) {
-  if (isValidNodeVersion(nodeVersion, nodeRange)) {
-    logger.info(`Pass node version test with version: ${nodeVersion}`);
-  } else {
-    throw new Error(
-      `Invalid node version, please use the specified node version ${nodeRange}`
-    );
-  }
+async function preValidate() {
+  return new Promise((resolve, reject) => {
+    const { engines } = require("./package.json");
+    const { node: nodeRange, npm } = engines;
+    check({ npm: npm, node: nodeRange }, (error, result) => {
+      if (error) {
+        reject("Unknown error accord in the setup process");
+      }
+      if (!result.versions.node.isSatisfied)
+        reject(
+          `Invalid node version, please use the specified node version ${nodeRange}`
+        );
+      if (!result.versions.npm.isSatisfied)
+        reject(
+          `Invalid npm version, please use the specified npm version ${npm}`
+        );
+      resolve(null);
+    });
+  });
 }
-//#endregion
-function isValidNodeVersion(nodeVersion: string, nodeRange: string): boolean {
-  if (!satisfies(nodeVersion, nodeRange)) {
-    return false;
-  } else {
-    return true;
-  }
-}
+
 if (require.main === module) {
   main();
 }

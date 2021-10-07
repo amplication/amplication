@@ -21,6 +21,7 @@
     "setup:dev": "ts-node ./setup.ts"
   },
   "dependencies": {
+    "check-node-version": "^4.1.0",
     "cli-spinners": "^2.6.1",
     "lerna": "3.22.1",
     "ora": "^6.0.1",
@@ -36,7 +37,7 @@
     "prettier": "2.0.5"
   },
   "engines": {
-    "node": ">=14.0.0",
+    "node": "^14.0.0",
     "npm": ">=7.0.0"
   }
 }
