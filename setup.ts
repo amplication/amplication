@@ -37,6 +37,7 @@ async function main(args: string[]) {
     "pre validation successfully!",
     preValidate
   );
+  const clientPromises = buildClient();
   logger.warn(
     "Starting npm run bootstrap its take a lot of time, be patient dont close the process in the middle"
   );
@@ -60,10 +61,25 @@ async function main(args: string[]) {
     "init of the docker and the seed",
     runInitDocker
   );
-  await Promise.all([generatePromise]);
+  await Promise.all([generatePromise, clientPromises]);
   logger.info("Finish all the process for the setup, have fun hacking 🎉");
 
-  async function buildClient() {}
+  function buildClient(): Promise<any>[] {
+    const clientPromise = taskRunner.run("", "", buildClient);
+    return [clientPromise];
+
+    async function buildClient() {
+      return new Promise((resolve, reject) => {
+        exec(
+          "npm run build -- --scope @amplication/client --include-dependencies",
+          (error, stdout, stderr) => {
+            error && reject(error);
+            stdout && resolve(true);
+          }
+        );
+      });
+    }
+  }
   //#region functions
   async function runBootstrap() {
     return new Promise((resolve, reject) => {
