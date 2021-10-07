@@ -58,8 +58,6 @@ function getMetaDataForAuthGuard(
       throw new Error(
         `Not found any meta data for auth guard - ${setAuthGuard}`
       );
-
-      break;
   }
   return data;
 }
