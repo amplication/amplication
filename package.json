@@ -20,7 +20,7 @@
     "generate-test-data-service": "lerna run --scope @amplication/data-service-generator generate-test-data-service"
   },
   "dependencies": {
-    "lerna": "3.22.1"
+    "lerna": "^4.0.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.21.6",
