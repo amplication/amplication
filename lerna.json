@@ -4,7 +4,7 @@
     "packages/amplication-data-service-generator/src/admin/static/",
     "packages/amplication-data-service-generator/src/server/static/"
   ],
-  "version": "0.9.0",
+  "version": "0.10.0",
   "command": {
     "bootstrap": {
       "ignore": [
