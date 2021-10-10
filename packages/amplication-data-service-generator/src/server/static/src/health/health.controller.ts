@@ -1,17 +1,10 @@
-import { Controller, Get, Res } from "@nestjs/common";
-import { Response } from "express";
-import { PrismaService } from "nestjs-prisma";
+import { Controller } from "@nestjs/common";
+import { HealthControllerBase } from "./base/health.controller.base";
+import { HealthService } from "./health.service";
 
 @Controller("health")
-export class HealthController {
-  constructor(private readonly prisma: PrismaService) {}
-  @Get("live")
-  healthLive(@Res() response: Response): Response<void> {
-    return response.sendStatus(200);
-  }
-  @Get("ready")
-  healthReady(@Res() response: Response): Response<void> {
-    this.prisma.user;
-    return response.sendStatus(200);
+export class HealthController extends HealthControllerBase {
+  constructor(protected readonly healthService: HealthService) {
+    super(healthService);
   }
 }
