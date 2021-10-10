@@ -1,0 +1,7 @@
+FROM node:lts-alpine
+RUN npm i -g npm@7.3.0
+WORKDIR /app
+COPY . .
+RUN npm i
+RUN npm run setup:dev
+EXPOSE 3000
