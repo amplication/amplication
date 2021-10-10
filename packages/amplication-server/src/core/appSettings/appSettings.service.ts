@@ -6,6 +6,8 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
 import { isEmpty } from 'lodash';
 import { User } from 'src/models';
+import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+
 @Injectable()
 export class AppSettingsService {
   @Inject()
@@ -20,7 +22,8 @@ export class AppSettingsService {
       dbName,
       dbPassword,
       dbPort,
-      dbUser
+      dbUser,
+      authProvider
     } = await this.getAppSettingsBlock(args, user);
 
     return {
@@ -29,7 +32,8 @@ export class AppSettingsService {
       dbPassword,
       dbPort,
       dbUser,
-      appId: args.where.id
+      appId: args.where.id,
+      authProvider
     };
   }
 
@@ -49,12 +53,14 @@ export class AppSettingsService {
       },
       EnumBlockType.AppSettings
     );
-
     if (isEmpty(appSettings)) {
       return this.createDefaultAppSettings(args.where.id, user);
     }
 
-    return appSettings;
+    return {
+      ...appSettings,
+      authProvider: appSettings.authProvider || EnumAuthProviderType.Http
+    };
   }
 
   async updateAppSettings(

@@ -2,7 +2,8 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
-  ".env": "POSTGRESQL_USER=testUsername
+  ".env": "# The variables in this file are only used by docker-compose for local docker deployment
+POSTGRESQL_USER=testUsername
 POSTGRESQL_PASSWORD=1234
 POSTGRESQL_PORT=5433
 SERVER_PORT=3000
@@ -12,7 +13,6 @@ BCRYPT_SALT=10
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
 import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
-import basicHttpAuthProvider from \\"./auth-provider/ra-auth-basic-http\\";
 import { theme } from \\"./theme/theme\\";
 import Login from \\"./Login\\";
 import \\"./App.scss\\";
@@ -37,6 +37,7 @@ import { EmptyList } from \\"./empty/EmptyList\\";
 import { EmptyCreate } from \\"./empty/EmptyCreate\\";
 import { EmptyEdit } from \\"./empty/EmptyEdit\\";
 import { EmptyShow } from \\"./empty/EmptyShow\\";
+import { httpAuthProvider } from \\"./auth-provider/ra-auth-http\\";
 
 const App = (): React.ReactElement => {
   const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
@@ -57,7 +58,7 @@ const App = (): React.ReactElement => {
       <Admin
         title={\\"Sample Application\\"}
         dataProvider={dataProvider}
-        authProvider={basicHttpAuthProvider}
+        authProvider={httpAuthProvider}
         theme={theme}
         dashboard={Dashboard}
         loginPage={Login}
@@ -784,30 +785,13 @@ export type UserWhereInput = {
   id: string;
 };
 ",
-  "admin-ui/src/auth-provider/basic-auth.util.ts": "export function createBasicAuthorizationHeader(
-  username: string,
-  password: string
-): string {
-  return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
-}
-",
-  "admin-ui/src/auth-provider/ra-auth-basic-http.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
-import { createBasicAuthorizationHeader } from \\"./basic-auth.util\\";
+  "admin-ui/src/auth-provider/ra-auth-http.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
 import { AuthProvider } from \\"react-admin\\";
-
-export const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
-const USER_DATA_LOCAL_STORAGE_ITEM = \\"userData\\";
-
-type TData = {
-  login: {
-    username: string;
-  };
-};
-
-export type Credentials = {
-  username: string;
-  password: string;
-};
+import {
+  CREDENTIALS_LOCAL_STORAGE_ITEM,
+  USER_DATA_LOCAL_STORAGE_ITEM,
+} from \\"../constants\\";
+import { Credentials, LoginMutateResult } from \\"../types\\";
 
 const LOGIN = gql\`
   mutation login($username: String!, $password: String!) {
@@ -818,14 +802,14 @@ const LOGIN = gql\`
   }
 \`;
 
-const basicHttpAuthProvider: AuthProvider = {
+export const httpAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
     const apolloClient = new ApolloClient({
       uri: \\"/graphql\\",
       cache: new InMemoryCache(),
     });
 
-    const userData = await apolloClient.mutate<TData>({
+    const userData = await apolloClient.mutate<LoginMutateResult>({
       mutation: LOGIN,
       variables: {
         ...credentials,
@@ -867,7 +851,7 @@ const basicHttpAuthProvider: AuthProvider = {
   getPermissions: () => Promise.reject(\\"Unknown method\\"),
   getIdentity: () => {
     const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
-    const userData: TData = JSON.parse(str || \\"\\");
+    const userData: LoginMutateResult = JSON.parse(str || \\"\\");
 
     return Promise.resolve({
       id: userData.login.username,
@@ -876,16 +860,94 @@ const basicHttpAuthProvider: AuthProvider = {
     });
   },
 };
-export default basicHttpAuthProvider;
-",
-  "admin-ui/src/auth.ts": "import { EventEmitter } from \\"events\\";
 
-export type Credentials = {
-  username: string;
-  password: string;
+function createBasicAuthorizationHeader(
+  username: string,
+  password: string
+): string {
+  return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
+}
+",
+  "admin-ui/src/auth-provider/ra-auth-jwt.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
+import { AuthProvider } from \\"react-admin\\";
+import {
+  CREDENTIALS_LOCAL_STORAGE_ITEM,
+  USER_DATA_LOCAL_STORAGE_ITEM,
+} from \\"../constants\\";
+import { Credentials, LoginMutateResult } from \\"../types\\";
+
+const LOGIN = gql\`
+  mutation login($username: String!, $password: String!) {
+    login(credentials: { username: $username, password: $password }) {
+      username
+      accessToken
+    }
+  }
+\`;
+
+export const jwtAuthProvider: AuthProvider = {
+  login: async (credentials: Credentials) => {
+    const apolloClient = new ApolloClient({
+      uri: \\"/graphql\\",
+      cache: new InMemoryCache(),
+    });
+
+    const userData = await apolloClient.mutate<LoginMutateResult>({
+      mutation: LOGIN,
+      variables: {
+        ...credentials,
+      },
+    });
+
+    if (userData && userData.data?.login.username) {
+      localStorage.setItem(
+        CREDENTIALS_LOCAL_STORAGE_ITEM,
+        createBearerAuthorizationHeader(userData.data.login?.accessToken)
+      );
+      localStorage.setItem(
+        USER_DATA_LOCAL_STORAGE_ITEM,
+        JSON.stringify(userData.data)
+      );
+      return Promise.resolve();
+    }
+    return Promise.reject();
+  },
+  logout: () => {
+    localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+    return Promise.resolve();
+  },
+  checkError: ({ status }: any) => {
+    if (status === 401 || status === 403) {
+      localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+      return Promise.reject();
+    }
+    return Promise.resolve();
+  },
+  checkAuth: () => {
+    return localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
+      ? Promise.resolve()
+      : Promise.reject();
+  },
+  getPermissions: () => Promise.reject(\\"Unknown method\\"),
+  getIdentity: () => {
+    const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
+    const userData: LoginMutateResult = JSON.parse(str || \\"\\");
+
+    return Promise.resolve({
+      id: userData.login.username,
+      fullName: userData.login.username,
+      avatar: undefined,
+    });
+  },
 };
 
-const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
+export function createBearerAuthorizationHeader(accessToken: string) {
+  return \`Bearer \${accessToken}\`;
+}
+",
+  "admin-ui/src/auth.ts": "import { EventEmitter } from \\"events\\";
+import { CREDENTIALS_LOCAL_STORAGE_ITEM } from \\"./constants\\";
+import { Credentials } from \\"./types\\";
 
 const eventEmitter = new EventEmitter();
 
@@ -917,6 +979,9 @@ export function getCredentials(): Credentials | null {
 export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
+",
+  "admin-ui/src/constants.ts": "export const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
+export const USER_DATA_LOCAL_STORAGE_ITEM = \\"userData\\";
 ",
   "admin-ui/src/customer/CustomerCreate.tsx": "import * as React from \\"react\\";
 
@@ -1236,14 +1301,14 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
 
 export const CUSTOMER_TITLE_FIELD = \\"firstName\\";
 
-export const CustomerTitle = (record: TCustomer) => {
-  return record.firstName;
+export const CustomerTitle = (record: TCustomer): string => {
+  return record.firstName || record.id;
 };
 ",
   "admin-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
 import { ApolloClient, InMemoryCache, createHttpLink } from \\"@apollo/client\\";
 import { setContext } from \\"@apollo/client/link/context\\";
-import { CREDENTIALS_LOCAL_STORAGE_ITEM } from \\"../auth-provider/ra-auth-basic-http\\";
+import { CREDENTIALS_LOCAL_STORAGE_ITEM } from \\"../constants\\";
 
 const httpLink = createHttpLink({
   uri: \\"/graphql\\",
@@ -1341,8 +1406,8 @@ export const EmptyShow = (props: ShowProps): React.ReactElement => {
 
 export const EMPTY_TITLE_FIELD = \\"id\\";
 
-export const EmptyTitle = (record: TEmpty) => {
-  return record.id;
+export const EmptyTitle = (record: TEmpty): string => {
+  return record.id || record.id;
 };
 ",
   "admin-ui/src/index.tsx": "import React from \\"react\\";
@@ -1529,8 +1594,8 @@ export const OrderShow = (props: ShowProps): React.ReactElement => {
 
 export const ORDER_TITLE_FIELD = \\"id\\";
 
-export const OrderTitle = (record: TOrder) => {
-  return record.id;
+export const OrderTitle = (record: TOrder): string => {
+  return record.id || record.id;
 };
 ",
   "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
@@ -1711,8 +1776,8 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
 
 export const ORGANIZATION_TITLE_FIELD = \\"name\\";
 
-export const OrganizationTitle = (record: TOrganization) => {
-  return record.name;
+export const OrganizationTitle = (record: TOrganization): string => {
+  return record.name || record.id;
 };
 ",
   "admin-ui/src/pages/Dashboard.tsx": "import * as React from \\"react\\";
@@ -1783,6 +1848,17 @@ const themeOptions: ThemeOptions = {
 };
 
 export const theme = createTheme(merge({}, defaultTheme, themeOptions));
+",
+  "admin-ui/src/types.ts": "export type Credentials = {
+  username: string;
+  password: string;
+};
+export type LoginMutateResult = {
+  login: {
+    username: string;
+    accessToken: string;
+  };
+};
 ",
   "admin-ui/src/user/EnumRoles.ts": "export enum EnumRoles {
   User = \\"user\\",
@@ -2026,8 +2102,8 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 
 export const USER_TITLE_FIELD = \\"username\\";
 
-export const UserTitle = (record: TUser) => {
-  return record.username;
+export const UserTitle = (record: TUser): string => {
+  return record.username || record.id;
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [
@@ -2180,7 +2256,8 @@ POSTGRESQL_PORT=5433
 POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
 BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${appId}
-",
+JWT_SECRET_KEY=Change_ME!!!
+JWT_EXPIRATION=2d",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
@@ -2352,10 +2429,29 @@ WHERE n.nspname = 'public';
   return results.map((result) => result.typname);
 }
 ",
+  "server/scripts/customSeed.ts": "import { PrismaClient } from \\"@prisma/client\\";
+
+export async function customSeed() {
+  const client = new PrismaClient();
+  const username = \\"admin\\";
+
+  //replace this sample code to populate your database
+  //with data that is required for your application to start
+  await client.user.update({
+    where: { username: username },
+    data: {
+      username,
+    },
+  });
+
+  client.$disconnect();
+}
+",
   "server/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
+import { customSeed } from \\"./customSeed\\";
 import { EnumUserPriority } from \\"../src/user/base/EnumUserPriority\\";
 
 if (require.main === module) {
@@ -2401,6 +2497,10 @@ async function seed(bcryptSalt: Salt) {
     create: data,
   });
   client.$disconnect();
+
+  console.info(\\"Seeding database with custom seed...\\");
+  customSeed();
+
   console.info(\\"Seeded database successfully\\");
 }
 ",
@@ -2412,6 +2512,7 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
+import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
@@ -2428,6 +2529,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     EmptyModule,
     ACLModule,
     AuthModule,
+    SecretsManagerModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
@@ -2493,6 +2595,8 @@ export class UserInfo implements Partial<User> {
   username!: string;
   @Field(() => [String])
   roles!: string[];
+  @Field(() => String)
+  accessToken?: string;
 }
 ",
   "server/src/auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
@@ -2543,25 +2647,52 @@ export class AuthController {
 ",
   "server/src/auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
+import { JwtModule } from \\"@nestjs/jwt\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
 import { AuthController } from \\"./auth.controller\\";
 import { AuthResolver } from \\"./auth.resolver\\";
 import { AuthService } from \\"./auth.service\\";
-import { BasicStrategy } from \\"./basic.strategy\\";
+import { BasicStrategy } from \\"./basic/basic.strategy\\";
 import { PasswordService } from \\"./password.service\\";
+import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
+import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
+import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
+import { ConfigService } from \\"@nestjs/config\\";
+import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
 
 @Module({
-  imports: [forwardRef(() => UserModule), PassportModule],
-  providers: [AuthService, BasicStrategy, PasswordService, AuthResolver],
+  imports: [
+    forwardRef(() => UserModule),
+    PassportModule,
+    SecretsManagerModule,
+    JwtModule.registerAsync({
+      imports: [SecretsManagerModule],
+      inject: [SecretsManagerService, ConfigService],
+      useFactory: async (
+        secretsService: SecretsManagerService,
+        configService: ConfigService
+      ) => ({
+        secret: secretsService.getSecret<string>(JWT_SECRET_KEY),
+        signOptions: { expiresIn: configService.get(JWT_EXPIRATION) },
+      }),
+    }),
+  ],
+  providers: [
+    AuthService,
+    BasicStrategy,
+    PasswordService,
+    AuthResolver,
+    JwtStrategy,
+  ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],
 })
 export class AuthModule {}
 ",
-  "server/src/auth/auth.resolver.ts": "import * as common from \\"@nestjs/common\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+  "server/src/auth/auth.resolver.ts": "import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth.guard\\";
+import * as common from \\"@nestjs/common\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { Args, Mutation, Resolver, Query } from \\"@nestjs/graphql\\";
 import { ApolloError } from \\"apollo-server-express\\";
@@ -2569,10 +2700,14 @@ import { AuthService } from \\"./auth.service\\";
 import { UserInfo } from \\"./UserInfo\\";
 import { LoginArgs } from \\"./LoginArgs\\";
 import { UserData } from \\"./gqlUserData.decorator\\";
+import { JwtService } from \\"@nestjs/jwt\\";
 
 @Resolver(UserInfo)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private jwtService: JwtService
+  ) {}
   @Mutation(() => UserInfo)
   async login(@Args() args: LoginArgs): Promise<UserInfo> {
     const user = await this.authService.validateUser(
@@ -2582,14 +2717,15 @@ export class AuthResolver {
     if (!user) {
       throw new ApolloError(\\"The passed credentials are incorrect\\");
     }
-    return user;
+    const payload = { username: user.username };
+    return {
+      accessToken: this.jwtService.sign(payload), //signs username payload
+      ...user,
+    };
   }
 
   @Query(() => UserInfo)
-  @common.UseGuards(
-    gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-    gqlACGuard.GqlACGuard
-  )
+  @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
   async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
     return userInfo;
   }
@@ -2695,11 +2831,11 @@ export class AuthService {
   }
 }
 ",
-  "server/src/auth/basic.strategy.ts": "import { BasicStrategy as Strategy } from \\"passport-http\\";
+  "server/src/auth/basic/basic.strategy.ts": "import { BasicStrategy as Strategy } from \\"passport-http\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
-import { AuthService } from \\"./auth.service\\";
-import { UserInfo } from \\"./UserInfo\\";
+import { AuthService } from \\"../auth.service\\";
+import { UserInfo } from \\"../UserInfo\\";
 
 @Injectable()
 export class BasicStrategy extends PassportStrategy(Strategy) {
@@ -2716,11 +2852,11 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "server/src/auth/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
+  "server/src/auth/basic/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
-  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basicAuth.guard\\";
+  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
 
 export class DefaultAuthGuard extends BasicAuthGuard {}
 ",
@@ -2736,23 +2872,20 @@ export class GqlACGuard<User extends any = any> extends ACGuard<User> {
   }
 }
 ",
-  "server/src/auth/gqlBasicAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
+  "server/src/auth/gqlDefaultAuth.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
 import type { Request } from \\"express\\";
-import { BasicAuthGuard } from \\"./basicAuth.guard\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { DefaultAuthGuard } from \\"./defaultAuth.guard\\";
 
-@Injectable()
-export class GqlBasicAuthGuard extends BasicAuthGuard {
+export class GqlDefaultAuthGuard extends DefaultAuthGuard {
   // This method is required for the interface - do not delete it.
   getRequest(context: ExecutionContext): Request {
     const ctx = GqlExecutionContext.create(context);
     return ctx.getContext<{ req: Request }>().req;
   }
 }
-",
-  "server/src/auth/gqlDefaultAuth.guard.ts": "import { GqlBasicAuthGuard } from \\"./gqlBasicAuth.guard\\";
-
-export class GqlDefaultAuthGuard extends GqlBasicAuthGuard {}
 ",
   "server/src/auth/gqlUserData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
@@ -2786,6 +2919,44 @@ export const UserRoles = createParamDecorator(
     return data ? request.user[data] : request.user.roles;
   }
 );
+",
+  "server/src/auth/jwt/jwt.strategy.ts": "import { ExtractJwt, Strategy } from \\"passport-jwt\\";
+import { PassportStrategy } from \\"@nestjs/passport\\";
+import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
+import { UserInfo } from \\"../UserInfo\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { UserService } from \\"../../user/user.service\\";
+import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
+import { JWT_SECRET_KEY } from \\"../../constants\\";
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor(
+    private userService: UserService,
+    secretsService: SecretsManagerService
+  ) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: secretsService.getSecret<string>(JWT_SECRET_KEY),
+    });
+  }
+
+  async validate(payload: UserInfo): Promise<UserInfo> {
+    const { username } = payload;
+    const user = await this.userService.findOne({
+      where: { username },
+    });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
+}
+",
+  "server/src/auth/jwt/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
+
+export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
 ",
   "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
 import { Test, TestingModule } from \\"@nestjs/testing\\";
@@ -2919,6 +3090,9 @@ export function parseSalt(value: string | undefined): Salt {
   }
   return rounds;
 }
+",
+  "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
+export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
 ",
   "server/src/customer/base/CreateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
@@ -4124,7 +4298,7 @@ import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
 import { OrderWhereInput } from \\"../../order/base/OrderWhereInput\\";
 import { Order } from \\"../../order/base/Order\\";
-
+@swagger.ApiBasicAuth()
 export class CustomerControllerBase {
   constructor(
     protected readonly service: CustomerService,
@@ -4700,7 +4874,7 @@ export class CustomerModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -4718,10 +4892,7 @@ import { Organization } from \\"../../organization/base/Organization\\";
 import { CustomerService } from \\"../customer.service\\";
 
 @graphql.Resolver(() => Customer)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class CustomerResolverBase {
   constructor(
     protected readonly service: CustomerService,
@@ -5072,7 +5243,6 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerControllerBase } from \\"./base/customer.controller.base\\";
 
-@swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"customers\\")
 @common.Controller(\\"customers\\")
 export class CustomerController extends CustomerControllerBase {
@@ -5102,17 +5272,14 @@ export class CustomerModule {}
   "server/src/customer/customer.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { CustomerResolverBase } from \\"./base/customer.resolver.base\\";
 import { Customer } from \\"./base/Customer\\";
 import { CustomerService } from \\"./customer.service\\";
 
 @graphql.Resolver(() => Customer)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class CustomerResolver extends CustomerResolverBase {
   constructor(
     protected readonly service: CustomerService,
@@ -5494,7 +5661,7 @@ import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
-
+@swagger.ApiBasicAuth()
 export class EmptyControllerBase {
   constructor(
     protected readonly service: EmptyService,
@@ -5744,7 +5911,7 @@ export class EmptyModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -5757,10 +5924,7 @@ import { Empty } from \\"./Empty\\";
 import { EmptyService } from \\"../empty.service\\";
 
 @graphql.Resolver(() => Empty)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class EmptyResolverBase {
   constructor(
     protected readonly service: EmptyService,
@@ -5897,7 +6061,6 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { EmptyService } from \\"./empty.service\\";
 import { EmptyControllerBase } from \\"./base/empty.controller.base\\";
 
-@swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"empties\\")
 @common.Controller(\\"empties\\")
 export class EmptyController extends EmptyControllerBase {
@@ -5927,17 +6090,14 @@ export class EmptyModule {}
   "server/src/empty/empty.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { EmptyResolverBase } from \\"./base/empty.resolver.base\\";
 import { Empty } from \\"./base/Empty\\";
 import { EmptyService } from \\"./empty.service\\";
 
 @graphql.Resolver(() => Empty)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class EmptyResolver extends EmptyResolverBase {
   constructor(
     protected readonly service: EmptyService,
@@ -6600,7 +6760,7 @@ import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
-
+@swagger.ApiBasicAuth()
 export class OrderControllerBase {
   constructor(
     protected readonly service: OrderService,
@@ -6907,7 +7067,7 @@ export class OrderModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -6923,10 +7083,7 @@ import { Customer } from \\"../../customer/base/Customer\\";
 import { OrderService } from \\"../order.service\\";
 
 @graphql.Resolver(() => Order)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class OrderResolverBase {
   constructor(
     protected readonly service: OrderService,
@@ -7192,7 +7349,6 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderControllerBase } from \\"./base/order.controller.base\\";
 
-@swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"orders\\")
 @common.Controller(\\"orders\\")
 export class OrderController extends OrderControllerBase {
@@ -7222,17 +7378,14 @@ export class OrderModule {}
   "server/src/order/order.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { OrderResolverBase } from \\"./base/order.resolver.base\\";
 import { Order } from \\"./base/Order\\";
 import { OrderService } from \\"./order.service\\";
 
 @graphql.Resolver(() => Order)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class OrderResolver extends OrderResolverBase {
   constructor(
     protected readonly service: OrderService,
@@ -7731,7 +7884,7 @@ import { UserWhereInput } from \\"../../user/base/UserWhereInput\\";
 import { User } from \\"../../user/base/User\\";
 import { CustomerWhereInput } from \\"../../customer/base/CustomerWhereInput\\";
 import { Customer } from \\"../../customer/base/Customer\\";
-
+@swagger.ApiBasicAuth()
 export class OrganizationControllerBase {
   constructor(
     protected readonly service: OrganizationService,
@@ -8572,7 +8725,7 @@ export class OrganizationModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -8591,10 +8744,7 @@ import { Customer } from \\"../../customer/base/Customer\\";
 import { OrganizationService } from \\"../organization.service\\";
 
 @graphql.Resolver(() => Organization)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class OrganizationResolverBase {
   constructor(
     protected readonly service: OrganizationService,
@@ -8927,7 +9077,6 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationControllerBase } from \\"./base/organization.controller.base\\";
 
-@swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"organizations\\")
 @common.Controller(\\"organizations\\")
 export class OrganizationController extends OrganizationControllerBase {
@@ -8957,17 +9106,14 @@ export class OrganizationModule {}
   "server/src/organization/organization.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { OrganizationResolverBase } from \\"./base/organization.resolver.base\\";
 import { Organization } from \\"./base/Organization\\";
 import { OrganizationService } from \\"./organization.service\\";
 
 @graphql.Resolver(() => Organization)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class OrganizationResolver extends OrganizationResolverBase {
   constructor(
     protected readonly service: OrganizationService,
@@ -9044,6 +9190,36 @@ export async function transformStringFieldUpdateInput<
   return input;
 }
 ",
+  "server/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from \\"@nestjs/config\\";
+
+export class SecretsManagerServiceBase {
+  constructor(protected readonly configService: ConfigService) {}
+  getSecret<T>(key: string): T {
+    const value = this.configService.get(key);
+    return value;
+  }
+}
+",
+  "server/src/providers/secrets/secretsManager.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { SecretsManagerService } from \\"./secretsManager.service\\";
+
+@Module({
+  providers: [SecretsManagerService],
+  exports: [SecretsManagerService],
+})
+export class SecretsManagerModule {}
+",
+  "server/src/providers/secrets/secretsManager.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { ConfigService } from \\"@nestjs/config\\";
+import { SecretsManagerServiceBase } from \\"./base/secretsManager.service.base\\";
+
+@Injectable()
+export class SecretsManagerService extends SecretsManagerServiceBase {
+  constructor(protected readonly configService: ConfigService) {
+    super(configService);
+  }
+}
+",
   "server/src/serveStaticOptions.service.ts": "import * as path from \\"path\\";
 import { Injectable, Logger } from \\"@nestjs/common\\";
 import { ConfigService } from \\"@nestjs/config\\";
@@ -9090,7 +9266,7 @@ export const swaggerPath = \\"api\\";
 export const swaggerDocumentOptions = new DocumentBuilder()
   .setTitle(\\"Sample Application\\")
   .setDescription(
-    'Sample application for testing\\\\n\\\\n## Congratulations! Your application is ready.\\\\n\\\\nPlease note that all endpoints are secured with HTTP basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
+    'Sample application for testing\\\\n\\\\n## Congratulations! Your application is ready.\\\\n  \\\\nPlease note that all endpoints are secured with HTTP Basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
   )
   .setVersion(\\"0.1.3\\")
   .addBasicAuth()
@@ -10234,7 +10410,7 @@ import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
 import { OrganizationWhereInput } from \\"../../organization/base/OrganizationWhereInput\\";
 import { Organization } from \\"../../organization/base/Organization\\";
-
+@swagger.ApiBasicAuth()
 export class UserControllerBase {
   constructor(
     protected readonly service: UserService,
@@ -10957,7 +11133,7 @@ export class UserModuleBase {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
 import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -10974,10 +11150,7 @@ import { Organization } from \\"../../organization/base/Organization\\";
 import { UserService } from \\"../user.service\\";
 
 @graphql.Resolver(() => User)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class UserResolverBase {
   constructor(
     protected readonly service: UserService,
@@ -11344,7 +11517,6 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { UserService } from \\"./user.service\\";
 import { UserControllerBase } from \\"./base/user.controller.base\\";
 
-@swagger.ApiBasicAuth()
 @swagger.ApiTags(\\"users\\")
 @common.Controller(\\"users\\")
 export class UserController extends UserControllerBase {
@@ -11374,17 +11546,14 @@ export class UserModule {}
   "server/src/user/user.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlDefaultAuthGuard from \\"../auth/gqlDefaultAuth.guard\\";
+import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { UserResolverBase } from \\"./base/user.resolver.base\\";
 import { User } from \\"./base/User\\";
 import { UserService } from \\"./user.service\\";
 
 @graphql.Resolver(() => User)
-@common.UseGuards(
-  gqlDefaultAuthGuard.GqlDefaultAuthGuard,
-  gqlACGuard.GqlACGuard
-)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class UserResolver extends UserResolverBase {
   constructor(
     protected readonly service: UserService,

@@ -20,6 +20,8 @@ import useNavigationTabs from "../Layout/UseNavigationTabs";
 import InnerTabLink from "../Layout/InnerTabLink";
 import { ApiTokenList } from "../Settings/ApiTokenList";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
+import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms";
+import ApplicationAuthSettingForm from "./ApplicationAuthSettingForm";
 
 type Props = {
   match: match<{ application: string }>;
@@ -61,6 +63,16 @@ function ApplicationHome({ match }: Props) {
           <div>
             <InnerTabLink to={`/${applicationId}/update`} icon="settings">
               App Settings
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink to={`/${applicationId}/db/update`} icon="settings">
+              DB Settings
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink to={`/${applicationId}/auth/update`} icon="settings">
+              Auth Settings
             </InnerTabLink>
           </div>
           <div>
@@ -117,6 +129,14 @@ function ApplicationHome({ match }: Props) {
                 <RouteWithAnalytics
                   path="/:application/update"
                   component={ApplicationForm}
+                />
+                <RouteWithAnalytics
+                  path="/:application/db/update"
+                  component={ApplicationDatabaseSettingsForms}
+                />
+                <RouteWithAnalytics
+                  path="/:application/auth/update"
+                  component={ApplicationAuthSettingForm}
                 />
               </Switch>
             </>

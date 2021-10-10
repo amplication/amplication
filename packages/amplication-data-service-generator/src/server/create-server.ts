@@ -14,6 +14,7 @@ import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
 import { BASE_DIRECTORY } from "./constants";
+import { createAuthModules } from "./auth/createAuth";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -38,7 +39,15 @@ export async function createServerModules(
 
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos);
-  const resourcesModules = await createResourcesModules(entities, dtos, logger);
+  const resourcesModules = await createResourcesModules(
+    appInfo,
+    entities,
+    dtos,
+    logger
+  );
+
+  logger.info("Creating Auth module...");
+  const authModules = await createAuthModules(appInfo);
 
   logger.info("Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
@@ -55,6 +64,7 @@ export async function createServerModules(
     swaggerModule,
     appModule,
     seedModule,
+    ...authModules,
   ];
 
   logger.info("Formatting code...");

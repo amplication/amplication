@@ -1,53 +1,39 @@
-import { TextField } from "@amplication/design-system";
+import { SelectField, Snackbar } from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { Form, Formik } from "formik";
 import React, { useCallback, useContext } from "react";
+import { match } from "react-router-dom";
+import { useTracking } from "react-tracking";
 import * as models from "../models";
-import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import "./ApplicationAuthSettingForm.scss";
 
 type Props = {
-  applicationId: string;
+  match: match<{ application: string }>;
 };
-
 type TData = {
   updateAppSettings: models.AppSettings;
 };
 
 const FORM_SCHEMA = {
-  required: ["dbHost", "dbUser", "dbPassword", "dbPort"],
+  required: ["authProvider"],
   properties: {
-    dbHost: {
+    authProvider: {
       type: "string",
       minLength: 2,
-    },
-    dbUser: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPassword: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPort: {
-      type: "integer",
-      minLength: 4,
-      maxLength: 5,
-    },
-    dbName: {
-      type: "string",
     },
   },
 };
 
-const CLASS_NAME = "application-settings-form";
+const CLASS_NAME = "application-auth-settings-form";
 
-function ApplicationSettingsForm({ applicationId }: Props) {
+function ApplicationAuthSettingForm({ match }: Props) {
+  const applicationId = match.params.application;
+
   const { data, error } = useQuery<{
     appSettings: models.AppSettings;
   }>(GET_APP_SETTINGS, {
@@ -55,6 +41,7 @@ function ApplicationSettingsForm({ applicationId }: Props) {
       id: applicationId,
     },
   });
+
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const { trackEvent } = useTracking();
@@ -70,7 +57,7 @@ function ApplicationSettingsForm({ applicationId }: Props) {
 
   const handleSubmit = useCallback(
     (data: models.AppSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser } = data;
+      const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
       trackEvent({
         eventName: "updateAppSettings",
       });
@@ -82,6 +69,7 @@ function ApplicationSettingsForm({ applicationId }: Props) {
             dbPassword,
             dbPort,
             dbUser,
+            authProvider,
           },
           appId: applicationId,
         },
@@ -91,6 +79,7 @@ function ApplicationSettingsForm({ applicationId }: Props) {
   );
 
   const errorMessage = formatError(error || updateError);
+
   return (
     <div className={CLASS_NAME}>
       {data?.appSettings && (
@@ -105,32 +94,26 @@ function ApplicationSettingsForm({ applicationId }: Props) {
           {(formik) => {
             return (
               <Form>
-                <h3>DB Settings</h3>
-                <p>
-                  All the below settings will appear in clear text in the
-                  generated app. <br />
-                  It should only be used for the development environment
-                  variables and should not include sensitive data.
-                </p>
                 <FormikAutoSave debounceMS={2000} />
-                <TextField name="dbHost" autoComplete="off" label="Host" />
-                <TextField
-                  name="dbName"
-                  autoComplete="off"
-                  label="Database Name"
-                />
-                <TextField
-                  name="dbPort"
-                  type="number"
-                  autoComplete="off"
-                  label="Port"
-                />
-                <TextField name="dbUser" autoComplete="off" label="User" />
-                <TextField
-                  name="dbPassword"
-                  autoComplete="off"
-                  label="Password"
-                />
+                <h3>Authentication Providers</h3>
+
+                <p>
+                  Select the authentication method to be used in the generated
+                  app.
+                </p>
+
+                <div className={`${CLASS_NAME}__space`}>
+                  <SelectField
+                    label="Authentication provider"
+                    name="authProvider"
+                    options={Object.keys(models.EnumAuthProviderType).map(
+                      (authProvider) => ({
+                        label: authProvider,
+                        value: authProvider,
+                      })
+                    )}
+                  />
+                </div>
               </Form>
             );
           }}
@@ -141,7 +124,7 @@ function ApplicationSettingsForm({ applicationId }: Props) {
   );
 }
 
-export default ApplicationSettingsForm;
+export default ApplicationAuthSettingForm;
 
 const UPDATE_APP_SETTINGS = gql`
   mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
@@ -152,6 +135,7 @@ const UPDATE_APP_SETTINGS = gql`
       dbUser
       dbPassword
       dbPort
+      authProvider
     }
   }
 `;
@@ -165,6 +149,7 @@ const GET_APP_SETTINGS = gql`
       dbUser
       dbPassword
       dbPort
+      authProvider
     }
   }
 `;

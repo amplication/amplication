@@ -112,7 +112,10 @@ const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
 
 const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
 
-export function createInitialStepData(version: string, message: string) {
+export function createInitialStepData(
+  version: string,
+  message: string
+): Prisma.ActionStepCreateWithoutActionInput {
   return {
     message: 'Adding task to queue',
     name: 'ADD_TO_QUEUE',
@@ -166,6 +169,10 @@ export class BuildService {
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
   }
 
+  /**
+   * create function creates a new build for given app in the DB
+   * @returns the build object that return after prisma.build.create
+   */
   async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
     const appId = args.data.app.connect.id;
 
@@ -174,7 +181,7 @@ export class BuildService {
         id: args.data.createdBy.connect.id
       }
     });
-
+    //TODO
     /**@todo: set version based on release when applicable */
     const commitId = args.data.commit.connect.id;
     const version = commitId.slice(commitId.length - 8);
@@ -188,7 +195,6 @@ export class BuildService {
       data: {
         ...args.data,
         version,
-
         createdAt: new Date(),
         blockVersions: {
           connect: []
@@ -335,7 +341,11 @@ export class BuildService {
 
     return EnumBuildStatus.Running;
   }
-
+  /**
+   *
+   * Give the ReadableStream of the build zip file
+   * @returns the zip file of the build
+   */
   async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
     const build = await this.findOne(args);
     const { id } = args.where;
@@ -364,7 +374,8 @@ export class BuildService {
 
   /**
    * Generates code for given build and saves it to storage
-   * @param build build to generate code for
+   * @DSG The connection between the server and the DSG (Data Service Generator)
+   * @param build the build object to generate code for
    */
   private async generate(build: Build, user: User): Promise<string> {
     return this.actionService.run(
@@ -372,6 +383,7 @@ export class BuildService {
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       async step => {
+        //#region getting all the app data
         const entities = await this.getOrderedEntities(build.id);
         const roles = await this.getAppRoles(build);
         const app = await this.appService.app({ where: { id: build.appId } });
@@ -381,6 +393,7 @@ export class BuildService {
           },
           user
         );
+        //#endregion
         const [
           dataServiceGeneratorLogger,
           logPromises
@@ -410,6 +423,7 @@ export class BuildService {
 
         await this.actionService.logInfo(step, ACTION_ZIP_LOG);
 
+        // the path to the tar.gz artifact
         const tarballURL = await this.save(build, modules);
 
         await this.saveToGitHub(build, modules);
@@ -670,7 +684,11 @@ ${url}
     await this.actionService.log(step, level, message, meta);
   }
 
-  //this function must always return the entities in the same order to prevent unintended code changes
+  /**
+   *
+   * @info this function must always return the entities in the same order to prevent unintended code changes
+   * @returns all the entities for build order by date of creation
+   */
   private async getOrderedEntities(
     buildId: string
   ): Promise<DataServiceGenerator.Entity[]> {

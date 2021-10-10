@@ -16,6 +16,7 @@ import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import omit from "lodash.omit";
 import generateTestDataService from "../scripts/generate-test-data-service";
+import appInfo from "../src/tests/appInfo";
 
 // Use when running the E2E multiple times to shorten build time
 const { NO_DELETE_IMAGE } = process.env;
@@ -62,7 +63,7 @@ describe("Data Service Generator", () => {
     await fs.promises.mkdir(directory);
 
     // Generate the test data service
-    await generateTestDataService(directory);
+    await generateTestDataService(directory, appInfo);
 
     port = await getPort();
     const dbPort = await getPort();
@@ -110,6 +111,8 @@ describe("Data Service Generator", () => {
         // See: https://www.docker.com/blog/faster-builds-in-compose-thanks-to-buildkit-support/
         COMPOSE_DOCKER_CLI_BUILD: "1",
         DOCKER_BUILDKIT: "1",
+        JWT_SECRET_KEY: "Change_ME!!!",
+        JWT_EXPIRATION: "2d",
       },
     };
 

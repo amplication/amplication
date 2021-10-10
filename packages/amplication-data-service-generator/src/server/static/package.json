@@ -22,6 +22,7 @@
     "@nestjs/config": "0.6.3",
     "@nestjs/core": "7.6.18",
     "@nestjs/graphql": "7.9.1",
+    "@nestjs/jwt": "8.0.0",
     "@nestjs/passport": "7.1.6",
     "@nestjs/platform-express": "7.6.18",
     "@nestjs/serve-static": "2.2.2",
@@ -40,6 +41,7 @@
     "npm-run-all": "4.1.5",
     "passport": "0.4.1",
     "passport-http": "0.3.0",
+    "passport-jwt": "4.0.0",
     "reflect-metadata": "0.1.13",
     "swagger-ui-express": "4.1.6",
     "ts-node": "9.1.1"
@@ -52,6 +54,7 @@
     "@types/jest": "26.0.19",
     "@types/normalize-path": "3.0.0",
     "@types/passport-http": "0.3.9",
+    "@types/passport-jwt": "3.0.6",
     "@types/supertest": "2.0.11",
     "jest": "27.0.6",
     "prisma": "2.19.0",

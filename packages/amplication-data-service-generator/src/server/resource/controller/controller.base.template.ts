@@ -49,6 +49,8 @@ declare const CREATE_DATA_MAPPING: CREATE_INPUT;
 declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 declare const SELECT: Select;
 
+//@ts-ignore
+@swagger.SWAGGER_API_AUTH_FUNCTION()
 export class CONTROLLER_BASE {
   constructor(
     protected readonly service: SERVICE,

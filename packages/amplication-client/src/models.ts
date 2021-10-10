@@ -2,6 +2,10 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -202,6 +206,7 @@ export type AppSettings = IBlock & {
   dbUser: Scalars["String"];
   dbPassword: Scalars["String"];
   dbPort: Scalars["Int"];
+  authProvider: EnumAuthProviderType;
 };
 
 export type AppSettingsUpdateInput = {
@@ -212,6 +217,7 @@ export type AppSettingsUpdateInput = {
   dbUser: Scalars["String"];
   dbPassword: Scalars["String"];
   dbPort: Scalars["Int"];
+  authProvider: EnumAuthProviderType;
 };
 
 export type AppUpdateInput = {
@@ -691,8 +697,8 @@ export type EntityFieldCreateInput = {
   displayName: Scalars["String"];
   dataType: EnumDataType;
   properties: Scalars["JSONObject"];
-  unique: Scalars["Boolean"];
   required: Scalars["Boolean"];
+  unique: Scalars["Boolean"];
   searchable: Scalars["Boolean"];
   description: Scalars["String"];
   entity: WhereParentIdInput;
@@ -987,6 +993,11 @@ export enum EnumActionStepStatus {
   Running = "Running",
   Failed = "Failed",
   Success = "Success",
+}
+
+export enum EnumAuthProviderType {
+  Http = "Http",
+  Jwt = "Jwt",
 }
 
 export enum EnumBlockType {
