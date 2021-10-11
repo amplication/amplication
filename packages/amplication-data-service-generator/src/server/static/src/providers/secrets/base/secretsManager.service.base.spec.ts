@@ -24,6 +24,8 @@ describe("Testing the secrets manager base class", () => {
     //ACT
     expect(secretsManagerServiceBase.getSecret(SECRET_KEY)).toBeNull();
   });
+
+  //TODO if didn't get any key
   //   test("Secrets manager throw error if dont get key", () => {
   //     //@ts-ignore
   //     expect(secretsManagerServiceBase.getSecret()).toThrowError();
