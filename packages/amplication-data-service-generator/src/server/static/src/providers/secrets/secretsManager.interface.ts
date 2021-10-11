@@ -1,3 +1,3 @@
 export interface ISecretsManager {
-  getSecret: (key: string) => any;
+  getSecret: (key: string) => any | null;
 }

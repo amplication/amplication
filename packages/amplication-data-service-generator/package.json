@@ -69,6 +69,7 @@
     "fast-glob": "3.2.7",
     "formik": "2.2.9",
     "graphql-type-json": "0.3.2",
+    "jest-mock-extended": "^2.0.4",
     "lodash.countby": "4.6.0",
     "lodash.flatten": "4.4.0",
     "lodash.get": "4.4.2",
