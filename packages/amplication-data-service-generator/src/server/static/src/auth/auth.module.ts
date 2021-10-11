@@ -26,10 +26,20 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../constants";
       useFactory: async (
         secretsService: SecretsManagerService,
         configService: ConfigService
-      ) => ({
-        secret: secretsService.getSecret<string>(JWT_SECRET_KEY),
-        signOptions: { expiresIn: configService.get(JWT_EXPIRATION) },
-      }),
+      ) => {
+        const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
+        const expiresIn = configService.get(JWT_EXPIRATION);
+        if (!secret) {
+          throw new Error("Didn't get a valid jwt secret");
+        }
+        if (!expiresIn) {
+          throw new Error("Jwt expire in value is not valid");
+        }
+        return {
+          secret: secret,
+          signOptions: { expiresIn },
+        };
+      },
     }),
   ],
   providers: [
