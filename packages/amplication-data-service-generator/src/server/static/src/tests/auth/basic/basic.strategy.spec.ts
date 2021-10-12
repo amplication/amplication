@@ -7,15 +7,16 @@ import { TEST_PASSWORD, TEST_USER } from "../constants";
 describe("Testing the basicStrategy.validate()", () => {
   const authService = mock<AuthService>();
   const basicStrategy = new BasicStrategy(authService);
-
   beforeEach(() => {
     authService.validateUser.mockClear();
   });
-  it("should return the user", async () => {
+  beforeAll(() => {
     //ARRANGE
     authService.validateUser
       .calledWith(TEST_USER.username, TEST_PASSWORD)
       .mockReturnValue(Promise.resolve(TEST_USER));
+  });
+  it("should return the user", async () => {
     //ACT
     const result = await basicStrategy.validate(
       TEST_USER.username,

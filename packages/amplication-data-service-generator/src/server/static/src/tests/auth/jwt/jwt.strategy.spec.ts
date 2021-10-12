@@ -5,8 +5,9 @@ import { SecretsManagerService } from "../../../providers/secrets/secretsManager
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from "../../../user/user.service";
+import { TEST_USER } from "../constants";
 
-describe("Testing the JWT strategy class", () => {
+describe("Testing the jwtStrategy.validate()", () => {
   const JWT_SECRET_KEY = "JWT_SECRET_KEY";
   const secretsService = mock<SecretsManagerService>();
   secretsService.getSecret.mockReturnValue(Promise.resolve(JWT_SECRET_KEY));
@@ -15,17 +16,15 @@ describe("Testing the JWT strategy class", () => {
   beforeEach(() => {
     userService.findOne.mockClear();
   });
-  test("When there is no user throw error", async () => {
+  it("should throw UnauthorizedException where there is no user", async () => {
     //ARRANGE
     userService.findOne.mockReturnValue(Promise.resolve(null));
-
     //ACT
-    //TODO finish the test
-    expect(
-      await jwtStrategy.validate({
-        username: "ofek",
-        roles: ["User"],
-      })
-    ).toThrowError(UnauthorizedException);
+    const result = jwtStrategy.validate({
+      username: TEST_USER.username,
+      roles: TEST_USER.roles,
+    });
+    //ASSERT
+    return expect(result).rejects.toThrowError(UnauthorizedException);
   });
 });
