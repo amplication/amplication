@@ -154,8 +154,8 @@
     "modulePathIgnorePatterns": [
       "dist",
       "generated",
-      "src/server/static/src/**/*",
-      "src/admin/static/src/**/*"
+      "src/server/static",
+      "src/admin/static"
     ]
   }
 }
