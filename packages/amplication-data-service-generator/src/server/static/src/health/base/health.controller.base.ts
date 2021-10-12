@@ -12,11 +12,8 @@ export class HealthControllerBase {
   async healthReady(@Res() response: Response): Promise<Response<void>> {
     const dbConnection = await this.healthService.isDbReady();
     if (!dbConnection) {
-      return response.status(HttpStatus.SERVICE_UNAVAILABLE).json({
-        status: "SERVICE UNAVAILABLE",
-        message: "No connection to db",
-      });
+      return response.status(HttpStatus.NOT_FOUND).send();
     }
-    return response.status(HttpStatus.OK).send();
+    return response.status(HttpStatus.NO_CONTENT).send();
   }
 }
