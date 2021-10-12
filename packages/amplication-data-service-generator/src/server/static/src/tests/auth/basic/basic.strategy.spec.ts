@@ -1,26 +1,35 @@
+import { UnauthorizedException } from "@nestjs/common";
 import { mock } from "jest-mock-extended";
 import { AuthService } from "../../../auth/auth.service";
 import { BasicStrategy } from "../../../auth/basic/basic.strategy";
-import { UserInfo } from "../../../auth/UserInfo";
+import { TEST_PASSWORD, TEST_USER } from "../constants";
 
-describe("Testing the basic strategy", () => {
+describe("Testing the basicStrategy.validate()", () => {
   const authService = mock<AuthService>();
   const basicStrategy = new BasicStrategy(authService);
-  const user: UserInfo = { roles: ["User"], username: "ofek" };
+
   beforeEach(() => {
     authService.validateUser.mockClear();
   });
   it("should return the user", async () => {
     //ARRANGE
-    authService.validateUser.mockReturnValue(Promise.resolve(user));
+    authService.validateUser
+      .calledWith(TEST_USER.username, TEST_PASSWORD)
+      .mockReturnValue(Promise.resolve(TEST_USER));
     //ACT
-    expect(await basicStrategy.validate(user.username, "gabay")).toBe(user);
+    const result = await basicStrategy.validate(
+      TEST_USER.username,
+      TEST_PASSWORD
+    );
+    //ASSERT
+    expect(result).toBe(TEST_USER);
   });
-  //TODO finish the test
-  //   it("should throw error", async () => {
-  //     //ARRANGE
-  //     authService.validateUser.mockReturnValue(Promise.resolve(null));
-  //     //ACT
-  //     expect(await basicStrategy.validate("noUsername", "gabay")).toThrow();
-  //   });
+  it("should throw error if there is not valid user", async () => {
+    //ARRANGE
+    authService.validateUser.mockReturnValue(Promise.resolve(null));
+    //ACT
+    const result = basicStrategy.validate("noUsername", TEST_PASSWORD);
+    //ASSERT
+    return expect(result).rejects.toThrowError(UnauthorizedException);
+  });
 });
