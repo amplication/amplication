@@ -9214,26 +9214,30 @@ describe(\\"Testing the secrets manager base class\\", () => {
   beforeEach(() => {
     configService.get.mockClear();
   });
-  test(\\"Secrets manager need to return value from env\\", async () => {
+  it(\\"should return value from env\\", async () => {
     //ARRANGE
     configService.get.mockReturnValue(SECRET_VALUE);
     //ACT
-    expect(await secretsManagerServiceBase.getSecret(SECRET_KEY)).toBe(
-      SECRET_VALUE
-    );
+    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    //ASSERT
+    expect(result).toBe(SECRET_VALUE);
   });
-  test(\\"Secrets manager need to return null for unknown keys\\", async () => {
+  it(\\"should return null for unknown keys\\", async () => {
     //ARRANGE
     configService.get.mockReturnValue(undefined);
     //ACT
-    expect(await secretsManagerServiceBase.getSecret(SECRET_KEY)).toBeNull();
+    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    //ASSERT
+    expect(result).toBeNull();
   });
-
-  //TODO if didn't get any key
-  //   test(\\"Secrets manager throw error if dont get key\\", () => {
-  //     //@ts-ignore
-  //     expect(secretsManagerServiceBase.getSecret()).toThrowError();
-  //   });
+  it(\\"should throw error if dont get key\\", () => {
+    //@ts-ignore
+    return expect(secretsManagerServiceBase.getSecret()).rejects.toThrow();
+  });
+  it(\\"should throw an exeption if getting null key\\", () => {
+    //@ts-ignore
+    return expect(secretsManagerServiceBase.getSecret(null)).rejects.toThrow();
+  });
 });
 ",
   "server/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from \\"@nestjs/config\\";
