@@ -6146,18 +6146,15 @@ export class HealthControllerBase {
   constructor(protected readonly healthService: HealthService) {}
   @Get(\\"live\\")
   healthLive(@Res() response: Response): Response<void> {
-    return response.status(HttpStatus.OK).send();
+    return response.status(HttpStatus.NO_CONTENT).send();
   }
   @Get(\\"ready\\")
   async healthReady(@Res() response: Response): Promise<Response<void>> {
     const dbConnection = await this.healthService.isDbReady();
     if (!dbConnection) {
-      return response.status(HttpStatus.SERVICE_UNAVAILABLE).json({
-        status: \\"SERVICE UNAVAILABLE\\",
-        message: \\"No connection to db\\",
-      });
+      return response.status(HttpStatus.NOT_FOUND).send();
     }
-    return response.status(HttpStatus.OK).send();
+    return response.status(HttpStatus.NO_CONTENT).send();
   }
 }
 ",
@@ -6181,7 +6178,7 @@ export class HealthServiceBase {
 import { HealthControllerBase } from \\"./base/health.controller.base\\";
 import { HealthService } from \\"./health.service\\";
 
-@Controller(\\"health\\")
+@Controller(\\"_health\\")
 export class HealthController extends HealthControllerBase {
   constructor(protected readonly healthService: HealthService) {
     super(healthService);
