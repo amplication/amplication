@@ -14,12 +14,6 @@ const MODULE_PATH = `${SRC_DIRECTORY}/swagger.ts`;
 
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
-export const INSTRUCTIONS = `## Congratulations! Your application is ready.
-
-Please note that all endpoints are secured with HTTP basic authentication.
-By default, your app comes with one user with the username "admin" and password "admin".
-Learn more in [our docs](https://docs.amplication.com)`;
-
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
 export async function createSwagger(appInfo: AppInfo): Promise<Module> {
@@ -48,7 +42,31 @@ export async function createSwagger(appInfo: AppInfo): Promise<Module> {
 }
 
 export async function createDescription(appInfo: AppInfo): Promise<string> {
-  return [appInfo.description || "", INSTRUCTIONS].join(INSTRUCTIONS_BUFFER);
+  return [
+    appInfo.description || "",
+    getInstructions(appInfo.settings.authProvider),
+  ].join(INSTRUCTIONS_BUFFER);
+}
+
+function getInstructionsAuthentication(
+  authProvider: EnumAuthProviderType
+): string {
+  switch (authProvider) {
+    case EnumAuthProviderType.Http:
+      return "HTTP Basic";
+    case EnumAuthProviderType.Jwt:
+      return "JWT Bearer";
+  }
+}
+
+export function getInstructions(authProvider: EnumAuthProviderType): string {
+  return `## Congratulations! Your application is ready.
+  
+Please note that all endpoints are secured with ${getInstructionsAuthentication(
+    authProvider
+  )} authentication.
+By default, your app comes with one user with the username "admin" and password "admin".
+Learn more in [our docs](https://docs.amplication.com)`;
 }
 
 export function getSwaggerAuthDecorationIdForClass(
