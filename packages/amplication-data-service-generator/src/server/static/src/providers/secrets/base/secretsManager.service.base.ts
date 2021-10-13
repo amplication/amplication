@@ -1,9 +1,16 @@
 import { ConfigService } from "@nestjs/config";
 
-export class SecretsManagerServiceBase {
+export interface ISecretsManager {
+  getSecret: (key: string) => Promise<any | null>;
+}
+
+export class SecretsManagerServiceBase implements ISecretsManager {
   constructor(protected readonly configService: ConfigService) {}
-  getSecret<T>(key: string): T {
+  async getSecret<T>(key: string): Promise<T | null> {
     const value = this.configService.get(key);
-    return value;
+    if (value) {
+      return value;
+    }
+    return null;
   }
 }
