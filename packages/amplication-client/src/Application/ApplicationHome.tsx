@@ -9,7 +9,6 @@ import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import { CircleBadge } from "@amplication/design-system";
 import ApplicationForm from "./ApplicationForm";
-import SyncWithGithubPage from "../Settings/SyncWithGithubPage";
 import "./ApplicationHome.scss";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 import EntitiesTile from "./EntitiesTile";
@@ -22,6 +21,7 @@ import { ApiTokenList } from "../Settings/ApiTokenList";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms";
 import ApplicationAuthSettingForm from "./ApplicationAuthSettingForm";
+import SyncWithGithubPage from "./github/SyncWithGithubPage";
 
 type Props = {
   match: match<{ application: string }>;

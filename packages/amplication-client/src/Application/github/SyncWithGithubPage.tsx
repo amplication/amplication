@@ -4,11 +4,11 @@ import { Snackbar } from "@rmwc/snackbar";
 import { Icon } from "@rmwc/icon";
 
 import { useQuery } from "@apollo/client";
-import { formatError } from "../util/error";
-import * as models from "../models";
-import { GET_APPLICATION } from "../Application/ApplicationHome";
+import * as models from "../../models";
 import "./SyncWithGithubPage.scss";
 import AuthAppWithGithub from "./AuthAppWithGithub";
+import { GET_APPLICATION } from "../ApplicationHome";
+import { formatError } from "../../util/error";
 
 const CLASS_NAME = "sync-with-github-page";
 

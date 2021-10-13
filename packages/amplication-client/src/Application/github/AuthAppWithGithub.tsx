@@ -1,23 +1,22 @@
-import React, { useCallback, useRef, useState } from "react";
+import {
+  ConfirmationDialog,
+  Dialog,
+  EnumPanelStyle,
+  Panel,
+  Toggle,
+} from "@amplication/design-system";
+import { gql, useMutation } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
 import { Icon } from "@rmwc/icon";
-import { isEmpty } from "lodash";
 import { Snackbar } from "@rmwc/snackbar";
-import { gql, useMutation } from "@apollo/client";
-import { formatError } from "../util/error";
-import * as models from "../models";
-import GithubRepos from "./GithubRepos";
-import GithubSyncDetails from "./GithubSyncDetails";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { useTracking } from "../util/analytics";
-
-import {
-  Panel,
-  EnumPanelStyle,
-  Toggle,
-  Dialog,
-  ConfirmationDialog,
-} from "@amplication/design-system";
+import { isEmpty } from "lodash";
+import React, { useCallback, useRef, useState } from "react";
+import { Button, EnumButtonStyle } from "../../Components/Button";
+import * as models from "../../models";
+import GithubRepos from "../../Settings/GithubRepos";
+import GithubSyncDetails from "../../Settings/GithubSyncDetails";
+import { useTracking } from "../../util/analytics";
+import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
 
 type DType = {
@@ -48,7 +47,6 @@ function AuthAppWithGithub({ app, onDone }: Props) {
     START_AUTH_APP_WITH_GITHUB,
     {
       onCompleted: (data) => {
-
         openSignInWindow(
           data.startAuthorizeAppWithGithub.url,
           "auth with github"
@@ -181,6 +179,13 @@ function AuthAppWithGithub({ app, onDone }: Props) {
                   </div>
 
                   <div className={`${CLASS_NAME}__action`}>
+                    {/* {TODO edit style} */}
+                    <Button
+                      buttonStyle={EnumButtonStyle.Primary}
+                      // onClick={handleSelectRepoDialogOpen}
+                    >
+                      Create Repository
+                    </Button>
                     <Button
                       buttonStyle={EnumButtonStyle.Primary}
                       onClick={handleSelectRepoDialogOpen}
