@@ -1,12 +1,13 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { mock } from "jest-mock-extended";
 import { AuthService } from "../../../auth/auth.service";
-import { BasicStrategy } from "../../../auth/basic/basic.strategy";
-import { TEST_PASSWORD, TEST_USER } from "../constants";
+import { BasicStrategyBase } from "../../../auth/basic/base/basic.stategy.base";
+import { TEST_USER } from "../constants";
 
-describe("Testing the basicStrategy.validate()", () => {
+describe("Testing the basicStrategyBase.validate()", () => {
+  const TEST_PASSWORD = "gabay";
   const authService = mock<AuthService>();
-  const basicStrategy = new BasicStrategy(authService);
+  const basicStrategy = new BasicStrategyBase(authService);
   beforeEach(() => {
     authService.validateUser.mockClear();
   });
