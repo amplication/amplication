@@ -2512,6 +2512,7 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
+import { HealthModule } from \\"./health/health.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
@@ -2529,6 +2530,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     EmptyModule,
     ACLModule,
     AuthModule,
+    HealthModule,
     SecretsManagerModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -6134,6 +6136,77 @@ export class NotFoundException extends common.NotFoundException {
   statusCode!: number;
   @ApiProperty()
   message!: string;
+}
+",
+  "server/src/health/base/health.controller.base.ts": "import { Get, HttpStatus, Res } from \\"@nestjs/common\\";
+import { Response } from \\"express\\";
+import { HealthService } from \\"../health.service\\";
+
+export class HealthControllerBase {
+  constructor(protected readonly healthService: HealthService) {}
+  @Get(\\"live\\")
+  healthLive(@Res() response: Response): Response<void> {
+    return response.status(HttpStatus.NO_CONTENT).send();
+  }
+  @Get(\\"ready\\")
+  async healthReady(@Res() response: Response): Promise<Response<void>> {
+    const dbConnection = await this.healthService.isDbReady();
+    if (!dbConnection) {
+      return response.status(HttpStatus.NOT_FOUND).send();
+    }
+    return response.status(HttpStatus.NO_CONTENT).send();
+  }
+}
+",
+  "server/src/health/base/health.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+
+@Injectable()
+export class HealthServiceBase {
+  constructor(protected readonly prisma: PrismaService) {}
+  async isDbReady(): Promise<boolean> {
+    try {
+      await this.prisma.$queryRaw(\`SELECT 1\`);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+}
+",
+  "server/src/health/health.controller.ts": "import { Controller } from \\"@nestjs/common\\";
+import { HealthControllerBase } from \\"./base/health.controller.base\\";
+import { HealthService } from \\"./health.service\\";
+
+@Controller(\\"_health\\")
+export class HealthController extends HealthControllerBase {
+  constructor(protected readonly healthService: HealthService) {
+    super(healthService);
+  }
+}
+",
+  "server/src/health/health.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { HealthController } from \\"./health.controller\\";
+import { HealthService } from \\"./health.service\\";
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [HealthController],
+  providers: [HealthService],
+  exports: [HealthService],
+})
+export class HealthModule {}
+",
+  "server/src/health/health.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { HealthServiceBase } from \\"./base/health.service.base\\";
+
+@Injectable()
+export class HealthService extends HealthServiceBase {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
+  }
 }
 ",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
