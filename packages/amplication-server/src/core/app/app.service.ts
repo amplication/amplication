@@ -662,9 +662,7 @@ export class AppService {
       );
     }
 
-    return await this.githubService.listRepoForAuthenticatedUser(
-      app.githubToken
-    );
+    return await this.githubService.getUserRepos(app.githubToken);
   }
 
   /**

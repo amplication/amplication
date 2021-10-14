@@ -12,6 +12,8 @@ import { OAuthApp } from '@octokit/oauth-app';
 // eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
 import { IGitClient } from '../git/contracts/IGitClient';
+import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
+import { GitRepo } from '../git/dto/objects/GitRepo';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -31,6 +33,28 @@ export class GithubService implements IGitClient {
     private readonly configService: ConfigService,
     private readonly googleSecretManagerService: GoogleSecretsManagerService
   ) {}
+  createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
+    throw new Error('Method not implemented.');
+  }
+  async getUserRepos(token: string): Promise<GitRepo[]> {
+    const octokit = new Octokit({
+      auth: token
+    });
+
+    const results = await octokit.repos.listForAuthenticatedUser({
+      type: 'all',
+      sort: 'updated',
+      direction: 'desc'
+    });
+
+    return results.data.map(repo => ({
+      name: repo.name,
+      url: repo.html_url,
+      private: repo.private,
+      fullName: repo.full_name,
+      admin: repo.permissions.admin
+    }));
+  }
 
   async listRepoForAuthenticatedUser(token: string): Promise<GithubRepo[]> {
     const octokit = new Octokit({
