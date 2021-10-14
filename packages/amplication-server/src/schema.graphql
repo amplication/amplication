@@ -1146,6 +1146,7 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
+  createRepoInOrg(appId: String!, sourceControlService: EnumSourceControlService!, input: RepoCreateInput!): GitRepo!
 }
 
 type PendingChange {
@@ -1226,6 +1227,10 @@ type Query {
 enum QueryMode {
   Default
   Insensitive
+}
+
+input RepoCreateInput {
+  name: String!
 }
 
 enum Role {
