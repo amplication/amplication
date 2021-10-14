@@ -18,6 +18,7 @@ import GithubSyncDetails from "../../Settings/GithubSyncDetails";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
+import CreateRepoDialogContent from "./dialogs/CreateRepoDialogContent";
 
 type DType = {
   startAuthorizeAppWithGithub: models.AuthorizeAppWithGithubResult;
@@ -41,6 +42,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [popupFailed, setPopupFailed] = useState(false);
+  const [createRepoOpen, setCreateRepoOpen] = useState(false);
   const { trackEvent } = useTracking();
 
   const [authWithGithub, { loading, error }] = useMutation<DType>(
@@ -149,6 +151,20 @@ function AuthAppWithGithub({ app, onDone }: Props) {
         />
       </Dialog>
       <Dialog
+        className="create-repo-dialog"
+        isOpen={createRepoOpen}
+        title="Create GitHub Repository"
+        onDismiss={() => {
+          setCreateRepoOpen(false);
+        }}
+      >
+        <CreateRepoDialogContent
+          appId={app.id}
+          sourceControlService={"Github"}
+          setOpen={setCreateRepoOpen}
+        />
+      </Dialog>
+      <Dialog
         className="popup-failed-dialog"
         isOpen={popupFailed}
         title="Popup failed to load"
@@ -182,7 +198,9 @@ function AuthAppWithGithub({ app, onDone }: Props) {
                     {/* {TODO edit style} */}
                     <Button
                       buttonStyle={EnumButtonStyle.Primary}
-                      // onClick={handleSelectRepoDialogOpen}
+                      onClick={() => {
+                        setCreateRepoOpen(true);
+                      }}
                     >
                       Create Repository
                     </Button>
