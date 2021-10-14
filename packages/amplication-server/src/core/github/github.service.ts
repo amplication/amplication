@@ -33,8 +33,42 @@ export class GithubService implements IGitClient {
     private readonly configService: ConfigService,
     private readonly googleSecretManagerService: GoogleSecretsManagerService
   ) {}
-  createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
-    throw new Error('Method not implemented.');
+  async isRepoExist(token: string, name: string): Promise<boolean> {
+    const repos = await this.getUserRepos(token);
+    if (repos.map(repo => repo.name).includes(name)) {
+      return true;
+    }
+    return false;
+  }
+  async createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
+    const { input, token } = args;
+    const octokit = new Octokit({
+      auth: token
+    });
+    if (await this.isRepoExist(token, input.name)) {
+      throw new Error('Repo already exist');
+    }
+    return octokit
+      .request('POST /user/repos', {
+        name: input.name,
+        private: true,
+        // eslint-disable-next-line
+        auto_init: true,
+        // eslint-disable-next-line
+        gitignore_template: 'Node'
+      })
+      .then(response => {
+        const { data: repo } = response;
+        //TODO add logger
+        // console.log('Repository %s created', repo.full_name);
+        return {
+          name: repo.name,
+          url: repo.html_url,
+          private: repo.private,
+          fullName: repo.full_name,
+          admin: repo.permissions.admin
+        };
+      });
   }
   async getUserRepos(token: string): Promise<GitRepo[]> {
     const octokit = new Octokit({
