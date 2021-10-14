@@ -8,9 +8,4 @@ export class RepoCreateInput {
     nullable: false
   })
   name!: string;
-
-  @Field(() => String, {
-    nullable: false
-  })
-  org!: string;
 }

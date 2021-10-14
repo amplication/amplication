@@ -23,15 +23,15 @@ export class GitService {
   }
 
   async createRepoInOrg(args: CreateRepoArgs): Promise<GitRepo> {
-    const app = await this.appService.app({ where: { id: args.appId } });
+    const { input, appId, sourceControlService } = args;
+    const app = await this.appService.app({ where: { id: appId } });
     const token = app.githubToken;
-    const { sourceControlService } = args;
+
     switch (sourceControlService) {
       case EnumSourceControlService.Github:
-        return this.githubService.createRepo({ token, input: args.input });
-
+        return this.githubService.createRepo({ token, input: input });
       default:
-        break;
+        throw new Error("didn't get a valid source control");
     }
   }
 }

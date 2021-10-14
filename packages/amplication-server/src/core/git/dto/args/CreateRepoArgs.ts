@@ -5,5 +5,5 @@ import { BaseGitArgs } from './BaseGitArgs';
 @ArgsType()
 export class CreateRepoArgs extends BaseGitArgs {
   @Field(() => RepoCreateInput, { nullable: false })
-  input;
+  input: RepoCreateInput;
 }
