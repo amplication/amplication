@@ -88,7 +88,8 @@
     "lint": "eslint --cache .",
     "lint:fix": "npm run lint -- --fix",
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
-    "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
+    "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\"",
+    "storybook": "npx start-storybook"
   },
   "proxy": "http://localhost:3000",
   "eslintConfig": {
@@ -129,6 +130,12 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^6.3.12",
+    "@storybook/addon-essentials": "^6.3.12",
+    "@storybook/addon-links": "^6.3.12",
+    "@storybook/node-logger": "^6.3.12",
+    "@storybook/preset-create-react-app": "^3.2.0",
+    "@storybook/react": "^6.3.12",
     "@types/ajv-errors": "1.0.3",
     "@types/lodash.debounce": "4.0.6",
     "@types/react-beautiful-dnd": "13.1.1",
