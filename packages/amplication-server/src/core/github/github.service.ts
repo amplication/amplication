@@ -11,6 +11,7 @@ import { OAuthApp } from '@octokit/oauth-app';
 // We currently ignore it and should look deeper into the root cause
 // eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
+import { IGitClient } from '../git/contracts/IGitClient';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -25,7 +26,7 @@ export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encodin
 type DirectoryItem = components['schemas']['content-directory'][number];
 
 @Injectable()
-export class GithubService {
+export class GithubService implements IGitClient {
   constructor(
     private readonly configService: ConfigService,
     private readonly googleSecretManagerService: GoogleSecretsManagerService
