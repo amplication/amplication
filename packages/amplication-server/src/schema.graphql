@@ -1010,6 +1010,11 @@ enum EnumPendingChangeResourceType {
   Block
 }
 
+enum EnumSourceControlService {
+  Github
+  Gitlab
+}
+
 type Environment {
   id: String!
   createdAt: DateTime!
@@ -1022,6 +1027,14 @@ type Environment {
 }
 
 type GithubRepo {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
+}
+
+type GitRepo {
   name: String!
   url: String!
   private: Boolean!
@@ -1207,6 +1220,7 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  getReposOfUser(appId: String!, sourceControlService: EnumSourceControlService!): [GitRepo!]!
 }
 
 enum QueryMode {
