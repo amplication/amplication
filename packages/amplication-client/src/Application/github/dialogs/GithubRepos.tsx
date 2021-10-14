@@ -1,11 +1,11 @@
-import React, { useCallback } from "react";
-import { Snackbar } from "@rmwc/snackbar";
-import { gql, useQuery, useMutation, NetworkStatus } from "@apollo/client";
-import { formatError } from "../util/error";
-import * as models from "../models";
+import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
-import GithubRepoItem from "./GithubRepoItem";
-import { Button, EnumButtonStyle } from "../Components/Button";
+import { Snackbar } from "@rmwc/snackbar";
+import React, { useCallback } from "react";
+import { Button, EnumButtonStyle } from "../../../Components/Button";
+import * as models from "../../../models";
+import GithubRepoItem from "../../../Settings/GithubRepoItem";
+import { formatError } from "../../../util/error";
 import "./GithubRepos.scss";
 
 const CLASS_NAME = "github-repos";
@@ -16,6 +16,7 @@ type Props = {
 };
 
 function GithubRepos({ applicationId, onCompleted }: Props) {
+  // const {} = useGithubSelection();
   const { data, error, loading, refetch, networkStatus } = useQuery<{
     appAvailableGithubRepos: models.GithubRepo[];
   }>(FIND_GITHUB_REPOS, {

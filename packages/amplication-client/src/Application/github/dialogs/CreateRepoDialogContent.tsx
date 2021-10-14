@@ -30,7 +30,7 @@ export default function CreateRepoDialogContent({
       //   eventName: "updateAppSettings",
       // }); //TODO what is that
     },
-    [initialValues]
+    [appId, sourceControlService, triggerCreation]
   );
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function CreateRepoDialogContent({
         setOpen(false);
       }
     }
-  }, [called]);
+  }, [called, repoResponse, setOpen]);
 
   return (
     <Formik

@@ -13,12 +13,12 @@ import { isEmpty } from "lodash";
 import React, { useCallback, useRef, useState } from "react";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import * as models from "../../models";
-import GithubRepos from "../../Settings/GithubRepos";
 import GithubSyncDetails from "../../Settings/GithubSyncDetails";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
 import CreateRepoDialogContent from "./dialogs/CreateRepoDialogContent";
+import GithubRepos from "./dialogs/GithubRepos";
 
 type DType = {
   startAuthorizeAppWithGithub: models.AuthorizeAppWithGithubResult;
