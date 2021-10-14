@@ -11,6 +11,7 @@ import { OAuthApp } from '@octokit/oauth-app';
 // We currently ignore it and should look deeper into the root cause
 // eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
+import { doNotOverrideRegexPatterns } from '../git/constants';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -113,24 +114,13 @@ export class GithubService {
     const octokit = new myOctokit({
       auth: TOKEN
     });
-
-    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
-    //do not override server/scripts/customSeed.ts
-    const doNotOverride = [
-      /^server\/src\/[^\/]+\/.+\.controller.ts$/,
-      /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
-      /^server\/src\/[^\/]+\/.+\.service.ts$/,
-      /^server\/src\/[^\/]+\/.+\.module.ts$/,
-      /^server\/scripts\/customSeed.ts$/
-    ];
-
     const authFolder = 'server/src/auth';
 
     const files = Object.fromEntries(
       modules.map(module => {
         if (
           !module.path.startsWith(authFolder) &&
-          doNotOverride.some(rx => rx.test(module.path))
+          doNotOverrideRegexPatterns.some(rx => rx.test(module.path))
         ) {
           return [
             module.path,
