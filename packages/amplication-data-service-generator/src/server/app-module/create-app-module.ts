@@ -66,7 +66,9 @@ export async function createAppModule(
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
         return {
-          autoSchemaFile: true,
+          // @todo: allow some documented env variable to override this (e.g. GQL_SCHEMA_EXPORT_PATH)
+          autoSchemaFile: "schema.graphqls",
+          sortSchema: true,
           playground,
           introspection: playground || introspection
         }
