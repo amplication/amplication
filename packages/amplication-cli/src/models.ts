@@ -2,6 +2,10 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -1125,15 +1129,6 @@ export type GitRepo = {
   admin: Scalars['Boolean'];
 };
 
-export type GithubRepo = {
-  __typename?: 'GithubRepo';
-  name: Scalars['String'];
-  url: Scalars['String'];
-  private: Scalars['Boolean'];
-  fullName: Scalars['String'];
-  admin: Scalars['Boolean'];
-};
-
 export type HttpBasicAuthenticationSettings = {
   __typename?: 'HttpBasicAuthenticationSettings';
   username: Scalars['String'];
@@ -1518,7 +1513,6 @@ export type Query = {
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
-  appEnableSyncWithGithubRepo: Array<GithubRepo>;
   appValidateBeforeCommit: AppValidationResult;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
@@ -1616,11 +1610,6 @@ export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
 };
 
-export type QueryAppEnableSyncWithGithubRepoArgs = {
-  data: AppEnableSyncWithGithubRepoInput;
-  where: WhereUniqueInput;
-};
-
 export type QueryAppValidateBeforeCommitArgs = {
   where: WhereUniqueInput;
 };
@@ -1682,6 +1671,7 @@ export enum QueryMode {
 
 export type RepoCreateInput = {
   name: Scalars['String'];
+  public: Scalars['Boolean'];
 };
 
 export enum Role {
