@@ -11,14 +11,17 @@ import { GitService } from './git.service';
 @UseGuards(GqlAuthGuard)
 export class GitResolver {
   constructor(private readonly gitService: GitService) {}
+  //#region Mutation
   @Mutation(() => GitRepo)
   async createRepoInOrg(@Args() args: CreateRepoArgs): Promise<GitRepo> {
     return this.gitService.createRepoInOrg(args);
   }
-
+  //#endregion
+  //#region Query
   @Query(() => [GitRepo])
   //   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id') //TODO what is that?
   async getReposOfUser(@Args() args: GetReposListArgs): Promise<GitRepo[]> {
     return this.gitService.getReposOfUser(args);
   }
+  //#endregion
 }
