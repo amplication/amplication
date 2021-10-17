@@ -83,8 +83,8 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
 export default GithubRepos;
 
 const FIND_GITHUB_REPOS = gql`
-  query appAvailableGithubRepos($id: String!) {
-    appAvailableGithubRepos(where: { app: { id: $id } }) {
+  query getReposOfUser($id: String!) {
+    getReposOfUser(appId: $id, sourceControlService: Github) {
       name
       url
       private

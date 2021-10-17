@@ -13,7 +13,6 @@ import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
-  FindAvailableGithubReposArgs,
   PendingChange,
   AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
@@ -224,13 +223,6 @@ export class AppResolver {
   @Query(() => [GithubRepo], {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async appAvailableGithubRepos(
-    @Args() args: FindAvailableGithubReposArgs
-  ): Promise<GithubRepo[]> {
-    return this.appService.findAvailableGithubRepos(args);
-  }
-
   @Mutation(() => App, {
     nullable: false
   })

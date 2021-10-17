@@ -5,6 +5,8 @@ import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { EnumSourceControlService } from './dto/enums/EnumSourceControlService';
 import { GitRepo } from './dto/objects/GitRepo';
+import { isEmpty } from 'lodash';
+import { INVALID_APP_ID } from '../app/app.service';
 
 @Injectable()
 export class GitService {
@@ -15,6 +17,15 @@ export class GitService {
   async getReposOfUser(args: GetReposListArgs): Promise<GitRepo[]> {
     const app = await this.appService.app({ where: { id: args.appId } });
 
+    if (isEmpty(app)) {
+      throw new Error(INVALID_APP_ID);
+    }
+
+    if (isEmpty(app.githubToken)) {
+      throw new Error(
+        `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
+      );
+    }
     switch (args.sourceControlService) {
       case EnumSourceControlService.Github:
         return await this.githubService.getUserRepos(app.githubToken);
