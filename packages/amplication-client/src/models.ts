@@ -2,10 +2,6 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -256,10 +252,6 @@ export type Auth = {
 export type AuthorizeAppWithGithubResult = {
   __typename?: "AuthorizeAppWithGithubResult";
   url: Scalars["String"];
-};
-
-export type AvailableGithubReposFindInput = {
-  app: WhereUniqueInput;
 };
 
 export type Block = {
@@ -1107,6 +1099,11 @@ export enum EnumPendingChangeResourceType {
   Block = "Block",
 }
 
+export enum EnumSourceControlService {
+  Github = "Github",
+  Gitlab = "Gitlab",
+}
+
 export type Environment = {
   __typename?: "Environment";
   id: Scalars["String"];
@@ -1117,6 +1114,15 @@ export type Environment = {
   name: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   address: Scalars["String"];
+};
+
+export type GitRepo = {
+  __typename?: "GitRepo";
+  name: Scalars["String"];
+  url: Scalars["String"];
+  private: Scalars["Boolean"];
+  fullName: Scalars["String"];
+  admin: Scalars["Boolean"];
 };
 
 export type GithubRepo = {
@@ -1229,6 +1235,7 @@ export type Mutation = {
   updateConnectorRestApiCall: ConnectorRestApiCall;
   createEntityPage: EntityPage;
   updateEntityPage: EntityPage;
+  createRepoInOrg: GitRepo;
 };
 
 export type MutationUpdateAccountArgs = {
@@ -1441,6 +1448,12 @@ export type MutationUpdateEntityPageArgs = {
   where: WhereUniqueInput;
 };
 
+export type MutationCreateRepoInOrgArgs = {
+  appId: Scalars["String"];
+  sourceControlService: EnumSourceControlService;
+  input: RepoCreateInput;
+};
+
 export type PendingChange = {
   __typename?: "PendingChange";
   action: EnumPendingChangeAction;
@@ -1505,7 +1518,7 @@ export type Query = {
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
-  appAvailableGithubRepos: Array<GithubRepo>;
+  appEnableSyncWithGithubRepo: Array<GithubRepo>;
   appValidateBeforeCommit: AppValidationResult;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
@@ -1517,6 +1530,7 @@ export type Query = {
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
+  getReposOfUser: Array<GitRepo>;
 };
 
 export type QueryWorkspaceArgs = {
@@ -1602,8 +1616,9 @@ export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
 };
 
-export type QueryAppAvailableGithubReposArgs = {
-  where: AvailableGithubReposFindInput;
+export type QueryAppEnableSyncWithGithubRepoArgs = {
+  data: AppEnableSyncWithGithubRepoInput;
+  where: WhereUniqueInput;
 };
 
 export type QueryAppValidateBeforeCommitArgs = {
@@ -1655,10 +1670,19 @@ export type QueryEntityPagesArgs = {
   take?: Maybe<Scalars["Int"]>;
 };
 
+export type QueryGetReposOfUserArgs = {
+  appId: Scalars["String"];
+  sourceControlService: EnumSourceControlService;
+};
+
 export enum QueryMode {
   Default = "Default",
   Insensitive = "Insensitive",
 }
+
+export type RepoCreateInput = {
+  name: Scalars["String"];
+};
 
 export enum Role {
   Admin = "Admin",
