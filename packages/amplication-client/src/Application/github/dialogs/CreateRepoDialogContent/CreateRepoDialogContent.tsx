@@ -22,7 +22,12 @@ export default function CreateRepoDialogContent({
   const handleSubmit = useCallback(
     (data) => {
       triggerCreation({
-        variables: { name: data.name, appId, sourceControlService },
+        variables: {
+          name: data.name,
+          appId,
+          sourceControlService,
+          public: data.public,
+        },
       }).catch((error) => {
         setError(error.graphQLErrors[0].message);
       });
@@ -49,7 +54,6 @@ export default function CreateRepoDialogContent({
       initialValues={initialValues}
       onSubmit={handleSubmit}
       //TODO add validation
-      //TODO add private option not work yet
       //TODO style the error message
     >
       {({}) => (
@@ -75,11 +79,12 @@ const CREATE_REPO = gql`
     $sourceControlService: EnumSourceControlService!
     $appId: String!
     $name: String!
+    $public: Boolean!
   ) {
     createRepoInOrg(
       appId: $appId
       sourceControlService: $sourceControlService
-      input: { name: $name }
+      input: { name: $name, public: $public }
     ) {
       name
       url

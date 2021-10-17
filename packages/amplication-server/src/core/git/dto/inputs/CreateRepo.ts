@@ -8,4 +8,8 @@ export class RepoCreateInput {
     nullable: false
   })
   name!: string;
+  @Field(() => Boolean, {
+    nullable: false
+  })
+  public!: boolean;
 }

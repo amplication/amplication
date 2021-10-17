@@ -48,10 +48,11 @@ export class GithubService implements IGitClient {
     if (await this.isRepoExist(token, input.name)) {
       throw new Error('Repo already exist');
     }
+
     return octokit
       .request('POST /user/repos', {
         name: input.name,
-        private: true,
+        private: !args.input.public,
         // eslint-disable-next-line
         auto_init: true,
         // eslint-disable-next-line

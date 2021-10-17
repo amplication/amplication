@@ -1227,6 +1227,7 @@ enum QueryMode {
 
 input RepoCreateInput {
   name: String!
+  public: Boolean!
 }
 
 enum Role {
