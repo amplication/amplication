@@ -2,10 +2,10 @@ import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
 import React, { useCallback } from "react";
-import { Button, EnumButtonStyle } from "../../../Components/Button";
-import * as models from "../../../models";
-import GithubRepoItem from "../../../Settings/GithubRepoItem";
-import { formatError } from "../../../util/error";
+import { Button, EnumButtonStyle } from "../../../../Components/Button";
+import * as models from "../../../../models";
+import GithubRepoItem from "./GithubRepoItem/GithubRepoItem";
+import { formatError } from "../../../../util/error";
 import "./GithubRepos.scss";
 
 const CLASS_NAME = "github-repos";

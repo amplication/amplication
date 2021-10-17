@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
-import * as models from "../models";
+import * as models from "../../../../../models";
 import { Icon } from "@rmwc/icon";
-import { Button } from "../Components/Button";
 import "./GithubRepoItem.scss";
+import { Button } from "../../../../../Components/Button";
 
 const CLASS_NAME = "github-repo-item";
 
