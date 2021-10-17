@@ -1,5 +1,5 @@
-import { Button, TextField } from "@amplication/design-system";
-import { useMutation, gql } from "@apollo/client";
+import { Button, TextField, ToggleField } from "@amplication/design-system";
+import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -14,7 +14,7 @@ export default function CreateRepoDialogContent({
   sourceControlService,
   setOpen,
 }: Props) {
-  const initialValues = { name: "" };
+  const initialValues = { name: "", public: false };
   const [error, setError] = useState("");
   const [triggerCreation, { data: repoResponse, called }] = useMutation(
     CREATE_REPO
@@ -49,7 +49,7 @@ export default function CreateRepoDialogContent({
       initialValues={initialValues}
       onSubmit={handleSubmit}
       //TODO add validation
-      //TODO add private option
+      //TODO add private option not work yet
       //TODO style the error message
     >
       {({}) => (
@@ -61,6 +61,8 @@ export default function CreateRepoDialogContent({
             label="Repository name"
           />
           <div>{error}</div>
+          <ToggleField name="public" label="Public" />
+          <br />
           <Button type="submit">Let go!</Button>
         </Form>
       )}
