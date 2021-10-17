@@ -1022,14 +1022,6 @@ type Environment {
   address: String!
 }
 
-type GithubRepo {
-  name: String!
-  url: String!
-  private: Boolean!
-  fullName: String!
-  admin: Boolean!
-}
-
 type GitRepo {
   name: String!
   url: String!
@@ -1205,7 +1197,6 @@ type Query {
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
-  appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): [GithubRepo!]!
   appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]

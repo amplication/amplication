@@ -220,9 +220,6 @@ export class AppResolver {
     return this.appService.removeAuthorizeAppWithGithub(args);
   }
 
-  @Query(() => [GithubRepo], {
-    nullable: false
-  })
   @Mutation(() => App, {
     nullable: false
   })
