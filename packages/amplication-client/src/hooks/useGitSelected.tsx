@@ -4,23 +4,19 @@ import { App, GitRepo } from "../models";
 
 type Props = {
   appId: string;
-  onCompleted: () => void;
+  onCompleted?: () => void;
 };
 
 export default function useGitSelected({ appId, onCompleted }: Props) {
-  const [enableSyncWithGithub, { error }] = useMutation<App>(
+  const [enableSyncWithGithub, mutationResult] = useMutation<App>(
     ENABLE_SYNC_WITH_GITHUB,
     {
-      onCompleted: () => {
-        onCompleted();
-      },
+      onCompleted,
     }
   );
 
   const handleRepoSelected = useCallback(
     (data: GitRepo) => {
-      console.log(data);
-
       enableSyncWithGithub({
         variables: {
           githubRepo: data.fullName,
@@ -31,7 +27,7 @@ export default function useGitSelected({ appId, onCompleted }: Props) {
     },
     [enableSyncWithGithub, appId]
   );
-  return { handleRepoSelected, error };
+  return { handleRepoSelected, mutationResult: mutationResult };
 }
 
 export const ENABLE_SYNC_WITH_GITHUB = gql`

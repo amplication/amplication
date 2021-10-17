@@ -23,7 +23,6 @@ export default function CreateRepoDialogContent({
   );
   const { handleRepoSelected } = useGitSelected({
     appId: appId,
-    onCompleted: () => {},
   });
   const handleSubmit = useCallback(
     (data: GitRepo) => {

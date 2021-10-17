@@ -1,24 +1,21 @@
-import React, { useCallback } from "react";
-import { GitRepo } from "../../../../../models";
 import { Icon } from "@rmwc/icon";
-import "./GithubRepoItem.scss";
+import React from "react";
 import { Button } from "../../../../../Components/Button";
+import useGitSelected from "../../../../../hooks/useGitSelected";
+import { GitRepo } from "../../../../../models";
+import "./GithubRepoItem.scss";
 
 const CLASS_NAME = "github-repo-item";
 
 type Props = {
+  appId: string;
   repo: GitRepo;
-  onSelectRepo: (repo: GitRepo) => void;
 };
 
-function GithubRepoItem({ repo, onSelectRepo }: Props) {
-  const handleRepoSelected = useCallback(
-    (data: GitRepo) => {
-      onSelectRepo(data);
-    },
-    [onSelectRepo]
-  );
-
+function GithubRepoItem({ appId, repo }: Props) {
+  const { handleRepoSelected } = useGitSelected({
+    appId: appId,
+  });
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__details`}>

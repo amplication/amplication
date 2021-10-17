@@ -3,7 +3,6 @@ import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
-import useGitSelected from "../../../../hooks/useGitSelected";
 import * as models from "../../../../models";
 import { formatError } from "../../../../util/error";
 import GithubRepoItem from "./GithubRepoItem/GithubRepoItem";
@@ -17,7 +16,6 @@ type Props = {
 };
 
 function GithubRepos({ applicationId, onCompleted }: Props) {
-  // const {} = useGithubSelection();
   const { data, error, loading, refetch, networkStatus } = useQuery<{
     getReposOfUser: models.GitRepo[];
   }>(FIND_GITHUB_REPOS, {
@@ -26,14 +24,11 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
     },
     notifyOnNetworkStatusChange: true,
   });
-  const { handleRepoSelected, error: errorUpdate } = useGitSelected({
-    appId: applicationId,
-    onCompleted,
-  });
+
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
-  const errorMessage = formatError(error || errorUpdate);
+  const errorMessage = formatError(error);
 
   return (
     <div className={CLASS_NAME}>
@@ -51,13 +46,9 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
         />
       </div>
       {data?.getReposOfUser.map((repo) => (
-        <GithubRepoItem
-          key={repo.fullName}
-          repo={repo}
-          onSelectRepo={handleRepoSelected}
-        />
+        <GithubRepoItem key={repo.fullName} appId={applicationId} repo={repo} />
       ))}
-      <Snackbar open={Boolean(error || errorUpdate)} message={errorMessage} />
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 }
