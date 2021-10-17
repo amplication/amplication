@@ -37,11 +37,11 @@ async function main(args: string[]) {
     "pre validation successfully!",
     preValidate
   );
-  const clientPromises = buildClient();
   logger.warn(
-    "Starting npm run bootstrap its take a lot of time, be patient dont close the process in the middle"
+    "Starting npm run bootstrap, be patient don't close the process in the middle."
   );
   await taskRunner.run("bootstrap", "lerna bootstrap", runBootstrap);
+  const clientPromises = buildClient();
   await Promise.all([
     taskRunner.run("prisma", "prisma generation", runPrismaGenerate),
     taskRunner.run("build", "build of all the server dependencies", runBuild),
@@ -145,7 +145,7 @@ async function main(args: string[]) {
 
   async function preValidate() {
     return new Promise((resolve, reject) => {
-      const { engines } = require("./package.json");
+      const { engines } = require("../package.json");
       const { node: nodeRange, npm } = engines;
       check({ npm: npm, node: nodeRange }, (error, result) => {
         if (error) {
