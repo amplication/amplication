@@ -18,7 +18,7 @@ type Props = {
 function GithubRepos({ applicationId, onCompleted }: Props) {
   // const {} = useGithubSelection();
   const { data, error, loading, refetch, networkStatus } = useQuery<{
-    appAvailableGithubRepos: models.GithubRepo[];
+    getReposOfUser: models.GitRepo[];
   }>(FIND_GITHUB_REPOS, {
     variables: {
       id: applicationId,
@@ -68,7 +68,7 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
           disabled={networkStatus === NetworkStatus.refetch}
         />
       </div>
-      {data?.appAvailableGithubRepos.map((repo) => (
+      {data?.getReposOfUser.map((repo) => (
         <GithubRepoItem
           key={repo.fullName}
           repo={repo}

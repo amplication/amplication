@@ -7,13 +7,13 @@ import "./GithubRepoItem.scss";
 const CLASS_NAME = "github-repo-item";
 
 type Props = {
-  repo: models.GithubRepo;
-  onSelectRepo: (repo: models.GithubRepo) => void;
+  repo: models.GitRepo;
+  onSelectRepo: (repo: models.GitRepo) => void;
 };
 
 function GithubRepoItem({ repo, onSelectRepo }: Props) {
   const handleRepoSelected = useCallback(
-    (data: models.GithubRepo) => {
+    (data: models.GitRepo) => {
       onSelectRepo(data);
     },
     [onSelectRepo]
