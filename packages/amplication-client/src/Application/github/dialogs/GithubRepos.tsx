@@ -39,7 +39,7 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
   }, [refetch]);
 
   const handleRepoSelected = useCallback(
-    (data: models.GithubRepo) => {
+    (data: models.GitRepo) => {
       enableSyncWithGithub({
         variables: {
           githubRepo: data.fullName,
