@@ -2,6 +2,8 @@ import { Button, TextField, ToggleField } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback, useEffect, useState } from "react";
+import useGitSelected from "../../../../hooks/useGitSelected";
+import { GitRepo } from "../../../../models";
 
 type Props = {
   appId: string;
@@ -19,8 +21,13 @@ export default function CreateRepoDialogContent({
   const [triggerCreation, { data: repoResponse, called }] = useMutation(
     CREATE_REPO
   );
+  const { handleRepoSelected } = useGitSelected({
+    appId: appId,
+    onCompleted: () => {},
+  });
   const handleSubmit = useCallback(
-    (data) => {
+    (data: GitRepo) => {
+      handleRepoSelected(data);
       triggerCreation({
         variables: {
           name: data.name,
@@ -35,7 +42,7 @@ export default function CreateRepoDialogContent({
       //   eventName: "updateAppSettings",
       // }); //TODO what is that
     },
-    [appId, sourceControlService, triggerCreation]
+    [appId, handleRepoSelected, sourceControlService, triggerCreation]
   );
 
   useEffect(() => {

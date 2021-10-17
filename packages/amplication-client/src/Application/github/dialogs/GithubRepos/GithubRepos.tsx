@@ -1,11 +1,12 @@
-import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
+import { gql, NetworkStatus, useQuery } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
+import useGitSelected from "../../../../hooks/useGitSelected";
 import * as models from "../../../../models";
-import GithubRepoItem from "./GithubRepoItem/GithubRepoItem";
 import { formatError } from "../../../../util/error";
+import GithubRepoItem from "./GithubRepoItem/GithubRepoItem";
 import "./GithubRepos.scss";
 
 const CLASS_NAME = "github-repos";
@@ -25,32 +26,13 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
     },
     notifyOnNetworkStatusChange: true,
   });
-
-  const [enableSyncWithGithub, { error: errorUpdate }] = useMutation<
-    models.App
-  >(ENABLE_SYNC_WITH_GITHUB, {
-    onCompleted: () => {
-      onCompleted();
-    },
+  const { handleRepoSelected, error: errorUpdate } = useGitSelected({
+    appId: applicationId,
+    onCompleted,
   });
-
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
-
-  const handleRepoSelected = useCallback(
-    (data: models.GitRepo) => {
-      enableSyncWithGithub({
-        variables: {
-          githubRepo: data.fullName,
-          githubBranch: null,
-          appId: applicationId,
-        },
-      }).catch(console.error);
-    },
-    [enableSyncWithGithub, applicationId]
-  );
-
   const errorMessage = formatError(error || errorUpdate);
 
   return (
@@ -90,24 +72,6 @@ const FIND_GITHUB_REPOS = gql`
       private
       fullName
       admin
-    }
-  }
-`;
-
-const ENABLE_SYNC_WITH_GITHUB = gql`
-  mutation appEnableSyncWithGithubRepo(
-    $githubRepo: String!
-    $githubBranch: String
-    $appId: String!
-  ) {
-    appEnableSyncWithGithubRepo(
-      data: { githubRepo: $githubRepo, githubBranch: $githubBranch }
-      where: { id: $appId }
-    ) {
-      id
-      githubSyncEnabled
-      githubRepo
-      githubBranch
     }
   }
 `;
