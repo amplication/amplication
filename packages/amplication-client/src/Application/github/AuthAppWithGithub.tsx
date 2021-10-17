@@ -17,7 +17,7 @@ import GithubSyncDetails from "../../Settings/GithubSyncDetails";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
-import CreateRepoDialogContent from "./dialogs/CreateRepoDialogContent";
+import CreateRepoDialogContent from "./dialogs/CreateRepoDialogContent/CreateRepoDialogContent";
 import GithubRepos from "./dialogs/GithubRepos";
 
 type DType = {

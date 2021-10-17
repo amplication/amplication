@@ -14,6 +14,7 @@ export class GitService {
   ) {}
   async getReposOfUser(args: GetReposListArgs): Promise<GitRepo[]> {
     const app = await this.appService.app({ where: { id: args.appId } });
+
     switch (args.sourceControlService) {
       case EnumSourceControlService.Github:
         return await this.githubService.getUserRepos(app.githubToken);
@@ -21,7 +22,8 @@ export class GitService {
         throw new Error("Didn't get a valid git service");
     }
   }
-
+  //TODO add args validation
+  //TODO add make sure repo name valid
   async createRepoInOrg(args: CreateRepoArgs): Promise<GitRepo> {
     const { input, appId, sourceControlService } = args;
     const app = await this.appService.app({ where: { id: appId } });

@@ -24,6 +24,8 @@ export default function CreateRepoDialogContent({
       triggerCreation({
         variables: { name: data.name, appId, sourceControlService },
       }).catch((error) => {
+        console.log(error);
+
         setError(error.graphQLErrors[0].message);
       });
       // trackEvent({
