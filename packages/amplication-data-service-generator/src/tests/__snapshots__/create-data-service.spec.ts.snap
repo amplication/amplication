@@ -2512,6 +2512,7 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
+import { HealthModule } from \\"./health/health.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
@@ -2529,6 +2530,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     EmptyModule,
     ACLModule,
     AuthModule,
+    HealthModule,
     SecretsManagerModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -2673,10 +2675,20 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
       useFactory: async (
         secretsService: SecretsManagerService,
         configService: ConfigService
-      ) => ({
-        secret: secretsService.getSecret<string>(JWT_SECRET_KEY),
-        signOptions: { expiresIn: configService.get(JWT_EXPIRATION) },
-      }),
+      ) => {
+        const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
+        const expiresIn = configService.get(JWT_EXPIRATION);
+        if (!secret) {
+          throw new Error(\\"Didn't get a valid jwt secret\\");
+        }
+        if (!expiresIn) {
+          throw new Error(\\"Jwt expire in value is not valid\\");
+        }
+        return {
+          secret: secret,
+          signOptions: { expiresIn },
+        };
+      },
     }),
   ],
   providers: [
@@ -6136,6 +6148,77 @@ export class NotFoundException extends common.NotFoundException {
   message!: string;
 }
 ",
+  "server/src/health/base/health.controller.base.ts": "import { Get, HttpStatus, Res } from \\"@nestjs/common\\";
+import { Response } from \\"express\\";
+import { HealthService } from \\"../health.service\\";
+
+export class HealthControllerBase {
+  constructor(protected readonly healthService: HealthService) {}
+  @Get(\\"live\\")
+  healthLive(@Res() response: Response): Response<void> {
+    return response.status(HttpStatus.NO_CONTENT).send();
+  }
+  @Get(\\"ready\\")
+  async healthReady(@Res() response: Response): Promise<Response<void>> {
+    const dbConnection = await this.healthService.isDbReady();
+    if (!dbConnection) {
+      return response.status(HttpStatus.NOT_FOUND).send();
+    }
+    return response.status(HttpStatus.NO_CONTENT).send();
+  }
+}
+",
+  "server/src/health/base/health.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+
+@Injectable()
+export class HealthServiceBase {
+  constructor(protected readonly prisma: PrismaService) {}
+  async isDbReady(): Promise<boolean> {
+    try {
+      await this.prisma.$queryRaw(\`SELECT 1\`);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+}
+",
+  "server/src/health/health.controller.ts": "import { Controller } from \\"@nestjs/common\\";
+import { HealthControllerBase } from \\"./base/health.controller.base\\";
+import { HealthService } from \\"./health.service\\";
+
+@Controller(\\"_health\\")
+export class HealthController extends HealthControllerBase {
+  constructor(protected readonly healthService: HealthService) {
+    super(healthService);
+  }
+}
+",
+  "server/src/health/health.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { HealthController } from \\"./health.controller\\";
+import { HealthService } from \\"./health.service\\";
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [HealthController],
+  providers: [HealthService],
+  exports: [HealthService],
+})
+export class HealthModule {}
+",
+  "server/src/health/health.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { HealthServiceBase } from \\"./base/health.service.base\\";
+
+@Injectable()
+export class HealthService extends HealthServiceBase {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
+  }
+}
+",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
 import { SwaggerModule } from \\"@nestjs/swagger\\";
@@ -9190,13 +9273,60 @@ export async function transformStringFieldUpdateInput<
   return input;
 }
 ",
+  "server/src/providers/secrets/base/secretsManager.service.base.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
+import { mock } from \\"jest-mock-extended\\";
+import { SecretsManagerServiceBase } from \\"./secretsManager.service.base\\";
+
+describe(\\"Testing the secrets manager base class\\", () => {
+  const SECRET_KEY = \\"SECRET_KEY\\";
+  const SECRET_VALUE = \\"SECRET_VALUE\\";
+  const configService = mock<ConfigService>();
+  const secretsManagerServiceBase = new SecretsManagerServiceBase(
+    configService
+  );
+  beforeEach(() => {
+    configService.get.mockClear();
+  });
+  it(\\"should return value from env\\", async () => {
+    //ARRANGE
+    configService.get.mockReturnValue(SECRET_VALUE);
+    //ACT
+    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    //ASSERT
+    expect(result).toBe(SECRET_VALUE);
+  });
+  it(\\"should return null for unknown keys\\", async () => {
+    //ARRANGE
+    configService.get.mockReturnValue(undefined);
+    //ACT
+    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    //ASSERT
+    expect(result).toBeNull();
+  });
+  it(\\"should throw error if dont get key\\", () => {
+    //@ts-ignore
+    return expect(secretsManagerServiceBase.getSecret()).rejects.toThrow();
+  });
+  it(\\"should throw an exeption if getting null key\\", () => {
+    //@ts-ignore
+    return expect(secretsManagerServiceBase.getSecret(null)).rejects.toThrow();
+  });
+});
+",
   "server/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from \\"@nestjs/config\\";
 
-export class SecretsManagerServiceBase {
+export interface ISecretsManager {
+  getSecret: (key: string) => Promise<any | null>;
+}
+
+export class SecretsManagerServiceBase implements ISecretsManager {
   constructor(protected readonly configService: ConfigService) {}
-  getSecret<T>(key: string): T {
+  async getSecret<T>(key: string): Promise<T | null> {
     const value = this.configService.get(key);
-    return value;
+    if (value) {
+      return value;
+    }
+    return null;
   }
 }
 ",
@@ -9266,7 +9396,7 @@ export const swaggerPath = \\"api\\";
 export const swaggerDocumentOptions = new DocumentBuilder()
   .setTitle(\\"Sample Application\\")
   .setDescription(
-    'Sample application for testing\\\\n\\\\n## Congratulations! Your application is ready.\\\\n\\\\nPlease note that all endpoints are secured with HTTP basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
+    'Sample application for testing\\\\n\\\\n## Congratulations! Your application is ready.\\\\n  \\\\nPlease note that all endpoints are secured with HTTP Basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
   )
   .setVersion(\\"0.1.3\\")
   .addBasicAuth()
@@ -9280,6 +9410,79 @@ export const swaggerSetupOptions = {
   customfavIcon: \\"../swagger/favicon.png\\",
   customSiteTitle: \\"Sample Application\\",
 };
+",
+  "server/src/tests/auth/basic/basic.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
+import { mock } from \\"jest-mock-extended\\";
+import { AuthService } from \\"../../../auth/auth.service\\";
+import { BasicStrategy } from \\"../../../auth/basic/basic.strategy\\";
+import { TEST_PASSWORD, TEST_USER } from \\"../constants\\";
+
+describe(\\"Testing the basicStrategy.validate()\\", () => {
+  const authService = mock<AuthService>();
+  const basicStrategy = new BasicStrategy(authService);
+  beforeEach(() => {
+    authService.validateUser.mockClear();
+  });
+  beforeAll(() => {
+    //ARRANGE
+    authService.validateUser
+      .calledWith(TEST_USER.username, TEST_PASSWORD)
+      .mockReturnValue(Promise.resolve(TEST_USER));
+  });
+  it(\\"should return the user\\", async () => {
+    //ACT
+    const result = await basicStrategy.validate(
+      TEST_USER.username,
+      TEST_PASSWORD
+    );
+    //ASSERT
+    expect(result).toBe(TEST_USER);
+  });
+  it(\\"should throw error if there is not valid user\\", async () => {
+    //ARRANGE
+    authService.validateUser.mockReturnValue(Promise.resolve(null));
+    //ACT
+    const result = basicStrategy.validate(\\"noUsername\\", TEST_PASSWORD);
+    //ASSERT
+    return expect(result).rejects.toThrowError(UnauthorizedException);
+  });
+});
+",
+  "server/src/tests/auth/constants.ts": "import { UserInfo } from \\"../../auth/UserInfo\\";
+
+export const TEST_PASSWORD = \\"gabay\\";
+export const TEST_USER: UserInfo = { roles: [\\"User\\"], username: \\"ofek\\" };
+",
+  "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
+import { mock } from \\"jest-mock-extended\\";
+import { JwtStrategy } from \\"../../../auth/jwt/jwt.strategy\\";
+import { SecretsManagerService } from \\"../../../providers/secrets/secretsManager.service\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { UserService } from \\"../../../user/user.service\\";
+import { TEST_USER } from \\"../constants\\";
+
+describe(\\"Testing the jwtStrategy.validate()\\", () => {
+  const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
+  const secretsService = mock<SecretsManagerService>();
+  secretsService.getSecret.mockReturnValue(Promise.resolve(JWT_SECRET_KEY));
+  const userService = mock<UserService>();
+  const jwtStrategy = new JwtStrategy(userService, secretsService);
+  beforeEach(() => {
+    userService.findOne.mockClear();
+  });
+  it(\\"should throw UnauthorizedException where there is no user\\", async () => {
+    //ARRANGE
+    userService.findOne.mockReturnValue(Promise.resolve(null));
+    //ACT
+    const result = jwtStrategy.validate({
+      username: TEST_USER.username,
+      roles: TEST_USER.roles,
+    });
+    //ASSERT
+    return expect(result).rejects.toThrowError(UnauthorizedException);
+  });
+});
 ",
   "server/src/user/base/CreateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";

@@ -2,7 +2,7 @@ import { EnumAuthProviderType } from "../../models";
 import { AppInfo } from "../../types";
 import {
   createDescription,
-  INSTRUCTIONS,
+  getInstructions,
   INSTRUCTIONS_BUFFER,
 } from "./create-swagger";
 
@@ -26,7 +26,10 @@ const EXAMPLE_APP_INFO: AppInfo = {
 describe("createDescription", () => {
   test("creates description correctly", async () => {
     expect(await createDescription(EXAMPLE_APP_INFO)).toEqual(
-      [EXAMPLE_DESCRIPTION, INSTRUCTIONS].join(INSTRUCTIONS_BUFFER)
+      [
+        EXAMPLE_DESCRIPTION,
+        getInstructions(EXAMPLE_APP_INFO.settings.authProvider),
+      ].join(INSTRUCTIONS_BUFFER)
     );
   });
 });

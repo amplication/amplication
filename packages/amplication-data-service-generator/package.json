@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -19,8 +19,8 @@
     "update-test-data-service-snapshot": "jest -u src/tests/create-data-service.spec.ts"
   },
   "dependencies": {
-    "@amplication/data": "^0.9.0",
-    "@amplication/design-system": "^0.9.0",
+    "@amplication/data": "^0.10.0",
+    "@amplication/design-system": "^0.10.0",
     "@apollo/client": "3.3.19",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
@@ -133,6 +133,7 @@
     "eslint-plugin-testing-library": "3.10.2",
     "get-port": "5.1.1",
     "jest": "27.0.6",
+    "jest-mock-extended": "^2.0.4",
     "normalize-path": "3.0.0",
     "npm-run-all": "4.1.5",
     "sleep-promise": "8.0.1",
@@ -153,8 +154,8 @@
     "modulePathIgnorePatterns": [
       "dist",
       "generated",
-      "src/server/static/src/auth/auth.service.spec.ts",
-      "src/admin/static/src/App.test.tsx"
+      "src/server/static",
+      "src/admin/static"
     ]
   }
 }
