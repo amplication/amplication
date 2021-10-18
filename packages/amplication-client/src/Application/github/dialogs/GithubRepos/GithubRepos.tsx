@@ -24,7 +24,7 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
   const {
     refetch,
     error,
-    data,
+    repos,
     loading: loadingRepos,
     networkStatus,
   } = useGetReposOfUser({
@@ -78,23 +78,24 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
               />
             </div>
             <GitReposBar loading={createLoading} />
-            {data?.getReposOfUser
-              .filter((repo) => {
-                if (repo?.name.includes(values.name) || !values.name) {
-                  if (touched.public) {
-                    return repo.private === !values.public;
+            {repos &&
+              repos
+                .filter((repo) => {
+                  if (repo?.name.includes(values.name) || !values.name) {
+                    if (touched.public) {
+                      return repo.private === !values.public;
+                    }
+                    return true;
                   }
-                  return true;
-                }
-                return false;
-              })
-              .map((repo) => (
-                <GithubRepoItem
-                  key={repo.fullName}
-                  repo={repo}
-                  onSelectRepo={handleRepoSelected}
-                />
-              ))}
+                  return false;
+                })
+                .map((repo) => (
+                  <GithubRepoItem
+                    key={repo.fullName}
+                    repo={repo}
+                    onSelectRepo={handleRepoSelected}
+                  />
+                ))}
           </Form>
         )}
       </Formik>

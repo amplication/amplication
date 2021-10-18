@@ -14,7 +14,13 @@ export default function useGetReposOfUser({ appId }: Props) {
     },
     notifyOnNetworkStatusChange: true,
   });
-  return { refetch, error, loading, networkStatus, data };
+  return {
+    refetch,
+    error,
+    loading,
+    networkStatus,
+    repos: data?.getReposOfUser,
+  };
 }
 
 const FIND_GITHUB_REPOS = gql`
