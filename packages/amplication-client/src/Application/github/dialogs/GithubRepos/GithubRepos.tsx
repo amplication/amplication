@@ -12,6 +12,7 @@ import GitReposBar from "./GitReposBar/GitReposBar";
 import useGetReposOfUser from "./hooks/useGetReposOfUser";
 import useGitCreate from "./hooks/useGitCreate";
 import useGitSelected from "./hooks/useGitSelected";
+
 const CLASS_NAME = "github-repos";
 
 type Props = {
@@ -20,14 +21,16 @@ type Props = {
 };
 
 function GithubRepos({ applicationId, onCompleted }: Props) {
-  const { refetch, error, data, loading, networkStatus } = useGetReposOfUser({
+  const {
+    refetch,
+    error,
+    data,
+    loading: loadingRepos,
+    networkStatus,
+  } = useGetReposOfUser({
     appId: applicationId,
   });
-  const {
-    // error: createError,
-    handleCreation,
-    loading: createLoading,
-  } = useGitCreate({
+  const { handleCreation, loading: createLoading } = useGitCreate({
     appId: applicationId,
     sourceControlService: EnumSourceControlService.Github,
     cb: (repo) => {
@@ -59,7 +62,7 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
           <Form>
             <div className={`${CLASS_NAME}__header`}>
               <h3>Select a GitHub repository to sync your application with.</h3>
-              {(loading || networkStatus === NetworkStatus.refetch) && (
+              {(loadingRepos || networkStatus === NetworkStatus.refetch) && (
                 <CircularProgress />
               )}
               <Button
