@@ -14,8 +14,8 @@ describe("Testing the HealthServiceBase", () => {
     it("should return true if allow connection to db", async () => {
       //ARRANGE
       prismaService.$queryRaw
-        .calledWith(`SELECT 1`)
-        .mockReturnValue(Promise.resolve());
+        //@ts-ignore
+        .mockReturnValue(Promise.resolve(true));
       //ACT
       const response = await healthServiceBase.isDbReady();
       //ASSERT
@@ -24,10 +24,12 @@ describe("Testing the HealthServiceBase", () => {
     it("should return false if db is not available", async () => {
       //ARRANGE
       prismaService.$queryRaw
-        .calledWith(`SELECT 1`)
-        .mockReturnValue(Promise.reject());
+        //@ts-ignore
+        .mockReturnValue(Promise.reject(false));
       //ACT
       const response = await healthServiceBase.isDbReady();
+      console.log(response);
+
       //ASSERT
       expect(response).toBe(false);
     });
