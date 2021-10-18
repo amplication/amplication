@@ -129,9 +129,11 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^7.0.2",
     "@types/ajv-errors": "1.0.3",
     "@types/lodash.debounce": "4.0.6",
     "@types/react-beautiful-dnd": "13.1.1",
+    "jest-mock-extended": "^2.0.4",
     "prettier": "2.0.5",
     "react-app-rewired": "2.1.8"
   }
