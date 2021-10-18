@@ -1,8 +1,7 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum EnumSourceControlService {
-  Github = 'Github',
-  Gitlab = 'Gitlab'
+  Github = 'Github'
 }
 
 registerEnumType(EnumSourceControlService, {

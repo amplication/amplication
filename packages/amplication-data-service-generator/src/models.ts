@@ -1105,7 +1105,6 @@ export enum EnumPendingChangeResourceType {
 
 export enum EnumSourceControlService {
   Github = "Github",
-  Gitlab = "Gitlab",
 }
 
 export type Environment = {
