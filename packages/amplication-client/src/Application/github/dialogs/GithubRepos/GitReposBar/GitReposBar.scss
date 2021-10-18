@@ -4,4 +4,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  &__toggle {
+    margin: var(--default-spacing-small);
+  }
+}
+#github-repos-bar-text-input {
+  flex: auto;
 }
