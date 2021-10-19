@@ -2,6 +2,7 @@ import { UseFilters, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { BaseGitArgs } from './dto/args/BaseGitArgs';
 import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
@@ -22,6 +23,10 @@ export class GitResolver {
   //   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id') //TODO what is that?
   async getReposOfUser(@Args() args: GetReposListArgs): Promise<GitRepo[]> {
     return this.gitService.getReposOfUser(args);
+  }
+  @Query(() => String)
+  async getUsername(@Args() args: BaseGitArgs): Promise<string> {
+    return this.gitService.getUsername(args);
   }
   //#endregion
 }

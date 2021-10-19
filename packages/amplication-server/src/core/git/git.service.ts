@@ -7,6 +7,8 @@ import { EnumSourceControlService } from './dto/enums/EnumSourceControlService';
 import { GitRepo } from './dto/objects/GitRepo';
 import { isEmpty } from 'lodash';
 import { INVALID_APP_ID } from '../app/app.service';
+import { BaseGitArgs } from './dto/args/BaseGitArgs';
+import { ApolloError } from 'apollo-server-errors';
 
 @Injectable()
 export class GitService {
@@ -44,7 +46,19 @@ export class GitService {
       case EnumSourceControlService.Github:
         return this.githubService.createRepo({ token, input: input });
       default:
-        throw new Error("didn't get a valid source control");
+        throw new ApolloError("didn't get a valid source control");
+    }
+  }
+
+  async getUsername(args: BaseGitArgs): Promise<string> {
+    const { appId, sourceControlService } = args;
+    const app = await this.appService.app({ where: { id: appId } });
+    const { githubToken } = app;
+    switch (sourceControlService) {
+      case EnumSourceControlService.Github:
+        return (await this.githubService.getUser(githubToken)).data.login;
+      default:
+        throw new ApolloError("Didn't got a valid source control service");
     }
   }
 }

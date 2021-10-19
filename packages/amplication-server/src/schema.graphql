@@ -1208,6 +1208,7 @@ type Query {
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   getReposOfUser(appId: String!, sourceControlService: EnumSourceControlService!): [GitRepo!]!
+  getUsername(appId: String!, sourceControlService: EnumSourceControlService!): String!
 }
 
 enum QueryMode {
