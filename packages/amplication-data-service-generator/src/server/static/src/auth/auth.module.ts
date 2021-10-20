@@ -14,6 +14,7 @@ import { SecretsManagerModule } from "../providers/secrets/secretsManager.module
 import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
 import { ConfigService } from "@nestjs/config";
 import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../constants";
+import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../constants";
     PasswordService,
     AuthResolver,
     JwtStrategy,
+    jwtSecretFactory,
   ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],

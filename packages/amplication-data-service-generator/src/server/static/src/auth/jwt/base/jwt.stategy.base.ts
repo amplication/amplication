@@ -1,8 +1,6 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { JWT_SECRET_KEY } from "../../../constants";
-import { SecretsManagerService } from "../../../providers/secrets/secretsManager.service";
 import { IAuthStrategy } from "../../IAuthStrategy";
 // @ts-ignore
 // eslint-disable-next-line
@@ -14,12 +12,12 @@ export class JwtStrategyBase
   implements IAuthStrategy {
   constructor(
     protected readonly userService: UserService,
-    protected readonly secretsService: SecretsManagerService
+    protected readonly secretOrKey: string
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: secretsService.getSecret<string>(JWT_SECRET_KEY),
+      secretOrKey,
     });
   }
 
