@@ -4,12 +4,13 @@ import { HealthServiceBase } from "../../health/base/health.service.base";
 
 describe("Testing the HealthServiceBase", () => {
   //ARRANGE
-  const prismaService = mock<PrismaService>();
-  const healthServiceBase = new HealthServiceBase(prismaService);
+  let prismaService: PrismaService;
+  let healthServiceBase: HealthServiceBase;
 
   describe("Testing the isDbReady function in HealthServiceBase class", () => {
     beforeEach(() => {
-      prismaService.$queryRaw.mockClear();
+      prismaService = mock<PrismaService>();
+      healthServiceBase = new HealthServiceBase(prismaService);
     });
     it("should return true if allow connection to db", async () => {
       //ARRANGE
@@ -28,8 +29,6 @@ describe("Testing the HealthServiceBase", () => {
         .mockReturnValue(Promise.reject(false));
       //ACT
       const response = await healthServiceBase.isDbReady();
-      console.log(response);
-
       //ASSERT
       expect(response).toBe(false);
     });
