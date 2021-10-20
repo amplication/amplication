@@ -24,7 +24,9 @@
 <div align="center">
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-37-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
@@ -58,7 +60,7 @@ See [Amplication website](http://amplication.com/) or [Amplication docs](http://
 
 ## Development
 
-Amplication is constructed of multiple packages. To start working on Amplication follow the "Amplication Server" and "Amplication Client" installation instructions.
+Amplication is constructed of multiple packages. To start working on Amplication follow the "Amplication Server" and "Amplication Client" installation instructions or run `npm run setup:dev` to auto build all the project.
 
 ### [Amplication Server](./packages/amplication-server/README.md)
 
@@ -116,11 +118,9 @@ Amplication is an open source project. We are committed to a fully transparent d
 
 Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
 
-
 ## Sponsors ✨
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [Become a sponsor](https://commerce.coinbase.com/checkout/8d425faa-9e2a-4393-a029-4f7ed68c3e02)
-
 
 <table>
   <tr>
@@ -128,7 +128,6 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
    
   </tr>
   </table>
-
 
 ## Contributors ✨
 
