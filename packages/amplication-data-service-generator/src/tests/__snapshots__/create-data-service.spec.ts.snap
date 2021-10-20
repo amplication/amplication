@@ -9452,12 +9452,13 @@ export const swaggerSetupOptions = {
   "server/src/tests/auth/basic/basic.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
 import { AuthService } from \\"../../../auth/auth.service\\";
-import { BasicStrategy } from \\"../../../auth/basic/basic.strategy\\";
-import { TEST_PASSWORD, TEST_USER } from \\"../constants\\";
+import { BasicStrategyBase } from \\"../../../auth/basic/base/basic.stategy.base\\";
+import { TEST_USER } from \\"../constants\\";
 
-describe(\\"Testing the basicStrategy.validate()\\", () => {
+describe(\\"Testing the basicStrategyBase.validate()\\", () => {
+  const TEST_PASSWORD = \\"gabay\\";
   const authService = mock<AuthService>();
-  const basicStrategy = new BasicStrategy(authService);
+  const basicStrategy = new BasicStrategyBase(authService);
   beforeEach(() => {
     authService.validateUser.mockClear();
   });
@@ -9488,30 +9489,31 @@ describe(\\"Testing the basicStrategy.validate()\\", () => {
 ",
   "server/src/tests/auth/constants.ts": "import { UserInfo } from \\"../../auth/UserInfo\\";
 
-export const TEST_PASSWORD = \\"gabay\\";
 export const TEST_USER: UserInfo = { roles: [\\"User\\"], username: \\"ofek\\" };
 ",
   "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
-import { JwtStrategy } from \\"../../../auth/jwt/jwt.strategy\\";
+import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.stategy.base\\";
 import { SecretsManagerService } from \\"../../../providers/secrets/secretsManager.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../../../user/user.service\\";
 import { TEST_USER } from \\"../constants\\";
 
-describe(\\"Testing the jwtStrategy.validate()\\", () => {
+describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
   const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
   const secretsService = mock<SecretsManagerService>();
   secretsService.getSecret.mockReturnValue(Promise.resolve(JWT_SECRET_KEY));
   const userService = mock<UserService>();
-  const jwtStrategy = new JwtStrategy(userService, secretsService);
+  const jwtStrategy = new JwtStrategyBase(userService, secretsService);
   beforeEach(() => {
     userService.findOne.mockClear();
   });
   it(\\"should throw UnauthorizedException where there is no user\\", async () => {
     //ARRANGE
-    userService.findOne.mockReturnValue(Promise.resolve(null));
+    userService.findOne
+      .calledWith({ where: { username: TEST_USER.username } })
+      .mockReturnValue(Promise.resolve(null));
     //ACT
     const result = jwtStrategy.validate({
       username: TEST_USER.username,
