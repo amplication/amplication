@@ -1,5 +1,7 @@
 name: Setup script test
-on: workflow_dispatch
+
+on:
+  workflow_dispatch:
 
 jobs:
   setup:
@@ -7,12 +9,10 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-18.04, ubuntu-20.04]
-        node: [10, 12, 14]
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        node: [14]
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch master
-        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/master:refs/remotes/origin/master
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
@@ -21,3 +21,4 @@ jobs:
         run: npm i -g npm@7.3.0
       - run: npm ci
       - run: npm run setup:dev
+      - run: cd ./packages/amplication-server && npm run test

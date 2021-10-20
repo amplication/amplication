@@ -1,36 +1,45 @@
-import check from "check-node-version";
 import { exec } from "child_process";
 import { createLogger, format, Logger, transports } from "winston";
+import { satisfies, minVersion, clean, valid } from "semver";
 const { combine, colorize, simple } = format;
 
-type Task = {
-  command: string;
-  label: string;
-  finishMessage: string;
-};
+class Task {
+  constructor(
+    public command: string,
+    public label: string,
+    public finishMessage: string
+  ) {}
+}
 const logger = createLogger({
   transports: [new transports.Console()],
   format: combine(colorize(), simple()),
 });
-async function preValidate() {
-  return new Promise((resolve, reject) => {
-    const { engines } = require("../package.json");
-    const { node: nodeRange, npm } = engines;
-    check({ npm: npm, node: nodeRange }, (error, result) => {
-      if (error) {
-        reject("Unknown error accord in the setup process");
-      }
-      if (!result.versions.node.isSatisfied)
-        reject(
-          `Invalid node version, please use the specified node version ${nodeRange}`
-        );
-      if (!result.versions.npm.isSatisfied)
-        reject(
-          `Invalid npm version, please use the specified npm version ${npm}`
-        );
-      resolve(null);
-    });
-  });
+function preValidate() {
+  const { engines } = require("../package.json");
+  const { node: nodeRange, npm } = engines;
+  // const currentNpmVersion = process.env.npm_package_engines_npm?.trim();
+  // console.log(process);
+  const npm_config_user_agent = process.env.npm_config_user_agent;
+  const currentNpmVersionArray = npm_config_user_agent?.match(
+    /npm\/[\^*\~*]*[\d\.]+/
+  );
+  if (!currentNpmVersionArray) {
+    throw new Error("Npm error");
+  }
+  const currentNpmVersion = currentNpmVersionArray[0].substr(4);
+  if (!currentNpmVersion) {
+    throw new Error("Npm error");
+  }
+  if (!satisfies(process.versions.node, nodeRange)) {
+    throw new Error(
+      `Invalid node version, please use the specified node version ${nodeRange}`
+    );
+  }
+  if (!satisfies(currentNpmVersion, npm)) {
+    throw new Error(
+      `Invalid npm version, please use the specified npm version ${npm}`
+    );
+  }
 }
 async function runFunction(task: Task, logger: Logger): Promise<string> {
   logger.info(`Starting ${task.label}`);
@@ -104,8 +113,8 @@ const tasks: Task[][] = [
 ];
 if (require.main === module) {
   (async () => {
+    preValidate();
     logger.info(`Starting the script!`);
-    await preValidate();
     for (let i = 0; i < tasks.length; i++) {
       const step = tasks[i];
       logger.info(`Starting step ${i + 1}`);
