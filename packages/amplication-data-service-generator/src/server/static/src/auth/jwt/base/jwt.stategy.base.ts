@@ -1,7 +1,6 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { JWT_SECRET_KEY } from "../../../constants";
 import { SecretsManagerService } from "../../../providers/secrets/secretsManager.service";
 import { IAuthStrategy } from "../../IAuthStrategy";
 // @ts-ignore
