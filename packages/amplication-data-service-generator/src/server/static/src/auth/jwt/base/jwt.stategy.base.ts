@@ -1,7 +1,6 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { SecretsManagerService } from "../../../providers/secrets/secretsManager.service";
 import { IAuthStrategy } from "../../IAuthStrategy";
 // @ts-ignore
 // eslint-disable-next-line
@@ -13,7 +12,6 @@ export class JwtStrategyBase
   implements IAuthStrategy {
   constructor(
     protected readonly userService: UserService,
-    protected readonly secretsService: SecretsManagerService,
     protected readonly secretOrKey: string
   ) {
     super({

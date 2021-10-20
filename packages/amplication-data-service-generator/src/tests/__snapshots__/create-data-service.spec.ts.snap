@@ -2669,6 +2669,7 @@ import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.modu
 import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
 import { ConfigService } from \\"@nestjs/config\\";
 import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
+import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
 
 @Module({
   imports: [
@@ -2703,6 +2704,7 @@ import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
     PasswordService,
     AuthResolver,
     JwtStrategy,
+    jwtSecretFactory,
   ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],
@@ -2736,8 +2738,10 @@ export class AuthResolver {
       throw new ApolloError(\\"The passed credentials are incorrect\\");
     }
     const payload = { username: user.username };
+    const accessToken = await this.jwtService.signAsync(payload); //signs username payload
+
     return {
-      accessToken: this.jwtService.sign(payload), //signs username payload
+      accessToken,
       ...user,
     };
   }
@@ -2954,8 +2958,6 @@ export const UserRoles = createParamDecorator(
   "server/src/auth/jwt/base/jwt.stategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { ExtractJwt, Strategy } from \\"passport-jwt\\";
-import { JWT_SECRET_KEY } from \\"../../../constants\\";
-import { SecretsManagerService } from \\"../../../providers/secrets/secretsManager.service\\";
 import { IAuthStrategy } from \\"../../IAuthStrategy\\";
 // @ts-ignore
 // eslint-disable-next-line
@@ -2967,12 +2969,12 @@ export class JwtStrategyBase
   implements IAuthStrategy {
   constructor(
     protected readonly userService: UserService,
-    protected readonly secretsService: SecretsManagerService
+    protected readonly secretOrKey: string
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: secretsService.getSecret<string>(JWT_SECRET_KEY),
+      secretOrKey,
     });
   }
 
@@ -2988,8 +2990,8 @@ export class JwtStrategyBase
   }
 }
 ",
-  "server/src/auth/jwt/jwt.strategy.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
+  "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
+import { JWT_SECRET_KEY } from \\"../../constants\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../../user/user.service\\";
@@ -2998,15 +3000,26 @@ import { JwtStrategyBase } from \\"./base/jwt.stategy.base\\";
 export class JwtStrategy extends JwtStrategyBase {
   constructor(
     protected readonly userService: UserService,
-    protected readonly secretsService: SecretsManagerService
+    @Inject(JWT_SECRET_KEY) secretOrKey: string
   ) {
-    super(userService, secretsService);
+    super(userService, secretOrKey);
   }
 }
 ",
   "server/src/auth/jwt/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
 
 export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
+",
+  "server/src/auth/jwt/jwtSecretFactory.ts": "import { JWT_SECRET_KEY } from \\"../../constants\\";
+import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
+
+export const jwtSecretFactory = {
+  provide: JWT_SECRET_KEY,
+  useFactory: async (secretsService: SecretsManagerService) => {
+    return await secretsService.getSecret<string>(JWT_SECRET_KEY);
+  },
+  inject: [SecretsManagerService],
+};
 ",
   "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
 import { Test, TestingModule } from \\"@nestjs/testing\\";
@@ -9360,6 +9373,9 @@ export interface ISecretsManager {
 export class SecretsManagerServiceBase implements ISecretsManager {
   constructor(protected readonly configService: ConfigService) {}
   async getSecret<T>(key: string): Promise<T | null> {
+    if (!key) {
+      throw new Error(\\"Didn't got the key\\");
+    }
     const value = this.configService.get(key);
     if (value) {
       return value;
@@ -9494,18 +9510,14 @@ export const TEST_USER: UserInfo = { roles: [\\"User\\"], username: \\"ofek\\" }
   "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
 import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.stategy.base\\";
-import { SecretsManagerService } from \\"../../../providers/secrets/secretsManager.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../../../user/user.service\\";
 import { TEST_USER } from \\"../constants\\";
 
 describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
-  const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
-  const secretsService = mock<SecretsManagerService>();
-  secretsService.getSecret.mockReturnValue(Promise.resolve(JWT_SECRET_KEY));
   const userService = mock<UserService>();
-  const jwtStrategy = new JwtStrategyBase(userService, secretsService);
+  const jwtStrategy = new JwtStrategyBase(userService, \\"Secrete\\");
   beforeEach(() => {
     userService.findOne.mockClear();
   });
