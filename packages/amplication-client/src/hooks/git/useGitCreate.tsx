@@ -4,7 +4,8 @@ import {
   EnumSourceControlService,
   GitRepo,
   RepoCreateInput,
-} from "../../../../../models";
+} from "../../models";
+import { formatError } from "../../util/error";
 
 type Props = {
   appId: string;
@@ -34,15 +35,16 @@ export default function useGitCreate({
           const data: GitRepo = value.data.createRepoInOrg;
           cb(data);
         })
-        .catch((error) => {
-          setError(error.graphQLErrors[0].message);
+        .catch((error: Error) => {
+          setError(formatError(error) || "Unknown error");
         });
       // trackEvent({
       //   eventName: "updateAppSettings",
       // }); //TODO what is that
     },
-    [appId, sourceControlService, triggerCreation]
+    [appId, cb, sourceControlService, triggerCreation]
   );
+
   return { called, loading, error, handleCreation };
 }
 

@@ -1,3 +1,4 @@
+import { TextField } from "@amplication/design-system";
 import { NetworkStatus } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
@@ -8,10 +9,9 @@ import { EnumSourceControlService, RepoCreateInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import GithubRepoItem from "./GithubRepoItem/GithubRepoItem";
 import "./GithubRepos.scss";
-import GitReposBar from "./GitReposBar/GitReposBar";
 import useGetReposOfUser from "./hooks/useGetReposOfUser";
-import useGitCreate from "./hooks/useGitCreate";
-import useGitSelected from "./hooks/useGitSelected";
+import useGitCreate from "../../../../hooks/git/useGitCreate";
+import useGitSelected from "../../../../hooks/git/useGitSelected";
 
 const CLASS_NAME = "github-repos";
 
@@ -30,7 +30,7 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
   } = useGetReposOfUser({
     appId: applicationId,
   });
-  const { handleCreation, loading: createLoading } = useGitCreate({
+  const { handleCreation } = useGitCreate({
     appId: applicationId,
     sourceControlService: EnumSourceControlService.Github,
     cb: (repo) => {
@@ -77,25 +77,35 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
                 disabled={networkStatus === NetworkStatus.refetch}
               />
             </div>
-            <GitReposBar loading={createLoading} />
-            {repos &&
-              repos
-                .filter((repo) => {
-                  if (repo?.name.includes(values.name) || !values.name) {
-                    if (touched.public) {
-                      return repo.private === !values.public;
+
+            {repos && (
+              <>
+                <TextField
+                  name="name"
+                  autoComplete="off"
+                  type="text"
+                  label="Repository name"
+                />
+
+                {repos
+                  .filter((repo) => {
+                    if (repo?.name.includes(values.name) || !values.name) {
+                      if (touched.public) {
+                        return repo.private === !values.public;
+                      }
+                      return true;
                     }
-                    return true;
-                  }
-                  return false;
-                })
-                .map((repo) => (
-                  <GithubRepoItem
-                    key={repo.fullName}
-                    repo={repo}
-                    onSelectRepo={handleRepoSelected}
-                  />
-                ))}
+                    return false;
+                  })
+                  .map((repo) => (
+                    <GithubRepoItem
+                      key={repo.fullName}
+                      repo={repo}
+                      onSelectRepo={handleRepoSelected}
+                    />
+                  ))}
+              </>
+            )}
           </Form>
         )}
       </Formik>

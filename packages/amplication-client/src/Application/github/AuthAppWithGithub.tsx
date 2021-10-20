@@ -1,10 +1,4 @@
-import {
-  ConfirmationDialog,
-  Dialog,
-  EnumPanelStyle,
-  Panel,
-  Toggle,
-} from "@amplication/design-system";
+import { EnumPanelStyle, Panel, Toggle } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
 import { Icon } from "@rmwc/icon";
@@ -17,7 +11,7 @@ import GithubSyncDetails from "../../Settings/GithubSyncDetails";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
-import GithubRepos from "./dialogs/GithubRepos/GithubRepos";
+import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 
 type DType = {
   startAuthorizeAppWithGithub: models.AuthorizeAppWithGithubResult;
@@ -34,12 +28,10 @@ type Props = {
 
 const CLASS_NAME = "auth-app-with-github";
 
-const CONFIRM_BUTTON = { label: "Disable Sync" };
-const DISMISS_BUTTON = { label: "Dismiss" };
-
 function AuthAppWithGithub({ app, onDone }: Props) {
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
+  const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
   const { trackEvent } = useTracking();
 
@@ -128,34 +120,20 @@ function AuthAppWithGithub({ app, onDone }: Props) {
 
   return (
     <>
-      <ConfirmationDialog
-        isOpen={confirmRemove}
-        title={`Disable Sync with GitHub`}
-        confirmButton={CONFIRM_BUTTON}
-        dismissButton={DISMISS_BUTTON}
-        message="Are you sure you want to disable sync with GitHub?"
-        onConfirm={handleConfirmRemoveAuth}
-        onDismiss={handleDismissRemove}
+      <GitDialogsContainer
+        app={app}
+        handleSelectRepoDialogDismiss={handleSelectRepoDialogDismiss}
+        selectRepoOpen={selectRepoOpen}
+        handlePopupFailedClose={handlePopupFailedClose}
+        popupFailed={popupFailed}
+        gitCreateRepoOpen={createNewRepoOpen}
+        setGitCreateRepo={setCreateNewRepoOpen}
+        sourceControlService={models.EnumSourceControlService.Github}
+        confirmRemove={confirmRemove}
+        handleConfirmRemoveAuth={handleConfirmRemoveAuth}
+        handleDismissRemove={handleDismissRemove}
       />
-      <Dialog
-        className="select-repo-dialog"
-        isOpen={selectRepoOpen}
-        title="Select GitHub Repository"
-        onDismiss={handleSelectRepoDialogDismiss}
-      >
-        <GithubRepos
-          applicationId={app.id}
-          onCompleted={handleSelectRepoDialogDismiss}
-        />
-      </Dialog>
-      <Dialog
-        className="popup-failed-dialog"
-        isOpen={popupFailed}
-        title="Popup failed to load"
-        onDismiss={handlePopupFailedClose}
-      >
-        Please make sure that you allow popup windows in the browser
-      </Dialog>
+
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         <Toggle
           label="Sync with GitHub"
@@ -177,14 +155,25 @@ function AuthAppWithGithub({ app, onDone }: Props) {
                     <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
                     No repository was selected
                   </div>
-
-                  <div className={`${CLASS_NAME}__action`}>
-                    <Button
-                      buttonStyle={EnumButtonStyle.Primary}
-                      onClick={handleSelectRepoDialogOpen}
-                    >
-                      Select Repository
-                    </Button>
+                  <div className={`${CLASS_NAME}__actions`}>
+                    <div className={`${CLASS_NAME}__action`}>
+                      <Button
+                        buttonStyle={EnumButtonStyle.Primary}
+                        onClick={() => {
+                          setCreateNewRepoOpen(true);
+                        }}
+                      >
+                        Create repository
+                      </Button>
+                    </div>
+                    <div className={`${CLASS_NAME}__action`}>
+                      <Button
+                        buttonStyle={EnumButtonStyle.Primary}
+                        onClick={handleSelectRepoDialogOpen}
+                      >
+                        Select repository
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -202,19 +191,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
               </li>
               <li>
                 <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
-                The selected repository must not be empty, so please create at
-                least one file in the root.
-              </li>
-              <li>
-                <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
-                <div>
-                  <a href="https://github.com/new" target="github_repo">
-                    Click here
-                  </a>{" "}
-                  to create a new repository. Please select{" "}
-                  <b>Initialize this repository with a README file</b> to make
-                  sure it is not empty.
-                </div>
+                The selected repository must not be empty.
               </li>
             </ul>
           </div>

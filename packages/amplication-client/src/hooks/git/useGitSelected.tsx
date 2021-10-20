@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import { useCallback } from "react";
-import { App, GitRepo } from "../../../../../models";
+import { App, GitRepo } from "../../models";
 
 type Props = {
   appId: string;
