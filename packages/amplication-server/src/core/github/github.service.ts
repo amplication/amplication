@@ -14,6 +14,7 @@ import { components } from '@octokit/openapi-types';
 import { IGitClient } from '../git/contracts/IGitClient';
 import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
 import { GitRepo } from '../git/dto/objects/GitRepo';
+import { ApolloError } from 'apollo-server-errors';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -46,7 +47,7 @@ export class GithubService implements IGitClient {
       auth: token
     });
     if (await this.isRepoExist(token, input.name)) {
-      throw new Error('Repo already exist');
+      throw new ApolloError('Repo already exist');
     }
 
     return octokit
@@ -311,5 +312,13 @@ export class GithubService implements IGitClient {
     const secretManager = this.googleSecretManagerService;
     const [version] = await secretManager.accessSecretVersion({ name });
     return version.payload.data.toString();
+  }
+
+  async getUser(token: string) {
+    const octokit = new Octokit({
+      auth: token
+    });
+    const user = await octokit.users.getAuthenticated();
+    return user;
   }
 }
