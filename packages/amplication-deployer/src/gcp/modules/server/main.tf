@@ -7,6 +7,12 @@ locals {
   bcrypt_salt = "10"
 }
 
+resource "random_password" "app_jwt_secret" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
 resource "google_cloud_run_service" "default" {
   name     = "${var.app_id}-server"
   location = var.region
@@ -30,6 +36,14 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "BCRYPT_SALT"
           value = local.bcrypt_salt
+        }
+        env {
+          name  = "JWT_SECRET_KEY"
+          value = random_password.app_jwt_secret.result
+        }
+        env {
+          name  = "JWT_EXPIRATION"
+          value = "2d"
         }
       }
     }
