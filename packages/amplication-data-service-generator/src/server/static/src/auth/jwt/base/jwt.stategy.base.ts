@@ -14,12 +14,13 @@ export class JwtStrategyBase
   implements IAuthStrategy {
   constructor(
     protected readonly userService: UserService,
-    protected readonly secretsService: SecretsManagerService
+    protected readonly secretsService: SecretsManagerService,
+    protected readonly secretOrKey: string
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: secretsService.getSecret<string>(JWT_SECRET_KEY),
+      secretOrKey,
     });
   }
 
