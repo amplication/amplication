@@ -9,6 +9,7 @@ import {
   EnumSourceControlService,
   RepoCreateInput,
 } from "../../../../models";
+import { CreateGitFormSchema } from "./CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 
 type Props = {
@@ -40,42 +41,43 @@ export default function GitCreateRepo({
     <Formik
       initialValues={initialValues}
       onSubmit={(values) => {
-        console.log(values);
         handleCreation(values);
       }}
+      validationSchema={CreateGitFormSchema}
     >
-      {({ setValues, values }) => (
-        <Form>
-          <div className={`${CLASS_NAME}__header`}>
-            <h3>
-              Create a new {sourceControlService} repository to sync your
-              application with
-            </h3>
-          </div>
-          <table>
-            <tr>
-              <th>Owner</th>
-              <th>Repository name</th>
-            </tr>
-            <tr>
-              <td>{username}/</td>
-              <td>
-                <TextField name="name" />
-              </td>
-            </tr>
-          </table>
-          <ToggleField label="Create repository as public" name="public" />
-          <Button
-            type="submit"
-            className={`${CLASS_NAME}__button`}
-            disabled={loading}
-          >
-            Create
-          </Button>
-          <div>{error}</div>
-          {JSON.stringify(values)}
-        </Form>
-      )}
+      {({ setErrors, errors }) => {
+        return (
+          <Form>
+            <div className={`${CLASS_NAME}__header`}>
+              <h3>
+                Create a new {sourceControlService} repository to sync your
+                application with
+              </h3>
+            </div>
+            <table>
+              <tr>
+                <th>Owner</th>
+                <th>Repository name</th>
+              </tr>
+              <tr>
+                <td>{username}/</td>
+                <td>
+                  <TextField name="name" autoComplete="off" helpText={error} />
+                </td>
+              </tr>
+            </table>
+            <ToggleField label="Create repository as public" name="public" />
+            <Button
+              type="submit"
+              className={`${CLASS_NAME}__button`}
+              disabled={loading}
+            >
+              Create
+            </Button>
+            <div>{error}</div>
+          </Form>
+        );
+      }}
     </Formik>
   );
 }
