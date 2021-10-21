@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { useCallback } from "react";
 import { App, GitRepo } from "../../models";
+import { useTracking } from "../../util/analytics";
 
 type Props = {
   appId: string;
@@ -8,6 +9,8 @@ type Props = {
 };
 
 export default function useGitSelected({ appId, onCompleted }: Props) {
+  const { trackEvent } = useTracking();
+
   const [enableSyncWithGithub, { error }] = useMutation<App>(
     ENABLE_SYNC_WITH_GITHUB,
     {
@@ -24,8 +27,11 @@ export default function useGitSelected({ appId, onCompleted }: Props) {
           appId: appId,
         },
       }).catch(console.error);
+      trackEvent({
+        eventName: "selectGitRepo",
+      });
     },
-    [enableSyncWithGithub, appId]
+    [enableSyncWithGithub, appId, trackEvent]
   );
   return { handleRepoSelected, error };
 }

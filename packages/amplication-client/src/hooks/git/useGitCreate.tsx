@@ -5,6 +5,7 @@ import {
   GitRepo,
   RepoCreateInput,
 } from "../../models";
+import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 
 type Props = {
@@ -18,6 +19,7 @@ export default function useGitCreate({
   sourceControlService,
   cb,
 }: Props) {
+  const { trackEvent } = useTracking();
   const [error, setError] = useState("");
   const [triggerCreation, { called, loading }] = useMutation(CREATE_REPO);
 
@@ -38,9 +40,9 @@ export default function useGitCreate({
         .catch((error: Error) => {
           setError(formatError(error) || "Unknown error");
         });
-      // trackEvent({
-      //   eventName: "updateAppSettings",
-      // }); //TODO what is that
+      trackEvent({
+        eventName: "createGitRepo",
+      });
     },
     [appId, cb, sourceControlService, triggerCreation]
   );
