@@ -21,7 +21,7 @@ import { ApiTokenList } from "../Settings/ApiTokenList";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms";
 import ApplicationAuthSettingForm from "./ApplicationAuthSettingForm";
-import SyncWithGithubPage from "./github/SyncWithGithubPage";
+import SyncWithGithubPage from "./git/SyncWithGithubPage";
 
 type Props = {
   match: match<{ application: string }>;

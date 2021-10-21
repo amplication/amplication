@@ -13,7 +13,7 @@ import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import RouteWithAnalytics from "./Layout/RouteWithAnalytics";
-import AuthAppWithGithubCallback from "./Application/github/AuthAppWithGithubCallback";
+import AuthAppWithGithubCallback from "./Application/git/AuthAppWithGithubCallback";
 
 const context = {
   source: "amplication-client",
