@@ -7,7 +7,7 @@ import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import { EnumSourceControlService, RepoCreateInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
-import GithubRepoItem from "./GithubRepoItem/GithubRepoItem";
+import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GithubRepos.scss";
 import useGetReposOfUser from "../../../../hooks/git/useGetReposOfUser";
 import useGitCreate from "../../../../hooks/git/useGitCreate";
@@ -104,7 +104,7 @@ function GithubRepos({
                     return false;
                   })
                   .map((repo) => (
-                    <GithubRepoItem
+                    <GitRepoItem
                       key={repo.fullName}
                       repo={repo}
                       onSelectRepo={handleRepoSelected}
