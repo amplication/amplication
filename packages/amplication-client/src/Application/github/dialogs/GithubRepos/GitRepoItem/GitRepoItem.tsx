@@ -1,17 +1,17 @@
 import React, { useCallback } from "react";
 import { GitRepo } from "../../../../../models";
 import { Icon } from "@rmwc/icon";
-import "./GithubRepoItem.scss";
+import "./GitRepoItem.scss";
 import { Button } from "../../../../../Components/Button";
 
-const CLASS_NAME = "github-repo-item";
+const CLASS_NAME = "git-repo-item";
 
 type Props = {
   repo: GitRepo;
   onSelectRepo: (repo: GitRepo) => void;
 };
 
-function GithubRepoItem({ repo, onSelectRepo }: Props) {
+function GitRepoItem({ repo, onSelectRepo }: Props) {
   const handleRepoSelected = useCallback(
     (data: GitRepo) => {
       onSelectRepo(data);
@@ -53,4 +53,4 @@ function GithubRepoItem({ repo, onSelectRepo }: Props) {
   );
 }
 
-export default GithubRepoItem;
+export default GitRepoItem;
