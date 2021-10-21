@@ -2,7 +2,7 @@ import { ConfirmationDialog, Dialog } from "@amplication/design-system";
 import React from "react";
 import { App, EnumSourceControlService } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
-import GithubRepos from "./GithubRepos/GithubRepos";
+import GitRepos from "./GithubRepos/GithubRepos";
 
 type Props = {
   app: App;
@@ -50,7 +50,7 @@ export default function GitDialogsContainer({
         title="Select GitHub repository"
         onDismiss={handleSelectRepoDialogDismiss}
       >
-        <GithubRepos
+        <GitRepos
           applicationId={app.id}
           onCompleted={handleSelectRepoDialogDismiss}
           sourceControlService={sourceControlService}

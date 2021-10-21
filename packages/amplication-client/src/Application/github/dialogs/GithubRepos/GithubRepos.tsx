@@ -8,12 +8,12 @@ import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import { EnumSourceControlService, RepoCreateInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
-import "./GithubRepos.scss";
+import "./GitRepos.scss";
 import useGetReposOfUser from "../../../../hooks/git/useGetReposOfUser";
 import useGitCreate from "../../../../hooks/git/useGitCreate";
 import useGitSelected from "../../../../hooks/git/useGitSelected";
 
-const CLASS_NAME = "github-repos";
+const CLASS_NAME = "git-repos";
 
 type Props = {
   applicationId: string;
@@ -21,11 +21,7 @@ type Props = {
   sourceControlService: EnumSourceControlService;
 };
 
-function GithubRepos({
-  applicationId,
-  onCompleted,
-  sourceControlService,
-}: Props) {
+function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
   const {
     refetch,
     error,
@@ -67,7 +63,10 @@ function GithubRepos({
         {({ values, touched, setTouched, setValues }) => (
           <Form>
             <div className={`${CLASS_NAME}__header`}>
-              <h3>Select a GitHub repository to sync your application with.</h3>
+              <h3>
+                Select a {sourceControlService} repository to sync your
+                application with.
+              </h3>
               {(loadingRepos || networkStatus === NetworkStatus.refetch) && (
                 <CircularProgress />
               )}
@@ -120,4 +119,4 @@ function GithubRepos({
   );
 }
 
-export default GithubRepos;
+export default GitRepos;
