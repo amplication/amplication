@@ -18,7 +18,8 @@
     "generate": "run-s generate-graphql-schema generate-graphql-code",
     "build-storybook": "lerna run build-storybook",
     "generate-test-data-service": "lerna run --scope @amplication/data-service-generator generate-test-data-service",
-    "setup:dev": "ts-node ./script/setup.ts"
+    "setup:dev": "ts-node ./script/setup.ts",
+    "package-lock-update": "npx lerna run --parallel install"
   },
   "dependencies": {
     "lerna": "3.22.1",
