@@ -60,7 +60,8 @@ See [Amplication website](http://amplication.com/) or [Amplication docs](http://
 
 ## Development
 
-Amplication is constructed of multiple packages. To start working on Amplication follow the "Amplication Server" and "Amplication Client" installation instructions or run `npm run setup:dev` to auto build all the project.
+Amplication is constructed from multiple packages. To initialize the local development environment, run `npm run setup:dev`, it will install all the required dependencies, run the necessary scripts and init Docker-based Postgres server.
+To set up manually Amplication local development environment, follow the "Amplication Server" and "Amplication Client" installation instructions.
 
 ### [Amplication Server](./packages/amplication-server/README.md)
 
