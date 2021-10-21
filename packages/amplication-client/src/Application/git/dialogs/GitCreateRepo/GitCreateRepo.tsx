@@ -9,7 +9,7 @@ import {
   EnumSourceControlService,
   RepoCreateInput,
 } from "../../../../models";
-import { CreateGitFormSchema } from "./CreateGitFormSchema";
+import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 
 type Props = {
