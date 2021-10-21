@@ -1,18 +1,12 @@
 @import "../../../../style/index.scss";
+@import "../GitDialogsIndex.scss";
 
-$max-height: 80vh;
 .git-create {
-  //   overflow: auto;
+  overflow: auto;
 
   &__button {
     @include flexFullRowWithSpacing;
     width: 100%;
     justify-content: center;
-  }
-  h3 {
-    margin-top: 0;
-    margin-bottom: 0;
-    @include body2;
-    margin-right: auto;
   }
 }

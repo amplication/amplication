@@ -1,0 +1,7 @@
+$max-height: 80vh;
+h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+  @include body2;
+  margin-right: auto;
+}
