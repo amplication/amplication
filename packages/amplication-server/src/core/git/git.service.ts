@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { ApolloError } from 'apollo-server-errors';
+import { isEmpty } from 'lodash';
 import { AppService } from '..';
+import { INVALID_APP_ID } from '../app/app.service';
 import { GithubService } from '../github/github.service';
+import { BaseGitArgs } from './dto/args/BaseGitArgs';
 import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { EnumSourceControlService } from './dto/enums/EnumSourceControlService';
 import { GitRepo } from './dto/objects/GitRepo';
-import { isEmpty } from 'lodash';
-import { INVALID_APP_ID } from '../app/app.service';
-import { BaseGitArgs } from './dto/args/BaseGitArgs';
-import { ApolloError } from 'apollo-server-errors';
+import { GitUser } from './dto/objects/GitUser';
 
 @Injectable()
 export class GitService {
@@ -56,7 +57,18 @@ export class GitService {
     const { githubToken } = app;
     switch (sourceControlService) {
       case EnumSourceControlService.Github:
-        return (await this.githubService.getUser(githubToken)).data.login;
+        return await (await this.githubService.getUser(githubToken)).username;
+      default:
+        throw new ApolloError("Didn't got a valid source control service");
+    }
+  }
+  async getUser(args: BaseGitArgs): Promise<GitUser> {
+    const { appId, sourceControlService } = args;
+    const app = await this.appService.app({ where: { id: appId } });
+    const { githubToken } = app;
+    switch (sourceControlService) {
+      case EnumSourceControlService.Github:
+        return await this.githubService.getUser(githubToken);
       default:
         throw new ApolloError("Didn't got a valid source control service");
     }

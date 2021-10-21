@@ -15,6 +15,7 @@ import { IGitClient } from '../git/contracts/IGitClient';
 import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
 import { GitRepo } from '../git/dto/objects/GitRepo';
 import { ApolloError } from 'apollo-server-errors';
+import { GitUser } from '../git/dto/objects/GitUser';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -314,11 +315,11 @@ export class GithubService implements IGitClient {
     return version.payload.data.toString();
   }
 
-  async getUser(token: string) {
+  async getUser(token: string): Promise<GitUser> {
     const octokit = new Octokit({
       auth: token
     });
     const user = await octokit.users.getAuthenticated();
-    return user;
+    return { username: user.data.login };
   }
 }
