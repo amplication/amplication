@@ -38,7 +38,7 @@ export class GitService {
   }
   //TODO add args validation
   //TODO add make sure repo name valid
-  async createRepoInOrg(args: CreateRepoArgs): Promise<GitRepo> {
+  async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
     const { input, appId, sourceControlService } = args;
     const app = await this.appService.app({ where: { id: appId } });
     const token = app.githubToken;
