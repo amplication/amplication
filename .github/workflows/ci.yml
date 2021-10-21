@@ -59,7 +59,7 @@ jobs:
       - name: Check GraphQL schema
         run: npm run check-graphql-schema -- --since $SINCE
       - name: Run tests
-        run: npm test -- --since $SINCE --ignore @amplication/e2e-tester
+        run: npm test -- --since $SINCE
       # E2E tests to run on merge to master
       - name: Generate test data service
         run: npm run generate-test-data-service

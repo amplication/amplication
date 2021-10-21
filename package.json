@@ -17,21 +17,29 @@
     "generate-graphql-code": "graphql-codegen",
     "generate": "run-s generate-graphql-schema generate-graphql-code",
     "build-storybook": "lerna run build-storybook",
-    "generate-test-data-service": "lerna run --scope @amplication/data-service-generator generate-test-data-service"
+    "generate-test-data-service": "lerna run --scope @amplication/data-service-generator generate-test-data-service",
+    "setup:dev": "ts-node ./script/setup.ts"
   },
   "dependencies": {
-    "lerna": "3.22.1"
+    "lerna": "3.22.1",
+    "semver": "^6.3.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.21.6",
     "@graphql-codegen/typescript": "1.22.4",
+    "@types/dockerode": "^3.2.7",
+    "@types/jest": "^27.0.2",
+    "@types/semver": "^7.3.8",
+    "dockerode": "^3.3.1",
     "graphql": "15.3.0",
     "npm-run-all": "4.1.5",
-    "prettier": "2.0.5"
+    "prettier": "2.0.5",
+    "ts-jest": "^27.0.5"
   },
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=7.0.0"
+    "node": "^14.0.0",
+    "npm": "^7.3.0"
   },
   "bugs": {
     "url": "https://github.com/amplication/amplication/issues"

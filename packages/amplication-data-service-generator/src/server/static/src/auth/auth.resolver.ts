@@ -25,8 +25,10 @@ export class AuthResolver {
       throw new ApolloError("The passed credentials are incorrect");
     }
     const payload = { username: user.username };
+    const accessToken = await this.jwtService.signAsync(payload); //signs username payload
+
     return {
-      accessToken: this.jwtService.sign(payload), //signs username payload
+      accessToken,
       ...user,
     };
   }

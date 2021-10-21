@@ -133,6 +133,19 @@ describe("Data Service Generator", () => {
   afterAll(async () => {
     await down(dockerComposeOptions);
   });
+  test("check /api/health/live endpoint", async () => {
+    const res = await fetch(`${host}/api/health/live`, {
+      method: "GET",
+    });
+    expect(res.status === STATUS_OK);
+  });
+
+  test("check api/health/ready endpoint", async () => {
+    const res = await fetch(`${host}/api/health/ready`, {
+      method: "GET",
+    });
+    expect(res.status === STATUS_OK);
+  });
 
   test("creates POST /api/login endpoint", async () => {
     const res = await fetch(`${host}/api/login`, {
@@ -472,6 +485,8 @@ describe("Data Service Generator", () => {
       })
     );
   });
+
+  //TODO add test if not connect to db send api/health/ready status 503
 });
 
 async function down(
