@@ -37,17 +37,17 @@ export default function GitDialogsContainer({
     <div>
       <ConfirmationDialog
         isOpen={confirmRemove}
-        title={`Disable Sync with GitHub`}
+        title={`Disable Sync with ${sourceControlService}`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message="Are you sure you want to disable sync with GitHub?"
+        message={`Are you sure you want to disable sync with ${sourceControlService}?`}
         onConfirm={handleConfirmRemoveAuth}
         onDismiss={handleDismissRemove}
       />
       <Dialog
         className="select-repo-dialog"
         isOpen={selectRepoOpen}
-        title="Select GitHub repository"
+        title={`Select ${sourceControlService} repository`}
         onDismiss={handleSelectRepoDialogDismiss}
       >
         <GitRepos
