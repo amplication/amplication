@@ -9,7 +9,7 @@ import { EnumSourceControlService, RepoCreateInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import GithubRepoItem from "./GithubRepoItem/GithubRepoItem";
 import "./GithubRepos.scss";
-import useGetReposOfUser from "./hooks/useGetReposOfUser";
+import useGetReposOfUser from "../../../../hooks/git/useGetReposOfUser";
 import useGitCreate from "../../../../hooks/git/useGitCreate";
 import useGitSelected from "../../../../hooks/git/useGitSelected";
 
@@ -18,9 +18,14 @@ const CLASS_NAME = "github-repos";
 type Props = {
   applicationId: string;
   onCompleted: () => void;
+  sourceControlService: EnumSourceControlService;
 };
 
-function GithubRepos({ applicationId, onCompleted }: Props) {
+function GithubRepos({
+  applicationId,
+  onCompleted,
+  sourceControlService,
+}: Props) {
   const {
     refetch,
     error,
@@ -29,10 +34,11 @@ function GithubRepos({ applicationId, onCompleted }: Props) {
     networkStatus,
   } = useGetReposOfUser({
     appId: applicationId,
+    sourceControlService,
   });
   const { handleCreation } = useGitCreate({
     appId: applicationId,
-    sourceControlService: EnumSourceControlService.Github,
+    sourceControlService: sourceControlService,
     cb: (repo) => {
       handleRepoSelected(repo);
     },

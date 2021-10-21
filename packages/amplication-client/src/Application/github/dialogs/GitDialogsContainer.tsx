@@ -53,6 +53,7 @@ export default function GitDialogsContainer({
         <GithubRepos
           applicationId={app.id}
           onCompleted={handleSelectRepoDialogDismiss}
+          sourceControlService={sourceControlService}
         />
       </Dialog>
       <Dialog
