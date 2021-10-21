@@ -10,3 +10,7 @@
     justify-content: center;
   }
 }
+th {
+  text-align: inherit;
+  @include body2;
+}

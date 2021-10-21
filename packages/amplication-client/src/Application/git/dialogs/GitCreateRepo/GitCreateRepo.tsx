@@ -1,4 +1,4 @@
-import { Button, TextField, ToggleField } from "@amplication/design-system";
+import { Button, TextField } from "@amplication/design-system";
 import { Form, Formik } from "formik";
 import React from "react";
 import useGitCreate from "../../../../hooks/git/useGitCreate";
@@ -45,39 +45,37 @@ export default function GitCreateRepo({
       }}
       validationSchema={CreateGitFormSchema}
     >
-      {({ setErrors, errors }) => {
-        return (
-          <Form>
-            <div className={`${CLASS_NAME}__header`}>
-              <h3>
-                Create a new {sourceControlService} repository to sync your
-                application with
-              </h3>
-            </div>
-            <table>
-              <tr>
-                <th>Owner</th>
-                <th>Repository name</th>
-              </tr>
-              <tr>
-                <td>{username}/</td>
-                <td>
-                  <TextField name="name" autoComplete="off" helpText={error} />
-                </td>
-              </tr>
-            </table>
-            <ToggleField label="Create repository as public" name="public" />
-            <Button
-              type="submit"
-              className={`${CLASS_NAME}__button`}
-              disabled={loading}
-            >
-              Create
-            </Button>
-            <div>{error}</div>
-          </Form>
-        );
-      }}
+      {({}) => (
+        <Form>
+          <div className={`${CLASS_NAME}__header`}>
+            <h3>
+              Create a new {sourceControlService} repository to sync your
+              application with
+            </h3>
+            <br />
+          </div>
+          <table>
+            <tr>
+              <th>Owner</th>
+              <th>Repository name</th>
+            </tr>
+            <tr>
+              <td>{username}/</td>
+              <td>
+                <TextField name="name" autoComplete="off" helpText={error} />
+              </td>
+            </tr>
+          </table>
+          <Button
+            type="submit"
+            className={`${CLASS_NAME}__button`}
+            disabled={loading}
+          >
+            Create
+          </Button>
+          <div>{error}</div>
+        </Form>
+      )}
     </Formik>
   );
 }
