@@ -1,6 +1,6 @@
-# Use node 14.15.1 as the base image
-FROM node@sha256:bac289a6f393990e759c672d5f567553c697255d1fb858e2c62d086a2dfae44a AS node
+FROM node:14.18.1-alpine3.12 AS node
 FROM node
+
 
 FROM node as base
 RUN npm i -g npm@7.3.0
@@ -15,27 +15,50 @@ RUN cp --parents packages/*/package*.json /app/
 WORKDIR /app
 RUN npm ci --loglevel=${NPM_LOG_LEVEL} --production
 
+# build the packages folders to production for moving them to the stage
 FROM package-sources AS build
 ARG NPM_LOG_LEVEL=silent
 
 ENV OPENCOLLECTIVE_HIDE=1
 
-RUN npm run bootstrap -- --loglevel=${NPM_LOG_LEVEL} --scope @amplication/server --scope @amplication/client --include-dependencies
+RUN npm run bootstrap -- --scope @amplication/server --scope @amplication/client --include-dependencies -- --loglevel=${NPM_LOG_LEVEL}
 
 COPY packages packages
 
-RUN npm run prisma:generate
-RUN npm run build -- --scope @amplication/server --scope @amplication/client --include-dependencies
-RUN npm run clean -- --yes
+# RUN npm run prisma:generate
+# RUN npm run build -- --scope @amplication/server --scope @amplication/client --include-dependencies
+# RUN npm run clean -- --yes
 
+# starting of the stage phase
 FROM package-sources
 
 ENV OPENCOLLECTIVE_HIDE=1
 
 EXPOSE 3000
-
 RUN npm ci --production --silent
-RUN npm run bootstrap -- -- --production --loglevel=silent --scope @amplication/server --scope @amplication/client --include-dependencies
+
+# WORKDIR /app/packages/amplication-server
+# RUN npm install --production
+# WORKDIR /app/packages/amplication-client
+# RUN npm install --production
+# WORKDIR /app/packages/amplication-data-service-generator
+# RUN npm install --production
+# WORKDIR /app/packages/amplication-data-service-cli
+# RUN npm install --production
+# WORKDIR /app/packages/amplication-scheduler
+# RUN npm install --production
+# WORKDIR /app/packages/amplication-deployer
+# RUN npm install --production
+
+
+# WORKDIR /app/packages/amplication-container-builder
+# RUN npm install --production
+# WORKDIR /app/packages/amplication-container-data
+# RUN npm install --production
+
+
+WORKDIR /app
+RUN npm run bootstrap -- --scope @amplication/server --scope @amplication/client --include-dependencies -- --loglevel=silent
 
 COPY --from=build /app/packages /app/packages
 RUN npm run prisma:generate
