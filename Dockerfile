@@ -21,7 +21,7 @@ ARG NPM_LOG_LEVEL=silent
 
 ENV OPENCOLLECTIVE_HIDE=1
 
-RUN npm run bootstrap -- --scope @amplication/server --scope @amplication/client --include-dependencies -- --loglevel=${NPM_LOG_LEVEL}
+RUN npm run bootstrap -- --scope @amplication/server --scope @amplication/client --include-dependencies
 
 COPY packages packages
 
@@ -38,7 +38,7 @@ EXPOSE 3000
 RUN npm ci --production --silent
 
 # WORKDIR /app/packages/amplication-server
-# RUN npm install --production
+# RUN npm install --production --no-save
 # WORKDIR /app/packages/amplication-client
 # RUN npm install --production
 # WORKDIR /app/packages/amplication-data-service-generator
@@ -58,7 +58,7 @@ RUN npm ci --production --silent
 
 
 WORKDIR /app
-RUN npm run bootstrap -- --scope @amplication/server --scope @amplication/client --include-dependencies -- --loglevel=silent
+RUN npm run bootstrap -- --scope @amplication/server --scope @amplication/client --include-dependencies -- --production
 
 COPY --from=build /app/packages /app/packages
 RUN npm run prisma:generate
