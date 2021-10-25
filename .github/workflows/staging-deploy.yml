@@ -1,86 +1,15 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: CI
+name: Deploy To Staging
 
 on:
   workflow_dispatch:
-  push:
-    branches: [master]
-    paths-ignore:
-      - "**.md"
-      - ".github/workflows/**.yml"
-      - "renovate.json"
-      - ".all-contributorsrc"
-  pull_request:
-    branches: [master]
-    paths-ignore:
-      - "**.md"
-      - ".github/workflows/**.yml"
-      - "renovate.json"
-      - ".all-contributorsrc"
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v2
-      - name: Fetch master
-        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/master:refs/remotes/origin/master
-      - name: Use Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14.x
-      - name: Update npm
-        run: npm i -g npm@7.3.0
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.npm
-            node_modules
-            */*/node_modules
-          key: ${{ runner.os }}-node-2-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-2-
-      - run: npm ci
-      - name: Install packages' dependencies
-        run: npm run bootstrap -- --loglevel verbose
-      - name: Update Prisma client
-        run: npm run prisma:generate
-      - name: Define Lerna since parameter
-        run: echo "SINCE=origin/master" >> $GITHUB_ENV
-        if: ${{ github.ref != 'refs/heads/master' }}
-      - name: Check format
-        run: npm run check-format -- --since $SINCE
-      - name: Build packages
-        run: npm run build -- --since $SINCE
-      - name: Lint
-        run: npm run lint -- --since $SINCE
-      - name: Check GraphQL schema
-        run: npm run check-graphql-schema -- --since $SINCE
-      - name: Run tests
-        run: npm test -- --since $SINCE
-      # E2E tests to run on merge to master
-      - name: Generate test data service
-        run: npm run generate-test-data-service
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
-      - name: Install test data service's dependencies
-        working-directory: packages/amplication-data-service-generator/generated/server
-        run: npm ci && npm run prisma:generate
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
-      - name: Run test data service's tests
-        working-directory: packages/amplication-data-service-generator/generated/server
-        run: npm test
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
-      - name: Run Data Service Generator E2E test
-        run: npm run test:e2e -- --scope @amplication/data-service-generator
-        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    if: github.ref == 'refs/heads/master' || contains('ci', github.ref)
     steps:
       - uses: actions/checkout@v2
       - uses: docker/setup-buildx-action@v1
@@ -97,14 +26,6 @@ jobs:
           registry: gcr.io
           username: _json_key
           password: ${{ secrets.GOOGLE_CREDENTIALS }}
-      # cache was removed because it didn't reduce the runtime
-      # - name: Cache Docker layers
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: /tmp/.buildx-cache
-      #     key: ${{ runner.os }}-buildx-${{ github.sha }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-buildx-
       - name: "Build and push amplication/amplication Docker image"
         uses: docker/build-push-action@v2
         with:
