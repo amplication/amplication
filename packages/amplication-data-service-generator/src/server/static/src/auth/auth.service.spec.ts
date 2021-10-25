@@ -1,29 +1,39 @@
+import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
-import { AuthService } from "./auth.service";
 // @ts-ignore
 // eslint-disable-next-line
-import { UserService, User } from "../user/user.service";
-import { PasswordService } from "./password.service";
+import { User } from "src/user/base/User";
+// @ts-ignore
+// eslint-disable-next-line
+import { UserService } from "../user/user.service";
+import { AuthService } from "./auth.service";
 import { Credentials } from "./Credentials";
-import { MockUser } from "../tests/__mocks__/MockUser";
-import { JwtService } from "@nestjs/jwt";
-import { mock } from "jest-mock-extended";
+import { PasswordService } from "./password.service";
 
-const VALID_USER: User = {
+const VALID_CREDENTIALS: Credentials = {
   username: "Valid User",
   password: "Valid User Password",
 };
-const INVALID_USER: User = {
+const INVALID_CREDENTIALS: Credentials = {
   username: "Invalid User",
   password: "Invalid User Password",
+};
+const USER: User = {
+  ...VALID_CREDENTIALS,
+  createdAt: new Date(),
+  firstName: "ofek",
+  id: "1",
+  lastName: "gabay",
+  roles: ["admin"],
+  updatedAt: new Date(),
 };
 
 const signToken = "signToken";
 
 const userService = {
   findOne(args: { where: { username: string } }): User | null {
-    if (args.where.username === VALID_USER.username) {
-      return VALID_USER;
+    if (args.where.username === VALID_CREDENTIALS.username) {
+      return USER;
     }
     return null;
   },
@@ -32,6 +42,12 @@ const userService = {
 const passwordService = {
   compare(password: string, encrypted: string) {
     return true;
+  },
+};
+
+const jwtService = {
+  signAsync() {
+    return Promise.resolve(signToken);
   },
 };
 
@@ -51,7 +67,7 @@ describe("AuthService", () => {
         },
         {
           provide: JwtService,
-          useValue: mock<JwtService>(),
+          useValue: jwtService,
         },
         AuthService,
       ],
@@ -67,52 +83,34 @@ describe("AuthService", () => {
   describe("Testing the authService.validateUser()", () => {
     it("should validate a valid user", async () => {
       await expect(
-        service.validateUser(VALID_USER.username, VALID_USER.password)
+        service.validateUser(
+          VALID_CREDENTIALS.username,
+          VALID_CREDENTIALS.password
+        )
       ).resolves.toEqual({
-        username: VALID_USER.username,
+        username: USER.username,
+        roles: USER.roles,
       });
     });
 
     it("should not validate a invalid user", async () => {
       await expect(
-        service.validateUser(INVALID_USER.username, INVALID_USER.password)
+        service.validateUser(
+          INVALID_CREDENTIALS.username,
+          INVALID_CREDENTIALS.password
+        )
       ).resolves.toBe(null);
     });
   });
 
   describe("Testing the authService.login()", () => {
-    const validCredentials: Credentials = {
-      password: "gabay",
-      username: MockUser.username,
-    };
-    let passwordService = mock<PasswordService>();
-    let jwtService = mock<JwtService>();
-
-    beforeEach(() => {
-      //ARRANGE
-      const userService = mock<UserService>();
-      userService.findOne
-        .calledWith({
-          where: { username: validCredentials.username },
-        })
-        .mockReturnValue(
-          Promise.resolve({ ...MockUser, password: "hashedPassword" })
-        );
-      passwordService = mock<PasswordService>();
-      jwtService = mock<JwtService>();
-
-      // authService = new AuthService(userService, passwordService, jwtService);
-    });
     it("should return userInfo object for correct username and password", async () => {
-      passwordService.compare.mockReturnValue(Promise.resolve(true));
-      jwtService.signAsync.mockReturnValue(Promise.resolve(signToken));
-      const loginResult = await service.login(validCredentials);
-      expect(loginResult).toBe({
-        username: validCredentials.username,
-        roles: MockUser.roles,
+      const loginResult = await service.login(VALID_CREDENTIALS);
+      expect(loginResult).toEqual({
+        username: USER.username,
+        roles: USER.roles,
         accessToken: signToken,
       });
     });
   });
 });
-//TODO not ready
