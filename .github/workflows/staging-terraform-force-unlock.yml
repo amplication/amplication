@@ -18,7 +18,7 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         working-directory: terraform/envs/dev
-      - run: terraform force-unlock ${{ github.event.inputs.lock-id }}
+      - run: terraform force-unlock -force ${{ github.event.inputs.lock-id }}
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         working-directory: terraform/envs/dev
