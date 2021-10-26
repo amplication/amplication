@@ -119,20 +119,37 @@ export class GithubService {
       /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
       /^server\/src\/[^\/]+\/.+\.service.ts$/,
       /^server\/src\/[^\/]+\/.+\.module.ts$/,
-      /^server\/src\/[^\/]+\/.+\.strategy.ts$/,
+
       /^server\/scripts\/customSeed.ts$/
     ];
+    const doNotOverrideAuthModules = [/^server\/src\/[^\/]+\/.+\.strategy.ts$/];
     type Code = string;
     type Path = string;
     type File = [Path, Code];
     type DoNotOverrideFile = [Path, ({ exists }) => Code | null];
-    // const authFolder = 'server/src/auth';
+    const authFolder = 'server/src/auth';
 
     const filesArray: (File | DoNotOverrideFile)[] = modules.map(module => {
-      // const isInAuthFolder = module.path.startsWith(authFolder);
+      const isInAuthFolder = module.path.startsWith(authFolder);
+      if (isInAuthFolder) {
+        if (doNotOverrideAuthModules.some(rx => rx.test(module.path))) {
+          const doNotOverrideFile: DoNotOverrideFile = [
+            module.path,
+            ({ exists }) => {
+              // do not create the file if it already exist
+              if (exists) return null;
+
+              return module.code;
+            }
+          ];
+          return doNotOverrideFile;
+        }
+        const file: File = [module.path, module.code];
+        return file;
+      }
       const isMatchRegex = doNotOverride.some(rx => rx.test(module.path));
       if (isMatchRegex) {
-        const dynamicFile: DoNotOverrideFile = [
+        const doNotOverrideFile: DoNotOverrideFile = [
           module.path,
           ({ exists }) => {
             // do not create the file if it already exist
@@ -141,8 +158,9 @@ export class GithubService {
             return module.code;
           }
         ];
-        return dynamicFile;
+        return doNotOverrideFile;
       }
+
       const file: File = [module.path, module.code];
       return file;
     });
