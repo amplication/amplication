@@ -108,10 +108,8 @@ export class GithubService {
     token: string
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
-
-    const TOKEN = token;
     const octokit = new myOctokit({
-      auth: TOKEN
+      auth: token
     });
 
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
@@ -121,33 +119,40 @@ export class GithubService {
       /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
       /^server\/src\/[^\/]+\/.+\.service.ts$/,
       /^server\/src\/[^\/]+\/.+\.module.ts$/,
+      /^server\/src\/[^\/]+\/.+\.strategy.ts$/,
       /^server\/scripts\/customSeed.ts$/
     ];
+    type Code = string;
+    type Path = string;
+    type File = [Path, Code];
+    type DoNotOverrideFile = [Path, ({ exists }) => Code | null];
+    // const authFolder = 'server/src/auth';
 
-    const authFolder = 'server/src/auth';
+    const filesArray: (File | DoNotOverrideFile)[] = modules.map(module => {
+      // const isInAuthFolder = module.path.startsWith(authFolder);
+      const isMatchRegex = doNotOverride.some(rx => rx.test(module.path));
+      if (isMatchRegex) {
+        const dynamicFile: DoNotOverrideFile = [
+          module.path,
+          ({ exists }) => {
+            // do not create the file if it already exist
+            if (exists) return null;
 
-    const files = Object.fromEntries(
-      modules.map(module => {
-        if (
-          !module.path.startsWith(authFolder) &&
-          doNotOverride.some(rx => rx.test(module.path))
-        ) {
-          return [
-            module.path,
-            ({ exists }) => {
-              // do not create the file if it already exist
-              if (exists) return null;
+            return module.code;
+          }
+        ];
+        return dynamicFile;
+      }
+      const file: File = [module.path, module.code];
+      return file;
+    });
+    // files is an array with key as the path and value as the code of the file
+    const files: Record<
+      Path,
+      Code | (({ exists }) => Code | null)
+    > = Object.fromEntries(filesArray);
 
-              return module.code;
-            }
-          ];
-        }
-
-        return [module.path, module.code];
-      })
-    );
-
-    //todo: delete files that are no longer part of the app
+    //TODO: delete files that are no longer part of the app
 
     // Returns a normal Octokit PR response
     // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
