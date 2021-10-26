@@ -3,7 +3,7 @@ import { JWT_SECRET_KEY } from "../../constants";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from "../../user/user.service";
-import { JwtStrategyBase } from "./base/jwt.stategy.base";
+import { JwtStrategyBase } from "./base/jwt.strategy.base";
 @Injectable()
 export class JwtStrategy extends JwtStrategyBase {
   constructor(

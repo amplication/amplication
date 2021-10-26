@@ -1,7 +1,7 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { mock } from "jest-mock-extended";
 import { AuthService } from "../../../auth/auth.service";
-import { BasicStrategyBase } from "../../../auth/basic/base/basic.stategy.base";
+import { BasicStrategyBase } from "../../../auth/basic/base/basic.strategy.base";
 import { TEST_USER } from "../constants";
 
 describe("Testing the basicStrategyBase.validate()", () => {
