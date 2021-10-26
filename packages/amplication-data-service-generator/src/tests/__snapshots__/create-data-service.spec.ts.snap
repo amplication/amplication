@@ -2853,7 +2853,7 @@ export class AuthService {
   }
 }
 ",
-  "server/src/auth/basic/base/basic.stategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
+  "server/src/auth/basic/base/basic.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { BasicStrategy as Strategy } from \\"passport-http\\";
 import { AuthService } from \\"../../auth.service\\";
@@ -2878,7 +2878,7 @@ export class BasicStrategyBase
 ",
   "server/src/auth/basic/basic.strategy.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { AuthService } from \\"../auth.service\\";
-import { BasicStrategyBase } from \\"./base/basic.stategy.base\\";
+import { BasicStrategyBase } from \\"./base/basic.strategy.base\\";
 
 @Injectable()
 export class BasicStrategy extends BasicStrategyBase {
@@ -2955,7 +2955,7 @@ export const UserRoles = createParamDecorator(
   }
 );
 ",
-  "server/src/auth/jwt/base/jwt.stategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
+  "server/src/auth/jwt/base/jwt.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { ExtractJwt, Strategy } from \\"passport-jwt\\";
 import { IAuthStrategy } from \\"../../IAuthStrategy\\";
@@ -2995,7 +2995,7 @@ import { JWT_SECRET_KEY } from \\"../../constants\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../../user/user.service\\";
-import { JwtStrategyBase } from \\"./base/jwt.stategy.base\\";
+import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
 @Injectable()
 export class JwtStrategy extends JwtStrategyBase {
   constructor(
@@ -9474,7 +9474,7 @@ export const swaggerSetupOptions = {
   "server/src/tests/auth/basic/basic.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
 import { AuthService } from \\"../../../auth/auth.service\\";
-import { BasicStrategyBase } from \\"../../../auth/basic/base/basic.stategy.base\\";
+import { BasicStrategyBase } from \\"../../../auth/basic/base/basic.strategy.base\\";
 import { TEST_USER } from \\"../constants\\";
 
 describe(\\"Testing the basicStrategyBase.validate()\\", () => {
@@ -9515,7 +9515,7 @@ export const TEST_USER: UserInfo = { roles: [\\"User\\"], username: \\"ofek\\" }
 ",
   "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
-import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.stategy.base\\";
+import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.strategy.base\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../../../user/user.service\\";
