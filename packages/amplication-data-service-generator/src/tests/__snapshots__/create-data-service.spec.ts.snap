@@ -2630,11 +2630,11 @@ import grants from \\"../grants.json\\";
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
-  "server/src/auth/auth.controller.ts": "import { Controller, Post, Body, UnauthorizedException } from \\"@nestjs/common\\";
+  "server/src/auth/auth.controller.ts": "import { Body, Controller, Post } from \\"@nestjs/common\\";
 import { ApiTags } from \\"@nestjs/swagger\\";
 import { AuthService } from \\"./auth.service\\";
-import { UserInfo } from \\"./UserInfo\\";
 import { Credentials } from \\"./Credentials\\";
+import { UserInfo } from \\"./UserInfo\\";
 
 @ApiTags(\\"auth\\")
 @Controller()
@@ -2642,14 +2642,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post(\\"login\\")
   async login(@Body() body: Credentials): Promise<UserInfo> {
-    const user = await this.authService.validateUser(
-      body.username,
-      body.password
-    );
-    if (!user) {
-      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
-    }
-    return user;
+    return this.authService.login(body);
   }
 }
 ",
@@ -2711,39 +2704,21 @@ import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
 })
 export class AuthModule {}
 ",
-  "server/src/auth/auth.resolver.ts": "import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
+  "server/src/auth/auth.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import { Args, Mutation, Query, Resolver } from \\"@nestjs/graphql\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { Args, Mutation, Resolver, Query } from \\"@nestjs/graphql\\";
-import { ApolloError } from \\"apollo-server-express\\";
 import { AuthService } from \\"./auth.service\\";
-import { UserInfo } from \\"./UserInfo\\";
-import { LoginArgs } from \\"./LoginArgs\\";
+import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth.guard\\";
 import { UserData } from \\"./gqlUserData.decorator\\";
-import { JwtService } from \\"@nestjs/jwt\\";
+import { LoginArgs } from \\"./LoginArgs\\";
+import { UserInfo } from \\"./UserInfo\\";
 
 @Resolver(UserInfo)
 export class AuthResolver {
-  constructor(
-    private readonly authService: AuthService,
-    private jwtService: JwtService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
   @Mutation(() => UserInfo)
   async login(@Args() args: LoginArgs): Promise<UserInfo> {
-    const user = await this.authService.validateUser(
-      args.credentials.username,
-      args.credentials.password
-    );
-    if (!user) {
-      throw new ApolloError(\\"The passed credentials are incorrect\\");
-    }
-    const payload = { username: user.username };
-    const accessToken = await this.jwtService.signAsync(payload); //signs username payload
-
-    return {
-      accessToken,
-      ...user,
-    };
+    return this.authService.login(args.credentials);
   }
 
   @Query(() => UserInfo)
@@ -2753,26 +2728,42 @@ export class AuthResolver {
   }
 }
 ",
-  "server/src/auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
-import { AuthService } from \\"./auth.service\\";
+  "server/src/auth/auth.service.spec.ts": "import { JwtService } from \\"@nestjs/jwt\\";
+import { Test, TestingModule } from \\"@nestjs/testing\\";
 // @ts-ignore
 // eslint-disable-next-line
-import { UserService, User } from \\"../user/user.service\\";
+import { User } from \\"src/user/base/User\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { UserService } from \\"../user/user.service\\";
+import { AuthService } from \\"./auth.service\\";
+import { Credentials } from \\"./Credentials\\";
 import { PasswordService } from \\"./password.service\\";
 
-const VALID_USER: User = {
+const VALID_CREDENTIALS: Credentials = {
   username: \\"Valid User\\",
   password: \\"Valid User Password\\",
 };
-const INVALID_USER: User = {
+const INVALID_CREDENTIALS: Credentials = {
   username: \\"Invalid User\\",
   password: \\"Invalid User Password\\",
 };
+const USER: User = {
+  ...VALID_CREDENTIALS,
+  createdAt: new Date(),
+  firstName: \\"ofek\\",
+  id: \\"1\\",
+  lastName: \\"gabay\\",
+  roles: [\\"admin\\"],
+  updatedAt: new Date(),
+};
+
+const signToken = \\"signToken\\";
 
 const userService = {
   findOne(args: { where: { username: string } }): User | null {
-    if (args.where.username === VALID_USER.username) {
-      return VALID_USER;
+    if (args.where.username === VALID_CREDENTIALS.username) {
+      return USER;
     }
     return null;
   },
@@ -2784,9 +2775,15 @@ const passwordService = {
   },
 };
 
-describe(\\"AuthService\\", () => {
-  let service: AuthService;
+const jwtService = {
+  signAsync() {
+    return Promise.resolve(signToken);
+  },
+};
 
+describe(\\"AuthService\\", () => {
+  //ARRANGE
+  let service: AuthService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -2797,6 +2794,10 @@ describe(\\"AuthService\\", () => {
         {
           provide: PasswordService,
           useValue: passwordService,
+        },
+        {
+          provide: JwtService,
+          useValue: jwtService,
         },
         AuthService,
       ],
@@ -2809,33 +2810,56 @@ describe(\\"AuthService\\", () => {
     expect(service).toBeDefined();
   });
 
-  it(\\"should validate a valid user\\", async () => {
-    await expect(
-      service.validateUser(VALID_USER.username, VALID_USER.password)
-    ).resolves.toEqual({
-      username: VALID_USER.username,
+  describe(\\"Testing the authService.validateUser()\\", () => {
+    it(\\"should validate a valid user\\", async () => {
+      await expect(
+        service.validateUser(
+          VALID_CREDENTIALS.username,
+          VALID_CREDENTIALS.password
+        )
+      ).resolves.toEqual({
+        username: USER.username,
+        roles: USER.roles,
+      });
+    });
+
+    it(\\"should not validate a invalid user\\", async () => {
+      await expect(
+        service.validateUser(
+          INVALID_CREDENTIALS.username,
+          INVALID_CREDENTIALS.password
+        )
+      ).resolves.toBe(null);
     });
   });
 
-  it(\\"should not validate a invalid user\\", async () => {
-    await expect(
-      service.validateUser(INVALID_USER.username, INVALID_USER.password)
-    ).resolves.toBe(null);
+  describe(\\"Testing the authService.login()\\", () => {
+    it(\\"should return userInfo object for correct username and password\\", async () => {
+      const loginResult = await service.login(VALID_CREDENTIALS);
+      expect(loginResult).toEqual({
+        username: USER.username,
+        roles: USER.roles,
+        accessToken: signToken,
+      });
+    });
   });
 });
 ",
-  "server/src/auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+  "server/src/auth/auth.service.ts": "import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
 import { PasswordService } from \\"./password.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../user/user.service\\";
 import { UserInfo } from \\"./UserInfo\\";
+import { Credentials } from \\"./Credentials\\";
+import { JwtService } from \\"@nestjs/jwt\\";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly passwordService: PasswordService
+    private readonly passwordService: PasswordService,
+    private readonly jwtService: JwtService
   ) {}
 
   async validateUser(
@@ -2850,6 +2874,21 @@ export class AuthService {
       return { username, roles };
     }
     return null;
+  }
+  async login(credentials: Credentials): Promise<UserInfo> {
+    const user = await this.validateUser(
+      credentials.username,
+      credentials.password
+    );
+    if (!user) {
+      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
+    }
+    const payload = { username: user.username };
+    const accessToken = await this.jwtService.signAsync(payload); //signs username payload
+    return {
+      accessToken,
+      ...user,
+    };
   }
 }
 ",
