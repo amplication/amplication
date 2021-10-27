@@ -1,8 +1,8 @@
-import { JwtService } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 // @ts-ignore
 // eslint-disable-next-line
 import { User } from "src/user/base/User";
+import { TOKEN_SERVICE_ID } from "../constants";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from "../user/user.service";
@@ -45,9 +45,9 @@ const passwordService = {
   },
 };
 
-const jwtService = {
-  signAsync() {
-    return Promise.resolve(signToken);
+const tokenService = {
+  createToken(username: string, password: string) {
+    return signToken;
   },
 };
 
@@ -66,8 +66,8 @@ describe("AuthService", () => {
           useValue: passwordService,
         },
         {
-          provide: JwtService,
-          useValue: jwtService,
+          provide: TOKEN_SERVICE_ID,
+          useValue: tokenService,
         },
         AuthService,
       ],
