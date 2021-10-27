@@ -13,8 +13,11 @@ import { JwtStrategy } from "./jwt/jwt.strategy";
 import { SecretsManagerModule } from "../providers/secrets/secretsManager.module";
 import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
 import { ConfigService } from "@nestjs/config";
-import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../constants";
+import { JWT_EXPIRATION, JWT_SECRET_KEY, TOKEN_SERVICE_ID } from "../constants";
 import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
+// @ts-ignore
+// eslint-disable-next-line
+import { DefaultTokenService } from "./token.service";
 
 @Module({
   imports: [
@@ -50,6 +53,7 @@ import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
     AuthResolver,
     JwtStrategy,
     jwtSecretFactory,
+    { provide: TOKEN_SERVICE_ID, useClass: DefaultTokenService },
   ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],
