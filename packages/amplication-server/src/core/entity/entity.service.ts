@@ -28,6 +28,7 @@ import { JsonObject } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
 import { getSchemaForDataType, types } from '@amplication/data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
+import { DiffService } from 'src/services/diff.service';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
@@ -147,7 +148,8 @@ const BASE_FIELD: Pick<
 export class EntityService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly jsonSchemaValidationService: JsonSchemaValidationService
+    private readonly jsonSchemaValidationService: JsonSchemaValidationService,
+    private readonly diffService: DiffService
   ) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
@@ -622,6 +624,74 @@ export class EntityService {
           entityId: entityId,
           versionNumber: versionNumber
         }
+      }
+    });
+  }
+
+  async hasPendingChanges(entityId: string): Promise<boolean> {
+    const entityVersions = await this.prisma.entityVersion.findMany({
+      where: {
+        entityId
+      },
+      orderBy: {
+        versionNumber: Prisma.SortOrder.asc
+      },
+      include: {
+        fields: true,
+        permissions: {
+          include: {
+            permissionFields: {
+              include: {
+                permissionRoles: true
+              }
+            },
+            permissionRoles: {
+              include: {
+                appRole: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // If there's only one version, lastVersion will be undefined
+    const currentVersion = entityVersions.shift();
+    const lastVersion = last(entityVersions);
+
+    if (currentVersion.deleted && !lastVersion) {
+      // The entity was created than deleted => there are no changes
+      return false;
+    }
+
+    const NON_COMPARABLE_PROPERTIES = [
+      'id',
+      'createdAt',
+      'updatedAt',
+      'versionNumber',
+      'commitId',
+      'permissionId',
+      'entityVersionId',
+      'appRoleId'
+    ];
+
+    return this.diffService.areDifferent(currentVersion, lastVersion, {
+      objectHash(obj, index) {
+        // returns a unique identifier for an array element
+        // @TODO: Adding a permanentId in the tables below would really simplify this
+        if (obj.action && obj.appRole) {
+          return `${obj.action}_${obj.appRole.name}`; // for EntityPermissionRole
+        }
+
+        return (
+          obj.permanentId || // for EntityField
+          obj.fieldPermanentId || // for EntityPermissionField
+          obj.action || // for EntityPermission
+          `index_${index}` // fallback
+        );
+      },
+      propertyFilter(name) {
+        return !NON_COMPARABLE_PROPERTIES.includes(name);
       }
     });
   }
