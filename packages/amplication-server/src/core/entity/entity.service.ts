@@ -382,6 +382,8 @@ export class EntityService {
         });
       })
     );
+
+    await this.updateLock(entityId);
   }
 
   /**
@@ -403,7 +405,7 @@ export class EntityService {
       throw new ConflictException(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
     }
 
-    return this.prisma.entity.update({
+    const deletedEntity = await this.prisma.entity.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(entity.name, entity.id),
@@ -429,6 +431,10 @@ export class EntityService {
         }
       }
     });
+
+    await this.updateLock(entity.id);
+
+    return deletedEntity;
   }
 
   /**
@@ -562,7 +568,7 @@ export class EntityService {
         );
       }
     }
-    return this.prisma.entity.update({
+    const updatedEntity = await this.prisma.entity.update({
       where: { ...args.where },
       data: {
         ...args.data,
@@ -585,6 +591,10 @@ export class EntityService {
         }
       }
     });
+
+    await this.updateLock(entity.id);
+
+    return updatedEntity;
   }
 
   /**
@@ -1128,7 +1138,7 @@ export class EntityService {
 
     const entityVersionId = entityVersion.id;
 
-    return this.prisma.entityPermission.upsert({
+    const entityPermission = await this.prisma.entityPermission.upsert({
       create: {
         ...args.data,
         entityVersion: {
@@ -1148,6 +1158,10 @@ export class EntityService {
         }
       }
     });
+
+    await this.updateLock(args.where.id);
+
+    return entityPermission;
   }
 
   async updateEntityPermissionRoles(
@@ -1244,6 +1258,8 @@ export class EntityService {
       take: 1
     });
 
+    await this.updateLock(args.data.entity.connect.id);
+
     return results[0];
   }
 
@@ -1323,31 +1339,37 @@ export class EntityService {
     });
     const entityVersionId = entityVersion.id;
 
-    return this.prisma.entityPermissionField.create({
-      data: {
-        field: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityVersionId_name: {
-              entityVersionId: entityVersionId,
-              name: args.data.fieldName
+    const createdEntityPermissionField = await this.prisma.entityPermissionField.create(
+      {
+        data: {
+          field: {
+            connect: {
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              entityVersionId_name: {
+                entityVersionId: entityVersionId,
+                name: args.data.fieldName
+              }
+            }
+          },
+          permission: {
+            connect: {
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              entityVersionId_action: {
+                entityVersionId: entityVersionId,
+                action: args.data.action
+              }
             }
           }
         },
-        permission: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityVersionId_action: {
-              entityVersionId: entityVersionId,
-              action: args.data.action
-            }
-          }
+        include: {
+          field: true
         }
-      },
-      include: {
-        field: true
       }
-    });
+    );
+
+    await this.updateLock(args.data.entity.connect.id);
+
+    return createdEntityPermissionField;
   }
 
   async deleteEntityPermissionField(
@@ -1375,14 +1397,20 @@ export class EntityService {
 
     const id = permissionField[0].id;
 
-    return this.prisma.entityPermissionField.delete({
-      where: {
-        id: id
-      },
-      include: {
-        field: true
+    const deletedEntityPermissionField = await this.prisma.entityPermissionField.delete(
+      {
+        where: {
+          id: id
+        },
+        include: {
+          field: true
+        }
       }
-    });
+    );
+
+    await this.updateLock(args.where.entityId);
+
+    return deletedEntityPermissionField;
   }
 
   async updateEntityPermissionFieldRoles(
@@ -1465,19 +1493,25 @@ export class EntityService {
     }
     await Promise.all(promises);
 
-    return this.prisma.entityPermissionField.findUnique({
-      where: {
-        id: args.data.permissionField.connect.id
-      },
-      include: {
-        field: true,
-        permissionRoles: {
-          include: {
-            appRole: true
+    const updatedEntityPermissionField = await this.prisma.entityPermissionField.findUnique(
+      {
+        where: {
+          id: args.data.permissionField.connect.id
+        },
+        include: {
+          field: true,
+          permissionRoles: {
+            include: {
+              appRole: true
+            }
           }
         }
       }
-    });
+    );
+
+    await this.updateLock(entityId);
+
+    return updatedEntityPermissionField;
   }
 
   private async validateFieldProperties(
@@ -1794,7 +1828,7 @@ export class EntityService {
     }
 
     // Create entity field
-    return this.prisma.entityField.create({
+    const createdEntityField = await this.prisma.entityField.create({
       data: {
         ...data,
         permanentId: fieldId,
@@ -1809,6 +1843,10 @@ export class EntityService {
         }
       }
     });
+
+    await this.updateLock(entity.id);
+
+    return createdEntityField;
   }
 
   /** 2021-02-10
@@ -1879,7 +1917,7 @@ export class EntityService {
     properties.relatedFieldId = relatedFieldId;
 
     //Update the field with the ID of the related field
-    return this.prisma.entityField.update({
+    const updatedEntityField = await this.prisma.entityField.update({
       where: {
         id: field.id
       },
@@ -1887,6 +1925,10 @@ export class EntityService {
         properties: (properties as unknown) as Prisma.InputJsonValue
       }
     });
+
+    await this.updateLock(entity.id);
+
+    return updatedEntityField;
   }
 
   private async createRelatedField(
@@ -1902,7 +1944,7 @@ export class EntityService {
     // Acquire lock to edit the entity
     await this.acquireLock({ where: { id: entityId } }, user);
 
-    return this.prisma.entityField.create({
+    const createdRelatedEntity = await this.prisma.entityField.create({
       data: {
         ...BASE_FIELD,
         name,
@@ -1925,6 +1967,10 @@ export class EntityService {
         }
       }
     });
+
+    await this.updateLock(entityId);
+
+    return createdRelatedEntity;
   }
 
   private async deleteRelatedField(
@@ -1948,6 +1994,8 @@ export class EntityService {
         }
       }
     });
+
+    await this.updateLock(entityId);
   }
 
   async updateField(
@@ -2035,9 +2083,13 @@ export class EntityService {
       );
     }
 
-    return this.prisma.entityField.update(
+    const updatedEntityField = await this.prisma.entityField.update(
       omit(args, ['relatedFieldName', 'relatedFieldDisplayName'])
     );
+
+    await this.updateLock(entity.id);
+
+    return updatedEntityField;
   }
 
   async deleteField(
@@ -2061,7 +2113,7 @@ export class EntityService {
       );
     }
 
-    await this.acquireLock(
+    const entity = await this.acquireLock(
       { where: { id: field.entityVersion.entityId } },
       user
     );
@@ -2085,7 +2137,11 @@ export class EntityService {
       }
     }
 
-    return this.prisma.entityField.delete(args);
+    const deletedEntityField = await this.prisma.entityField.delete(args);
+
+    await this.updateLock(entity.id);
+
+    return deletedEntityField;
   }
 
   /**
