@@ -32,6 +32,7 @@ import {
   createFieldFindOneFunctionId,
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
+import { UserInfo } from "server/static/src/auth/UserInfo";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -298,4 +299,12 @@ async function createToManyRelationMethods(
   });
 
   return getMethods(getClassDeclarationById(toManyFile, MIXIN_ID));
+}
+
+export async function getUserObject(authResolver: AuthResolver) {
+const userInfo: UserInfo = {
+  username: "",
+  roles: [],
+};
+return authResolver.userInfo(userInfo);
 }
