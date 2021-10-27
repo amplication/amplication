@@ -24,9 +24,9 @@
 </p>
 
 <div align="center">
-
+ 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-37-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-38-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
@@ -60,7 +60,8 @@ See [Amplication website](http://amplication.com/) or [Amplication docs](http://
 
 ## Development
 
-Amplication is constructed of multiple packages. To start working on Amplication follow the "Amplication Server" and "Amplication Client" installation instructions.
+Amplication is constructed from multiple packages. To initialize the local development environment, run `npm run setup:dev`, it will install all the required dependencies, run the necessary scripts and init Docker-based Postgres server.
+To set up manually Amplication local development environment, follow the "Amplication Server" and "Amplication Client" installation instructions.
 
 ### [Amplication Server](./packages/amplication-server/README.md)
 
@@ -118,11 +119,9 @@ Amplication is an open source project. We are committed to a fully transparent d
 
 Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
 
-
 ## Sponsors ✨
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [Become a sponsor](https://commerce.coinbase.com/checkout/8d425faa-9e2a-4393-a029-4f7ed68c3e02)
-
 
 <table>
   <tr>
@@ -130,7 +129,6 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
    
   </tr>
   </table>
-
 
 ## Contributors ✨
 
@@ -188,6 +186,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="http://knsblog.com"><img src="https://avatars.githubusercontent.com/u/51660321?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Thuc Pham</b></sub></a><br /><a href="#example-thucpn" title="Examples">💡</a></td>
     <td align="center"><a href="http://codylacey.com"><img src="https://avatars.githubusercontent.com/u/29167666?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Cody Lacey</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=CodyLacey" title="Code">💻</a></td>
+    <td align="center"><a href="http://amplication.com"><img src="https://avatars.githubusercontent.com/u/91742238?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Matan Shidlov</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=mshidlov" title="Code">💻</a> <a href="#content-mshidlov" title="Content">🖋</a></td>
   </tr>
 </table>
 

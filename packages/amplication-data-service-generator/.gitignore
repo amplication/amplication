@@ -1,8 +1,9 @@
 dist/
 node_modules/
 coverage/
-generated/
-*.d.ts
+# the generated folder is the one how created after running the generate-test-data-service script
+generated/ 
+# *.d.ts
 *.map
 # ESLint
 .eslintcache

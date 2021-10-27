@@ -1,6 +1,6 @@
 {
   "name": "@amplication/container-builder",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Multi-provider library for building Docker containers",
   "main": "dist/index.js",
   "scripts": {
