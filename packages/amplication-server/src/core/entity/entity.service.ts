@@ -696,6 +696,14 @@ export class EntityService {
     });
   }
 
+  async updateLock(entityId: string): Promise<void> {
+    const hasPendingChanges = await this.hasPendingChanges(entityId);
+
+    if (!hasPendingChanges) {
+      await this.releaseLock(entityId);
+    }
+  }
+
   // Tries to acquire a lock on the given entity for the given user.
   // The function checks that the given entity is not already locked by another user
   // If the current user already has a lock on the entity, the function complete successfully
