@@ -84,8 +84,10 @@
     "get-stream": "6.0.1",
     "graphql": "14.6.0",
     "graphql-type-json": "0.3.2",
+    "jsondiffpatch": "^0.4.1",
     "lodash.get": "4.4.2",
     "lodash.head": "4.0.1",
+    "lodash.isempty": "^4.4.0",
     "lodash.last": "3.0.0",
     "lodash.omit": "4.5.0",
     "lodash.set": "4.3.2",
@@ -113,6 +115,7 @@
   "devDependencies": {
     "@nestjs/cli": "7.6.0",
     "@nestjs/testing": "7.6.18",
+    "@types/lodash.isempty": "^4.4.6",
     "@types/pluralize": "0.0.29",
     "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "4.28.3",
