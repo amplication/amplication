@@ -4,7 +4,7 @@ import { parseGCSObjectURL } from "./gcs.util";
 
 export const GCR_HOST = "gcr.io";
 export const CLOUD_BUILDERS_DOCKER_IMAGE =
-  "gcr.io/kaniko-project/executor:latest";
+  "gcr.io/kaniko-project/executor:v1.6.0";
 export const DEFAULT_TAGS = ["container-builder"];
 export const DESTINATION_ARG = "destination";
 

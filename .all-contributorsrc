@@ -357,6 +357,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mshidlov",
+      "name": "Matan Shidlov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/91742238?v=4",
+      "profile": "http://amplication.com",
+      "contributions": [
+        "code",
+        "content"
+      ]
     }
   ],
   "contributorsPerLine": 7,
