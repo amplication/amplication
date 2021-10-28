@@ -18,7 +18,7 @@ export async function createTokenService(
     authProvider === EnumAuthProviderType.Http ? "Basic" : authProvider;
   const file = await readFile(require.resolve("./token.service.template.ts"));
   const filePath = `${authDir}/token.service.ts`;
-  const importPath = `${authDir}/${name}/${name.toLowerCase()}Token.service.ts`;
+  const importPath = `${authDir}/${name.toLowerCase()}/${name.toLowerCase()}Token.service.ts`;
   const selectedTokenService = builders.identifier(`${name}TokenService`);
   interpolate(file, { SELECTED_TOKEN_SERVICE: selectedTokenService });
   const selectedService = importNames(

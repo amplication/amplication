@@ -3246,7 +3246,7 @@ export function parseSalt(value: string | undefined): Salt {
 ",
   "server/src/auth/token.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { ITokenService } from \\"./ITokenService\\";
-import { BasicTokenService } from \\"./Basic/basicToken.service\\";
+import { BasicTokenService } from \\"./basic/basicToken.service\\";
 
 @Injectable()
 export class DefaultTokenService
