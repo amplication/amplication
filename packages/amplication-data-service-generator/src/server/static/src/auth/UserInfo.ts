@@ -10,5 +10,5 @@ export class UserInfo implements Partial<User> {
   @Field(() => [String])
   roles!: string[];
   @Field(() => String)
-  accessToken?: string;
+  accessToken!: string;
 }
