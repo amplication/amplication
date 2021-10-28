@@ -1,11 +1,12 @@
-import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
-import { TOKEN_SERVICE_ID } from "../constants";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from "../user/user.service";
 import { Credentials } from "./Credentials";
-import { ITokenService } from "./ITokenService";
 import { PasswordService } from "./password.service";
+// @ts-ignore
+// eslint-disable-next-line
+import { DefaultTokenService } from "./token.service";
 import { UserInfo } from "./UserInfo";
 
 @Injectable()
@@ -13,8 +14,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly passwordService: PasswordService,
-    @Inject(TOKEN_SERVICE_ID)
-    private readonly tokenService: ITokenService
+    private readonly tokenService: DefaultTokenService
   ) {}
 
   async validateUser(

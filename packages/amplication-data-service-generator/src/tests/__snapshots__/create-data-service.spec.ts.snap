@@ -2650,9 +2650,13 @@ export class AuthController {
   }
 }
 ",
-  "server/src/auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
-import { PassportModule } from \\"@nestjs/passport\\";
+  "server/src/auth/auth.module.ts": "import { forwardRef, Module } from \\"@nestjs/common\\";
+import { ConfigService } from \\"@nestjs/config\\";
 import { JwtModule } from \\"@nestjs/jwt\\";
+import { PassportModule } from \\"@nestjs/passport\\";
+import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
+import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
+import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
@@ -2660,13 +2664,9 @@ import { AuthController } from \\"./auth.controller\\";
 import { AuthResolver } from \\"./auth.resolver\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic/basic.strategy\\";
-import { PasswordService } from \\"./password.service\\";
 import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
-import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
-import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
-import { ConfigService } from \\"@nestjs/config\\";
-import { JWT_EXPIRATION, JWT_SECRET_KEY, TOKEN_SERVICE_ID } from \\"../constants\\";
 import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
+import { PasswordService } from \\"./password.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { DefaultTokenService } from \\"./token.service\\";
@@ -2705,7 +2705,7 @@ import { DefaultTokenService } from \\"./token.service\\";
     AuthResolver,
     JwtStrategy,
     jwtSecretFactory,
-    { provide: TOKEN_SERVICE_ID, useClass: DefaultTokenService },
+    DefaultTokenService,
   ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],
@@ -2740,13 +2740,15 @@ export class AuthResolver {
 // @ts-ignore
 // eslint-disable-next-line
 import { User } from \\"src/user/base/User\\";
-import { TOKEN_SERVICE_ID } from \\"../constants\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../user/user.service\\";
 import { AuthService } from \\"./auth.service\\";
 import { Credentials } from \\"./Credentials\\";
 import { PasswordService } from \\"./password.service\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { DefaultTokenService } from \\"./token.service\\";
 
 const VALID_CREDENTIALS: Credentials = {
   username: \\"Valid User\\",
@@ -2804,7 +2806,7 @@ describe(\\"AuthService\\", () => {
           useValue: passwordService,
         },
         {
-          provide: TOKEN_SERVICE_ID,
+          provide: DefaultTokenService,
           useValue: tokenService,
         },
         AuthService,
@@ -2853,14 +2855,15 @@ describe(\\"AuthService\\", () => {
   });
 });
 ",
-  "server/src/auth/auth.service.ts": "import { Inject, Injectable, UnauthorizedException } from \\"@nestjs/common\\";
-import { TOKEN_SERVICE_ID } from \\"../constants\\";
+  "server/src/auth/auth.service.ts": "import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../user/user.service\\";
 import { Credentials } from \\"./Credentials\\";
-import { ITokenService } from \\"./ITokenService\\";
 import { PasswordService } from \\"./password.service\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { DefaultTokenService } from \\"./token.service\\";
 import { UserInfo } from \\"./UserInfo\\";
 
 @Injectable()
@@ -2868,8 +2871,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly passwordService: PasswordService,
-    @Inject(TOKEN_SERVICE_ID)
-    private readonly tokenService: ITokenService
+    private readonly tokenService: DefaultTokenService
   ) {}
 
   async validateUser(
@@ -3253,7 +3255,6 @@ export class DefaultTokenService
 ",
   "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
-export const TOKEN_SERVICE_ID = \\"TOKEN_SERVICE_ID\\";
 ",
   "server/src/customer/base/CreateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
