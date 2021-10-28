@@ -28,7 +28,7 @@ const USER: User = {
   updatedAt: new Date(),
 };
 
-const signToken = "signToken";
+const SIGN_TOKEN = "SIGN_TOKEN";
 
 const userService = {
   findOne(args: { where: { username: string } }): User | null {
@@ -47,7 +47,7 @@ const passwordService = {
 
 const jwtService = {
   signAsync() {
-    return Promise.resolve(signToken);
+    return Promise.resolve(SIGN_TOKEN);
   },
 };
 
@@ -109,7 +109,7 @@ describe("AuthService", () => {
       expect(loginResult).toEqual({
         username: USER.username,
         roles: USER.roles,
-        accessToken: signToken,
+        accessToken: SIGN_TOKEN,
       });
     });
   });
