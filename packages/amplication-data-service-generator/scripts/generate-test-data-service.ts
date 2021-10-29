@@ -6,6 +6,11 @@ import appInfo from "../src/tests/appInfo";
 import { AppInfo, Module } from "../src/types";
 import { createDataService } from "../src/create-data-service";
 
+const STATIC_COMMENT =
+  "// **************************************************************************\n" +
+  "// GENERATED CODE - DO NOT MODIFY BY HAND\n" +
+  "// **************************************************************************\n";
+
 if (require.main === module) {
   const [, , output] = process.argv;
   if (!output) {
@@ -34,7 +39,7 @@ async function writeModules(
     modules.map(async (module) => {
       const filePath = path.join(destination, module.path);
       await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-      await fs.promises.writeFile(filePath, module.code);
+      await fs.promises.writeFile(filePath, STATIC_COMMENT + module.code);
     })
   );
   console.info(`Successfully wrote modules to ${destination}${path.sep}`);
