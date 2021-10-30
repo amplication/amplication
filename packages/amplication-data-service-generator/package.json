@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -19,8 +19,8 @@
     "update-test-data-service-snapshot": "jest -u src/tests/create-data-service.spec.ts"
   },
   "dependencies": {
-    "@amplication/data": "^0.10.0",
-    "@amplication/design-system": "^0.10.0",
+    "@amplication/data": "^0.10.1",
+    "@amplication/design-system": "^0.10.1",
     "@apollo/client": "3.3.19",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
