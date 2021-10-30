@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out our bug report form 🙏
-   - type: textarea
+  - type: textarea
     id: description
     validations:
       required: true
