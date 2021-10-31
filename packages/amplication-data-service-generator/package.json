@@ -155,7 +155,8 @@
       "dist",
       "generated",
       "src/server/static",
-      "src/admin/static"
+      "src/admin/static",
+      "src/server/auth/token"
     ]
   }
 }
