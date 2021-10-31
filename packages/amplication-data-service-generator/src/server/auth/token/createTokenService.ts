@@ -1,9 +1,7 @@
 import { print } from "recast";
 import { EnumAuthProviderType } from "../../../models";
 import { Module } from "../../../types";
-import {
-  removeTSIgnoreComments
-} from "../../../util/ast";
+import { removeTSIgnoreComments } from "../../../util/ast";
 import { readFile } from "../../../util/module";
 
 export async function createTokenService(
