@@ -1,14 +1,10 @@
-import { builders } from "ast-types";
 import { print } from "recast";
 import { EnumAuthProviderType } from "../../../models";
 import { Module } from "../../../types";
 import {
-  addImports,
-  importNames,
-  interpolate,
-  removeTSClassDeclares,
+  removeTSIgnoreComments
 } from "../../../util/ast";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { readFile } from "../../../util/module";
 
 export async function createTokenService(
   authDir: string,
@@ -16,18 +12,12 @@ export async function createTokenService(
 ): Promise<Module> {
   const name =
     authProvider === EnumAuthProviderType.Http ? "Basic" : authProvider;
-  const file = await readFile(require.resolve("./token.service.template.ts"));
-  const filePath = `${authDir}/token.service.ts`;
-  const importPath = `${authDir}/${name.toLowerCase()}/${name.toLowerCase()}Token.service.ts`;
-  const selectedTokenService = builders.identifier(`${name}TokenService`);
-  interpolate(file, { SELECTED_TOKEN_SERVICE: selectedTokenService });
-  const selectedService = importNames(
-    [selectedTokenService],
-    relativeImportPath(filePath, importPath)
+  const file = await readFile(
+    require.resolve(`./templates/${name.toLowerCase()}Token.service.ts`)
   );
-  addImports(file, [selectedService]);
+  const filePath = `${authDir}/base/token.service.base.ts`;
 
-  removeTSClassDeclares(file);
+  removeTSIgnoreComments(file);
 
   return { code: print(file).code, path: filePath };
 }

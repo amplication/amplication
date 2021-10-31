@@ -4,9 +4,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { UserService } from "../user/user.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
-// @ts-ignore
-// eslint-disable-next-line
-import { DefaultTokenService } from "./token.service";
+import { TokenService } from "./token.service";
 import { UserInfo } from "./UserInfo";
 
 @Injectable()
@@ -14,7 +12,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly passwordService: PasswordService,
-    private readonly tokenService: DefaultTokenService
+    private readonly tokenService: TokenService
   ) {}
 
   async validateUser(
@@ -39,6 +37,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException("The passed credentials are incorrect");
     }
+    //@ts-ignore
     const accessToken = await this.tokenService.createToken(username, password);
     return {
       accessToken,

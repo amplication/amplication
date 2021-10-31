@@ -15,9 +15,8 @@ import { BasicStrategy } from "./basic/basic.strategy";
 import { JwtStrategy } from "./jwt/jwt.strategy";
 import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
 import { PasswordService } from "./password.service";
-// @ts-ignore
-// eslint-disable-next-line
-import { DefaultTokenService } from "./token.service";
+//@ts-ignore
+import { TokenService } from "./token.service";
 
 @Module({
   imports: [
@@ -53,7 +52,7 @@ import { DefaultTokenService } from "./token.service";
     AuthResolver,
     JwtStrategy,
     jwtSecretFactory,
-    DefaultTokenService,
+    TokenService,
   ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],

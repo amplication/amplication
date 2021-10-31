@@ -10,7 +10,7 @@ import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
 // @ts-ignore
 // eslint-disable-next-line
-import { DefaultTokenService } from "./token.service";
+import { TokenService } from "./token.service";
 
 const VALID_CREDENTIALS: Credentials = {
   username: "Valid User",
@@ -68,7 +68,7 @@ describe("AuthService", () => {
           useValue: passwordService,
         },
         {
-          provide: DefaultTokenService,
+          provide: TokenService,
           useValue: tokenService,
         },
         AuthService,
