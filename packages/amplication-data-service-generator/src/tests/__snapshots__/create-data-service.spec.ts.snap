@@ -2786,7 +2786,7 @@ const passwordService = {
 
 const tokenService = {
   createToken(username: string, password: string) {
-    return signToken;
+    return SIGN_TOKEN;
   },
 };
 
