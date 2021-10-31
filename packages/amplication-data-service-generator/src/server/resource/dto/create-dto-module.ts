@@ -4,6 +4,7 @@ import { DeclarationKind } from "ast-types/gen/kinds";
 import { Module } from "../../../types";
 import { relativeImportPath } from "../../../util/module";
 import {
+  addAutoGenerationComment,
   addImports,
   importContainedIdentifiers,
   NamedClassDeclaration,
@@ -45,6 +46,7 @@ import {
 } from "./filters.util";
 import { SRC_DIRECTORY } from "../../constants";
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
+import { add } from "winston";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
@@ -86,6 +88,7 @@ export function createDTOModule(
   dtoNameToPath: Record<string, string>
 ): Module {
   const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
+  addAutoGenerationComment(file);
   return {
     code: print(file).code,
     path: dtoNameToPath[dto.id.name],
