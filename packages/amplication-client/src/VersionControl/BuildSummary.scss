@@ -29,9 +29,6 @@ $step-min-height: 32px;
 
   &__message {
     @include flexFullRowWithSpacing;
-    justify-content: flex-start;
-    align-items: flex-start;
     color: var(--black60);
-    margin-bottom: var(--default-spacing);
   }
 }
