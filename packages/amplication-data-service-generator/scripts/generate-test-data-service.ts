@@ -34,7 +34,7 @@ async function writeModules(
     modules.map(async (module) => {
       const filePath = path.join(destination, module.path);
       await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-      await fs.promises.writeFile(filePath, STATIC_COMMENT + module.code);
+      await fs.promises.writeFile(filePath, module.code);
     })
   );
   console.info(`Successfully wrote modules to ${destination}${path.sep}`);

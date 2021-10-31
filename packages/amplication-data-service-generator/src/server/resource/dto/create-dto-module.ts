@@ -46,7 +46,6 @@ import {
 } from "./filters.util";
 import { SRC_DIRECTORY } from "../../constants";
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
-import { add } from "winston";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
