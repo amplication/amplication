@@ -35,7 +35,7 @@ ENV OPENCOLLECTIVE_HIDE=1
 EXPOSE 3000
 
 RUN npm ci --production --silent
-RUN npm run bootstrap -- -- --production --loglevel=silent --scope @amplication/server --scope @amplication/client --include-dependencies
+RUN npm run bootstrap -- --scope @amplication/server --scope @amplication/client --include-dependencies -- --production --loglevel=silent
 
 COPY --from=build /app/packages /app/packages
 RUN npm run prisma:generate

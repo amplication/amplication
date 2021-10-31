@@ -30,7 +30,7 @@ const USER: User = {
   updatedAt: new Date(),
 };
 
-const signToken = "signToken";
+const SIGN_TOKEN = "SIGN_TOKEN";
 
 const userService = {
   findOne(args: { where: { username: string } }): User | null {
@@ -49,7 +49,7 @@ const passwordService = {
 
 const tokenService = {
   createToken(username: string, password: string) {
-    return signToken;
+    return SIGN_TOKEN;
   },
 };
 
@@ -111,7 +111,7 @@ describe("AuthService", () => {
       expect(loginResult).toEqual({
         username: USER.username,
         roles: USER.roles,
-        accessToken: signToken,
+        accessToken: SIGN_TOKEN,
       });
     });
   });

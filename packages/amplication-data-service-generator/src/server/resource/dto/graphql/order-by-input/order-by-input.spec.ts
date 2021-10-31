@@ -18,7 +18,6 @@ const EXAMPLE_ENTITY: Entity = {
 describe("createOrderByInput", () => {
   test("creates order by input", async () => {
     const createInput = await createOrderByInput(EXAMPLE_ENTITY);
-    console.log(print(createInput).code);
     expect(createInput && print(createInput).code).toEqual(`@InputType({
   isAbstract: true,
   description: undefined,
