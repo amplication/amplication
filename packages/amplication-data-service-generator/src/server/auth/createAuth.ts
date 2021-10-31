@@ -8,7 +8,7 @@ export async function createAuthModules(
   appInfo: AppInfo
 ): Promise<Module[]> {
   const authDir = `${srcDir}/auth`;
-  const authTestsDir = `${srcDir}/tests`;
+  const authTestsDir = `${srcDir}/tests/auth`;
   const { settings } = appInfo;
   const { authProvider } = settings;
   const defaultGuardFile = await createDefaultGuard(authProvider);
