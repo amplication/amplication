@@ -2510,9 +2510,9 @@ import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
+import { HealthModule } from \\"./health/health.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
-import { HealthModule } from \\"./health/health.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
@@ -2528,9 +2528,9 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     OrganizationModule,
     CustomerModule,
     EmptyModule,
+    HealthModule,
     ACLModule,
     AuthModule,
-    HealthModule,
     SecretsManagerModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -9584,9 +9584,19 @@ describe(\\"Testing the basicStrategyBase.validate()\\", () => {
   });
 });
 ",
-  "server/src/tests/auth/constants.ts": "import { UserInfo } from \\"../../auth/UserInfo\\";
+  "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
+import { UserInfo } from \\"../../auth/UserInfo\\";
 
 export const TEST_USER: UserInfo = { roles: [\\"User\\"], username: \\"ofek\\" };
+export const SIGN_TOKEN = \\"SIGN_TOKEN\\";
+export const VALID_CREDENTIALS: Credentials = {
+  username: \\"Valid User\\",
+  password: \\"Valid User Password\\",
+};
+export const INVALID_CREDENTIALS: Credentials = {
+  username: \\"Invalid User\\",
+  password: \\"Invalid User Password\\",
+};
 ",
   "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
@@ -9617,6 +9627,7 @@ describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
   });
 });
 ",
+  "server/src/tests/auth/token.service.ts": "",
   "server/src/tests/health/health.service.spec.ts": "import { mock } from \\"jest-mock-extended\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import { HealthServiceBase } from \\"../../health/base/health.service.base\\";
@@ -9650,6 +9661,35 @@ describe(\\"Testing the HealthServiceBase\\", () => {
       const response = await healthServiceBase.isDbReady();
       //ASSERT
       expect(response).toBe(false);
+    });
+  });
+});
+",
+  "server/src/tests/token.service.spec.ts": "/* eslint-disable import/no-unresolved */
+import { TokenServiceBase } from \\"../../auth/base/token.service.base\\";
+import {
+  INVALID_USERNAME_ERROR,
+  INVALID_PASSWORD_ERROR,
+} from \\"../../auth/constants\\";
+
+describe(\\"Testing the TokenServiceBase\\", () => {
+  let tokenServiceBase: TokenServiceBase;
+  beforeEach(() => {
+    tokenServiceBase = new TokenServiceBase();
+  });
+  describe(\\"Testing the BasicTokenService.createToken()\\", () => {
+    it(\\"should create valid token for given username and password\\", async () => {
+      expect(await tokenServiceBase.createToken(\\"admin\\", \\"admin\\")).toBe(
+        \\"YWRtaW46YWRtaW4=\\"
+      );
+    });
+    it(\\"should reject when username missing\\", () => {
+      const result = tokenServiceBase.createToken(null, \\"admin\\");
+      return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
+    });
+    it(\\"should reject when password missing\\", () => {
+      const result = tokenServiceBase.createToken(\\"admin\\", null);
+      return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
     });
   });
 });
