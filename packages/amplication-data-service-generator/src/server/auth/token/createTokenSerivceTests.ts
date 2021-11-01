@@ -10,9 +10,10 @@ export async function createTokenServiceTests(
 ): Promise<Module> {
   const name =
     authProvider === EnumAuthProviderType.Http ? "Basic" : authProvider;
-  const file = await readFile(
-    require.resolve(`./templates/${name.toLowerCase()}Token.service.spec.ts`)
+  const templatePath = require.resolve(
+    `./${name.toLowerCase()}Token.service.spec.template.ts`
   );
+  const file = await readFile(templatePath);
   const filePath = `${authTestsDir}/token.service.spec.ts`;
 
   removeTSIgnoreComments(file);
