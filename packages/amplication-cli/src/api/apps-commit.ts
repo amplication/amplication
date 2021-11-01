@@ -1,4 +1,6 @@
-import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client/core';
+import { 
+  ApolloClient, gql, NormalizedCacheObject 
+} from '@apollo/client/core';
 
 import * as models from '../models';
 
