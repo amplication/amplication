@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "*.json"
-      - "packages/**"
-
+      - "packages/**/*.{js,ts,json,gql,md,yaml}"
+      
 jobs:
   build:
     runs-on: ubuntu-latest
