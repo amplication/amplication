@@ -4,7 +4,12 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "packages/**/*.{js,ts,json,gql,md,yaml}"
+      - "packages/**/*.yaml"
+      - "packages/**/*.js"
+      - "packages/**/*.ts"
+      - "packages/**/*.json"
+      - "packages/**/*.gql"
+      - "packages/**/*.md"
       
 jobs:
   build:
