@@ -25,7 +25,7 @@ export default function GitCreateRepo({
   sourceControlService,
   onCompleted,
 }: Props) {
-  const initialValues: RepoCreateInput = { name: "", public: false };
+  const initialValues: RepoCreateInput = { name: "", public: true };
 
   const { username } = useGitUserName({ appId: app.id, sourceControlService });
   const { handleRepoSelected } = useGitSelected({ appId: app.id });
@@ -45,7 +45,7 @@ export default function GitCreateRepo({
       }}
       validationSchema={CreateGitFormSchema}
     >
-      {({}) => (
+      {({ errors: formError }) => (
         <Form>
           <div className={`${CLASS_NAME}__header`}>
             <h4>
@@ -62,7 +62,11 @@ export default function GitCreateRepo({
             <tr>
               <td>{username}/</td>
               <td>
-                <TextField name="name" autoComplete="off" helpText={error} />
+                <TextField
+                  name="name"
+                  autoComplete="off"
+                  helpText={formError.name}
+                />
               </td>
             </tr>
           </table>
