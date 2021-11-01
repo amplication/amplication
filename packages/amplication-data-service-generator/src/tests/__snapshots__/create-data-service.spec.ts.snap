@@ -4166,7 +4166,11 @@ class DeleteCustomerArgs {
 
 export { DeleteCustomerArgs };
 ",
-  "server/src/customer/base/EnumCustomerCustomerType.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/EnumCustomerCustomerType.ts": "/*// **************************************************************************
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// **************************************************************************
+*/
+import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumCustomerCustomerType {
   Platinum = \\"platinum\\",
@@ -4179,7 +4183,11 @@ registerEnumType(EnumCustomerCustomerType, {
   name: \\"EnumCustomerCustomerType\\",
 });
 ",
-  "server/src/customer/base/EnumCustomerFavoriteColors.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/customer/base/EnumCustomerFavoriteColors.ts": "/*// **************************************************************************
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// **************************************************************************
+*/
+import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumCustomerFavoriteColors {
   Red = \\"red\\",
@@ -6455,7 +6463,11 @@ class DeleteOrderArgs {
 
 export { DeleteOrderArgs };
 ",
-  "server/src/order/base/EnumOrderLabel.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/order/base/EnumOrderLabel.ts": "/*// **************************************************************************
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// **************************************************************************
+*/
+import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumOrderLabel {
   Fragile = \\"fragile\\",
@@ -6465,7 +6477,11 @@ registerEnumType(EnumOrderLabel, {
   name: \\"EnumOrderLabel\\",
 });
 ",
-  "server/src/order/base/EnumOrderStatus.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/order/base/EnumOrderStatus.ts": "/*// **************************************************************************
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// **************************************************************************
+*/
+import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumOrderStatus {
   Pending = \\"pending\\",
@@ -9841,7 +9857,11 @@ class DeleteUserArgs {
 
 export { DeleteUserArgs };
 ",
-  "server/src/user/base/EnumUserInterests.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/user/base/EnumUserInterests.ts": "/*// **************************************************************************
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// **************************************************************************
+*/
+import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumUserInterests {
   Programming = \\"programming\\",
@@ -9852,7 +9872,11 @@ registerEnumType(EnumUserInterests, {
   name: \\"EnumUserInterests\\",
 });
 ",
-  "server/src/user/base/EnumUserPriority.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/user/base/EnumUserPriority.ts": "/*// **************************************************************************
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// **************************************************************************
+*/
+import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumUserPriority {
   High = \\"high\\",
