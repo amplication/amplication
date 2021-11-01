@@ -48,10 +48,10 @@ export default function GitCreateRepo({
       {({}) => (
         <Form>
           <div className={`${CLASS_NAME}__header`}>
-            <h3>
+            <h4>
               Create a new {sourceControlService} repository to sync your
               application with
-            </h3>
+            </h4>
             <br />
           </div>
           <table>

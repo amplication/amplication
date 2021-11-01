@@ -63,10 +63,10 @@ function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
         {({ values, touched, setTouched, setValues }) => (
           <Form>
             <div className={`${CLASS_NAME}__header`}>
-              <h3>
+              <h4>
                 Select a {sourceControlService} repository to sync your
                 application with.
-              </h3>
+              </h4>
               {(loadingRepos || networkStatus === NetworkStatus.refetch) && (
                 <CircularProgress />
               )}
