@@ -1,0 +1,46 @@
+name: Validate Push
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "*.json"
+      - "packages/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - run: npm i -g npm@7.3.0
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            */*/node_modules
+          key: vp-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+              vp-${{ runner.os }}-
+      - run: npm ci
+      - name: Install packages' dependencies
+        run: npm run bootstrap -- --loglevel verbose
+      - name: Update Prisma client
+        run: npm run prisma:generate
+      - name: Define Lerna since parameter
+        run: echo "SINCE=origin/master" >> $GITHUB_ENV
+      - name: Check format
+        run: npm run check-format -- --since $SINCE
+      - name: Build packages
+        run: npm run build -- --since $SINCE
+      - name: Lint
+        run: npm run lint -- --since $SINCE
+      - name: Check GraphQL schema
+        run: npm run check-graphql-schema -- --since $SINCE
+      - name: Run tests
+        run: npm test -- --since $SINCE
