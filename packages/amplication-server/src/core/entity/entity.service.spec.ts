@@ -19,6 +19,7 @@ import {
   USER_ENTITY_NAME
 } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
+import { DiffModule } from 'src/services/diff.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 import {
   EnumPendingChangeAction,
@@ -281,7 +282,7 @@ describe('EntityService', () => {
     prismaEntityFindManyMock.mockImplementation(() => [EXAMPLE_ENTITY]);
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [JsonSchemaValidationModule],
+      imports: [JsonSchemaValidationModule, DiffModule],
       providers: [
         {
           provide: PrismaService,
