@@ -4,6 +4,7 @@ import { DeclarationKind } from "ast-types/gen/kinds";
 import { Module } from "../../../types";
 import { relativeImportPath } from "../../../util/module";
 import {
+  addAutoGenerationComment,
   addImports,
   importContainedIdentifiers,
   NamedClassDeclaration,
@@ -86,6 +87,7 @@ export function createDTOModule(
   dtoNameToPath: Record<string, string>
 ): Module {
   const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
+  addAutoGenerationComment(file);
   return {
     code: print(file).code,
     path: dtoNameToPath[dto.id.name],

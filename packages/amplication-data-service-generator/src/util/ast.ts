@@ -26,6 +26,10 @@ export type NamedClassProperty = namedTypes.ClassProperty & {
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
 const ARRAY_ID = builders.identifier("Array");
+const STATIC_COMMENT =
+  "// **************************************************************************\n" +
+  "// GENERATED CODE - DO NOT MODIFY BY HAND\n" +
+  "// **************************************************************************\n";
 
 type ParseOptions = Omit<recast.Options, "parser">;
 type PartialParseOptions = Omit<ParserOptions, "tolerant">;
@@ -400,6 +404,18 @@ export function removeESLintComments(ast: ASTNode): void {
       this.traverse(path);
     },
   });
+}
+
+/**
+ * Adds auto-generated static comments to top of given file
+ * @param file file to add comments to
+ */
+export function addAutoGenerationComment(file: namedTypes.File): void {
+  const autoGen = builders.commentBlock(STATIC_COMMENT, true);
+  if (!file.comments) {
+    file.comments = [];
+  }
+  file.comments.unshift(autoGen);
 }
 
 export function importNames(
