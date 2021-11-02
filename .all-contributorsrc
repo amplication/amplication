@@ -385,6 +385,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "AsianCat54x",
+      "name": "Asian Cat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/82395440?v=4",
+      "profile": "https://leetcode.com/purpl3/",
+      "contributions": [
+        "blog"
+      ]
     }
   ],
   "contributorsPerLine": 7,
