@@ -376,6 +376,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "g-traub",
+      "name": "Guillaume Traub",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33841027?v=4",
+      "profile": "https://github.com/g-traub",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
