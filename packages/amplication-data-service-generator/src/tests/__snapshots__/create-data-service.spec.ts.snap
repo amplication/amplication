@@ -2583,6 +2583,10 @@ export interface IAuthStrategy {
   validate: (...any: any) => Promise<UserInfo>;
 }
 ",
+  "server/src/auth/ITokenService.ts": "export interface ITokenService {
+  createToken: (username: string, password: string) => Promise<string>;
+}
+",
   "server/src/auth/LoginArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { Credentials } from \\"./Credentials\\";
 
@@ -2630,11 +2634,11 @@ import grants from \\"../grants.json\\";
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
-  "server/src/auth/auth.controller.ts": "import { Controller, Post, Body, UnauthorizedException } from \\"@nestjs/common\\";
+  "server/src/auth/auth.controller.ts": "import { Body, Controller, Post } from \\"@nestjs/common\\";
 import { ApiTags } from \\"@nestjs/swagger\\";
 import { AuthService } from \\"./auth.service\\";
-import { UserInfo } from \\"./UserInfo\\";
 import { Credentials } from \\"./Credentials\\";
+import { UserInfo } from \\"./UserInfo\\";
 
 @ApiTags(\\"auth\\")
 @Controller()
@@ -2642,20 +2646,17 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post(\\"login\\")
   async login(@Body() body: Credentials): Promise<UserInfo> {
-    const user = await this.authService.validateUser(
-      body.username,
-      body.password
-    );
-    if (!user) {
-      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
-    }
-    return user;
+    return this.authService.login(body);
   }
 }
 ",
-  "server/src/auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
-import { PassportModule } from \\"@nestjs/passport\\";
+  "server/src/auth/auth.module.ts": "import { forwardRef, Module } from \\"@nestjs/common\\";
+import { ConfigService } from \\"@nestjs/config\\";
 import { JwtModule } from \\"@nestjs/jwt\\";
+import { PassportModule } from \\"@nestjs/passport\\";
+import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
+import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
+import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
@@ -2663,13 +2664,11 @@ import { AuthController } from \\"./auth.controller\\";
 import { AuthResolver } from \\"./auth.resolver\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic/basic.strategy\\";
-import { PasswordService } from \\"./password.service\\";
 import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
-import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
-import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
-import { ConfigService } from \\"@nestjs/config\\";
-import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
 import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
+import { PasswordService } from \\"./password.service\\";
+//@ts-ignore
+import { TokenService } from \\"./token.service\\";
 
 @Module({
   imports: [
@@ -2705,45 +2704,28 @@ import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
     AuthResolver,
     JwtStrategy,
     jwtSecretFactory,
+    TokenService,
   ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],
 })
 export class AuthModule {}
 ",
-  "server/src/auth/auth.resolver.ts": "import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
+  "server/src/auth/auth.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import { Args, Mutation, Query, Resolver } from \\"@nestjs/graphql\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { Args, Mutation, Resolver, Query } from \\"@nestjs/graphql\\";
-import { ApolloError } from \\"apollo-server-express\\";
 import { AuthService } from \\"./auth.service\\";
-import { UserInfo } from \\"./UserInfo\\";
-import { LoginArgs } from \\"./LoginArgs\\";
+import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth.guard\\";
 import { UserData } from \\"./gqlUserData.decorator\\";
-import { JwtService } from \\"@nestjs/jwt\\";
+import { LoginArgs } from \\"./LoginArgs\\";
+import { UserInfo } from \\"./UserInfo\\";
 
 @Resolver(UserInfo)
 export class AuthResolver {
-  constructor(
-    private readonly authService: AuthService,
-    private jwtService: JwtService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
   @Mutation(() => UserInfo)
   async login(@Args() args: LoginArgs): Promise<UserInfo> {
-    const user = await this.authService.validateUser(
-      args.credentials.username,
-      args.credentials.password
-    );
-    if (!user) {
-      throw new ApolloError(\\"The passed credentials are incorrect\\");
-    }
-    const payload = { username: user.username };
-    const accessToken = await this.jwtService.signAsync(payload); //signs username payload
-
-    return {
-      accessToken,
-      ...user,
-    };
+    return this.authService.login(args.credentials);
   }
 
   @Query(() => UserInfo)
@@ -2754,25 +2736,43 @@ export class AuthResolver {
 }
 ",
   "server/src/auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
-import { AuthService } from \\"./auth.service\\";
 // @ts-ignore
 // eslint-disable-next-line
-import { UserService, User } from \\"../user/user.service\\";
+import { User } from \\"src/user/base/User\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { UserService } from \\"../user/user.service\\";
+import { AuthService } from \\"./auth.service\\";
+import { Credentials } from \\"./Credentials\\";
 import { PasswordService } from \\"./password.service\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { TokenService } from \\"./token.service\\";
 
-const VALID_USER: User = {
+const VALID_CREDENTIALS: Credentials = {
   username: \\"Valid User\\",
   password: \\"Valid User Password\\",
 };
-const INVALID_USER: User = {
+const INVALID_CREDENTIALS: Credentials = {
   username: \\"Invalid User\\",
   password: \\"Invalid User Password\\",
 };
+const USER: User = {
+  ...VALID_CREDENTIALS,
+  createdAt: new Date(),
+  firstName: \\"ofek\\",
+  id: \\"1\\",
+  lastName: \\"gabay\\",
+  roles: [\\"admin\\"],
+  updatedAt: new Date(),
+};
+
+const SIGN_TOKEN = \\"SIGN_TOKEN\\";
 
 const userService = {
   findOne(args: { where: { username: string } }): User | null {
-    if (args.where.username === VALID_USER.username) {
-      return VALID_USER;
+    if (args.where.username === VALID_CREDENTIALS.username) {
+      return USER;
     }
     return null;
   },
@@ -2784,9 +2784,15 @@ const passwordService = {
   },
 };
 
-describe(\\"AuthService\\", () => {
-  let service: AuthService;
+const tokenService = {
+  createToken(username: string, password: string) {
+    return SIGN_TOKEN;
+  },
+};
 
+describe(\\"AuthService\\", () => {
+  //ARRANGE
+  let service: AuthService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -2797,6 +2803,10 @@ describe(\\"AuthService\\", () => {
         {
           provide: PasswordService,
           useValue: passwordService,
+        },
+        {
+          provide: TokenService,
+          useValue: tokenService,
         },
         AuthService,
       ],
@@ -2809,33 +2819,56 @@ describe(\\"AuthService\\", () => {
     expect(service).toBeDefined();
   });
 
-  it(\\"should validate a valid user\\", async () => {
-    await expect(
-      service.validateUser(VALID_USER.username, VALID_USER.password)
-    ).resolves.toEqual({
-      username: VALID_USER.username,
+  describe(\\"Testing the authService.validateUser()\\", () => {
+    it(\\"should validate a valid user\\", async () => {
+      await expect(
+        service.validateUser(
+          VALID_CREDENTIALS.username,
+          VALID_CREDENTIALS.password
+        )
+      ).resolves.toEqual({
+        username: USER.username,
+        roles: USER.roles,
+      });
+    });
+
+    it(\\"should not validate a invalid user\\", async () => {
+      await expect(
+        service.validateUser(
+          INVALID_CREDENTIALS.username,
+          INVALID_CREDENTIALS.password
+        )
+      ).resolves.toBe(null);
     });
   });
 
-  it(\\"should not validate a invalid user\\", async () => {
-    await expect(
-      service.validateUser(INVALID_USER.username, INVALID_USER.password)
-    ).resolves.toBe(null);
+  describe(\\"Testing the authService.login()\\", () => {
+    it(\\"should return userInfo object for correct username and password\\", async () => {
+      const loginResult = await service.login(VALID_CREDENTIALS);
+      expect(loginResult).toEqual({
+        username: USER.username,
+        roles: USER.roles,
+        accessToken: SIGN_TOKEN,
+      });
+    });
   });
 });
 ",
-  "server/src/auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PasswordService } from \\"./password.service\\";
+  "server/src/auth/auth.service.ts": "import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../user/user.service\\";
+import { Credentials } from \\"./Credentials\\";
+import { PasswordService } from \\"./password.service\\";
+import { TokenService } from \\"./token.service\\";
 import { UserInfo } from \\"./UserInfo\\";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly passwordService: PasswordService
+    private readonly passwordService: PasswordService,
+    private readonly tokenService: TokenService
   ) {}
 
   async validateUser(
@@ -2850,6 +2883,46 @@ export class AuthService {
       return { username, roles };
     }
     return null;
+  }
+  async login(credentials: Credentials): Promise<UserInfo> {
+    const { username, password } = credentials;
+    const user = await this.validateUser(
+      credentials.username,
+      credentials.password
+    );
+    if (!user) {
+      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
+    }
+    //@ts-ignore
+    const accessToken = await this.tokenService.createToken(username, password);
+    return {
+      accessToken,
+      ...user,
+    };
+  }
+}
+",
+  "server/src/auth/base/token.service.base.ts": "/* eslint-disable import/no-unresolved */
+import { Injectable } from \\"@nestjs/common\\";
+import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from \\"../constants\\";
+import { ITokenService } from \\"../ITokenService\\";
+/**
+ * TokenServiceBase is a basic http implementation of ITokenService
+ */
+@Injectable()
+export class TokenServiceBase implements ITokenService {
+  /**
+   *
+   * @param username
+   * @param password
+   * @returns a base64 string of the username and password
+   */
+  createToken(username: string, password: string): Promise<string> {
+    if (!username) return Promise.reject(INVALID_USERNAME_ERROR);
+    if (!password) return Promise.reject(INVALID_PASSWORD_ERROR);
+    return Promise.resolve(
+      Buffer.from(\`\${username}:\${password}\`).toString(\\"base64\\")
+    );
   }
 }
 ",
@@ -2890,6 +2963,9 @@ export class BasicStrategy extends BasicStrategyBase {
   "server/src/auth/basic/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
+",
+  "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
+export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
 ",
   "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
 
@@ -3159,6 +3235,13 @@ export function parseSalt(value: string | undefined): Salt {
   }
   return rounds;
 }
+",
+  "server/src/auth/token.service.ts": "import { ITokenService } from \\"./ITokenService\\";
+//@ts-ignore
+// eslint-disable-next-line import/no-unresolved
+import { TokenServiceBase } from \\"./base/token.service.base\\";
+//@ts-ignore
+export class TokenService extends TokenServiceBase implements ITokenService {}
 ",
   "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
@@ -9509,9 +9592,19 @@ describe(\\"Testing the basicStrategyBase.validate()\\", () => {
   });
 });
 ",
-  "server/src/tests/auth/constants.ts": "import { UserInfo } from \\"../../auth/UserInfo\\";
+  "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
+import { UserInfo } from \\"../../auth/UserInfo\\";
 
 export const TEST_USER: UserInfo = { roles: [\\"User\\"], username: \\"ofek\\" };
+export const SIGN_TOKEN = \\"SIGN_TOKEN\\";
+export const VALID_CREDENTIALS: Credentials = {
+  username: \\"Valid User\\",
+  password: \\"Valid User Password\\",
+};
+export const INVALID_CREDENTIALS: Credentials = {
+  username: \\"Invalid User\\",
+  password: \\"Invalid User Password\\",
+};
 ",
   "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
@@ -9542,6 +9635,40 @@ describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
   });
 });
 ",
+  "server/src/tests/auth/token.service.spec.ts": "/* eslint-disable import/no-unresolved */
+//@ts-ignore
+import { TokenServiceBase } from \\"../../auth/base/token.service.base\\";
+import {
+  INVALID_USERNAME_ERROR,
+  INVALID_PASSWORD_ERROR,
+  //@ts-ignore
+} from \\"../../auth/constants\\";
+
+describe(\\"Testing the TokenServiceBase\\", () => {
+  let tokenServiceBase: TokenServiceBase;
+  beforeEach(() => {
+    tokenServiceBase = new TokenServiceBase();
+  });
+  describe(\\"Testing the BasicTokenService.createToken()\\", () => {
+    it(\\"should create valid token for given username and password\\", async () => {
+      expect(await tokenServiceBase.createToken(\\"admin\\", \\"admin\\")).toBe(
+        \\"YWRtaW46YWRtaW4=\\"
+      );
+    });
+    it(\\"should reject when username missing\\", () => {
+      //@ts-ignore
+      const result = tokenServiceBase.createToken(null, \\"admin\\");
+      return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
+    });
+    it(\\"should reject when password missing\\", () => {
+      //@ts-ignore
+      const result = tokenServiceBase.createToken(\\"admin\\", null);
+      return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
+    });
+  });
+});
+",
+  "server/src/tests/auth/token.service.ts": "",
   "server/src/tests/health/health.service.spec.ts": "import { mock } from \\"jest-mock-extended\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import { HealthServiceBase } from \\"../../health/base/health.service.base\\";
