@@ -3,6 +3,7 @@
 provider "google" {
   project = var.project
   region  = var.region
+  version = "~> 3.90"
 }
 
 # APIs
@@ -107,6 +108,7 @@ resource "google_project_service_identity" "cloud_build" {
 resource "google_project_iam_member" "cloud_build_editor" {
   role       = "roles/editor"
   member     = "serviceAccount:${google_project_service_identity.cloud_build.email}"
+  project  = var.project
   depends_on = [google_project_service.cloud_build_api]
 }
 
