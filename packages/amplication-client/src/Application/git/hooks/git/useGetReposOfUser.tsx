@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { EnumSourceControlService, GitRepo } from "../../models";
+import { EnumSourceControlService, GitRepo } from "../../../../models";
 
 type Props = {
   appId: string;

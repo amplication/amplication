@@ -9,9 +9,9 @@ import { EnumSourceControlService, RepoCreateInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
-import useGetReposOfUser from "../../../../hooks/git/useGetReposOfUser";
-import useGitCreate from "../../../../hooks/git/useGitCreate";
-import useGitSelected from "../../../../hooks/git/useGitSelected";
+import useGetReposOfUser from "../../hooks/git/useGetReposOfUser";
+import useGitCreate from "../../hooks/git/useGitCreate";
+import useGitSelected from "../../hooks/git/useGitSelected";
 
 const CLASS_NAME = "git-repos";
 
