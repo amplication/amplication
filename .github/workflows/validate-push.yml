@@ -12,7 +12,7 @@ on:
       - "packages/**/*.md"
       
 jobs:
-  build:
+  lerna:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -34,3 +34,23 @@ jobs:
       - run: npm ci
       - name: Install packages' dependencies
         run: npm run bootstrap
+  tests:
+    needs: lerna
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - run: npm run test
+  tests-e2e:
+    needs: lerna
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - run: npm run test:e2e
+      
+  check-format:
+    needs: lerna
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - run: npm run check-format
+  
