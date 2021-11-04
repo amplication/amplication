@@ -36,16 +36,17 @@ export class GitService {
         throw new Error("Didn't get a valid git service");
     }
   }
-  //TODO add args validation
-  //TODO add make sure repo name valid
   async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
     const { input, appId, sourceControlService } = args;
     const app = await this.appService.app({ where: { id: appId } });
-    const token = app.githubToken;
+    const { githubToken } = app;
 
     switch (sourceControlService) {
       case EnumSourceControlService.Github:
-        return this.githubService.createRepo({ token, input: input });
+        return this.githubService.createRepo({
+          token: githubToken,
+          input: input
+        });
       default:
         throw new ApolloError("didn't get a valid source control");
     }
