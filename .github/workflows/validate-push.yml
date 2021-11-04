@@ -33,24 +33,4 @@ jobs:
               vp-${{ runner.os }}-
       - run: npm ci
       - name: Install packages' dependencies
-        run: npm run bootstrap -- --loglevel verbose
-      - name: Update Prisma client
-        run: npm run prisma:generate
-      - name: Define Lerna since parameter
-        run: echo "SINCE=origin/master" >> $GITHUB_ENV
-      - name: Check format
-        id: formater
-        run: npm run check-format -- --since $SINCE
-      - name: discord
-        if: failure()
-        env: 
-          JOB_CONTEXT: ${{toJson(job)}}
-        run: echo "$JOB_CONTEXT"
-      - name: Build packages
-        run: npm run build -- --since $SINCE
-      - name: Lint
-        run: npm run lint -- --since $SINCE
-      - name: Check GraphQL schema
-        run: npm run check-graphql-schema -- --since $SINCE
-      - name: Run tests
-        run: npm test -- --since $SINCE
+        run: npm run bootstrap
