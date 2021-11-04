@@ -1,9 +1,9 @@
 import { Button, TextField } from "@amplication/design-system";
 import { Form, Formik } from "formik";
 import React from "react";
-import useGitCreate from "../../hooks/git/useGitCreate";
-import useGitSelected from "../../hooks/git/useGitSelected";
-import useGitUserName from "../../hooks/git/useGitUserName";
+import useGitCreate from "../../hooks/useGitCreate";
+import useGitSelected from "../../hooks/useGitSelected";
+import useGitUserName from "../../hooks/useGitUserName";
 import {
   App,
   EnumSourceControlService,
