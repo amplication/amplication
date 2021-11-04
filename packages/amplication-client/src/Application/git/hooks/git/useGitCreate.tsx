@@ -44,7 +44,7 @@ export default function useGitCreate({
         eventName: "createGitRepo",
       });
     },
-    [appId, cb, sourceControlService, triggerCreation]
+    [appId, cb, sourceControlService, trackEvent, triggerCreation]
   );
 
   return { called, loading, error, handleCreation };
