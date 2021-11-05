@@ -1,0 +1,33 @@
+name: Validate Push
+
+on:
+  workflow_dispatch:
+  pull_request:
+      
+jobs:
+  lerna:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - run: npm i -g npm@7.3.0
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            */*/node_modules
+          key: pr-wf-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+              pr-wf-${{ runner.os }}-
+      - run: npm ci
+      - name: Define Lerna since parameter
+        run: echo "SINCE=origin/$GITHUB_BASE_REF" >> $GITHUB_ENV
+        if: ${{ github.ref != 'refs/heads/master' }}
+      - name: Install packages' dependencies
+        run: npm run bootstrap
+      - run: npx lerna changed --json
