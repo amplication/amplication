@@ -64,8 +64,5 @@ jobs:
         run: |
           echo ${{toJSON(steps.test.outputs.path) }}
           echo ${{hashFiles(toJSON(steps.test.outputs.path)) }}
-          echo ${{hashFiles("**/package-lock.json") }}
-
-          
-          
+          echo ${{hashFiles('**/package-lock.json') }}
 
