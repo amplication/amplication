@@ -56,7 +56,7 @@ jobs:
         package: ${{ fromJson(needs.lerna.outputs.packages) }}
     steps:
       - run: |
-          echo ${{ matrix.package }}
+          echo ${{ toJSON(matrix.package) }}
           
 #      - uses: actions/checkout@v2
 #      - uses: actions/setup-node@v2
