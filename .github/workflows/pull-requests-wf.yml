@@ -64,7 +64,7 @@ jobs:
       - name: escape
         run: |
           echo ${{toJSON(steps.test.outputs.path) }}
-          echo ${${{ toJSON(steps.test.outputs.path) }}:42}
+          echo ${{ toJSON(steps.test.outputs.path) }} | echo ${:42}
           echo ${{hashFiles('**/package-lock.json') }}
 
 
