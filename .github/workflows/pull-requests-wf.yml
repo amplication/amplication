@@ -66,4 +66,5 @@ jobs:
           echo ${{toJSON(steps.test.outputs.path) }}
           echo ${{hashFiles(toJSON(steps.test.outputs.path)) }}
           echo ${{hashFiles('**/package-lock.json') }}
+          echo ${{hashFiles(format('{0}/package-lock.json', toJSON(matrix.package.location))) }}
 
