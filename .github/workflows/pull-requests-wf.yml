@@ -43,6 +43,8 @@ jobs:
     steps:
       - name: Echo previous outputs
         run: echo "${{ toJSON(needs.lerna.outputs) }}"
+      - run: echo "${{ toJSON(needs.lerna.outputs.packages) }}"
+      - run: echo "${{ toJSON(needs.lerna.outputs).packages }}"
 
   step2:
     runs-on: ubuntu-latest
