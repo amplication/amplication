@@ -64,8 +64,8 @@ jobs:
       - name: escape
         run: |
           echo ${{toJSON(steps.test.outputs.path) }}
-          
-          echo ${{ toJSON(steps.test.outputs.path) }} | sed 's/\/home\/runner\/work\/amplication\/amplication\///'
+          echo ${{ toJSON(steps.test.outputs.path) }} | sed 's/\/home\/runner\/work\/amplication\/amplication\///' >> $ENV_TMP
+          echo $ENV_TMP
           echo ${{hashFiles('**/package-lock.json') }}
           echo ${{hashFiles('packages/amplication-cli/package-lock.json') }}
           
