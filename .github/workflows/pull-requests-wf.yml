@@ -32,7 +32,7 @@ jobs:
       - name: Lerna SINCE environment 
         run: echo "SINCE=origin/$GITHUB_BASE_REF" >> $GITHUB_ENV     
       - name: Lerna Changed
-        id: lerna_changed
+        id: lerna-changed
         run: |
           echo ::set-output name=packages::$(lerna changed --json)
 
