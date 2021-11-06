@@ -57,11 +57,9 @@ jobs:
     steps:
       - name: test
         id: package
-        env: 
-          PNAME: toJSON(matrix.package.name)
         run: |
-          echo "${{env.PNAME}}"
-          echo ::set-output name=name::$${{env.PNAME}}
+          echo "${{toJSON(matrix.package.name)}}"
+          echo ::set-output name=name::$${{toJSON(matrix.package.name)}}
       - run: |
           echo ${{  format('{{{0}{1}{2}}}', 'packages/', steps.package.outputs.name, '/package-lock.json') }}
 #          echo ${{  format('{{Hello {0} {1} {2}!}}', 'packages/', $NAME, '/package-lock.json') }}
