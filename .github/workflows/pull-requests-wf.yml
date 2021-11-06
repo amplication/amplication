@@ -63,7 +63,7 @@ jobs:
       - name: escape
         run: |
           echo ${{toJSON(steps.test.outputs.path) }}
-          echo ${{hashfiles(steps.test.outputs.path) }}
+          echo ${{hashfiles(toJSON(steps.test.outputs.path)) }}
 #          Run echo "{\"path\": /home/runner/work/amplication/amplication/packages/amplication-cli}"
 #         {"path": /home/runner/work/amplication/amplication/packages/amplication-cli}
           
