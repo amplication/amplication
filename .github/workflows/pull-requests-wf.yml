@@ -58,7 +58,7 @@ jobs:
       - name: test
         id: test
         run: |
-          echo ::set-output name=path::${{  format('{{"path": {0}}}', toJSON(matrix.package.location)) }}
+          echo ::set-output name=path::${{  format('{0}//package-lock.json', toJSON(matrix.package.location)) }}
       - name: escape
         run: |
           echo ${{toJSON(steps.test.outputs.path) }}
