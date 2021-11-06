@@ -53,7 +53,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       matrix:
-        package: ${{ fromJSON(needs.lerna.outputs.packages) }}
+        package: ${{ toJSON(needs.lerna.outputs.packages) }}
     steps:
       - run: |
           echo ${{ matrix.package }}
