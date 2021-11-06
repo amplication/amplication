@@ -55,6 +55,7 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.changed-packages.outputs.packages) }}
     steps:
+      - uses: actions/checkout@v2
       - name: test
         id: test
         run: |
