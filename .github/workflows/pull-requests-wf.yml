@@ -63,7 +63,7 @@ jobs:
           echo ::set-output name=path2::${{  format('{0}/package-lock.json', matrix.package.location) }}
       - name: escape
         env:
-          TT: echo ${${{hashFiles(toJSON(steps.test.outputs.path)) }}:42}
+          TT: echo "${ ${{hashFiles(toJSON(steps.test.outputs.path)) }}:42 }"
         run: |
           echo ${{toJSON(steps.test.outputs.path) }}
           echo $TT
