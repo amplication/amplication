@@ -67,5 +67,8 @@ jobs:
           
           echo ${{ toJSON(steps.test.outputs.path) }} | sed 's/\/home\/runner\/work\/amplication\/amplication\///'
           echo ${{hashFiles('**/package-lock.json') }}
+          echo ${{hashFiles('packages/amplication-cli/package-lock.json') }}
+          
+
 
 
