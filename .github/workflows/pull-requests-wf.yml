@@ -26,8 +26,8 @@ jobs:
               pr-wf-${{ runner.os }}-
       - name: npm ci
         run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
-      - name: Lerna Bootstrap
-        run: npm run bootstrap
+#      - name: Lerna Bootstrap
+#        run: npm run bootstrap
       - name: Lerna SINCE environment 
         run: echo "SINCE=origin/$GITHUB_BASE_REF" >> $GITHUB_ENV
       - name: Lerna Changed
