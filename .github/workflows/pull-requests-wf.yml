@@ -15,7 +15,7 @@ jobs:
            echo ::set-output name=json_var::'[{ "name": "test", "client_payload": "111" }, { "name": "test2", "client_payload": "222" }] '
       - name: use output
         run: |
-          echo $json_var | jq '.[].name'
+          echo ${{steps.set.outputs.json_var}} | jq '.[].name'
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
