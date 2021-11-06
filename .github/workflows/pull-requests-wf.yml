@@ -33,5 +33,5 @@ jobs:
       - name: Lerna SINCE environment 
         run: echo "SINCE=origin/$GITHUB_BASE_REF" >> $GITHUB_ENV
       - name: Lerna Changed
-        run: npx lerna changed --json
+        run: lerna changed --json
 
