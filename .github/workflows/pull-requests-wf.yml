@@ -34,4 +34,10 @@ jobs:
         run: echo "SINCE=origin/$GITHUB_BASE_REF" >> $GITHUB_ENV
       - name: Lerna Changed
         run: lerna changed --json
-
+        
+      - name: Lerna Changed
+        run: |
+          echo ::set-outpu name=changed::$(lerna changed --json)
+        id: lc
+      - name: Get Lerna Changed
+        run: echo "The changed packaged are ${{ steps.lc.outputs.changed }}"
