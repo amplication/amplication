@@ -9,16 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: set output
-        id: set
-        run: |
-           echo ::set-output name=json_var::'[{ "name": "test", "client_payload": "111" }, { "name": "test2", "client_payload": "222" }] '
-      - name: use output
-        run: |
-          echo '${{fromJson(steps.set.outputs.json_var)[].name}}'
-          echo '${{steps.set.outputs.json_var}}'
-          echo '${{steps.set.outputs.json_var}}' | jq '.'
-          echo '${{steps.set.outputs.json_var}}' | jq '.[].name'
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -33,24 +23,43 @@ jobs:
             ~/.npm
             node_modules
             */*/node_modules
-          key: pr-wf-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: pr-ci-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-              pr-wf-${{ runner.os }}-
+              pr-ci-${{ runner.os }}-
       - name: npm ci
         run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
-#      - name: Lerna Bootstrap
-#        run: npm run bootstrap
       - name: Lerna SINCE environment 
-        run: echo "SINCE=origin/$GITHUB_BASE_REF" >> $GITHUB_ENV
+        run: echo "SINCE=origin/$GITHUB_BASE_REF" >> $GITHUB_ENV     
       - name: Lerna Changed
-        run: lerna changed --json
-        
-      - name: Lerna Changed
+        id: lerna_changed
         run: |
-          echo ::set-output name=changed::$(lerna changed --json)
-        id: lc
-      - name: Get Lerna Changed
-        run: |
-          echo "fromJson(${{ steps.lc.outputs.changed }})"
-          echo "The changed packaged are ${{ steps.lc.outputs.changed }}"
-          echo "${{ steps.lc.outputs.changed}}" | jq '.[].name' | join(",")
+          echo ::set-output name=packages::$(lerna changed --json)
+
+
+  step2:
+    runs-on: ubuntu-latest
+    needs:
+      - lerna
+    timeout-minutes: 45
+    strategy:
+      matrix:
+        package: ${{ fromJSON(needs.lerna_changed.outputs.packages) }}
+    steps:
+      - run: echo ${{ fromJSON(matrix.package).name }}
+#      - uses: actions/checkout@v2
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: 14.x
+#      - run: npm i -g npm@7.3.0
+#      - name: Cache node modules
+#        uses: actions/cache@v2
+#        with:
+#          path: |
+#            ~/.npm
+#            node_modules
+#            */*/node_modules
+#          key: pr-wf-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+#          restore-keys: |
+#              pr-wf-${{ runner.os }}-
+#      - name: npm ci
+#        run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
