@@ -25,10 +25,9 @@ jobs:
           restore-keys: |
               pr-wf-${{ runner.os }}-
       - run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
-      - name: Define Lerna since parameter
-        run: echo "SINCE=origin/$GITHUB_BASE_REF" >> $GITHUB_ENV
-        if: ${{ github.ref != 'refs/heads/master' }}
       - name: Install packages' dependencies
         run: npm run bootstrap
+      - name: Define Lerna since parameter
+        run: echo "SINCE=origin/$GITHUB_BASE_REF" >> $GITHUB_ENV
       - run: npx lerna changed --json
 
