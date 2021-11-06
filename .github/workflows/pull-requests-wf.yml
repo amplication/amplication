@@ -55,14 +55,9 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.changed-packages.outputs.packages) }}
     steps:
-      - name: test
-        id: package
-        run: |
-          echo ::set-output name=path::$${{toJSON(matrix.package.location)}}
-          echo ::set-output name=name::$${{toJSON(matrix.package.name)}}
       - run: |
-          echo ${{  format('{{{0}{1}}}', steps.package.outputs.location, '/package-lock.json') }}
-          echo ${{  hashFiles(format('{{{0}{1}}}', steps.package.outputs.location, '/package-lock.json')) }}
+          echo ${{  format('{0}{1}', toJSON(matrix.package.location), '/package-lock.json') }}
+          echo ${{  hashFiles(format('{0}{1}', toJSON(matrix.package.location), '/package-lock.json')) }}
 
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
