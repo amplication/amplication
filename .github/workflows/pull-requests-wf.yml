@@ -61,5 +61,5 @@ jobs:
           echo ::set-output name=path::${{  format('{{\"path\": {0}}}', toJSON(matrix.package.location)) }}
       - name: escape
         run: |
-          echo ${{toJSON(steps.test.outputs.path) }}
+          echo ${{toJSON(steps.test.outputs.path.path) }}
 
