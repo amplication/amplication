@@ -51,4 +51,4 @@ jobs:
       - name: Get Lerna Changed
         run: |
           echo "The changed packaged are ${{ steps.lc.outputs.changed }}"
-          echo "${{ steps.lc.outputs.changed}}" | jq '.[].name' | join(" --scope=")
+          echo "${{ steps.lc.outputs.changed}}" | jq '.[].name' | join(",")
