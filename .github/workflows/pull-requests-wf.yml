@@ -58,12 +58,12 @@ jobs:
       - name: test
         id: package
         run: |
-          echo "${{toJSON(matrix.package.name)}}"
+          echo ::set-output name=path::$${{toJSON(matrix.package.location)}}
           echo ::set-output name=name::$${{toJSON(matrix.package.name)}}
       - run: |
-          echo ${{  format('{{{0}{1}{2}}}', 'packages/', steps.package.outputs.name, '/package-lock.json') }}
-#          echo ${{  format('{{Hello {0} {1} {2}!}}', 'packages/', $NAME, '/package-lock.json') }}
-#          echo ${{ hashFiles('packages/$NAME/package-lock.json') }}
+          echo ${{  format('{{{0}{1}}}', steps.package.outputs.location, '/package-lock.json') }}
+          echo ${{  hashFiles(format('{{{0}{1}}}', steps.package.outputs.location, '/package-lock.json')) }}
+
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -76,7 +76,7 @@ jobs:
             ~/.npm
             node_modules
             */*/node_modules
-          key: pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}-${{ hashFiles('**/package-lock.json') }}
+          key: pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}-${{ hashFiles(format('{{{0}{1}}}', steps.package.outputs.location, '/package-lock.json')) }}
           restore-keys: |
               pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}
               pr-wf-${{ runner.os }}-
