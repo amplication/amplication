@@ -7,7 +7,8 @@ on:
 jobs:
   lerna:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    outputs:
+      packages: ${{ steps.lerna-changed.outputs.packages }}
     steps:
       - uses: actions/checkout@v2
         with:
