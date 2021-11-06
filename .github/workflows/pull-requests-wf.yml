@@ -78,7 +78,7 @@ jobs:
             ~/.npm
             node_modules
             */*/node_modules
-          key: pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}-${{ hashFiles('packages/'+toJSON(matrix.package.name)+'/package-lock.json') }}
+          key: pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
               pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}
               pr-wf-${{ runner.os }}-
