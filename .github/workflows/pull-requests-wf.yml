@@ -62,7 +62,8 @@ jobs:
       - name: escape
         run: |
           echo ${{toJSON(steps.test.outputs.path) }}
-          echo ${{toJSON(fromJSON(steps.test.outputs.path).path) }}
+          echo ${{fromJSON(steps.test.outputs.path)}}
+          echo ${{fromJSON(steps.test.outputs.path).path }}
           echo ${{format('{0}/package-lock.json',toJSON(steps.test.outputs.path.path)) }}
           echo ${{hashFiles(format('{0}/package-lock.json',toJSON(steps.test.outputs.path.path))) }}
 #          Run echo "{\"path\": /home/runner/work/amplication/amplication/packages/amplication-cli}"
