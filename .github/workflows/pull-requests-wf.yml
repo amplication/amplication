@@ -55,8 +55,11 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.changed-packages.outputs.packages) }}
     steps:
-      - run: |
-          echo ${{  format('{0}{1}', toJSON(matrix.package.location), '/package-lock.json') }}
-          echo ${{  format('{0}{1}', fromJSON(matrix.package.location), '/package-lock.json') }}
-          echo ${{  hashFiles(format('{0}{1}', fromJSON(matrix.package.location), '/package-lock.json')) }}
+      - name: test
+        id: test
+        run: |
+          echo ::set-output name=path::${{  format('{\"path\": {1}}}', toJSON(matrix.package.location), '/package-lock.json') }}
+      - name: escape
+        run: |
+          echo ${{toJSON(steps.test.outputs.path) }}
 
