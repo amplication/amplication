@@ -62,11 +62,10 @@ jobs:
         run: |
           echo "$PNAME"
           echo ::set-output name=name::$PNAME
-      - run: 
-          NAME=steps.package.outputs.name
-         echo ${{  format('{{{0}{1}{2}}}', 'packages/', steps.package.outputs.name, '/package-lock.json') }}
-          echo ${{  format('{{Hello {0} {1} {2}!}}', 'packages/', $NAME, '/package-lock.json') }}
-          echo ${{ hashFiles('packages/$NAME/package-lock.json') }}
+      - run: |
+          echo ${{  format('{{{0}{1}{2}}}', 'packages/', steps.package.outputs.name, '/package-lock.json') }}
+#          echo ${{  format('{{Hello {0} {1} {2}!}}', 'packages/', $NAME, '/package-lock.json') }}
+#          echo ${{ hashFiles('packages/$NAME/package-lock.json') }}
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
