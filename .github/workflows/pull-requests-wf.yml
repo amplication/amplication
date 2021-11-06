@@ -37,7 +37,7 @@ jobs:
         
       - name: Lerna Changed
         run: |
-          echo ::set-outpu name=changed::$(lerna changed --json)
+          echo ::set-output name=changed::$(lerna changed --json)
         id: lc
       - name: Get Lerna Changed
         run: echo "The changed packaged are ${{ steps.lc.outputs.changed }}"
