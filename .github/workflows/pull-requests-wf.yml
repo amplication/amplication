@@ -55,8 +55,17 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.changed-packages.outputs.packages) }}
     steps:
-      - run: echo ${{ 'packages/'+toJSON(matrix.package.name)+'/package-lock.json' }}
-      - run: echo ${{ hashFiles('packages/'+toJSON(matrix.package.name)+'/package-lock.json') }}
+      - name: test
+        id: package
+        env: 
+          PNAME: toJSON(matrix.package.name)
+        run: |
+          echo "$PNAME"
+          echo ::set-output name=name::$PNAME
+      - run: 
+          NAME=steps.package.outputs.name
+          echo ${{ print('packages/$NAME/package-lock.json') }}
+          echo ${{ hashFiles('packages/$NAME/package-lock.json') }}
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -72,6 +81,7 @@ jobs:
           key: pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}-${{ hashFiles('packages/'+toJSON(matrix.package.name)+'/package-lock.json') }}
           restore-keys: |
               pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}
+              pr-wf-${{ runner.os }}-
       - name: npm ci
         run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
       - run: lerna run check-format --scope=${{ toJSON(matrix.package.name) }}
