@@ -5,7 +5,7 @@ on:
   pull_request:
       
 jobs:
-  lerna:
+  changed-packages:
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.lerna-changed.outputs.packages }}
@@ -39,39 +39,39 @@ jobs:
   my_echo:
     runs-on: ubuntu-latest
     needs:
-      - lerna
+      - changed-packages
     steps:
       - name: Echo previous outputs
-        run: echo "${{ toJSON(needs.lerna.outputs) }}"
-      - run: echo "${{ toJSON(needs.lerna.outputs.packages) }}"
-      - run: echo "${{ toJSON(needs.lerna.outputs).packages }}"
+        run: echo "${{ toJSON(needs.changed-packages.outputs) }}"
+      - run: echo "${{ toJSON(needs.changed-packages.outputs.packages) }}"
+      - run: echo "${{ toJSON(needs.changed-packages.outputs).packages }}"
 
-  step2:
+  check-format:
     runs-on: ubuntu-latest
     needs:
-      - lerna
+      - changed-packages
     timeout-minutes: 45
     strategy:
       matrix:
-        package: ${{ fromJson(needs.lerna.outputs.packages) }}
+        package: ${{ fromJson(needs.changed-packages.outputs.packages) }}
     steps:
-      - run: |
-          echo ${{ toJSON(matrix.package.name) }}
-          
-#      - uses: actions/checkout@v2
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: 14.x
-#      - run: npm i -g npm@7.3.0
-#      - name: Cache node modules
-#        uses: actions/cache@v2
-#        with:
-#          path: |
-#            ~/.npm
-#            node_modules
-#            */*/node_modules
-#          key: pr-wf-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-#          restore-keys: |
-#              pr-wf-${{ runner.os }}-
-#      - name: npm ci
-#        run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
+      - run: echo ${{ 'packages/'+toJSON(matrix.package.name)+'/package-lock.json' }}
+      - run: echo ${{ hashFiles('packages/'+toJSON(matrix.package.name)+'/package-lock.json') }}
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - run: npm i -g npm@7.3.0
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            */*/node_modules
+          key: pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}-${{ hashFiles('packages/'+toJSON(matrix.package.name)+'/package-lock.json') }}
+          restore-keys: |
+              pr-wf-${{ runner.os }}-${{ toJSON(matrix.package.name) }}
+      - name: npm ci
+        run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
+      - run: lerna run check-format --scope=${{ toJSON(matrix.package.name) }}
