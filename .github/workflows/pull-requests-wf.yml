@@ -35,6 +35,13 @@ jobs:
         run: |
           echo ::set-output name=packages::$(lerna changed --json)
 
+  my_echo:
+    runs-on: ubuntu-latest
+    needs:
+      - lerna
+    steps:
+      - name: Echo previous outputs
+        run: echo "${{ toJSON(needs.lerna.outputs) }}"
 
   step2:
     runs-on: ubuntu-latest
@@ -43,7 +50,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       matrix:
-        package: ${{ fromJSON(needs.lerna_changed.outputs.packages) }}
+        package: ${{ fromJSON(needs.lerna.outputs.packages) }}
     steps:
       - run: echo ${{ fromJSON(matrix.package).name }}
 #      - uses: actions/checkout@v2
