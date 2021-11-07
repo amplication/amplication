@@ -367,6 +367,33 @@
         "code",
         "content"
       ]
+    },
+    {
+      "login": "michizhou",
+      "name": "michizhou",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33012425?v=4",
+      "profile": "https://github.com/michizhou",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "g-traub",
+      "name": "Guillaume Traub",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33841027?v=4",
+      "profile": "https://github.com/g-traub",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "AsianCat54x",
+      "name": "Asian Cat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/82395440?v=4",
+      "profile": "https://leetcode.com/purpl3/",
+      "contributions": [
+        "blog"
+      ]
     }
   ],
   "contributorsPerLine": 7,
