@@ -62,11 +62,15 @@ jobs:
           echo ::set-output name=path::${{  format('{0}/package-lock.json', toJSON(matrix.package.location)) }}
           echo ::set-output name=path2::${{  format('{0}/package-lock.json', matrix.package.location) }}
       - name: escape
+        id: path
         run: |
           echo ${{toJSON(steps.test.outputs.path) }}
-          echo "$(echo ${{ toJSON(steps.test.outputs.path) }} | sed 's/\/home\/runner\/work\/amplication\/amplication\///')"
-          echo ${{hashFiles('**/package-lock.json') }}
-          echo ${{hashFiles('packages/amplication-cli/package-lock.json') }}
+          echo ::set-output name=rel_path::$(echo ${{ toJSON(steps.test.outputs.path) }} | sed 's/\/home\/runner\/work\/amplication\/amplication\///')
+          # echo ${{hashFiles('**/package-lock.json') }}
+          # echo ${{hashFiles('packages/amplication-cli/package-lock.json') }}
+          
+      - run: |
+          echo ${{steps.path.outputs.rel_path}}
           
 
 
