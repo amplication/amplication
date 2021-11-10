@@ -20,16 +20,12 @@
     "@rmwc/radio": "6.1.4",
     "@rmwc/snackbar": "6.1.4",
     "@rmwc/tooltip": "6.1.4",
-    "@types/lodash": "4.14.162",
-    "@types/react": "17.0.34",
-    "@types/react-select": "3.0.27",
     "classnames": "2.2.6",
     "date-fns": "2.16.1",
     "lodash": "4.17.20",
     "react-animate-height": "2.0.23",
     "react-device-detect": "1.14.0",
-    "react-select": "3.1.1",
-    "typescript": "3.9.10"
+    "react-select": "3.1.1"
   },
   "devDependencies": {
     "@storybook/addon-actions": "6.1.9",
@@ -39,6 +35,9 @@
     "@storybook/node-logger": "6.1.9",
     "@storybook/preset-create-react-app": "3.1.5",
     "@storybook/react": "6.0.28",
+    "@types/lodash": "4.14.162",
+    "@types/react": "17.0.34",
+    "@types/react-select": "3.0.27",
     "@typescript-eslint/eslint-plugin": "4.28.3",
     "@typescript-eslint/parser": "4.28.3",
     "eslint": "7.17.0",
@@ -56,7 +55,8 @@
     "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-postcss": "3.1.8",
     "rollup-plugin-typescript2": "0.30.0",
-    "sass": "1.35.2"
+    "sass": "1.35.2",
+    "typescript": "3.9.10"
   },
   "eslintConfig": {
     "extends": "react-app",
