@@ -444,6 +444,8 @@ export class BlockService {
       }
     });
 
+    await this.updateLock(args.where.id);
+
     return this.versionToIBlock<T>(version);
   }
 
@@ -497,6 +499,14 @@ export class BlockService {
         lockedAt: null
       }
     });
+  }
+
+  async updateLock(blockId: string): Promise<void> {
+    const hasPendingChanges = await this.hasPendingChanges(blockId);
+
+    if (!hasPendingChanges) {
+      await this.releaseLock(blockId);
+    }
   }
 
   async hasPendingChanges(blockId: string): Promise<boolean> {
