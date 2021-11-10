@@ -13,6 +13,7 @@ import {
   User
 } from 'src/models';
 import { Prisma } from '@prisma/client';
+import { DiffService } from 'src/services/diff.service';
 
 const INITIAL_VERSION_NUMBER = 0;
 const NOW = new Date();
@@ -120,6 +121,7 @@ const prismaBlockVersionFindOneMock = jest.fn(() => {
 const prismaBlockVersionUpdateMock = jest.fn(() => {
   return EXAMPLE_BLOCK_VERSION;
 });
+const areDifferentMock = jest.fn();
 
 describe('BlockService', () => {
   let service: BlockService;
@@ -156,7 +158,10 @@ describe('BlockService', () => {
         BlockService
       ],
       imports: [DiffModule]
-    }).compile();
+    })
+      .overrideProvider(DiffService)
+      .useValue({ areDifferent: areDifferentMock })
+      .compile();
 
     service = module.get<BlockService>(BlockService);
   });
@@ -423,5 +428,26 @@ describe('BlockService', () => {
     expect(prismaBlockFindOneMock).toBeCalledWith({
       where: { id: block.parentBlockId }
     });
+  });
+
+  it('should have no pending changes when block versions are the same', async () => {
+    areDifferentMock.mockImplementationOnce(() => false);
+    expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(false);
+  });
+
+  it('should have pending changes when block versions are different', async () => {
+    areDifferentMock.mockImplementationOnce(() => true);
+    expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(true);
+  });
+
+  it('should have no pending changes when there is only one block version and it was deleted', async () => {
+    areDifferentMock.mockImplementationOnce(() => true);
+    prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
+      {
+        ...EXAMPLE_BLOCK_VERSION,
+        deleted: true
+      }
+    ]);
+    expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(false);
   });
 });
