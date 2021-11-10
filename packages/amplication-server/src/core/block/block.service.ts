@@ -13,6 +13,7 @@ import {
   Prisma
 } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { DiffService } from 'src/services/diff.service';
 import {
   Block,
   BlockVersion,
@@ -55,7 +56,10 @@ export type BlockPendingChange = {
 
 @Injectable()
 export class BlockService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly diffService: DiffService
+  ) {}
 
   /** use NULL in the set of allowed parents to allow the block to be created without a parent */
   blockTypeAllowedParents: {
@@ -491,6 +495,40 @@ export class BlockService {
           disconnect: true
         },
         lockedAt: null
+      }
+    });
+  }
+
+  async hasPendingChanges(blockId: string): Promise<boolean> {
+    const blockVersions = await this.prisma.blockVersion.findMany({
+      where: {
+        blockId
+      },
+      orderBy: {
+        versionNumber: Prisma.SortOrder.asc
+      }
+    });
+
+    // If there's only one version, lastVersion will be undefined
+    const currentVersion = blockVersions.shift();
+    const lastVersion = last(blockVersions);
+
+    if (currentVersion.deleted && !lastVersion) {
+      // The block was created than deleted => there are no changes
+      return false;
+    }
+
+    const NON_COMPARABLE_PROPERTIES = [
+      'id',
+      'createdAt',
+      'updatedAt',
+      'versionNumber',
+      'commitId'
+    ];
+
+    return this.diffService.areDifferent(currentVersion, lastVersion, {
+      propertyFilter(name) {
+        return !NON_COMPARABLE_PROPERTIES.includes(name);
       }
     });
   }
