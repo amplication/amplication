@@ -1,4 +1,12 @@
 # Provider
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 3.90"
+    }
+  }
+}
 
 provider "google" {
   project = var.project
@@ -107,6 +115,7 @@ resource "google_project_service_identity" "cloud_build" {
 resource "google_project_iam_member" "cloud_build_editor" {
   role       = "roles/editor"
   member     = "serviceAccount:${google_project_service_identity.cloud_build.email}"
+  project  = var.project
   depends_on = [google_project_service.cloud_build_api]
 }
 
