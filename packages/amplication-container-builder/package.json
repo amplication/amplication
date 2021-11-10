@@ -18,6 +18,7 @@
     "@google-cloud/cloudbuild": "2.0.3",
     "@nestjs/common": "7.4.4",
     "dockerode": "3.2.1",
+    "reflect-metadata": "0.1.13",
     "winston": "3.3.3"
   },
   "devDependencies": {
