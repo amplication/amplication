@@ -3,6 +3,7 @@ import { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
 import { PrismaService } from 'nestjs-prisma';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { DiffModule } from 'src/services/diff.module';
 import {
   App,
   Block,
@@ -154,7 +155,7 @@ describe('BlockService', () => {
         },
         BlockService
       ],
-      imports: []
+      imports: [DiffModule]
     }).compile();
 
     service = module.get<BlockService>(BlockService);
