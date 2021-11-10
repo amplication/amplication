@@ -82,7 +82,6 @@
     "pluralize": "8.0.0",
     "prisma": "2.19.0",
     "reflect-metadata": "0.1.13",
-    "rxjs": "6.6.7",
     "semver": "7.3.5",
     "tar-stream": "2.2.0",
     "validate-color": "2.1.1",
