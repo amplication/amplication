@@ -121,7 +121,7 @@ const prismaBlockVersionFindOneMock = jest.fn(() => {
 const prismaBlockVersionUpdateMock = jest.fn(() => {
   return EXAMPLE_BLOCK_VERSION;
 });
-const areDifferentMock = jest.fn();
+const areDifferentMock = jest.fn(() => true);
 
 describe('BlockService', () => {
   let service: BlockService;

@@ -274,7 +274,7 @@ const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
-const areDifferentMock = jest.fn();
+const areDifferentMock = jest.fn(() => true);
 
 describe('EntityService', () => {
   let service: EntityService;
