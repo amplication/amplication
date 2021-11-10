@@ -25,6 +25,7 @@ import {
   EnumPendingChangeAction,
   EnumPendingChangeResourceType
 } from '../app/dto';
+import { DiffService } from 'src/services/diff.service';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
@@ -273,6 +274,8 @@ const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
+const areDifferentMock = jest.fn();
+
 describe('EntityService', () => {
   let service: EntityService;
 
@@ -320,7 +323,10 @@ describe('EntityService', () => {
         },
         EntityService
       ]
-    }).compile();
+    })
+      .overrideProvider(DiffService)
+      .useValue({ areDifferent: areDifferentMock })
+      .compile();
 
     service = module.get<EntityService>(EntityService);
   });
@@ -1212,5 +1218,23 @@ describe('EntityService', () => {
     expect(
       await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_DELETE]);
+  });
+  it('should have no pending changes when entity versions are the same', async () => {
+    areDifferentMock.mockImplementationOnce(() => false);
+    expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
+  });
+  it('should have pending changes when entity versions are different', async () => {
+    areDifferentMock.mockImplementationOnce(() => true);
+    expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(true);
+  });
+  it('should have no pending changes when there is only one entity version and it was deleted', async () => {
+    areDifferentMock.mockImplementationOnce(() => true);
+    prismaEntityVersionFindManyMock.mockImplementationOnce(() => [
+      {
+        ...EXAMPLE_CURRENT_ENTITY_VERSION,
+        deleted: true
+      }
+    ]);
+    expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
   });
 });
