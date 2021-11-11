@@ -20,7 +20,7 @@ const INVALID_CREDENTIALS: Credentials = {
   username: "Invalid User",
   password: "Invalid User Password",
 };
-const USER: User = {
+const USER: any = {
   ...VALID_CREDENTIALS,
   createdAt: new Date(),
   firstName: "ofek",
@@ -33,7 +33,7 @@ const USER: User = {
 const SIGN_TOKEN = "SIGN_TOKEN";
 
 const userService = {
-  findOne(args: { where: { username: string } }): User | null {
+  findOne(args: { where: { username: string } }): any | null {
     if (args.where.username === VALID_CREDENTIALS.username) {
       return USER;
     }
