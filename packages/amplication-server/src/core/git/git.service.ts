@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ApolloError } from 'apollo-server-errors';
 import { isEmpty } from 'lodash';
+import { AmplicationError } from 'src/errors/AmplicationError';
 import { AppService } from '..';
 import { INVALID_APP_ID } from '../app/app.service';
 import { GithubService } from '../github/github.service';
@@ -48,7 +49,7 @@ export class GitService {
           input: input
         });
       default:
-        throw new ApolloError("didn't get a valid source control");
+        throw new AmplicationError("didn't get a valid source control");
     }
   }
 

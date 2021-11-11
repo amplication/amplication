@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Octokit } from '@octokit/rest';
-import { GithubRepo } from './dto/githubRepo';
-import { GithubFile } from './dto/githubFile';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { OAuthApp } from '@octokit/oauth-app';
-
 //@octokit/openapi-types constantly fails with linting error "Unable to resolve path to module '@octokit/openapi-types'."
 // We currently ignore it and should look deeper into the root cause
 // eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
+import { Octokit } from '@octokit/rest';
+import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { AmplicationError } from 'src/errors/AmplicationError';
+import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { IGitClient } from '../git/contracts/IGitClient';
 import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
 import { GitRepo } from '../git/dto/objects/GitRepo';
-import { ApolloError } from 'apollo-server-errors';
 import { GitUser } from '../git/dto/objects/GitUser';
+import { GithubFile } from './dto/githubFile';
+import { GithubRepo } from './dto/githubRepo';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -48,7 +47,7 @@ export class GithubService implements IGitClient {
       auth: token
     });
     if (await this.isRepoExist(token, input.name)) {
-      throw new ApolloError('Repo already exist');
+      throw new AmplicationError('Repo already exist');
     }
 
     return octokit
