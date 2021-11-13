@@ -430,24 +430,71 @@ describe('BlockService', () => {
     });
   });
 
-  it('should have no pending changes when block versions are the same', async () => {
+  it('should have no pending changes when the current and last block versions are the same', async () => {
+    const LAST_BLOCK_VERSION = {
+      ...EXAMPLE_BLOCK_VERSION,
+      versionNumber: 2
+    };
+
+    prismaBlockVersionFindManyMock.mockImplementation(() => [
+      EXAMPLE_BLOCK_VERSION,
+      { ...EXAMPLE_BLOCK_VERSION, versionNumber: 1 },
+      LAST_BLOCK_VERSION
+    ]);
     areDifferentMock.mockImplementationOnce(() => false);
+
     expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(false);
+    expect(areDifferentMock).toBeCalledWith(
+      EXAMPLE_BLOCK_VERSION,
+      LAST_BLOCK_VERSION,
+      expect.anything()
+    );
   });
 
-  it('should have pending changes when block versions are different', async () => {
+  it('should have pending changes when the current and last block versions are different', async () => {
+    const CURRENT_BLOCK_VERSION = {
+      ...EXAMPLE_BLOCK_VERSION,
+      displayName: 'new block name'
+    };
+
+    prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
+      CURRENT_BLOCK_VERSION,
+      EXAMPLE_BLOCK_VERSION
+    ]);
     areDifferentMock.mockImplementationOnce(() => true);
+
     expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(true);
+    expect(areDifferentMock).toBeCalledWith(
+      CURRENT_BLOCK_VERSION,
+      EXAMPLE_BLOCK_VERSION,
+      expect.anything()
+    );
+  });
+
+  it('should have pending changes when there is only one block version', async () => {
+    prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
+      EXAMPLE_BLOCK_VERSION
+    ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
+    expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(true);
+    expect(areDifferentMock).toBeCalledWith(
+      EXAMPLE_BLOCK_VERSION,
+      undefined,
+      expect.anything()
+    );
   });
 
   it('should have no pending changes when there is only one block version and it was deleted', async () => {
-    areDifferentMock.mockImplementationOnce(() => true);
     prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
       {
         ...EXAMPLE_BLOCK_VERSION,
         deleted: true
       }
     ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
     expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(false);
+    expect(areDifferentMock).not.toBeCalled();
   });
 });

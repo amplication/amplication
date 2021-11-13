@@ -1219,22 +1219,68 @@ describe('EntityService', () => {
       await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_DELETE]);
   });
-  it('should have no pending changes when entity versions are the same', async () => {
+  it('should have no pending changes when the current and last entity versions are the same', async () => {
+    const LAST_ENTITY_VERSION = {
+      ...EXAMPLE_CURRENT_ENTITY_VERSION,
+      versionNumber: 2
+    };
+
+    prismaEntityVersionFindManyMock.mockImplementationOnce(() => [
+      EXAMPLE_CURRENT_ENTITY_VERSION,
+      { ...EXAMPLE_CURRENT_ENTITY_VERSION, versionNumber: 1 },
+      LAST_ENTITY_VERSION
+    ]);
     areDifferentMock.mockImplementationOnce(() => false);
+
     expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
+    expect(areDifferentMock).toBeCalledWith(
+      EXAMPLE_CURRENT_ENTITY_VERSION,
+      LAST_ENTITY_VERSION,
+      expect.anything()
+    );
   });
-  it('should have pending changes when entity versions are different', async () => {
+  it('should have pending changes when the current and last entity versions are different', async () => {
+    const CURRENT_ENTITY_VERSION_WITH_CHANGES = {
+      ...EXAMPLE_LAST_ENTITY_VERSION,
+      displayName: 'new entity name'
+    };
+
+    prismaEntityVersionFindManyMock.mockImplementationOnce(() => [
+      CURRENT_ENTITY_VERSION_WITH_CHANGES,
+      EXAMPLE_LAST_ENTITY_VERSION
+    ]);
     areDifferentMock.mockImplementationOnce(() => true);
+
     expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(true);
+    expect(areDifferentMock).toBeCalledWith(
+      CURRENT_ENTITY_VERSION_WITH_CHANGES,
+      EXAMPLE_LAST_ENTITY_VERSION,
+      expect.anything()
+    );
+  });
+  it('should have pending changes when there is only one entity version', async () => {
+    prismaEntityVersionFindManyMock.mockImplementationOnce(() => [
+      EXAMPLE_CURRENT_ENTITY_VERSION
+    ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
+    expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(true);
+    expect(areDifferentMock).toBeCalledWith(
+      EXAMPLE_CURRENT_ENTITY_VERSION,
+      undefined,
+      expect.anything()
+    );
   });
   it('should have no pending changes when there is only one entity version and it was deleted', async () => {
-    areDifferentMock.mockImplementationOnce(() => true);
     prismaEntityVersionFindManyMock.mockImplementationOnce(() => [
       {
         ...EXAMPLE_CURRENT_ENTITY_VERSION,
         deleted: true
       }
     ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
     expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
+    expect(areDifferentMock).not.toBeCalled();
   });
 });
