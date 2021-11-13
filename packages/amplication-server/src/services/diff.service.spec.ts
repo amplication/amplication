@@ -185,7 +185,9 @@ describe('DiffService', () => {
   });
 
   it('should return false when only array elements were moved', () => {
-    expect(service.areDifferent(['a', 'b', 'c'], ['b', 'a', 'c'])).toBe(false);
+    expect(
+      service.areDifferent({ a: ['a', 'b', 'c'] }, { a: ['b', 'a', 'c'] })
+    ).toBe(false);
     expect(
       service.areDifferent(OBJECT_WITH_ONLY_ARRAY_MOVES, OBJECT, {
         objectHash(obj, index) {
