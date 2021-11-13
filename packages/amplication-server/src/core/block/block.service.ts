@@ -414,39 +414,37 @@ export class BlockService {
   ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
 
-    await this.acquireLock(args, user);
-
-    const version = await this.prisma.blockVersion.update({
-      data: {
-        settings: settings,
-        block: {
-          update: {
-            displayName,
-            description
+    return await this.useLocking(args.where.id, user, async () => {
+      const version = await this.prisma.blockVersion.update({
+        data: {
+          settings: settings,
+          block: {
+            update: {
+              displayName,
+              description
+            }
+          },
+          displayName,
+          description
+        },
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          blockId_versionNumber: {
+            blockId: args.where.id,
+            versionNumber: CURRENT_VERSION_NUMBER
           }
         },
-        displayName,
-        description
-      },
-      where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        blockId_versionNumber: {
-          blockId: args.where.id,
-          versionNumber: CURRENT_VERSION_NUMBER
-        }
-      },
-      include: {
-        block: {
-          include: {
-            parentBlock: true
+        include: {
+          block: {
+            include: {
+              parentBlock: true
+            }
           }
         }
-      }
+      });
+
+      return this.versionToIBlock<T>(version);
     });
-
-    await this.updateLock(args.where.id);
-
-    return this.versionToIBlock<T>(version);
   }
 
   // Tries to acquire a lock on the given block for the given user.
@@ -506,6 +504,20 @@ export class BlockService {
 
     if (!hasPendingChanges) {
       await this.releaseLock(blockId);
+    }
+  }
+
+  async useLocking<T>(
+    blockId: string,
+    user: User,
+    fn: (block: Block) => T
+  ): Promise<T> {
+    const block = await this.acquireLock({ where: { id: blockId } }, user);
+
+    try {
+      return await fn(block);
+    } finally {
+      await this.updateLock(blockId);
     }
   }
 
