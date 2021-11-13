@@ -3,13 +3,22 @@ import { create, Config, Delta } from 'jsondiffpatch';
 
 type DifferOptions = Pick<Config, 'objectHash' | 'propertyFilter'>;
 
+type ExtendedJsonObject = { [Key in string]?: ExtendedJsonValue };
+type ExtendedJsonArray = Array<ExtendedJsonValue>;
+type ExtendedJsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | Date
+  | ExtendedJsonObject
+  | ExtendedJsonArray;
+
 export class DiffService {
-  // @TODO: better types for object params (undefined, object or array containing : object, array, boolean, string, number, null and Date)
   public areDifferent(
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    object: any,
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    referenceObject: any,
+    object?: ExtendedJsonObject,
+    referenceObject?: ExtendedJsonObject,
     options: DifferOptions = {}
   ): boolean {
     const differ = create(options);
