@@ -359,6 +359,26 @@ describe('BlockService', () => {
     });
   });
 
+  it('should still call updateLock when an error occurs', async () => {
+    jest.spyOn(service, 'updateLock');
+    prismaBlockVersionUpdateMock.mockImplementation(() => {
+      throw new Error();
+    });
+
+    const args = {
+      where: {
+        id: EXAMPLE_BLOCK.id
+      },
+      data: {
+        displayName: EXAMPLE_BLOCK.displayName,
+        description: EXAMPLE_BLOCK.description,
+        ...EXAMPLE_BLOCK_SETTINGS
+      }
+    };
+    await expect(service.update(args, EXAMPLE_USER)).rejects.toThrowError();
+    expect(service.updateLock).toBeCalled();
+  });
+
   it('should find many blocks', async () => {
     const args = {};
     expect(await service.findMany(args)).toEqual([EXAMPLE_BLOCK]);

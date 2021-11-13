@@ -926,6 +926,22 @@ describe('EntityService', () => {
     expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
   });
 
+  it('should still call updateLock when an error occurs', async () => {
+    jest.spyOn(service, 'updateLock');
+    jest.spyOn(service, 'validateFieldMutationArgs').mockImplementation(() => {
+      throw new Error();
+    });
+
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_ENTITY_FIELD_DATA
+    };
+    await expect(
+      service.updateField(args, EXAMPLE_USER)
+    ).rejects.toThrowError();
+    expect(service.updateLock).toBeCalled();
+  });
+
   it('should create entity field', async () => {
     expect(
       await service.createField(
