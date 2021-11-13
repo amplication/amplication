@@ -10,7 +10,7 @@ export class DiffService {
     object: any,
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     referenceObject: any,
-    options: DifferOptions
+    options: DifferOptions = {}
   ): boolean {
     const differ = create(options);
     const diff = differ.diff(referenceObject, object);
