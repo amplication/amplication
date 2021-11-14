@@ -16,6 +16,19 @@ type ExtendedJsonValue =
   | ExtendedJsonArray;
 
 export class DiffService {
+  /**
+   * Checks if two objects are different by using a diff algorithm and parsing the result.
+   * NB: moved array elements are ignored.
+   * @param object
+   * @param referenceObject object to compare against
+   * @param options options provided to the diff algorithm
+   * @param options.objectHash Function needed when the objects have arrays of objects.
+   * It returns a unique hash for each object in the array that is used to match it in
+   * the reference and be able to identity array moves correctly.
+   * @param options.propertyFilter Function to ignore some of the object properties.
+   * Should return false for ignored properties.
+   * @returns Whether the two provided objects are different
+   */
   public areDifferent(
     object?: ExtendedJsonObject,
     referenceObject?: ExtendedJsonObject,

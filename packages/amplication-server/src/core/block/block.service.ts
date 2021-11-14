@@ -499,6 +499,12 @@ export class BlockService {
     });
   }
 
+  /**
+   * Has the responsibility to unlock or keep a block locked based on whether
+   * it has changes. It's supposed to be used after an operation that uses locking
+   * was made.
+   * @param blockId A locked block
+   */
   async updateLock(blockId: string): Promise<void> {
     const hasPendingChanges = await this.hasPendingChanges(blockId);
 
@@ -507,6 +513,15 @@ export class BlockService {
     }
   }
 
+  /**
+   * Higher order function responsible for encapsulating the locking behaviour.
+   * It will lock a block, execute some provided operations on it then update
+   * the lock (unlock it or keep it locked).
+   * @param blockId The block on which the locking and operations are performed
+   * @param user The user requesting the operations
+   * @param fn A function containing the operations on the block
+   * @returns What the provided function `fn` returns
+   */
   async useLocking<T>(
     blockId: string,
     user: User,
@@ -521,6 +536,12 @@ export class BlockService {
     }
   }
 
+  /**
+   * Checks if the block has any meaningful changes (some generated properties are ignored : id, createdAt...)
+   * between its current and last version.
+   * @param blockId The block to check for changes
+   * @returns whether the block's current version has changes
+   */
   async hasPendingChanges(blockId: string): Promise<boolean> {
     const blockVersions = await this.prisma.blockVersion.findMany({
       where: {

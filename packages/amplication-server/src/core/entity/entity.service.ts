@@ -629,6 +629,12 @@ export class EntityService {
     });
   }
 
+  /**
+   * Checks if the entity has any meaningful changes (some generated properties are ignored : id, createdAt...)
+   * between its current and last version.
+   * @param entityId The entity to check for changes
+   * @returns whether the entity's current version has changes
+   */
   async hasPendingChanges(entityId: string): Promise<boolean> {
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
@@ -697,6 +703,12 @@ export class EntityService {
     });
   }
 
+  /**
+   * Has the responsibility to unlock or keep an entity locked based on whether
+   * it has changes. It's supposed to be used after an operation that uses locking
+   * was made.
+   * @param entityId A locked entity
+   */
   async updateLock(entityId: string): Promise<void> {
     const hasPendingChanges = await this.hasPendingChanges(entityId);
 
@@ -705,6 +717,15 @@ export class EntityService {
     }
   }
 
+  /**
+   * Higher order function responsible for encapsulating the locking behaviour.
+   * It will lock an entity, execute some provided operations on it then update the lock
+   * (unlock it or keep it locked).
+   * @param entityId The entity on which the locking and operations are performed
+   * @param user The user requesting the operations
+   * @param fn A function containing the operations on the entity
+   * @returns What the provided function `fn` returns
+   */
   async useLocking<T>(
     entityId: string,
     user: User,
