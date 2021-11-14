@@ -1,41 +1,53 @@
-remove this comment to unbreak the file validation so it will appear in the template list when creating a new issue (for the conference day only) 
 name: 🏆 Node.TLV Challenge 🏆
-description: "Node.TLV 2021 convention issue challenge"
+description: "Node.TLV 2021 conference challenge"
 title: "🏆 Node.TLV: [title of your idea]"
 labels: [Node-TLV]
 body:
   - type: markdown
     attributes:
       value: |
-        ## Welcome to Node.TLV Challenge
-        ### Share with us your best idea, for anything that can make backend developers' life easier, better, faster - for a chance to win a MacBook Pro
-        1. Create a feature request in our project repo on GitHub with your idea. Use the QR code to navigate to the special "node.TLV challenge" 
+        # Welcome to Node.TLV Challenge
+        
+        Share with us your best idea, for anything that can make backend developers' life easier, better, faster - for a chance to win a MacBook Pro
+        
+        1. Submit your greatest idea in the form below. 
         2. Come visit us at our booth to approve your submission and pick up the coolest "open-source" t-shirt.
         3. Share the idea with your colleagues and friends. 
         
-        The list of ideas will be shared with Amplication's community on Discord and Twitter and displayed in our booth. Anyone can vote for the best idea. 
-        
-        The best idea with the most upvotes will win a MacBook Pro.
-        
-        The challenge ends at 15:45, and the winner will get the MacBook Pro at the last coffee break between 15:45 and 16:00.
-        
+       
   - type: textarea
     id: feature-description
     validations:
       required: true
     attributes:
-      label: "Feature description"
+      label: "💡 My idea is"
       description: "A clear and concise description of what the feature is."
-      placeholder: "Example: Add mongoDB as alternativ to the default postgress"
+      placeholder: "Example: Add support for MongoDB as an alternative to PostgreSQL"
   - type: textarea
     id: pitch
     validations:
-      required: true
+      required: false
     attributes:
-      label: "🎤 Pitch"
-      description: "Please explain why this feature is the best idea and should win the challenge"
+      label: "✅ The idea is awesome because"
+      description: "Please explain why this feature is awesome and should win the challenge"
       placeholder: "Example: I love mongoDB and use it all the time. I think many developers can benefit from this option."
-
-
+  - type: markdown
+    attributes:
+      value: |
+        ## 🏆 And the winner is...
+        The list of ideas will be shared with Amplication's community on Discord and Twitter and displayed in our booth. Anyone can vote for the best idea. 
+        The best idea with the most upvotes will win a MacBook Pro.
+        The challenge ends today (November 15th) at 15:45, and the winner will get the MacBook Pro at the last coffee break between 15:45 and 16:00.
+        
+        ## 👀 Please note
+        Only approved posts are participating, so make sure to visit our booth to get your free t-shirt and approve your post.
+       
+        ## 🥳 Join our growing community
+        Discord - [amplication.com/discord](https://amplication.com/discord)
+        Twitter - [twitter.com/amplication](https://twitter.com/amplication)
+        
+        ## 💜 Show your love and support
+        Add a star to our [project](https://github.com/amplication/amplication/stargazers)
+        
 
 
