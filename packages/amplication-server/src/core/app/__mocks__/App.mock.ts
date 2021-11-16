@@ -1,6 +1,7 @@
 import { TEST_GITHUB_TOKEN } from '../../github/__mocks__/Github';
 import { App } from '../../../models';
 export const TEST_APP_ID = 'appId';
+export const MOCK_INVALID_APP_ID = 'invalidAppId';
 
 export const TEST_APP_MOCK: App = {
   createdAt: new Date(),

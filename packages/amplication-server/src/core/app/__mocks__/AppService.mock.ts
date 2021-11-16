@@ -8,13 +8,13 @@ mockAppService.app
   .calledWith(
     new Matcher<FindOneArgs>(actualValue => {
       return actualValue.where.id === TEST_APP_ID;
-    }, `Make sure that the name of the repo is "repo"`)
+    }, `Make sure that the name of the repo is ${TEST_APP_ID}`)
   )
   .mockReturnValue(Promise.resolve(TEST_APP_MOCK));
 mockAppService.app
   .calledWith(
     new Matcher<FindOneArgs>(actualValue => {
       return actualValue.where.id !== TEST_APP_ID;
-    }, `Make sure that the name of the repo is "repo"`)
+    }, `Make sure that the name of the repo is'nt ${TEST_APP_ID}`)
   )
   .mockReturnValue(Promise.resolve(null));
