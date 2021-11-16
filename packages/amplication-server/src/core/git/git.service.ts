@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ApolloError } from 'apollo-server-errors';
 import { isEmpty } from 'lodash';
-import { AmplicationError } from 'src/errors/AmplicationError';
 import { AppService } from '..';
 import { INVALID_APP_ID } from '../app/app.service';
 import { GithubService } from '../github/github.service';
@@ -11,6 +9,7 @@ import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { EnumSourceControlService } from './dto/enums/EnumSourceControlService';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitUser } from './dto/objects/GitUser';
+import { InvalidSourceControl } from './errors/InvalidSourceControl';
 
 @Injectable()
 export class GitService {
@@ -34,7 +33,7 @@ export class GitService {
       case EnumSourceControlService.Github:
         return await this.githubService.getUserRepos(app.githubToken);
       default:
-        throw new Error("Didn't get a valid git service");
+        throw new InvalidSourceControl();
     }
   }
   async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
@@ -49,7 +48,7 @@ export class GitService {
           input: input
         });
       default:
-        throw new AmplicationError("didn't get a valid source control");
+        throw new InvalidSourceControl();
     }
   }
 
@@ -59,9 +58,9 @@ export class GitService {
     const { githubToken } = app;
     switch (sourceControlService) {
       case EnumSourceControlService.Github:
-        return await (await this.githubService.getUser(githubToken)).username;
+        return (await this.githubService.getUser(githubToken)).username;
       default:
-        throw new ApolloError("Didn't got a valid source control service");
+        throw new InvalidSourceControl();
     }
   }
   async getUser(args: BaseGitArgs): Promise<GitUser> {
@@ -72,7 +71,7 @@ export class GitService {
       case EnumSourceControlService.Github:
         return await this.githubService.getUser(githubToken);
       default:
-        throw new ApolloError("Didn't got a valid source control service");
+        throw new InvalidSourceControl();
     }
   }
 }
