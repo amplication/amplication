@@ -2,10 +2,12 @@ import { INVALID_APP_ID } from '../../../core/app/app.service';
 import { AppService } from '../../../core';
 import { isEmpty } from 'lodash';
 
-//TODO implement per git service token
+/**
+ *
+ */
 export class TokenFactory {
   constructor(private appService: AppService) {}
-  async getToken(appId: string): Promise<string> {
+  async getTokenFromApp(appId: string): Promise<string> {
     const app = await this.appService.app({ where: { id: appId } });
 
     if (isEmpty(app)) {

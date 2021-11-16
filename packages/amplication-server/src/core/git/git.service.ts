@@ -21,7 +21,7 @@ export class GitService {
   }
 
   async getReposOfUser(args: GetReposListArgs): Promise<GitRepo[]> {
-    const githubToken = await this.tokenFactory.getToken(args.appId);
+    const githubToken = await this.tokenFactory.getTokenFromApp(args.appId);
 
     switch (args.sourceControlService) {
       case EnumSourceControlService.Github:
@@ -32,7 +32,7 @@ export class GitService {
   }
   async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
     const { input, appId, sourceControlService } = args;
-    const githubToken = await this.tokenFactory.getToken(appId);
+    const githubToken = await this.tokenFactory.getTokenFromApp(appId);
 
     switch (sourceControlService) {
       case EnumSourceControlService.Github:
@@ -47,7 +47,7 @@ export class GitService {
 
   async getUsername(args: BaseGitArgs): Promise<string> {
     const { appId, sourceControlService } = args;
-    const githubToken = await this.tokenFactory.getToken(appId);
+    const githubToken = await this.tokenFactory.getTokenFromApp(appId);
 
     switch (sourceControlService) {
       case EnumSourceControlService.Github:
@@ -58,7 +58,7 @@ export class GitService {
   }
   async getUser(args: BaseGitArgs): Promise<GitUser> {
     const { appId, sourceControlService } = args;
-    const githubToken = await this.tokenFactory.getToken(appId);
+    const githubToken = await this.tokenFactory.getTokenFromApp(appId);
 
     switch (sourceControlService) {
       case EnumSourceControlService.Github:
