@@ -12,7 +12,7 @@ import { TokenFactory } from './utils/TokenFactory';
 
 @Injectable()
 export class GitService {
-  private tokenFactory: TokenFactory;
+  private readonly tokenFactory: TokenFactory;
   constructor(
     private readonly githubService: GithubService,
     appService: AppService

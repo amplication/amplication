@@ -16,17 +16,19 @@ export class GitResolver {
   constructor(private readonly gitService: GitService) {}
   //#region Mutation
   @Mutation(() => GitRepo)
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'appId')
   async createRepoInOrg(@Args() args: CreateRepoArgs): Promise<GitRepo> {
     return this.gitService.createRepo(args);
   }
   //#endregion
   //#region Query
   @Query(() => [GitRepo])
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'appId') //TODO what is that?
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'appId')
   async getReposOfUser(@Args() args: GetReposListArgs): Promise<GitRepo[]> {
     return this.gitService.getReposOfUser(args);
   }
   @Query(() => String)
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'appId')
   async getUsername(@Args() args: BaseGitArgs): Promise<string> {
     return this.gitService.getUsername(args);
   }
