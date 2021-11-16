@@ -1,20 +1,34 @@
 import { Matcher, mock } from 'jest-mock-extended';
 import { AppService } from 'src/core';
 import { FindOneArgs } from 'src/dto';
-import { TEST_APP_ID, TEST_APP_MOCK } from './App.mock';
+import {
+  MOCK_APP_WITHOUT_GITHUB_TOKEN,
+  TEST_APP_ID,
+  TEST_APP_MOCK
+} from './App.mock';
 
 export const mockAppService = mock<AppService>();
 mockAppService.app
   .calledWith(
     new Matcher<FindOneArgs>(actualValue => {
       return actualValue.where.id === TEST_APP_ID;
-    }, `Make sure that the name of the repo is ${TEST_APP_ID}`)
+    }, `Make sure that the id of the app is ${TEST_APP_ID}`)
   )
   .mockReturnValue(Promise.resolve(TEST_APP_MOCK));
 mockAppService.app
   .calledWith(
     new Matcher<FindOneArgs>(actualValue => {
-      return actualValue.where.id !== TEST_APP_ID;
-    }, `Make sure that the name of the repo is'nt ${TEST_APP_ID}`)
+      return (
+        actualValue.where.id !== TEST_APP_ID &&
+        actualValue.where.id !== MOCK_APP_WITHOUT_GITHUB_TOKEN.id
+      );
+    }, `Make sure that the id of the app is'nt ${TEST_APP_ID}`)
   )
   .mockReturnValue(Promise.resolve(null));
+mockAppService.app
+  .calledWith(
+    new Matcher<FindOneArgs>(actualValue => {
+      return actualValue.where.id === MOCK_APP_WITHOUT_GITHUB_TOKEN.id;
+    }, `Make sure that the id of the app is the one without the github token`)
+  )
+  .mockReturnValue(Promise.resolve(MOCK_APP_WITHOUT_GITHUB_TOKEN));

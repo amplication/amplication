@@ -1,9 +1,11 @@
 import {
+  MOCK_APP_WITHOUT_GITHUB_TOKEN,
   MOCK_INVALID_APP_ID,
   TEST_APP_ID,
   TEST_APP_MOCK
 } from 'src/core/app/__mocks__/App.mock';
 import { mockAppService } from 'src/core/app/__mocks__/AppService.mock';
+import { MISSING_TOKEN_ERROR } from './MissingTokenError';
 import { TokenFactory } from './TokenFactory';
 
 describe('TokenFactory', () => {
@@ -18,6 +20,11 @@ describe('TokenFactory', () => {
       return expect(
         tokenFactory.getTokenFromApp(MOCK_INVALID_APP_ID)
       ).rejects.toThrow();
+    });
+    it('should throw error if app db object missing token', () => {
+      return expect(
+        tokenFactory.getTokenFromApp(MOCK_APP_WITHOUT_GITHUB_TOKEN.id)
+      ).rejects.toThrow(MISSING_TOKEN_ERROR);
     });
   });
 });

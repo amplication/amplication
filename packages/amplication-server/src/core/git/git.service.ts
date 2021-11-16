@@ -8,7 +8,7 @@ import { EnumSourceControlService } from './dto/enums/EnumSourceControlService';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitUser } from './dto/objects/GitUser';
 import { INVALID_SOURCE_CONTROL_ERROR } from './errors/InvalidSourceControlError';
-import { TokenFactory } from './utils/TokenFactory';
+import { TokenFactory } from './utils/TokenFactory/TokenFactory';
 
 @Injectable()
 export class GitService {

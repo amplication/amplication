@@ -1,6 +1,7 @@
-import { INVALID_APP_ID } from '../../../core/app/app.service';
-import { AppService } from '../../../core';
+import { INVALID_APP_ID } from '../../../../core/app/app.service';
+import { AppService } from '../../../../core';
 import { isEmpty } from 'lodash';
+import { MISSING_TOKEN_ERROR } from './MissingTokenError';
 
 /**
  *
@@ -15,9 +16,7 @@ export class TokenFactory {
     }
 
     if (isEmpty(app.githubToken)) {
-      throw new Error(
-        `App Missing a Github token. You should first complete the authorization process`
-      );
+      throw MISSING_TOKEN_ERROR;
     }
     return app.githubToken;
   }

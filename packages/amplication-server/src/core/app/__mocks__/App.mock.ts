@@ -1,5 +1,6 @@
 import { TEST_GITHUB_TOKEN } from '../../github/__mocks__/Github';
 import { App } from '../../../models';
+
 export const TEST_APP_ID = 'appId';
 export const MOCK_INVALID_APP_ID = 'invalidAppId';
 
@@ -11,4 +12,13 @@ export const TEST_APP_MOCK: App = {
   name: 'test app',
   updatedAt: new Date(),
   githubToken: TEST_GITHUB_TOKEN
+};
+export const MOCK_APP_WITHOUT_GITHUB_TOKEN: App = {
+  createdAt: new Date(),
+  description: 'Description',
+  id: 'MOCK_APP_WITHOUT_GITHUB_TOKEN',
+  githubSyncEnabled: false,
+  name: 'test app',
+  updatedAt: new Date(),
+  githubToken: null
 };
