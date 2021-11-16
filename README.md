@@ -60,7 +60,7 @@ See [Amplication website](http://amplication.com/) or [Amplication docs](http://
 
 Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, follow these steps:
 
-First, execute this command, in the root folder of the projec:
+Execute the following commands in the project root folder:
 ```
 npm install
 ```
