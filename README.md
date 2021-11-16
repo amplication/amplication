@@ -64,7 +64,6 @@ Execute the following commands in the project root folder:
 ```
 npm install
 ```
-Then, execute this command, also in the root folder of the project:
 ```
 npm run setup:dev
 ```
