@@ -17,6 +17,7 @@
     "nestjs",
     "Octokit",
     "ofek",
+    "openapi",
     "Queryable",
     "Repos",
     "rmwc",
