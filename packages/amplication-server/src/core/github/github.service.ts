@@ -7,12 +7,12 @@ import { OAuthApp } from '@octokit/oauth-app';
 import { components } from '@octokit/openapi-types';
 import { Octokit } from '@octokit/rest';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { AmplicationError } from 'src/errors/AmplicationError';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { IGitClient } from '../git/contracts/IGitClient';
 import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
 import { GitRepo } from '../git/dto/objects/GitRepo';
 import { GitUser } from '../git/dto/objects/GitUser';
+import { REPO_NAME_TAKEN_ERROR } from '../git/errors/RepoNameTakenError';
 import { GithubFile } from './dto/githubFile';
 import { GithubRepo } from './dto/githubRepo';
 
@@ -47,7 +47,7 @@ export class GithubService implements IGitClient {
       auth: token
     });
     if (await this.isRepoExist(token, input.name)) {
-      throw new AmplicationError('Repo already exist');
+      throw REPO_NAME_TAKEN_ERROR;
     }
 
     return octokit

@@ -9,7 +9,7 @@ import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { EnumSourceControlService } from './dto/enums/EnumSourceControlService';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitUser } from './dto/objects/GitUser';
-import { InvalidSourceControl } from './errors/InvalidSourceControl';
+import { INVALID_SOURCE_CONTROL_ERROR } from './errors/InvalidSourceControlError';
 
 @Injectable()
 export class GitService {
@@ -33,7 +33,7 @@ export class GitService {
       case EnumSourceControlService.Github:
         return await this.githubService.getUserRepos(app.githubToken);
       default:
-        throw new InvalidSourceControl();
+        throw INVALID_SOURCE_CONTROL_ERROR;
     }
   }
   async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
@@ -48,7 +48,7 @@ export class GitService {
           input: input
         });
       default:
-        throw new InvalidSourceControl();
+        throw INVALID_SOURCE_CONTROL_ERROR;
     }
   }
 
@@ -60,7 +60,7 @@ export class GitService {
       case EnumSourceControlService.Github:
         return (await this.githubService.getUser(githubToken)).username;
       default:
-        throw new InvalidSourceControl();
+        throw INVALID_SOURCE_CONTROL_ERROR;
     }
   }
   async getUser(args: BaseGitArgs): Promise<GitUser> {
@@ -71,7 +71,7 @@ export class GitService {
       case EnumSourceControlService.Github:
         return await this.githubService.getUser(githubToken);
       default:
-        throw new InvalidSourceControl();
+        throw INVALID_SOURCE_CONTROL_ERROR;
     }
   }
 }
