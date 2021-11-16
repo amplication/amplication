@@ -68,7 +68,8 @@ Then, execute this command, also in the root folder of the project:
 ```
 npm run setup:dev
 ```
-The second command will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
+
+This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
 
 You can also use a more manual step-by-step approach to set up Amplication in a local development environment. To do that, you should follow the instructions listed for "Amplication Server" and "Amplication Client" below.
 
