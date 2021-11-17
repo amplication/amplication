@@ -4,16 +4,16 @@ import { AppService } from '../../app/app.service';
 import { TEST_APP_ID, TEST_APP_MOCK } from '../../app/__mocks__/App.mock';
 import { EnumSourceControlService } from '../dto/enums/EnumSourceControlService';
 import { GitService } from '../git.service';
+import { MOCK_GIT_SERVICE_FACTORY } from '../utils/GitServiceFactory/GitServiceFactory.mock';
 import { TEST_GIT_REPO } from '../__mocks__/GitRepo';
 import { TEST_GIT_REPOS } from '../__mocks__/GitRepos';
-import { githubService } from '../__mocks__/GitService.mock';
 
 describe('GitService', () => {
   let gitService: GitService;
   beforeEach(() => {
     const appService = mock<AppService>();
     appService.app.mockReturnValue(Promise.resolve(TEST_APP_MOCK));
-    gitService = new GitService(githubService, appService);
+    gitService = new GitService(MOCK_GIT_SERVICE_FACTORY, appService);
   });
   it('should be defined', () => {
     expect(gitService).toBeDefined();
