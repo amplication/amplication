@@ -8,7 +8,6 @@ import { GitUser } from './dto/objects/GitUser';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
 import { TokenFactory } from './utils/TokenFactory/TokenFactory';
 
-//TODO export the switch to a factory be this logic https://blog.cleancoder.com/uncle-bob/2021/03/06/ifElseSwitch.html
 @Injectable()
 export class GitService {
   private readonly tokenFactory: TokenFactory;
