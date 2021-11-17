@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { AppService } from '..';
-import { GithubService } from '../github/github.service';
 import { BaseGitArgs } from './dto/args/BaseGitArgs';
 import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
-import { EnumSourceControlService } from './dto/enums/EnumSourceControlService';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitUser } from './dto/objects/GitUser';
-import { INVALID_SOURCE_CONTROL_ERROR } from './errors/InvalidSourceControlError';
+import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
 import { TokenFactory } from './utils/TokenFactory/TokenFactory';
 
 //TODO export the switch to a factory be this logic https://blog.cleancoder.com/uncle-bob/2021/03/06/ifElseSwitch.html
@@ -15,57 +13,35 @@ import { TokenFactory } from './utils/TokenFactory/TokenFactory';
 export class GitService {
   private readonly tokenFactory: TokenFactory;
   constructor(
-    private readonly githubService: GithubService,
+    private readonly gitServiceFactory: GitServiceFactory,
     appService: AppService
   ) {
     this.tokenFactory = new TokenFactory(appService);
   }
 
   async getReposOfUser(args: GetReposListArgs): Promise<GitRepo[]> {
-    const githubToken = await this.tokenFactory.getTokenFromApp(args.appId);
-
-    switch (args.sourceControlService) {
-      case EnumSourceControlService.Github:
-        return await this.githubService.getUserRepos(githubToken);
-      default:
-        throw INVALID_SOURCE_CONTROL_ERROR;
-    }
+    const { sourceControlService, appId } = args;
+    const service = this.gitServiceFactory.getService(sourceControlService);
+    const githubToken = await this.tokenFactory.getTokenFromApp(appId);
+    return await service.getUserRepos(githubToken);
   }
   async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
     const { input, appId, sourceControlService } = args;
+    const service = this.gitServiceFactory.getService(sourceControlService);
     const githubToken = await this.tokenFactory.getTokenFromApp(appId);
-
-    switch (sourceControlService) {
-      case EnumSourceControlService.Github:
-        return this.githubService.createRepo({
-          token: githubToken,
-          input: input
-        });
-      default:
-        throw INVALID_SOURCE_CONTROL_ERROR;
-    }
+    return await service.createRepo({
+      token: githubToken,
+      input: input
+    });
   }
 
   async getUsername(args: BaseGitArgs): Promise<string> {
-    const { appId, sourceControlService } = args;
-    const githubToken = await this.tokenFactory.getTokenFromApp(appId);
-
-    switch (sourceControlService) {
-      case EnumSourceControlService.Github:
-        return (await this.githubService.getUser(githubToken)).username;
-      default:
-        throw INVALID_SOURCE_CONTROL_ERROR;
-    }
+    return (await this.getUser(args)).username;
   }
   async getUser(args: BaseGitArgs): Promise<GitUser> {
     const { appId, sourceControlService } = args;
     const githubToken = await this.tokenFactory.getTokenFromApp(appId);
-
-    switch (sourceControlService) {
-      case EnumSourceControlService.Github:
-        return await this.githubService.getUser(githubToken);
-      default:
-        throw INVALID_SOURCE_CONTROL_ERROR;
-    }
+    const service = this.gitServiceFactory.getService(sourceControlService);
+    return await service.getUser(githubToken);
   }
 }

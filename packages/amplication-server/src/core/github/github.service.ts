@@ -7,12 +7,13 @@ import { OAuthApp } from '@octokit/oauth-app';
 import { components } from '@octokit/openapi-types';
 import { Octokit } from '@octokit/rest';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { AmplicationError } from 'src/errors/AmplicationError';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { IGitClient } from '../git/contracts/IGitClient';
 import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
 import { GitRepo } from '../git/dto/objects/GitRepo';
 import { GitUser } from '../git/dto/objects/GitUser';
-import { REPO_NAME_TAKEN_ERROR } from '../git/errors/RepoNameTakenError';
+import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
 import { GithubFile } from './dto/githubFile';
 import { GithubRepo } from './dto/githubRepo';
 
@@ -47,7 +48,7 @@ export class GithubService implements IGitClient {
       auth: token
     });
     if (await this.isRepoExist(token, input.name)) {
-      throw REPO_NAME_TAKEN_ERROR;
+      throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
 
     return octokit
@@ -72,11 +73,7 @@ export class GithubService implements IGitClient {
         };
       });
   }
-  async getUserRepos(token: string): Promise<GitRepo[]> {
-    const octokit = new Octokit({
-      auth: token
-    });
-
+  async getUserReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {
     const results = await octokit.repos.listForAuthenticatedUser({
       type: 'all',
       sort: 'updated',
@@ -90,6 +87,12 @@ export class GithubService implements IGitClient {
       fullName: repo.full_name,
       admin: repo.permissions.admin
     }));
+  }
+  async getUserRepos(token: string): Promise<GitRepo[]> {
+    const octokit = new Octokit({
+      auth: token
+    });
+    return this.getUserReposWithOctokit(octokit);
   }
 
   async listRepoForAuthenticatedUser(token: string): Promise<GithubRepo[]> {

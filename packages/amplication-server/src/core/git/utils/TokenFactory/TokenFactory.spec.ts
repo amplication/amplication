@@ -5,8 +5,8 @@ import {
   TEST_APP_MOCK
 } from 'src/core/app/__mocks__/App.mock';
 import { mockAppService } from 'src/core/app/__mocks__/AppService.mock';
-import { MISSING_TOKEN_ERROR } from './MissingTokenError';
-import { TokenFactory } from './TokenFactory';
+import { AmplicationError } from 'src/errors/AmplicationError';
+import { MISSING_TOKEN_ERROR, TokenFactory } from './TokenFactory';
 
 describe('TokenFactory', () => {
   const tokenFactory = new TokenFactory(mockAppService);
@@ -24,7 +24,7 @@ describe('TokenFactory', () => {
     it('should throw error if app db object missing token', () => {
       return expect(
         tokenFactory.getTokenFromApp(MOCK_APP_WITHOUT_GITHUB_TOKEN.id)
-      ).rejects.toThrow(MISSING_TOKEN_ERROR);
+      ).rejects.toThrow(new AmplicationError(MISSING_TOKEN_ERROR));
     });
   });
 });
