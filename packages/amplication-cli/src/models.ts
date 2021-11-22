@@ -1524,6 +1524,7 @@ export type Query = {
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
   getReposOfUser: Array<GitRepo>;
+  getUsername: Scalars['String'];
 };
 
 export type QueryWorkspaceArgs = {
@@ -1659,6 +1660,11 @@ export type QueryEntityPagesArgs = {
 };
 
 export type QueryGetReposOfUserArgs = {
+  appId: Scalars['String'];
+  sourceControlService: EnumSourceControlService;
+};
+
+export type QueryGetUsernameArgs = {
   appId: Scalars['String'];
   sourceControlService: EnumSourceControlService;
 };
