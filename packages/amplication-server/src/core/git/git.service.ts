@@ -1,35 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { AppService } from '..';
 import { BaseGitArgs } from './dto/args/BaseGitArgs';
 import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitUser } from './dto/objects/GitUser';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
-import { TokenFactory } from './utils/TokenFactory/TokenFactory';
 
 @Injectable()
 export class GitService {
-  private readonly tokenFactory: TokenFactory;
-  constructor(
-    private readonly gitServiceFactory: GitServiceFactory,
-    appService: AppService
-  ) {
-    this.tokenFactory = new TokenFactory(appService);
-  }
+  constructor(private readonly gitServiceFactory: GitServiceFactory) {}
 
   async getReposOfUser(args: GetReposListArgs): Promise<GitRepo[]> {
     const { sourceControlService, appId } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
-    const githubToken = await this.tokenFactory.getTokenFromApp(appId);
-    return await service.getUserRepos(githubToken);
+    const token = await service.tokenExtractor.getTokenFromDb(appId);
+    return await service.getUserRepos(token);
   }
   async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
     const { input, appId, sourceControlService } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
-    const githubToken = await this.tokenFactory.getTokenFromApp(appId);
+    const token = await service.tokenExtractor.getTokenFromDb(appId);
     return await service.createRepo({
-      token: githubToken,
+      token,
       input: input
     });
   }
@@ -39,8 +31,8 @@ export class GitService {
   }
   async getUser(args: BaseGitArgs): Promise<GitUser> {
     const { appId, sourceControlService } = args;
-    const githubToken = await this.tokenFactory.getTokenFromApp(appId);
     const service = this.gitServiceFactory.getService(sourceControlService);
-    return await service.getUser(githubToken);
+    const token = await service.tokenExtractor.getTokenFromDb(appId);
+    return await service.getUser(token);
   }
 }

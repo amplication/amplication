@@ -3,9 +3,12 @@ import { CreateRepoArgsType } from 'src/core/git/contracts/types/CreateRepoArgsT
 import { TEST_GIT_REPO } from 'src/core/git/__mocks__/GitRepo';
 import { TEST_GIT_REPOS } from 'src/core/git/__mocks__/GitRepos';
 import { GithubService } from '../github.service';
+import { mockGithubTokenExtractor } from '../utils/tokenExtractor/__mocks__/GithubTokenExtractor.mock';
 
 export const TEST_GITHUB_TOKEN = 'GITHUB_TOKEN';
-export const MOCK_GITHUB_SERVICE = mock<GithubService>();
+export const MOCK_GITHUB_SERVICE = mock<GithubService>({
+  tokenExtractor: mockGithubTokenExtractor
+});
 MOCK_GITHUB_SERVICE.getUserRepos.mockReturnValue(
   Promise.resolve(TEST_GIT_REPOS)
 );

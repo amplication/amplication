@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { mock } from 'jest-mock-extended';
-import { AppService } from '../../app/app.service';
-import { TEST_APP_ID, TEST_APP_MOCK } from '../../app/__mocks__/App.mock';
+import { TEST_APP_ID } from '../../app/__mocks__/App.mock';
 import { EnumSourceControlService } from '../dto/enums/EnumSourceControlService';
 import { GitService } from '../git.service';
 import { MOCK_GIT_SERVICE_FACTORY } from '../utils/GitServiceFactory/GitServiceFactory.mock';
@@ -11,9 +8,7 @@ import { TEST_GIT_REPOS } from '../__mocks__/GitRepos';
 describe('GitService', () => {
   let gitService: GitService;
   beforeEach(() => {
-    const appService = mock<AppService>();
-    appService.app.mockReturnValue(Promise.resolve(TEST_APP_MOCK));
-    gitService = new GitService(MOCK_GIT_SERVICE_FACTORY, appService);
+    gitService = new GitService(MOCK_GIT_SERVICE_FACTORY);
   });
   it('should be defined', () => {
     expect(gitService).toBeDefined();
