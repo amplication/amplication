@@ -119,7 +119,7 @@ export class EntityResolver {
   async fields(
     @Parent() entity: Entity,
     @Args() args: FindManyEntityFieldArgs
-  ) {
+  ): Promise<EntityField[]> {
     if (entity.fields && entity.fields.length) {
       return entity.fields;
     }
@@ -128,7 +128,7 @@ export class EntityResolver {
   }
 
   @ResolveField(() => [EntityPermission])
-  async permissions(@Parent() entity: Entity) {
+  async permissions(@Parent() entity: Entity): Promise<EntityPermission[]> {
     //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
     return this.entityService.getPermissions(entity.id);
   }
@@ -137,7 +137,7 @@ export class EntityResolver {
   async versions(
     @Parent() entity: Entity,
     @Args() args: FindManyEntityVersionArgs
-  ) {
+  ): Promise<EntityVersion[]> {
     return this.entityService.getVersions({
       ...args,
       where: {

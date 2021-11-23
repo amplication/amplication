@@ -9,7 +9,7 @@ function readGraphQLSchema(): Promise<string> {
   return fs.promises.readFile(SCHEMA_PATH, 'utf-8');
 }
 
-async function checkGraphQLSchema() {
+async function checkGraphQLSchema(): Promise<void> {
   const existingSchema = await readGraphQLSchema();
   await generateGraphQLSchema();
   const generatedSchema = await readGraphQLSchema();

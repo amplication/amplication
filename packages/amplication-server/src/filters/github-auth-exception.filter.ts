@@ -12,7 +12,7 @@ export class GithubAuthExceptionFilter implements ExceptionFilter {
     private readonly configService: ConfigService
   ) {}
 
-  catch(exception: Error, host: ArgumentsHost) {
+  catch(exception: Error, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();

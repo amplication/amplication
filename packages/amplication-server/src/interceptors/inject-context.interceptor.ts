@@ -9,6 +9,7 @@ import { InjectableResourceParameter } from 'src/enums/InjectableResourceParamet
 import { User } from 'src/models';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Observable } from 'rxjs';
 
 export const INJECT_CONTEXT_VALUE = 'injectContextValue';
 
@@ -21,7 +22,7 @@ export type InjectContextValueParameters = {
 export class InjectContextInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
 
-  intercept(context: ExecutionContext, next: CallHandler) {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const handler = context.getHandler();
     const graphqlContext = GqlExecutionContext.create(context);
     const { req } = graphqlContext.getContext();
@@ -44,8 +45,10 @@ export class InjectContextInterceptor implements NestInterceptor {
 
     return next.handle();
   }
-  /* eslint-disable-next-line @typescript-eslint/ban-types */
-  private getInjectContextValueParameters(handler: Function) {
+  private getInjectContextValueParameters(
+    /* eslint-disable-next-line @typescript-eslint/ban-types */
+    handler: Function
+  ): InjectContextValueParameters {
     return this.reflector.get<InjectContextValueParameters>(
       INJECT_CONTEXT_VALUE,
       handler

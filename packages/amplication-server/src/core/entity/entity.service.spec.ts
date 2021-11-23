@@ -218,8 +218,8 @@ const prismaEntityVersionFindOneMock = jest.fn(
     }
 
     return {
-      then: resolve => resolve(version),
-      commit: () => EXAMPLE_COMMIT
+      then: (resolve): Promise<EntityVersion> => resolve(version),
+      commit: (): Commit => EXAMPLE_COMMIT
     };
   }
 );

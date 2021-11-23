@@ -18,7 +18,7 @@ const EXAMPLE_AUTHORIZE_CONTEXT_PARAMETERS: AuthorizeContextParameters = {
   parameterPath: 'where.workspace.id',
   parameterType: AuthorizableResourceParameter.WorkspaceId
 };
-const EXAMPLE_HANDLER = () => null;
+const EXAMPLE_HANDLER = (): null => null;
 
 const EXAMPLE_USER_ROLE = new UserRole();
 EXAMPLE_USER_ROLE.role = EXAMPLE_ROLE;

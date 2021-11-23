@@ -43,8 +43,8 @@ const EXAMPLE_USER: User = {
 };
 
 const prismaUserFindOneMock = jest.fn(() => ({
-  then: resolve => resolve(EXAMPLE_USER),
-  account: () => EXAMPLE_ACCOUNT
+  then: (resolve): Promise<User> => resolve(EXAMPLE_USER),
+  account: (): Account => EXAMPLE_ACCOUNT
 }));
 
 const prismaUserFindManyMock = jest.fn(() => {

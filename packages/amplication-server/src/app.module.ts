@@ -37,7 +37,7 @@ import { RootStorageModule } from './core/storage/root-storage.module';
           configService.get('GRAPHQL_SCHEMA_DEST') || './src/schema.graphql',
         debug: configService.get('GRAPHQL_DEBUG') === '1',
         playground: configService.get('PLAYGROUND_ENABLE') === '1',
-        context: ({ req }: { req: Request }) => ({
+        context: ({ req }: { req: Request }): { req: Request } => ({
           req
         })
       }),
@@ -59,7 +59,7 @@ import { RootStorageModule } from './core/storage/root-storage.module';
   ]
 })
 export class AppModule implements OnApplicationShutdown {
-  onApplicationShutdown(signal: string) {
+  onApplicationShutdown(signal: string): void {
     console.trace(`Application shut down (signal: ${signal})`);
   }
 }

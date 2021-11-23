@@ -5,7 +5,7 @@ import { DockerService } from '../docker/docker.service';
 @Injectable()
 export class DockerProviderService {
   constructor(private readonly docker: DockerService) {}
-  getProvider() {
+  getProvider(): DockerProvider {
     return new DockerProvider(this.docker);
   }
 }

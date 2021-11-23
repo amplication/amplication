@@ -1,4 +1,4 @@
-import { SetMetadata } from '@nestjs/common';
+import { CustomDecorator, SetMetadata } from '@nestjs/common';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import {
   INJECT_CONTEXT_VALUE,
@@ -14,7 +14,7 @@ import {
 export const InjectContextValue = (
   parameterType: InjectableResourceParameter,
   parameterPath: string
-) =>
+): CustomDecorator<string> =>
   SetMetadata<string, InjectContextValueParameters>(INJECT_CONTEXT_VALUE, {
     parameterType,
     parameterPath

@@ -22,7 +22,7 @@ export class ActionResolver {
   }
 
   @ResolveField(() => [ActionStep])
-  async steps(@Parent() action: Action) {
+  async steps(@Parent() action: Action): Promise<ActionStep[]> {
     return this.service.getSteps(action.id);
   }
 }

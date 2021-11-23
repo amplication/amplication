@@ -57,7 +57,7 @@ export class EntityPageService extends BlockTypeService<
     entityId: string,
     showAllFields: boolean,
     showFieldList: string[]
-  ) {
+  ): Promise<void> {
     await this.validateEntityFieldNames(entityId, showAllFields, showFieldList);
 
     /** @todo: case EnumEntityPageType.List validate navigateToPageId */

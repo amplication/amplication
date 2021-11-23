@@ -8,7 +8,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 
-const EXAMPLE_HANDLER = () => null;
+const EXAMPLE_HANDLER = (): null => null;
 const EXAMPLE_INJECT_CONTEXT_VALUE_PARAMETERS: InjectContextValueParameters = {
   parameterPath: 'data.workspace.connect.id',
   parameterType: InjectableResourceParameter.WorkspaceId

@@ -20,7 +20,7 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor('combined'))
   @Get('/github')
   @UseGuards(AuthGuard('github'))
-  async github() {
+  async github(): Promise<void> {
     return;
   }
 
@@ -28,7 +28,10 @@ export class AuthController {
   @UseFilters(GithubAuthExceptionFilter)
   @Get('/github/callback')
   @UseGuards(AuthGuard('github'))
-  async githubCallback(@Req() request: Request, @Res() response: Response) {
+  async githubCallback(
+    @Req() request: Request,
+    @Res() response: Response
+  ): Promise<void> {
     const token = await this.authService.prepareToken(request.user as AuthUser);
 
     const host =

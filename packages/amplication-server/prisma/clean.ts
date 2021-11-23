@@ -9,7 +9,7 @@ if (require.main === module) {
   });
 }
 
-async function clean() {
+async function clean(): Promise<void> {
   console.info('Dropping all tables in the database...');
   const prisma = new PrismaClient();
   const tables = await getTables(prisma);
@@ -29,7 +29,7 @@ async function dropTables(
   }
 }
 
-async function dropTypes(prisma: PrismaClient, types: string[]) {
+async function dropTypes(prisma: PrismaClient, types: string[]): Promise<void> {
   for (const type of types) {
     await prisma.$executeRaw(`DROP TYPE IF EXISTS "${type}" CASCADE;`);
   }

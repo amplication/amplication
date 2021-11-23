@@ -71,6 +71,7 @@ const DESTROY_STALED_INTERVAL_DAYS = 30;
 const DEPLOY_STATUS_FETCH_INTERVAL_SEC = 10;
 const DEPLOY_STATUS_UPDATE_INTERVAL_SEC = 30;
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createInitialStepData(
   version: string,
   message: string,

@@ -134,7 +134,7 @@ export class GithubService {
         ) {
           return [
             module.path,
-            ({ exists }) => {
+            ({ exists }): string | null => {
               // do not create the file if it already exist
               if (exists) return null;
 
@@ -188,7 +188,7 @@ export class GithubService {
     return pr.data.html_url;
   }
 
-  async getOAuthAppAuthorizationUrl(appId: string) {
+  async getOAuthAppAuthorizationUrl(appId: string): Promise<string> {
     const [clientID, clientSecret] = await this.getGithubIdAndSecret();
 
     const app = new OAuthApp({
@@ -229,7 +229,7 @@ export class GithubService {
 
     return token;
   }
-  async getGithubIdAndSecret() {
+  async getGithubIdAndSecret(): Promise<[string, string]> {
     const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
     const clientSecret = await this.getSecret();
     if (!clientID || !clientSecret)

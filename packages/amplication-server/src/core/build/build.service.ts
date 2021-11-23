@@ -473,7 +473,7 @@ export class BuildService {
     build: Build,
     step: ActionStep,
     result: BuildResult
-  ) {
+  ): Promise<void> {
     switch (result.status) {
       case ContainerBuildStatus.Completed:
         await this.actionService.logInfo(
@@ -586,7 +586,7 @@ export class BuildService {
   private async saveToGitHub(
     build: Build,
     modules: DataServiceGenerator.Module[]
-  ) {
+  ): Promise<void> {
     const app = build.app;
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
@@ -661,7 +661,7 @@ ${url}
   }
 
   /** @todo move */
-  private getFileURL(disk: Storage, filePath: string) {
+  private getFileURL(disk: Storage, filePath: string): string {
     try {
       return disk.getUrl(filePath);
     } catch (error) {

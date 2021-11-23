@@ -12,7 +12,7 @@ export class SystemController {
 
   @Post('update-statuses')
   @UseInterceptors(MorganInterceptor('combined'))
-  async updateStatuses() {
+  async updateStatuses(): Promise<void> {
     await Promise.all([
       this.buildService.updateRunningBuildsStatus(),
       this.deploymentService.updateRunningDeploymentsStatus(),

@@ -48,7 +48,7 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
         authService: AuthService,
         configService: ConfigService,
         googleSecretsManagerService: GoogleSecretsManagerService
-      ) => {
+      ): Promise<GitHubStrategy> => {
         const githubConfigService = new GitHubStrategyConfigService(
           configService,
           googleSecretsManagerService

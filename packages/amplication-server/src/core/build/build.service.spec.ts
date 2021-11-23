@@ -442,9 +442,10 @@ describe('BuildService', () => {
         {
           provide: StorageService,
           useValue: {
-            registerDriver() {
+            registerDriver(): void {
               return;
             },
+            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
             getDisk() {
               return {
                 exists: storageServiceDiskExistsMock,
@@ -755,7 +756,10 @@ describe('BuildService', () => {
     prismaBuildFindOneMock.mockImplementation(() =>
       Object.assign(Promise.resolve(EXAMPLE_BUILD), {
         action: () => ({
-          steps: () => [
+          steps: (): {
+            name: string;
+            status: EnumActionStepStatus;
+          }[] => [
             {
               name: GENERATE_STEP_NAME,
               status: EnumActionStepStatus.Success

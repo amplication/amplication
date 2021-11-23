@@ -44,12 +44,12 @@ export class UserResolver {
   // }
 
   @ResolveField(() => [UserRole])
-  async userRoles(@Parent() user: User) {
+  async userRoles(@Parent() user: User): Promise<UserRole[]> {
     return await this.userService.getRoles(user.id);
   }
 
   @ResolveField(() => Account)
-  async account(@Parent() user: User) {
+  async account(@Parent() user: User): Promise<Account> {
     return await this.userService.getAccount(user.id);
   }
 }

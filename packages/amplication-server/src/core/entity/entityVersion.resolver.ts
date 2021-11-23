@@ -14,7 +14,7 @@ export class EntityVersionResolver {
   constructor(private readonly entityService: EntityService) {}
 
   @ResolveField(() => Commit)
-  async commit(@Parent() entityVersion: EntityVersion) {
+  async commit(@Parent() entityVersion: EntityVersion): Promise<Commit> {
     return this.entityService.getVersionCommit(entityVersion.id);
   }
 
@@ -22,14 +22,16 @@ export class EntityVersionResolver {
   async fields(
     @Parent() entityVersion: EntityVersion,
     @Args() args: FindManyEntityFieldArgs
-  ) {
+  ): Promise<EntityField[]> {
     const { entityId, versionNumber } = entityVersion;
 
     return this.entityService.getVersionFields(entityId, versionNumber, args);
   }
 
   @ResolveField(() => [EntityField])
-  async permissions(@Parent() entityVersion: EntityVersion) {
+  async permissions(
+    @Parent() entityVersion: EntityVersion
+  ): Promise<EntityPermission[]> {
     const { entityId, versionNumber } = entityVersion;
 
     return this.entityService.getVersionPermissions(entityId, versionNumber);

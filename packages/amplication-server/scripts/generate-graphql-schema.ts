@@ -8,7 +8,7 @@ import { AppModule } from 'src/app.module';
 
 export default async function generateGraphQLSchema(): Promise<void> {
   // Override PrismaClient $connect to prevent connections to the database
-  PrismaClient.prototype.$connect = async function() {
+  PrismaClient.prototype.$connect = async function(): Promise<void> {
     return;
   };
   // Use the side effect of initializing the nest application for generating
