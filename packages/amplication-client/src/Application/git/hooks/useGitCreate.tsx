@@ -1,12 +1,11 @@
 import { gql, useMutation } from "@apollo/client";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import {
   EnumSourceControlService,
   GitRepo,
   RepoCreateInput,
 } from "../../../models";
 import { useTracking } from "../../../util/analytics";
-import { formatError } from "../../../util/error";
 
 type Props = {
   appId: string;
@@ -20,8 +19,18 @@ export default function useGitCreate({
   cb,
 }: Props) {
   const { trackEvent } = useTracking();
-  const [error, setError] = useState("");
-  const [triggerCreation, { called, loading }] = useMutation(CREATE_REPO);
+  const [triggerCreation, { called, loading, error }] = useMutation(
+    CREATE_REPO,
+    {
+      onCompleted: (data) => {
+        const gitRepo: GitRepo = data.createRepoInOrg;
+        cb(gitRepo);
+        trackEvent({
+          eventName: "createGitRepo",
+        });
+      },
+    }
+  );
 
   const handleCreation = useCallback(
     (data: RepoCreateInput) => {
@@ -32,19 +41,9 @@ export default function useGitCreate({
           sourceControlService,
           public: data.public,
         },
-      })
-        .then((value) => {
-          const data: GitRepo = value.data.createRepoInOrg;
-          cb(data);
-        })
-        .catch((error: Error) => {
-          setError(formatError(error) || "Unknown error");
-        });
-      trackEvent({
-        eventName: "createGitRepo",
-      });
+      }).catch((error) => {});
     },
-    [appId, cb, sourceControlService, trackEvent, triggerCreation]
+    [appId, sourceControlService, triggerCreation]
   );
 
   return { called, loading, error, handleCreation };

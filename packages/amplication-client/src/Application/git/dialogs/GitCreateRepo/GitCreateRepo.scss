@@ -11,6 +11,8 @@
   }
 }
 th {
+  font-weight: normal;
+  color: var(--black60);
+  font-size: var(--text-field-label-font-size);
   text-align: inherit;
-  @include body2;
 }
