@@ -32,10 +32,6 @@
     right: 8px;
     bottom: 10px;
   }
-
-  &__error {
-    @include errorMessage;
-  }
   label {
     @include label;
     position: relative;
