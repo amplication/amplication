@@ -10,7 +10,7 @@ export type Props = React.HTMLProps<HTMLSpanElement> & {
 
 const CLASS_NAME = "amplication-label";
 
-export default function Label({ text, ...props }: Props) {
+export function Label({ text, ...props }: Props) {
   return (
     <span
       {...props}

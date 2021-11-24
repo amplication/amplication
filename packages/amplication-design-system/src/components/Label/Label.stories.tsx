@@ -1,5 +1,5 @@
 import { Meta } from "@storybook/react/types-6-0";
-import Label from "./Label";
+import { Label } from "./Label";
 import React from "react";
 
 export default {

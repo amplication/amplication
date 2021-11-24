@@ -171,3 +171,5 @@ export {
   RadioButtonField,
   Props as RadioButtonFieldProps,
 } from "./components/RadioButton/RadioButtonField";
+
+export { Label, Props as LabelProps } from "./components/Label/Label";

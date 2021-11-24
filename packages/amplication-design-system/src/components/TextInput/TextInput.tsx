@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { Icon } from "@rmwc/icon";
 import { Button } from "../Button/Button";
 import "./TextInput.scss";
-import Label from "../Label/Label";
+import { Label } from "../Label/Label";
 
 export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
   helpText?: string;
