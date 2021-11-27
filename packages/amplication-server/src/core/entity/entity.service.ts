@@ -632,6 +632,7 @@ export class EntityService {
   /**
    * Checks if the entity has any meaningful changes (some generated properties are ignored : id, createdAt...)
    * between its current and last version.
+   * Every list of records is sorted to get a consistent order and make versions comparable.
    * @param entityId The entity to check for changes
    * @returns whether the entity's current version has changes
    */
@@ -644,15 +645,32 @@ export class EntityService {
         versionNumber: Prisma.SortOrder.asc
       },
       include: {
-        fields: true,
+        fields: {
+          orderBy: {
+            permanentId: Prisma.SortOrder.asc
+          }
+        },
         permissions: {
+          orderBy: {
+            action: Prisma.SortOrder.asc
+          },
           include: {
             permissionFields: {
+              orderBy: {
+                fieldPermanentId: Prisma.SortOrder.asc
+              },
               include: {
-                permissionRoles: true
+                permissionRoles: {
+                  orderBy: {
+                    appRoleId: Prisma.SortOrder.asc
+                  }
+                }
               }
             },
             permissionRoles: {
+              orderBy: {
+                appRoleId: Prisma.SortOrder.asc
+              },
               include: {
                 appRole: true
               }
