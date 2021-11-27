@@ -1312,14 +1312,23 @@ export class EntityService {
       },
       include: {
         permissionRoles: {
+          orderBy: {
+            appRoleId: Prisma.SortOrder.asc
+          },
           include: {
             appRole: true
           }
         },
         permissionFields: {
+          orderBy: {
+            fieldPermanentId: Prisma.SortOrder.asc
+          },
           include: {
             field: true,
             permissionRoles: {
+              orderBy: {
+                appRoleId: Prisma.SortOrder.asc
+              },
               include: {
                 appRole: true
               }
