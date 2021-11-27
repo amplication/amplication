@@ -700,25 +700,11 @@ export class EntityService {
       'appRoleId'
     ];
 
-    return this.diffService.areDifferent(currentVersion, lastVersion, {
-      objectHash(obj, index) {
-        // returns a unique identifier for an array element
-        // @TODO: Adding a permanentId in the tables below would really simplify this
-        if (obj.action && obj.appRole) {
-          return `${obj.action}_${obj.appRole.name}`; // for EntityPermissionRole
-        }
-
-        return (
-          obj.permanentId || // for EntityField
-          obj.fieldPermanentId || // for EntityPermissionField
-          obj.action || // for EntityPermission
-          `index_${index}` // fallback
-        );
-      },
-      propertyFilter(name) {
-        return !NON_COMPARABLE_PROPERTIES.includes(name);
-      }
-    });
+    return this.diffService.areDifferent(
+      currentVersion,
+      lastVersion,
+      NON_COMPARABLE_PROPERTIES
+    );
   }
 
   /**

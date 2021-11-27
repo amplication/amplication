@@ -569,11 +569,11 @@ export class BlockService {
       'commitId'
     ];
 
-    return this.diffService.areDifferent(currentVersion, lastVersion, {
-      propertyFilter(name) {
-        return !NON_COMPARABLE_PROPERTIES.includes(name);
-      }
-    });
+    return this.diffService.areDifferent(
+      currentVersion,
+      lastVersion,
+      NON_COMPARABLE_PROPERTIES
+    );
   }
 
   /**
