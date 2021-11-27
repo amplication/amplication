@@ -41,6 +41,13 @@ import {
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
+const NON_COMPARABLE_PROPERTIES = [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'versionNumber',
+  'commitId'
+];
 
 export type BlockPendingChange = {
   /** The id of the changed block */
@@ -560,14 +567,6 @@ export class BlockService {
       // The block was created than deleted => there are no changes
       return false;
     }
-
-    const NON_COMPARABLE_PROPERTIES = [
-      'id',
-      'createdAt',
-      'updatedAt',
-      'versionNumber',
-      'commitId'
-    ];
 
     return this.diffService.areDifferent(
       currentVersion,

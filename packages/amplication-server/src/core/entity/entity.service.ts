@@ -144,6 +144,17 @@ const BASE_FIELD: Pick<
   description: ''
 };
 
+const NON_COMPARABLE_PROPERTIES = [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'versionNumber',
+  'commitId',
+  'permissionId',
+  'entityVersionId',
+  'appRoleId'
+];
+
 @Injectable()
 export class EntityService {
   constructor(
@@ -688,17 +699,6 @@ export class EntityService {
       // The entity was created than deleted => there are no changes
       return false;
     }
-
-    const NON_COMPARABLE_PROPERTIES = [
-      'id',
-      'createdAt',
-      'updatedAt',
-      'versionNumber',
-      'commitId',
-      'permissionId',
-      'entityVersionId',
-      'appRoleId'
-    ];
 
     return this.diffService.areDifferent(
       currentVersion,
