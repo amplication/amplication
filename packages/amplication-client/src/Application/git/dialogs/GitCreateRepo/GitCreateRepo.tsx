@@ -76,7 +76,7 @@ export default function GitCreateRepo({
             {loading ? (
               <CircularProgress style={{ color: "white", margin: "5px" }} />
             ) : (
-              "Create"
+              "Create new repository"
             )}
           </Button>
           <Label
