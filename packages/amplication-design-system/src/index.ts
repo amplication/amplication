@@ -173,3 +173,8 @@ export {
 } from "./components/RadioButton/RadioButtonField";
 
 export { Label, Props as LabelProps } from "./components/Label/Label";
+
+export {
+  CircularProgress,
+  Props as CircularProgressProps,
+} from "./components/CircularProgress/CircularProgress";

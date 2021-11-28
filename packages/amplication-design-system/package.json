@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@primer/components": "^20.3.0",
+    "@rmwc/circular-progress": "6.1.4",
     "@rmwc/data-table": "^6.1.4",
     "@rmwc/drawer": "^6.1.4",
     "@rmwc/icon": "^6.1.4",
