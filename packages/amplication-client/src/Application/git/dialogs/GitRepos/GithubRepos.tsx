@@ -60,18 +60,18 @@ function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
               }}
               type="button"
               icon="refresh_cw"
-              // disabled={networkStatus === NetworkStatus.refetch}
             />
           </Tooltip>
         )}
       </div>
-      {repos?.map((repo) => (
-        <GitRepoItem
-          key={repo.fullName}
-          repo={repo}
-          onSelectRepo={handleRepoSelected}
-        />
-      ))}
+      {networkStatus !== NetworkStatus.refetch && // hide data if refetch
+        repos?.map((repo) => (
+          <GitRepoItem
+            key={repo.fullName}
+            repo={repo}
+            onSelectRepo={handleRepoSelected}
+          />
+        ))}
       <Snackbar open={Boolean(error || errorUpdate)} message={errorMessage} />
     </div>
   );
