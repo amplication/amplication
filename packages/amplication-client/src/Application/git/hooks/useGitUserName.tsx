@@ -7,10 +7,10 @@ type Props = {
 };
 
 export default function useGitUserName({ appId, sourceControlService }: Props) {
-  const { data } = useQuery(GET_USERNAME, {
+  const { data, loading } = useQuery(GET_USERNAME, {
     variables: { appId, sourceControlService },
   });
-  return { username: data?.getUsername };
+  return { username: data?.getUsername, loadingUsername: loading };
 }
 
 const GET_USERNAME = gql`

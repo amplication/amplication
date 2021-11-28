@@ -1,4 +1,4 @@
-import { Button, TextField } from "@amplication/design-system";
+import { Button, TextField, Label } from "@amplication/design-system";
 import { Form, Formik } from "formik";
 import React from "react";
 import useGitCreate from "../../hooks/useGitCreate";
@@ -11,6 +11,8 @@ import {
 } from "../../../../models";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
+import { CircularProgress } from "@rmwc/circular-progress";
+import { formatError } from "../../../../util/error";
 
 type Props = {
   sourceControlService: EnumSourceControlService;
@@ -54,19 +56,15 @@ export default function GitCreateRepo({
             </h4>
             <br />
           </div>
-          <table>
+          <table style={{ width: "100%", marginBottom: "1vh" }}>
             <tr>
               <th>Owner</th>
               <th>Repository name</th>
             </tr>
             <tr>
-              <td>{username}/</td>
+              <td style={{ position: "relative", top: "-5px" }}>{username}/</td>
               <td>
-                <TextField
-                  name="name"
-                  autoComplete="off"
-                  helpText={formError.name}
-                />
+                <TextField name="name" autoComplete="off" showError={false} />
               </td>
             </tr>
           </table>
@@ -74,10 +72,18 @@ export default function GitCreateRepo({
             type="submit"
             className={`${CLASS_NAME}__button`}
             disabled={loading}
+            style={{ marginBottom: "0.8vh" }}
           >
-            Create
+            {loading ? (
+              <CircularProgress style={{ color: "white", margin: "5px" }} />
+            ) : (
+              "Create new repository"
+            )}
           </Button>
-          <div>{error}</div>
+          <Label
+            text={formError.name || formatError(error) || ""}
+            type="error"
+          />
         </Form>
       )}
     </Formik>

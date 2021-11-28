@@ -4,6 +4,7 @@ import { TextInput, Props as TextInputProps } from "../TextInput/TextInput";
 
 export type Props = Omit<TextInputProps, "hasError"> & {
   name: string;
+  showError?: boolean;
 };
 
 export const TextField = (props: Props) => {
@@ -25,8 +26,12 @@ export const TextField = (props: Props) => {
       {...rest}
       {...field}
       onChange={handleChange}
-      hasError={Boolean(meta.error) && meta.touched}
-      helpText={props.helpText || meta.error}
+      hasError={
+        props.showError !== false && Boolean(meta.error) && meta.touched
+      }
+      helpText={
+        props.showError !== false ? props.helpText || meta.error : undefined
+      }
     />
   );
 };

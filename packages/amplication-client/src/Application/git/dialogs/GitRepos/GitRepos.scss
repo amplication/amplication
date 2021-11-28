@@ -7,6 +7,7 @@
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--default-spacing);
+    min-height: 7vh;
   }
 
   &__body {

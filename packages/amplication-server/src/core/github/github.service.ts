@@ -37,20 +37,28 @@ export class GithubService implements IGitClient {
     private readonly googleSecretManagerService: GoogleSecretsManagerService,
     public readonly tokenExtractor: GithubTokenExtractor
   ) {}
-
-  async isRepoExist(token: string, name: string): Promise<boolean> {
-    const repos = await this.getUserRepos(token);
+  async isRepoExistWithOctokit(
+    octokit: Octokit,
+    name: string
+  ): Promise<boolean> {
+    const repos = await this.getUserReposWithOctokit(octokit);
     if (repos.map(repo => repo.name).includes(name)) {
       return true;
     }
     return false;
+  }
+  async isRepoExist(token: string, name: string): Promise<boolean> {
+    const octokit = new Octokit({
+      auth: token
+    });
+    return await this.isRepoExistWithOctokit(octokit, name);
   }
   async createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
     const { input, token } = args;
     const octokit = new Octokit({
       auth: token
     });
-    if (await this.isRepoExist(token, input.name)) {
+    if (await this.isRepoExistWithOctokit(octokit, input.name)) {
       throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
 
@@ -67,6 +75,7 @@ export class GithubService implements IGitClient {
         const { data: repo } = response;
         //TODO add logger
         // console.log('Repository %s created', repo.full_name);
+
         return {
           name: repo.name,
           url: repo.html_url,

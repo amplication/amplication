@@ -14,7 +14,13 @@ If you need help or have a question, go to our [Discord channel](https://discord
 - [Docker](https://docs.docker.com/desktop/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
-#### One time set up
+#### Automatic one-time setup
+
+Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, you should follow the instruction on the [README.md](../../README.md) file in the project root folder.
+
+You can also use a more manual step-by-step approach to set up Amplication server - to do that, follow the instructions below.
+
+#### Manual one-time set up
 
 - Install dependencies of the monorepo (execute in root directory):
   ```

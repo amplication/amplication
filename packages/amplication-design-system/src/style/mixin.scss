@@ -54,11 +54,6 @@
   color: var(--black40);
 }
 
-@mixin errorMessage {
-  color: var(--negative);
-  font-size: 10px;
-}
-
 @mixin bold {
   font-weight: 600;
 }
