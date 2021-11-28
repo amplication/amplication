@@ -1,5 +1,5 @@
 import { NetworkStatus } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
+import { CircularProgress } from "@amplication/design-system";
 import { Snackbar } from "@rmwc/snackbar";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
@@ -9,6 +9,7 @@ import useGetReposOfUser from "../../hooks/useGetReposOfUser";
 import useGitSelected from "../../hooks/useGitSelected";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
+import { Tooltip } from "@primer/components";
 
 const CLASS_NAME = "git-repos";
 
@@ -48,18 +49,21 @@ function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
           Select a {sourceControlService} repository to sync your application
           with.
         </h4>
-        {(loadingRepos || networkStatus === NetworkStatus.refetch) && (
+        {loadingRepos || networkStatus === NetworkStatus.refetch ? (
           <CircularProgress />
+        ) : (
+          <Tooltip aria-label="Refresh options" direction="w" noDelay wrap>
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              onClick={(e) => {
+                handleRefresh();
+              }}
+              type="button"
+              icon="refresh_cw"
+              // disabled={networkStatus === NetworkStatus.refetch}
+            />
+          </Tooltip>
         )}
-        <Button
-          buttonStyle={EnumButtonStyle.Clear}
-          onClick={(e) => {
-            handleRefresh();
-          }}
-          type="button"
-          icon="refresh_cw"
-          disabled={networkStatus === NetworkStatus.refetch}
-        />
       </div>
       {repos?.map((repo) => (
         <GitRepoItem

@@ -56,7 +56,7 @@ export default function GitCreateRepo({
             </h4>
             <br />
           </div>
-          <table style={{ width: "100%" }}>
+          <table style={{ width: "100%", marginBottom: "1vh" }}>
             <tr>
               <th>Owner</th>
               <th>Repository name</th>
@@ -72,6 +72,7 @@ export default function GitCreateRepo({
             type="submit"
             className={`${CLASS_NAME}__button`}
             disabled={loading}
+            style={{ marginBottom: "0.8vh" }}
           >
             {loading ? (
               <CircularProgress style={{ color: "white", margin: "5px" }} />
