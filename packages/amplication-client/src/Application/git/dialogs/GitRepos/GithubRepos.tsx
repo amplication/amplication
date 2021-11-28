@@ -52,7 +52,7 @@ function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
         {loadingRepos || networkStatus === NetworkStatus.refetch ? (
           <CircularProgress />
         ) : (
-          <Tooltip aria-label="Refresh options" direction="w" noDelay wrap>
+          <Tooltip aria-label="Refresh repositories" direction="w" noDelay wrap>
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               onClick={(e) => {
