@@ -1,4 +1,3 @@
-import { TEST_GITHUB_TOKEN } from '../../github/__mocks__/token.mock';
 import { App } from '../../../models';
 import { TEST_APP_ID } from './appId.mock';
 
@@ -9,7 +8,7 @@ export const TEST_APP_MOCK: App = {
   githubSyncEnabled: true,
   name: 'test app',
   updatedAt: new Date(),
-  githubToken: TEST_GITHUB_TOKEN
+  githubToken: 'GITHUB_TOKEN'
 };
 export const MOCK_APP_WITHOUT_GITHUB_TOKEN: App = {
   createdAt: new Date(),

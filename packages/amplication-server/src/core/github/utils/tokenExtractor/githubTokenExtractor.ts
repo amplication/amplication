@@ -1,7 +1,7 @@
 import { ITokenExtractor } from '../../../git/contracts/ITokenExtractor';
 import { isEmpty } from 'lodash';
 import { AmplicationError } from 'src/errors/AmplicationError';
-import { MISSING_TOKEN_ERROR } from 'src/core/git/constants';
+import { MISSING_TOKEN_ERROR } from '../../../git/constants';
 import { AppService } from '../../..';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
