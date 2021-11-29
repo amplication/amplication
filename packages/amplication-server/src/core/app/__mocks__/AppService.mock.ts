@@ -1,11 +1,8 @@
 import { Matcher, mock } from 'jest-mock-extended';
 import { AppService } from 'src/core';
 import { FindOneArgs } from 'src/dto';
-import {
-  MOCK_APP_WITHOUT_GITHUB_TOKEN,
-  TEST_APP_ID,
-  TEST_APP_MOCK
-} from './App.mock';
+import { MOCK_APP_WITHOUT_GITHUB_TOKEN, TEST_APP_MOCK } from './App.mock';
+import { TEST_APP_ID } from './appId.mock';
 
 export const mockAppService = mock<AppService>();
 mockAppService.app

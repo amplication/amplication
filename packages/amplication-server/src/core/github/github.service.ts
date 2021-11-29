@@ -9,13 +9,14 @@ import { Octokit } from '@octokit/rest';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
 import { IGitClient } from '../git/contracts/IGitClient';
 import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
 import { GitRepo } from '../git/dto/objects/GitRepo';
 import { GitUser } from '../git/dto/objects/GitUser';
-import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
 import { GithubFile } from './dto/githubFile';
 import { GithubRepo } from './dto/githubRepo';
+import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtractor';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -33,7 +34,8 @@ type DirectoryItem = components['schemas']['content-directory'][number];
 export class GithubService implements IGitClient {
   constructor(
     private readonly configService: ConfigService,
-    private readonly googleSecretManagerService: GoogleSecretsManagerService
+    private readonly googleSecretManagerService: GoogleSecretsManagerService,
+    public readonly tokenExtractor: GithubTokenExtractor
   ) {}
   async isRepoExistWithOctokit(
     octokit: Octokit,
