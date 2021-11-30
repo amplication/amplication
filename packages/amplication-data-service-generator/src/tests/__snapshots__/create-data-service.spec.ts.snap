@@ -9670,7 +9670,6 @@ describe(\\"Testing the TokenServiceBase\\", () => {
   });
 });
 ",
-  "server/src/tests/auth/token.service.ts": "",
   "server/src/tests/health/health.service.spec.ts": "import { mock } from \\"jest-mock-extended\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import { HealthServiceBase } from \\"../../health/base/health.service.base\\";
