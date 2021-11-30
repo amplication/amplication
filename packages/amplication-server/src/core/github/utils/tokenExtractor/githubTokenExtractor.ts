@@ -1,18 +1,17 @@
-import { ITokenExtractor } from '../../../git/contracts/ITokenExtractor';
+import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
+import { PrismaService } from 'nestjs-prisma';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { MISSING_TOKEN_ERROR } from '../../../git/constants';
-import { AppService } from '../../..';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { ITokenExtractor } from '../../../git/contracts/ITokenExtractor';
 
 @Injectable()
 export class GithubTokenExtractor implements ITokenExtractor {
-  constructor(
-    @Inject(forwardRef(() => AppService))
-    private readonly appService: AppService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
   async getTokenFromDb(appId: string): Promise<string> {
-    const app = await this.appService.app({ where: { id: appId } });
+    const app = await this.prismaService.app.findUnique({
+      where: { id: appId }
+    });
     if (isEmpty(app)) {
       throw new AmplicationError('Invalid appId');
     }
