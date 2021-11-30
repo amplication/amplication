@@ -3,7 +3,7 @@
 
 .git-repos {
   overflow: auto;
-
+  overflow-x: hidden;
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--default-spacing);
