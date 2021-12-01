@@ -2505,6 +2505,9 @@ async function seed(bcryptSalt: Salt) {
   console.info(\\"Seeded database successfully\\");
 }
 ",
+  "server/src/amplication/constants.base.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
+export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
+",
   "server/src/app.module.ts": "import { Module } from \\"@nestjs/common\\";
 import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
@@ -3246,8 +3249,7 @@ import { TokenServiceBase } from \\"./base/token.service.base\\";
 //@ts-ignore
 export class TokenService extends TokenServiceBase implements ITokenService {}
 ",
-  "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
-export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
+  "server/src/constants.ts": "export * from \\"./amplication/constants.base\\";
 ",
   "server/src/customer/base/CreateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
