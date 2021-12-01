@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { JWT_SECRET_KEY } from "../../amplication/constants.base";
+import { JWT_SECRET_KEY } from "../../constants";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from "../../user/user.service";

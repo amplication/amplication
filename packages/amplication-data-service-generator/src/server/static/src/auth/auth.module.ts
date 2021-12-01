@@ -2,7 +2,7 @@ import { forwardRef, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../amplication/constants.base";
+import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../constants";
 import { SecretsManagerModule } from "../providers/secrets/secretsManager.module";
 import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
 // @ts-ignore

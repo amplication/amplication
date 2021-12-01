@@ -1,4 +1,4 @@
-import { JWT_SECRET_KEY } from "../../amplication/constants.base";
+import { JWT_SECRET_KEY } from "../../constants";
 import { SecretsManagerService } from "../../providers/secrets/secretsManager.service";
 
 export const jwtSecretFactory = {
