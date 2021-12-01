@@ -36,8 +36,8 @@
     "ts-jest": "^27.0.5"
   },
   "engines": {
-    "node": "^16.13.0",
-    "npm": "^8.1.0"
+    "node": "^14.0.0",
+    "npm": "^7.3.0"
   },
   "bugs": {
     "url": "https://github.com/amplication/amplication/issues"
