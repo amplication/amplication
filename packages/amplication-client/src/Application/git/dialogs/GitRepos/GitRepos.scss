@@ -1,19 +1,15 @@
-@import "../style/index.scss";
+@import "../../../../style/index.scss";
+@import "../GitDialogsIndex.scss";
 
-$max-height: 80vh;
-.github-repos {
+.git-repos {
   overflow: auto;
-
+  overflow-x: hidden;
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--default-spacing);
+    min-height: 7vh;
   }
-  h3 {
-    margin-top: 0;
-    margin-bottom: 0;
-    @include body2;
-    margin-right: auto;
-  }
+
   &__body {
     @include flexFullRowWithSpacing;
     align-items: center;

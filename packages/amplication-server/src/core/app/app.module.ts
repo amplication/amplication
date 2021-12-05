@@ -8,8 +8,8 @@ import { BuildModule } from '../build/build.module'; // eslint-disable-line impo
 import { EnvironmentModule } from '../environment/environment.module';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
-import { CommitModule } from '../commit/commit.module';
-import { GithubModule } from '../github/github.module';
+import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
+import { GithubModule } from '../github/github.module'; // eslint-disable-line import/no-cycle
 
 @Module({
   imports: [

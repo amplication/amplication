@@ -17,6 +17,7 @@ import { ActionModule } from '../action/action.module';
 import { DeploymentModule } from '../deployment/deployment.module';
 import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilderRoot.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
+// eslint-disable-next-line import/no-cycle
 import { GithubModule } from '../github/github.module';
 
 @Module({

@@ -77,7 +77,8 @@
     "typescript": "3.9.10",
     "use-debounce": "3.4.3",
     "xlsx": "0.16.9",
-    "yaml": "1.10.2"
+    "yaml": "1.10.2",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -129,9 +130,11 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^7.0.2",
     "@types/ajv-errors": "1.0.3",
     "@types/lodash.debounce": "4.0.6",
     "@types/react-beautiful-dnd": "13.1.1",
+    "jest-mock-extended": "^2.0.4",
     "prettier": "2.0.5",
     "react-app-rewired": "2.1.8"
   }

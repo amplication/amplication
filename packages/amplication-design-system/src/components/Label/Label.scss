@@ -1,0 +1,7 @@
+@import "../../index.scss";
+.amplication-label {
+  font-size: 10px;
+  &__error {
+    color: var(--negative);
+  }
+}
