@@ -5,7 +5,7 @@ on: workflow_dispatch
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v2
       - name: Fetch master

@@ -8,7 +8,8 @@ POSTGRESQL_PASSWORD=1234
 POSTGRESQL_PORT=5433
 SERVER_PORT=3000
 BCRYPT_SALT=10
-",
+JWT_SECRET_KEY=Change_ME!!!
+JWT_EXPIRATION=2d",
   "admin-ui/.env": "PORT=3001",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
@@ -2542,7 +2543,8 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
         const playground = configService.get(\\"GRAPHQL_PLAYGROUND\\");
         const introspection = configService.get(\\"GRAPHQL_INTROSPECTION\\");
         return {
-          autoSchemaFile: true,
+          autoSchemaFile: \\"schema.graphql\\",
+          sortSchema: true,
           playground,
           introspection: playground || introspection,
         };
@@ -9668,7 +9670,6 @@ describe(\\"Testing the TokenServiceBase\\", () => {
   });
 });
 ",
-  "server/src/tests/auth/token.service.ts": "",
   "server/src/tests/health/health.service.spec.ts": "import { mock } from \\"jest-mock-extended\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import { HealthServiceBase } from \\"../../health/base/health.service.base\\";

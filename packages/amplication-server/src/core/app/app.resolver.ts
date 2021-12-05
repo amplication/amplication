@@ -1,47 +1,43 @@
+import { UseFilters, UseGuards } from '@nestjs/common';
 import {
   Args,
   Mutation,
+  Parent,
   Query,
-  Resolver,
   ResolveField,
-  Parent
+  Resolver
 } from '@nestjs/graphql';
-import {
-  CreateOneAppArgs,
-  FindManyAppArgs,
-  UpdateOneAppArgs,
-  CreateCommitArgs,
-  DiscardPendingChangesArgs,
-  FindPendingChangesArgs,
-  FindAvailableGithubReposArgs,
-  PendingChange,
-  AppEnableSyncWithGithubRepoArgs,
-  AppValidationResult,
-  CreateAppWithEntitiesArgs
-} from './dto';
-import { FindOneArgs } from 'src/dto';
-import { App, Entity, User, Commit } from 'src/models';
-import { Build } from '../build/dto/Build';
-import { Environment } from '../environment/dto/Environment';
-import { AppService, EntityService } from '../';
-import { BuildService } from '../build/build.service';
-import { EnvironmentService } from '../environment/environment.service';
-import { FindManyBuildArgs } from '../build/dto/FindManyBuildArgs';
-import { AuthorizeAppWithGithubResult } from './dto/AuthorizeAppWithGithubResult';
-import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
-
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { Roles } from 'src/decorators/roles.decorator';
-
-import { UseGuards, UseFilters } from '@nestjs/common';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { UserEntity } from 'src/decorators/user.decorator';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserEntity } from 'src/decorators/user.decorator';
+import { FindOneArgs } from 'src/dto';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { App, Commit, Entity, User } from 'src/models';
+import { AppService, EntityService } from '../';
+import { BuildService } from '../build/build.service';
+import { Build } from '../build/dto/Build';
+import { FindManyBuildArgs } from '../build/dto/FindManyBuildArgs';
 import { FindManyEntityArgs } from '../entity/dto';
-import { GithubRepo } from '../github/dto/githubRepo';
+import { Environment } from '../environment/dto/Environment';
+import { EnvironmentService } from '../environment/environment.service';
+import {
+  AppEnableSyncWithGithubRepoArgs,
+  AppValidationResult,
+  CreateAppWithEntitiesArgs,
+  CreateCommitArgs,
+  CreateOneAppArgs,
+  DiscardPendingChangesArgs,
+  FindManyAppArgs,
+  FindPendingChangesArgs,
+  PendingChange,
+  UpdateOneAppArgs
+} from './dto';
+import { AuthorizeAppWithGithubResult } from './dto/AuthorizeAppWithGithubResult';
+import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
 @Resolver(() => App)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -219,16 +215,6 @@ export class AppResolver {
     @UserEntity() user: User
   ): Promise<App> {
     return this.appService.removeAuthorizeAppWithGithub(args);
-  }
-
-  @Query(() => [GithubRepo], {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async appAvailableGithubRepos(
-    @Args() args: FindAvailableGithubReposArgs
-  ): Promise<GithubRepo[]> {
-    return this.appService.findAvailableGithubRepos(args);
   }
 
   @Mutation(() => App, {

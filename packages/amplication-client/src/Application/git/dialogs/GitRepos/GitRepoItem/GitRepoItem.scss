@@ -1,6 +1,6 @@
-@import "../style/index.scss";
+@import "../../../../../style/index.scss";
 
-.github-repo-item {
+.git-repo-item {
   @include flexFullRowWithSpacing;
   background-color: var(--black5);
   border-radius: var(--default-border-radius);

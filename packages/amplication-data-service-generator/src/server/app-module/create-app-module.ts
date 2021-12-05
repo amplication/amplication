@@ -54,6 +54,7 @@ export async function createAppModule(
     /** @todo explicitly check for "@Module" decorated classes */
     ({ exports }) => exports
   );
+  //@TODO: allow some env variable to override the autoSchemaFile: "schema.graphql" (e.g. GQL_SCHEMA_EXPORT_PATH)
   const modules = builders.arrayExpression([
     ...nestModulesIds,
     MORGAN_MODULE_ID,
@@ -66,7 +67,8 @@ export async function createAppModule(
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
         return {
-          autoSchemaFile: true,
+          autoSchemaFile: "schema.graphql",
+          sortSchema: true,
           playground,
           introspection: playground || introspection
         }

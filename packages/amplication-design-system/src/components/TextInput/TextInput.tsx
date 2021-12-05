@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { Icon } from "@rmwc/icon";
 import { Button } from "../Button/Button";
 import "./TextInput.scss";
+import { Label } from "../Label/Label";
 
 export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
   helpText?: string;
@@ -38,7 +39,7 @@ export function TextInput({
     >
       <div className={`${CLASS_NAME}__inner-wrapper`}>
         <label className="input-label">
-          {!hideLabel && <span className="input-label-value">{label}</span>}
+          {!hideLabel && label && <Label text={label} />}
           {textarea ? (
             <textarea
               {...rest}
@@ -60,7 +61,7 @@ export function TextInput({
           </Button>
         )}
       </div>
-      {hasError && <div className={`${CLASS_NAME}__error`}>{helpText}</div>}
+      {hasError && helpText && <Label text={helpText} type="error" />}
     </div>
   );
 }

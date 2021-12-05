@@ -1,0 +1,18 @@
+@import "../../../../style/index.scss";
+@import "../GitDialogsIndex.scss";
+
+.git-create {
+  overflow: auto;
+
+  &__button {
+    @include flexFullRowWithSpacing;
+    width: 100%;
+    justify-content: center;
+  }
+}
+th {
+  font-weight: normal;
+  color: var(--black60);
+  font-size: var(--text-field-label-font-size);
+  text-align: inherit;
+}
