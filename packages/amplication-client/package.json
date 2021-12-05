@@ -50,7 +50,8 @@
     "styled-components": "5.1.1",
     "use-debounce": "3.4.3",
     "xlsx": "0.16.9",
-    "yaml": "1.10.2"
+    "yaml": "1.10.2",
+    "yup": "0.32.11"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -105,6 +106,7 @@
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "9.5.0",
     "@testing-library/user-event": "13.2.0",
+    "@testing-library/react-hooks": "^7.0.2",
     "@types/ajv-errors": "1.0.3",
     "@types/amplitude-js": "5.11.2",
     "@types/chalk-pipe": "2.0.0",
@@ -123,6 +125,7 @@
     "@types/react-router-dom": "5.1.8",
     "@types/react-tracking": "7.0.4",
     "@types/semver": "7.3.7",
+    "jest-mock-extended": "^2.0.4",
     "prettier": "2.0.5",
     "react-app-rewired": "2.1.8",
     "typescript": "3.9.10"
