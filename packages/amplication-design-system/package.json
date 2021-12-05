@@ -1,6 +1,6 @@
 {
   "name": "@amplication/design-system",
-  "version": "0.10.1",
+  "version": "0.10.3",
   "main": "dist/index.js",
   "scripts": {
     "storybook": "start-storybook -p 6006",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@primer/components": "20.3.0",
+    "@rmwc/circular-progress": "6.1.4",
     "@rmwc/data-table": "6.1.4",
     "@rmwc/drawer": "6.1.4",
     "@rmwc/icon": "6.1.4",
@@ -25,8 +26,7 @@
     "lodash": "4.17.20",
     "react-animate-height": "2.0.23",
     "react-device-detect": "1.14.0",
-    "react-select": "3.1.1",
-    "@rmwc/circular-progress": "6.1.4"
+    "react-select": "3.1.1"
   },
   "devDependencies": {
     "@storybook/addon-actions": "6.1.9",
