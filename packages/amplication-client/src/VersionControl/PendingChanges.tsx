@@ -116,7 +116,10 @@ const PendingChanges = ({ applicationId }: Props) => {
                   key={change.resourceId}
                   change={change}
                   applicationId={applicationId}
-                  linkToResource
+                  linkToResource={
+                    // if its delete you cant got to the page # for more info look at issue 2032
+                    change.action !== models.EnumPendingChangeAction.Delete
+                  }
                 />
               ))}
             </div>
