@@ -23,6 +23,7 @@ import { GithubModule } from './github/github.module';
 import { MailModule } from './mail/mail.module';
 import { AppSettingsModule } from './appSettings/appSettings.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { GitModule } from './git/git.module';
 @Module({
   imports: [
     AccountModule,
@@ -44,11 +45,11 @@ import { SubscriptionModule } from './subscription/subscription.module';
     CommitModule,
     SystemModule,
     GithubModule,
-    MailModule,
     AppSettingsModule,
+    GitModule
+    MailModule,
     SubscriptionModule
   ],
-  providers: [],
   exports: [
     AccountModule,
     WorkspaceModule,
@@ -67,8 +68,9 @@ import { SubscriptionModule } from './subscription/subscription.module';
     EnvironmentModule,
     CommitModule,
     GithubModule,
-    MailModule,
     AppSettingsModule,
+    GitModule
+    MailModule,
     SubscriptionModule
   ]
 })

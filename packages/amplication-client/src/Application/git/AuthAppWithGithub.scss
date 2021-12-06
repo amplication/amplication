@@ -1,4 +1,4 @@
-@import "../style/index.scss";
+@import "../../style/index.scss";
 
 .auth-app-with-github {
   margin-left: 0 !important;
@@ -6,7 +6,14 @@
   .toggle-field {
     margin: 0;
   }
-
+  &__action {
+    margin-left: var(--default-spacing-small);
+    margin-right: var(--default-spacing-small);
+  }
+  &__actions {
+    display: flex;
+    justify-content: space-between;
+  }
   &__auth {
     margin: var(--double-spacing) 0;
   }

@@ -1,0 +1,55 @@
+# remove this comment to unbreak the file validation so it will appear in the template list when creating a new issue (for the conference day only) 
+name: 🏆 Node.TLV Challenge 🏆
+description: "Node.TLV 2021 conference challenge"
+title: "🏆 Node.TLV: [title of your idea]"
+labels: [Node-TLV]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Welcome to Node.TLV Challenge
+        
+        Share with us your best idea, for anything that can make backend developers' life easier, better, faster - for a chance to win a MacBook Pro
+        
+        1. Submit your greatest idea in the form below. 
+        2. Optional, come visit us at our booth and pick up the coolest "open-source" t-shirt.
+        3. Share the idea with your colleagues and friends. 
+        
+       
+  - type: textarea
+    id: feature-description
+    validations:
+      required: true
+    attributes:
+      label: "💡 My idea is"
+      description: "A clear and concise description of what the feature is."
+      placeholder: "Example: Add support for MongoDB as an alternative to PostgreSQL"
+  - type: textarea
+    id: pitch
+    validations:
+      required: false
+    attributes:
+      label: "✅ The idea is awesome because"
+      description: "Please explain why this feature is awesome and should win the challenge"
+      placeholder: "Example: I love mongoDB and use it all the time. I think many developers can benefit from this option."
+  - type: markdown
+    attributes:
+      value: |
+        ## 🏆 And the winner is...
+        The list of ideas will be shared with Amplication's community on Discord and Twitter and displayed in our booth. Anyone can vote for the best idea. 
+        The best idea with the most upvotes will win a MacBook Pro.
+        The challenge ends Thursday (November 18th) at 10am Eastern time.
+        
+        ## 👀 Please note
+        After you post your idea, we will need to approve it for minimum qualification, so please do not spam our repo. 
+        Only approved posts are participating.
+       
+        ## 🥳 Join our growing community
+        Discord - [amplication.com/discord](https://amplication.com/discord)
+        Twitter - [twitter.com/amplication](https://twitter.com/amplication)
+        
+        ## 💜 Show your love and support
+        Add a star to our [project](https://github.com/amplication/amplication/stargazers)
+        
+
+

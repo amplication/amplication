@@ -1,6 +1,6 @@
 {
   "name": "@amplication/design-system",
-  "version": "0.10.1",
+  "version": "0.10.3",
   "main": "dist/index.js",
   "scripts": {
     "storybook": "start-storybook -p 6006",
@@ -13,23 +13,20 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@primer/components": "^20.3.0",
-    "@rmwc/data-table": "^6.1.4",
-    "@rmwc/drawer": "^6.1.4",
-    "@rmwc/icon": "^6.1.4",
-    "@rmwc/radio": "^6.1.4",
-    "@rmwc/snackbar": "^6.1.4",
-    "@rmwc/tooltip": "^6.1.4",
-    "@types/lodash": "^4.14.162",
-    "@types/react": "^16.9.34",
-    "@types/react-select": "^3.0.27",
-    "classnames": "^2.2.6",
-    "date-fns": "^2.16.1",
-    "lodash": "^4.17.20",
-    "react-animate-height": "^2.0.23",
-    "react-device-detect": "^1.14.0",
-    "react-select": "^3.1.1",
-    "typescript": "~3.9.0"
+    "@primer/components": "20.3.0",
+    "@rmwc/circular-progress": "6.1.4",
+    "@rmwc/data-table": "6.1.4",
+    "@rmwc/drawer": "6.1.4",
+    "@rmwc/icon": "6.1.4",
+    "@rmwc/radio": "6.1.4",
+    "@rmwc/snackbar": "6.1.4",
+    "@rmwc/tooltip": "6.1.4",
+    "classnames": "2.2.6",
+    "date-fns": "2.16.1",
+    "lodash": "4.17.20",
+    "react-animate-height": "2.0.23",
+    "react-device-detect": "1.14.0",
+    "react-select": "3.1.1"
   },
   "devDependencies": {
     "@storybook/addon-actions": "6.1.9",
@@ -39,6 +36,9 @@
     "@storybook/node-logger": "6.1.9",
     "@storybook/preset-create-react-app": "3.1.5",
     "@storybook/react": "6.0.28",
+    "@types/lodash": "4.14.162",
+    "@types/react": "17.0.34",
+    "@types/react-select": "3.0.27",
     "@typescript-eslint/eslint-plugin": "4.28.3",
     "@typescript-eslint/parser": "4.28.3",
     "eslint": "7.17.0",
@@ -56,7 +56,8 @@
     "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-postcss": "3.1.8",
     "rollup-plugin-typescript2": "0.30.0",
-    "sass": "1.35.2"
+    "sass": "1.35.2",
+    "typescript": "3.9.10"
   },
   "eslintConfig": {
     "extends": "react-app",

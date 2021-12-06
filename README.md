@@ -60,8 +60,19 @@ See [Amplication website](http://amplication.com/) or [Amplication docs](http://
 
 ## Development
 
-Amplication is constructed from multiple packages. To initialize the local development environment, run `npm run setup:dev`, it will install all the required dependencies, run the necessary scripts and init Docker-based Postgres server.
-To set up manually Amplication local development environment, follow the "Amplication Server" and "Amplication Client" installation instructions.
+Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, follow these steps:
+
+Execute the following commands in the project root folder:
+```
+npm install
+```
+```
+npm run setup:dev
+```
+
+This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
+
+You can also use a more manual step-by-step approach to set up Amplication in a local development environment. To do that, you should follow the instructions listed for "Amplication Server" and "Amplication Client" below.
 
 ### [Amplication Server](./packages/amplication-server/README.md)
 
