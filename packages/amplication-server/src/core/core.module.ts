@@ -46,7 +46,7 @@ import { GitModule } from './git/git.module';
     SystemModule,
     GithubModule,
     AppSettingsModule,
-    GitModule
+    GitModule,
     MailModule,
     SubscriptionModule
   ],
