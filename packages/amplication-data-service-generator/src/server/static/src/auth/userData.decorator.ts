@@ -6,7 +6,7 @@ import { User } from "@prisma/client";
 /**
  * Access the user data from the request object i.e `req.user`.
  */
-function userDataFactory(data: undefined, ctx: ExecutionContext): User {
+function userFactory(ctx: ExecutionContext): User {
   const contextType = ctx.getType();
   if (contextType === "http") {
     // do something that is only important in the context of regular HTTP requests (REST)
@@ -27,5 +27,5 @@ function userDataFactory(data: undefined, ctx: ExecutionContext): User {
 }
 
 export const UserData = createParamDecorator<undefined, ExecutionContext, User>(
-  userDataFactory
+  (data, ctx: ExecutionContext) => userFactory(ctx)
 );
