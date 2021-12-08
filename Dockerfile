@@ -1,9 +1,9 @@
-# Use node 14.15.1 as the base image
-FROM node@sha256:bac289a6f393990e759c672d5f567553c697255d1fb858e2c62d086a2dfae44a AS node
+# Use node as the base image
+FROM node:16.13.1-alpine3.14 AS node
 FROM node
 
 FROM node as base
-RUN npm i -g npm@7.3.0
+RUN npm i -g npm@8.1.2
 
 # This stage creates a skeleton with package*.json to /app/
 FROM base as package-sources
