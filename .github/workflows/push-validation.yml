@@ -62,7 +62,8 @@ jobs:
             */*/node_modules
           key: PUSH-${{ runner.os }}-${{matrix.node-version}}-${{matrix.package.package}}-${{ hashFiles(format('{0}/package-lock.json',matrix.package.path)) }}
           restore-keys: |
-            PUSH-${{ runner.os }}-${{matrix.package.package}}-${{matrix.node-version}}
+            PUSH-${{ runner.os }}-${{matrix.node-version}}-${{matrix.package.package}}-
+            PUSH-${{ runner.os }}-${{matrix.node-version}}-
             PUSH-${{ runner.os }}-
 
       - name: Install Node.js dependencies
