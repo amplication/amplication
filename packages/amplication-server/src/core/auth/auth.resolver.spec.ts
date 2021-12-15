@@ -273,12 +273,15 @@ describe('AuthResolver', () => {
     mockCanActivate.mockImplementation(
       mockGqlAuthGuardCanActivate(EXAMPLE_USER_WITHOUT_ACCOUNT)
     );
-    const res = await apolloClient.mutate({
+    const { data, errors } = await apolloClient.mutate({
       mutation: SET_WORKSPACE_MUTATION,
       variables: { id: EXAMPLE_WORKSPACE_ID }
     });
-    expect(res.errors).toEqual([new GraphQLError('User has no account')]);
-    expect(res.data).toEqual(null);
+
+    expect(data).toEqual(null); //make sure no data is forward
+    expect(errors.length === 1); // make sure only one error is send
+    const error = errors[0];
+    expect(error.message === 'User has no account'); // make sure the error message is valid
     expect(setCurrentWorkspaceMock).toBeCalledTimes(0);
   });
 });
