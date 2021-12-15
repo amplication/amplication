@@ -1,19 +1,18 @@
+import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
 import { Test, TestingModule } from '@nestjs/testing';
 import { gql } from 'apollo-server-express';
 import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { INestApplication } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ConfigService } from '@nestjs/config';
-import { AuthService } from './auth.service';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { Account, Auth, User } from 'src/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { AuthResolver } from './auth.resolver';
-import { Auth, User, Account } from 'src/models';
-import { GraphQLError } from 'graphql';
+import { AuthService } from './auth.service';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_TOKEN = 'exampleToken';
