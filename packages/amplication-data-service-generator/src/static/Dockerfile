@@ -11,7 +11,7 @@ ENV NPM_CONFIG_AUDIT=false
 ENV NPM_CONFIG_FUND=false
 
 # Update npm to version 7
-RUN npm i -g npm@7.3.0
+RUN npm i -g npm@8.1.2
 
 # Set the working direcotry
 WORKDIR /app

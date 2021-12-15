@@ -3,7 +3,7 @@ FROM node:16.13.1-alpine3.14 AS node
 FROM node
 
 FROM node as base
-RUN npm i -g npm@7.3.0
+RUN npm i -g npm@8.1.2
 
 # This stage creates a skeleton with package*.json to /app/
 FROM base as package-sources
