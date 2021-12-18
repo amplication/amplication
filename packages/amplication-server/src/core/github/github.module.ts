@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'nestjs-prisma';
 import { ConfigModule } from '@nestjs/config';
-import { GithubService } from './github.service';
-import { PermissionsModule } from '../permissions/permissions.module';
+import { PrismaModule } from 'nestjs-prisma';
 import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
+import { PermissionsModule } from '../permissions/permissions.module';
+import { GithubService } from './github.service';
+import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtractor';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.mo
     PermissionsModule,
     GoogleSecretsManagerModule
   ],
-  providers: [GithubService],
+  providers: [GithubService, GithubTokenExtractor],
   exports: [GithubService]
 })
 export class GithubModule {}

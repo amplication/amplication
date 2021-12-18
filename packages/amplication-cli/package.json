@@ -1,7 +1,7 @@
 {
   "name": "@amplication/cli",
   "description": "Amplication CLI",
-  "version": "0.10.1",
+  "version": "0.10.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/amplication/amplication.git"
@@ -48,24 +48,24 @@
   },
   "types": "lib/index.d.ts",
   "dependencies": {
-    "@apollo/client": "^3.3.8",
-    "@oclif/command": "^1.8.0",
-    "@oclif/config": "^1.17.0",
-    "@oclif/plugin-help": "^3.2.2",
-    "@types/pluralize": "^0.0.29",
-    "@types/url-join": "^4.0.0",
-    "cli-ux": "^5.5.1",
+    "@apollo/client": "3.3.8",
+    "@oclif/command": "1.8.0",
+    "@oclif/config": "1.17.0",
+    "@oclif/plugin-help": "3.2.2",
+    "cli-ux": "5.5.1",
     "cross-fetch": "3.1.4",
-    "graphql": "^15.5.0",
-    "pascal-case": "^3.1.2",
-    "pluralize": "^8.0.0",
-    "tslib": "^1.14.1",
-    "url-join": "^4.0.1"
+    "graphql": "15.5.0",
+    "pascal-case": "3.1.2",
+    "pluralize": "8.0.0",
+    "tslib": "1.14.1",
+    "url-join": "4.0.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "1.26.0",
     "@oclif/test": "1.2.8",
     "@types/node": "10.17.60",
+    "@types/pluralize": "0.0.29",
+    "@types/url-join": "4.0.0",
     "@typescript-eslint/eslint-plugin": "2.34.0",
     "@typescript-eslint/parser": "2.34.0",
     "eslint": "5.16.0",

@@ -1,27 +1,27 @@
-import React from "react";
-import { Switch, Route, match, useLocation } from "react-router-dom";
+import { CircleBadge } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import classNames from "classnames";
-import * as models from "../models";
-import { formatError } from "../util/error";
+import React from "react";
+import { match, Route, Switch, useLocation } from "react-router-dom";
+import InnerTabLink from "../Layout/InnerTabLink";
 import PageContent from "../Layout/PageContent";
-import { CircleBadge } from "@amplication/design-system";
+import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
+import useNavigationTabs from "../Layout/UseNavigationTabs";
+import * as models from "../models";
+import { ApiTokenList } from "../Settings/ApiTokenList";
+import { formatError } from "../util/error";
+import ApplicationAuthSettingForm from "./ApplicationAuthSettingForm";
+import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms";
 import ApplicationForm from "./ApplicationForm";
-import SyncWithGithubPage from "../Settings/SyncWithGithubPage";
 import "./ApplicationHome.scss";
-import SyncWithGithubTile from "./SyncWithGithubTile";
+import { COLOR_TO_NAME } from "./constants";
 import EntitiesTile from "./EntitiesTile";
+import SyncWithGithubPage from "./git/SyncWithGithubPage";
 import NewVersionTile from "./NewVersionTile";
 import RolesTile from "./RolesTile";
-import { COLOR_TO_NAME } from "./constants";
-import useNavigationTabs from "../Layout/UseNavigationTabs";
-import InnerTabLink from "../Layout/InnerTabLink";
-import { ApiTokenList } from "../Settings/ApiTokenList";
-import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
-import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms";
-import ApplicationAuthSettingForm from "./ApplicationAuthSettingForm";
+import SyncWithGithubTile from "./SyncWithGithubTile";
 
 type Props = {
   match: match<{ application: string }>;
@@ -54,7 +54,7 @@ function ApplicationHome({ match }: Props) {
     <PageContent
       className={CLASS_NAME}
       sideContent={
-        <>
+        <div>
           <div>
             <InnerTabLink to={`/${applicationId}/`} icon="home">
               Overview
@@ -85,7 +85,7 @@ function ApplicationHome({ match }: Props) {
               API Tokens
             </InnerTabLink>
           </div>
-        </>
+        </div>
       }
     >
       <Switch>

@@ -159,7 +159,9 @@ export class EntityService {
     });
 
     if (!entity) {
-      throw new Error(`Cannot find entity where ${JSON.stringify(args.where)}`);
+      throw new AmplicationError(
+        `Cannot find entity where ${JSON.stringify(args.where)}`
+      );
     }
 
     return entity;
@@ -644,7 +646,7 @@ export class EntityService {
     }
 
     if (entity.lockedByUserId) {
-      throw new Error(
+      throw new AmplicationError(
         `Entity ${entityId} is already locked by another user - ${entity.lockedByUserId} `
       );
     }
@@ -697,7 +699,7 @@ export class EntityService {
     const firstEntityVersion = head(entityVersions);
     const lastEntityVersion = last(entityVersions);
     if (!firstEntityVersion || !lastEntityVersion) {
-      throw new Error(`Entity ${entityId} has no versions`);
+      throw new AmplicationError(`Entity ${entityId} has no versions`);
     }
     const lastVersionNumber = lastEntityVersion.versionNumber;
 
@@ -747,11 +749,11 @@ export class EntityService {
     const lastEntityVersion = last(entityVersions);
 
     if (!firstEntityVersion || !lastEntityVersion) {
-      throw new Error(`Entity ${entityId} has no versions `);
+      throw new AmplicationError(`Entity ${entityId} has no versions `);
     }
 
     if (firstEntityVersion.entity.lockedByUserId !== userId) {
-      throw new Error(
+      throw new AmplicationError(
         `Cannot discard pending changes on Entity ${entityId} since it is not currently locked by the requesting user `
       );
     }
@@ -786,7 +788,9 @@ export class EntityService {
     });
 
     if (!sourceVersion) {
-      throw new Error(`Can't find source (Entity Version ${sourceVersionId})`);
+      throw new AmplicationError(
+        `Can't find source (Entity Version ${sourceVersionId})`
+      );
     }
 
     let targetVersion = await this.prisma.entityVersion.findUnique({
@@ -796,7 +800,9 @@ export class EntityService {
     });
 
     if (!targetVersion) {
-      throw new Error(`Can't find target (Entity Version ${targetVersionId})`);
+      throw new AmplicationError(
+        `Can't find target (Entity Version ${targetVersionId})`
+      );
     }
 
     // Clear any existing fields and permissions when discarding changes and rolling back to previous version
@@ -1292,7 +1298,7 @@ export class EntityService {
     });
 
     if (isEmpty(permissionField)) {
-      throw new Error(`Record not found`);
+      throw new AmplicationError(`Record not found`);
     }
 
     const id = permissionField[0].id;

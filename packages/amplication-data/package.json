@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data",
-  "version": "0.10.1",
+  "version": "0.10.3",
   "private": true,
   "main": "dist/index.js",
   "scripts": {
@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.19",
+    "@types/json-schema": "7.0.8",
     "@types/normalize-path": "3.0.0",
     "fast-glob": "3.2.7",
     "jest": "27.0.6",
@@ -23,9 +24,6 @@
     "ts-jest": "27.0.3",
     "ts-node": "9.1.1",
     "typescript": "4.0.2"
-  },
-  "dependencies": {
-    "@types/json-schema": "7.0.8"
   },
   "jest": {
     "preset": "ts-jest",
