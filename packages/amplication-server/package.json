@@ -85,6 +85,7 @@
     "pluralize": "8.0.0",
     "prisma": "3.6.0",
     "reflect-metadata": "0.1.13",
+    "rxjs": "7.4.0",
     "semver": "7.3.5",
     "tar-stream": "2.2.0",
     "ts-morph": "^13.0.2",
