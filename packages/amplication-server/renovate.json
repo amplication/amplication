@@ -2,7 +2,7 @@
   "packageRules": [
     {
       "depTypeList": ["devDependencies"],
-      "automerge": true
+      "automerge": false
     }
   ],
   "extends": ["config:base"]
