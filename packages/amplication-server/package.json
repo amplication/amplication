@@ -95,7 +95,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "7.6.0",
-    "@nestjs/testing": "8.2.3",
+    "@nestjs/testing": "8.2.4",
     "@types/adm-zip": "0.4.34",
     "@types/bcrypt": "5.0.0",
     "@types/dockerode": "2.5.34",
