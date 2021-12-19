@@ -12,10 +12,10 @@ ENV NPM_CONFIG_FUND=false
 # Update npm to version 7
 RUN npm i -g npm@7.3.0
 
-# Set the working direcotry
+# Set the working directory
 WORKDIR /app
 
-# Copy files specifiying dependencies
+# Copy files specifying dependencies
 COPY src/server/static/package.json src/server/static/package-lock.json ./server/
 COPY src/admin/static/package.json src/admin/static/package-lock.json ./admin/
 
