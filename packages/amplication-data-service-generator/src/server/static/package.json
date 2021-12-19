@@ -57,7 +57,7 @@
     "@types/passport-jwt": "3.0.6",
     "@types/supertest": "2.0.11",
     "jest": "27.0.6",
-    "jest-mock-extended": "^2.0.4",
+    "jest-mock-extended": "2.0.4",
     "prisma": "2.19.0",
     "supertest": "4.0.2",
     "ts-jest": "27.0.3",
