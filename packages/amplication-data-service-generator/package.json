@@ -23,7 +23,6 @@
     "@amplication/design-system": "^0.10.3",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
-    "@prisma/client": "2.19.0",
     "camel-case": "4.1.2",
     "fast-glob": "3.2.7",
     "lodash.countby": "4.6.0",
@@ -34,7 +33,6 @@
     "lodash.omit": "4.5.0",
     "lodash.uniqby": "4.7.0",
     "nest-morgan": "1.0.1",
-    "nestjs-prisma": "0.12.0",
     "param-case": "3.0.4",
     "pascal-case": "3.1.2",
     "pluralize": "8.0.0",
@@ -46,6 +44,8 @@
     "winston": "3.3.3"
   },
   "devDependencies": {
+    "@prisma/client": "3.6.0",
+    "nestjs-prisma": "0.14.3",
     "@apollo/client": "3.3.19",
     "@material-ui/core": "^4.12.1",
     "@nestjs/common": "7.6.18",
