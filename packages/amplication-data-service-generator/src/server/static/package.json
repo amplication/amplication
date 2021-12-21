@@ -32,7 +32,7 @@
     "bcrypt": "5.0.1",
     "class-transformer": "0.3.1",
     "class-validator": "0.12.2",
-    "graphql": "16.1.0",
+    "graphql": "15.7.2",
     "graphql-type-json": "0.3.2",
     "nest-access-control": "2.0.2",
     "nest-morgan": "1.0.1",
