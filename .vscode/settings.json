@@ -19,6 +19,7 @@
     "Formik",
     "IBLOCK",
     "linkcode",
+    "loglevel",
     "nestjs",
     "oclif",
     "Octokit",
