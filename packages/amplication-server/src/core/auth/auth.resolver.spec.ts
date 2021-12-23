@@ -1,19 +1,18 @@
+import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
 import { Test, TestingModule } from '@nestjs/testing';
 import { gql } from 'apollo-server-express';
 import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { INestApplication } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ConfigService } from '@nestjs/config';
-import { AuthService } from './auth.service';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { Account, Auth, User } from 'src/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { AuthResolver } from './auth.resolver';
-import { Auth, User, Account } from 'src/models';
-import { GraphQLError } from 'graphql';
+import { AuthService } from './auth.service';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_TOKEN = 'exampleToken';
@@ -273,12 +272,15 @@ describe('AuthResolver', () => {
     mockCanActivate.mockImplementation(
       mockGqlAuthGuardCanActivate(EXAMPLE_USER_WITHOUT_ACCOUNT)
     );
-    const res = await apolloClient.mutate({
+    const { data, errors } = await apolloClient.mutate({
       mutation: SET_WORKSPACE_MUTATION,
       variables: { id: EXAMPLE_WORKSPACE_ID }
     });
-    expect(res.errors).toEqual([new GraphQLError('User has no account')]);
-    expect(res.data).toEqual(null);
+
+    expect(data).toEqual(null); //make sure no data is forward
+    expect(errors.length === 1); // make sure only one error is send
+    const error = errors[0];
+    expect(error.message === 'User has no account'); // make sure the error message is valid
     expect(setCurrentWorkspaceMock).toBeCalledTimes(0);
   });
 });
