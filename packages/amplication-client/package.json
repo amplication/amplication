@@ -1,133 +1,120 @@
 {
-  "name": "@amplication/client",
-  "version": "0.10.3",
-  "private": true,
-  "dependencies": {
-    "@amplication/data": "^0.10.3",
-    "@amplication/design-system": "^0.10.3",
-    "@apollo/client": "3.3.16",
-    "@extra-set/difference": "2.2.3",
-    "@primer/components": "19.1.1",
-    "@rmwc/circular-progress": "6.1.4",
-    "@rmwc/drawer": "6.1.4",
-    "@rmwc/icon": "6.1.4",
-    "@rmwc/snackbar": "6.1.4",
-    "@rmwc/tabs": "6.1.4",
-    "@rooks/use-window-size": "3.6.0",
-    "ajv-errors": "3.0.0",
-    "capital-case": "1.0.4",
-    "classnames": "2.3.1",
-    "date-fns": "2.22.1",
-    "deepdash-es": "5.3.9",
-    "downloadjs": "1.4.7",
-    "events": "3.3.0",
-    "formik": "2.2.9",
-    "graphql": "15.0.0",
-    "lodash.debounce": "4.0.8",
-    "lodash.keyby": "4.6.0",
-    "lodash.omit": "4.5.0",
-    "pluralize": "8.0.0",
-    "query-string": "4.3.4",
-    "react": "16.14.0",
-    "react-beautiful-dnd": "13.1.0",
-    "react-command-palette": "0.13.0-0",
-    "react-compound-timer": "1.2.0",
-    "react-device-detect": "1.17.0",
-    "react-diff-viewer": "3.1.1",
-    "react-dom": "16.14.0",
-    "react-draggable": "4.4.3",
-    "react-dropzone": "11.3.4",
-    "react-hotkeys": "2.0.0",
-    "react-lazylog": "4.5.3",
-    "react-router-dom": "5.2.0",
-    "react-scripts": "4.0.3",
-    "react-teleporter": "2.2.1",
-    "react-tracking": "8.0.0",
-    "react-use-localstorage": "3.5.3",
-    "react-xarrows": "1.7.1",
-    "sass": "1.35.2",
-    "semver": "7.3.5",
-    "styled-components": "5.1.1",
-    "use-debounce": "3.4.3",
-    "xlsx": "0.16.9",
-    "yaml": "1.10.2",
-    "yup": "0.32.11"
-  },
-  "scripts": {
-    "start": "react-app-rewired start",
-    "start:debug": "npm start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-scripts eject",
-    "lint": "eslint --cache .",
-    "lint:fix": "npm run lint -- --fix",
-    "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
-    "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
-  },
-  "proxy": "http://localhost:3000",
-  "eslintConfig": {
-    "extends": "react-app",
-    "rules": {
-      "react/self-closing-comp": "error",
-      "react/jsx-boolean-value": "error",
-      "react/jsx-key": "error",
-      "react/jsx-no-useless-fragment": "error",
-      "no-duplicate-imports": "error",
-      "no-undef": "error",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          "args": "none"
-        }
-      ]
-    }
-  },
-  "jest": {
-    "transformIgnorePatterns": [
-      "/node_modules/(?!react-command-palette)"
-    ],
-    "moduleNameMapper": {
-      "\\.css$": "<rootDir>/__mocks__/styleMock.js"
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "5.14.1",
-    "@testing-library/react": "9.5.0",
-    "@testing-library/react-hooks": "^7.0.2",
-    "@testing-library/user-event": "13.2.0",
-    "@types/ajv-errors": "1.0.3",
-    "@types/amplitude-js": "5.11.2",
-    "@types/chalk-pipe": "2.0.0",
-    "@types/downloadjs": "1.4.2",
-    "@types/jest": "24.9.1",
-    "@types/lodash.debounce": "4.0.6",
-    "@types/lodash.groupby": "4.6.6",
-    "@types/lodash.keyby": "4.6.6",
-    "@types/lodash.omit": "4.5.6",
-    "@types/node": "12.20.16",
-    "@types/pluralize": "0.0.29",
-    "@types/react": "16.14.11",
-    "@types/react-beautiful-dnd": "13.1.1",
-    "@types/react-dom": "16.9.14",
-    "@types/react-lazylog": "4.5.1",
-    "@types/react-router-dom": "5.1.8",
-    "@types/react-tracking": "7.0.4",
-    "@types/semver": "7.3.7",
-    "jest-mock-extended": "^2.0.4",
-    "prettier": "2.0.5",
-    "react-app-rewired": "2.1.8",
-    "typescript": "3.9.10"
-  }
+	"name": "@amplication/client",
+	"version": "0.10.3",
+	"private": true,
+	"dependencies": {
+		"@apollo/client": "3.3.16",
+		"@extra-set/difference": "2.2.3",
+		"@primer/components": "19.1.1",
+		"@rmwc/circular-progress": "6.1.4",
+		"@rmwc/drawer": "6.1.4",
+		"@rmwc/icon": "6.1.4",
+		"@rmwc/snackbar": "6.1.4",
+		"@rmwc/tabs": "6.1.4",
+		"@rooks/use-window-size": "3.6.0",
+		"ajv-errors": "3.0.0",
+		"capital-case": "1.0.4",
+		"classnames": "2.3.1",
+		"date-fns": "2.22.1",
+		"deepdash-es": "5.3.9",
+		"downloadjs": "1.4.7",
+		"events": "3.3.0",
+		"formik": "2.2.9",
+		"graphql": "15.0.0",
+		"lodash.debounce": "4.0.8",
+		"lodash.keyby": "4.6.0",
+		"lodash.omit": "4.5.0",
+		"pluralize": "8.0.0",
+		"query-string": "4.3.4",
+		"react": "16.14.0",
+		"react-beautiful-dnd": "13.1.0",
+		"react-command-palette": "0.13.0-0",
+		"react-compound-timer": "1.2.0",
+		"react-device-detect": "1.17.0",
+		"react-diff-viewer": "3.1.1",
+		"react-dom": "16.14.0",
+		"react-draggable": "4.4.3",
+		"react-dropzone": "11.3.4",
+		"react-hotkeys": "2.0.0",
+		"react-lazylog": "4.5.3",
+		"react-router-dom": "5.2.0",
+		"react-scripts": "4.0.3",
+		"react-teleporter": "2.2.1",
+		"react-tracking": "8.0.0",
+		"react-use-localstorage": "3.5.3",
+		"react-xarrows": "1.7.1",
+		"sass": "1.35.2",
+		"semver": "7.3.5",
+		"styled-components": "5.1.1",
+		"use-debounce": "3.4.3",
+		"xlsx": "0.16.9",
+		"yaml": "1.10.2",
+		"yup": "0.32.11"
+	},
+	"proxy": "http://localhost:3000",
+	"eslintConfig": {
+		"extends": "react-app",
+		"rules": {
+			"react/self-closing-comp": "error",
+			"react/jsx-boolean-value": "error",
+			"react/jsx-key": "error",
+			"react/jsx-no-useless-fragment": "error",
+			"no-duplicate-imports": "error",
+			"no-undef": "error",
+			"@typescript-eslint/no-unused-vars": [
+				"error",
+				{
+					"args": "none"
+				}
+			]
+		}
+	},
+	"jest": {
+		"transformIgnorePatterns": [
+			"/node_modules/(?!react-command-palette)"
+		],
+		"moduleNameMapper": {
+			"\\.css$": "<rootDir>/__mocks__/styleMock.js"
+		}
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"devDependencies": {
+		"@testing-library/jest-dom": "5.14.1",
+		"@testing-library/react": "9.5.0",
+		"@testing-library/react-hooks": "^7.0.2",
+		"@testing-library/user-event": "13.2.0",
+		"@types/ajv-errors": "1.0.3",
+		"@types/amplitude-js": "5.11.2",
+		"@types/chalk-pipe": "2.0.0",
+		"@types/downloadjs": "1.4.2",
+		"@types/jest": "24.9.1",
+		"@types/lodash.debounce": "4.0.6",
+		"@types/lodash.groupby": "4.6.6",
+		"@types/lodash.keyby": "4.6.6",
+		"@types/lodash.omit": "4.5.6",
+		"@types/node": "12.20.16",
+		"@types/pluralize": "0.0.29",
+		"@types/react": "16.14.11",
+		"@types/react-beautiful-dnd": "13.1.1",
+		"@types/react-dom": "16.9.14",
+		"@types/react-lazylog": "4.5.1",
+		"@types/react-router-dom": "5.1.8",
+		"@types/react-tracking": "7.0.4",
+		"@types/semver": "7.3.7",
+		"jest-mock-extended": "^2.0.4",
+		"prettier": "2.0.5",
+		"react-app-rewired": "2.1.8",
+		"typescript": "3.9.10"
+	}
 }
