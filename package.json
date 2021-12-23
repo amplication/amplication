@@ -21,7 +21,7 @@
     "setup:dev": "ts-node ./script/setup.ts"
   },
   "dependencies": {
-    "lerna": "3.22.1",
+    "lerna": "4.0.0",
     "semver": "6.3.0",
     "winston": "3.3.3"
   },
@@ -36,8 +36,8 @@
     "ts-jest": "27.0.5"
   },
   "engines": {
-    "node": "^14.0.0",
-    "npm": "^7.3.0"
+    "node": "^16.3.0 || ^14.0.0",
+    "npm": "^8.1.0 || ^7.3.0"
   },
   "bugs": {
     "url": "https://github.com/amplication/amplication/issues"
