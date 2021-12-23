@@ -1,102 +1,100 @@
-name: "🐛 Bug Report"
-description: "Submit a bug report to help us improve"
+name: Bug Report
+description: Problems and issues with code of Amplication
 title: "🐛 Bug Report: "
-labels: [bug]
+labels: ["type: bug"]
 body:
   - type: markdown
     attributes:
-      value: |
-        Thanks for taking the time to fill out our bug report form 🙏
+      value: "
+        <img src='https://avatars.githubusercontent.com/u/65107786?s=200&v=4' align='left' width='80' height='80'>
+        Thank you for finding the time to report the problem!
+
+        We really appreciate the community efforts to improve Amplication.
+
+        Note, that you do not need to create an issue if you have a change ready to submit!
+
+        You can open [Pull Request](https://github.com/amplication/amplication/pulls) immediately instead.
+        <br clear='left'/>"
   - type: textarea
-    id: description
+    attributes:
+      label: What happened?
+      description: Please provide as much info as possible. If this matter is security related, please disclose it privately via [Amplication Security]
+      placeholder: >
+        Please provide the context in which the problem occurred and explain what happened
     validations:
       required: true
-    attributes:
-      label: "📜 Description"
-      description: "A clear and concise description of what the bug is."
-      placeholder: "It bugs out when ..."
   - type: textarea
-    id: steps-to-reproduce
+    attributes:
+      label: What you expected to happen
+      description: What do you think went wrong?
+      placeholder: >
+        Please explain why you think the behaviour is erroneous. It is extremely helpful if you copy&paste
+        the fragment of logs showing the exact error messages or wrong behaviour and screenshots for
+        UI problems or a video of you demonstrating the problem. You can include files by
+        dragging and dropping them here.
     validations:
       required: true
-    attributes:
-      label: "👟 Reproduction steps"
-      description: "How do you trigger this bug? Please walk us through it step by step."
-      placeholder: "1. When I ..."
   - type: textarea
-    id: expected-behavior
+    attributes:
+      label: How to reproduce
+      description: >
+        What should we do to reproduce the problem? If you are not able to provide a reproducible case,
+        please open a [Discussion](https://github.com/amplication/amplication/discussions) instead.
+      placeholder: >
+        Please make sure you provide a reproducible step-by-step case of how to reproduce the problem
+        as minimally and precisely as possible. Keep in mind we do not have access to your local environment.
+        Remember that non-reproducible issues will be closed! Opening a discussion is recommended as a
+        first step.
     validations:
       required: true
+  - type: input
     attributes:
-      label: "👍 Expected behavior"
-      description: "What did you think would happen?"
-      placeholder: "It should ..."
-  - type: textarea
-    id: actual-behavior
+      label: Amplication version
+      description: >
+        What Amplication version are you using?
     validations:
       required: true
+  - type: textarea
     attributes:
-      label: "👎 Actual Behavior"
-      description: "What did actually happen? Add screenshots, if applicable."
-      placeholder: "It actually ..."
+      label: Environment
+      description: In which environment does the problem occur?
+      placeholder: "
+        Node version: [node -v] \n
+        NPM version: [npm -v] \n
+        Docker version: [docker -v] \n
+        Cloud Provider: [AWS, GCP, Azure, Herokue, ...] \n
+        OS Details (Linux): [cat /etc/os-release && uname -a]\n
+        OS Details (Windows): [wmic os get Caption, Version, BuildNumber, OSArchitecture]
+        "
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Anything else
+      description: Anything else we need to know?
+      placeholder: >
+        How often does this problem occur? (Once? Every time? Only when certain conditions are met?)
+        Any relevant logs to include? Put them here inside fenced
+        ``` ``` blocks or inside a foldable details tag if it's long:
+        <details><summary>x.log</summary> lots of stuff </details>
   - type: dropdown
-    id: device
     attributes:
-      label: "💻 Device"
-      description: "Which device running on?"
+      label: Are you willing to submit PR?
+      description: >
+        This is absolutely not required, but we are happy to guide you in the contribution process
+        especially if you already have a good understanding of how to implement the fix.
+        Amplication is a community-managed project and we love to bring new contributors in.
+        Find us in #how-to-pr on [Discord](https://discord.gg/cEcS9zDA)!
+      multiple: true
       options:
-        - Desktop
-        - Mobile
-    validations:
-      required: true
+        - "Yes I am willing to submit a PR!"
   - type: dropdown
-    id: operating-system
     attributes:
-      label: "💻 Operating system"
-      description: "What OS is your app running on?"
+      label: Code of Conduct
+      description: The [Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md) helps create a safe space for everyone. We require
+        that everyone agrees to it.
+      multiple: true
       options:
-        - Linux
-        - MacOS
-        - Windows
-        - iOS
-        - Android
-        - Something else
+        - "I agree to follow this project's Code of Conduct"
     validations:
       required: true
-  - type: dropdown
-    id: browser
-    attributes:
-      label: "🌍 Browser"
-      description: "What browser is your app running on?"
-      options:
-        - Chrome
-        - Safari
-        - Firefox
-        - Opera
-        - Edge
-        - Something Else
-    validations:
-      required: true
-  - type: textarea
-    id: environment
-    validations:
-      required: false
-    attributes:
-      label: "🧱 Your Environment"
-      description: "Is your environment customized in any way? Provide your Browser version as well."
-      placeholder: "I use XYZ for ..."
-  - type: checkboxes
-    id: no-duplicate-issues
-    attributes:
-      label: "👀 Have you spent some time to check if this issue has been raised before?"
-      description: "Have you Googled for a similar issue or checked our older issues for a similar bug?"
-      options:
-        - label: "I checked and didn't find similar issue"
-          required: true
-  - type: checkboxes
-    id: read-code-of-conduct
-    attributes:
-      label: "🏢 Have you read the Code of Conduct?"
-      options:
-        - label: "I have read the [Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md)"
-          required: true
