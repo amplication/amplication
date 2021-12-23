@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: 16.x
       - name: Update npm
-        run: npm i -g npm@7.3.0
+        run: npm i -g npm@8.1.2
       - run: npm ci
       - name: Install packages' dependencies
         run: npm run bootstrap -- --loglevel verbose
