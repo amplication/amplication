@@ -7,7 +7,7 @@
     "@amplication/design-system": "^0.10.3",
     "@apollo/client": "3.3.16",
     "@extra-set/difference": "2.2.3",
-    "@primer/components": "19.1.1",
+    "@primer/components": "20.3.0",
     "@rmwc/circular-progress": "6.1.4",
     "@rmwc/drawer": "6.1.4",
     "@rmwc/icon": "6.1.4",
