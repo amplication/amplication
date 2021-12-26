@@ -1,8 +1,12 @@
-import { EnumPanelStyle, Panel, Toggle } from "@amplication/design-system";
+import {
+  EnumPanelStyle,
+  Panel,
+  Snackbar,
+  Toggle,
+} from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
 import { Icon } from "@rmwc/icon";
-import { Snackbar } from "@rmwc/snackbar";
 import { isEmpty } from "lodash";
 import React, { useCallback, useRef, useState } from "react";
 import { Button, EnumButtonStyle } from "../../Components/Button";

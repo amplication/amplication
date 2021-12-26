@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useEffect, useContext } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Tooltip } from "@primer/components";
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
 import { Link } from "react-router-dom";
 
@@ -10,7 +8,7 @@ import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Dialog } from "@amplication/design-system";
+import { Dialog, Snackbar } from "@amplication/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";

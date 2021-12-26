@@ -8,7 +8,6 @@ import Timer from "../Components/Timer";
 
 import { differenceInSeconds } from "date-fns";
 
-import "@rmwc/snackbar/styles";
 import chalk from "chalk";
 import * as models from "../models";
 import logsImage from "../assets/images/logs.svg";

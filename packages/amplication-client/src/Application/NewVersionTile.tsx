@@ -2,7 +2,6 @@ import { EnumPanelStyle, Panel } from "@amplication/design-system";
 import { useQuery } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Icon } from "@rmwc/icon";
-import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
 import React, { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";

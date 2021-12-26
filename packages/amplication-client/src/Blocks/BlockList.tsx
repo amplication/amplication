@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import keyBy from "lodash.keyby";
 import { useHistory, Link } from "react-router-dom";
@@ -17,6 +16,7 @@ import {
   SelectMenuModal,
   SelectMenuItem,
   SelectMenuList,
+  Snackbar,
 } from "@amplication/design-system";
 import { paramCase } from "param-case";
 

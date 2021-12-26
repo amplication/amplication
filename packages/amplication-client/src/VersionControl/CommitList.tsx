@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
 import { CircularProgress } from "@rmwc/circular-progress";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
 
-import { SearchField } from "@amplication/design-system";
+import { SearchField, Snackbar } from "@amplication/design-system";
 
 import { CommitListItem } from "./CommitListItem";
 import PageContent from "../Layout/PageContent";

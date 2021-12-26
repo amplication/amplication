@@ -4,7 +4,7 @@ import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
-import { Snackbar } from "@rmwc/snackbar";
+import { Snackbar } from "@amplication/design-system";
 import { formatError } from "../util/error";
 
 import useNavigationTabs from "../Layout/UseNavigationTabs";

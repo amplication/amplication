@@ -1,6 +1,5 @@
 import { NetworkStatus } from "@apollo/client";
-import { CircularProgress } from "@amplication/design-system";
-import { Snackbar } from "@rmwc/snackbar";
+import { CircularProgress, Snackbar } from "@amplication/design-system";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import { EnumSourceControlService } from "../../../../models";

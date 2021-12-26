@@ -10,7 +10,6 @@
     "@primer/components": "19.1.1",
     "@rmwc/circular-progress": "6.1.4",
     "@rmwc/icon": "6.1.4",
-    "@rmwc/snackbar": "6.1.4",
     "@rooks/use-window-size": "3.6.0",
     "ajv-errors": "3.0.0",
     "capital-case": "1.0.4",

@@ -1,6 +1,6 @@
 import React from "react";
 import { match } from "react-router-dom";
-import { Snackbar } from "@rmwc/snackbar";
+import { Snackbar } from "@amplication/design-system";
 import { Icon } from "@rmwc/icon";
 
 import { useQuery } from "@apollo/client";
