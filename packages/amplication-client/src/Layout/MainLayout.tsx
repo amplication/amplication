@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useApolloClient } from "@apollo/client";
-import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";
 import { isMobileOnly, isMacOs } from "react-device-detect";
 
