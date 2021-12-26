@@ -17,6 +17,7 @@ type Query {
   workspaces: [Workspace!]!
   workspace(where: WhereUniqueInput!): Workspace
   currentWorkspace: Workspace
+  workspaceMembers: [WorkspaceMember!]
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
@@ -70,6 +71,7 @@ type Workspace {
   name: String!
   apps: [App!]!
   users: [User!]!
+  subscription: Subscription
 }
 
 type App {
@@ -619,6 +621,56 @@ input EntityOrderByInput {
   description: SortOrder
 }
 
+type Subscription {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  workspace: Workspace
+  workspaceId: String!
+  subscriptionPlan: EnumSubscriptionPlan!
+  status: EnumSubscriptionStatus!
+  cancellationEffectiveDate: DateTime
+  cancelUrl: String
+  updateUrl: String
+  nextBillDate: DateTime
+  price: Float
+}
+
+enum EnumSubscriptionPlan {
+  Pro
+  Business
+  Enterprise
+}
+
+enum EnumSubscriptionStatus {
+  Active
+  Trailing
+  PastDue
+  Paused
+  Deleted
+}
+
+type WorkspaceMember {
+  type: EnumWorkspaceMemberType!
+  member: WorkspaceMemberType!
+}
+
+enum EnumWorkspaceMemberType {
+  User
+  Invitation
+}
+
+union WorkspaceMemberType = User | Invitation
+
+type Invitation {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  workspace: Workspace
+  invitedByUser: User
+}
+
 input AppWhereInput {
   id: String
   createdAt: DateTimeFilter
@@ -954,7 +1006,10 @@ type Mutation {
   deleteWorkspace(where: WhereUniqueInput!): Workspace
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
   createWorkspace(data: WorkspaceCreateInput!): Workspace
-  inviteUser(data: InviteUserInput!): User
+  inviteUser(data: InviteUserInput!): Invitation
+  revokeInvitation(where: WhereUniqueInput!): Invitation
+  resendInvitation(where: WhereUniqueInput!): Invitation
+  deleteUser(where: WhereUniqueInput!): User
   createApp(data: AppCreateInput!): App!
   createAppWithEntities(data: AppCreateWithEntitiesInput!): App!
   deleteApp(where: WhereUniqueInput!): App
@@ -992,6 +1047,7 @@ type Mutation {
   changePassword(data: ChangePasswordInput!): Account!
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
+  completeInvitation(data: CompleteInvitationInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
   createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
@@ -1205,6 +1261,10 @@ input ApiTokenCreateInput {
 input ChangePasswordInput {
   oldPassword: String!
   newPassword: String!
+}
+
+input CompleteInvitationInput {
+  token: String!
 }
 
 input ConnectorRestApiCreateInput {
