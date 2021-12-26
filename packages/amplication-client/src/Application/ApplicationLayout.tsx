@@ -6,12 +6,9 @@ import { gql, useQuery } from "@apollo/client";
 import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import { RelatedFieldsMigrationFix } from "../Entity/RelatedFieldsMigrationFix";
-import Pages from "../Pages/Pages";
-import EntityPage from "../Pages/EntityPage";
 import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
-import NewEntityPage from "../Pages/NewEntityPage";
 import PendingChangesPage from "../VersionControl/PendingChangesPage";
 
 import "./ApplicationLayout.scss";
@@ -26,7 +23,6 @@ import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
 import { track } from "../util/analytics";
-import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
 import Commits from "../VersionControl/Commits";
@@ -77,12 +73,13 @@ function ApplicationLayout({ match }: Props) {
     [selectedFixedPanel]
   );
 
-  const { data: pendingChangesData, refetch } =
-    useQuery<PendingChangeStatusData>(GET_PENDING_CHANGES_STATUS, {
-      variables: {
-        applicationId: application,
-      },
-    });
+  const { data: pendingChangesData, refetch } = useQuery<
+    PendingChangeStatusData
+  >(GET_PENDING_CHANGES_STATUS, {
+    variables: {
+      applicationId: application,
+    },
+  });
 
   const { data: applicationData } = useQuery<ApplicationData>(GET_APPLICATION, {
     variables: {
@@ -212,9 +209,6 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}/entities`}
             icon="entity_outline"
           />
-          {SHOW_UI_ELEMENTS && (
-            <MenuItem title="Pages" to={`/${application}/pages`} icon="pages" />
-          )}
           <MenuItem
             title="Roles"
             to={`/${application}/roles`}
@@ -238,19 +232,6 @@ function ApplicationLayout({ match }: Props) {
 
               <Route path="/:application/entities/" component={Entities} />
 
-              {SHOW_UI_ELEMENTS && (
-                <>
-                  <Route path="/:application/pages/" component={Pages} />
-                  <Route
-                    path="/:application/entity-pages/new"
-                    component={NewEntityPage}
-                  />
-                  <Route
-                    path="/:application/entity-pages/:entityPageId"
-                    component={EntityPage}
-                  />
-                </>
-              )}
               <RouteWithAnalytics
                 path="/:application/builds/:buildId"
                 component={BuildPage}
