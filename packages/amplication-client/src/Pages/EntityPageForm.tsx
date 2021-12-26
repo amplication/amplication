@@ -8,7 +8,6 @@ import { gql, useQuery } from "@apollo/client";
 import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
 
-import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import * as models from "../models";
 import {
   SelectField,
@@ -151,10 +150,8 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                 <Tab>Properties</Tab>
                 <Tab>Display</Tab>
               </TabBar>
-              <DrawerHeader>
-                <DrawerTitle>{formik.values.displayName}</DrawerTitle>
-              </DrawerHeader>
-              <DrawerContent>
+              <div>{formik.values.displayName}</div>
+              <div>
                 <Form>
                   <HeaderToolbar.Source>
                     <FormikAutoSave debounceMS={1000} />
@@ -268,7 +265,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                     </p>
                   )}
                 </Form>
-              </DrawerContent>
+              </div>
             </>
           );
         }}

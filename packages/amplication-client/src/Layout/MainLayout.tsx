@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { Drawer, DrawerContent } from "@rmwc/drawer";
 import { useApolloClient } from "@apollo/client";
 import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";
@@ -67,8 +66,8 @@ const Menu = ({ children }: MenuProps) => {
   }, [setSupportMenuOpen, supportMenuOpen, trackEvent]);
 
   return (
-    <Drawer className={classNames("main-layout__side")}>
-      <DrawerContent className="main-layout__side__wrapper">
+    <div className={classNames("main-layout__side")}>
+      <div className="main-layout__side__wrapper">
         <div className="main-layout__side__wrapper__main-menu">
           <div className="logo-container">
             <Link to="/" className="logo-container__logo">
@@ -115,8 +114,8 @@ const Menu = ({ children }: MenuProps) => {
           </div>
         </div>
         <MenuFixedPanel.Target className="main-layout__side__wrapper__menu-fixed-panel" />
-      </DrawerContent>
-    </Drawer>
+      </div>
+    </div>
   );
 };
 

@@ -6,7 +6,6 @@ import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 
 import * as models from "../models";
-import Sidebar from "../Layout/Sidebar";
 import { formatError } from "../util/error";
 import EntityPageForm from "./EntityPageForm";
 import PageContent from "../Layout/PageContent";
@@ -62,7 +61,6 @@ function EntityPage({ match }: Props) {
           <h1>{data?.EntityPage.displayName}</h1>
         </div>
       )}
-      <Sidebar>
         {loading ? (
           <span>Loading...</span>
         ) : (
@@ -72,7 +70,6 @@ function EntityPage({ match }: Props) {
             applicationId={application}
           />
         )}
-      </Sidebar>
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>
   );
