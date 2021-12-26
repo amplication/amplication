@@ -178,3 +178,5 @@ export {
   CircularProgress,
   Props as CircularProgressProps,
 } from "./components/CircularProgress/CircularProgress";
+
+export { Icon, Props as IconProps } from "./components/Icon/Icon";
