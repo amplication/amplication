@@ -9,11 +9,11 @@ body:
         <img src='https://avatars.githubusercontent.com/u/65107786?s=200&v=4' align='left' width='80' height='80'>
         Thank you for finding the time to report the problem!
 
-        We really appreciate the community efforts to improve Amplication.
+        We appreciate the community's efforts to improve Amplication.
 
-        Note, that you do not need to create an issue if you have a change ready to submit!
+        Note, that after you create an issue, if you have a change ready to submit!
 
-        You can open [Pull Request](https://github.com/amplication/amplication/pulls) immediately instead.
+        You can open a [Pull Request](https://github.com/amplication/amplication/pulls)  immediately after.
         <br clear='left'/>"
   - type: textarea
     attributes:
