@@ -33,7 +33,7 @@ export async function createServerModules(
     BASE_DIRECTORY
   );
   const staticModules = updatePackageJSONs(rawStaticModules, BASE_DIRECTORY, {
-    name: `${paramCase(appInfo.name)}-server`,
+    name: `@${paramCase(appInfo.name)}/server`,
     version: appInfo.version,
   });
 

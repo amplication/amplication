@@ -10,13 +10,13 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        node: [14]
+        node: [14.x,16.x]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 14.x
+          node-version: ${{ matrix.node}}
       - name: Update npm
         run: npm i -g npm@7.3.0
       - run: npm ci

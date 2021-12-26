@@ -43,7 +43,7 @@ export async function createAdminModules(
     BASE_DIRECTORY
   );
   const staticModules = updatePackageJSONs(rawStaticModules, BASE_DIRECTORY, {
-    name: `${paramCase(appInfo.name)}-admin`,
+    name: `@${paramCase(appInfo.name)}/admin`,
     version: appInfo.version,
   });
 
