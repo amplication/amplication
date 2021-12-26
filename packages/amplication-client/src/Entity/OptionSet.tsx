@@ -3,9 +3,8 @@ import { FieldArray, FieldArrayRenderProps, getIn } from "formik";
 import { pascalCase } from "pascal-case";
 import { get } from "lodash";
 
-import { Icon } from "@rmwc/icon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { TextField } from "@amplication/design-system";
+import { TextField, Icon } from "@amplication/design-system";
 import "./OptionSet.scss";
 
 type OptionItem = {

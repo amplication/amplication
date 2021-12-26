@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "@amplication/design-system";
 import { CircularProgress } from "@rmwc/circular-progress";
 
 import * as models from "../models";

@@ -1,5 +1,4 @@
-import { Panel } from "@amplication/design-system";
-import { Icon } from "@rmwc/icon";
+import { Panel, Icon } from "@amplication/design-system";
 import { Formik } from "formik";
 import React from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";

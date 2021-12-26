@@ -3,12 +3,11 @@ import { match } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { validate } from "../util/formikValidateJsonSchema";
-import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
-import { TextField, Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar, Icon } from "@amplication/design-system";
 import { COLORS } from "./constants";
 import { ColorSelectButton } from "../Components/ColorSelectButton";
 import { useTracking } from "../util/analytics";

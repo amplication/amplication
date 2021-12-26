@@ -4,7 +4,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { Tooltip } from "@primer/components";
 import { MenuFixedPanel } from "../util/teleporter";
 
-import { Icon } from "@rmwc/icon";
+import { Icon } from "@amplication/design-system";
 
 type Props = {
   /** Text to be displayed as a tooltip */

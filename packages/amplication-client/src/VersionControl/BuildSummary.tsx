@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "@amplication/design-system";
 import { useQuery } from "@apollo/client";
 
 import * as models from "../models";

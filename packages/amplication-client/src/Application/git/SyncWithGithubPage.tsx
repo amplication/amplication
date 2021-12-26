@@ -1,7 +1,6 @@
 import React from "react";
 import { match } from "react-router-dom";
-import { Snackbar } from "@amplication/design-system";
-import { Icon } from "@rmwc/icon";
+import { Snackbar, Icon } from "@amplication/design-system";
 
 import { useQuery } from "@apollo/client";
 import * as models from "../../models";

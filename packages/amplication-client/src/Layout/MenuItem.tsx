@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Tooltip } from "@primer/components";
 
-import { Icon } from "@rmwc/icon";
+import { Icon } from "@amplication/design-system";
 
 type Props = {
   /** Optional URL to navigate to on click  */

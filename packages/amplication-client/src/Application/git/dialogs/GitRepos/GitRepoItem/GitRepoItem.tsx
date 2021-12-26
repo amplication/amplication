@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { GitRepo } from "../../../../../models";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "@amplication/design-system";
 import "./GitRepoItem.scss";
 import { Button } from "../../../../../Components/Button";
 

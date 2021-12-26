@@ -1,5 +1,4 @@
 import React from "react";
-import { Icon } from "@rmwc/icon";
 import { Link } from "react-router-dom";
 import * as models from "../models";
 
@@ -8,6 +7,7 @@ import {
   CircleIcon,
   EnumCircleIconStyle,
   EnumCircleIconSize,
+  Icon,
 } from "@amplication/design-system";
 import ProgressBar from "../Components/ProgressBar";
 import "./Deployment.scss";

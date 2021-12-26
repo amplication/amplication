@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { LazyLog } from "react-lazylog";
 import { isEmpty, last } from "lodash";
-import { Icon } from "@rmwc/icon";
 
 import { CircularProgress } from "@rmwc/circular-progress";
 import Timer from "../Components/Timer";
@@ -13,7 +12,11 @@ import * as models from "../models";
 import logsImage from "../assets/images/logs.svg";
 
 import "./ActionLog.scss";
-import { CircleIcon, EnumCircleIconSize } from "@amplication/design-system";
+import {
+  CircleIcon,
+  EnumCircleIconSize,
+  Icon,
+} from "@amplication/design-system";
 import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
 
 type Props = {

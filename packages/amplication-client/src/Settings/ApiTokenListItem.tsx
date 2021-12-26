@@ -1,5 +1,9 @@
-import { EnumPanelStyle, Panel, TimeSince } from "@amplication/design-system";
-import { Icon } from "@rmwc/icon";
+import {
+  EnumPanelStyle,
+  Panel,
+  TimeSince,
+  Icon,
+} from "@amplication/design-system";
 import { isEmpty } from "lodash";
 import React from "react";
 import classNames from "classnames";

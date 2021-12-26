@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import * as models from "../models";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "@amplication/design-system";
 import { Tooltip } from "@primer/components";
 import {
   GENERATE_STEP_NAME,

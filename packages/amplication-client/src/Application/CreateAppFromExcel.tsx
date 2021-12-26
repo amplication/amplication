@@ -10,7 +10,7 @@ import {
   COMMON_FIELDS,
   EntitiesDiagramFormData,
 } from "../EntitiesDiagram/EntitiesDiagram";
-import { Snackbar } from "@amplication/design-system";
+import { Snackbar, Icon } from "@amplication/design-system";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
@@ -19,7 +19,6 @@ import "./CreateAppFromExcel.scss";
 import { CreateAppFromExcelForm } from "./CreateAppFromExcelForm";
 import { sampleAppWithEntities, sampleAppWithoutEntities } from "./constants";
 import ProgressBar from "../Components/ProgressBar";
-import { Icon } from "@rmwc/icon";
 
 type ColumnKey = {
   name: string;

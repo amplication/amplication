@@ -3,10 +3,10 @@ import {
   Panel,
   Snackbar,
   Toggle,
+  Icon,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
-import { Icon } from "@rmwc/icon";
 import { isEmpty } from "lodash";
 import React, { useCallback, useRef, useState } from "react";
 import { Button, EnumButtonStyle } from "../../Components/Button";

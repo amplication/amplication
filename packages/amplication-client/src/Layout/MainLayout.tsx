@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useApolloClient } from "@apollo/client";
-import { Icon } from "@rmwc/icon";
 import { isMobileOnly, isMacOs } from "react-device-detect";
 
 import classNames from "classnames";
@@ -12,7 +11,7 @@ import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 import UserBadge from "../Components/UserBadge";
 import { MenuFixedPanel } from "../util/teleporter";
-import { Popover } from "@amplication/design-system";
+import { Popover, Icon } from "@amplication/design-system";
 import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
 import DarkModeToggle from "./DarkModeToggle";
