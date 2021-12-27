@@ -8,7 +8,7 @@ import { GraphQLJSONObject } from "graphql-type-json";
   isAbstract: true,
   description: undefined,
 })
-export class JsonNullableFilter {
+export class JsonFilter {
   @ApiProperty({
     required: false,
     type: GraphQLJSONObject,
@@ -17,7 +17,7 @@ export class JsonNullableFilter {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  equals?: JsonValue;
+  equals?: Omit<JsonValue, "null">;
 
   @ApiProperty({
     required: false,
@@ -27,5 +27,5 @@ export class JsonNullableFilter {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  not?: JsonValue;
+  not?: Omit<JsonValue, "null">;
 }

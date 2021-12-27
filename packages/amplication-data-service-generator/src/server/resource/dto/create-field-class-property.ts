@@ -64,7 +64,7 @@ const PRISMA_SCALAR_TO_QUERY_TYPE: {
   [ScalarType.String]:
     SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.String].type,
   [ScalarType.Json]:
-    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.JsonNullable].type,
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.Json].type,
 };
 
 const PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE: {
