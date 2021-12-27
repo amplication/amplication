@@ -3,6 +3,7 @@ import {
   CircularProgress as CP,
   CircularProgressProps,
 } from "@rmwc/circular-progress";
+import "@rmwc/circular-progress/styles";
 import "./CircularProgress.scss";
 
 const CLASS_NAME = "amp-circular-progress";
