@@ -1,9 +1,12 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { SearchField, Snackbar } from "@amplication/design-system";
+import {
+  SearchField,
+  Snackbar,
+  CircularProgress,
+} from "@amplication/design-system";
 
 import { EntityFieldListItem } from "./EntityFieldListItem";
 import { GET_ENTITIES } from "./EntityList";

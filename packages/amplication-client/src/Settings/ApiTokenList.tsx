@@ -3,9 +3,9 @@ import {
   EnumPanelStyle,
   Panel,
   Snackbar,
+  CircularProgress,
 } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
 import React, { useCallback, useState } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";

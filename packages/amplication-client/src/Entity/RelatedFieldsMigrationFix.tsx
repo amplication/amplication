@@ -1,6 +1,10 @@
-import { Panel, PanelHeader, Snackbar } from "@amplication/design-system";
+import {
+  Panel,
+  PanelHeader,
+  Snackbar,
+  CircularProgress,
+} from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
 import { camelCase } from "camel-case";
 import { keyBy } from "lodash";
 import React, { useCallback, useContext, useMemo } from "react";

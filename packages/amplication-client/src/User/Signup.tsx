@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
-import "@rmwc/circular-progress/styles";
 import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
 import { Formik, Form } from "formik";
 import WelcomePage from "../Layout/WelcomePage";
-import { TextField, Snackbar } from "@amplication/design-system";
+import {
+  TextField,
+  Snackbar,
+  CircularProgress,
+} from "@amplication/design-system";
 import { Button } from "../Components/Button";
 import { SIGN_IN_PAGE_CONTENT, DEFAULT_PAGE_SOURCE } from "../User/constants";
 import "./Signup.scss";

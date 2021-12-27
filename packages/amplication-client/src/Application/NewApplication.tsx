@@ -4,15 +4,17 @@ import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { GlobalHotKeys } from "react-hotkeys";
 
-import { CircularProgress } from "@rmwc/circular-progress";
-import "@rmwc/circular-progress/styles";
 import { GET_APPLICATIONS } from "../Workspaces/ApplicationList";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
 
-import { TextField, Snackbar } from "@amplication/design-system";
+import {
+  TextField,
+  Snackbar,
+  CircularProgress,
+} from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";

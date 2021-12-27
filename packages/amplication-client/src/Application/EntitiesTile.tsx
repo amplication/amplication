@@ -1,10 +1,14 @@
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
 
 import * as models from "../models";
-import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
+import {
+  Panel,
+  EnumPanelStyle,
+  Icon,
+  CircularProgress,
+} from "@amplication/design-system";
 
 import { GET_ENTITIES } from "../Entity/EntityList";
 import { useTracking, Event as TrackEvent } from "../util/analytics";

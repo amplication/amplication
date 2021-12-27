@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { LazyLog } from "react-lazylog";
 import { isEmpty, last } from "lodash";
 
-import { CircularProgress } from "@rmwc/circular-progress";
 import Timer from "../Components/Timer";
 
 import { differenceInSeconds } from "date-fns";
@@ -16,6 +15,7 @@ import {
   CircleIcon,
   EnumCircleIconSize,
   Icon,
+  CircularProgress,
 } from "@amplication/design-system";
 import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
 
