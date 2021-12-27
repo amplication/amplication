@@ -767,7 +767,7 @@ import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
-import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
+import { JsonFilter } from \\"../../util/JsonFilter\\";
 
 export type UserWhereInput = {
   id?: StringFilter;
@@ -779,7 +779,7 @@ export type UserWhereInput = {
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: BooleanFilter;
   location?: StringFilter;
-  extendedProperties?: JsonNullableFilter;
+  extendedProperties?: JsonFilter;
 };
 ",
   "admin-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
@@ -10510,7 +10510,7 @@ import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
-import { JsonNullableFilter } from \\"../../util/JsonNullableFilter\\";
+import { JsonFilter } from \\"../../util/JsonFilter\\";
 @InputType()
 class UserWhereInput {
   @ApiProperty({
@@ -10615,14 +10615,14 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
-    type: JsonNullableFilter,
+    type: JsonFilter,
   })
-  @Type(() => JsonNullableFilter)
+  @Type(() => JsonFilter)
   @IsOptional()
-  @Field(() => JsonNullableFilter, {
+  @Field(() => JsonFilter, {
     nullable: true,
   })
-  extendedProperties?: JsonNullableFilter;
+  extendedProperties?: JsonFilter;
 }
 export { UserWhereInput };
 ",
@@ -12662,9 +12662,39 @@ export class IntNullableFilter {
   not?: number;
 }
 ",
-  "server/src/util/JsonNullableFilter.ts": "// @ts-ignore
-// eslint-disable-next-line
-import { JsonValue } from \\"type-fest\\";
+  "server/src/util/JsonFilter.ts": "import { JsonValue } from \\"type-fest\\";
+import { Field, InputType } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
+import { GraphQLJSONObject } from \\"graphql-type-json\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class JsonFilter {
+  @ApiProperty({
+    required: false,
+    type: GraphQLJSONObject,
+  })
+  @IsOptional()
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  equals?: Omit<JsonValue, \\"null\\">;
+
+  @ApiProperty({
+    required: false,
+    type: GraphQLJSONObject,
+  })
+  @IsOptional()
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  not?: Omit<JsonValue, \\"null\\">;
+}
+",
+  "server/src/util/JsonNullableFilter.ts": "import { JsonValue } from \\"type-fest\\";
 import { Field, InputType } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
@@ -12683,7 +12713,7 @@ export class JsonNullableFilter {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  equals?: JsonValue | null;
+  equals?: JsonValue;
 
   @ApiProperty({
     required: false,
@@ -12693,7 +12723,7 @@ export class JsonNullableFilter {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  not?: JsonValue | null;
+  not?: JsonValue;
 }
 ",
   "server/src/util/MetaQueryPayload.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
