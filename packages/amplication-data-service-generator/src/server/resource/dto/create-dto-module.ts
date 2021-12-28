@@ -78,6 +78,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     FIELD_ID,
   ],
   [SORT_ORDER_MODULE]: [SORT_ORDER_ID],
+  "../../types": [builders.identifier("InputJsonValue")],
   ...FILTERS_IMPORTABLE_NAMES,
 };
 

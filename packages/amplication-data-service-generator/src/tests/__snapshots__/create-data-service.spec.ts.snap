@@ -684,7 +684,7 @@ export type User = {
 };
 ",
   "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { JsonValue } from \\"type-fest\\";
+import { InputJsonValue } from \\"../../types\\";
 
 export type UserCreateInput = {
   username: string;
@@ -701,7 +701,7 @@ export type UserCreateInput = {
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
-  extendedProperties: Omit<JsonValue, \\"null\\">;
+  extendedProperties: InputJsonValue;
 };
 ",
   "admin-ui/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -742,7 +742,7 @@ export type UserOrderByInput = {
 };
 ",
   "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { JsonValue } from \\"type-fest\\";
+import { InputJsonValue } from \\"../../types\\";
 
 export type UserUpdateInput = {
   username?: string;
@@ -759,7 +759,7 @@ export type UserUpdateInput = {
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
-  extendedProperties?: Omit<JsonValue, \\"null\\">;
+  extendedProperties?: InputJsonValue;
 };
 ",
   "admin-ui/src/api/user/UserWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
@@ -9713,6 +9713,10 @@ describe(\\"Testing the HealthServiceBase\\", () => {
   });
 });
 ",
+  "server/src/types.ts": "import { JsonValue } from \\"type-fest\\";
+
+export type InputJsonValue = Omit<JsonValue, \\"null\\">;
+",
   "server/src/user/base/CreateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 
@@ -9965,7 +9969,7 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
-import { JsonValue } from \\"type-fest\\";
+import { InputJsonValue } from \\"../../types\\";
 @InputType()
 class UserCreateInput {
   @ApiProperty({
@@ -10097,7 +10101,7 @@ class UserCreateInput {
   })
   @IsJSON()
   @Field(() => GraphQLJSONObject)
-  extendedProperties!: Omit<JsonValue, \\"null\\">;
+  extendedProperties!: InputJsonValue;
 }
 export { UserCreateInput };
 ",
@@ -10331,7 +10335,7 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
-import { JsonValue } from \\"type-fest\\";
+import { InputJsonValue } from \\"../../types\\";
 @InputType()
 class UserUpdateInput {
   @ApiProperty({
@@ -10502,7 +10506,7 @@ class UserUpdateInput {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  extendedProperties?: Omit<JsonValue, \\"null\\">;
+  extendedProperties?: InputJsonValue;
 }
 export { UserUpdateInput };
 ",

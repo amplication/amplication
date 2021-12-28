@@ -38,7 +38,6 @@ import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { FIELD_ID } from "./nestjs-graphql.util";
 
 const DATE_ID = builders.identifier("Date");
-const JSON_VALUE_TYPE = builders.tsTypeReference(JSON_VALUE_ID);
 const PRISMA_SCALAR_TO_TYPE: {
   [scalar in ScalarType]: TSTypeKind;
 } = {
@@ -47,13 +46,8 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.Float]: builders.tsNumberKeyword(),
   [ScalarType.Int]: builders.tsNumberKeyword(),
   [ScalarType.String]: builders.tsStringKeyword(),
-  // Omit<JsonValue, "null"> for removing the null type because it make types issues with prisma
   [ScalarType.Json]: builders.tsTypeReference(
-    builders.identifier("Omit"),
-    builders.tsTypeParameterInstantiation([
-      JSON_VALUE_TYPE,
-      builders.tsLiteralType(builders.stringLiteral("null")),
-    ])
+    builders.identifier("InputJsonValue")
   ),
 };
 
@@ -455,7 +449,7 @@ export function createFieldValueTypeFromPrismaField(
       ];
     } else {
       if (isObjectType && prismaField.type === "Json") {
-        return [JSON_VALUE_TYPE];
+        return [builders.tsTypeReference(JSON_VALUE_ID)];
       }
       return [PRISMA_SCALAR_TO_TYPE[prismaField.type]];
     }
