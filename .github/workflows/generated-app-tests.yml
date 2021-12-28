@@ -1,0 +1,64 @@
+name: Generated App Tests
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+
+  test-generated-app:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [ 14.x, 16.x ]
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            */*/node_modules
+          key: GA-E2E-${{ runner.os }}-${{matrix.node-version}}-${{ hashFiles('./packages/amplication-data-service-generator/**/package-lock.json')}}
+          restore-keys: |
+            GA-E2E-${{ runner.os }}-${{matrix.node-version}}
+            GA-E2E-${{ runner.os }}-
+      - name: Update npm
+        run: npm i -g npm@8.1.2
+
+      - name: Install Root Dependencies
+        run: npm ci
+
+      - name: Install Data Service Generator Dependencies
+        run: lerna bootstrap --scope=@amplication/data-service-generator --include-dependencies
+
+      - name: Data Service Generator - Geneeate Prisma
+        run: lerna run prisma:generate --scope=@amplication/data-service-generator --include-dependencies
+
+      - name: Build Data Service Generator
+        run: lerna run build --scope=@amplication/data-service-generator --include-dependencies
+
+      - name: Generate test data service
+        run: npm run generate-test-data-service
+
+      - name: Run test data services tests
+        run: lerna run test --scope=@amplication/data-service-generator
+
+      - name: Discord notification
+        if: failure()
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_EMBEDS: '[{"color":15734528,"title":"Generated App Tests Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","author":{"name":"${{ github.event.sender.login }}","icon_url":"${{ github.event.sender.avatar_url }}","url":"${{ github.event.sender.html_url }}"},"fields":[{"name":"Node version","value":"${{ matrix.node-version }}"}]}]'
+
+#      TODO:Review @amplication/data-service-generator test:e2e
+#      - name: Run Data Service Generator E2E test
+#        run: lerna run test:e2e --scope=@amplication/data-service-generator
