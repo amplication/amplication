@@ -701,7 +701,7 @@ export type UserCreateInput = {
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
-  extendedProperties: JsonValue;
+  extendedProperties: Omit<JsonValue, \\"null\\">;
 };
 ",
   "admin-ui/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -759,7 +759,7 @@ export type UserUpdateInput = {
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
-  extendedProperties?: JsonValue;
+  extendedProperties?: Omit<JsonValue, \\"null\\">;
 };
 ",
   "admin-ui/src/api/user/UserWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
@@ -10091,7 +10091,7 @@ class UserCreateInput {
   })
   @IsJSON()
   @Field(() => GraphQLJSONObject)
-  extendedProperties!: JsonValue;
+  extendedProperties!: Omit<JsonValue, \\"null\\">;
 }
 export { UserCreateInput };
 ",
@@ -10496,7 +10496,7 @@ class UserUpdateInput {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  extendedProperties?: JsonValue;
+  extendedProperties?: Omit<JsonValue, \\"null\\">;
 }
 export { UserUpdateInput };
 ",

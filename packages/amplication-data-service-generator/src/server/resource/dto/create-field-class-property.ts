@@ -38,7 +38,7 @@ import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { FIELD_ID } from "./nestjs-graphql.util";
 
 const DATE_ID = builders.identifier("Date");
-
+const JSON_VALUE_TYPE = builders.tsTypeReference(JSON_VALUE_ID);
 const PRISMA_SCALAR_TO_TYPE: {
   [scalar in ScalarType]: TSTypeKind;
 } = {
@@ -47,7 +47,14 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.Float]: builders.tsNumberKeyword(),
   [ScalarType.Int]: builders.tsNumberKeyword(),
   [ScalarType.String]: builders.tsStringKeyword(),
-  [ScalarType.Json]: builders.tsTypeReference(JSON_VALUE_ID),
+  // Omit<JsonValue, "null"> for removing the null type because it make types issues with prisma
+  [ScalarType.Json]: builders.tsTypeReference(
+    builders.identifier("Omit"),
+    builders.tsTypeParameterInstantiation([
+      JSON_VALUE_TYPE,
+      builders.tsLiteralType(builders.stringLiteral("null")),
+    ])
+  ),
 };
 
 const PRISMA_SCALAR_TO_QUERY_TYPE: {
@@ -121,12 +128,25 @@ export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
 export const NULLABLE_ID = builders.identifier("nullable");
 
+/**
+ *
+ * create all the body of the classes of the dto like input, object, args, etc...
+ * @param field
+ * @param entity
+ * @param optional
+ * @param isInput represent is the class is input object
+ * @param isQuery
+ * @param isObjectType true only for the entity object type.
+ * is User entity so only for the User.ts
+ * @returns
+ */
 export function createFieldClassProperty(
   field: EntityField,
   entity: Entity,
   optional: boolean,
   isInput: boolean,
-  isQuery: boolean
+  isQuery: boolean,
+  isObjectType = false
 ): namedTypes.ClassProperty {
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
@@ -137,7 +157,8 @@ export function createFieldClassProperty(
     optional,
     isInput,
     isEnum,
-    isQuery
+    isQuery,
+    isObjectType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
   const apiPropertyOptionsObjectExpression = builders.objectExpression([
@@ -177,9 +198,7 @@ export function createFieldClassProperty(
     }
     const swaggerType = !isQuery
       ? PRISMA_SCALAR_TO_SWAGGER_TYPE[prismaField.type]
-      : !field.required
-      ? PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[prismaField.type]
-      : PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type];
+      : getFilterAstId(field.required, prismaField.type);
 
     if (swaggerType) {
       if (isQuery) {
@@ -337,9 +356,7 @@ function createGraphQLFieldType(
     return builders.arrayExpression([itemType]);
   }
   if (isQuery && prismaField.kind === FieldKind.Scalar) {
-    return !field.required
-      ? PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[prismaField.type]
-      : PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type];
+    return getFilterAstId(field.required, prismaField.type);
   }
 
   if (prismaField.type === ScalarType.Boolean) {
@@ -389,9 +406,16 @@ export function createFieldValueTypeFromPrismaField(
   optional: boolean,
   isInput: boolean,
   isEnum: boolean,
-  isQuery: boolean
+  isQuery: boolean,
+  isObjectType: boolean
 ): TSTypeKind[] {
-  if (!prismaField.isRequired && !isQuery) {
+  // add  "| null" to the end of the type
+  if (
+    !prismaField.isRequired &&
+    !isQuery &&
+    !(prismaField.type === "Json") // json property cant be null
+    //TODO add a ui update that make json required and remove this
+  ) {
     const [type] = createFieldValueTypeFromPrismaField(
       field,
       {
@@ -401,7 +425,8 @@ export function createFieldValueTypeFromPrismaField(
       optional,
       isInput,
       isEnum,
-      isQuery
+      isQuery,
+      isObjectType
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
@@ -416,7 +441,8 @@ export function createFieldValueTypeFromPrismaField(
       optional,
       isInput,
       isEnum,
-      isQuery
+      isQuery,
+      isObjectType
     );
     return [createGenericArray(itemType), itemType];
   }
@@ -424,12 +450,13 @@ export function createFieldValueTypeFromPrismaField(
     if (isQuery) {
       return [
         builders.tsTypeReference(
-          !field.required
-            ? PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[prismaField.type]
-            : PRISMA_SCALAR_TO_QUERY_TYPE[prismaField.type]
+          getFilterAstId(field.required, prismaField.type)
         ),
       ];
     } else {
+      if (isObjectType && prismaField.type === "Json") {
+        return [JSON_VALUE_TYPE];
+      }
       return [PRISMA_SCALAR_TO_TYPE[prismaField.type]];
     }
   }
@@ -447,5 +474,16 @@ export function createFieldValueTypeFromPrismaField(
     ];
   } else {
     return [builders.tsTypeReference(builders.identifier(prismaField.type))];
+  }
+}
+
+function getFilterAstId(
+  isRequired: boolean,
+  type: ScalarType
+): namedTypes.Identifier {
+  if (isRequired || type === "Json") {
+    return PRISMA_SCALAR_TO_QUERY_TYPE[type];
+  } else {
+    return PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[type];
   }
 }
