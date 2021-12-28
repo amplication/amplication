@@ -1850,7 +1850,9 @@ const themeOptions: ThemeOptions = {
 
 export const theme = createTheme(merge({}, defaultTheme, themeOptions));
 ",
-  "admin-ui/src/types.ts": "export type Credentials = {
+  "admin-ui/src/types.ts": "import { JsonValue } from \\"type-fest\\";
+
+export type Credentials = {
   username: string;
   password: string;
 };
@@ -1860,6 +1862,7 @@ export type LoginMutateResult = {
     accessToken: string;
   };
 };
+export type InputJsonValue = Omit<JsonValue, \\"null\\">;
 ",
   "admin-ui/src/user/EnumRoles.ts": "export enum EnumRoles {
   User = \\"user\\",
