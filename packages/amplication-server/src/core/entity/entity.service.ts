@@ -2049,6 +2049,7 @@ export class EntityService {
         `Could not find an entity field for: ${JSON.stringify(args.where)}`
       );
     }
+    if (isJsonType(field.dataType)) field.required = true;
     return field;
   }
 }
