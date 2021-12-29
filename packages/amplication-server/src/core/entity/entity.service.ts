@@ -73,6 +73,7 @@ import {
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
+import { isJsonType } from './utils';
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -163,7 +164,6 @@ export class EntityService {
         `Cannot find entity where ${JSON.stringify(args.where)}`
       );
     }
-
     return entity;
   }
 
@@ -616,7 +616,7 @@ export class EntityService {
     versionNumber: number,
     args: Prisma.EntityFieldFindManyArgs
   ): Promise<EntityField[]> {
-    return await this.prisma.entityField.findMany({
+    const fields = await this.prisma.entityField.findMany({
       ...args,
       where: {
         ...args.where,
@@ -626,6 +626,11 @@ export class EntityService {
         }
       }
     });
+    fields.map(field => ({
+      ...field,
+      required: isJsonType(field.dataType) ? true : field.required
+    }));
+    return fields;
   }
 
   // Tries to acquire a lock on the given entity for the given user.
@@ -1720,6 +1725,8 @@ export class EntityService {
         user
       );
     }
+    //TODO remove the set the required to true in json data type
+    if (isJsonType(data.dataType)) data.required = true;
 
     // Create entity field
     return this.prisma.entityField.create({
@@ -1962,6 +1969,8 @@ export class EntityService {
         user
       );
     }
+    //TODO remove the set the required to true in json data type
+    if (isJsonType(args.data.dataType)) args.data.required = true;
 
     return this.prisma.entityField.update(
       omit(args, ['relatedFieldName', 'relatedFieldDisplayName'])
