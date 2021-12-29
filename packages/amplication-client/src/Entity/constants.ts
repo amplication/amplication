@@ -34,7 +34,7 @@ export const ENTITY_ACTIONS: permissionTypes.PermissionAction[] = [
 /**
  * All the field that necessary to the operations of the server
  */
-export const SYSTEM_DATA_FIELDS: Set<models.EnumDataType> = new Set([
+export const SYSTEM_DATA_TYPES: Set<models.EnumDataType> = new Set([
   models.EnumDataType.Id, // all the entities must have id
   models.EnumDataType.Username, // the user entity
   models.EnumDataType.Password, // the user entity

@@ -9,7 +9,7 @@ import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
-import { SYSTEM_DATA_FIELDS } from "./constants";
+import { SYSTEM_DATA_TYPES } from "./constants";
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityField.scss";
 import EntityFieldForm, { Values } from "./EntityFieldForm";
@@ -187,7 +187,7 @@ const EntityField = () => {
           </div>
           <EntityFieldForm
             isDisabled={
-              defaultValues && SYSTEM_DATA_FIELDS.has(defaultValues.dataType)
+              defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
             }
             onSubmit={handleSubmit}
             defaultValues={defaultValues}

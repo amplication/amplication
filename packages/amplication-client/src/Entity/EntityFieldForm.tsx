@@ -11,7 +11,7 @@ import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
-import { SYSTEM_DATA_FIELDS } from "./constants";
+import { SYSTEM_DATA_TYPES } from "./constants";
 import DataTypeSelectField from "./DataTypeSelectField";
 import { SchemaFields } from "./SchemaFields";
 
@@ -153,7 +153,7 @@ const EntityFieldForm = ({
                 disabled={isDisabled}
               />
             </div>
-            {!SYSTEM_DATA_FIELDS.has(formik.values.dataType) && (
+            {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
               <DataTypeSelectField label="Data Type" disabled={isDisabled} />
             )}
             <SchemaFields

@@ -3,7 +3,7 @@ import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
 import { ConfirmationDialog } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { SYSTEM_DATA_FIELDS } from "./constants";
+import { SYSTEM_DATA_TYPES } from "./constants";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
@@ -100,7 +100,7 @@ export const DeleteEntityField = ({
       />
 
       <div className={CLASS_NAME}>
-        {!deleteLoading && !SYSTEM_DATA_FIELDS.has(entityField.dataType) && (
+        {!deleteLoading && !SYSTEM_DATA_TYPES.has(entityField.dataType) && (
           <Button
             buttonStyle={
               showLabel ? EnumButtonStyle.Secondary : EnumButtonStyle.Clear
