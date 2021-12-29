@@ -1,13 +1,13 @@
 import React, { useRef, useEffect } from "react";
 import { useFormikContext } from "formik";
-import { DATA_TYPE_TO_LABEL_AND_ICON, SYSTEM_DATA_TYPES } from "./constants";
+import { DATA_TYPE_TO_LABEL_AND_ICON, SYSTEM_DATA_FIELDS } from "./constants";
 import { getSchemaForDataType } from "@amplication/data";
 import * as models from "../models";
 import { SelectField, SelectFieldProps } from "@amplication/design-system";
 
 export const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL_AND_ICON)
   .filter(
-    ([value, content]) => !SYSTEM_DATA_TYPES.has(value as models.EnumDataType)
+    ([value, content]) => !SYSTEM_DATA_FIELDS.has(value as models.EnumDataType)
   )
   .map(([value, content]) => ({
     value,

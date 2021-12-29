@@ -31,11 +31,14 @@ export const ENTITY_ACTIONS: permissionTypes.PermissionAction[] = [
   },
 ];
 
-export const SYSTEM_DATA_TYPES: Set<models.EnumDataType> = new Set([
-  models.EnumDataType.Id,
-  models.EnumDataType.Username,
-  models.EnumDataType.Password,
-  models.EnumDataType.Roles,
+/**
+ * All the field that necessary to the operations of the server
+ */
+export const SYSTEM_DATA_FIELDS: Set<models.EnumDataType> = new Set([
+  models.EnumDataType.Id, // all the entities must have id
+  models.EnumDataType.Username, // the user entity
+  models.EnumDataType.Password, // the user entity
+  models.EnumDataType.Roles, // the user entity
 ]);
 
 export const DATA_TYPE_TO_LABEL_AND_ICON: {

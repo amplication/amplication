@@ -1,24 +1,22 @@
-import React, { useCallback, useMemo, useContext, useState } from "react";
-import { useRouteMatch, useHistory } from "react-router-dom";
-import { gql, useMutation, useQuery } from "@apollo/client";
 import { types } from "@amplication/data";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-
-import { formatError } from "../util/error";
+import React, { useCallback, useContext, useMemo, useState } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../models";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
-
 import { useTracking } from "../util/analytics";
-import { SYSTEM_DATA_TYPES } from "./constants";
+import { formatError } from "../util/error";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { SYSTEM_DATA_FIELDS } from "./constants";
+import { DeleteEntityField } from "./DeleteEntityField";
+import "./EntityField.scss";
 import EntityFieldForm, { Values } from "./EntityFieldForm";
 import {
   RelatedFieldDialog,
   Values as RelatedFieldValues,
 } from "./RelatedFieldDialog";
-import { DeleteEntityField } from "./DeleteEntityField";
-import "./EntityField.scss";
 
 type TData = {
   entity: models.Entity;
@@ -112,6 +110,9 @@ const EntityField = () => {
       }
 
       const { id, ...rest } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (rest.dataType === "Json") {
+        rest.required = true;
+      }
       updateEntityField({
         variables: {
           where: {
@@ -186,7 +187,7 @@ const EntityField = () => {
           </div>
           <EntityFieldForm
             isDisabled={
-              defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
+              defaultValues && SYSTEM_DATA_FIELDS.has(defaultValues.dataType)
             }
             onSubmit={handleSubmit}
             defaultValues={defaultValues}

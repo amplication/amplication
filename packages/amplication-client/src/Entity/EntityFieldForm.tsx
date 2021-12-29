@@ -11,7 +11,7 @@ import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
-import { SYSTEM_DATA_TYPES } from "./constants";
+import { SYSTEM_DATA_FIELDS } from "./constants";
 import DataTypeSelectField from "./DataTypeSelectField";
 import { SchemaFields } from "./SchemaFields";
 
@@ -81,7 +81,7 @@ const EntityFieldForm = ({
     };
   }, [defaultValues]);
 
-  function onKeyDown(keyEvent:any) {
+  function onKeyDown(keyEvent: any) {
     if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
       keyEvent.preventDefault();
     }
@@ -116,7 +116,6 @@ const EntityFieldForm = ({
     >
       {(formik) => {
         const schema = getSchemaForDataType(formik.values.dataType);
-
         return (
           <Form childrenAsBlocks onKeyDown={onKeyDown}>
             {!isDisabled && <FormikAutoSave debounceMS={1000} />}
@@ -144,7 +143,7 @@ const EntityFieldForm = ({
               <ToggleField
                 name="required"
                 label="Required Field"
-                disabled={isDisabled}
+                disabled={isDisabled || formik.values.dataType === "Json"}
               />
             </div>
             <div>
@@ -154,7 +153,7 @@ const EntityFieldForm = ({
                 disabled={isDisabled}
               />
             </div>
-            {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
+            {!SYSTEM_DATA_FIELDS.has(formik.values.dataType) && (
               <DataTypeSelectField label="Data Type" disabled={isDisabled} />
             )}
             <SchemaFields
