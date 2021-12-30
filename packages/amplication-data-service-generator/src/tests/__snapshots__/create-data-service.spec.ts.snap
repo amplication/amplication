@@ -2201,10 +2201,10 @@ export const UserTitle = (record: TUser): string => {
   not?: number;
 }
 ",
-  "admin-ui/src/util/JsonFilter.ts": "import { JsonValue } from \\"type-fest\\";
+  "admin-ui/src/util/JsonFilter.ts": "import { InputJsonValue } from \\"../types\\";
 export class JsonFilter {
-  equals?: Omit<JsonValue, \\"null\\">;
-  not?: Omit<JsonValue, \\"null\\">;
+  equals?: InputJsonValue;
+  not?: InputJsonValue;
 }
 ",
   "admin-ui/src/util/JsonNullableFilter.ts": "import { JsonValue } from \\"type-fest\\";
@@ -12675,11 +12675,11 @@ export class IntNullableFilter {
   not?: number;
 }
 ",
-  "server/src/util/JsonFilter.ts": "import { JsonValue } from \\"type-fest\\";
-import { Field, InputType } from \\"@nestjs/graphql\\";
+  "server/src/util/JsonFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { InputJsonValue } from \\"../types\\";
 
 @InputType({
   isAbstract: true,
@@ -12694,7 +12694,7 @@ export class JsonFilter {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  equals?: Omit<JsonValue, \\"null\\">;
+  equals?: InputJsonValue;
 
   @ApiProperty({
     required: false,
@@ -12704,7 +12704,7 @@ export class JsonFilter {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  not?: Omit<JsonValue, \\"null\\">;
+  not?: InputJsonValue;
 }
 ",
   "server/src/util/JsonNullableFilter.ts": "import { JsonValue } from \\"type-fest\\";

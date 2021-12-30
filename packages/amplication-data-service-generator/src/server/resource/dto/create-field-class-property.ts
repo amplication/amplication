@@ -132,7 +132,7 @@ export const NULLABLE_ID = builders.identifier("nullable");
  * @param isQuery
  * @param isObjectType true only for the entity object type.
  * is User entity so only for the User.ts
- * @returns
+ * @returns a property of class with all the decorators as AST object
  */
 export function createFieldClassProperty(
   field: EntityField,
@@ -192,7 +192,7 @@ export function createFieldClassProperty(
     }
     const swaggerType = !isQuery
       ? PRISMA_SCALAR_TO_SWAGGER_TYPE[prismaField.type]
-      : getFilterAstId(field.required, prismaField.type);
+      : getFilterASTIdentifier(field.required, prismaField.type);
 
     if (swaggerType) {
       if (isQuery) {
@@ -350,7 +350,7 @@ function createGraphQLFieldType(
     return builders.arrayExpression([itemType]);
   }
   if (isQuery && prismaField.kind === FieldKind.Scalar) {
-    return getFilterAstId(field.required, prismaField.type);
+    return getFilterASTIdentifier(field.required, prismaField.type);
   }
 
   if (prismaField.type === ScalarType.Boolean) {
@@ -444,7 +444,7 @@ export function createFieldValueTypeFromPrismaField(
     if (isQuery) {
       return [
         builders.tsTypeReference(
-          getFilterAstId(field.required, prismaField.type)
+          getFilterASTIdentifier(field.required, prismaField.type)
         ),
       ];
     } else {
@@ -471,7 +471,7 @@ export function createFieldValueTypeFromPrismaField(
   }
 }
 
-function getFilterAstId(
+function getFilterASTIdentifier(
   isRequired: boolean,
   type: ScalarType
 ): namedTypes.Identifier {

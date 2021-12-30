@@ -1,5 +1,5 @@
-import { JsonValue } from "type-fest";
+import { InputJsonValue } from "../types";
 export class JsonFilter {
-  equals?: Omit<JsonValue, "null">;
-  not?: Omit<JsonValue, "null">;
+  equals?: InputJsonValue;
+  not?: InputJsonValue;
 }
