@@ -17,7 +17,7 @@ model Account {
   password      String
   currentUserId String?  @unique
   githubId      String?
-  currentUser   User?    @relation(fields: [currentUserId], references: [id])
+  currentUser   User?    @relation(fields: [currentUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   users         User[]   @relation("AccountOnUser")
 }
 
@@ -36,8 +36,8 @@ model User {
   updatedAt         DateTime     @updatedAt
   accountId         String
   workspaceId       String
-  account           Account      @relation("AccountOnUser", fields: [accountId], references: [id])
-  workspace         Workspace    @relation(fields: [workspaceId], references: [id])
+  account           Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace         Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   assignedCurrentTo Account?
   apiTokens         ApiToken[]
   builds            Build[]
@@ -57,7 +57,7 @@ model UserRole {
   updatedAt DateTime @updatedAt
   userId    String
   role      String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([userId, role])
 }
@@ -71,7 +71,7 @@ model ApiToken {
   token        String
   previewChars String
   lastAccessAt DateTime
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([userId, name])
 }
@@ -92,7 +92,7 @@ model App {
   githubLastSync         DateTime?
   githubLastMessage      String?
   deletedAt              DateTime?
-  workspace              Workspace     @relation(fields: [workspaceId], references: [id])
+  workspace              Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   roles                  AppRole[]
   blocks                 Block[]
   builds                 Build[]
@@ -112,7 +112,7 @@ model AppRole {
   displayName String
   description String?
 
-  app                   App                    @relation(fields: [appId], references: [id])
+  app                   App                    @relation(fields: [appId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   entityPermissionRoles EntityPermissionRole[]
 
   @@unique([appId, displayName])
@@ -125,8 +125,8 @@ model Commit {
   appId          String
   userId         String
   message        String
-  app            App             @relation(fields: [appId], references: [id])
-  user           User            @relation(fields: [userId], references: [id])
+  app            App             @relation(fields: [appId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   builds         Build[]
   entityVersions EntityVersion[]
   blockVersions  BlockVersion[]
@@ -145,8 +145,8 @@ model Entity {
   lockedByUserId    String?
   lockedAt          DateTime?
   deletedAt         DateTime?
-  app               App             @relation(fields: [appId], references: [id])
-  lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
+  app               App             @relation(fields: [appId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   versions          EntityVersion[]
 
   @@unique([appId, displayName])
@@ -166,8 +166,8 @@ model EntityVersion {
   description       String?
   commitId          String?
   deleted           Boolean?
-  commit            Commit?            @relation(fields: [commitId], references: [id])
-  entity            Entity             @relation(fields: [entityId], references: [id])
+  commit            Commit?            @relation(fields: [commitId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  entity            Entity             @relation(fields: [entityId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   fields            EntityField[]
   permissions       EntityPermission[]
   builds            Build[]
@@ -180,7 +180,7 @@ model EntityPermission {
   entityVersionId  String
   action           EnumEntityAction
   type             EnumEntityPermissionType
-  entityVersion    EntityVersion            @relation(fields: [entityVersionId], references: [id])
+  entityVersion    EntityVersion            @relation(fields: [entityVersionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   permissionFields EntityPermissionField[]
   permissionRoles  EntityPermissionRole[]
 
@@ -192,8 +192,8 @@ model EntityPermissionRole {
   entityVersionId  String
   action           EnumEntityAction
   appRoleId        String
-  appRole          AppRole                 @relation(fields: [appRoleId], references: [id])
-  permission       EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action])
+  appRole          AppRole                 @relation(fields: [appRoleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  permission       EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action], onDelete: Cascade, onUpdate: Cascade)
   permissionFields EntityPermissionField[]
 
   @@unique([entityVersionId, action, appRoleId])
@@ -204,8 +204,8 @@ model EntityPermissionField {
   permissionId     String
   fieldPermanentId String
   entityVersionId  String
-  field            EntityField            @relation(fields: [fieldPermanentId, entityVersionId], references: [permanentId, entityVersionId])
-  permission       EntityPermission       @relation(fields: [permissionId], references: [id])
+  field            EntityField            @relation(fields: [fieldPermanentId, entityVersionId], references: [permanentId, entityVersionId], onDelete: Cascade, onUpdate: Cascade)
+  permission       EntityPermission       @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   permissionRoles  EntityPermissionRole[]
 
   @@unique([permissionId, fieldPermanentId])
@@ -226,7 +226,7 @@ model EntityField {
   searchable      Boolean
   description     String
   position        Int?
-  entityVersion   EntityVersion           @relation(fields: [entityVersionId], references: [id])
+  entityVersion   EntityVersion           @relation(fields: [entityVersionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   permissionField EntityPermissionField[]
 
   @@unique([entityVersionId, displayName])
@@ -246,9 +246,9 @@ model Block {
   lockedByUserId String?
   lockedAt       DateTime?
   deletedAt      DateTime?
-  lockedByUser   User?          @relation(fields: [lockedByUserId], references: [id])
-  app            App            @relation(fields: [appId], references: [id])
-  parentBlock    Block?         @relation("BlockToBlock", fields: [parentBlockId], references: [id])
+  lockedByUser   User?          @relation(fields: [lockedByUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  app            App            @relation(fields: [appId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parentBlock    Block?         @relation("BlockToBlock", fields: [parentBlockId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   blocks         Block[]        @relation("BlockToBlock")
   versions       BlockVersion[]
 
@@ -268,8 +268,8 @@ model BlockVersion {
   settings         Json
   commitId         String?
   deleted          Boolean?
-  commit           Commit?  @relation(fields: [commitId], references: [id])
-  block            Block    @relation(fields: [blockId], references: [id])
+  commit           Commit?  @relation(fields: [commitId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  block            Block    @relation(fields: [blockId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   builds           Build[]
 
   @@unique([blockId, versionNumber])
@@ -291,7 +291,7 @@ model ActionStep {
   completedAt DateTime?
   actionId    String
   name        String           @default("")
-  action      Action           @relation(fields: [actionId], references: [id])
+  action      Action           @relation(fields: [actionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   logs        ActionLog[]
 
   @@index([actionId], name: "ActionStep.actionId_index")
@@ -304,7 +304,7 @@ model ActionLog {
   meta      Json
   level     EnumLogLevel
   stepId    String
-  step      ActionStep   @relation(fields: [stepId], references: [id])
+  step      ActionStep   @relation(fields: [stepId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([stepId], name: "ActionLog.stepId_index")
 }
@@ -321,10 +321,10 @@ model Build {
   containerStatusQuery     Json?
   containerStatusUpdatedAt DateTime?
   commitId                 String?
-  action                   Action          @relation(fields: [actionId], references: [id])
-  app                      App             @relation(fields: [appId], references: [id])
-  commit                   Commit?         @relation(fields: [commitId], references: [id])
-  createdBy                User            @relation(fields: [userId], references: [id])
+  action                   Action          @relation(fields: [actionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  app                      App             @relation(fields: [appId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  commit                   Commit?         @relation(fields: [commitId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdBy                User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   deployments              Deployment[]
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
@@ -338,7 +338,7 @@ model Release {
   version     String
   description String?
   commitId    String
-  commit      Commit   @relation(fields: [commitId], references: [id])
+  commit      Commit   @relation(fields: [commitId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Environment {
@@ -349,7 +349,7 @@ model Environment {
   name        String
   description String?
   address     String
-  app         App          @relation(fields: [appId], references: [id])
+  app         App          @relation(fields: [appId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   deployments Deployment[]
 
   @@unique([appId, name])
@@ -366,10 +366,10 @@ model Deployment {
   actionId        String
   statusQuery     Json?
   statusUpdatedAt DateTime?
-  action          Action               @relation(fields: [actionId], references: [id])
-  build           Build                @relation(fields: [buildId], references: [id])
-  environment     Environment          @relation(fields: [environmentId], references: [id])
-  createdBy       User                 @relation(fields: [userId], references: [id])
+  action          Action               @relation(fields: [actionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  build           Build                @relation(fields: [buildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  environment     Environment          @relation(fields: [environmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdBy       User                 @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 enum EnumEntityAction {
