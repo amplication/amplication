@@ -11,21 +11,21 @@ model Account {
   id            String   @id @default(cuid())
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  email         String   @unique
+  email         String   @unique(map: "Account.email_unique")
   firstName     String
   lastName      String
   password      String
-  currentUserId String?  @unique
+  currentUserId String?  @unique(map: "Account.currentUserId_unique")
   githubId      String?
   currentUser   User?    @relation(fields: [currentUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   users         User[]   @relation("AccountOnUser")
 }
 
 model Workspace {
-  id        String   @id @default(cuid())
+  id        String   @id(map: "Organization_pkey") @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String   @unique
+  name      String   @unique(map: "Workspace.name_unique")
   apps      App[]
   users     User[]
 }
@@ -36,19 +36,19 @@ model User {
   updatedAt         DateTime     @updatedAt
   accountId         String
   workspaceId       String
+  isOwner           Boolean      @default(false)
   account           Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   workspace         Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   assignedCurrentTo Account?
   apiTokens         ApiToken[]
+  lockedBlocks      Block[]
   builds            Build[]
   commits           Commit[]
   deployments       Deployment[]
   lockedEntitis     Entity[]
-  lockedBlocks      Block[]
   userRoles         UserRole[]
-  isOwner           Boolean      @default(false)
 
-  @@unique([accountId, workspaceId])
+  @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
 
 model UserRole {
@@ -59,7 +59,7 @@ model UserRole {
   role      String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@unique([userId, role])
+  @@unique([userId, role], map: "UserRole.userId_role_unique")
 }
 
 model ApiToken {
@@ -73,7 +73,7 @@ model ApiToken {
   lastAccessAt DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@unique([userId, name])
+  @@unique([userId, name], map: "ApiToken.userId_name_unique")
 }
 
 model App {
@@ -100,23 +100,22 @@ model App {
   entities               Entity[]
   environments           Environment[]
 
-  @@unique([workspaceId, name])
+  @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
 }
 
 model AppRole {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  appId       String
-  name        String
-  displayName String
-  description String?
-
+  id                    String                 @id @default(cuid())
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  appId                 String
+  name                  String
+  displayName           String
+  description           String?
   app                   App                    @relation(fields: [appId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   entityPermissionRoles EntityPermissionRole[]
 
-  @@unique([appId, displayName])
-  @@unique([appId, name])
+  @@unique([appId, displayName], map: "AppRole.appId_displayName_unique")
+  @@unique([appId, name], map: "AppRole.appId_name_unique")
 }
 
 model Commit {
@@ -127,9 +126,9 @@ model Commit {
   message        String
   app            App             @relation(fields: [appId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  blockVersions  BlockVersion[]
   builds         Build[]
   entityVersions EntityVersion[]
-  blockVersions  BlockVersion[]
   releases       Release[]
 }
 
@@ -149,9 +148,9 @@ model Entity {
   lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   versions          EntityVersion[]
 
-  @@unique([appId, displayName])
-  @@unique([appId, name])
-  @@unique([appId, pluralDisplayName])
+  @@unique([appId, displayName], map: "Entity.appId_displayName_unique")
+  @@unique([appId, name], map: "Entity.appId_name_unique")
+  @@unique([appId, pluralDisplayName], map: "Entity.appId_pluralDisplayName_unique")
 }
 
 model EntityVersion {
@@ -172,7 +171,7 @@ model EntityVersion {
   permissions       EntityPermission[]
   builds            Build[]
 
-  @@unique([entityId, versionNumber])
+  @@unique([entityId, versionNumber], map: "EntityVersion.entityId_versionNumber_unique")
 }
 
 model EntityPermission {
@@ -184,7 +183,7 @@ model EntityPermission {
   permissionFields EntityPermissionField[]
   permissionRoles  EntityPermissionRole[]
 
-  @@unique([entityVersionId, action])
+  @@unique([entityVersionId, action], map: "EntityPermission.entityVersionId_action_unique")
 }
 
 model EntityPermissionRole {
@@ -196,7 +195,7 @@ model EntityPermissionRole {
   permission       EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action], onDelete: Cascade, onUpdate: Cascade)
   permissionFields EntityPermissionField[]
 
-  @@unique([entityVersionId, action, appRoleId])
+  @@unique([entityVersionId, action, appRoleId], map: "EntityPermissionRole.entityVersionId_action_appRoleId_unique")
 }
 
 model EntityPermissionField {
@@ -208,7 +207,7 @@ model EntityPermissionField {
   permission       EntityPermission       @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   permissionRoles  EntityPermissionRole[]
 
-  @@unique([permissionId, fieldPermanentId])
+  @@unique([permissionId, fieldPermanentId], map: "EntityPermissionField.permissionId_fieldPermanentId_unique")
 }
 
 model EntityField {
@@ -221,17 +220,17 @@ model EntityField {
   displayName     String
   dataType        EnumDataType
   properties      Json
-  unique          Boolean                 @default(false)
   required        Boolean
   searchable      Boolean
   description     String
   position        Int?
+  unique          Boolean                 @default(false)
   entityVersion   EntityVersion           @relation(fields: [entityVersionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   permissionField EntityPermissionField[]
 
-  @@unique([entityVersionId, displayName])
-  @@unique([entityVersionId, name])
-  @@unique([entityVersionId, permanentId])
+  @@unique([entityVersionId, displayName], map: "EntityField.entityVersionId_displayName_unique")
+  @@unique([entityVersionId, name], map: "EntityField.entityVersionId_name_unique")
+  @@unique([entityVersionId, permanentId], map: "EntityField.entityVersionId_permanentId_unique")
 }
 
 model Block {
@@ -252,7 +251,7 @@ model Block {
   blocks         Block[]        @relation("BlockToBlock")
   versions       BlockVersion[]
 
-  @@unique([appId, displayName])
+  @@unique([appId, displayName], map: "Block.appId_displayName_unique")
 }
 
 model BlockVersion {
@@ -261,18 +260,18 @@ model BlockVersion {
   updatedAt        DateTime @updatedAt
   blockId          String
   versionNumber    Int
-  displayName      String   @default("")
-  description      String?
   inputParameters  Json?
   outputParameters Json?
   settings         Json
+  displayName      String   @default("")
+  description      String?
   commitId         String?
   deleted          Boolean?
   commit           Commit?  @relation(fields: [commitId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   block            Block    @relation(fields: [blockId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   builds           Build[]
 
-  @@unique([blockId, versionNumber])
+  @@unique([blockId, versionNumber], map: "BlockVersion.blockId_versionNumber_unique")
 }
 
 model Action {
@@ -294,7 +293,7 @@ model ActionStep {
   action      Action           @relation(fields: [actionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   logs        ActionLog[]
 
-  @@index([actionId], name: "ActionStep.actionId_index")
+  @@index([actionId], map: "ActionStep.actionId_index")
 }
 
 model ActionLog {
@@ -306,7 +305,7 @@ model ActionLog {
   stepId    String
   step      ActionStep   @relation(fields: [stepId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@index([stepId], name: "ActionLog.stepId_index")
+  @@index([stepId], map: "ActionLog.stepId_index")
 }
 
 model Build {
@@ -329,7 +328,7 @@ model Build {
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
 
-  @@unique([appId, version])
+  @@unique([appId, version], map: "Build.appId_version_unique")
 }
 
 model Release {
@@ -352,7 +351,7 @@ model Environment {
   app         App          @relation(fields: [appId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   deployments Deployment[]
 
-  @@unique([appId, name])
+  @@unique([appId, name], map: "Environment.appId_name_unique")
 }
 
 model Deployment {
