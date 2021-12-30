@@ -36,6 +36,7 @@ import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { FIELD_ID } from "./nestjs-graphql.util";
+import { INPUT_JSON_VALUE_KEY } from "./constants";
 
 const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
@@ -47,7 +48,7 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.Int]: builders.tsNumberKeyword(),
   [ScalarType.String]: builders.tsStringKeyword(),
   [ScalarType.Json]: builders.tsTypeReference(
-    builders.identifier("InputJsonValue")
+    builders.identifier(INPUT_JSON_VALUE_KEY)
   ),
 };
 
@@ -407,7 +408,7 @@ export function createFieldValueTypeFromPrismaField(
   if (
     !prismaField.isRequired &&
     !isQuery &&
-    !(prismaField.type === "Json") // json property cant be null
+    !(prismaField.type === ScalarType.Json) // json property cant be null
     //TODO add a ui update that make json required and remove this
   ) {
     const [type] = createFieldValueTypeFromPrismaField(
@@ -448,7 +449,7 @@ export function createFieldValueTypeFromPrismaField(
         ),
       ];
     } else {
-      if (isObjectType && prismaField.type === "Json") {
+      if (isObjectType && prismaField.type === ScalarType.Json) {
         return [builders.tsTypeReference(JSON_VALUE_ID)];
       }
       return [PRISMA_SCALAR_TO_TYPE[prismaField.type]];
@@ -475,7 +476,7 @@ function getFilterASTIdentifier(
   isRequired: boolean,
   type: ScalarType
 ): namedTypes.Identifier {
-  if (isRequired || type === "Json") {
+  if (isRequired || type === ScalarType.Json) {
     return PRISMA_SCALAR_TO_QUERY_TYPE[type];
   } else {
     return PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[type];
