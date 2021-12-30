@@ -1,6 +1,7 @@
 import { builders } from "ast-types";
 
 export enum EnumScalarFiltersTypes {
+  Json = "Json",
   JsonNullable = "JsonNullable",
   String = "String",
   StringNullable = "StringNullable",
