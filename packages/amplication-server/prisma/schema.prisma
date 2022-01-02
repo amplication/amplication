@@ -457,13 +457,13 @@ model Invitation {
   invitedByUser   User      @relation("InvitedByUserOnInvitation", fields: [invitedByUserId], references: [id])
   workspaceId     String
   workspace       Workspace @relation(fields: [workspaceId], references: [id])
-  newUserId       String?   @unique
+  newUserId       String?   @unique(map: "Invitation_newUserId_unique")
   newUser         User?     @relation(fields: [newUserId], references: [id])
   token           String
   tokenExpiration DateTime
 
 
-  @@unique([workspaceId, email])
+  @@unique([workspaceId, email], map: "Invitation.workspaceId_email_unique")
 }
 
 enum EnumSubscriptionPlan {
