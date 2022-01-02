@@ -21,13 +21,13 @@
     "setup:dev": "ts-node ./script/setup.ts"
   },
   "dependencies": {
-    "lerna": "3.22.1",
+    "lerna": "4.0.0",
     "semver": "6.3.0",
     "winston": "3.3.3"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "1.21.6",
-    "@graphql-codegen/typescript": "1.22.4",
+    "@graphql-codegen/cli": "1.21.8",
+    "@graphql-codegen/typescript": "1.23.0",
     "@types/jest": "27.0.2",
     "@types/semver": "7.3.8",
     "graphql": "15.3.0",

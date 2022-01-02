@@ -10,15 +10,23 @@ export const OBJECT_TYPE_DECORATOR = builders.decorator(
 );
 
 export function createEntityDTO(entity: Entity): NamedClassDeclaration {
+  // make all the ast properties that inject to the entity class
   const properties = entity.fields
     .filter((field) => !isPasswordField(field))
     .map((field) =>
-      createFieldClassProperty(field, entity, !field.required, false, false)
+      createFieldClassProperty(
+        field,
+        entity,
+        !field.required,
+        false,
+        false,
+        true
+      )
     );
   return classDeclaration(
-    builders.identifier(entity.name),
-    builders.classBody(properties),
-    null,
-    [OBJECT_TYPE_DECORATOR]
+    builders.identifier(entity.name), //name of the class
+    builders.classBody(properties), // body of the class
+    null, // super class
+    [OBJECT_TYPE_DECORATOR] // class decorator
   ) as NamedClassDeclaration;
 }
