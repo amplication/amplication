@@ -76,12 +76,14 @@ describe("createFieldClassProperty", () => {
     boolean,
     boolean,
     boolean,
+    boolean,
     namedTypes.ClassProperty
   ]> = [
     [
       "id field (not input)",
       EXAMPLE_ID_FIELD,
       !EXAMPLE_ID_FIELD.required,
+      false,
       false,
       false,
       classProperty(
@@ -112,6 +114,7 @@ describe("createFieldClassProperty", () => {
       "optional id field (not input)",
       EXAMPLE_OPTIONAL_ENTITY_FIELD,
       !EXAMPLE_OPTIONAL_ENTITY_FIELD.required,
+      false,
       false,
       false,
       classProperty(
@@ -156,6 +159,7 @@ describe("createFieldClassProperty", () => {
       !EXAMPLE_LOOKUP_FIELD.required,
       false,
       false,
+      false,
       classProperty(
         builders.identifier(EXAMPLE_LOOKUP_FIELD.name),
         builders.tsTypeAnnotation(
@@ -196,7 +200,7 @@ describe("createFieldClassProperty", () => {
   ];
   test.each(cases)(
     "%s",
-    (name, field, optional, isInput, isQuery, expected) => {
+    (name, field, optional, isInput, isQuery, isObjectType, expected) => {
       expect(
         print(
           createFieldClassProperty(
@@ -328,6 +332,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
           field.required,
           isInput,
           isEnum,
+          false,
           false
         )
       ).toEqual(expected);

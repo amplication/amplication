@@ -38,17 +38,17 @@ model User {
   updatedAt             DateTime     @updatedAt
   accountId             String
   workspaceId           String
-  account               Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  workspace             Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  isOwner           Boolean      @default(false)
+  account           Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace         Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   assignedCurrentTo     Account?
   apiTokens             ApiToken[]
+  lockedBlocks      Block[]
   builds                Build[]
   commits               Commit[]
   deployments           Deployment[]
   lockedEntitis         Entity[]
-  lockedBlocks          Block[]
   userRoles             UserRole[]
-  isOwner               Boolean      @default(false)
   sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
   deletedAt             DateTime?
@@ -131,9 +131,9 @@ model Commit {
   message        String
   app            App             @relation(fields: [appId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  blockVersions  BlockVersion[]
   builds         Build[]
   entityVersions EntityVersion[]
-  blockVersions  BlockVersion[]
   releases       Release[]
 }
 
