@@ -17,7 +17,7 @@
     "@types/cron": "1.7.2",
     "@types/node-fetch": "2.5.7",
     "@types/rc": "1.1.0",
-    "ajv": "6.12.6",
+    "ajv": "8.8.2",
     "cron": "1.8.2",
     "cronstrue": "1.105.0",
     "node-fetch": "2.6.1",
