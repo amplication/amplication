@@ -14,7 +14,7 @@
     "build:compile": "tsc"
   },
   "dependencies": {
-    "@types/cron": "1.7.2",
+    "@types/cron": "1.7.3",
     "@types/node-fetch": "2.5.7",
     "@types/rc": "1.1.0",
     "ajv": "6.12.6",
