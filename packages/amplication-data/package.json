@@ -9,7 +9,8 @@
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\"",
     "build:compile": "tsc",
     "build:generate-types": "ts-node ./scripts/generate-types",
-    "test": "jest"
+    "test": "jest",
+    "update-snapshots-tests": "jest -u ./script"
   },
   "devDependencies": {
     "@types/jest": "26.0.19",

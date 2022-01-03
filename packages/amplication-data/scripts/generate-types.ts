@@ -1,12 +1,12 @@
 import fs from "fs";
-import * as path from "path";
-import fg from "fast-glob";
+import { join, relative } from "path";
+import fg, { Entry } from "fast-glob";
 import { compileFromFile } from "json-schema-to-typescript";
 import normalize from "normalize-path";
 
-const SRC_DIRECTORY = path.join(__dirname, "..", "src");
-const SCHEMAS_DIRECTORY = path.join(SRC_DIRECTORY, "schemas");
-const TYPES_DIRECTORY = path.join(SRC_DIRECTORY, "types");
+const SRC_DIRECTORY = join(__dirname, "..", "src");
+const SCHEMAS_DIRECTORY = join(SRC_DIRECTORY, "schemas");
+const TYPES_DIRECTORY = join(SRC_DIRECTORY, "types");
 
 if (require.main === module) {
   generateTypes().catch((error) => {
@@ -16,7 +16,7 @@ if (require.main === module) {
 }
 
 async function generateTypes() {
-  const schemaGrep = normalize(path.join(SCHEMAS_DIRECTORY, "**", "*.json"));
+  const schemaGrep = normalize(join(SCHEMAS_DIRECTORY, "**", "*.json"));
   const schemaFiles = await fg(schemaGrep, {
     objectMode: true,
   });
@@ -24,23 +24,31 @@ async function generateTypes() {
     throw new Error(`No schema files were found for ${schemaGrep}`);
   }
   await fs.promises.mkdir(TYPES_DIRECTORY, { recursive: true });
-  await Promise.all(
+  const typesFiles = await Promise.all(
     schemaFiles.map(async ({ name, path: filePath }) =>
       generateTypeFile(filePath, name)
     )
   );
-  const code = schemaFiles
-    .map(({ name }) => `export * from "./${name.replace(".json", "")}"`)
-    .join("\n");
-  const indexPath = path.join(TYPES_DIRECTORY, "index.ts");
-  await fs.promises.writeFile(indexPath, code);
+  for await (const { code, path } of typesFiles) {
+    await fs.promises.writeFile(path, code);
+  }
+  await createTypesIndexFile(schemaFiles);
   console.info(
-    `Successfully written to ${path.relative(process.cwd(), TYPES_DIRECTORY)}`
+    `Successfully written to ${relative(process.cwd(), TYPES_DIRECTORY)}`
   );
 }
 
-async function generateTypeFile(filePath: string, name: string) {
+export async function generateTypeFile(filePath: string, name: string) {
   const code = await compileFromFile(filePath);
-  const tsPath = path.join(TYPES_DIRECTORY, name.replace(".json", ".ts"));
-  await fs.promises.writeFile(tsPath, code);
+  const tsPath = join(TYPES_DIRECTORY, name.replace(".json", ".ts"));
+  return { path: tsPath, code };
+}
+
+async function createTypesIndexFile(schemaFiles: Entry[]): Promise<void> {
+  const code = schemaFiles
+    .map(({ name }) => `export * from "./${name.replace(".json", "")}"`)
+    .join("\n");
+  const indexPath = join(TYPES_DIRECTORY, "index.ts");
+  await fs.promises.writeFile(indexPath, code);
+  return;
 }
