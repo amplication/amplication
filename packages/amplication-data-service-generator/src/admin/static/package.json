@@ -9,7 +9,7 @@
     "graphql": "14.7.0",
     "graphql-tag": "2.12.4",
     "lodash": "4.17.21",
-    "pluralize": "7.0.0",
+    "pluralize": "8.0.0",
     "ra-data-graphql-amplication": "0.0.6",
     "react": "16.14.0",
     "react-admin": "3.17.0",
