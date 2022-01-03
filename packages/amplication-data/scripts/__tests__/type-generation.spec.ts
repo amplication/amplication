@@ -7,6 +7,6 @@ describe("Testing the generation of new type", () => {
   test.each(DATA_TYPES)("generateTypeFile(%s)", async (dataType) => {
     const name = `${camelCase(dataType)}.json`;
     const path = join(schemasFolder, name);
-    expect(await generateTypeFile(path, name)).toMatchSnapshot();
+    expect((await generateTypeFile(path, name)).code).toMatchSnapshot();
   });
 });
