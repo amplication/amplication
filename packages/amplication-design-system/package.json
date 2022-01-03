@@ -22,7 +22,7 @@
     "@rmwc/snackbar": "6.1.4",
     "@rmwc/tooltip": "6.1.4",
     "classnames": "2.2.6",
-    "date-fns": "2.16.1",
+    "date-fns": "2.28.0",
     "lodash": "4.17.20",
     "react-animate-height": "2.0.23",
     "react-device-detect": "1.14.0",
