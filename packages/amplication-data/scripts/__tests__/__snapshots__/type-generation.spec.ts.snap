@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.Boolean) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(Boolean) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -15,7 +15,7 @@ export interface Boolean {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.CreatedAt) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(CreatedAt) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -30,7 +30,7 @@ export interface CreatedAt {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.DateTime) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(DateTime) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -48,7 +48,7 @@ export interface DateTime {
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.DecimalNumber) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(DecimalNumber) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -76,7 +76,7 @@ export interface DecimalNumber {
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.Email) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(Email) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -91,7 +91,7 @@ export interface Email {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.GeographicLocation) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(GeographicLocation) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -106,7 +106,7 @@ export interface GeographicAddress {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.Id) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(Id) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -121,7 +121,7 @@ export interface Id {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.Json) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(Json) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -136,7 +136,7 @@ export interface Json {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.Lookup) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(Lookup) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -158,7 +158,7 @@ export interface Lookup {
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.MultiLineText) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(MultiLineText) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -178,7 +178,7 @@ export interface MultiLineText {
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.MultiSelectOptionSet) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(MultiSelectOptionSet) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -204,7 +204,7 @@ export interface MultiSelectOptionSet {
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.OptionSet) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(OptionSet) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -230,7 +230,7 @@ export interface OptionSet {
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.Password) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(Password) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -245,7 +245,7 @@ export interface Password {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.Roles) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(Roles) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -260,7 +260,7 @@ export interface Roles {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.SingleLineText) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(SingleLineText) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -280,7 +280,7 @@ export interface SingleLineText {
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.UpdatedAt) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(UpdatedAt) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -295,7 +295,7 @@ export interface UpdatedAt {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.Username) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(Username) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
@@ -310,7 +310,7 @@ export interface Username {}
 }
 `;
 
-exports[`Testing the generation of new type getSchemaForDataType(EnumDataType.WholeNumber) 1`] = `
+exports[`Testing the generation of new type generateTypeFile(WholeNumber) 1`] = `
 Object {
   "code": "/* tslint:disable */
 /**
