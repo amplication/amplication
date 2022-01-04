@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { useField, ErrorMessage } from "formik";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
 
 import Select, { OptionProps, OptionTypeBase, components } from "react-select";

@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Button/Button";
 import { Tooltip } from "@primer/components";
 
-import { Icon } from "@rmwc/icon";
+import { Icon } from "../Icon/Icon";
 import "./MenuItem.scss";
 
 export type Props = {
@@ -38,12 +38,7 @@ export const MenuItem = ({
         children
       ) : (
         <>
-          <Icon
-            icon={{
-              icon: icon,
-              size: ICON_SIZE,
-            }}
-          />
+          <Icon icon={icon || ""} size={ICON_SIZE} />
           <span className="amp-menu-item__title">{title}</span>
         </>
       )}

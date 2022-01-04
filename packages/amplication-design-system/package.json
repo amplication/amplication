@@ -16,7 +16,6 @@
     "@primer/components": "20.3.0",
     "@rmwc/circular-progress": "6.1.4",
     "@rmwc/drawer": "6.1.4",
-    "@rmwc/icon": "6.1.4",
     "@rmwc/radio": "6.1.4",
     "@rmwc/snackbar": "6.1.4",
     "@rmwc/tooltip": "6.1.4",

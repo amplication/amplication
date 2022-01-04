@@ -4,7 +4,7 @@ import {
   ButtonProps as PrimerButtonProps,
 } from "@primer/components";
 import classNames from "classnames";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "../Icon/Icon";
 import { isEmpty } from "lodash";
 import "./Button.scss";
 
@@ -52,7 +52,9 @@ export const Button = ({
       )}
       {...rest}
     >
-      {!isEmpty(icon) && <Icon icon={icon} className="amp-button__icon" />}
+      {!isEmpty(icon) && (
+        <Icon icon={icon as string} className="amp-button__icon" />
+      )}
       {children}
       {isSplit && (
         <span className="amp-button__split">

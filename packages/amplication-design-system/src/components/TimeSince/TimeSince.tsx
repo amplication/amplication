@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "../Icon/Icon";
 import { Tooltip } from "@primer/components";
 import classNames from "classnames";
 import { formatDistanceToNow } from "date-fns";

@@ -1,11 +1,27 @@
 import React from "react";
-import { Icon as RmwcIcon, IconProps } from "@rmwc/icon";
-import "@rmwc/icon/styles";
+
+import classNames from "classnames";
 
 import "./Icon.scss";
 
-export type Props = IconProps;
+type IconSize = "xsmall" | "small" | "medium" | "large" | "xlarge";
+
+export type Props = {
+  icon: string;
+  size?: IconSize;
+  className?: string;
+};
+
+const CLASS_NAME = "amp-icon";
 
 export function Icon(props: Props) {
-  return <RmwcIcon className="amp-icon" {...props} />;
+  return (
+    <i
+      className={classNames(CLASS_NAME, props.className, {
+        [`${CLASS_NAME}--size-${props.size}`]: props.size,
+      })}
+    >
+      {props.icon}
+    </i>
+  );
 }
