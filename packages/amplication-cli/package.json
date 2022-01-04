@@ -73,7 +73,7 @@
     "eslint-config-oclif-typescript": "0.2.0",
     "eslint-import-resolver-lerna": "2.0.0",
     "eslint-plugin-import": "2.23.4",
-    "ts-node": "8.10.2",
+    "ts-node": "10.4.0",
     "typescript": "3.9.10"
   }
 }

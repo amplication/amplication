@@ -43,7 +43,7 @@
     "passport-jwt": "4.0.0",
     "reflect-metadata": "0.1.13",
     "swagger-ui-express": "4.1.6",
-    "ts-node": "9.1.1"
+    "ts-node": "10.4.0"
   },
   "devDependencies": {
     "@nestjs/cli": "8.1.5",
