@@ -109,6 +109,8 @@ $expand-button-padding: 4px;
           i {
             font-size: $logo-font-size;
             margin-right: var(--default-spacing);
+            color: var(--static-white);
+            font-size: 28px;
           }
           svg {
             opacity: 0;

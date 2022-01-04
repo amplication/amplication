@@ -61,7 +61,7 @@ function EntitiesTile({ applicationId }: Props) {
             <CircularProgress />
           ) : (
             <span className={`${CLASS_NAME}__content__details__summary`}>
-              <Icon icon={{ icon: "database", size: "medium" }} />
+              <Icon icon="database" size="medium" />
 
               {data?.entities.length}
               {data?.entities.length > 1 ? " entities" : " entity"}

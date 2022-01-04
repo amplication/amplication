@@ -49,16 +49,7 @@ const MenuItem = ({
       onClick={onClick}
       to={to}
     >
-      {children ? (
-        children
-      ) : (
-        <Icon
-          icon={{
-            icon: icon,
-            size: ICON_SIZE,
-          }}
-        />
-      )}
+      {children ? children : <Icon icon={icon || ""} size={ICON_SIZE} />}
     </Button>
   );
 

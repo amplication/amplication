@@ -77,10 +77,8 @@ export const EntityFieldListItem = ({
         <span className={`${CLASS_NAME}__highlight`}>
           <Icon
             className="amp-data-grid-item__icon"
-            icon={{
-              icon: DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].icon,
-              size: "xsmall",
-            }}
+            icon={DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].icon}
+            size="xsmall"
           />
           {entityField.dataType === models.EnumDataType.Lookup &&
           entityIdToName ? (

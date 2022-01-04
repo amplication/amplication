@@ -162,14 +162,13 @@ export const EntitiesDiagramEntity = React.memo(
                           )}
                         >
                           <Icon
-                            icon={{
-                              icon:
-                                DATA_TYPE_TO_LABEL_AND_ICON[
-                                  entity.fields[rubric.source.index].dataType ||
-                                    models.EnumDataType.SingleLineText
-                                ].icon,
-                              size: "xsmall",
-                            }}
+                            size="xsmall"
+                            icon={
+                              DATA_TYPE_TO_LABEL_AND_ICON[
+                                entity.fields[rubric.source.index].dataType ||
+                                  models.EnumDataType.SingleLineText
+                              ].icon
+                            }
                           />
                           <span>{entity.fields[rubric.source.index].name}</span>
                           <span className="spacer" />

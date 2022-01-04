@@ -156,7 +156,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
               {!app.githubSyncEnabled ? (
                 <div className={`${CLASS_NAME}__select-repo`}>
                   <div className={`${CLASS_NAME}__select-repo__details`}>
-                    <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
+                    <Icon size="xsmall" icon="info_circle" />
                     No repository was selected
                   </div>
                   <div className={`${CLASS_NAME}__actions`}>
@@ -189,12 +189,12 @@ function AuthAppWithGithub({ app, onDone }: Props) {
             Please note:
             <ul>
               <li>
-                <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
+                <Icon size="xsmall" icon="check_circle" />
                 The changes will be pushed to the root of the selected
                 repository, using Pull Requests.
               </li>
               <li>
-                <Icon icon={{ size: "xsmall", icon: "check_circle" }} />
+                <Icon size="xsmall" icon="check_circle" />
                 The selected repository must not be empty.
               </li>
             </ul>

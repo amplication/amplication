@@ -63,7 +63,7 @@ function SyncWithGithubTile({ applicationId }: Props) {
             <CircularProgress />
           ) : (
             <span className={`${CLASS_NAME}__content__details__summary`}>
-              <Icon icon={{ icon: "github", size: "medium" }} />
+              <Icon icon="github" size="medium" />
 
               {!data?.app.githubSyncEnabled ? (
                 <>You are not connected to a GitHub repository</>

@@ -42,7 +42,7 @@ const Deployment = ({ deployment, applicationId }: Props) => {
       <div className={`${CLASS_NAME}__details`}>
         {deployment.status === models.EnumDeploymentStatus.Waiting && (
           <>
-            <Icon icon={{ icon: "publish", size: "medium" }} />
+            <Icon icon="publish" size="medium" />
             <div className={`${CLASS_NAME}__details__status`}>
               Your app is being deployed.
             </div>
@@ -54,7 +54,7 @@ const Deployment = ({ deployment, applicationId }: Props) => {
         )}
         {deployment.status === models.EnumDeploymentStatus.Completed && (
           <>
-            <Icon icon={{ icon: "publish", size: "medium" }} />
+            <Icon icon="publish" size="medium" />
             <div className={`${CLASS_NAME}__details__status`}>
               Your app is ready.
             </div>

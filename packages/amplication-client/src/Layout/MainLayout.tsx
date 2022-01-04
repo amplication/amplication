@@ -5,7 +5,6 @@ import { isMobileOnly, isMacOs } from "react-device-detect";
 
 import classNames from "classnames";
 import { unsetToken } from "../authentication/authentication";
-import logo from "../assets/logo.svg";
 import { ReactComponent as LogoTextual } from "../assets/logo-textual.svg";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
@@ -69,7 +68,7 @@ const Menu = ({ children }: MenuProps) => {
         <div className="main-layout__side__wrapper__main-menu">
           <div className="logo-container">
             <Link to="/" className="logo-container__logo">
-              <Icon icon={logo} />
+              <Icon icon="logo" className="main-logo" />
               <LogoTextual />
             </Link>
           </div>

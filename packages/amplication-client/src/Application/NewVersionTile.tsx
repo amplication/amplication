@@ -80,7 +80,7 @@ function NewVersionTile({ applicationId }: Props) {
                 <CircularProgress />
               ) : (
                 <span className={`${CLASS_NAME}__content__details__summary`}>
-                  <Icon icon={{ icon: "info_circle", size: "medium" }} />
+                  <Icon icon="info_circle" size="medium" />
                   {requiredFixesCount}
                   {requiredFixesCount > 1
                     ? " relation needs "

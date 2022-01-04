@@ -176,7 +176,7 @@ const BuildSummary = ({ build, onError }: Props) => {
         ) : (
           //app was connected after this build was created
           <div className={`${CLASS_NAME}__message`}>
-            <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
+            <Icon size="xsmall" icon="info_circle" />
             <span>
               You are now connected to GitHub. Future builds will create a Pull
               Request in your repo.
@@ -256,7 +256,7 @@ const BuildSummary = ({ build, onError }: Props) => {
               </Link>
             ) : (
               <>
-                <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
+                <Icon size="xsmall" icon="info_circle" />
 
                 <span>Commit changes to start deployment to sandbox. </span>
               </>

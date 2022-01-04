@@ -31,7 +31,7 @@ function SyncWithGithubPage({ match }: Props) {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
-        <Icon icon={{ icon: "github", size: "xlarge" }} />
+        <Icon icon="github" size="xlarge" />
         <div className={`${CLASS_NAME}__message`}>
           Enable sync with GitHub to automatically push the generated code of
           your application and create a Pull Request in your GitHub repository

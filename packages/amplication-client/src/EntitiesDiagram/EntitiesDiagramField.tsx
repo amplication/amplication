@@ -63,10 +63,8 @@ export const EntitiesDiagramField = React.memo(
               {...provided.dragHandleProps}
             >
               <Icon
-                icon={{
-                  icon: DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon,
-                  size: "xsmall",
-                }}
+                icon={DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon}
+                size="xsmall"
               />
               <span>{field.name}</span>
               <span className="spacer" />

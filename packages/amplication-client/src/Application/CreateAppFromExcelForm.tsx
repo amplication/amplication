@@ -40,7 +40,7 @@ export const CreateAppFromExcelForm = ({
             />
             <Panel className={`${CLASS_NAME}__notice`}>
               <div className={`${CLASS_NAME}__notice__title`}>
-                <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
+                <Icon size="xsmall" icon="info_circle" />
                 <span>Good to know</span>
               </div>
               <ul className={`${CLASS_NAME}__layout__body__side__message`}>
