@@ -31,23 +31,6 @@ export {
   Props as SelectMenuProps,
 } from "./components/SelectMenu/SelectMenu";
 
-export { SortData, DataField, DataFilter } from "./components/DataGrid/types";
-
-export {
-  DataGrid,
-  EnumTitleType,
-  Props as DataGridProps,
-} from "./components/DataGrid/DataGrid";
-
-export {
-  default as DataGridRow,
-  Props as DataGridRowProps,
-} from "./components/DataGrid/DataGridRow";
-export {
-  default as DataGridCell,
-  Props as DataGridCellProps,
-} from "./components/DataGrid/DataGridCell";
-
 export {
   CheckboxField,
   Props as CheckboxFieldProps,
