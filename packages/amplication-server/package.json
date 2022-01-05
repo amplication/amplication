@@ -106,6 +106,7 @@
     "@types/jest": "25.2.3",
     "@types/lodash.get": "4.4.6",
     "@types/lodash.head": "4.0.6",
+    "@types/lodash.isequalwith": "4.4.6",
     "@types/lodash.last": "3.0.6",
     "@types/lodash.omit": "4.5.6",
     "@types/lodash.set": "4.3.6",
