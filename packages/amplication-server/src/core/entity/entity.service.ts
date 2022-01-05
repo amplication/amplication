@@ -28,6 +28,7 @@ import { JsonObject } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
 import { getSchemaForDataType, types } from '@amplication/data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
+import { DiffService } from 'src/services/diff.service';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
@@ -143,11 +144,23 @@ const BASE_FIELD: Pick<
   description: ''
 };
 
+const NON_COMPARABLE_PROPERTIES = [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'versionNumber',
+  'commitId',
+  'permissionId',
+  'entityVersionId',
+  'appRoleId'
+];
+
 @Injectable()
 export class EntityService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly jsonSchemaValidationService: JsonSchemaValidationService
+    private readonly jsonSchemaValidationService: JsonSchemaValidationService,
+    private readonly diffService: DiffService
   ) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
@@ -362,26 +375,26 @@ export class EntityService {
     entityId: string,
     fields: (BulkEntityFieldData & { permanentId: string })[]
   ): Promise<void> {
-    await this.acquireLock({ where: { id: entityId } }, user);
-
-    await Promise.all(
-      fields.map(field => {
-        return this.prisma.entityField.create({
-          data: {
-            ...field,
-            entityVersion: {
-              connect: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                entityId_versionNumber: {
-                  entityId: entityId,
-                  versionNumber: CURRENT_VERSION_NUMBER
+    return await this.useLocking(entityId, user, async () => {
+      await Promise.all(
+        fields.map(field => {
+          return this.prisma.entityField.create({
+            data: {
+              ...field,
+              entityVersion: {
+                connect: {
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  entityId_versionNumber: {
+                    entityId: entityId,
+                    versionNumber: CURRENT_VERSION_NUMBER
+                  }
                 }
               }
             }
-          }
-        });
-      })
-    );
+          });
+        })
+      );
+    });
   }
 
   /**
@@ -397,37 +410,37 @@ export class EntityService {
     args: DeleteOneEntityArgs,
     user: User
   ): Promise<Entity | null> {
-    const entity = await this.acquireLock(args, user);
+    return await this.useLocking(args.where.id, user, async entity => {
+      if (entity.name === USER_ENTITY_NAME) {
+        throw new ConflictException(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
+      }
 
-    if (entity.name === USER_ENTITY_NAME) {
-      throw new ConflictException(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
-    }
-
-    return this.prisma.entity.update({
-      where: args.where,
-      data: {
-        name: prepareDeletedItemName(entity.name, entity.id),
-        displayName: prepareDeletedItemName(entity.displayName, entity.id),
-        pluralDisplayName: prepareDeletedItemName(
-          entity.pluralDisplayName,
-          entity.id
-        ),
-        deletedAt: new Date(),
-        versions: {
-          update: {
-            where: {
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              entityId_versionNumber: {
-                entityId: args.where.id,
-                versionNumber: CURRENT_VERSION_NUMBER
+      return this.prisma.entity.update({
+        where: args.where,
+        data: {
+          name: prepareDeletedItemName(entity.name, entity.id),
+          displayName: prepareDeletedItemName(entity.displayName, entity.id),
+          pluralDisplayName: prepareDeletedItemName(
+            entity.pluralDisplayName,
+            entity.id
+          ),
+          deletedAt: new Date(),
+          versions: {
+            update: {
+              where: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityId_versionNumber: {
+                  entityId: args.where.id,
+                  versionNumber: CURRENT_VERSION_NUMBER
+                }
+              },
+              data: {
+                deleted: true
               }
-            },
-            data: {
-              deleted: true
             }
           }
         }
-      }
+      });
     });
   }
 
@@ -539,51 +552,52 @@ export class EntityService {
     user: User
   ): Promise<Entity | null> {
     /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
+    return await this.useLocking(args.where.id, user, async entity => {
+      const newName =
+        args.data.name?.toLowerCase().trim() ||
+        entity?.name.toLowerCase().trim();
 
-    const entity = await this.acquireLock(args, user);
+      const newPluralDisplayName =
+        args.data.pluralDisplayName?.toLowerCase().trim() ||
+        entity?.pluralDisplayName.toLowerCase().trim();
 
-    const newName =
-      args.data.name?.toLowerCase().trim() || entity?.name.toLowerCase().trim();
-
-    const newPluralDisplayName =
-      args.data.pluralDisplayName?.toLowerCase().trim() ||
-      entity?.pluralDisplayName.toLowerCase().trim();
-
-    if (newName === newPluralDisplayName) {
-      throw new AmplicationError(
-        `The entity name and plural display name cannot be the same.`
-      );
-    }
-
-    if (entity.name === USER_ENTITY_NAME) {
-      if (args.data.name && args.data.name !== USER_ENTITY_NAME) {
-        throw new ConflictException(
-          `The 'user' entity is a reserved entity and its name cannot be updated`
+      if (newName === newPluralDisplayName) {
+        throw new AmplicationError(
+          `The entity name and plural display name cannot be the same.`
         );
       }
-    }
-    return this.prisma.entity.update({
-      where: { ...args.where },
-      data: {
-        ...args.data,
-        versions: {
-          update: {
-            where: {
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              entityId_versionNumber: {
-                entityId: args.where.id,
-                versionNumber: CURRENT_VERSION_NUMBER
+
+      if (entity.name === USER_ENTITY_NAME) {
+        if (args.data.name && args.data.name !== USER_ENTITY_NAME) {
+          throw new ConflictException(
+            `The 'user' entity is a reserved entity and its name cannot be updated`
+          );
+        }
+      }
+
+      return this.prisma.entity.update({
+        where: { ...args.where },
+        data: {
+          ...args.data,
+          versions: {
+            update: {
+              where: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityId_versionNumber: {
+                  entityId: args.where.id,
+                  versionNumber: CURRENT_VERSION_NUMBER
+                }
+              },
+              data: {
+                name: args.data.name,
+                displayName: args.data.displayName,
+                pluralDisplayName: args.data.pluralDisplayName,
+                description: args.data.description
               }
-            },
-            data: {
-              name: args.data.name,
-              displayName: args.data.displayName,
-              pluralDisplayName: args.data.pluralDisplayName,
-              description: args.data.description
             }
           }
         }
-      }
+      });
     });
   }
 
@@ -626,6 +640,110 @@ export class EntityService {
         }
       }
     });
+  }
+
+  /**
+   * Checks if the entity has any meaningful changes (some generated properties are ignored : id, createdAt...)
+   * between its current and last version.
+   * Every list of records is sorted to get a consistent order and make versions comparable.
+   * @param entityId The entity to check for changes
+   * @returns whether the entity's current version has changes
+   */
+  async hasPendingChanges(entityId: string): Promise<boolean> {
+    const entityVersions = await this.prisma.entityVersion.findMany({
+      where: {
+        entityId
+      },
+      orderBy: {
+        versionNumber: Prisma.SortOrder.asc
+      },
+      include: {
+        fields: {
+          orderBy: {
+            permanentId: Prisma.SortOrder.asc
+          }
+        },
+        permissions: {
+          orderBy: {
+            action: Prisma.SortOrder.asc
+          },
+          include: {
+            permissionFields: {
+              orderBy: {
+                fieldPermanentId: Prisma.SortOrder.asc
+              },
+              include: {
+                permissionRoles: {
+                  orderBy: {
+                    appRoleId: Prisma.SortOrder.asc
+                  }
+                }
+              }
+            },
+            permissionRoles: {
+              orderBy: {
+                appRoleId: Prisma.SortOrder.asc
+              },
+              include: {
+                appRole: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // If there's only one version, lastVersion will be undefined
+    const currentVersion = entityVersions.shift();
+    const lastVersion = last(entityVersions);
+
+    if (currentVersion.deleted && !lastVersion) {
+      // The entity was created than deleted => there are no changes
+      return false;
+    }
+
+    return this.diffService.areDifferent(
+      currentVersion,
+      lastVersion,
+      NON_COMPARABLE_PROPERTIES
+    );
+  }
+
+  /**
+   * Has the responsibility to unlock or keep an entity locked based on whether
+   * it has changes. It's supposed to be used after an operation that uses locking
+   * was made.
+   * @param entityId A locked entity
+   */
+  async updateLock(entityId: string): Promise<void> {
+    const hasPendingChanges = await this.hasPendingChanges(entityId);
+
+    if (!hasPendingChanges) {
+      await this.releaseLock(entityId);
+    }
+  }
+
+  /**
+   * Higher order function responsible for encapsulating the locking behaviour.
+   * It will lock an entity, execute some provided operations on it then update the lock
+   * (unlock it or keep it locked).
+   * @param entityId The entity on which the locking and operations are performed
+   * @param user The user requesting the operations
+   * @param fn A function containing the operations on the entity
+   * @returns What the provided function `fn` returns
+   */
+  async useLocking<T>(
+    entityId: string,
+    user: User,
+    fn: (entity: Entity) => T
+  ): Promise<T> {
+    const entity = await this.acquireLock({ where: { id: entityId } }, user);
+
+    try {
+      return await fn(entity);
+    } finally {
+      await this.updateLock(entityId);
+    }
   }
 
   // Tries to acquire a lock on the given entity for the given user.
@@ -1042,39 +1160,39 @@ export class EntityService {
     args: UpdateEntityPermissionArgs,
     user: User
   ): Promise<EntityPermission> {
-    await this.acquireLock(args, user);
-
-    const entityVersion = await this.prisma.entityVersion.findUnique({
-      where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        entityId_versionNumber: {
-          entityId: args.where.id,
-          versionNumber: CURRENT_VERSION_NUMBER
-        }
-      }
-    });
-
-    const entityVersionId = entityVersion.id;
-
-    return this.prisma.entityPermission.upsert({
-      create: {
-        ...args.data,
-        entityVersion: {
-          connect: {
-            id: entityVersionId
+    return await this.useLocking(args.where.id, user, async () => {
+      const entityVersion = await this.prisma.entityVersion.findUnique({
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          entityId_versionNumber: {
+            entityId: args.where.id,
+            versionNumber: CURRENT_VERSION_NUMBER
           }
         }
-      },
-      update: {
-        type: args.data.type
-      },
-      where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        entityVersionId_action: {
-          entityVersionId: entityVersionId,
-          action: args.data.action
+      });
+
+      const entityVersionId = entityVersion.id;
+
+      return this.prisma.entityPermission.upsert({
+        create: {
+          ...args.data,
+          entityVersion: {
+            connect: {
+              id: entityVersionId
+            }
+          }
+        },
+        update: {
+          type: args.data.type
+        },
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          entityVersionId_action: {
+            entityVersionId: entityVersionId,
+            action: args.data.action
+          }
         }
-      }
+      });
     });
   }
 
@@ -1082,97 +1200,98 @@ export class EntityService {
     args: UpdateEntityPermissionRolesArgs,
     user: User
   ): Promise<EntityPermission> {
-    await this.acquireLock(
-      { where: { id: args.data.entity.connect.id } },
-      user
-    );
-
-    const entityVersion = await this.prisma.entityVersion.findUnique({
-      where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        entityId_versionNumber: {
-          entityId: args.data.entity.connect.id,
-          versionNumber: CURRENT_VERSION_NUMBER
-        }
-      }
-    });
-    const entityVersionId = entityVersion.id;
-
-    const promises: Promise<any>[] = [];
-
-    //add new roles
-    if (!isEmpty(args.data.addRoles)) {
-      const createMany = args.data.addRoles.map(role => {
-        return {
-          appRole: {
-            connect: {
-              id: role.id
-            }
-          }
-        };
-      });
-
-      promises.push(
-        this.prisma.entityPermission.update({
+    return await this.useLocking(
+      args.data.entity.connect.id,
+      user,
+      async () => {
+        const entityVersion = await this.prisma.entityVersion.findUnique({
           where: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityVersionId_action: {
-              entityVersionId: entityVersionId,
-              action: args.data.action
-            }
-          },
-          data: {
-            permissionRoles: {
-              create: createMany
+            entityId_versionNumber: {
+              entityId: args.data.entity.connect.id,
+              versionNumber: CURRENT_VERSION_NUMBER
             }
           }
-        })
-      );
-    }
+        });
+        const entityVersionId = entityVersion.id;
 
-    //delete existing roles
-    if (!isEmpty(args.data.deleteRoles)) {
-      promises.push(
-        this.prisma.entityPermissionRole.deleteMany({
+        const promises: Promise<any>[] = [];
+
+        //add new roles
+        if (!isEmpty(args.data.addRoles)) {
+          const createMany = args.data.addRoles.map(role => {
+            return {
+              appRole: {
+                connect: {
+                  id: role.id
+                }
+              }
+            };
+          });
+
+          promises.push(
+            this.prisma.entityPermission.update({
+              where: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityVersionId_action: {
+                  entityVersionId: entityVersionId,
+                  action: args.data.action
+                }
+              },
+              data: {
+                permissionRoles: {
+                  create: createMany
+                }
+              }
+            })
+          );
+        }
+
+        //delete existing roles
+        if (!isEmpty(args.data.deleteRoles)) {
+          promises.push(
+            this.prisma.entityPermissionRole.deleteMany({
+              where: {
+                appRoleId: {
+                  in: args.data.deleteRoles.map(role => role.id)
+                }
+              }
+            })
+          );
+        }
+        await Promise.all(promises);
+
+        const results = await this.prisma.entityPermission.findMany({
           where: {
-            appRoleId: {
-              in: args.data.deleteRoles.map(role => role.id)
-            }
-          }
-        })
-      );
-    }
-    await Promise.all(promises);
-
-    const results = await this.prisma.entityPermission.findMany({
-      where: {
-        entityVersion: {
-          entityId: args.data.entity.connect.id,
-          versionNumber: CURRENT_VERSION_NUMBER
-        },
-        action: args.data.action
-      },
-      include: {
-        permissionRoles: {
+            entityVersion: {
+              entityId: args.data.entity.connect.id,
+              versionNumber: CURRENT_VERSION_NUMBER
+            },
+            action: args.data.action
+          },
           include: {
-            appRole: true
-          }
-        },
-        permissionFields: {
-          include: {
-            field: true,
             permissionRoles: {
               include: {
                 appRole: true
               }
+            },
+            permissionFields: {
+              include: {
+                field: true,
+                permissionRoles: {
+                  include: {
+                    appRole: true
+                  }
+                }
+              }
             }
-          }
-        }
-      },
-      take: 1
-    });
+          },
+          take: 1
+        });
 
-    return results[0];
+        return results[0];
+      }
+    );
   }
 
   async getPermissions(
@@ -1203,14 +1322,23 @@ export class EntityService {
       },
       include: {
         permissionRoles: {
+          orderBy: {
+            appRoleId: Prisma.SortOrder.asc
+          },
           include: {
             appRole: true
           }
         },
         permissionFields: {
+          orderBy: {
+            fieldPermanentId: Prisma.SortOrder.asc
+          },
           include: {
             field: true,
             permissionRoles: {
+              orderBy: {
+                appRoleId: Prisma.SortOrder.asc
+              },
               include: {
                 appRole: true
               }
@@ -1225,91 +1353,92 @@ export class EntityService {
     args: AddEntityPermissionFieldArgs,
     user: User
   ): Promise<EntityPermissionField> {
-    await this.acquireLock(
-      { where: { id: args.data.entity.connect.id } },
-      user
-    );
-
-    const nonMatchingNames = await this.validateAllFieldsExist(
+    return await this.useLocking(
       args.data.entity.connect.id,
-      [args.data.fieldName]
+      user,
+      async () => {
+        const nonMatchingNames = await this.validateAllFieldsExist(
+          args.data.entity.connect.id,
+          [args.data.fieldName]
+        );
+        if (nonMatchingNames.size > 0) {
+          throw new NotFoundException(
+            `Invalid field selected: ${Array.from(nonMatchingNames).join(', ')}`
+          );
+        }
+
+        const entityVersion = await this.prisma.entityVersion.findUnique({
+          where: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: args.data.entity.connect.id,
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
+          }
+        });
+        const entityVersionId = entityVersion.id;
+
+        return this.prisma.entityPermissionField.create({
+          data: {
+            field: {
+              connect: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityVersionId_name: {
+                  entityVersionId: entityVersionId,
+                  name: args.data.fieldName
+                }
+              }
+            },
+            permission: {
+              connect: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityVersionId_action: {
+                  entityVersionId: entityVersionId,
+                  action: args.data.action
+                }
+              }
+            }
+          },
+          include: {
+            field: true
+          }
+        });
+      }
     );
-    if (nonMatchingNames.size > 0) {
-      throw new NotFoundException(
-        `Invalid field selected: ${Array.from(nonMatchingNames).join(', ')}`
-      );
-    }
-
-    const entityVersion = await this.prisma.entityVersion.findUnique({
-      where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        entityId_versionNumber: {
-          entityId: args.data.entity.connect.id,
-          versionNumber: CURRENT_VERSION_NUMBER
-        }
-      }
-    });
-    const entityVersionId = entityVersion.id;
-
-    return this.prisma.entityPermissionField.create({
-      data: {
-        field: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityVersionId_name: {
-              entityVersionId: entityVersionId,
-              name: args.data.fieldName
-            }
-          }
-        },
-        permission: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityVersionId_action: {
-              entityVersionId: entityVersionId,
-              action: args.data.action
-            }
-          }
-        }
-      },
-      include: {
-        field: true
-      }
-    });
   }
 
   async deleteEntityPermissionField(
     args: DeleteEntityPermissionFieldArgs,
     user: User
   ): Promise<EntityPermissionField> {
-    await this.acquireLock({ where: { id: args.where.entityId } }, user);
-
-    const permissionField = await this.prisma.entityPermissionField.findMany({
-      where: {
-        permission: {
-          entityVersion: {
-            entityId: args.where.entityId,
-            versionNumber: CURRENT_VERSION_NUMBER
+    return await this.useLocking(args.where.entityId, user, async () => {
+      const permissionField = await this.prisma.entityPermissionField.findMany({
+        where: {
+          permission: {
+            entityVersion: {
+              entityId: args.where.entityId,
+              versionNumber: CURRENT_VERSION_NUMBER
+            },
+            action: args.where.action
           },
-          action: args.where.action
-        },
-        fieldPermanentId: args.where.fieldPermanentId
-      }
-    });
+          fieldPermanentId: args.where.fieldPermanentId
+        }
+      });
 
     if (isEmpty(permissionField)) {
       throw new AmplicationError(`Record not found`);
     }
 
-    const id = permissionField[0].id;
+      const id = permissionField[0].id;
 
-    return this.prisma.entityPermissionField.delete({
-      where: {
-        id: id
-      },
-      include: {
-        field: true
-      }
+      return this.prisma.entityPermissionField.delete({
+        where: {
+          id: id
+        },
+        include: {
+          field: true
+        }
+      });
     });
   }
 
@@ -1346,65 +1475,67 @@ export class EntityService {
       );
     }
 
-    await this.acquireLock({ where: { id: entityId } }, user);
+    return await this.useLocking(entityId, user, async () => {
+      //add new roles
+      if (!isEmpty(args.data.addPermissionRoles)) {
+        const createMany = args.data.addPermissionRoles.map(permissionRole => {
+          return {
+            id: permissionRole.id
+          };
+        });
 
-    //add new roles
-    if (!isEmpty(args.data.addPermissionRoles)) {
-      const createMany = args.data.addPermissionRoles.map(permissionRole => {
-        return {
-          id: permissionRole.id
-        };
-      });
-
-      promises.push(
-        this.prisma.entityPermissionField.update({
-          where: {
-            id: args.data.permissionField.connect.id
-          },
-          data: {
-            permissionRoles: {
-              connect: createMany
+        promises.push(
+          this.prisma.entityPermissionField.update({
+            where: {
+              id: args.data.permissionField.connect.id
+            },
+            data: {
+              permissionRoles: {
+                connect: createMany
+              }
             }
+          })
+        );
+      }
+
+      //delete existing roles
+      if (!isEmpty(args.data.deletePermissionRoles)) {
+        const deleteMany = args.data.deletePermissionRoles.map(
+          permissionRole => {
+            return {
+              id: permissionRole.id
+            };
           }
-        })
-      );
-    }
+        );
 
-    //delete existing roles
-    if (!isEmpty(args.data.deletePermissionRoles)) {
-      const deleteMany = args.data.deletePermissionRoles.map(permissionRole => {
-        return {
-          id: permissionRole.id
-        };
-      });
-
-      promises.push(
-        this.prisma.entityPermissionField.update({
-          where: {
-            id: args.data.permissionField.connect.id
-          },
-          data: {
-            permissionRoles: {
-              disconnect: deleteMany
+        promises.push(
+          this.prisma.entityPermissionField.update({
+            where: {
+              id: args.data.permissionField.connect.id
+            },
+            data: {
+              permissionRoles: {
+                disconnect: deleteMany
+              }
             }
-          }
-        })
-      );
-    }
-    await Promise.all(promises);
+          })
+        );
+      }
+      await Promise.all(promises);
 
-    return this.prisma.entityPermissionField.findUnique({
-      where: {
-        id: args.data.permissionField.connect.id
-      },
-      include: {
-        field: true,
-        permissionRoles: {
-          include: {
-            appRole: true
+      return this.prisma.entityPermissionField.findUnique({
+        where: {
+          id: args.data.permissionField.connect.id
+        },
+        include: {
+          field: true,
+          permissionRoles: {
+            include: {
+              appRole: true
+            }
           }
         }
-      }
+      });
     });
   }
 
@@ -1684,59 +1815,59 @@ export class EntityService {
     // Omit entity from received data
     const data = omit(args.data, ['entity']);
 
-    // Get the field's entity and acquire lock to edit it
-    const entity = await this.acquireLock(
-      { where: args.data.entity.connect },
-      user
-    );
+    return await this.useLocking(
+      args.data.entity.connect.id,
+      user,
+      async entity => {
+        // Validate args
+        this.validateFieldMutationArgs(args, entity);
 
-    // Validate args
-    this.validateFieldMutationArgs(args, entity);
+        if (args.data.dataType === EnumDataType.Lookup) {
+          // If field data type is Lookup add relatedFieldId to field properties
+          args.data.properties.relatedFieldId = cuid();
+        }
 
-    if (args.data.dataType === EnumDataType.Lookup) {
-      // If field data type is Lookup add relatedFieldId to field properties
-      args.data.properties.relatedFieldId = cuid();
-    }
+        // Validate data
+        await this.validateFieldData(data, entity);
 
-    // Validate data
-    await this.validateFieldData(data, entity);
+        // Create field ID ahead of time so it can be used in the related field creation
+        const fieldId = cuid();
 
-    // Create field ID ahead of time so it can be used in the related field creation
-    const fieldId = cuid();
+        if (args.data.dataType === EnumDataType.Lookup) {
+          // Cast the received properties to Lookup properties type
+          const properties = (args.data.properties as unknown) as types.Lookup;
 
-    if (args.data.dataType === EnumDataType.Lookup) {
-      // Cast the received properties to Lookup properties type
-      const properties = (args.data.properties as unknown) as types.Lookup;
+          // Create a related lookup field in the related entity
+          await this.createRelatedField(
+            properties.relatedFieldId,
+            args.relatedFieldName,
+            args.relatedFieldDisplayName,
+            !properties.allowMultipleSelection,
+            properties.relatedEntityId,
+            entity.id,
+            fieldId,
+            user
+          );
+        }
 
-      // Create a related lookup field in the related entity
-      await this.createRelatedField(
-        properties.relatedFieldId,
-        args.relatedFieldName,
-        args.relatedFieldDisplayName,
-        !properties.allowMultipleSelection,
-        properties.relatedEntityId,
-        entity.id,
-        fieldId,
-        user
-      );
-    }
-
-    // Create entity field
-    return this.prisma.entityField.create({
-      data: {
-        ...data,
-        permanentId: fieldId,
-        entityVersion: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityId_versionNumber: {
-              entityId: entity.id,
-              versionNumber: CURRENT_VERSION_NUMBER
+        // Create entity field
+        return this.prisma.entityField.create({
+          data: {
+            ...data,
+            permanentId: fieldId,
+            entityVersion: {
+              connect: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityId_versionNumber: {
+                  entityId: entity.id,
+                  versionNumber: CURRENT_VERSION_NUMBER
+                }
+              }
             }
           }
-        }
+        });
       }
-    });
+    );
   }
 
   /** 2021-02-10
@@ -1769,52 +1900,52 @@ export class EntityService {
       );
     }
 
-    // Get the field's entity
-    const entity = await this.acquireLock(
-      { where: { id: field.entityVersion.entityId } },
-      user
-    );
+    return await this.useLocking(
+      field.entityVersion.entityId,
+      user,
+      async entity => {
+        // Validate args
+        this.validateFieldMutationArgs(
+          {
+            ...args,
+            data: {
+              properties: field.properties as JsonObject,
+              dataType: field.dataType
+            }
+          },
+          entity
+        );
 
-    // Validate args
-    this.validateFieldMutationArgs(
-      {
-        ...args,
-        data: {
-          properties: field.properties as JsonObject,
-          dataType: field.dataType
-        }
-      },
-      entity
-    );
+        const relatedFieldId = cuid();
 
-    const relatedFieldId = cuid();
+        // Cast the received properties as Lookup properties
+        const properties = (field.properties as unknown) as types.Lookup;
 
-    // Cast the received properties as Lookup properties
-    const properties = (field.properties as unknown) as types.Lookup;
+        //create the related field
+        await this.createRelatedField(
+          relatedFieldId,
+          args.relatedFieldName,
+          args.relatedFieldDisplayName,
+          !properties.allowMultipleSelection,
+          properties.relatedEntityId,
+          entity.id,
+          field.permanentId,
+          user
+        );
 
-    //create the related field
-    await this.createRelatedField(
-      relatedFieldId,
-      args.relatedFieldName,
-      args.relatedFieldDisplayName,
-      !properties.allowMultipleSelection,
-      properties.relatedEntityId,
-      entity.id,
-      field.permanentId,
-      user
-    );
+        properties.relatedFieldId = relatedFieldId;
 
-    properties.relatedFieldId = relatedFieldId;
-
-    //Update the field with the ID of the related field
-    return this.prisma.entityField.update({
-      where: {
-        id: field.id
-      },
-      data: {
-        properties: (properties as unknown) as Prisma.InputJsonValue
+        //Update the field with the ID of the related field
+        return this.prisma.entityField.update({
+          where: {
+            id: field.id
+          },
+          data: {
+            properties: (properties as unknown) as Prisma.InputJsonValue
+          }
+        });
       }
-    });
+    );
   }
 
   private async createRelatedField(
@@ -1827,31 +1958,30 @@ export class EntityService {
     relatedFieldId: string,
     user: User
   ): Promise<EntityField> {
-    // Acquire lock to edit the entity
-    await this.acquireLock({ where: { id: entityId } }, user);
-
-    return this.prisma.entityField.create({
-      data: {
-        ...BASE_FIELD,
-        name,
-        displayName,
-        dataType: EnumDataType.Lookup,
-        permanentId: id,
-        entityVersion: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityId_versionNumber: {
-              entityId,
-              versionNumber: CURRENT_VERSION_NUMBER
+    return await this.useLocking(entityId, user, async () => {
+      return this.prisma.entityField.create({
+        data: {
+          ...BASE_FIELD,
+          name,
+          displayName,
+          dataType: EnumDataType.Lookup,
+          permanentId: id,
+          entityVersion: {
+            connect: {
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              entityId_versionNumber: {
+                entityId,
+                versionNumber: CURRENT_VERSION_NUMBER
+              }
             }
+          },
+          properties: {
+            allowMultipleSelection,
+            relatedEntityId,
+            relatedFieldId
           }
-        },
-        properties: {
-          allowMultipleSelection,
-          relatedEntityId,
-          relatedFieldId
         }
-      }
+      });
     });
   }
 
@@ -1860,21 +1990,24 @@ export class EntityService {
     entityId: string,
     user: User
   ): Promise<void> {
-    // Acquire lock to edit the entity
-    await this.acquireLock({ where: { id: entityId } }, user);
-
-    // Get field to delete
-    const field = await this.getField({ where: { permanentId } });
-
-    // Delete the related field from the database
-    await this.prisma.entityField.delete({
-      where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        entityVersionId_permanentId: {
-          permanentId,
-          entityVersionId: field.entityVersionId
+    await this.useLocking(entityId, user, async () => {
+      // Get field to delete
+      const field = await this.getField({
+        where: {
+          permanentId
         }
-      }
+      });
+
+      // Delete the related field from the database
+      await this.prisma.entityField.delete({
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          entityVersionId_permanentId: {
+            permanentId,
+            entityVersionId: field.entityVersionId
+          }
+        }
+      });
     });
   }
 
@@ -1911,60 +2044,60 @@ export class EntityService {
       args.data.properties?.relatedEntityId !==
         ((field.properties as unknown) as types.Lookup)?.relatedEntityId;
 
-    // Get the field's entity
-    const entity = await this.acquireLock(
-      { where: { id: field.entityVersion.entityId } },
-      user
-    );
+    return await this.useLocking(
+      field.entityVersion.entityId,
+      user,
+      async entity => {
+        // Validate args
+        this.validateFieldMutationArgs(args, entity);
 
-    // Validate args
-    this.validateFieldMutationArgs(args, entity);
+        // In case related field should be created or changed, assign properties a
+        // new related field ID
+        if (shouldCreateRelated || shouldChangeRelated) {
+          args.data.properties.relatedFieldId = cuid();
+        }
 
-    // In case related field should be created or changed, assign properties a
-    // new related field ID
-    if (shouldCreateRelated || shouldChangeRelated) {
-      args.data.properties.relatedFieldId = cuid();
-    }
+        // Validate data
+        await this.validateFieldData(args.data, entity);
 
-    // Validate data
-    await this.validateFieldData(args.data, entity);
+        /**
+         * @todo validate the field was not published - only specific properties of
+         * fields that were already published can be updated
+         */
 
-    /**
-     * @todo validate the field was not published - only specific properties of
-     * fields that were already published can be updated
-     */
+        // In case related field should be deleted or changed, delete the existing related field
+        if (shouldDeleteRelated || shouldChangeRelated) {
+          const properties = (field.properties as unknown) as types.Lookup;
 
-    // In case related field should be deleted or changed, delete the existing related field
-    if (shouldDeleteRelated || shouldChangeRelated) {
-      const properties = (field.properties as unknown) as types.Lookup;
+          /**@todo: when the field should be changed and we delete it, we loose the permanent ID and links to previous versions  */
+          await this.deleteRelatedField(
+            properties.relatedFieldId,
+            properties.relatedEntityId,
+            user
+          );
+        }
 
-      /**@todo: when the field should be changed and we delete it, we loose the permanent ID and links to previous versions  */
-      await this.deleteRelatedField(
-        properties.relatedFieldId,
-        properties.relatedEntityId,
-        user
-      );
-    }
+        // In case related field should be created or changed, create a new related field
+        if (shouldCreateRelated || shouldChangeRelated) {
+          // Cast the received properties as Lookup properties
+          const properties = (args.data.properties as unknown) as types.Lookup;
 
-    // In case related field should be created or changed, create a new related field
-    if (shouldCreateRelated || shouldChangeRelated) {
-      // Cast the received properties as Lookup properties
-      const properties = (args.data.properties as unknown) as types.Lookup;
+          await this.createRelatedField(
+            properties.relatedFieldId,
+            args.relatedFieldName,
+            args.relatedFieldDisplayName,
+            !properties.allowMultipleSelection,
+            properties.relatedEntityId,
+            entity.id,
+            field.permanentId,
+            user
+          );
+        }
 
-      await this.createRelatedField(
-        properties.relatedFieldId,
-        args.relatedFieldName,
-        args.relatedFieldDisplayName,
-        !properties.allowMultipleSelection,
-        properties.relatedEntityId,
-        entity.id,
-        field.permanentId,
-        user
-      );
-    }
-
-    return this.prisma.entityField.update(
-      omit(args, ['relatedFieldName', 'relatedFieldDisplayName'])
+        return this.prisma.entityField.update(
+          omit(args, ['relatedFieldName', 'relatedFieldDisplayName'])
+        );
+      }
     );
   }
 
@@ -1989,31 +2122,32 @@ export class EntityService {
       );
     }
 
-    await this.acquireLock(
-      { where: { id: field.entityVersion.entityId } },
-      user
-    );
+    return await this.useLocking(
+      field.entityVersion.entityId,
+      user,
+      async () => {
+        if (field.dataType === EnumDataType.Lookup) {
+          // Cast the field properties as Lookup properties
+          const properties = (field.properties as unknown) as types.Lookup;
+          try {
+            await this.deleteRelatedField(
+              properties.relatedFieldId,
+              properties.relatedEntityId,
+              user
+            );
+          } catch (error) {
+            //continue to delete the field even if the deletion of the related field failed.
+            //This is done in order to allow the user to workaround issues in any case when a related field is missing
+            console.log(
+              'Continue with FieldDelete even though the related field could not be deleted or was not found ',
+              error
+            );
+          }
+        }
 
-    if (field.dataType === EnumDataType.Lookup) {
-      // Cast the field properties as Lookup properties
-      const properties = (field.properties as unknown) as types.Lookup;
-      try {
-        await this.deleteRelatedField(
-          properties.relatedFieldId,
-          properties.relatedEntityId,
-          user
-        );
-      } catch (error) {
-        //continue to delete the field even if the deletion of the related field failed.
-        //This is done in order to allow the user to workaround issues in any case when a related field is missing
-        console.log(
-          'Continue with FieldDelete even though the related field could not be deleted or was not found ',
-          error
-        );
+        return this.prisma.entityField.delete(args);
       }
-    }
-
-    return this.prisma.entityField.delete(args);
+    );
   }
 
   /**
