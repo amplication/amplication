@@ -62,7 +62,7 @@
     "supertest": "4.0.2",
     "ts-jest": "27.0.3",
     "type-fest": "0.11.0",
-    "typescript": "4.2.3"
+    "typescript": "4.5.4"
   },
   "jest": {
     "preset": "ts-jest",
