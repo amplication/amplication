@@ -15,7 +15,6 @@ export { PendingChange } from './PendingChange';
 export { EnumPendingChangeResourceType } from './EnumPendingChangeResourceType';
 export { EnumPendingChangeAction } from './EnumPendingChangeAction';
 export { FindManyCommitsArgs } from './FindManyCommitsArgs';
-export { FindAvailableGithubReposArgs } from './FindAvailableGithubReposArgs';
 export { AppEnableSyncWithGithubRepoArgs } from './AppEnableSyncWithGithubRepoArgs';
 export { AppCreateWithEntitiesInput } from './AppCreateWithEntitiesInput';
 export { CreateAppWithEntitiesArgs } from './CreateAppWithEntitiesArgs';

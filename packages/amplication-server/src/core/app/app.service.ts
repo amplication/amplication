@@ -1,49 +1,43 @@
-import { Injectable } from '@nestjs/common';
-
-import { PrismaService } from 'nestjs-prisma';
-import * as semver from 'semver';
-import pluralize from 'pluralize';
-import { pascalCase } from 'pascal-case';
-import { isEmpty } from 'lodash';
-import { validateHTMLColorHex } from 'validate-color';
-import { App, User, Commit } from 'src/models';
-import { FindOneArgs } from 'src/dto';
-import { EntityService } from '../entity/entity.service';
-import { BlockService } from '../block/block.service';
-import { USER_ENTITY_NAME } from '../entity/constants';
-import {
-  SAMPLE_APP_DATA,
-  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  createSampleAppEntities
-} from './sampleApp';
-import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
-import {
-  CreateOneAppArgs,
-  FindManyAppArgs,
-  UpdateOneAppArgs,
-  CreateCommitArgs,
-  DiscardPendingChangesArgs,
-  FindPendingChangesArgs,
-  PendingChange,
-  FindAvailableGithubReposArgs,
-  AppEnableSyncWithGithubRepoArgs,
-  AppValidationResult,
-  AppValidationErrorTypes,
-  AppCreateWithEntitiesInput
-} from './dto';
-
-import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
-
 import { AppGenerationConfig } from '@amplication/data-service-generator';
-
-import { EnvironmentService } from '../environment/environment.service';
-import { InvalidColorError } from './InvalidColorError';
-import { GithubService } from '../github/github.service';
-import { GithubRepo } from '../github/dto/githubRepo';
-import { ReservedEntityNameError } from './ReservedEntityNameError';
+import { Injectable } from '@nestjs/common';
+import { isEmpty } from 'lodash';
+import { PrismaService } from 'nestjs-prisma';
+import { pascalCase } from 'pascal-case';
+import pluralize from 'pluralize';
+import * as semver from 'semver';
+import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
+import { App, Commit, User } from 'src/models';
+import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
+import { BlockService } from '../block/block.service';
+import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
+import { USER_ENTITY_NAME } from '../entity/constants';
+import { EntityService } from '../entity/entity.service';
+import { EnvironmentService } from '../environment/environment.service';
+import { GithubService } from '../github/github.service';
+import {
+  AppCreateWithEntitiesInput,
+  AppEnableSyncWithGithubRepoArgs,
+  AppValidationErrorTypes,
+  AppValidationResult,
+  CreateCommitArgs,
+  CreateOneAppArgs,
+  DiscardPendingChangesArgs,
+  FindManyAppArgs,
+  FindPendingChangesArgs,
+  PendingChange,
+  UpdateOneAppArgs
+} from './dto';
+import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
+import { InvalidColorError } from './InvalidColorError';
+import { ReservedEntityNameError } from './ReservedEntityNameError';
+import {
+  createSampleAppEntities,
+  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
+  SAMPLE_APP_DATA
+} from './sampleApp';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -641,30 +635,6 @@ export class AppService {
         githubBranch: null
       }
     });
-  }
-
-  async findAvailableGithubRepos(
-    args: FindAvailableGithubReposArgs
-  ): Promise<GithubRepo[]> {
-    const app = await this.app({
-      where: {
-        id: args.where.app.id
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    if (isEmpty(app.githubToken)) {
-      throw new Error(
-        `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
-      );
-    }
-
-    return await this.githubService.listRepoForAuthenticatedUser(
-      app.githubToken
-    );
   }
 
   /**

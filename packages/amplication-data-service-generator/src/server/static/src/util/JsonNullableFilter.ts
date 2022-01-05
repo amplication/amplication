@@ -1,5 +1,3 @@
-// @ts-ignore
-// eslint-disable-next-line
 import { JsonValue } from "type-fest";
 import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
@@ -19,7 +17,7 @@ export class JsonNullableFilter {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  equals?: JsonValue | null;
+  equals?: JsonValue;
 
   @ApiProperty({
     required: false,
@@ -29,5 +27,5 @@ export class JsonNullableFilter {
   @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  not?: JsonValue | null;
+  not?: JsonValue;
 }
