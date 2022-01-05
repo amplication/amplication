@@ -18,7 +18,6 @@
     "@rmwc/drawer": "6.1.4",
     "@rmwc/radio": "6.1.4",
     "@rmwc/snackbar": "6.1.4",
-    "@rmwc/tooltip": "6.1.4",
     "classnames": "2.2.6",
     "date-fns": "2.16.1",
     "lodash": "4.17.20",

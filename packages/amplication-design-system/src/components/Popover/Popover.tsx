@@ -1,28 +1,18 @@
 import React from "react";
 import classNames from "classnames";
 import "./Popover.scss";
-import { Tooltip, TooltipProps } from "@rmwc/tooltip";
-import "@rmwc/tooltip/styles";
+import { Popover as PrimerPopover, PopoverProps } from "@primer/components";
 
 const CLASS_NAME = "amp-popover";
 
-export type Props = TooltipProps;
+export type Props = PopoverProps & { content: React.ReactNode };
 
-export function Popover({
-  children,
-  className,
-  showArrow = true,
-  content,
-  ...rest
-}: Props) {
+export function Popover({ className, content, ...rest }: Props) {
   return (
-    <Tooltip
-      {...rest}
-      className={classNames(CLASS_NAME, className)}
-      showArrow={showArrow}
-      content={<div className={`${CLASS_NAME}__content`}>{content}</div>}
-    >
-      {children}
-    </Tooltip>
+    <PrimerPopover {...rest} className={classNames(CLASS_NAME, className)}>
+      <PrimerPopover.Content className={`${CLASS_NAME}__content`}>
+        {content}
+      </PrimerPopover.Content>
+    </PrimerPopover>
   );
 }
