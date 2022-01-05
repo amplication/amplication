@@ -89,7 +89,7 @@
     "semver": "7.3.5",
     "tar-stream": "2.2.0",
     "ts-morph": "^13.0.2",
-    "validate-color": "2.1.1",
+    "validate-color": "2.2.1",
     "winston": "3.3.3",
     "winston-cloud-logging": "1.0.2",
     "zlib": "1.0.5"
