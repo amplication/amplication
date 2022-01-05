@@ -111,10 +111,6 @@ export {
   EnumTimeSinceSize,
 } from "./components/TimeSince/TimeSince";
 
-export { Menu, Props as MenuProps } from "./components/Menu/Menu";
-
-export { MenuItem, Props as MenuItemProps } from "./components/Menu/MenuItem";
-
 export {
   CircleBadge,
   Props as CircleBadgeProps,
