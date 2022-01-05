@@ -121,7 +121,7 @@
     "ra-data-graphql-amplication": "0.0.6",
     "react": "16.14.0",
     "react-admin": "3.17.0",
-    "sleep-promise": "8.0.1",
+    "sleep-promise": "9.1.0",
     "ts-jest": "27.0.3",
     "ts-node": "9.1.1",
     "type-fest": "1.1.2",
