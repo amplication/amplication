@@ -1,5 +1,5 @@
-# By default, use node 14.15.3 as the base image
-FROM node:14-alpine as builder
+# Use node as the base image
+FROM node:16.13.1-alpine3.14 as builder
 
 # Define how verbose should npm install be
 ARG NPM_LOG_LEVEL=silent
@@ -11,12 +11,12 @@ ENV NPM_CONFIG_AUDIT=false
 ENV NPM_CONFIG_FUND=false
 
 # Update npm to version 7
-RUN npm i -g npm@7.3.0
+RUN npm i -g npm@8.1.2
 
-# Set the working direcotry
+# Set the working directory
 WORKDIR /app
 
-# Copy files specifiying dependencies
+# Copy files specifying dependencies
 COPY server/package.json server/package-lock.json ./server/
 COPY admin-ui/package.json admin-ui/package-lock.json ./admin-ui/
 
