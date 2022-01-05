@@ -107,7 +107,7 @@
     "@testing-library/react": "9.5.0",
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "13.2.0",
-    "@types/ajv-errors": "1.0.3",
+    "@types/ajv-errors": "2.0.0",
     "@types/amplitude-js": "5.11.2",
     "@types/chalk-pipe": "2.0.0",
     "@types/downloadjs": "1.4.2",
