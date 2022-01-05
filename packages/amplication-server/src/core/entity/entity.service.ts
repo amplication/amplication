@@ -1425,9 +1425,9 @@ export class EntityService {
         }
       });
 
-    if (isEmpty(permissionField)) {
-      throw new AmplicationError(`Record not found`);
-    }
+      if (isEmpty(permissionField)) {
+        throw new AmplicationError(`Record not found`);
+      }
 
       const id = permissionField[0].id;
 
