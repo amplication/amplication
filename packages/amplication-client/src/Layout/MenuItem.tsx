@@ -5,6 +5,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { Tooltip } from "@primer/components";
 
 import { Icon } from "@amplication/design-system";
+import "./MenuItem.scss";
 
 type Props = {
   /** Optional URL to navigate to on click  */
