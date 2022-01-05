@@ -18,6 +18,7 @@
     "flydrive",
     "Formik",
     "IBLOCK",
+    "isequalwith",
     "linkcode",
     "loglevel",
     "nestjs",
