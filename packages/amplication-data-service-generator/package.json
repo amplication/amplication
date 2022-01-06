@@ -118,7 +118,7 @@
     "passport": "0.4.1",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.0",
-    "ra-data-graphql-amplication": "0.0.6",
+    "ra-data-graphql-amplication": "0.0.8",
     "react": "16.14.0",
     "react-admin": "3.17.0",
     "sleep-promise": "8.0.1",
