@@ -55,7 +55,7 @@
     "rollup": "2.53.2",
     "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-postcss": "3.1.8",
-    "rollup-plugin-typescript2": "0.30.0",
+    "rollup-plugin-typescript2": "0.31.1",
     "sass": "1.35.2",
     "typescript": "3.9.10"
   },
