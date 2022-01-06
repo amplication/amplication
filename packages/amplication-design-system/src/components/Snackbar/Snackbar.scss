@@ -1,20 +1,3 @@
 @import "../../style/index.scss";
 .amp-snackbar {
-  button {
-    border: none;
-    background: none;
-    outline: none;
-  }
-
-  .mdc-snackbar__surface {
-    background: var(--white);
-  }
-
-  .mdc-snackbar__label {
-    color: var(--black100);
-  }
-
-  .amp-button {
-    color: var(--white);
-  }
 }
