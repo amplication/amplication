@@ -1,16 +1,23 @@
 import React from "react";
 import { useField } from "formik";
-import { Radio, RadioProps, RadioHTMLProps } from "@rmwc/radio";
-import "@rmwc/radio/styles";
+import classNames from "classnames";
+import { FormControlLabel, Radio, FormControlLabelProps } from "@mui/material";
 import "./RadioButtonField.scss";
 
-export type Props = RadioProps &
-  RadioHTMLProps & { name: string; label: string };
+export type Props = FormControlLabelProps & { name: string; label: string };
 
-export const RadioButtonField = (props: Props) => {
+export const RadioButtonField = ({ className, ...props }: Props) => {
+  const { name } = props;
   const [field] = useField({
-    ...props,
+    name,
     type: "radio",
   });
-  return <Radio className="amp-radio-field" {...field} {...props} />;
+
+  return (
+    <FormControlLabel
+      className={classNames("amp-radio-field", className)}
+      {...props}
+      control={<Radio classes={{ checked: "amp-radio-field--checked" }} />}
+    />
+  );
 };
