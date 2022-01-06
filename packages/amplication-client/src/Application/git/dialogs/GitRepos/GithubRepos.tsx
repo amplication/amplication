@@ -1,5 +1,9 @@
 import { NetworkStatus } from "@apollo/client";
-import { CircularProgress, Snackbar } from "@amplication/design-system";
+import {
+  CircularProgress,
+  Snackbar,
+  Tooltip,
+} from "@amplication/design-system";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import { EnumSourceControlService } from "../../../../models";
@@ -8,7 +12,6 @@ import useGetReposOfUser from "../../hooks/useGetReposOfUser";
 import useGitSelected from "../../hooks/useGitSelected";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
-import { Tooltip } from "@primer/components";
 
 const CLASS_NAME = "git-repos";
 

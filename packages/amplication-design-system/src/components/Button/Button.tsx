@@ -2,7 +2,7 @@ import React from "react";
 import {
   Button as PrimerButton,
   ButtonProps as PrimerButtonProps,
-} from "@primer/components";
+} from "@primer/react";
 import classNames from "classnames";
 import { Icon } from "../Icon/Icon";
 import { isEmpty } from "lodash";

@@ -4,8 +4,11 @@ import classNames from "classnames";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { UserAndTime, CircularProgress } from "@amplication/design-system";
-import { Tooltip } from "@primer/components";
+import {
+  UserAndTime,
+  CircularProgress,
+  Tooltip,
+} from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import BuildSummary from "./BuildSummary";
 import BuildHeader from "./BuildHeader";

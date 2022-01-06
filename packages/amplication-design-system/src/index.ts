@@ -41,8 +41,6 @@ export {
   Props as CheckboxListFieldProps,
 } from "./components/Checkbox/CheckboxListField";
 
-export { default as Provider } from "./components/Provider";
-
 export {
   SelectField,
   Props as SelectFieldProps,
@@ -154,3 +152,5 @@ export {
 } from "./components/CircularProgress/CircularProgress";
 
 export { Icon, Props as IconProps } from "./components/Icon/Icon";
+
+export { Tooltip, Props as TooltipProps } from "./components/Tooltip/Tooltip";

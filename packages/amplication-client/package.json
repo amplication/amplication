@@ -7,7 +7,6 @@
     "@amplication/design-system": "^0.11.0",
     "@apollo/client": "3.3.16",
     "@extra-set/difference": "2.2.3",
-    "@primer/components": "19.1.1",
     "@rooks/use-window-size": "3.6.0",
     "ajv-errors": "3.0.0",
     "capital-case": "1.0.4",

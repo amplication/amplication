@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Tooltip } from "@primer/components";
+import { Tooltip } from "@primer/react";
 import "./UserAndTime.scss";
 
 export type Props = {

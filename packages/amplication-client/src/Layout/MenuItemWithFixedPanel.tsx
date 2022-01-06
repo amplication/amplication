@@ -1,10 +1,9 @@
 import React, { ReactNode, useCallback } from "react";
 import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Tooltip } from "@primer/components";
 import { MenuFixedPanel } from "../util/teleporter";
 
-import { Icon } from "@amplication/design-system";
+import { Icon, Tooltip } from "@amplication/design-system";
 
 type Props = {
   /** Text to be displayed as a tooltip */

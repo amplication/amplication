@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import "./Popover.scss";
-import { Popover as PrimerPopover, PopoverProps } from "@primer/components";
+import { Popover as PrimerPopover, PopoverProps } from "@primer/react";
 
 const CLASS_NAME = "amp-popover";
 

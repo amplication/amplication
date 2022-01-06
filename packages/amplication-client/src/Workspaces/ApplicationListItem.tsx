@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Tooltip } from "@primer/components";
 import { useTracking } from "../util/analytics";
 
 import * as models from "../models";
@@ -15,6 +14,7 @@ import {
   EnumPanelStyle,
   Panel,
   Icon,
+  Tooltip,
 } from "@amplication/design-system";
 
 type Props = {
