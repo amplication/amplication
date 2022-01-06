@@ -8,8 +8,10 @@
 
   &__generating {
     background: var(--primary);
-    .rmwc-circular-progress {
-      color: var(--static-white);
+    .amp-circular-progress {
+      .MuiCircularProgress-root {
+        color: var(--static-white);
+      }
     }
   }
 

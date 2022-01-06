@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { Popover } from "@amplication/design-system";
 import classNames from "classnames";
 import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import PendingChangesBar from "../VersionControl/PendingChangesBar";
@@ -47,28 +46,16 @@ const PendingChangesMenuItem = ({
         [popoverOpenClassName]: pendingChangesPopoverOpen,
       })}
     >
-      <Popover
-        className={`${CLASS_NAME}__popover`}
-        content={
-          <div>
-            Click here to view and commit your pending changes, and start a new
-            build.
-          </div>
-        }
-        open={pendingChangesPopoverOpen}
-        align={"right"}
+      <MenuItemWithFixedPanel
+        tooltip="Pending Changes"
+        icon="pending_changes_outline"
+        isOpen={isOpen}
+        panelKey={panelKey}
+        badgeValue={badgeValue}
+        onClick={handleClick}
       >
-        <MenuItemWithFixedPanel
-          tooltip="Pending Changes"
-          icon="pending_changes_outline"
-          isOpen={isOpen}
-          panelKey={panelKey}
-          badgeValue={badgeValue}
-          onClick={handleClick}
-        >
-          <PendingChangesBar applicationId={applicationId} />
-        </MenuItemWithFixedPanel>
-      </Popover>
+        <PendingChangesBar applicationId={applicationId} />
+      </MenuItemWithFixedPanel>
     </div>
   );
 };
