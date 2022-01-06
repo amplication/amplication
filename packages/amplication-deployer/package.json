@@ -22,7 +22,7 @@
     "dockerode": "3.2.1",
     "get-stream": "6.0.0",
     "reflect-metadata": "0.1.13",
-    "tar-fs": "2.1.0",
+    "tar-fs": "2.1.1",
     "winston": "3.3.3"
   },
   "devDependencies": {
@@ -30,7 +30,7 @@
     "@types/get-stream": "3.0.2",
     "@types/jest": "26.0.14",
     "@types/normalize-path": "3.0.0",
-    "@types/tar-fs": "2.0.0",
+    "@types/tar-fs": "2.0.1",
     "fast-glob": "3.2.7",
     "jest": "27.0.6",
     "normalize-path": "3.0.0",
