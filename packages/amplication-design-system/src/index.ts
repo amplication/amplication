@@ -116,11 +116,6 @@ export {
   Props as CircleBadgeProps,
 } from "./components/CircleBadge/CircleBadge";
 
-export {
-  default as MainLayout,
-  Props as MainLayoutProps,
-} from "./components/MainLayout/MainLayout";
-
 export { default as Page, Props as PageProps } from "./components/Page/Page";
 
 export {
