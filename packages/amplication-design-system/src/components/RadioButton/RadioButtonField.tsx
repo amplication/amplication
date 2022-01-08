@@ -16,6 +16,7 @@ export const RadioButtonField = ({ className, ...props }: Props) => {
   return (
     <FormControlLabel
       className={classNames("amp-radio-field", className)}
+      {...field}
       {...props}
       control={<Radio classes={{ checked: "amp-radio-field--checked" }} />}
     />
