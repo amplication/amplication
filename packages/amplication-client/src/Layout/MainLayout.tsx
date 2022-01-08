@@ -91,7 +91,7 @@ const Menu = ({ children }: MenuProps) => {
               className="main-layout__side__popover"
               content={<SupportMenu />}
               open={supportMenuOpen}
-              align={"right"}
+              placement="right"
             >
               <MenuItem
                 icon="help_outline"
