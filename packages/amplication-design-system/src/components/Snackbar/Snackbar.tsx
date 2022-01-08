@@ -1,10 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import classNames from "classnames";
-import {
-  Snackbar as MuiSnackbar,
-  SnackbarProps,
-  SnackbarCloseReason,
-} from "@mui/material";
+import { Snackbar as MuiSnackbar, SnackbarProps } from "@mui/material";
 
 import "./Snackbar.scss";
 

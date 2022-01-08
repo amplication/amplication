@@ -89,7 +89,6 @@ const CustomOption = <
     children,
     className,
     cx,
-    getStyles,
     isDisabled,
     isFocused,
     isSelected,

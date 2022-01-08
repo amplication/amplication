@@ -1,7 +1,6 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 import { Tooltip } from "./Tooltip";
-import { Button } from "../Button/Button";
 
 export default {
   title: "Tooltip",
