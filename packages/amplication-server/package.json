@@ -60,7 +60,7 @@
     "@slynova/flydrive-gcs": "1.0.3",
     "adm-zip": "0.5.5",
     "ajv": "6.12.6",
-    "apollo-server-express": "3.5.0",
+    "apollo-server-express": "3.6.1",
     "bcrypt": "5.0.1",
     "class-transformer": "0.3.1",
     "class-validator": "0.12.2",

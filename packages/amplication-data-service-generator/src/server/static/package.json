@@ -28,7 +28,7 @@
     "@nestjs/serve-static": "2.2.2",
     "@nestjs/swagger": "5.1.5",
     "@prisma/client": "3.6.0",
-    "apollo-server-express": "3.5.0",
+    "apollo-server-express": "3.6.1",
     "bcrypt": "5.0.1",
     "class-transformer": "0.3.1",
     "class-validator": "0.12.2",
