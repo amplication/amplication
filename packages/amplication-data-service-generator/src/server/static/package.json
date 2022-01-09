@@ -42,7 +42,7 @@
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.0",
     "reflect-metadata": "0.1.13",
-    "swagger-ui-express": "4.1.6",
+    "swagger-ui-express": "4.3.0",
     "ts-node": "9.1.1"
   },
   "devDependencies": {
