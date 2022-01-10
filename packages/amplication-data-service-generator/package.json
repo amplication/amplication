@@ -41,7 +41,7 @@
     "recast": "0.20.4",
     "replace-ext": "2.0.0",
     "semver": "7.3.5",
-    "winston": "3.3.3"
+    "winston": "3.3.4"
   },
   "devDependencies": {
     "@apollo/client": "3.3.19",
