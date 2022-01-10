@@ -14,6 +14,7 @@ import BuildSummary from "./BuildSummary";
 import BuildHeader from "./BuildHeader";
 import PendingChangesContext from "./PendingChangesContext";
 import "./LastCommit.scss";
+import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
 
 type TData = {
   commits: models.Commit[];
@@ -108,6 +109,7 @@ const LastCommit = ({ applicationId }: Props) => {
           )}
         </>
       )}
+      <PendingChangesMenuItem applicationId={applicationId} />
     </div>
   );
 };
