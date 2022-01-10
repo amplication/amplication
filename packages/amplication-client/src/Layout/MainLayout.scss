@@ -32,7 +32,7 @@ $expand-button-padding: 4px;
     overflow: hidden;
     box-sizing: border-box;
   }
-  &__side {
+  &__menu {
     height: 100%;
     width: auto;
     background-color: var(--menu-background-color);
@@ -52,20 +52,6 @@ $expand-button-padding: 4px;
       overflow: visible;
       display: flex;
       flex-direction: row;
-
-      &__menu-fixed-panel {
-        @include scrollbars($default-scroll-width, var(--black60), transparent);
-        background-color: var(--menu-fixed-panel-background);
-        height: 100%;
-        width: var(--fixed-menu-panel-width);
-        max-width: var(--fixed-menu-panel-max-width);
-        overflow: auto;
-        transition: width var(--menu-expand-animation-duration) ease-in;
-
-        &:empty {
-          width: 0;
-        }
-      }
 
       &__main-menu {
         height: 100%;
@@ -169,8 +155,26 @@ $expand-button-padding: 4px;
     }
   }
 
+  &__aside {
+    border-left: $border-black10;
+
+    &__expandable {
+      @include scrollbars($default-scroll-width, var(--black60), transparent);
+      background-color: var(--menu-fixed-panel-background);
+      height: 100%;
+      width: var(--fixed-menu-panel-width);
+      max-width: var(--fixed-menu-panel-max-width);
+      overflow: auto;
+      transition: width var(--menu-expand-animation-duration) ease-in;
+
+      &:empty {
+        width: 0;
+      }
+    }
+  }
+
   &--mobile {
-    .main-layout__side {
+    .main-layout__menu {
       &.mdc-drawer {
         background-color: transparent;
         box-shadow: none;

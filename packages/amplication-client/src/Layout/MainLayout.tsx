@@ -9,7 +9,6 @@ import { ReactComponent as LogoTextual } from "../assets/logo-textual.svg";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 import UserBadge from "../Components/UserBadge";
-import { MenuFixedPanel } from "../util/teleporter";
 import { Popover, Icon } from "@amplication/design-system";
 import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
@@ -63,9 +62,9 @@ const Menu = ({ children }: MenuProps) => {
   }, [setSupportMenuOpen, supportMenuOpen, trackEvent]);
 
   return (
-    <div className={classNames("main-layout__side")}>
-      <div className="main-layout__side__wrapper">
-        <div className="main-layout__side__wrapper__main-menu">
+    <div className={classNames("main-layout__menu")}>
+      <div className="main-layout__menu__wrapper">
+        <div className="main-layout__menu__wrapper__main-menu">
           <div className="logo-container">
             <Link to="/" className="logo-container__logo">
               <Icon icon="logo" className="main-logo" />
@@ -88,7 +87,7 @@ const Menu = ({ children }: MenuProps) => {
           <div className="bottom-menu-container">
             <DarkModeToggle />
             <Popover
-              className="main-layout__side__popover"
+              className="main-layout__menu__popover"
               content={<SupportMenu />}
               open={supportMenuOpen}
               placement="right"
@@ -110,7 +109,6 @@ const Menu = ({ children }: MenuProps) => {
             />
           </div>
         </div>
-        <MenuFixedPanel.Target className="main-layout__side__wrapper__menu-fixed-panel" />
       </div>
     </div>
   );
@@ -127,5 +125,15 @@ const Content = ({ children }: ContentProps) => {
 };
 
 MainLayout.Content = Content;
+
+type AsideProps = {
+  children?: React.ReactNode;
+};
+
+const Aside = ({ children }: AsideProps) => {
+  return <div className="main-layout__aside">{children}</div>;
+};
+
+MainLayout.Aside = Aside;
 
 export default MainLayout;
