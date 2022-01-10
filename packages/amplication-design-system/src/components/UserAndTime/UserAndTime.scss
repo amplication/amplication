@@ -37,4 +37,12 @@ $letter-spacing: 1px;
     margin-right: var(--default-spacing-small);
     letter-spacing: $letter-spacing;
   }
+
+  &--loading {
+    max-width: 120px;
+    .user-and-time__initials {
+      background-color: var(--black30);
+      content: " ";
+    }
+  }
 }

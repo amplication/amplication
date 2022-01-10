@@ -1,35 +1,44 @@
 import React, { useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Tooltip } from "@primer/react";
+import { Tooltip } from "../Tooltip/Tooltip";
 import "./UserAndTime.scss";
+import "skeleton-screen-css";
+import classNames from "classnames";
 
 export type Props = {
   account?: { firstName?: string; lastName?: string };
   time: Date;
+  loading?: boolean;
 };
 
+const CLASS_NAME = "user-and-time";
+const LOADING_ANIMATION_CLASS_NAME = "ssc-head-line";
 const DIRECTION = "n";
 
-export function UserAndTime({ account, time }: Props) {
+export function UserAndTime({ loading, account, time }: Props) {
   const { firstName, lastName } = account || {};
   const formattedTime = useMemo(() => {
     return formatTimeToNow(time);
   }, [time]);
 
   return (
-    <span className="user-and-time">
+    <span
+      className={classNames(CLASS_NAME, {
+        [`${CLASS_NAME}--loading`]: loading,
+        [LOADING_ANIMATION_CLASS_NAME]: loading,
+      })}
+    >
       <Tooltip
-        className="amp-menu-item__tooltip"
         aria-label={`${firstName} ${lastName}`}
         direction={DIRECTION}
         noDelay
       >
-        <span className="user-and-time__initials">
-          {firstName && firstName.substr(0, 1).toUpperCase()}
-          {lastName && lastName.substr(0, 1).toUpperCase()}
+        <span className={classNames(`${CLASS_NAME}__initials`)}>
+          {!loading && firstName && firstName.substr(0, 1).toUpperCase()}
+          {!loading && lastName && lastName.substr(0, 1).toUpperCase()}
         </span>
       </Tooltip>
-      {formattedTime}
+      {!loading && formattedTime}
     </span>
   );
 }
