@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Icon } from "../Icon/Icon";
-import { Tooltip } from "@primer/react";
+import { Tooltip } from "../Tooltip/Tooltip";
 import classNames from "classnames";
 import { formatDistanceToNow } from "date-fns";
 import "./TimeSince.scss";

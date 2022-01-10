@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 
 import "./Popover.scss";
-import { Tooltip, TooltipProps, tooltipClasses } from "@mui/material";
+import { Tooltip, TooltipProps } from "@mui/material";
 
 const CLASS_NAME = "amp-popover";
 
