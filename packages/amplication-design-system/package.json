@@ -20,7 +20,8 @@
     "date-fns": "2.16.1",
     "lodash": "4.17.20",
     "react-animate-height": "2.0.23",
-    "react-select": "5.2.1"
+    "react-select": "5.2.1",
+    "skeleton-screen-css": "^1.0.1"
   },
   "devDependencies": {
     "@types/classnames": "^2.3.1",

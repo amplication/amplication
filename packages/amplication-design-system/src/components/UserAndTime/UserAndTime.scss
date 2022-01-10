@@ -8,10 +8,8 @@ $letter-spacing: 1px;
   @include semiBold;
   height: var(--time-since-height);
   border-radius: calc(var(--time-since-height) / 2);
-
   margin: 0;
   white-space: nowrap;
-
   padding-right: var(--default-spacing);
   position: relative;
   background-color: var(--black10);
@@ -19,6 +17,10 @@ $letter-spacing: 1px;
   flex-direction: row;
   align-items: center;
   box-sizing: border-box;
+
+  &.ssc-head-line {
+    background-color: var(--black10);
+  }
 
   & &__initials {
     box-sizing: border-box;
