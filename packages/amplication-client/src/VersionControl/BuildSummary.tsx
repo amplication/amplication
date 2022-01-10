@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
-import { Icon, Tooltip } from "@amplication/design-system";
+import { Icon, Tooltip, CircularProgress } from "@amplication/design-system";
 import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
@@ -34,13 +34,14 @@ export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
   build: models.Build;
+  generating: boolean;
   onError: (error: Error) => void;
 };
 
 const LOCAL_STORAGE_KEY_SHOW_GITHUB_HELP = "ShowGitHubContextHelp";
 const LOCAL_STORAGE_KEY_SHOW_SANDBOX_HELP = "ShowGSandboxContextHelp";
 
-const BuildSummary = ({ build, onError }: Props) => {
+const BuildSummary = ({ generating, build, onError }: Props) => {
   const { data } = useBuildWatchStatus(build);
 
   const [showGitHelp, setShowGitHubHelp] = useLocalStorage(
@@ -138,6 +139,7 @@ const BuildSummary = ({ build, onError }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Primary}
               icon="github"
+              disabled={generating}
               eventData={{
                 eventName: "openGithubPullRequest",
               }}
@@ -165,6 +167,7 @@ const BuildSummary = ({ build, onError }: Props) => {
               <Button
                 buttonStyle={EnumButtonStyle.Primary}
                 icon="github"
+                disabled={generating}
                 eventData={{
                   eventName: "buildConnectToGithub",
                 }}
@@ -187,7 +190,8 @@ const BuildSummary = ({ build, onError }: Props) => {
           <Button
             buttonStyle={EnumButtonStyle.Clear}
             disabled={
-              stepGenerateCode.status !== models.EnumActionStepStatus.Success
+              stepGenerateCode.status !== models.EnumActionStepStatus.Success ||
+              generating
             }
             onClick={handleDownloadClick}
             icon="download1"
@@ -199,71 +203,80 @@ const BuildSummary = ({ build, onError }: Props) => {
         </Tooltip>
       </div>
 
-      <HelpPopover
-        onDismiss={handleDismissHelpSandbox}
-        content={
-          <div>
-            All your committed changes are continuously deployed to a sandbox
-            environment on the Amplication cloud so you can easily access your
-            application for testing and development purposes.
-          </div>
-        }
-        open={showSandboxHelp === "false" ? false : true}
-        placement="top-start"
-      >
-        {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
-        stepDeploy?.status === models.EnumActionStepStatus.Running ? (
-          <Link to={`/${build.appId}/builds/${build.id}`}>
-            <Button
-              buttonStyle={EnumButtonStyle.Secondary}
-              eventData={{
-                eventName: "BuildSandboxViewDetailsClick",
-              }}
-            >
-              <BuildStepsStatus status={models.EnumActionStepStatus.Running} />
-              Preparing sandbox environment...
-            </Button>
-          </Link>
-        ) : deployment &&
-          stepDeploy?.status === models.EnumActionStepStatus.Success ? (
-          <a href={deployment.environment.address} target="app">
-            <Button
-              buttonStyle={EnumButtonStyle.Secondary}
-              icon="link_2"
-              eventData={{
-                eventName: "openPreviewApp",
-                versionNumber: data.build.version,
-              }}
-            >
-              Open Sandbox environment
-            </Button>
-          </a>
-        ) : (
-          <div className={`${CLASS_NAME}__sandbox`}>
-            {stepDeploy ? (
-              <Link to={`/${build.appId}/builds/${build.id}`}>
-                <Button
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  eventData={{
-                    eventName: "buildFailedViewDetails",
-                  }}
-                >
-                  <BuildStepsStatus
-                    status={models.EnumActionStepStatus.Failed}
-                  />
-                  Deployment to sandbox failed
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Icon size="xsmall" icon="info_circle" />
+      {generating ? (
+        <div className={`${CLASS_NAME}__generating`}>
+          <CircularProgress />
+          Generating new build...
+        </div>
+      ) : (
+        <HelpPopover
+          onDismiss={handleDismissHelpSandbox}
+          content={
+            <div>
+              All your committed changes are continuously deployed to a sandbox
+              environment on the Amplication cloud so you can easily access your
+              application for testing and development purposes.
+            </div>
+          }
+          open={showSandboxHelp === "false" ? false : true}
+          placement="top-start"
+        >
+          {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
+          stepDeploy?.status === models.EnumActionStepStatus.Running ? (
+            <Link to={`/${build.appId}/builds/${build.id}`}>
+              <Button
+                buttonStyle={EnumButtonStyle.Secondary}
+                eventData={{
+                  eventName: "BuildSandboxViewDetailsClick",
+                }}
+              >
+                <BuildStepsStatus
+                  status={models.EnumActionStepStatus.Running}
+                />
+                Preparing sandbox environment...
+              </Button>
+            </Link>
+          ) : deployment &&
+            stepDeploy?.status === models.EnumActionStepStatus.Success ? (
+            <a href={deployment.environment.address} target="app">
+              <Button
+                buttonStyle={EnumButtonStyle.Secondary}
+                icon="link_2"
+                eventData={{
+                  eventName: "openPreviewApp",
+                  versionNumber: data.build.version,
+                }}
+              >
+                Open Sandbox environment
+              </Button>
+            </a>
+          ) : (
+            <div className={`${CLASS_NAME}__sandbox`}>
+              {stepDeploy ? (
+                <Link to={`/${build.appId}/builds/${build.id}`}>
+                  <Button
+                    buttonStyle={EnumButtonStyle.Secondary}
+                    eventData={{
+                      eventName: "buildFailedViewDetails",
+                    }}
+                  >
+                    <BuildStepsStatus
+                      status={models.EnumActionStepStatus.Failed}
+                    />
+                    Deployment to sandbox failed
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Icon size="xsmall" icon="info_circle" />
 
-                <span>Commit changes to start deployment to sandbox. </span>
-              </>
-            )}
-          </div>
-        )}
-      </HelpPopover>
+                  <span>Commit changes to start deployment to sandbox. </span>
+                </>
+              )}
+            </div>
+          )}
+        </HelpPopover>
+      )}
     </div>
   );
 };

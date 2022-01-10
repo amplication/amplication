@@ -110,7 +110,11 @@ const LastCommit = ({ applicationId }: Props) => {
             />
           </SkeletonWrapper>
 
-          <BuildSummary build={build} onError={setError} />
+          <BuildSummary
+            build={build}
+            onError={setError}
+            generating={generating}
+          />
         </>
       )}
 
