@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
-import { Icon } from "@amplication/design-system";
+import { Icon, Tooltip } from "@amplication/design-system";
 import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
@@ -156,7 +156,7 @@ const BuildSummary = ({ build, onError }: Props) => {
               </div>
             }
             open={showGitHelp === "false" ? false : true}
-            align={"topLeft"}
+            placement="top-start"
           >
             <Link
               to={`/${build.appId}/github`}
@@ -183,20 +183,20 @@ const BuildSummary = ({ build, onError }: Props) => {
             </span>
           </div>
         )}
-        <Button
-          buttonStyle={EnumButtonStyle.Secondary}
-          disabled={
-            stepGenerateCode.status !== models.EnumActionStepStatus.Success
-          }
-          onClick={handleDownloadClick}
-          icon="download1"
-          eventData={{
-            eventName: "downloadBuild",
-            versionNumber: data.build.version,
-          }}
-        >
-          Download Code
-        </Button>
+        <Tooltip aria-label={"Download Code"} direction="nw">
+          <Button
+            buttonStyle={EnumButtonStyle.Clear}
+            disabled={
+              stepGenerateCode.status !== models.EnumActionStepStatus.Success
+            }
+            onClick={handleDownloadClick}
+            icon="download1"
+            eventData={{
+              eventName: "downloadBuild",
+              versionNumber: data.build.version,
+            }}
+          />
+        </Tooltip>
       </div>
 
       <HelpPopover
@@ -209,7 +209,7 @@ const BuildSummary = ({ build, onError }: Props) => {
           </div>
         }
         open={showSandboxHelp === "false" ? false : true}
-        align={"top"}
+        placement="top-start"
       >
         {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
         stepDeploy?.status === models.EnumActionStepStatus.Running ? (
