@@ -1,5 +1,5 @@
 # Use node as the base image
-FROM node:16.13.1-alpine3.14 as builder
+FROM node:16.13.2-alpine3.14 as builder
 
 # Define how verbose should npm install be
 ARG NPM_LOG_LEVEL=silent
