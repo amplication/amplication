@@ -62,10 +62,10 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "1.26.0",
-    "@oclif/test": "1.2.8",
+    "@oclif/test": "1.2.9",
     "@types/node": "10.17.60",
     "@types/pluralize": "0.0.29",
-    "@types/url-join": "4.0.0",
+    "@types/url-join": "4.0.1",
     "@typescript-eslint/eslint-plugin": "2.34.0",
     "@typescript-eslint/parser": "2.34.0",
     "eslint": "5.16.0",
