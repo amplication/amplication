@@ -5,7 +5,8 @@ import { AuthService } from "../../auth.service";
 import { IAuthStrategy } from "../../IAuthStrategy";
 import { UserInfo } from "../../UserInfo";
 
-export class BasicStrategyBase extends PassportStrategy(Strategy)
+export class BasicStrategyBase
+  extends PassportStrategy(Strategy)
   implements IAuthStrategy {
   constructor(protected readonly authService: AuthService) {
     super();

@@ -7,7 +7,8 @@ import { IAuthStrategy } from "../../IAuthStrategy";
 import { UserService } from "../../user/user.service";
 import { UserInfo } from "../../UserInfo";
 
-export class JwtStrategyBase extends PassportStrategy(Strategy)
+export class JwtStrategyBase
+  extends PassportStrategy(Strategy)
   implements IAuthStrategy {
   constructor(
     protected readonly userService: UserService,
