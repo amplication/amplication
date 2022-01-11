@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@google-cloud/cloudbuild": "2.0.3",
-    "@google-cloud/storage": "5.3.0",
+    "@google-cloud/storage": "5.17.0",
     "@nestjs/common": "7.4.4",
     "dockerode": "3.2.1",
     "get-stream": "6.0.0",
