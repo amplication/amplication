@@ -63,7 +63,7 @@
     "apollo-server-express": "3.5.0",
     "bcrypt": "5.0.1",
     "class-transformer": "0.3.1",
-    "class-validator": "0.12.2",
+    "class-validator": "0.13.2",
     "cuid": "2.1.8",
     "date-fns": "2.22.1",
     "dockerode": "3.2.1",
