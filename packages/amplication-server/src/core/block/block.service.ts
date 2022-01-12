@@ -13,6 +13,7 @@ import {
   Prisma
 } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { DiffService } from 'src/services/diff.service';
 import {
   Block,
   BlockVersion,
@@ -40,6 +41,13 @@ import {
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
+const NON_COMPARABLE_PROPERTIES = [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'versionNumber',
+  'commitId'
+];
 
 export type BlockPendingChange = {
   /** The id of the changed block */
@@ -55,7 +63,10 @@ export type BlockPendingChange = {
 
 @Injectable()
 export class BlockService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly diffService: DiffService
+  ) {}
 
   /** use NULL in the set of allowed parents to allow the block to be created without a parent */
   blockTypeAllowedParents: {
@@ -410,37 +421,37 @@ export class BlockService {
   ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
 
-    await this.acquireLock(args, user);
-
-    const version = await this.prisma.blockVersion.update({
-      data: {
-        settings: settings,
-        block: {
-          update: {
-            displayName,
-            description
+    return await this.useLocking(args.where.id, user, async () => {
+      const version = await this.prisma.blockVersion.update({
+        data: {
+          settings: settings,
+          block: {
+            update: {
+              displayName,
+              description
+            }
+          },
+          displayName,
+          description
+        },
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          blockId_versionNumber: {
+            blockId: args.where.id,
+            versionNumber: CURRENT_VERSION_NUMBER
           }
         },
-        displayName,
-        description
-      },
-      where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        blockId_versionNumber: {
-          blockId: args.where.id,
-          versionNumber: CURRENT_VERSION_NUMBER
-        }
-      },
-      include: {
-        block: {
-          include: {
-            parentBlock: true
+        include: {
+          block: {
+            include: {
+              parentBlock: true
+            }
           }
         }
-      }
-    });
+      });
 
-    return this.versionToIBlock<T>(version);
+      return this.versionToIBlock<T>(version);
+    });
   }
 
   // Tries to acquire a lock on the given block for the given user.
@@ -493,6 +504,75 @@ export class BlockService {
         lockedAt: null
       }
     });
+  }
+
+  /**
+   * Has the responsibility to unlock or keep a block locked based on whether
+   * it has changes. It's supposed to be used after an operation that uses locking
+   * was made.
+   * @param blockId A locked block
+   */
+  async updateLock(blockId: string): Promise<void> {
+    const hasPendingChanges = await this.hasPendingChanges(blockId);
+
+    if (!hasPendingChanges) {
+      await this.releaseLock(blockId);
+    }
+  }
+
+  /**
+   * Higher order function responsible for encapsulating the locking behaviour.
+   * It will lock a block, execute some provided operations on it then update
+   * the lock (unlock it or keep it locked).
+   * @param blockId The block on which the locking and operations are performed
+   * @param user The user requesting the operations
+   * @param fn A function containing the operations on the block
+   * @returns What the provided function `fn` returns
+   */
+  async useLocking<T>(
+    blockId: string,
+    user: User,
+    fn: (block: Block) => T
+  ): Promise<T> {
+    const block = await this.acquireLock({ where: { id: blockId } }, user);
+
+    try {
+      return await fn(block);
+    } finally {
+      await this.updateLock(blockId);
+    }
+  }
+
+  /**
+   * Checks if the block has any meaningful changes (some generated properties are ignored : id, createdAt...)
+   * between its current and last version.
+   * @param blockId The block to check for changes
+   * @returns whether the block's current version has changes
+   */
+  async hasPendingChanges(blockId: string): Promise<boolean> {
+    const blockVersions = await this.prisma.blockVersion.findMany({
+      where: {
+        blockId
+      },
+      orderBy: {
+        versionNumber: Prisma.SortOrder.asc
+      }
+    });
+
+    // If there's only one version, lastVersion will be undefined
+    const currentVersion = blockVersions.shift();
+    const lastVersion = last(blockVersions);
+
+    if (currentVersion.deleted && !lastVersion) {
+      // The block was created than deleted => there are no changes
+      return false;
+    }
+
+    return this.diffService.areDifferent(
+      currentVersion,
+      lastVersion,
+      NON_COMPARABLE_PROPERTIES
+    );
   }
 
   /**
