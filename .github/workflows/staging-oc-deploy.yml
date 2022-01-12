@@ -36,7 +36,7 @@ jobs:
       - run: terraform init
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          working-directory: terraform/envs/staging-oc
+        working-directory: terraform/envs/staging-oc
 
       - run: terraform apply -auto-approve -lock-timeout=1200s
         env:
