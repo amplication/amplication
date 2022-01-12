@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from 'nestjs-prisma';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
+import { DiffModule } from 'src/services/diff.module';
 import { EntityService } from './entity.service';
 import { EntityResolver } from './entity.resolver';
 import { EntityVersionResolver } from './entityVersion.resolver';
@@ -12,7 +13,8 @@ import { UserModule } from '../user/user.module';
     PrismaModule,
     PermissionsModule,
     UserModule,
-    JsonSchemaValidationModule
+    JsonSchemaValidationModule,
+    DiffModule
   ],
   providers: [EntityService, EntityResolver, EntityVersionResolver],
   exports: [EntityService, EntityResolver, EntityVersionResolver]
