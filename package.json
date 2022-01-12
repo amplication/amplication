@@ -23,7 +23,7 @@
   "dependencies": {
     "lerna": "4.0.0",
     "semver": "6.3.0",
-    "winston": "3.3.3"
+    "winston": "3.3.4"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.21.8",
