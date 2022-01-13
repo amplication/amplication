@@ -61,7 +61,7 @@
     "url-join": "4.0.1"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "1.26.0",
+    "@oclif/dev-cli": "1.26.10",
     "@oclif/test": "1.2.9",
     "@types/node": "10.17.60",
     "@types/pluralize": "0.0.29",
