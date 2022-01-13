@@ -36,7 +36,7 @@
     "@storybook/node-logger": "6.1.9",
     "@storybook/preset-create-react-app": "3.1.5",
     "@storybook/react": "6.0.28",
-    "@types/lodash": "4.14.162",
+    "@types/lodash": "4.14.178",
     "@types/react": "17.0.34",
     "@types/react-select": "3.0.27",
     "@typescript-eslint/eslint-plugin": "4.28.3",
