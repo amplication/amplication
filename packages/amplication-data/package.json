@@ -12,11 +12,11 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@types/jest": "26.0.19",
+    "@types/jest": "26.0.24",
     "@types/json-schema": "7.0.8",
     "@types/normalize-path": "3.0.0",
     "fast-glob": "3.2.7",
-    "jest": "27.0.6",
+    "jest": "27.4.7",
     "json-schema-to-typescript": "10.1.5",
     "normalize-path": "3.0.0",
     "npm-run-all": "4.1.5",

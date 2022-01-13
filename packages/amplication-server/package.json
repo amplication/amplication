@@ -124,7 +124,7 @@
     "eslint": "7.23.0",
     "eslint-import-resolver-lerna": "2.0.0",
     "eslint-plugin-import": "2.23.4",
-    "jest": "27.0.6",
+    "jest": "27.4.7",
     "jest-mock-extended": "2.0.4",
     "prettier": "1.19.1",
     "rimraf": "3.0.2",
