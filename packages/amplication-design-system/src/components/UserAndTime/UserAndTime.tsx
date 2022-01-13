@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Tooltip } from "@primer/components";
 import "./UserAndTime.scss";
@@ -8,23 +8,23 @@ export type Props = {
   time: Date;
 };
 
-const DIRECTION = "n";
-
 export function UserAndTime({ account, time }: Props) {
+  const [tooltipDirection, setTooltipDiretion] = useState("s");
   const { firstName, lastName } = account || {};
   const formattedTime = useMemo(() => {
     return formatTimeToNow(time);
   }, [time]);
+  const changeTooltipDirection = (pageY: number) => setTooltipDiretion(pageY < 100 ? "s" : "n");
 
   return (
     <span className="user-and-time">
       <Tooltip
         className="amp-menu-item__tooltip"
         aria-label={`${firstName} ${lastName}`}
-        direction={DIRECTION}
+        direction={tooltipDirection}
         noDelay
       >
-        <span className="user-and-time__initials">
+        <span className="user-and-time__initials" onMouseOver={(e) => changeTooltipDirection(e.pageY)}>
           {firstName && firstName.substr(0, 1).toUpperCase()}
           {lastName && lastName.substr(0, 1).toUpperCase()}
         </span>
