@@ -80,7 +80,7 @@
     "@types/passport-jwt": "^3.0.6",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "2.1.5",
-    "@types/react": "16.14.11",
+    "@types/react": "16.14.21",
     "@types/react-dom": "16.9.14",
     "@types/react-router-dom": "5.1.8",
     "@types/replace-ext": "2.0.0",
