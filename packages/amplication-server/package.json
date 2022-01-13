@@ -38,7 +38,7 @@
     "@apollo/gateway": "0.42.3",
     "@codebrew/nestjs-storage": "0.1.6",
     "@extra-set/difference": "2.2.3",
-    "@google-cloud/cloudbuild": "2.0.3",
+    "@google-cloud/cloudbuild": "2.6.0",
     "@google-cloud/secret-manager": "3.8.1",
     "@google-cloud/storage": "5.3.0",
     "@google-cloud/trace-agent": "5.1.3",

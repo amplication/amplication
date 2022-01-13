@@ -15,7 +15,7 @@
     ]
   },
   "dependencies": {
-    "@google-cloud/cloudbuild": "2.0.3",
+    "@google-cloud/cloudbuild": "2.6.0",
     "@nestjs/common": "7.4.4",
     "dockerode": "3.2.1",
     "reflect-metadata": "0.1.13",
