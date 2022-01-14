@@ -13,6 +13,7 @@
   "dependencies": {
     "@emotion/react": "11.7.1",
     "@emotion/styled": "11.6.0",
+    "@mui/base": "5.0.0-alpha.64",
     "@mui/material": "5.2.7",
     "@mui/system": "5.2.8",
     "@primer/octicons-react": "16.2.0",
