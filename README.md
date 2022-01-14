@@ -128,17 +128,6 @@ Amplication is an open source project. We are committed to a fully transparent d
 
 Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
 
-## Sponsors ✨
-
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [Become a sponsor](https://commerce.coinbase.com/checkout/8d425faa-9e2a-4393-a029-4f7ed68c3e02)
-
-<table>
-  <tr>
-    <td align="center"><a href="https://digitalcopilote.io/"><img src="https://user-images.githubusercontent.com/43705455/126038318-fd8e927a-443b-45ba-9983-8e6449b6c024.png" width="100px;" alt=""/><br /><a href="https://digitalcopilote.io/">Digital Copilote</a></td>
-   
-  </tr>
-  </table>
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
