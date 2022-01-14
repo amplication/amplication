@@ -394,6 +394,16 @@
       "contributions": [
         "blog"
       ]
+    },
+    {
+      "login": "noyagasi",
+      "name": "Noy Agasi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25197581?v=4",
+      "profile": "http://www.noyagasi.com",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
