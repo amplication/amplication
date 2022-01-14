@@ -13,16 +13,25 @@ export type Props = {
 
 const CLASS_NAME = "user-and-time";
 const LOADING_ANIMATION_CLASS_NAME = "ssc-head-line";
-const DIRECTION = "n";
+const DIRECTION_UP = "n";
+const DIRECTION_DOWN = "s";
+const DIRECTION_THRESHOLD = 100;
+
+type DirectionType = "n" | "s";
 
 export function UserAndTime({ loading, account, time }: Props) {
-  const [tooltipDirection, setTooltipDirection] = useState("s");
+  const [tooltipDirection, setTooltipDirection] = useState<DirectionType>(
+    DIRECTION_DOWN
+  );
 
   const { firstName, lastName } = account || {};
   const formattedTime = useMemo(() => {
     return formatTimeToNow(time);
   }, [time]);
-  const changeTooltipDirection = (pageY: number) => setTooltipDirection(pageY < 100 ? "s" : "n");
+  const changeTooltipDirection = (pageY: number) =>
+    setTooltipDirection(
+      pageY < DIRECTION_THRESHOLD ? DIRECTION_DOWN : DIRECTION_UP
+    );
 
   return (
     <span
@@ -36,7 +45,10 @@ export function UserAndTime({ loading, account, time }: Props) {
         direction={tooltipDirection}
         noDelay
       >
-        <span className={classNames(`${CLASS_NAME}__initials`)} onMouseOver={(e) => changeTooltipDirection(e.pageY)}>
+        <span
+          className={classNames(`${CLASS_NAME}__initials`)}
+          onMouseOver={(e) => changeTooltipDirection(e.pageY)}
+        >
           {!loading && firstName && firstName.substr(0, 1).toUpperCase()}
           {!loading && lastName && lastName.substr(0, 1).toUpperCase()}
         </span>
