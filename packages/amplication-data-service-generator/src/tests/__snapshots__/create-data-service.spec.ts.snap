@@ -2462,7 +2462,7 @@ import { PrismaClient } from \\"@prisma/client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
 import { customSeed } from \\"./customSeed\\";
-import { EnumUserPriority } from \\"../src/user/base/EnumUserPriority\\";
+import { EnumUserPriority } from \\"../src/user/base/dtos/EnumUserPriority\\";
 
 if (require.main === module) {
   dotenv.config();
@@ -3257,1009 +3257,6 @@ export class TokenService extends TokenServiceBase implements ITokenService {}
   "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
 ",
-  "server/src/customer/base/CreateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
-
-@ArgsType()
-class CreateCustomerArgs {
-  @Field(() => CustomerCreateInput, { nullable: false })
-  data!: CustomerCreateInput;
-}
-
-export { CreateCustomerArgs };
-",
-  "server/src/customer/base/Customer.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
-
-import {
-  IsString,
-  IsDate,
-  IsOptional,
-  IsBoolean,
-  IsNumber,
-  IsInt,
-  IsEnum,
-  ValidateNested,
-} from \\"class-validator\\";
-
-import { Type } from \\"class-transformer\\";
-import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
-import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
-import { Organization } from \\"../../organization/base/Organization\\";
-import { Order } from \\"../../order/base/Order\\";
-@ObjectType()
-class Customer {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  id!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
-  createdAt!: Date;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
-  updatedAt!: Date;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  email!: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  firstName!: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  lastName!: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
-  @IsBoolean()
-  @IsOptional()
-  @Field(() => Boolean, {
-    nullable: true,
-  })
-  isVip!: boolean | null;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsDate()
-  @Type(() => Date)
-  @IsOptional()
-  @Field(() => Date, {
-    nullable: true,
-  })
-  birthData!: Date | null;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @IsNumber()
-  @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
-  averageSale!: number | null;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @IsInt()
-  @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
-  favoriteNumber!: number | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  geoLocation!: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  comments!: string | null;
-
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerFavoriteColors,
-    isArray: true,
-  })
-  @IsEnum(EnumCustomerFavoriteColors, {
-    each: true,
-  })
-  @IsOptional()
-  @Field(() => [EnumCustomerFavoriteColors], {
-    nullable: true,
-  })
-  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
-
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerCustomerType,
-  })
-  @IsEnum(EnumCustomerCustomerType)
-  @IsOptional()
-  @Field(() => EnumCustomerCustomerType, {
-    nullable: true,
-  })
-  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => Organization,
-  })
-  @ValidateNested()
-  @Type(() => Organization)
-  @IsOptional()
-  organization?: Organization | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => Organization,
-  })
-  @ValidateNested()
-  @Type(() => Organization)
-  @IsOptional()
-  vipOrganization?: Organization | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => [Order],
-  })
-  @ValidateNested()
-  @Type(() => Order)
-  @IsOptional()
-  orders?: Array<Order>;
-}
-export { Customer };
-",
-  "server/src/customer/base/CustomerCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
-
-import {
-  IsString,
-  IsOptional,
-  IsBoolean,
-  IsDate,
-  IsNumber,
-  IsInt,
-  IsEnum,
-  ValidateNested,
-} from \\"class-validator\\";
-
-import { Type } from \\"class-transformer\\";
-import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
-import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
-@InputType()
-class CustomerCreateInput {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  email!: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  firstName?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  lastName?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
-  @IsBoolean()
-  @IsOptional()
-  @Field(() => Boolean, {
-    nullable: true,
-  })
-  isVip?: boolean | null;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsDate()
-  @Type(() => Date)
-  @IsOptional()
-  @Field(() => Date, {
-    nullable: true,
-  })
-  birthData?: Date | null;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @IsNumber()
-  @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
-  averageSale?: number | null;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @IsInt()
-  @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
-  favoriteNumber?: number | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  geoLocation?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  comments?: string | null;
-
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerFavoriteColors,
-    isArray: true,
-  })
-  @IsEnum(EnumCustomerFavoriteColors, {
-    each: true,
-  })
-  @IsOptional()
-  @Field(() => [EnumCustomerFavoriteColors], {
-    nullable: true,
-  })
-  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
-
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerCustomerType,
-  })
-  @IsEnum(EnumCustomerCustomerType)
-  @IsOptional()
-  @Field(() => EnumCustomerCustomerType, {
-    nullable: true,
-  })
-  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  organization?: OrganizationWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  vipOrganization?: OrganizationWhereUniqueInput | null;
-}
-export { CustomerCreateInput };
-",
-  "server/src/customer/base/CustomerFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
-import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
-import { Type } from \\"class-transformer\\";
-import { CustomerOrderByInput } from \\"./CustomerOrderByInput\\";
-
-@ArgsType()
-class CustomerFindManyArgs {
-  @ApiProperty({
-    required: false,
-    type: () => CustomerWhereInput,
-  })
-  @Field(() => CustomerWhereInput, { nullable: true })
-  @Type(() => CustomerWhereInput)
-  where?: CustomerWhereInput;
-
-  @ApiProperty({
-    required: false,
-    type: CustomerOrderByInput,
-  })
-  @Field(() => CustomerOrderByInput, { nullable: true })
-  @Type(() => CustomerOrderByInput)
-  orderBy?: CustomerOrderByInput;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @Field(() => Number, { nullable: true })
-  @Type(() => Number)
-  skip?: number;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @Field(() => Number, { nullable: true })
-  @Type(() => Number)
-  take?: number;
-}
-
-export { CustomerFindManyArgs };
-",
-  "server/src/customer/base/CustomerFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-
-@ArgsType()
-class CustomerFindUniqueArgs {
-  @Field(() => CustomerWhereUniqueInput, { nullable: false })
-  where!: CustomerWhereUniqueInput;
-}
-
-export { CustomerFindUniqueArgs };
-",
-  "server/src/customer/base/CustomerOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
-import { SortOrder } from \\"../../util/SortOrder\\";
-
-@InputType({
-  isAbstract: true,
-  description: undefined,
-})
-class CustomerOrderByInput {
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  id?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  createdAt?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  updatedAt?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  email?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  firstName?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  lastName?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  isVip?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  birthData?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  averageSale?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  favoriteNumber?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  geoLocation?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  comments?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  favoriteColors?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  customerType?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  organizationId?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  vipOrganizationId?: SortOrder;
-}
-
-export { CustomerOrderByInput };
-",
-  "server/src/customer/base/CustomerUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
-
-import {
-  IsString,
-  IsOptional,
-  IsBoolean,
-  IsDate,
-  IsNumber,
-  IsInt,
-  IsEnum,
-  ValidateNested,
-} from \\"class-validator\\";
-
-import { Type } from \\"class-transformer\\";
-import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
-import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
-@InputType()
-class CustomerUpdateInput {
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  email?: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  firstName?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  lastName?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
-  @IsBoolean()
-  @IsOptional()
-  @Field(() => Boolean, {
-    nullable: true,
-  })
-  isVip?: boolean | null;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsDate()
-  @Type(() => Date)
-  @IsOptional()
-  @Field(() => Date, {
-    nullable: true,
-  })
-  birthData?: Date | null;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @IsNumber()
-  @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
-  averageSale?: number | null;
-
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
-  @IsInt()
-  @IsOptional()
-  @Field(() => Number, {
-    nullable: true,
-  })
-  favoriteNumber?: number | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  geoLocation?: string | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  comments?: string | null;
-
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerFavoriteColors,
-    isArray: true,
-  })
-  @IsEnum(EnumCustomerFavoriteColors, {
-    each: true,
-  })
-  @IsOptional()
-  @Field(() => [EnumCustomerFavoriteColors], {
-    nullable: true,
-  })
-  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
-
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerCustomerType,
-  })
-  @IsEnum(EnumCustomerCustomerType)
-  @IsOptional()
-  @Field(() => EnumCustomerCustomerType, {
-    nullable: true,
-  })
-  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  organization?: OrganizationWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  vipOrganization?: OrganizationWhereUniqueInput | null;
-}
-export { CustomerUpdateInput };
-",
-  "server/src/customer/base/CustomerWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
-import { Type } from \\"class-transformer\\";
-import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
-import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
-import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
-import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
-import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
-import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
-import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
-import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
-@InputType()
-class CustomerWhereInput {
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  id?: StringFilter;
-
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
-  })
-  @Type(() => DateTimeFilter)
-  @IsOptional()
-  @Field(() => DateTimeFilter, {
-    nullable: true,
-  })
-  createdAt?: DateTimeFilter;
-
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
-  })
-  @Type(() => DateTimeFilter)
-  @IsOptional()
-  @Field(() => DateTimeFilter, {
-    nullable: true,
-  })
-  updatedAt?: DateTimeFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  email?: StringFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
-  })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  @Field(() => StringNullableFilter, {
-    nullable: true,
-  })
-  firstName?: StringNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
-  })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  @Field(() => StringNullableFilter, {
-    nullable: true,
-  })
-  lastName?: StringNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: BooleanNullableFilter,
-  })
-  @Type(() => BooleanNullableFilter)
-  @IsOptional()
-  @Field(() => BooleanNullableFilter, {
-    nullable: true,
-  })
-  isVip?: BooleanNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: DateTimeNullableFilter,
-  })
-  @Type(() => DateTimeNullableFilter)
-  @IsOptional()
-  @Field(() => DateTimeNullableFilter, {
-    nullable: true,
-  })
-  birthData?: DateTimeNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: FloatNullableFilter,
-  })
-  @Type(() => FloatNullableFilter)
-  @IsOptional()
-  @Field(() => FloatNullableFilter, {
-    nullable: true,
-  })
-  averageSale?: FloatNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: IntNullableFilter,
-  })
-  @Type(() => IntNullableFilter)
-  @IsOptional()
-  @Field(() => IntNullableFilter, {
-    nullable: true,
-  })
-  favoriteNumber?: IntNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
-  })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  @Field(() => StringNullableFilter, {
-    nullable: true,
-  })
-  geoLocation?: StringNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
-  })
-  @Type(() => StringNullableFilter)
-  @IsOptional()
-  @Field(() => StringNullableFilter, {
-    nullable: true,
-  })
-  comments?: StringNullableFilter;
-
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerCustomerType,
-  })
-  @IsEnum(EnumCustomerCustomerType)
-  @IsOptional()
-  @Field(() => EnumCustomerCustomerType, {
-    nullable: true,
-  })
-  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
-
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  organization?: OrganizationWhereUniqueInput;
-
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
-  @IsOptional()
-  @Field(() => OrganizationWhereUniqueInput, {
-    nullable: true,
-  })
-  vipOrganization?: OrganizationWhereUniqueInput;
-}
-export { CustomerWhereInput };
-",
-  "server/src/customer/base/CustomerWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString } from \\"class-validator\\";
-@InputType()
-class CustomerWhereUniqueInput {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  id!: string;
-}
-export { CustomerWhereUniqueInput };
-",
-  "server/src/customer/base/DeleteCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-
-@ArgsType()
-class DeleteCustomerArgs {
-  @Field(() => CustomerWhereUniqueInput, { nullable: false })
-  where!: CustomerWhereUniqueInput;
-}
-
-export { DeleteCustomerArgs };
-",
-  "server/src/customer/base/EnumCustomerCustomerType.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
-
-export enum EnumCustomerCustomerType {
-  Platinum = \\"platinum\\",
-  Gold = \\"gold\\",
-  Bronze = \\"bronze\\",
-  Regular = \\"regular\\",
-}
-
-registerEnumType(EnumCustomerCustomerType, {
-  name: \\"EnumCustomerCustomerType\\",
-});
-",
-  "server/src/customer/base/EnumCustomerFavoriteColors.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
-
-export enum EnumCustomerFavoriteColors {
-  Red = \\"red\\",
-  Green = \\"green\\",
-  Purple = \\"purple\\",
-  Yellow = \\"yellow\\",
-}
-
-registerEnumType(EnumCustomerFavoriteColors, {
-  name: \\"EnumCustomerFavoriteColors\\",
-});
-",
-  "server/src/customer/base/UpdateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
-
-@ArgsType()
-class UpdateCustomerArgs {
-  @Field(() => CustomerWhereUniqueInput, { nullable: false })
-  where!: CustomerWhereUniqueInput;
-  @Field(() => CustomerUpdateInput, { nullable: false })
-  data!: CustomerUpdateInput;
-}
-
-export { UpdateCustomerArgs };
-",
   "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
@@ -4453,14 +3450,14 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { CustomerService } from \\"../customer.service\\";
-import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
-import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
-import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
-import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
-import { Customer } from \\"./Customer\\";
-import { OrderWhereInput } from \\"../../order/base/OrderWhereInput\\";
-import { Order } from \\"../../order/base/Order\\";
+import { CustomerCreateInput } from \\"./dtos/CustomerCreateInput\\";
+import { CustomerWhereInput } from \\"./dtos/CustomerWhereInput\\";
+import { CustomerWhereUniqueInput } from \\"./dtos/CustomerWhereUniqueInput\\";
+import { CustomerFindManyArgs } from \\"./dtos/CustomerFindManyArgs\\";
+import { CustomerUpdateInput } from \\"./dtos/CustomerUpdateInput\\";
+import { Customer } from \\"./dtos/Customer\\";
+import { OrderWhereInput } from \\"../../order/base/dtos/OrderWhereInput\\";
+import { Order } from \\"../../order/base/dtos/Order\\";
 @swagger.ApiBasicAuth()
 export class CustomerControllerBase {
   constructor(
@@ -5043,15 +4040,15 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
-import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
-import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
-import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
-import { CustomerFindUniqueArgs } from \\"./CustomerFindUniqueArgs\\";
-import { Customer } from \\"./Customer\\";
-import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
-import { Order } from \\"../../order/base/Order\\";
-import { Organization } from \\"../../organization/base/Organization\\";
+import { CreateCustomerArgs } from \\"./dtos/CreateCustomerArgs\\";
+import { UpdateCustomerArgs } from \\"./dtos/UpdateCustomerArgs\\";
+import { DeleteCustomerArgs } from \\"./dtos/DeleteCustomerArgs\\";
+import { CustomerFindManyArgs } from \\"./dtos/CustomerFindManyArgs\\";
+import { CustomerFindUniqueArgs } from \\"./dtos/CustomerFindUniqueArgs\\";
+import { Customer } from \\"./dtos/Customer\\";
+import { OrderFindManyArgs } from \\"../../order/base/dtos/OrderFindManyArgs\\";
+import { Order } from \\"../../order/base/dtos/Order\\";
+import { Organization } from \\"../../organization/base/dtos/Organization\\";
 import { CustomerService } from \\"../customer.service\\";
 
 @graphql.Resolver(() => Customer)
@@ -5400,6 +4397,1030 @@ export class CustomerServiceBase {
   }
 }
 ",
+  "server/src/customer/base/dtos/CreateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
+
+@ArgsType()
+class CreateCustomerArgs {
+  @Field(() => CustomerCreateInput, { nullable: false })
+  data!: CustomerCreateInput;
+}
+
+export { CreateCustomerArgs };
+",
+  "server/src/customer/base/dtos/Customer.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+
+import {
+  IsString,
+  IsDate,
+  IsOptional,
+  IsBoolean,
+  IsNumber,
+  IsInt,
+  IsEnum,
+  ValidateNested,
+} from \\"class-validator\\";
+
+import { Type } from \\"class-transformer\\";
+import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
+import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
+import { Organization } from \\"../../../organization/base/dtos/Organization\\";
+import { Order } from \\"../../../order/base/dtos/Order\\";
+@ObjectType()
+class Customer {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  email!: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  firstName!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  lastName!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isVip!: boolean | null;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  birthData!: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  averageSale!: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  favoriteNumber!: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  geoLocation!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  comments!: string | null;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerFavoriteColors,
+    isArray: true,
+  })
+  @IsEnum(EnumCustomerFavoriteColors, {
+    each: true,
+  })
+  @IsOptional()
+  @Field(() => [EnumCustomerFavoriteColors], {
+    nullable: true,
+  })
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerCustomerType,
+  })
+  @IsEnum(EnumCustomerCustomerType)
+  @IsOptional()
+  @Field(() => EnumCustomerCustomerType, {
+    nullable: true,
+  })
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => Organization,
+  })
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
+  organization?: Organization | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => Organization,
+  })
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
+  vipOrganization?: Organization | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Order],
+  })
+  @ValidateNested()
+  @Type(() => Order)
+  @IsOptional()
+  orders?: Array<Order>;
+}
+export { Customer };
+",
+  "server/src/customer/base/dtos/CustomerCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsDate,
+  IsNumber,
+  IsInt,
+  IsEnum,
+  ValidateNested,
+} from \\"class-validator\\";
+
+import { Type } from \\"class-transformer\\";
+import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
+import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
+import { OrganizationWhereUniqueInput } from \\"../../../organization/base/dtos/OrganizationWhereUniqueInput\\";
+@InputType()
+class CustomerCreateInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  email!: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  firstName?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  lastName?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isVip?: boolean | null;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  birthData?: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  averageSale?: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  favoriteNumber?: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  geoLocation?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  comments?: string | null;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerFavoriteColors,
+    isArray: true,
+  })
+  @IsEnum(EnumCustomerFavoriteColors, {
+    each: true,
+  })
+  @IsOptional()
+  @Field(() => [EnumCustomerFavoriteColors], {
+    nullable: true,
+  })
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerCustomerType,
+  })
+  @IsEnum(EnumCustomerCustomerType)
+  @IsOptional()
+  @Field(() => EnumCustomerCustomerType, {
+    nullable: true,
+  })
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  organization?: OrganizationWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  vipOrganization?: OrganizationWhereUniqueInput | null;
+}
+export { CustomerCreateInput };
+",
+  "server/src/customer/base/dtos/CustomerFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+import { Type } from \\"class-transformer\\";
+import { CustomerOrderByInput } from \\"./CustomerOrderByInput\\";
+
+@ArgsType()
+class CustomerFindManyArgs {
+  @ApiProperty({
+    required: false,
+    type: () => CustomerWhereInput,
+  })
+  @Field(() => CustomerWhereInput, { nullable: true })
+  @Type(() => CustomerWhereInput)
+  where?: CustomerWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: CustomerOrderByInput,
+  })
+  @Field(() => CustomerOrderByInput, { nullable: true })
+  @Type(() => CustomerOrderByInput)
+  orderBy?: CustomerOrderByInput;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  skip?: number;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  take?: number;
+}
+
+export { CustomerFindManyArgs };
+",
+  "server/src/customer/base/dtos/CustomerFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+
+@ArgsType()
+class CustomerFindUniqueArgs {
+  @Field(() => CustomerWhereUniqueInput, { nullable: false })
+  where!: CustomerWhereUniqueInput;
+}
+
+export { CustomerFindUniqueArgs };
+",
+  "server/src/customer/base/dtos/CustomerOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { SortOrder } from \\"../../util/SortOrder\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+class CustomerOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  id?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  email?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  firstName?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  lastName?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  isVip?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  birthData?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  averageSale?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  favoriteNumber?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  geoLocation?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  comments?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  favoriteColors?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  customerType?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  organizationId?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"Asc\\", \\"Desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  vipOrganizationId?: SortOrder;
+}
+
+export { CustomerOrderByInput };
+",
+  "server/src/customer/base/dtos/CustomerUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsDate,
+  IsNumber,
+  IsInt,
+  IsEnum,
+  ValidateNested,
+} from \\"class-validator\\";
+
+import { Type } from \\"class-transformer\\";
+import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
+import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
+import { OrganizationWhereUniqueInput } from \\"../../../organization/base/dtos/OrganizationWhereUniqueInput\\";
+@InputType()
+class CustomerUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  email?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  firstName?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  lastName?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isVip?: boolean | null;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  birthData?: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  averageSale?: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  favoriteNumber?: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  geoLocation?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  comments?: string | null;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerFavoriteColors,
+    isArray: true,
+  })
+  @IsEnum(EnumCustomerFavoriteColors, {
+    each: true,
+  })
+  @IsOptional()
+  @Field(() => [EnumCustomerFavoriteColors], {
+    nullable: true,
+  })
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerCustomerType,
+  })
+  @IsEnum(EnumCustomerCustomerType)
+  @IsOptional()
+  @Field(() => EnumCustomerCustomerType, {
+    nullable: true,
+  })
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  organization?: OrganizationWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  vipOrganization?: OrganizationWhereUniqueInput | null;
+}
+export { CustomerUpdateInput };
+",
+  "server/src/customer/base/dtos/CustomerWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
+import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
+import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
+import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
+import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
+import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
+import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
+import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
+import { OrganizationWhereUniqueInput } from \\"../../../organization/base/dtos/OrganizationWhereUniqueInput\\";
+@InputType()
+class CustomerWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  createdAt?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  email?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  firstName?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  lastName?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: BooleanNullableFilter,
+  })
+  @Type(() => BooleanNullableFilter)
+  @IsOptional()
+  @Field(() => BooleanNullableFilter, {
+    nullable: true,
+  })
+  isVip?: BooleanNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeNullableFilter,
+  })
+  @Type(() => DateTimeNullableFilter)
+  @IsOptional()
+  @Field(() => DateTimeNullableFilter, {
+    nullable: true,
+  })
+  birthData?: DateTimeNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: FloatNullableFilter,
+  })
+  @Type(() => FloatNullableFilter)
+  @IsOptional()
+  @Field(() => FloatNullableFilter, {
+    nullable: true,
+  })
+  averageSale?: FloatNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: IntNullableFilter,
+  })
+  @Type(() => IntNullableFilter)
+  @IsOptional()
+  @Field(() => IntNullableFilter, {
+    nullable: true,
+  })
+  favoriteNumber?: IntNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  geoLocation?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  comments?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerCustomerType,
+  })
+  @IsEnum(EnumCustomerCustomerType)
+  @IsOptional()
+  @Field(() => EnumCustomerCustomerType, {
+    nullable: true,
+  })
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
+
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  organization?: OrganizationWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
+  vipOrganization?: OrganizationWhereUniqueInput;
+}
+export { CustomerWhereInput };
+",
+  "server/src/customer/base/dtos/CustomerWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
+@InputType()
+class CustomerWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+}
+export { CustomerWhereUniqueInput };
+",
+  "server/src/customer/base/dtos/DeleteCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+
+@ArgsType()
+class DeleteCustomerArgs {
+  @Field(() => CustomerWhereUniqueInput, { nullable: false })
+  where!: CustomerWhereUniqueInput;
+}
+
+export { DeleteCustomerArgs };
+",
+  "server/src/customer/base/dtos/EnumCustomerCustomerType.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+
+export enum EnumCustomerCustomerType {
+  Platinum = \\"platinum\\",
+  Gold = \\"gold\\",
+  Bronze = \\"bronze\\",
+  Regular = \\"regular\\",
+}
+
+registerEnumType(EnumCustomerCustomerType, {
+  name: \\"EnumCustomerCustomerType\\",
+});
+",
+  "server/src/customer/base/dtos/EnumCustomerFavoriteColors.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+
+export enum EnumCustomerFavoriteColors {
+  Red = \\"red\\",
+  Green = \\"green\\",
+  Purple = \\"purple\\",
+  Yellow = \\"yellow\\",
+}
+
+registerEnumType(EnumCustomerFavoriteColors, {
+  name: \\"EnumCustomerFavoriteColors\\",
+});
+",
+  "server/src/customer/base/dtos/UpdateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
+
+@ArgsType()
+class UpdateCustomerArgs {
+  @Field(() => CustomerWhereUniqueInput, { nullable: false })
+  where!: CustomerWhereUniqueInput;
+  @Field(() => CustomerUpdateInput, { nullable: false })
+  data!: CustomerUpdateInput;
+}
+
+export { UpdateCustomerArgs };
+",
+  "server/src/customer/base/dtos/index.ts": "export * from \\"./Customer\\";
+export * from \\"./CustomerCreateInput\\";
+export * from \\"./CustomerUpdateInput\\";
+export * from \\"./CustomerWhereInput\\";
+export * from \\"./CustomerWhereUniqueInput\\";
+export * from \\"./DeleteCustomerArgs\\";
+export * from \\"./CustomerFindManyArgs\\";
+export * from \\"./CustomerFindUniqueArgs\\";
+export * from \\"./CustomerOrderByInput\\";
+export * from \\"./CreateCustomerArgs\\";
+export * from \\"./UpdateCustomerArgs\\";
+export * from \\"./EnumCustomerFavoriteColors\\";
+export * from \\"./EnumCustomerCustomerType\\";
+",
+  "server/src/customer/base/index.ts": "export * from \\"./customer.service.base\\";
+export * from \\"./customer.controller.base\\";
+export * from \\"./customer.resolver.base\\";
+export * from \\"./customer.module.base\\";
+export * from \\"./customer.controller.base.spec\\";
+export * from \\"./dtos\\";
+",
   "server/src/customer/customer.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
@@ -5438,7 +5459,7 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { CustomerResolverBase } from \\"./base/customer.resolver.base\\";
-import { Customer } from \\"./base/Customer\\";
+import { Customer } from \\"./base/dtos/Customer\\";
 import { CustomerService } from \\"./customer.service\\";
 
 @graphql.Resolver(() => Customer)
@@ -5464,7 +5485,7 @@ export class CustomerService extends CustomerServiceBase {
   }
 }
 ",
-  "server/src/empty/base/DeleteEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/dtos/DeleteEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 
 @ArgsType()
@@ -5475,7 +5496,7 @@ class DeleteEmptyArgs {
 
 export { DeleteEmptyArgs };
 ",
-  "server/src/empty/base/Empty.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/dtos/Empty.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsDate } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
@@ -5507,10 +5528,10 @@ class Empty {
 }
 export { Empty };
 ",
-  "server/src/empty/base/EmptyCreateInput.ts": "class EmptyCreateInput {}
+  "server/src/empty/base/dtos/EmptyCreateInput.ts": "class EmptyCreateInput {}
 export { EmptyCreateInput };
 ",
-  "server/src/empty/base/EmptyFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/dtos/EmptyFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { Type } from \\"class-transformer\\";
@@ -5553,7 +5574,7 @@ class EmptyFindManyArgs {
 
 export { EmptyFindManyArgs };
 ",
-  "server/src/empty/base/EmptyFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/dtos/EmptyFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 
 @ArgsType()
@@ -5564,7 +5585,7 @@ class EmptyFindUniqueArgs {
 
 export { EmptyFindUniqueArgs };
 ",
-  "server/src/empty/base/EmptyOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/dtos/EmptyOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
@@ -5603,10 +5624,10 @@ class EmptyOrderByInput {
 
 export { EmptyOrderByInput };
 ",
-  "server/src/empty/base/EmptyUpdateInput.ts": "class EmptyUpdateInput {}
+  "server/src/empty/base/dtos/EmptyUpdateInput.ts": "class EmptyUpdateInput {}
 export { EmptyUpdateInput };
 ",
-  "server/src/empty/base/EmptyWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/dtos/EmptyWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
 import { Type } from \\"class-transformer\\";
@@ -5649,7 +5670,7 @@ class EmptyWhereInput {
 }
 export { EmptyWhereInput };
 ",
-  "server/src/empty/base/EmptyWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/empty/base/dtos/EmptyWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -5663,6 +5684,16 @@ class EmptyWhereUniqueInput {
   id!: string;
 }
 export { EmptyWhereUniqueInput };
+",
+  "server/src/empty/base/dtos/index.ts": "export * from \\"./Empty\\";
+export * from \\"./EmptyCreateInput\\";
+export * from \\"./EmptyUpdateInput\\";
+export * from \\"./EmptyWhereInput\\";
+export * from \\"./EmptyWhereUniqueInput\\";
+export * from \\"./DeleteEmptyArgs\\";
+export * from \\"./EmptyFindManyArgs\\";
+export * from \\"./EmptyFindUniqueArgs\\";
+export * from \\"./EmptyOrderByInput\\";
 ",
   "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -5818,12 +5849,12 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { EmptyService } from \\"../empty.service\\";
-import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
-import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
-import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
-import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
-import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
-import { Empty } from \\"./Empty\\";
+import { EmptyCreateInput } from \\"./dtos/EmptyCreateInput\\";
+import { EmptyWhereInput } from \\"./dtos/EmptyWhereInput\\";
+import { EmptyWhereUniqueInput } from \\"./dtos/EmptyWhereUniqueInput\\";
+import { EmptyFindManyArgs } from \\"./dtos/EmptyFindManyArgs\\";
+import { EmptyUpdateInput } from \\"./dtos/EmptyUpdateInput\\";
+import { Empty } from \\"./dtos/Empty\\";
 @swagger.ApiBasicAuth()
 export class EmptyControllerBase {
   constructor(
@@ -6080,10 +6111,10 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
-import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
-import { EmptyFindUniqueArgs } from \\"./EmptyFindUniqueArgs\\";
-import { Empty } from \\"./Empty\\";
+import { DeleteEmptyArgs } from \\"./dtos/DeleteEmptyArgs\\";
+import { EmptyFindManyArgs } from \\"./dtos/EmptyFindManyArgs\\";
+import { EmptyFindUniqueArgs } from \\"./dtos/EmptyFindUniqueArgs\\";
+import { Empty } from \\"./dtos/Empty\\";
 import { EmptyService } from \\"../empty.service\\";
 
 @graphql.Resolver(() => Empty)
@@ -6218,6 +6249,13 @@ export class EmptyServiceBase {
   }
 }
 ",
+  "server/src/empty/base/index.ts": "export * from \\"./empty.service.base\\";
+export * from \\"./empty.controller.base\\";
+export * from \\"./empty.resolver.base\\";
+export * from \\"./empty.module.base\\";
+export * from \\"./empty.controller.base.spec\\";
+export * from \\"./dtos\\";
+",
   "server/src/empty/empty.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
@@ -6256,7 +6294,7 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { EmptyResolverBase } from \\"./base/empty.resolver.base\\";
-import { Empty } from \\"./base/Empty\\";
+import { Empty } from \\"./base/dtos/Empty\\";
 import { EmptyService } from \\"./empty.service\\";
 
 @graphql.Resolver(() => Empty)
@@ -6407,7 +6445,7 @@ async function main() {
 
 module.exports = main();
 ",
-  "server/src/order/base/CreateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/CreateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 
 @ArgsType()
@@ -6418,7 +6456,7 @@ class CreateOrderArgs {
 
 export { CreateOrderArgs };
 ",
-  "server/src/order/base/DeleteOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/DeleteOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 
 @ArgsType()
@@ -6429,7 +6467,7 @@ class DeleteOrderArgs {
 
 export { DeleteOrderArgs };
 ",
-  "server/src/order/base/EnumOrderLabel.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/EnumOrderLabel.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumOrderLabel {
   Fragile = \\"fragile\\",
@@ -6439,7 +6477,7 @@ registerEnumType(EnumOrderLabel, {
   name: \\"EnumOrderLabel\\",
 });
 ",
-  "server/src/order/base/EnumOrderStatus.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/EnumOrderStatus.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumOrderStatus {
   Pending = \\"pending\\",
@@ -6451,7 +6489,7 @@ registerEnumType(EnumOrderStatus, {
   name: \\"EnumOrderStatus\\",
 });
 ",
-  "server/src/order/base/Order.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/Order.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
@@ -6461,7 +6499,7 @@ import {
   IsOptional,
 } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../../customer/base/Customer\\";
+import { Customer } from \\"../../../customer/base/dtos/Customer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @ObjectType()
@@ -6521,9 +6559,9 @@ class Order {
 }
 export { Order };
 ",
-  "server/src/order/base/OrderCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/OrderCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { CustomerWhereUniqueInput } from \\"../../../customer/base/dtos/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
@@ -6560,7 +6598,7 @@ class OrderCreateInput {
 }
 export { OrderCreateInput };
 ",
-  "server/src/order/base/OrderFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/OrderFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { Type } from \\"class-transformer\\";
@@ -6603,7 +6641,7 @@ class OrderFindManyArgs {
 
 export { OrderFindManyArgs };
 ",
-  "server/src/order/base/OrderFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/OrderFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 
 @ArgsType()
@@ -6614,7 +6652,7 @@ class OrderFindUniqueArgs {
 
 export { OrderFindUniqueArgs };
 ",
-  "server/src/order/base/OrderOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/OrderOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
@@ -6680,9 +6718,9 @@ class OrderOrderByInput {
 
 export { OrderOrderByInput };
 ",
-  "server/src/order/base/OrderUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/OrderUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { CustomerWhereUniqueInput } from \\"../../../customer/base/dtos/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
@@ -6725,13 +6763,13 @@ class OrderUpdateInput {
 }
 export { OrderUpdateInput };
 ",
-  "server/src/order/base/OrderWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/OrderWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
 import { Type } from \\"class-transformer\\";
 import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { CustomerWhereUniqueInput } from \\"../../../customer/base/dtos/CustomerWhereUniqueInput\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
@@ -6805,7 +6843,7 @@ class OrderWhereInput {
 }
 export { OrderWhereInput };
 ",
-  "server/src/order/base/OrderWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/OrderWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -6820,7 +6858,7 @@ class OrderWhereUniqueInput {
 }
 export { OrderWhereUniqueInput };
 ",
-  "server/src/order/base/UpdateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/order/base/dtos/UpdateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 
@@ -6833,6 +6871,27 @@ class UpdateOrderArgs {
 }
 
 export { UpdateOrderArgs };
+",
+  "server/src/order/base/dtos/index.ts": "export * from \\"./Order\\";
+export * from \\"./OrderCreateInput\\";
+export * from \\"./OrderUpdateInput\\";
+export * from \\"./OrderWhereInput\\";
+export * from \\"./OrderWhereUniqueInput\\";
+export * from \\"./DeleteOrderArgs\\";
+export * from \\"./OrderFindManyArgs\\";
+export * from \\"./OrderFindUniqueArgs\\";
+export * from \\"./OrderOrderByInput\\";
+export * from \\"./CreateOrderArgs\\";
+export * from \\"./UpdateOrderArgs\\";
+export * from \\"./EnumOrderStatus\\";
+export * from \\"./EnumOrderLabel\\";
+",
+  "server/src/order/base/index.ts": "export * from \\"./order.service.base\\";
+export * from \\"./order.controller.base\\";
+export * from \\"./order.resolver.base\\";
+export * from \\"./order.module.base\\";
+export * from \\"./order.controller.base.spec\\";
+export * from \\"./dtos\\";
 ",
   "server/src/order/base/order.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -6988,12 +7047,12 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { OrderService } from \\"../order.service\\";
-import { OrderCreateInput } from \\"./OrderCreateInput\\";
-import { OrderWhereInput } from \\"./OrderWhereInput\\";
-import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
-import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
-import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
-import { Order } from \\"./Order\\";
+import { OrderCreateInput } from \\"./dtos/OrderCreateInput\\";
+import { OrderWhereInput } from \\"./dtos/OrderWhereInput\\";
+import { OrderWhereUniqueInput } from \\"./dtos/OrderWhereUniqueInput\\";
+import { OrderFindManyArgs } from \\"./dtos/OrderFindManyArgs\\";
+import { OrderUpdateInput } from \\"./dtos/OrderUpdateInput\\";
+import { Order } from \\"./dtos/Order\\";
 @swagger.ApiBasicAuth()
 export class OrderControllerBase {
   constructor(
@@ -7307,13 +7366,13 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
-import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
-import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
-import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
-import { OrderFindUniqueArgs } from \\"./OrderFindUniqueArgs\\";
-import { Order } from \\"./Order\\";
-import { Customer } from \\"../../customer/base/Customer\\";
+import { CreateOrderArgs } from \\"./dtos/CreateOrderArgs\\";
+import { UpdateOrderArgs } from \\"./dtos/UpdateOrderArgs\\";
+import { DeleteOrderArgs } from \\"./dtos/DeleteOrderArgs\\";
+import { OrderFindManyArgs } from \\"./dtos/OrderFindManyArgs\\";
+import { OrderFindUniqueArgs } from \\"./dtos/OrderFindUniqueArgs\\";
+import { Order } from \\"./dtos/Order\\";
+import { Customer } from \\"../../customer/base/dtos/Customer\\";
 import { OrderService } from \\"../order.service\\";
 
 @graphql.Resolver(() => Order)
@@ -7615,7 +7674,7 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { OrderResolverBase } from \\"./base/order.resolver.base\\";
-import { Order } from \\"./base/Order\\";
+import { Order } from \\"./base/dtos/Order\\";
 import { OrderService } from \\"./order.service\\";
 
 @graphql.Resolver(() => Order)
@@ -7641,7 +7700,7 @@ export class OrderService extends OrderServiceBase {
   }
 }
 ",
-  "server/src/organization/base/CreateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/CreateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 
 @ArgsType()
@@ -7652,7 +7711,7 @@ class CreateOrganizationArgs {
 
 export { CreateOrganizationArgs };
 ",
-  "server/src/organization/base/DeleteOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/DeleteOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
 @ArgsType()
@@ -7663,12 +7722,12 @@ class DeleteOrganizationArgs {
 
 export { DeleteOrganizationArgs };
 ",
-  "server/src/organization/base/Organization.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/Organization.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { User } from \\"../../user/base/User\\";
-import { Customer } from \\"../../customer/base/Customer\\";
+import { User } from \\"../../../user/base/dtos/User\\";
+import { Customer } from \\"../../../customer/base/dtos/Customer\\";
 @ObjectType()
 class Organization {
   @ApiProperty({
@@ -7732,7 +7791,7 @@ class Organization {
 }
 export { Organization };
 ",
-  "server/src/organization/base/OrganizationCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/OrganizationCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -7747,7 +7806,7 @@ class OrganizationCreateInput {
 }
 export { OrganizationCreateInput };
 ",
-  "server/src/organization/base/OrganizationFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/OrganizationFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { Type } from \\"class-transformer\\";
@@ -7790,7 +7849,7 @@ class OrganizationFindManyArgs {
 
 export { OrganizationFindManyArgs };
 ",
-  "server/src/organization/base/OrganizationFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/OrganizationFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
 @ArgsType()
@@ -7801,7 +7860,7 @@ class OrganizationFindUniqueArgs {
 
 export { OrganizationFindUniqueArgs };
 ",
-  "server/src/organization/base/OrganizationOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/OrganizationOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
@@ -7849,7 +7908,7 @@ class OrganizationOrderByInput {
 
 export { OrganizationOrderByInput };
 ",
-  "server/src/organization/base/OrganizationUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/OrganizationUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsOptional } from \\"class-validator\\";
 @InputType()
@@ -7867,7 +7926,7 @@ class OrganizationUpdateInput {
 }
 export { OrganizationUpdateInput };
 ",
-  "server/src/organization/base/OrganizationWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/OrganizationWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
 import { Type } from \\"class-transformer\\";
@@ -7921,7 +7980,7 @@ class OrganizationWhereInput {
 }
 export { OrganizationWhereInput };
 ",
-  "server/src/organization/base/OrganizationWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/OrganizationWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -7936,7 +7995,7 @@ class OrganizationWhereUniqueInput {
 }
 export { OrganizationWhereUniqueInput };
 ",
-  "server/src/organization/base/UpdateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/organization/base/dtos/UpdateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 
@@ -7949,6 +8008,25 @@ class UpdateOrganizationArgs {
 }
 
 export { UpdateOrganizationArgs };
+",
+  "server/src/organization/base/dtos/index.ts": "export * from \\"./Organization\\";
+export * from \\"./OrganizationCreateInput\\";
+export * from \\"./OrganizationUpdateInput\\";
+export * from \\"./OrganizationWhereInput\\";
+export * from \\"./OrganizationWhereUniqueInput\\";
+export * from \\"./DeleteOrganizationArgs\\";
+export * from \\"./OrganizationFindManyArgs\\";
+export * from \\"./OrganizationFindUniqueArgs\\";
+export * from \\"./OrganizationOrderByInput\\";
+export * from \\"./CreateOrganizationArgs\\";
+export * from \\"./UpdateOrganizationArgs\\";
+",
+  "server/src/organization/base/index.ts": "export * from \\"./organization.service.base\\";
+export * from \\"./organization.controller.base\\";
+export * from \\"./organization.resolver.base\\";
+export * from \\"./organization.module.base\\";
+export * from \\"./organization.controller.base.spec\\";
+export * from \\"./dtos\\";
 ",
   "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -8108,16 +8186,16 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { OrganizationService } from \\"../organization.service\\";
-import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
-import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
-import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
-import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
-import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
-import { Organization } from \\"./Organization\\";
-import { UserWhereInput } from \\"../../user/base/UserWhereInput\\";
-import { User } from \\"../../user/base/User\\";
-import { CustomerWhereInput } from \\"../../customer/base/CustomerWhereInput\\";
-import { Customer } from \\"../../customer/base/Customer\\";
+import { OrganizationCreateInput } from \\"./dtos/OrganizationCreateInput\\";
+import { OrganizationWhereInput } from \\"./dtos/OrganizationWhereInput\\";
+import { OrganizationWhereUniqueInput } from \\"./dtos/OrganizationWhereUniqueInput\\";
+import { OrganizationFindManyArgs } from \\"./dtos/OrganizationFindManyArgs\\";
+import { OrganizationUpdateInput } from \\"./dtos/OrganizationUpdateInput\\";
+import { Organization } from \\"./dtos/Organization\\";
+import { UserWhereInput } from \\"../../user/base/dtos/UserWhereInput\\";
+import { User } from \\"../../user/base/dtos/User\\";
+import { CustomerWhereInput } from \\"../../customer/base/dtos/CustomerWhereInput\\";
+import { Customer } from \\"../../customer/base/dtos/Customer\\";
 @swagger.ApiBasicAuth()
 export class OrganizationControllerBase {
   constructor(
@@ -8965,16 +9043,16 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
-import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
-import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
-import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
-import { OrganizationFindUniqueArgs } from \\"./OrganizationFindUniqueArgs\\";
-import { Organization } from \\"./Organization\\";
-import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
-import { User } from \\"../../user/base/User\\";
-import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
-import { Customer } from \\"../../customer/base/Customer\\";
+import { CreateOrganizationArgs } from \\"./dtos/CreateOrganizationArgs\\";
+import { UpdateOrganizationArgs } from \\"./dtos/UpdateOrganizationArgs\\";
+import { DeleteOrganizationArgs } from \\"./dtos/DeleteOrganizationArgs\\";
+import { OrganizationFindManyArgs } from \\"./dtos/OrganizationFindManyArgs\\";
+import { OrganizationFindUniqueArgs } from \\"./dtos/OrganizationFindUniqueArgs\\";
+import { Organization } from \\"./dtos/Organization\\";
+import { UserFindManyArgs } from \\"../../user/base/dtos/UserFindManyArgs\\";
+import { User } from \\"../../user/base/dtos/User\\";
+import { CustomerFindManyArgs } from \\"../../customer/base/dtos/CustomerFindManyArgs\\";
+import { Customer } from \\"../../customer/base/dtos/Customer\\";
 import { OrganizationService } from \\"../organization.service\\";
 
 @graphql.Resolver(() => Organization)
@@ -9343,7 +9421,7 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { OrganizationResolverBase } from \\"./base/organization.resolver.base\\";
-import { Organization } from \\"./base/Organization\\";
+import { Organization } from \\"./base/dtos/Organization\\";
 import { OrganizationService } from \\"./organization.service\\";
 
 @graphql.Resolver(() => Organization)
@@ -9720,7 +9798,7 @@ describe(\\"Testing the HealthServiceBase\\", () => {
 
 export type InputJsonValue = Omit<JsonValue, \\"null\\">;
 ",
-  "server/src/user/base/CreateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/CreateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 
 @ArgsType()
@@ -9731,7 +9809,7 @@ class CreateUserArgs {
 
 export { CreateUserArgs };
 ",
-  "server/src/user/base/DeleteUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/DeleteUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 
 @ArgsType()
@@ -9742,7 +9820,7 @@ class DeleteUserArgs {
 
 export { DeleteUserArgs };
 ",
-  "server/src/user/base/EnumUserInterests.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/EnumUserInterests.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumUserInterests {
   Programming = \\"programming\\",
@@ -9753,7 +9831,7 @@ registerEnumType(EnumUserInterests, {
   name: \\"EnumUserInterests\\",
 });
 ",
-  "server/src/user/base/EnumUserPriority.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/EnumUserPriority.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
 
 export enum EnumUserPriority {
   High = \\"high\\",
@@ -9765,7 +9843,7 @@ registerEnumType(EnumUserPriority, {
   name: \\"EnumUserPriority\\",
 });
 ",
-  "server/src/user/base/UpdateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/UpdateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 
@@ -9779,7 +9857,7 @@ class UpdateUserArgs {
 
 export { UpdateUserArgs };
 ",
-  "server/src/user/base/User.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/User.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -9795,7 +9873,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../../organization/base/Organization\\";
+import { Organization } from \\"../../../organization/base/dtos/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -9952,7 +10030,7 @@ class User {
 }
 export { User };
 ",
-  "server/src/user/base/UserCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/UserCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -10108,7 +10186,7 @@ class UserCreateInput {
 }
 export { UserCreateInput };
 ",
-  "server/src/user/base/UserFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/UserFindManyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { Type } from \\"class-transformer\\";
@@ -10151,7 +10229,7 @@ class UserFindManyArgs {
 
 export { UserFindManyArgs };
 ",
-  "server/src/user/base/UserFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/UserFindUniqueArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 
 @ArgsType()
@@ -10162,7 +10240,7 @@ class UserFindUniqueArgs {
 
 export { UserFindUniqueArgs };
 ",
-  "server/src/user/base/UserOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/UserOrderByInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
@@ -10318,7 +10396,7 @@ class UserOrderByInput {
 
 export { UserOrderByInput };
 ",
-  "server/src/user/base/UserUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/UserUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -10513,7 +10591,7 @@ class UserUpdateInput {
 }
 export { UserUpdateInput };
 ",
-  "server/src/user/base/UserWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/UserWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
 import { Type } from \\"class-transformer\\";
@@ -10639,7 +10717,7 @@ class UserWhereInput {
 }
 export { UserWhereInput };
 ",
-  "server/src/user/base/UserWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+  "server/src/user/base/dtos/UserWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
 @InputType()
@@ -10653,6 +10731,27 @@ class UserWhereUniqueInput {
   id!: string;
 }
 export { UserWhereUniqueInput };
+",
+  "server/src/user/base/dtos/index.ts": "export * from \\"./User\\";
+export * from \\"./UserCreateInput\\";
+export * from \\"./UserUpdateInput\\";
+export * from \\"./UserWhereInput\\";
+export * from \\"./UserWhereUniqueInput\\";
+export * from \\"./DeleteUserArgs\\";
+export * from \\"./UserFindManyArgs\\";
+export * from \\"./UserFindUniqueArgs\\";
+export * from \\"./UserOrderByInput\\";
+export * from \\"./CreateUserArgs\\";
+export * from \\"./UpdateUserArgs\\";
+export * from \\"./EnumUserInterests\\";
+export * from \\"./EnumUserPriority\\";
+",
+  "server/src/user/base/index.ts": "export * from \\"./user.service.base\\";
+export * from \\"./user.controller.base\\";
+export * from \\"./user.resolver.base\\";
+export * from \\"./user.module.base\\";
+export * from \\"./user.controller.base.spec\\";
+export * from \\"./dtos\\";
 ",
   "server/src/user/base/user.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -10841,14 +10940,14 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { UserService } from \\"../user.service\\";
-import { UserCreateInput } from \\"./UserCreateInput\\";
-import { UserWhereInput } from \\"./UserWhereInput\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
-import { UserUpdateInput } from \\"./UserUpdateInput\\";
-import { User } from \\"./User\\";
-import { OrganizationWhereInput } from \\"../../organization/base/OrganizationWhereInput\\";
-import { Organization } from \\"../../organization/base/Organization\\";
+import { UserCreateInput } from \\"./dtos/UserCreateInput\\";
+import { UserWhereInput } from \\"./dtos/UserWhereInput\\";
+import { UserWhereUniqueInput } from \\"./dtos/UserWhereUniqueInput\\";
+import { UserFindManyArgs } from \\"./dtos/UserFindManyArgs\\";
+import { UserUpdateInput } from \\"./dtos/UserUpdateInput\\";
+import { User } from \\"./dtos/User\\";
+import { OrganizationWhereInput } from \\"../../organization/base/dtos/OrganizationWhereInput\\";
+import { Organization } from \\"../../organization/base/dtos/Organization\\";
 @swagger.ApiBasicAuth()
 export class UserControllerBase {
   constructor(
@@ -11578,14 +11677,14 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { CreateUserArgs } from \\"./CreateUserArgs\\";
-import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
-import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
-import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
-import { UserFindUniqueArgs } from \\"./UserFindUniqueArgs\\";
-import { User } from \\"./User\\";
-import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
-import { Organization } from \\"../../organization/base/Organization\\";
+import { CreateUserArgs } from \\"./dtos/CreateUserArgs\\";
+import { UpdateUserArgs } from \\"./dtos/UpdateUserArgs\\";
+import { DeleteUserArgs } from \\"./dtos/DeleteUserArgs\\";
+import { UserFindManyArgs } from \\"./dtos/UserFindManyArgs\\";
+import { UserFindUniqueArgs } from \\"./dtos/UserFindUniqueArgs\\";
+import { User } from \\"./dtos/User\\";
+import { OrganizationFindManyArgs } from \\"../../organization/base/dtos/OrganizationFindManyArgs\\";
+import { Organization } from \\"../../organization/base/dtos/Organization\\";
 import { UserService } from \\"../user.service\\";
 
 @graphql.Resolver(() => User)
@@ -11988,7 +12087,7 @@ import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { UserResolverBase } from \\"./base/user.resolver.base\\";
-import { User } from \\"./base/User\\";
+import { User } from \\"./base/dtos/User\\";
 import { UserService } from \\"./user.service\\";
 
 @graphql.Resolver(() => User)
