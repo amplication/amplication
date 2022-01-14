@@ -14,7 +14,7 @@ export function UserAndTime({ account, time }: Props) {
   const formattedTime = useMemo(() => {
     return formatTimeToNow(time);
   }, [time]);
-  const changeTooltipDirection = (pageY: number) => setTooltipDiretion(pageY < 100 ? "s" : "n");
+  const changeTooltipDirection = (pageY: number) => setTooltipDirection(pageY < 100 ? "s" : "n");
 
   return (
     <span className="user-and-time">
