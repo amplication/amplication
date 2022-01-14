@@ -3,16 +3,18 @@ import { Location } from "history";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
-import { CircularProgress } from "@rmwc/circular-progress";
-import { Snackbar } from "@rmwc/snackbar";
 import { REACT_APP_GITHUB_CLIENT_ID } from "../env";
 import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
-import { TextField } from "@amplication/design-system";
+import {
+  TextField,
+  Snackbar,
+  Icon,
+  CircularProgress,
+} from "@amplication/design-system";
 import { Button } from "../Components/Button";
 import { Form } from "../Components/Form";
 import queryString from "query-string";
-import { Icon } from "@rmwc/icon";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 
 import { GitHubLoginButton } from "./GitHubLoginButton";
