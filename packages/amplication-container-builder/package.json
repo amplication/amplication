@@ -1,6 +1,6 @@
 {
   "name": "@amplication/container-builder",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Multi-provider library for building Docker containers",
   "main": "dist/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "@nestjs/common": "7.4.4",
     "dockerode": "3.2.1",
     "reflect-metadata": "0.1.13",
-    "winston": "3.3.3"
+    "winston": "3.3.4"
   },
   "devDependencies": {
     "@types/dockerode": "2.5.34",
