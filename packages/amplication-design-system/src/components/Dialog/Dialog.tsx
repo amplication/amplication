@@ -3,7 +3,7 @@ import classNames from "classnames";
 import {
   Dialog as PrimerDialog,
   DialogProps as PrimerDialogProps,
-} from "@primer/components";
+} from "@primer/react";
 import { Button, EnumButtonStyle } from "../Button/Button";
 import "./Dialog.scss";
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import "./CommitValidation.scss";

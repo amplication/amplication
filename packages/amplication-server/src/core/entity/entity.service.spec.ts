@@ -19,11 +19,13 @@ import {
   USER_ENTITY_NAME
 } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
+import { DiffModule } from 'src/services/diff.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 import {
   EnumPendingChangeAction,
   EnumPendingChangeResourceType
 } from '../app/dto';
+import { DiffService } from 'src/services/diff.service';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
@@ -272,6 +274,8 @@ const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
+const areDifferentMock = jest.fn(() => true);
+
 describe('EntityService', () => {
   let service: EntityService;
 
@@ -281,7 +285,7 @@ describe('EntityService', () => {
     prismaEntityFindManyMock.mockImplementation(() => [EXAMPLE_ENTITY]);
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [JsonSchemaValidationModule],
+      imports: [JsonSchemaValidationModule, DiffModule],
       providers: [
         {
           provide: PrismaService,
@@ -319,7 +323,10 @@ describe('EntityService', () => {
         },
         EntityService
       ]
-    }).compile();
+    })
+      .overrideProvider(DiffService)
+      .useValue({ areDifferent: areDifferentMock })
+      .compile();
 
     service = module.get<EntityService>(EntityService);
   });
@@ -919,6 +926,22 @@ describe('EntityService', () => {
     expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
   });
 
+  it('should still call updateLock when an error occurs', async () => {
+    jest.spyOn(service, 'updateLock');
+    jest.spyOn(service, 'validateFieldMutationArgs').mockImplementation(() => {
+      throw new Error();
+    });
+
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_ENTITY_FIELD_DATA
+    };
+    await expect(
+      service.updateField(args, EXAMPLE_USER)
+    ).rejects.toThrowError();
+    expect(service.updateLock).toBeCalled();
+  });
+
   it('should create entity field', async () => {
     expect(
       await service.createField(
@@ -1211,5 +1234,69 @@ describe('EntityService', () => {
     expect(
       await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_DELETE]);
+  });
+  it('should have no pending changes when the current and last entity versions are the same', async () => {
+    const LAST_ENTITY_VERSION = {
+      ...EXAMPLE_CURRENT_ENTITY_VERSION,
+      versionNumber: 2
+    };
+
+    prismaEntityVersionFindManyMock.mockImplementationOnce(() => [
+      EXAMPLE_CURRENT_ENTITY_VERSION,
+      { ...EXAMPLE_CURRENT_ENTITY_VERSION, versionNumber: 1 },
+      LAST_ENTITY_VERSION
+    ]);
+    areDifferentMock.mockImplementationOnce(() => false);
+
+    expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
+    expect(areDifferentMock).toBeCalledWith(
+      EXAMPLE_CURRENT_ENTITY_VERSION,
+      LAST_ENTITY_VERSION,
+      expect.anything()
+    );
+  });
+  it('should have pending changes when the current and last entity versions are different', async () => {
+    const CURRENT_ENTITY_VERSION_WITH_CHANGES = {
+      ...EXAMPLE_LAST_ENTITY_VERSION,
+      displayName: 'new entity name'
+    };
+
+    prismaEntityVersionFindManyMock.mockImplementationOnce(() => [
+      CURRENT_ENTITY_VERSION_WITH_CHANGES,
+      EXAMPLE_LAST_ENTITY_VERSION
+    ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
+    expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(true);
+    expect(areDifferentMock).toBeCalledWith(
+      CURRENT_ENTITY_VERSION_WITH_CHANGES,
+      EXAMPLE_LAST_ENTITY_VERSION,
+      expect.anything()
+    );
+  });
+  it('should have pending changes when there is only one entity version', async () => {
+    prismaEntityVersionFindManyMock.mockImplementationOnce(() => [
+      EXAMPLE_CURRENT_ENTITY_VERSION
+    ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
+    expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(true);
+    expect(areDifferentMock).toBeCalledWith(
+      EXAMPLE_CURRENT_ENTITY_VERSION,
+      undefined,
+      expect.anything()
+    );
+  });
+  it('should have no pending changes when there is only one entity version and it was deleted', async () => {
+    prismaEntityVersionFindManyMock.mockImplementationOnce(() => [
+      {
+        ...EXAMPLE_CURRENT_ENTITY_VERSION,
+        deleted: true
+      }
+    ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
+    expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
+    expect(areDifferentMock).not.toBeCalled();
   });
 });

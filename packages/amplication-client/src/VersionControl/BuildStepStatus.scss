@@ -25,10 +25,4 @@ $step-status-width: 25px;
       color: var(--black20) !important;
     }
   }
-
-  &--running {
-    .rmwc-circular-progress {
-      color: var(--primary) !important;
-    }
-  }
 }

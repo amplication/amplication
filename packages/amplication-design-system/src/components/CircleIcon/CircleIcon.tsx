@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
 import "./CircleIcon.scss";
 

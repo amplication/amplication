@@ -1,15 +1,23 @@
 import React, { useState, useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Tooltip } from "@primer/components";
+import { Tooltip } from "../Tooltip/Tooltip";
 import "./UserAndTime.scss";
+import "skeleton-screen-css";
+import classNames from "classnames";
 
 export type Props = {
   account?: { firstName?: string; lastName?: string };
   time: Date;
+  loading?: boolean;
 };
 
-export function UserAndTime({ account, time }: Props) {
+const CLASS_NAME = "user-and-time";
+const LOADING_ANIMATION_CLASS_NAME = "ssc-head-line";
+const DIRECTION = "n";
+
+export function UserAndTime({ loading, account, time }: Props) {
   const [tooltipDirection, setTooltipDirection] = useState("s");
+
   const { firstName, lastName } = account || {};
   const formattedTime = useMemo(() => {
     return formatTimeToNow(time);
@@ -17,19 +25,23 @@ export function UserAndTime({ account, time }: Props) {
   const changeTooltipDirection = (pageY: number) => setTooltipDirection(pageY < 100 ? "s" : "n");
 
   return (
-    <span className="user-and-time">
+    <span
+      className={classNames(CLASS_NAME, {
+        [`${CLASS_NAME}--loading`]: loading,
+        [LOADING_ANIMATION_CLASS_NAME]: loading,
+      })}
+    >
       <Tooltip
-        className="amp-menu-item__tooltip"
         aria-label={`${firstName} ${lastName}`}
         direction={tooltipDirection}
         noDelay
       >
-        <span className="user-and-time__initials" onMouseOver={(e) => changeTooltipDirection(e.pageY)}>
-          {firstName && firstName.substr(0, 1).toUpperCase()}
-          {lastName && lastName.substr(0, 1).toUpperCase()}
+        <span className={classNames(`${CLASS_NAME}__initials`)} onMouseOver={(e) => changeTooltipDirection(e.pageY)}>
+          {!loading && firstName && firstName.substr(0, 1).toUpperCase()}
+          {!loading && lastName && lastName.substr(0, 1).toUpperCase()}
         </span>
       </Tooltip>
-      {formattedTime}
+      {!loading && formattedTime}
     </span>
   );
 }
