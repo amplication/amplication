@@ -18,6 +18,8 @@ import { createDeleteArgs } from "./dto/graphql/delete/create-delete-args";
 import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-args";
 import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
+import { IndexFileBuilder } from "../../util";
+import { SRC_DIRECTORY } from "../../server/constants";
 
 type EntityDTOs = {
   entity: NamedClassDeclaration;
@@ -47,15 +49,27 @@ export type DTOs = {
  */
 export function createDTOModules(dtos: DTOs): Module[] {
   const dtoNameToPath = getDTONameToPath(dtos);
-  return Object.values(dtos).flatMap((entityDTOs) =>
-    Object.values(entityDTOs).map((dto) =>
-      namedTypes.TSEnumDeclaration.check(dto)
-        ? createEnumDTOModule(dto, dtoNameToPath)
-        : createDTOModule(dto, dtoNameToPath)
-    )
-  );
-}
+  const entitiesDTOs = Object.entries(dtos);
+  const dtosModules = entitiesDTOs.flatMap(([entityName, entityDTOs]) => {
+    const dtoClassDeclarations = Object.values(entityDTOs);
+    const indexBuilder = new IndexFileBuilder(
+      `${SRC_DIRECTORY}/${camelCase(entityName)}/base/dtos`
+    );
 
+    const modules = dtoClassDeclarations.map((dtoClassDeclaration) => {
+      if (namedTypes.TSEnumDeclaration.check(dtoClassDeclaration)) {
+        return createEnumDTOModule(dtoClassDeclaration, dtoNameToPath);
+      }
+      return createDTOModule(dtoClassDeclaration, dtoNameToPath);
+    });
+    modules.forEach((module) => {
+      indexBuilder.addFile(module.path);
+    });
+    return [...modules, indexBuilder.build()];
+  });
+
+  return dtosModules;
+}
 export function getDTONameToPath(dtos: DTOs): Record<string, string> {
   return Object.fromEntries(
     Object.entries(dtos).flatMap(([entityName, entityDTOs]) =>

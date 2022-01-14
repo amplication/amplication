@@ -11,6 +11,8 @@ import { createControllerModules } from "./controller/create-controller";
 import { createModules } from "./module/create-module";
 import { createControllerSpecModule } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
+import { IndexFileBuilder } from "../../util/indexFileBuilder";
+import { SRC_DIRECTORY } from "../../server/constants";
 
 export async function createResourcesModules(
   appInfo: AppInfo,
@@ -34,12 +36,13 @@ async function createResourceModules(
   logger: winston.Logger
 ): Promise<Module[]> {
   const entityType = entity.name;
-
   validateEntityName(entity);
 
   logger.info(`Creating ${entityType}...`);
   const entityName = camelCase(entityType);
   const resource = paramCase(plural(entityName));
+
+  const baseFolderPath = `${SRC_DIRECTORY}/${entityName}/base`;
 
   const serviceModules = await createServiceModules(
     entityName,
@@ -88,11 +91,29 @@ async function createResourceModules(
     controllerBaseModule.path
   );
 
+  const baseModules = [
+    ...serviceModules,
+    ...controllerModules,
+    ...resolverModules,
+    ...resourceModules,
+    testModule,
+  ].filter((module) => module.path.includes("base")); //TODO implement base on regex
+  const baseIndexFile = createBaseIndexFile(baseModules, baseFolderPath);
+
   return [
     ...serviceModules,
     ...controllerModules,
     ...resolverModules,
     ...resourceModules,
     testModule,
+    baseIndexFile,
   ];
+}
+
+function createBaseIndexFile(files: Module[], baseFolderPath: string): Module {
+  const indexBuilder = new IndexFileBuilder(baseFolderPath);
+  files.forEach((file) => {
+    indexBuilder.addFile(file.path);
+  });
+  return indexBuilder.build();
 }
