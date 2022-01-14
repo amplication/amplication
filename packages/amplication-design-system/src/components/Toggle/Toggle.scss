@@ -67,7 +67,7 @@ $thumb-position-offset: -6px;
         height: $track-height;
         position: relative;
         background: #e3ddf6;
-        border-radius: ($thumb-height / 2) + 2;
+        border-radius: ($thumb-height * 0.5) + 2;
       }
 
       .MuiSwitch-thumb {

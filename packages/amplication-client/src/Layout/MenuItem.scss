@@ -7,7 +7,7 @@ $inverted-border-radius: 6px;
   position: relative;
   border-radius: 0;
   padding: var(--default-spacing-small)
-    calc((var(--menu-width) - var(--menu-item-width)) / 2) !important ;
+    calc((var(--menu-width) - var(--menu-item-width)) * 0.5) !important ;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -64,7 +64,7 @@ $inverted-border-radius: 6px;
     background-color: var(--menu-item-active-background);
     content: "";
     position: absolute;
-    left: calc(50% - #{$select-item-width/2});
+    left: calc(50% - #{$select-item-width * 0.5});
   }
 
   &--with-fixed-panel {
