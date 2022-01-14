@@ -11,20 +11,21 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@emotion/react": "^11.7.1",
-    "@emotion/styled": "^11.6.0",
-    "@mui/material": "^5.2.7",
-    "@primer/octicons-react": "^16.2.0",
-    "@primer/react": "^34.1.0",
+    "@emotion/react": "11.7.1",
+    "@emotion/styled": "11.6.0",
+    "@mui/material": "5.2.7",
+    "@mui/system": "5.2.8",
+    "@primer/octicons-react": "16.2.0",
+    "@primer/react": "34.1.0",
     "classnames": "2.3.1",
-    "date-fns": "2.16.1",
+    "date-fns": "2.22.1",
     "lodash": "4.17.20",
     "react-animate-height": "2.0.23",
     "react-select": "5.2.1",
-    "skeleton-screen-css": "^1.0.1"
+    "skeleton-screen-css": "1.0.1"
   },
   "devDependencies": {
-    "@types/classnames": "^2.3.1",
+    "@types/classnames": "2.3.1",
     "@types/lodash": "4.14.162",
     "@types/react": "17.0.34",
     "@typescript-eslint/eslint-plugin": "5.9.1",
@@ -45,7 +46,7 @@
     "rollup-plugin-typescript2": "0.30.0",
     "sass": "1.35.2",
     "typescript": "3.9.10",
-    "webpack": "^5.65.0"
+    "webpack": "5.65.0"
   },
   "eslintConfig": {
     "extends": "react-app",
