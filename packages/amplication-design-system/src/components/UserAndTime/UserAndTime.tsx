@@ -9,7 +9,7 @@ export type Props = {
 };
 
 export function UserAndTime({ account, time }: Props) {
-  const [tooltipDirection, setTooltipDiretion] = useState("s");
+  const [tooltipDirection, setTooltipDirection] = useState("s");
   const { firstName, lastName } = account || {};
   const formattedTime = useMemo(() => {
     return formatTimeToNow(time);
