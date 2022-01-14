@@ -36,7 +36,8 @@ export const formatJson = (code: string): string => {
  * @param to filePath of the module to import to
  */
 export function relativeImportPath(from: string, to: string): string {
-  const relativePath = path.relative(path.dirname(from), to);
+  const fromFolder = path.dirname(from);
+  const relativePath = path.relative(fromFolder, to);
   return filePathToModulePath(relativePath);
 }
 
