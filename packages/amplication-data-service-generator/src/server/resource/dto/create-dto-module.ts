@@ -135,5 +135,5 @@ export function createDTOModulePath(
   entityDirectory: string,
   dtoName: string
 ): string {
-  return `${SRC_DIRECTORY}/${entityDirectory}/base/${dtoName}.ts`;
+  return `${SRC_DIRECTORY}/${entityDirectory}/base/dtos/${dtoName}.ts`;
 }
