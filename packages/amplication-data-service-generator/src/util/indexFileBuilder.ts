@@ -17,8 +17,9 @@ export class IndexFileBuilder {
     return;
   }
   addFolder(folderPath: string): void {
+    this.exportsDecelerations.push(this.createExportLine(folderPath));
     return;
-  } //TODO implement dtos folder in entity
+  }
 
   build(): Module {
     const file = b.file(b.program(this.exportsDecelerations));

@@ -46,6 +46,7 @@ import {
 import { SRC_DIRECTORY } from "../../constants";
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
+import { dtosFolderName } from "../create-dtos";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
@@ -135,5 +136,5 @@ export function createDTOModulePath(
   entityDirectory: string,
   dtoName: string
 ): string {
-  return `${SRC_DIRECTORY}/${entityDirectory}/base/dtos/${dtoName}.ts`;
+  return `${SRC_DIRECTORY}/${entityDirectory}/base/${dtosFolderName}/${dtoName}.ts`;
 }

@@ -5,7 +5,7 @@ import flatten from "lodash.flatten";
 import * as winston from "winston";
 import { Entity, Module, AppInfo } from "../../types";
 import { validateEntityName } from "../../util/entity";
-import { DTOs } from "./create-dtos";
+import { DTOs, dtosFolderName } from "./create-dtos";
 import { createServiceModules } from "./service/create-service";
 import { createControllerModules } from "./controller/create-controller";
 import { createModules } from "./module/create-module";
@@ -13,7 +13,7 @@ import { createControllerSpecModule } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 import { IndexFileBuilder } from "../../util/indexFileBuilder";
 import { SRC_DIRECTORY } from "../../server/constants";
-
+import { join } from "path";
 export async function createResourcesModules(
   appInfo: AppInfo,
   entities: Entity[],
@@ -115,5 +115,6 @@ function createBaseIndexFile(files: Module[], baseFolderPath: string): Module {
   files.forEach((file) => {
     indexBuilder.addFile(file.path);
   });
+  indexBuilder.addFolder(join(baseFolderPath, dtosFolderName));
   return indexBuilder.build();
 }

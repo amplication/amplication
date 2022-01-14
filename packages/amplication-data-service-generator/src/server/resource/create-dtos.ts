@@ -20,7 +20,7 @@ import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
 import { IndexFileBuilder } from "../../util";
 import { SRC_DIRECTORY } from "../../server/constants";
-
+export const dtosFolderName = "dtos";
 type EntityDTOs = {
   entity: NamedClassDeclaration;
   createInput: NamedClassDeclaration;
@@ -53,7 +53,7 @@ export function createDTOModules(dtos: DTOs): Module[] {
   const dtosModules = entitiesDTOs.flatMap(([entityName, entityDTOs]) => {
     const dtoClassDeclarations = Object.values(entityDTOs);
     const indexBuilder = new IndexFileBuilder(
-      `${SRC_DIRECTORY}/${camelCase(entityName)}/base/dtos`
+      `${SRC_DIRECTORY}/${camelCase(entityName)}/base/${dtosFolderName}`
     );
 
     const modules = dtoClassDeclarations.map((dtoClassDeclaration) => {
