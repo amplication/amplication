@@ -20,6 +20,7 @@ import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
 import { IndexFileBuilder } from "../../util";
 import { SRC_DIRECTORY } from "../../server/constants";
+
 export const dtosFolderName = "dtos";
 type EntityDTOs = {
   entity: NamedClassDeclaration;
