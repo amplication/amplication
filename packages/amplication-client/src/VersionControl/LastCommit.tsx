@@ -3,15 +3,18 @@ import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
-import { CircularProgress } from "@rmwc/circular-progress";
 import * as models from "../models";
-import { UserAndTime } from "@amplication/design-system";
-import { Tooltip } from "@primer/components";
+import {
+  UserAndTime,
+  Tooltip,
+  SkeletonWrapper,
+} from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import BuildSummary from "./BuildSummary";
 import BuildHeader from "./BuildHeader";
 import PendingChangesContext from "./PendingChangesContext";
 import "./LastCommit.scss";
+import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
 
 type TData = {
   commits: models.Commit[];
@@ -73,39 +76,49 @@ const LastCommit = ({ applicationId }: Props) => {
     />
   );
 
+  const generating = pendingChangesContext.commitRunning;
+
   return (
     <div
       className={classNames(`${CLASS_NAME}`, {
-        [`${CLASS_NAME}__generating`]: pendingChangesContext.commitRunning,
+        [`${CLASS_NAME}__generating`]: generating,
       })}
     >
       {Boolean(error) && errorMessage}
-      {pendingChangesContext.commitRunning ? (
-        <div className={`${CLASS_NAME}__loading`}>
-          <CircularProgress /> Generating new build...
-        </div>
-      ) : (
-        <>
-          {isEmpty(lastCommit?.message) ? (
-            ClickableCommitId
-          ) : (
-            <Tooltip aria-label={lastCommit?.message} direction="ne">
-              {ClickableCommitId}
-            </Tooltip>
-          )}
-          <UserAndTime account={account} time={lastCommit.createdAt} />
 
-          {build && (
-            <>
-              <BuildHeader
-                build={build}
-                isError={pendingChangesContext.isError}
-              />
-              <BuildSummary build={build} onError={setError} />
-            </>
-          )}
+      <SkeletonWrapper showSkeleton={generating}>
+        {isEmpty(lastCommit?.message) ? (
+          ClickableCommitId
+        ) : (
+          <Tooltip aria-label={lastCommit?.message} direction="ne">
+            {ClickableCommitId}
+          </Tooltip>
+        )}
+      </SkeletonWrapper>
+      <UserAndTime
+        loading={generating}
+        account={account}
+        time={lastCommit.createdAt}
+      />
+
+      {build && (
+        <>
+          <SkeletonWrapper showSkeleton={generating}>
+            <BuildHeader
+              build={build}
+              isError={pendingChangesContext.isError}
+            />
+          </SkeletonWrapper>
+
+          <BuildSummary
+            build={build}
+            onError={setError}
+            generating={generating}
+          />
         </>
       )}
+
+      <PendingChangesMenuItem applicationId={applicationId} />
     </div>
   );
 };
