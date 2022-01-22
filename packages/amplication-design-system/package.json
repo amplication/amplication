@@ -20,7 +20,7 @@
     "@primer/react": "34.1.0",
     "classnames": "2.3.1",
     "date-fns": "2.22.1",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "react-animate-height": "2.0.23",
     "react-select": "5.2.1",
     "react-transition-group": "4.4.2",
