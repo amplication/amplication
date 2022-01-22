@@ -6,18 +6,18 @@
   white-space: nowrap;
   padding: 0 var(--default-spacing);
 
-  &__generating {
-    background: var(--primary);
-    .rmwc-circular-progress {
-      color: var(--static-white);
-    }
-  }
-
   .clickable-id {
     color: var(--black80);
     a {
       color: var(--black100);
     }
+  }
+  .user-and-time {
+    margin-left: var(--default-spacing-small);
+  }
+
+  .build-summary {
+    margin-left: auto;
   }
 
   .build-header {
@@ -26,14 +26,5 @@
 
   &__message {
     color: var(--black60);
-  }
-
-  &__loading {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    > * {
-      margin-right: var(--default-spacing);
-    }
   }
 }

@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
-import { Switch, SwitchProps, SwitchHTMLProps } from "@rmwc/switch";
-import "@rmwc/switch/styles";
+import { Switch, SwitchProps } from "@mui/material";
 import { isEmpty } from "lodash";
 import classNames from "classnames";
 import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
@@ -8,12 +7,11 @@ import "./Toggle.scss";
 
 const CLASS_NAME = "toggle-field";
 
-export type Props = SwitchProps &
-  SwitchHTMLProps & {
-    name?: string;
-    label?: string;
-    onValueChange?: (checked: boolean) => void;
-  };
+export type Props = SwitchProps & {
+  name?: string;
+  label?: string;
+  onValueChange?: (checked: boolean) => void;
+};
 
 export const Toggle = (props: Props) => {
   const { label, onChange, onValueChange, ...rest } = props;
@@ -21,7 +19,7 @@ export const Toggle = (props: Props) => {
   const handleChange = useCallback(
     (event) => {
       if (onChange) {
-        onChange(event);
+        onChange(event, event.currentTarget.checked);
       }
       if (onValueChange) {
         onValueChange(event.currentTarget.checked);

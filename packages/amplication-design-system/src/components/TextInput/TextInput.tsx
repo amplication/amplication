@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "../Icon/Icon";
 import { Button } from "../Button/Button";
 import "./TextInput.scss";
 import { Label } from "../Label/Label";
@@ -50,7 +50,8 @@ export function TextInput({
           )}
           {hasError && (
             <Icon
-              icon={{ icon: "info_circle", size: "small" }}
+              icon="info_circle"
+              size="small"
               className={`${CLASS_NAME}__invalid`}
             />
           )}
