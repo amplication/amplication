@@ -1,9 +1,9 @@
 import React from "react";
 import {
-  Breadcrumb as PrimerBreadcrumb,
-  BreadcrumbProps as PrimerBreadcrumbProps,
-  BreadcrumbItemProps as PrimerBreadcrumbItemProps,
-} from "@primer/components";
+  Breadcrumbs as PrimerBreadcrumb,
+  BreadcrumbsProps as PrimerBreadcrumbProps,
+  BreadcrumbsItemProps as PrimerBreadcrumbItemProps,
+} from "@primer/react";
 import "./Breadcrumbs.scss";
 
 export type Props = PrimerBreadcrumbProps;

@@ -1,22 +1,8 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { GitRepo } from '../../git/dto/objects/GitRepo';
 
 @ObjectType({
   isAbstract: true,
   description: undefined
 })
-export class GithubRepo {
-  @Field(() => String)
-  name: string | null;
-
-  @Field(() => String)
-  url: string | null;
-
-  @Field(() => Boolean)
-  private: boolean | null;
-
-  @Field(() => String)
-  fullName: string | null;
-
-  @Field(() => Boolean)
-  admin: boolean | null;
-}
+export class GithubRepo extends GitRepo {}

@@ -1,7 +1,5 @@
 import React, { useCallback, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Icon } from "@rmwc/icon";
-import { Tooltip } from "@primer/components";
 import { useTracking } from "../util/analytics";
 
 import * as models from "../models";
@@ -15,6 +13,8 @@ import {
   CircleBadge,
   EnumPanelStyle,
   Panel,
+  Icon,
+  Tooltip,
 } from "@amplication/design-system";
 
 type Props = {

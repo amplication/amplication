@@ -1,16 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Octokit } from '@octokit/rest';
-import { GithubRepo } from './dto/githubRepo';
-import { GithubFile } from './dto/githubFile';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { OAuthApp } from '@octokit/oauth-app';
-
 //@octokit/openapi-types constantly fails with linting error "Unable to resolve path to module '@octokit/openapi-types'."
 // We currently ignore it and should look deeper into the root cause
 // eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
+import { Octokit } from '@octokit/rest';
+import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { AmplicationError } from 'src/errors/AmplicationError';
+import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
+import { IGitClient } from '../git/contracts/IGitClient';
+import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
+import { GitRepo } from '../git/dto/objects/GitRepo';
+import { GitUser } from '../git/dto/objects/GitUser';
+import { GithubFile } from './dto/githubFile';
+import { GithubRepo } from './dto/githubRepo';
+import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtractor';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -25,11 +31,81 @@ export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encodin
 type DirectoryItem = components['schemas']['content-directory'][number];
 
 @Injectable()
-export class GithubService {
+export class GithubService implements IGitClient {
   constructor(
     private readonly configService: ConfigService,
-    private readonly googleSecretManagerService: GoogleSecretsManagerService
+    private readonly googleSecretManagerService: GoogleSecretsManagerService,
+    public readonly tokenExtractor: GithubTokenExtractor
   ) {}
+  async isRepoExistWithOctokit(
+    octokit: Octokit,
+    name: string
+  ): Promise<boolean> {
+    const repos = await this.getUserReposWithOctokit(octokit);
+    if (repos.map(repo => repo.name).includes(name)) {
+      return true;
+    }
+    return false;
+  }
+  async isRepoExist(token: string, name: string): Promise<boolean> {
+    const octokit = new Octokit({
+      auth: token
+    });
+    return await this.isRepoExistWithOctokit(octokit, name);
+  }
+  async createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
+    const { input, token } = args;
+    const octokit = new Octokit({
+      auth: token
+    });
+    if (await this.isRepoExistWithOctokit(octokit, input.name)) {
+      throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
+    }
+
+    return octokit
+      .request('POST /user/repos', {
+        name: input.name,
+        private: !args.input.public,
+        // eslint-disable-next-line
+        auto_init: true,
+        // eslint-disable-next-line
+        gitignore_template: 'Node'
+      })
+      .then(response => {
+        const { data: repo } = response;
+        //TODO add logger
+        // console.log('Repository %s created', repo.full_name);
+
+        return {
+          name: repo.name,
+          url: repo.html_url,
+          private: repo.private,
+          fullName: repo.full_name,
+          admin: repo.permissions.admin
+        };
+      });
+  }
+  async getUserReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {
+    const results = await octokit.repos.listForAuthenticatedUser({
+      type: 'all',
+      sort: 'updated',
+      direction: 'desc'
+    });
+
+    return results.data.map(repo => ({
+      name: repo.name,
+      url: repo.html_url,
+      private: repo.private,
+      fullName: repo.full_name,
+      admin: repo.permissions.admin
+    }));
+  }
+  async getUserRepos(token: string): Promise<GitRepo[]> {
+    const octokit = new Octokit({
+      auth: token
+    });
+    return this.getUserReposWithOctokit(octokit);
+  }
 
   async listRepoForAuthenticatedUser(token: string): Promise<GithubRepo[]> {
     const octokit = new Octokit({
@@ -188,7 +264,7 @@ export class GithubService {
     return pr.data.html_url;
   }
 
-  async getOAuthAppAuthorizationUrl(appId: string) {
+  async getOAuthAppAuthorizationUrl(appId: string): Promise<string> {
     const [clientID, clientSecret] = await this.getGithubIdAndSecret();
 
     const app = new OAuthApp({
@@ -229,7 +305,7 @@ export class GithubService {
 
     return token;
   }
-  async getGithubIdAndSecret() {
+  async getGithubIdAndSecret(): Promise<[string, string]> {
     const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
     const clientSecret = await this.getSecret();
     if (!clientID || !clientSecret)
@@ -251,5 +327,13 @@ export class GithubService {
     const secretManager = this.googleSecretManagerService;
     const [version] = await secretManager.accessSecretVersion({ name });
     return version.payload.data.toString();
+  }
+
+  async getUser(token: string): Promise<GitUser> {
+    const octokit = new Octokit({
+      auth: token
+    });
+    const user = await octokit.users.getAuthenticated();
+    return { username: user.data.login };
   }
 }

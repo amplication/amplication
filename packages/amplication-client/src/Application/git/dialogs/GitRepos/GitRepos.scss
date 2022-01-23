@@ -1,0 +1,38 @@
+@import "../../../../style/index.scss";
+@import "../GitDialogsIndex.scss";
+
+.git-repos {
+  overflow: auto;
+  overflow-x: hidden;
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+    min-height: 7vh;
+  }
+
+  &__body {
+    @include flexFullRowWithSpacing;
+    align-items: center;
+
+    &__name {
+      @include title1;
+      padding-bottom: var(--default-spacing-small);
+    }
+  }
+}
+
+.amp-dialog.select-repo-dialog {
+  margin-top: 10vh !important;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  min-width: 700px;
+
+  .amp-dialog__body {
+    flex: 1;
+    overflow: auto;
+    @include scrollbars($default-scroll-width, var(--black60), transparent);
+  }
+}

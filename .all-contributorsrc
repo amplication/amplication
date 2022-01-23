@@ -367,6 +367,52 @@
         "code",
         "content"
       ]
+    },
+    {
+      "login": "michizhou",
+      "name": "michizhou",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33012425?v=4",
+      "profile": "https://github.com/michizhou",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "g-traub",
+      "name": "Guillaume Traub",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33841027?v=4",
+      "profile": "https://github.com/g-traub",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "AsianCat54x",
+      "name": "Asian Cat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/82395440?v=4",
+      "profile": "https://leetcode.com/purpl3/",
+      "contributions": [
+        "blog"
+      ]
+    },
+    {
+      "login": "noyagasi",
+      "name": "Noy Agasi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25197581?v=4",
+      "profile": "http://www.noyagasi.com",
+      "contributions": [
+        "code",
+        "bug"
+      ]
+    },
+    {
+      "login": "Rutam21",
+      "name": "Rutam Prita Mishra",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47860497?v=4",
+      "profile": "https://github.com/Rutam21",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

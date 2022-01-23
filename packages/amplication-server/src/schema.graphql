@@ -2,6 +2,51 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Auth {
+  """JWT Bearer token"""
+  token: String!
+}
+
+type AuthorizeAppWithGithubResult {
+  """"""
+  url: String!
+}
+
+type Query {
+  account: Account!
+  workspaces: [Workspace!]!
+  workspace(where: WhereUniqueInput!): Workspace
+  currentWorkspace: Workspace
+  app(where: WhereUniqueInput!): App
+  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
+  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
+  entity(where: WhereUniqueInput!): Entity
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  build(where: WhereUniqueInput!): Build!
+  appRole(where: WhereUniqueInput!, version: Float): AppRole
+  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  action(where: WhereUniqueInput!): Action!
+  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]!
+  deployment(where: WhereUniqueInput!): Deployment!
+  commit(where: CommitWhereUniqueInput!): Commit
+  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  appSettings(where: WhereUniqueInput!): AppSettings!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
+  block(where: WhereUniqueInput!): Block!
+  me: User!
+  userApiTokens: [ApiToken!]!
+  ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
+  ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
+  ConnectorRestApiCall(where: WhereUniqueInput!): ConnectorRestApiCall
+  ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
+  EntityPage(where: WhereUniqueInput!): EntityPage
+  EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  getReposOfUser(appId: String!, sourceControlService: EnumSourceControlService!): [GitRepo!]!
+  getUsername(appId: String!, sourceControlService: EnumSourceControlService!): String!
+}
+
 type Account {
   id: String!
   createdAt: DateTime!
@@ -13,43 +58,18 @@ type Account {
   githubId: String
 }
 
-type Action {
-  id: String!
-  createdAt: DateTime!
-  steps: [ActionStep!]
-}
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
-type ActionLog {
-  id: String!
-  createdAt: DateTime!
-  message: String!
-  meta: JSONObject!
-  level: EnumActionLogLevel!
-}
-
-type ActionStep {
-  id: String!
-  createdAt: DateTime!
-  name: String!
-  message: String!
-  status: EnumActionStepStatus!
-  completedAt: DateTime
-  logs: [ActionLog!]
-}
-
-type ApiToken {
+type Workspace {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
-  userId: String!
-  token: String
-  previewChars: String!
-  lastAccessAt: DateTime!
-}
-
-input ApiTokenCreateInput {
-  name: String!
+  apps: [App!]!
+  users: [User!]!
 }
 
 type App {
@@ -70,43 +90,461 @@ type App {
   githubLastMessage: String
 }
 
-input AppCreateInput {
+type Entity {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  app: App
+  appId: String!
   name: String!
-  description: String!
-  color: String
+  displayName: String!
+  pluralDisplayName: String!
+  description: String
+  versions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
+  permissions: [EntityPermission!]
+  lockedByUserId: String
+  lockedByUser: User
+  lockedAt: DateTime
 }
 
-input AppCreateWithEntitiesEntityInput {
+type EntityVersion {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  entityId: String!
+  entity: Entity!
+  versionNumber: Int!
   name: String!
-  fields: [AppCreateWithEntitiesFieldInput!]!
-  relationsToEntityIndex: [Int!]
+  displayName: String!
+  pluralDisplayName: String!
+  description: String
+  commit: Commit
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  permissions: [EntityPermission!]
 }
 
-input AppCreateWithEntitiesFieldInput {
+type Commit {
+  id: String!
+  createdAt: DateTime!
+  userId: String!
+  user: User
+  message: String!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]
+  changes: [PendingChange!]
+}
+
+type User {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  account: Account
+  workspace: Workspace
+  userRoles: [UserRole!]
+  isOwner: Boolean!
+}
+
+type UserRole {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  role: Role!
+}
+
+enum Role {
+  Admin
+  User
+  OrganizationAdmin
+  ProjectAdmin
+}
+
+type Build {
+  id: String!
+  createdAt: DateTime!
+  app: App!
+  appId: String!
+  createdBy: User!
+  userId: String!
+  status: EnumBuildStatus
+  archiveURI: String!
+  version: String!
+  message: String!
+  actionId: String!
+  action: Action
+  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
+  commit: Commit!
+  commitId: String!
+}
+
+enum EnumBuildStatus {
+  Running
+  Completed
+  Failed
+  Invalid
+}
+
+type Action {
+  id: String!
+  createdAt: DateTime!
+  steps: [ActionStep!]
+}
+
+type ActionStep {
+  id: String!
+  createdAt: DateTime!
   name: String!
-  dataType: EnumDataType
+  message: String!
+  status: EnumActionStepStatus!
+  completedAt: DateTime
+  logs: [ActionLog!]
 }
 
-input AppCreateWithEntitiesInput {
-  app: AppCreateInput!
-  entities: [AppCreateWithEntitiesEntityInput!]!
-  commitMessage: String!
+enum EnumActionStepStatus {
+  Waiting
+  Running
+  Failed
+  Success
 }
 
-input AppEnableSyncWithGithubRepoInput {
-  """The full name of the repo in the format org-name/repo-name"""
-  githubRepo: String!
-
-  """optional: defaults to default branch"""
-  githubBranch: String
+type ActionLog {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  meta: JSONObject!
+  level: EnumActionLogLevel!
 }
 
-input AppOrderByInput {
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+enum EnumActionLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+type Deployment {
+  id: String!
+  createdAt: DateTime!
+  createdBy: User!
+  userId: String!
+  build: Build!
+  buildId: String!
+  environment: Environment!
+  environmentId: String!
+  status: EnumDeploymentStatus!
+  message: String!
+  actionId: String!
+  action: Action
+}
+
+type Environment {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  app: App!
+  appId: String!
+  name: String!
+  description: String
+  address: String!
+}
+
+enum EnumDeploymentStatus {
+  Waiting
+  Completed
+  Failed
+  Removed
+}
+
+input DeploymentWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  build: WhereUniqueInput!
+  environment: WhereUniqueInput!
+  status: EnumDeploymentStatusFilter
+  createdBy: WhereUniqueInput
+  message: StringFilter
+}
+
+input StringFilter {
+  equals: String
+  not: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+}
+
+enum QueryMode {
+  Default
+  Insensitive
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  not: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+}
+
+input WhereUniqueInput {
+  id: String!
+}
+
+input EnumDeploymentStatusFilter {
+  equals: EnumDeploymentStatus
+  not: EnumDeploymentStatus
+  in: [EnumDeploymentStatus!]
+  notIn: [EnumDeploymentStatus!]
+}
+
+input DeploymentOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  userId: SortOrder
+  status: SortOrder
+  message: SortOrder
+}
+
+enum SortOrder {
+  Asc
+  Desc
+}
+
+input BuildWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  app: WhereUniqueInput!
+  createdBy: WhereUniqueInput
+  version: StringFilter
+  message: StringFilter
+  commit: WhereUniqueInput
+}
+
+input BuildOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  userId: SortOrder
+  status: SortOrder
+  version: SortOrder
+  message: SortOrder
+}
+
+type PendingChange {
+  action: EnumPendingChangeAction!
+  resourceType: EnumPendingChangeResourceType!
+  resourceId: String!
+  resource: PendingChangeResource!
+  versionNumber: Int!
+}
+
+enum EnumPendingChangeAction {
+  Create
+  Update
+  Delete
+}
+
+enum EnumPendingChangeResourceType {
+  Entity
+  Block
+}
+
+union PendingChangeResource = Entity | Block
+
+type Block {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  app: App
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float
+  lockedByUserId: String
+  lockedAt: DateTime
+  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]
+  lockedByUser: [User!]!
+}
+
+enum EnumBlockType {
+  AppSettings
+  Flow
+  ConnectorRestApi
+  ConnectorRestApiCall
+  ConnectorSoapApi
+  ConnectorFile
+  EntityApi
+  EntityApiEndpoint
+  FlowApi
+  Layout
+  CanvasPage
+  EntityPage
+  Document
+}
+
+type BlockVersion {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  displayName: String!
+  description: String
+  block: Block!
+  versionNumber: Int!
+  commit: Commit
+  settings: JSONObject
+}
+
+input BlockVersionWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  versionNumber: IntFilter
+  label: StringFilter
+  block: WhereUniqueInput
+}
+
+input IntFilter {
+  equals: Int
+  not: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+}
+
+input BlockVersionOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
+  versionNumber: SortOrder
+  label: SortOrder
+}
+
+type EntityField {
+  id: String!
+  permanentId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  displayName: String!
+  dataType: EnumDataType!
+  properties: JSONObject
+  required: Boolean!
+  unique: Boolean!
+  searchable: Boolean!
+  description: String
+  position: Int
+}
+
+enum EnumDataType {
+  SingleLineText
+  MultiLineText
+  Email
+  WholeNumber
+  DateTime
+  DecimalNumber
+  Lookup
+  MultiSelectOptionSet
+  OptionSet
+  Boolean
+  GeographicLocation
+  Id
+  CreatedAt
+  UpdatedAt
+  Roles
+  Username
+  Password
+  Json
+}
+
+input EntityFieldWhereInput {
+  id: StringFilter
+  permanentId: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  dataType: EnumDataTypeFilter
+  required: BooleanFilter
+  unique: BooleanFilter
+  searchable: BooleanFilter
+  description: StringFilter
+}
+
+input EnumDataTypeFilter {
+  equals: EnumDataType
+  not: EnumDataType
+  in: [EnumDataType!]
+  notIn: [EnumDataType!]
+}
+
+input BooleanFilter {
+  equals: Boolean
+  not: Boolean
+}
+
+input EntityFieldOrderByInput {
+  id: SortOrder
+  permanentId: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
   name: SortOrder
+  displayName: SortOrder
+  dataType: SortOrder
+  required: SortOrder
+  unique: SortOrder
+  searchable: SortOrder
   description: SortOrder
+  position: SortOrder
+}
+
+type EntityPermission {
+  id: String!
+  entityVersionId: String!
+  entityVersion: EntityVersion
+  action: EnumEntityAction!
+  type: EnumEntityPermissionType!
+  permissionRoles: [EntityPermissionRole!]
+  permissionFields: [EntityPermissionField!]
+}
+
+enum EnumEntityAction {
+  View
+  Create
+  Update
+  Delete
+  Search
+}
+
+enum EnumEntityPermissionType {
+  AllRoles
+  Granular
+  Disabled
+}
+
+type EntityPermissionRole {
+  id: String!
+  entityVersionId: String!
+  action: EnumEntityAction!
+  entityPermission: EntityPermission
+  appRoleId: String!
+  appRole: AppRole!
 }
 
 type AppRole {
@@ -118,11 +556,109 @@ type AppRole {
   description: String
 }
 
-input AppRoleCreateInput {
-  name: String!
-  description: String!
-  displayName: String!
-  app: WhereParentIdInput!
+type EntityPermissionField {
+  id: String!
+  permissionId: String!
+  permission: EntityPermission
+  fieldPermanentId: String!
+  entityVersionId: String!
+  field: EntityField!
+  permissionRoles: [EntityPermissionRole!]
+}
+
+input EntityVersionWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  versionNumber: IntFilter
+  name: StringFilter
+  displayName: StringFilter
+  pluralDisplayName: StringFilter
+  description: StringFilter
+  label: StringFilter
+  entity: WhereUniqueInput
+}
+
+input EntityVersionOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  versionNumber: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  pluralDisplayName: SortOrder
+  description: SortOrder
+  label: SortOrder
+}
+
+input EntityWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  pluralDisplayName: StringFilter
+  description: StringFilter
+  fields: EntityFieldFilter
+  app: WhereUniqueInput
+}
+
+input EntityFieldFilter {
+  every: EntityFieldWhereInput
+  some: EntityFieldWhereInput
+  none: EntityFieldWhereInput
+}
+
+input EntityOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  pluralDisplayName: SortOrder
+  description: SortOrder
+}
+
+input AppWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  description: StringFilter
+}
+
+input AppOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  description: SortOrder
+}
+
+input PendingChangesFindInput {
+  app: WhereUniqueInput!
+}
+
+type AppValidationResult {
+  isValid: Boolean!
+  messages: [AppValidationErrorTypes!]!
+}
+
+enum AppValidationErrorTypes {
+  CannotMergeCodeToGitHubBreakingChanges
+  CannotMergeCodeToGitHubInvalidAppId
+  DataServiceGeneratorVersionMissing
+  DataServiceGeneratorVersionInvalid
+}
+
+input AppRoleWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  description: StringFilter
+  app: WhereUniqueInput
 }
 
 input AppRoleOrderByInput {
@@ -134,20 +670,22 @@ input AppRoleOrderByInput {
   description: SortOrder
 }
 
-input AppRoleUpdateInput {
-  name: String
-  description: String
-  displayName: String!
+input CommitWhereUniqueInput {
+  id: String
 }
 
-input AppRoleWhereInput {
-  id: String
+input CommitWhereInput {
+  id: StringFilter
   createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  displayName: StringFilter
-  description: StringFilter
-  app: WhereUniqueInput
+  app: WhereUniqueInput!
+  user: WhereUniqueInput
+  message: StringFilter
+}
+
+input CommitOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  message: SortOrder
 }
 
 type AppSettings implements IBlock {
@@ -171,70 +709,19 @@ type AppSettings implements IBlock {
   authProvider: EnumAuthProviderType!
 }
 
-input AppSettingsUpdateInput {
-  displayName: String
-  description: String
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
-  authProvider: EnumAuthProviderType!
-}
-
-input AppUpdateInput {
-  name: String
-  description: String
-  color: String
-}
-
-enum AppValidationErrorTypes {
-  CannotMergeCodeToGitHubBreakingChanges
-  CannotMergeCodeToGitHubInvalidAppId
-  DataServiceGeneratorVersionMissing
-  DataServiceGeneratorVersionInvalid
-}
-
-type AppValidationResult {
-  isValid: Boolean!
-  messages: [AppValidationErrorTypes!]!
-}
-
-input AppWhereInput {
-  id: String
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  description: StringFilter
-}
-
-type Auth {
-  """JWT Bearer token"""
-  token: String!
-}
-
-type AuthorizeAppWithGithubResult {
-  url: String!
-}
-
-input AvailableGithubReposFindInput {
-  app: WhereUniqueInput!
-}
-
-type Block {
+interface IBlock {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  app: App
   parentBlock: Block
   displayName: String!
-  description: String
+  description: String!
   blockType: EnumBlockType!
-  versionNumber: Float
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
   lockedByUserId: String
   lockedAt: DateTime
-  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]
-  lockedByUser: [User!]!
 }
 
 type BlockInputOutput {
@@ -247,57 +734,14 @@ type BlockInputOutput {
   propertyList: [PropertySelector!]
 }
 
-input BlockInputOutputInput {
-  name: String!
-  description: String!
-  dataType: EnumDataType
-  dataTypeEntityName: String
-  isList: Boolean
-  includeAllPropertiesByDefault: Boolean
-  propertyList: [PropertySelectorInput!]
+type PropertySelector {
+  propertyName: String!
+  include: Boolean!
 }
 
-input BlockOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
-input BlockUpdateInput {
-  displayName: String
-  description: String
-}
-
-type BlockVersion {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  displayName: String!
-  description: String
-  block: Block!
-  versionNumber: Int!
-  commit: Commit
-  settings: JSONObject
-}
-
-input BlockVersionOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  versionNumber: SortOrder
-  label: SortOrder
-}
-
-input BlockVersionWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  versionNumber: IntFilter
-  label: StringFilter
-  block: WhereUniqueInput
+enum EnumAuthProviderType {
+  Http
+  Jwt
 }
 
 input BlockWhereInput {
@@ -311,95 +755,31 @@ input BlockWhereInput {
   description: StringFilter
 }
 
-input BooleanFilter {
-  equals: Boolean
-  not: Boolean
+input EnumBlockTypeFilter {
+  equals: EnumBlockType
+  not: EnumBlockType
+  in: [EnumBlockType!]
+  notIn: [EnumBlockType!]
 }
 
-type Build {
-  id: String!
-  createdAt: DateTime!
-  app: App!
-  appId: String!
-  createdBy: User!
-  userId: String!
-  status: EnumBuildStatus
-  archiveURI: String!
-  version: String!
-  message: String!
-  actionId: String!
-  action: Action
-  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
-  commit: Commit!
-  commitId: String!
-}
-
-input BuildCreateInput {
-  app: WhereParentIdInput!
-  message: String!
-  commit: WhereParentIdInput!
-}
-
-input BuildOrderByInput {
+input BlockOrderByInput {
   id: SortOrder
   createdAt: SortOrder
-  userId: SortOrder
-  status: SortOrder
-  version: SortOrder
-  message: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
 }
 
-input BuildWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  app: WhereUniqueInput!
-  createdBy: WhereUniqueInput
-  version: StringFilter
-  message: StringFilter
-  commit: WhereUniqueInput
-}
-
-input ChangePasswordInput {
-  oldPassword: String!
-  newPassword: String!
-}
-
-type Commit {
+type ApiToken {
   id: String!
   createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
   userId: String!
-  user: User
-  message: String!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]
-  changes: [PendingChange!]
-}
-
-input CommitCreateInput {
-  message: String!
-  app: WhereParentIdInput!
-}
-
-input CommitOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  message: SortOrder
-}
-
-input CommitWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  app: WhereUniqueInput!
-  user: WhereUniqueInput
-  message: StringFilter
-}
-
-input CommitWhereUniqueInput {
-  id: String
-}
-
-input CompleteAuthorizeAppWithGithubInput {
-  code: String!
-  state: String!
+  token: String
+  previewChars: String!
+  lastAccessAt: DateTime!
 }
 
 type ConnectorRestApi implements IBlock {
@@ -420,6 +800,44 @@ type ConnectorRestApi implements IBlock {
   httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings
 }
 
+enum EnumConnectorRestApiAuthenticationType {
+  None
+  PrivateKey
+  HttpBasicAuthentication
+  OAuth2PasswordFlow
+  OAuth2UserAgentFlow
+}
+
+type PrivateKeyAuthenticationSettings {
+  keyName: String!
+  keyValue: String!
+  type: String!
+}
+
+type HttpBasicAuthenticationSettings {
+  username: String!
+  password: String!
+}
+
+input ConnectorRestApiWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  app: WhereUniqueInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input ConnectorRestApiOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
 type ConnectorRestApiCall implements IBlock {
   id: String!
   createdAt: DateTime!
@@ -436,25 +854,6 @@ type ConnectorRestApiCall implements IBlock {
   url: String!
 }
 
-input ConnectorRestApiCallCreateInput {
-  displayName: String!
-  description: String
-  app: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  url: String!
-}
-
-input ConnectorRestApiCallOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
 input ConnectorRestApiCallWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
@@ -465,213 +864,12 @@ input ConnectorRestApiCallWhereInput {
   description: StringFilter
 }
 
-input ConnectorRestApiCreateInput {
-  displayName: String!
-  description: String
-  app: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  authenticationType: EnumConnectorRestApiAuthenticationType!
-  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettingsInput
-  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettingsInput
-}
-
-input ConnectorRestApiOrderByInput {
+input ConnectorRestApiCallOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
   blockType: SortOrder
   displayName: SortOrder
-  description: SortOrder
-}
-
-input ConnectorRestApiWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  app: WhereUniqueInput
-  parentBlock: WhereUniqueInput
-  displayName: StringFilter
-  description: StringFilter
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-input DateTimeFilter {
-  equals: DateTime
-  not: DateTime
-  in: [DateTime!]
-  notIn: [DateTime!]
-  lt: DateTime
-  lte: DateTime
-  gt: DateTime
-  gte: DateTime
-}
-
-type Deployment {
-  id: String!
-  createdAt: DateTime!
-  createdBy: User!
-  userId: String!
-  build: Build!
-  buildId: String!
-  environment: Environment!
-  environmentId: String!
-  status: EnumDeploymentStatus!
-  message: String!
-  actionId: String!
-  action: Action
-}
-
-input DeploymentCreateInput {
-  build: WhereParentIdInput!
-  environment: WhereParentIdInput!
-  message: String
-}
-
-input DeploymentOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  userId: SortOrder
-  status: SortOrder
-  message: SortOrder
-}
-
-input DeploymentWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  build: WhereUniqueInput!
-  environment: WhereUniqueInput!
-  status: EnumDeploymentStatusFilter
-  createdBy: WhereUniqueInput
-  message: StringFilter
-}
-
-type Entity {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  app: App
-  appId: String!
-  name: String!
-  displayName: String!
-  pluralDisplayName: String!
-  description: String
-  versions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
-  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
-  permissions: [EntityPermission!]
-  lockedByUserId: String
-  lockedByUser: User
-  lockedAt: DateTime
-}
-
-input EntityAddPermissionFieldInput {
-  action: EnumEntityAction!
-  fieldName: String!
-  entity: WhereParentIdInput!
-}
-
-input EntityCreateInput {
-  name: String!
-  displayName: String!
-  pluralDisplayName: String!
-  description: String
-  app: WhereParentIdInput!
-}
-
-type EntityField {
-  id: String!
-  permanentId: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  displayName: String!
-  dataType: EnumDataType!
-  properties: JSONObject
-  required: Boolean!
-  unique: Boolean!
-  searchable: Boolean!
-  description: String
-  position: Int
-}
-
-input EntityFieldCreateByDisplayNameInput {
-  displayName: String!
-  dataType: EnumDataType
-  entity: WhereParentIdInput!
-}
-
-input EntityFieldCreateInput {
-  name: String!
-  displayName: String!
-  dataType: EnumDataType!
-  properties: JSONObject!
-  required: Boolean!
-  unique: Boolean!
-  searchable: Boolean!
-  description: String!
-  entity: WhereParentIdInput!
-  position: Int
-}
-
-input EntityFieldFilter {
-  every: EntityFieldWhereInput
-  some: EntityFieldWhereInput
-  none: EntityFieldWhereInput
-}
-
-input EntityFieldOrderByInput {
-  id: SortOrder
-  permanentId: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  displayName: SortOrder
-  dataType: SortOrder
-  required: SortOrder
-  unique: SortOrder
-  searchable: SortOrder
-  description: SortOrder
-  position: SortOrder
-}
-
-input EntityFieldUpdateInput {
-  name: String
-  displayName: String
-  dataType: EnumDataType
-  properties: JSONObject
-  required: Boolean
-  unique: Boolean
-  searchable: Boolean
-  description: String
-  position: Int
-}
-
-input EntityFieldWhereInput {
-  id: StringFilter
-  permanentId: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  displayName: StringFilter
-  dataType: EnumDataTypeFilter
-  required: BooleanFilter
-  unique: BooleanFilter
-  searchable: BooleanFilter
-  description: StringFilter
-}
-
-input EntityOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  displayName: SortOrder
-  pluralDisplayName: SortOrder
   description: SortOrder
 }
 
@@ -696,6 +894,372 @@ type EntityPage implements IBlock {
   showFieldList: [String!]
 }
 
+enum EnumEntityPageType {
+  SingleRecord
+  List
+  MasterDetails
+}
+
+type EntityPageSingleRecordSettings implements IEntityPageSettings {
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
+  allowUpdate: Boolean!
+}
+
+interface IEntityPageSettings {
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
+}
+
+type EntityPageListSettings implements IEntityPageSettings {
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
+  enableSearch: Boolean!
+  navigateToPageId: String
+}
+
+input EntityPageWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  app: WhereUniqueInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input EntityPageOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+type GitRepo {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
+}
+
+enum EnumSourceControlService {
+  Github
+}
+
+type Mutation {
+  updateAccount(data: UpdateAccountInput!): Account!
+  deleteWorkspace(where: WhereUniqueInput!): Workspace
+  updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  createWorkspace(data: WorkspaceCreateInput!): Workspace
+  inviteUser(data: InviteUserInput!): User
+  createApp(data: AppCreateInput!): App!
+  createAppWithEntities(data: AppCreateWithEntitiesInput!): App!
+  deleteApp(where: WhereUniqueInput!): App
+  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
+  commit(data: CommitCreateInput!): Commit
+  discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
+  startAuthorizeAppWithGithub(where: WhereUniqueInput!): AuthorizeAppWithGithubResult!
+  completeAuthorizeAppWithGithub(data: CompleteAuthorizeAppWithGithubInput!, where: WhereUniqueInput!): App!
+  removeAuthorizeAppWithGithub(where: WhereUniqueInput!): App!
+  appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
+  appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
+  createOneEntity(data: EntityCreateInput!): Entity!
+  deleteEntity(where: WhereUniqueInput!): Entity
+  updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
+  lockEntity(where: WhereUniqueInput!): Entity
+  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
+  updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
+  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
+  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
+  createEntityField(data: EntityFieldCreateInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
+  deleteEntityField(where: WhereUniqueInput!): EntityField!
+  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  createBuild(data: BuildCreateInput!): Build!
+  createAppRole(data: AppRoleCreateInput!): AppRole!
+  deleteAppRole(where: WhereUniqueInput!): AppRole
+  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  createDeployment(data: DeploymentCreateInput!): Deployment!
+  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
+  createApiToken(data: ApiTokenCreateInput!): ApiToken!
+  changePassword(data: ChangePasswordInput!): Account!
+  deleteApiToken(where: WhereUniqueInput!): ApiToken!
+  setCurrentWorkspace(data: WhereUniqueInput!): Auth!
+  createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
+  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
+  createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
+  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
+  createEntityPage(data: EntityPageCreateInput!): EntityPage!
+  updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
+  createRepoInOrg(appId: String!, sourceControlService: EnumSourceControlService!, input: RepoCreateInput!): GitRepo!
+}
+
+input UpdateAccountInput {
+  firstName: String
+  lastName: String
+}
+
+input WorkspaceUpdateInput {
+  name: String
+}
+
+input WorkspaceCreateInput {
+  name: String!
+}
+
+input InviteUserInput {
+  email: String!
+}
+
+input AppCreateInput {
+  name: String!
+  description: String!
+  color: String
+}
+
+input AppCreateWithEntitiesInput {
+  app: AppCreateInput!
+  entities: [AppCreateWithEntitiesEntityInput!]!
+  commitMessage: String!
+}
+
+input AppCreateWithEntitiesEntityInput {
+  name: String!
+  fields: [AppCreateWithEntitiesFieldInput!]!
+  relationsToEntityIndex: [Int!]
+}
+
+input AppCreateWithEntitiesFieldInput {
+  name: String!
+  dataType: EnumDataType
+}
+
+input AppUpdateInput {
+  name: String
+  description: String
+  color: String
+}
+
+input CommitCreateInput {
+  message: String!
+  app: WhereParentIdInput!
+}
+
+input WhereParentIdInput {
+  connect: WhereUniqueInput!
+}
+
+input PendingChangesDiscardInput {
+  app: WhereParentIdInput!
+}
+
+input CompleteAuthorizeAppWithGithubInput {
+  code: String!
+  state: String!
+}
+
+input AppEnableSyncWithGithubRepoInput {
+  """The full name of the repo in the format org-name/repo-name"""
+  githubRepo: String!
+
+  """optional: defaults to default branch"""
+  githubBranch: String
+}
+
+input EntityCreateInput {
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  description: String
+  app: WhereParentIdInput!
+}
+
+input EntityUpdateInput {
+  name: String
+  displayName: String
+  pluralDisplayName: String
+  description: String
+}
+
+input EntityUpdatePermissionInput {
+  action: EnumEntityAction!
+  type: EnumEntityPermissionType!
+}
+
+input EntityUpdatePermissionRolesInput {
+  action: EnumEntityAction!
+  entity: WhereParentIdInput!
+  deleteRoles: [WhereUniqueInput!]
+  addRoles: [WhereUniqueInput!]
+}
+
+input EntityAddPermissionFieldInput {
+  action: EnumEntityAction!
+  fieldName: String!
+  entity: WhereParentIdInput!
+}
+
+input EntityPermissionFieldWhereUniqueInput {
+  entityId: String!
+  action: EnumEntityAction!
+  fieldPermanentId: String!
+}
+
+input EntityUpdatePermissionFieldRolesInput {
+  permissionField: WhereParentIdInput!
+  deletePermissionRoles: [WhereUniqueInput!]
+  addPermissionRoles: [WhereUniqueInput!]
+}
+
+input EntityFieldCreateInput {
+  name: String!
+  displayName: String!
+  dataType: EnumDataType!
+  properties: JSONObject!
+  required: Boolean!
+  unique: Boolean!
+  searchable: Boolean!
+  description: String!
+  entity: WhereParentIdInput!
+  position: Int
+}
+
+input EntityFieldCreateByDisplayNameInput {
+  displayName: String!
+  dataType: EnumDataType
+  entity: WhereParentIdInput!
+}
+
+input EntityFieldUpdateInput {
+  name: String
+  displayName: String
+  dataType: EnumDataType
+  properties: JSONObject
+  required: Boolean
+  unique: Boolean
+  searchable: Boolean
+  description: String
+  position: Int
+}
+
+input BuildCreateInput {
+  app: WhereParentIdInput!
+  message: String!
+  commit: WhereParentIdInput!
+}
+
+input AppRoleCreateInput {
+  name: String!
+  description: String!
+  displayName: String!
+  app: WhereParentIdInput!
+}
+
+input AppRoleUpdateInput {
+  name: String
+  description: String
+  displayName: String!
+}
+
+input DeploymentCreateInput {
+  build: WhereParentIdInput!
+  environment: WhereParentIdInput!
+  message: String
+}
+
+input AppSettingsUpdateInput {
+  displayName: String
+  description: String
+  dbHost: String!
+  dbName: String!
+  dbUser: String!
+  dbPassword: String!
+  dbPort: Int!
+  authProvider: EnumAuthProviderType!
+}
+
+input SignupInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  workspaceName: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input ApiTokenCreateInput {
+  name: String!
+}
+
+input ChangePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+}
+
+input ConnectorRestApiCreateInput {
+  displayName: String!
+  description: String
+  app: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  authenticationType: EnumConnectorRestApiAuthenticationType!
+  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettingsInput
+  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettingsInput
+}
+
+input BlockInputOutputInput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelectorInput!]
+}
+
+input PropertySelectorInput {
+  propertyName: String!
+  include: Boolean!
+}
+
+input PrivateKeyAuthenticationSettingsInput {
+  keyName: String!
+  keyValue: String!
+  type: String!
+}
+
+input HttpBasicAuthenticationSettingsInput {
+  username: String!
+  password: String!
+}
+
+input BlockUpdateInput {
+  displayName: String
+  description: String
+}
+
+input ConnectorRestApiCallCreateInput {
+  displayName: String!
+  description: String
+  app: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  url: String!
+}
+
 input EntityPageCreateInput {
   displayName: String!
   description: String
@@ -711,11 +1275,10 @@ input EntityPageCreateInput {
   showFieldList: [String!]
 }
 
-type EntityPageListSettings implements IEntityPageSettings {
+input EntityPageSingleRecordSettingsInput {
   allowCreation: Boolean!
   allowDeletion: Boolean!
-  enableSearch: Boolean!
-  navigateToPageId: String
+  allowUpdate: Boolean!
 }
 
 input EntityPageListSettingsInput {
@@ -723,27 +1286,6 @@ input EntityPageListSettingsInput {
   allowDeletion: Boolean!
   enableSearch: Boolean!
   navigateToPageId: String
-}
-
-input EntityPageOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
-type EntityPageSingleRecordSettings implements IEntityPageSettings {
-  allowCreation: Boolean!
-  allowDeletion: Boolean!
-  allowUpdate: Boolean!
-}
-
-input EntityPageSingleRecordSettingsInput {
-  allowCreation: Boolean!
-  allowDeletion: Boolean!
-  allowUpdate: Boolean!
 }
 
 input EntityPageUpdateInput {
@@ -757,541 +1299,7 @@ input EntityPageUpdateInput {
   showFieldList: [String!]
 }
 
-input EntityPageWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  app: WhereUniqueInput
-  parentBlock: WhereUniqueInput
-  displayName: StringFilter
-  description: StringFilter
-}
-
-type EntityPermission {
-  id: String!
-  entityVersionId: String!
-  entityVersion: EntityVersion
-  action: EnumEntityAction!
-  type: EnumEntityPermissionType!
-  permissionRoles: [EntityPermissionRole!]
-  permissionFields: [EntityPermissionField!]
-}
-
-type EntityPermissionField {
-  id: String!
-  permissionId: String!
-  permission: EntityPermission
-  fieldPermanentId: String!
-  entityVersionId: String!
-  field: EntityField!
-  permissionRoles: [EntityPermissionRole!]
-}
-
-input EntityPermissionFieldWhereUniqueInput {
-  entityId: String!
-  action: EnumEntityAction!
-  fieldPermanentId: String!
-}
-
-type EntityPermissionRole {
-  id: String!
-  entityVersionId: String!
-  action: EnumEntityAction!
-  entityPermission: EntityPermission
-  appRoleId: String!
-  appRole: AppRole!
-}
-
-input EntityUpdateInput {
-  name: String
-  displayName: String
-  pluralDisplayName: String
-  description: String
-}
-
-input EntityUpdatePermissionFieldRolesInput {
-  permissionField: WhereParentIdInput!
-  deletePermissionRoles: [WhereUniqueInput!]
-  addPermissionRoles: [WhereUniqueInput!]
-}
-
-input EntityUpdatePermissionInput {
-  action: EnumEntityAction!
-  type: EnumEntityPermissionType!
-}
-
-input EntityUpdatePermissionRolesInput {
-  action: EnumEntityAction!
-  entity: WhereParentIdInput!
-  deleteRoles: [WhereUniqueInput!]
-  addRoles: [WhereUniqueInput!]
-}
-
-type EntityVersion {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  entityId: String!
-  entity: Entity!
-  versionNumber: Int!
+input RepoCreateInput {
   name: String!
-  displayName: String!
-  pluralDisplayName: String!
-  description: String
-  commit: Commit
-  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
-  permissions: [EntityPermission!]
-}
-
-input EntityVersionOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  versionNumber: SortOrder
-  name: SortOrder
-  displayName: SortOrder
-  pluralDisplayName: SortOrder
-  description: SortOrder
-  label: SortOrder
-}
-
-input EntityVersionWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  versionNumber: IntFilter
-  name: StringFilter
-  displayName: StringFilter
-  pluralDisplayName: StringFilter
-  description: StringFilter
-  label: StringFilter
-  entity: WhereUniqueInput
-}
-
-input EntityWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  displayName: StringFilter
-  pluralDisplayName: StringFilter
-  description: StringFilter
-  fields: EntityFieldFilter
-  app: WhereUniqueInput
-}
-
-enum EnumActionLogLevel {
-  Error
-  Warning
-  Info
-  Debug
-}
-
-enum EnumActionStepStatus {
-  Waiting
-  Running
-  Failed
-  Success
-}
-
-enum EnumAuthProviderType {
-  Http
-  Jwt
-}
-
-enum EnumBlockType {
-  AppSettings
-  Flow
-  ConnectorRestApi
-  ConnectorRestApiCall
-  ConnectorSoapApi
-  ConnectorFile
-  EntityApi
-  EntityApiEndpoint
-  FlowApi
-  Layout
-  CanvasPage
-  EntityPage
-  Document
-}
-
-input EnumBlockTypeFilter {
-  equals: EnumBlockType
-  not: EnumBlockType
-  in: [EnumBlockType!]
-  notIn: [EnumBlockType!]
-}
-
-enum EnumBuildStatus {
-  Running
-  Completed
-  Failed
-  Invalid
-}
-
-enum EnumConnectorRestApiAuthenticationType {
-  None
-  PrivateKey
-  HttpBasicAuthentication
-  OAuth2PasswordFlow
-  OAuth2UserAgentFlow
-}
-
-enum EnumDataType {
-  SingleLineText
-  MultiLineText
-  Email
-  WholeNumber
-  DateTime
-  DecimalNumber
-  Lookup
-  MultiSelectOptionSet
-  OptionSet
-  Boolean
-  GeographicLocation
-  Id
-  CreatedAt
-  UpdatedAt
-  Roles
-  Username
-  Password
-  Json
-}
-
-input EnumDataTypeFilter {
-  equals: EnumDataType
-  not: EnumDataType
-  in: [EnumDataType!]
-  notIn: [EnumDataType!]
-}
-
-enum EnumDeploymentStatus {
-  Waiting
-  Completed
-  Failed
-  Removed
-}
-
-input EnumDeploymentStatusFilter {
-  equals: EnumDeploymentStatus
-  not: EnumDeploymentStatus
-  in: [EnumDeploymentStatus!]
-  notIn: [EnumDeploymentStatus!]
-}
-
-enum EnumEntityAction {
-  View
-  Create
-  Update
-  Delete
-  Search
-}
-
-enum EnumEntityPageType {
-  SingleRecord
-  List
-  MasterDetails
-}
-
-enum EnumEntityPermissionType {
-  AllRoles
-  Granular
-  Disabled
-}
-
-enum EnumPendingChangeAction {
-  Create
-  Update
-  Delete
-}
-
-enum EnumPendingChangeResourceType {
-  Entity
-  Block
-}
-
-type Environment {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  app: App!
-  appId: String!
-  name: String!
-  description: String
-  address: String!
-}
-
-type GithubRepo {
-  name: String!
-  url: String!
-  private: Boolean!
-  fullName: String!
-  admin: Boolean!
-}
-
-type HttpBasicAuthenticationSettings {
-  username: String!
-  password: String!
-}
-
-input HttpBasicAuthenticationSettingsInput {
-  username: String!
-  password: String!
-}
-
-interface IBlock {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String!
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-}
-
-interface IEntityPageSettings {
-  allowCreation: Boolean!
-  allowDeletion: Boolean!
-}
-
-input IntFilter {
-  equals: Int
-  not: Int
-  in: [Int!]
-  notIn: [Int!]
-  lt: Int
-  lte: Int
-  gt: Int
-  gte: Int
-}
-
-input InviteUserInput {
-  email: String!
-}
-
-"""
-The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
-scalar JSONObject
-
-input LoginInput {
-  email: String!
-  password: String!
-}
-
-type Mutation {
-  updateAccount(data: UpdateAccountInput!): Account!
-  deleteWorkspace(where: WhereUniqueInput!): Workspace
-  updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
-  createWorkspace(data: WorkspaceCreateInput!): Workspace
-  inviteUser(data: InviteUserInput!): User
-  createOneEntity(data: EntityCreateInput!): Entity!
-  deleteEntity(where: WhereUniqueInput!): Entity
-  updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
-  lockEntity(where: WhereUniqueInput!): Entity
-  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
-  updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
-  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
-  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
-  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
-  createEntityField(data: EntityFieldCreateInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
-  deleteEntityField(where: WhereUniqueInput!): EntityField!
-  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  createAppRole(data: AppRoleCreateInput!): AppRole!
-  deleteAppRole(where: WhereUniqueInput!): AppRole
-  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
-  createBuild(data: BuildCreateInput!): Build!
-  createDeployment(data: DeploymentCreateInput!): Deployment!
-  createApp(data: AppCreateInput!): App!
-  createAppWithEntities(data: AppCreateWithEntitiesInput!): App!
-  deleteApp(where: WhereUniqueInput!): App
-  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
-  commit(data: CommitCreateInput!): Commit
-  discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  startAuthorizeAppWithGithub(where: WhereUniqueInput!): AuthorizeAppWithGithubResult!
-  completeAuthorizeAppWithGithub(data: CompleteAuthorizeAppWithGithubInput!, where: WhereUniqueInput!): App!
-  removeAuthorizeAppWithGithub(where: WhereUniqueInput!): App!
-  appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
-  appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
-  signup(data: SignupInput!): Auth!
-  login(data: LoginInput!): Auth!
-  createApiToken(data: ApiTokenCreateInput!): ApiToken!
-  changePassword(data: ChangePasswordInput!): Account!
-  deleteApiToken(where: WhereUniqueInput!): ApiToken!
-  setCurrentWorkspace(data: WhereUniqueInput!): Auth!
-  createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
-  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
-  createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
-  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
-  createEntityPage(data: EntityPageCreateInput!): EntityPage!
-  updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-}
-
-type PendingChange {
-  action: EnumPendingChangeAction!
-  resourceType: EnumPendingChangeResourceType!
-  resourceId: String!
-  resource: PendingChangeResource!
-  versionNumber: Int!
-}
-
-union PendingChangeResource = Entity | Block
-
-input PendingChangesDiscardInput {
-  app: WhereParentIdInput!
-}
-
-input PendingChangesFindInput {
-  app: WhereUniqueInput!
-}
-
-type PrivateKeyAuthenticationSettings {
-  keyName: String!
-  keyValue: String!
-  type: String!
-}
-
-input PrivateKeyAuthenticationSettingsInput {
-  keyName: String!
-  keyValue: String!
-  type: String!
-}
-
-type PropertySelector {
-  propertyName: String!
-  include: Boolean!
-}
-
-input PropertySelectorInput {
-  propertyName: String!
-  include: Boolean!
-}
-
-type Query {
-  account: Account!
-  workspaces: [Workspace!]!
-  workspace(where: WhereUniqueInput!): Workspace
-  currentWorkspace: Workspace
-  entity(where: WhereUniqueInput!): Entity
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
-  block(where: WhereUniqueInput!): Block!
-  appRole(where: WhereUniqueInput!, version: Float): AppRole
-  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
-  appSettings(where: WhereUniqueInput!): AppSettings!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
-  build(where: WhereUniqueInput!): Build!
-  action(where: WhereUniqueInput!): Action!
-  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]!
-  deployment(where: WhereUniqueInput!): Deployment!
-  app(where: WhereUniqueInput!): App
-  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
-  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
-  appAvailableGithubRepos(where: AvailableGithubReposFindInput!): [GithubRepo!]!
-  appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
-  commit(where: CommitWhereUniqueInput!): Commit
-  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
-  me: User!
-  userApiTokens: [ApiToken!]!
-  ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
-  ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
-  ConnectorRestApiCall(where: WhereUniqueInput!): ConnectorRestApiCall
-  ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
-  EntityPage(where: WhereUniqueInput!): EntityPage
-  EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
-}
-
-enum QueryMode {
-  Default
-  Insensitive
-}
-
-enum Role {
-  Admin
-  User
-  OrganizationAdmin
-  ProjectAdmin
-}
-
-input SignupInput {
-  email: String!
-  password: String!
-  firstName: String!
-  lastName: String!
-  workspaceName: String!
-}
-
-enum SortOrder {
-  Asc
-  Desc
-}
-
-input StringFilter {
-  equals: String
-  not: String
-  in: [String!]
-  notIn: [String!]
-  lt: String
-  lte: String
-  gt: String
-  gte: String
-  contains: String
-  startsWith: String
-  endsWith: String
-  mode: QueryMode
-}
-
-input UpdateAccountInput {
-  firstName: String
-  lastName: String
-}
-
-type User {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  account: Account
-  workspace: Workspace
-  userRoles: [UserRole!]
-  isOwner: Boolean!
-}
-
-type UserRole {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  role: Role!
-}
-
-input WhereParentIdInput {
-  connect: WhereUniqueInput!
-}
-
-input WhereUniqueInput {
-  id: String!
-}
-
-type Workspace {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  apps: [App!]!
-  users: [User!]!
-}
-
-input WorkspaceCreateInput {
-  name: String!
-}
-
-input WorkspaceUpdateInput {
-  name: String
+  public: Boolean!
 }

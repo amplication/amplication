@@ -1,0 +1,97 @@
+name: validate push
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "packages/**"
+      - ".github/workflows/push-workflow.yml"
+
+jobs:
+  changed-packages:
+    runs-on: ubuntu-20.04
+    outputs:
+      packages: ${{ steps.resolved-packages.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Resolve changed packages
+        id: resolved-packages
+        run: |
+          echo ::set-output name=packages::$( \
+
+          # Git Diff - Get all changed files
+          git diff --name-only origin/master -- 'packages/**' |
+
+          # Extract package names from files path
+          grep -Po 'packages/\K[^/]*' |
+
+          # Dupplication
+          sort -t: -u -k1,1 |
+
+          # Format, Example: amplication-cli => package:@amplication/cli:path:amplication-cli
+          sed -e "s/amplication-\(.*\)/package:@amplication\/\1:path:packages\/amplication-\1/" |
+
+          # Create array of objects, => [{"package": "@amplication/cli", "path": "amplication-cli"}]
+          jq -Rs 'split("\n")|map(split(":")|{(.[0]):.[1],(.[2]):.[3]}?)')
+
+  validate-package:
+    runs-on: ubuntu-20.04
+    needs:
+      - changed-packages
+    timeout-minutes: 45
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.changed-packages.outputs.packages) }}
+        node-version: [14.x, 16.x]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            */*/node_modules
+          key: PUSH-${{ runner.os }}-${{matrix.node-version}}-${{matrix.package.package}}-${{ hashFiles(format('{0}/package-lock.json',matrix.package.path)) }}
+          restore-keys: |
+            PUSH-${{ runner.os }}-${{matrix.node-version}}-${{matrix.package.package}}-
+            PUSH-${{ runner.os }}-${{matrix.node-version}}-
+            PUSH-${{ runner.os }}-
+
+      - name: Install Node.js dependencies
+        run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
+
+      - name: Install package dependencies
+        id: install
+        run: lerna bootstrap --scope=${{matrix.package.package}} --include-dependencies
+
+      - name: Build code
+        id: build
+        run: lerna run --scope=${{matrix.package.package}} --loglevel=silent build --include-dependencies
+
+      - name: Format code
+        id: format
+        run: lerna run --scope=${{matrix.package.package}} --loglevel=silent check-format
+
+      - name: Lint code
+        id: lint
+        run: lerna run --scope=${{matrix.package.package}} --loglevel=silent lint
+
+      - name: Run tests
+        id: test
+        run: lerna run --scope=${{matrix.package.package}} --loglevel=silent test
+
+      - name: Discord notification
+        if: failure()
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"},{"name":"Install","value":"${{ steps.install.outcome }}","inline":true},{"name":"Build","value":"${{ steps.build.outcome }}","inline":true},{"name":"Test","value":"${{ steps.test.outcome }}","inline":true},{"name":"Format","value":"${{ steps.format.outcome }}","inline":true},{"name":"Lint","value":"${{ steps.lint.outcome }}","inline":true}]}]'
