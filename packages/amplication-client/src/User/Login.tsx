@@ -12,11 +12,10 @@ import { TextField } from "@amplication/design-system";
 import { Button } from "../Components/Button";
 import { Form } from "../Components/Form";
 import queryString from "query-string";
-import { Icon } from "@rmwc/icon";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
-
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
+import {LoginErrorMessage} from "../Components/ErrorMessage";
 import "./Login.scss";
 
 type Values = {
@@ -87,12 +86,8 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
-          {urlError && (
-            <div className={`${CLASS_NAME}__login-error`}>
-              <Icon icon="alert_circle" />
-              {urlError}
-            </div>
-          )}
+
+          <LoginErrorMessage error={urlError} className={CLASS_NAME}/>
 
           {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
@@ -110,6 +105,7 @@ const Login = () => {
             </>
           ) : (
             <>
+              <LoginErrorMessage error={errorMessage} className={CLASS_NAME}/>
               <TextField
                 label="Email"
                 name="email"
