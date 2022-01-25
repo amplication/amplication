@@ -15,7 +15,7 @@ import queryString from "query-string";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
-import {LoginErrorMessage} from "../Components/ErrorMessage";
+import {ErrorMessage} from "../Components/ErrorMessage";
 import "./Login.scss";
 
 type Values = {
@@ -87,7 +87,7 @@ const Login = () => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
 
-          <LoginErrorMessage error={urlError} className={CLASS_NAME}/>
+          {urlError && <ErrorMessage errorMessage={urlError}/>}
 
           {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
@@ -105,7 +105,7 @@ const Login = () => {
             </>
           ) : (
             <>
-              <LoginErrorMessage error={errorMessage} className={CLASS_NAME}/>
+            {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
               <TextField
                 label="Email"
                 name="email"

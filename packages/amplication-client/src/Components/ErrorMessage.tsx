@@ -1,18 +1,21 @@
 import {Icon} from "@rmwc/icon";
 import React from "react";
+import classNames from "classnames";
+
+import './ErrorMessage.scss';
 
 type Props = {
-    error: string | string[] | undefined | null;
-    className: string;
+    errorMessage: string | string[] | undefined | null;
+    className?: string;
 }
 
-export const LoginErrorMessage = ({error, className}: Props) => {
+const CLASS_NAME = 'amp-error-message';
+
+export const ErrorMessage = ({ errorMessage, className }: Props) => {
     return (
-        <div>
-            {error && (<div className={`${className}__login-error`}>
-                <Icon icon="alert_circle" />
-                {error}
-            </div>)}
+        <div className={classNames(CLASS_NAME, className)}>
+            <Icon icon="alert_circle" />
+            {errorMessage}
         </div>
     )
 }
