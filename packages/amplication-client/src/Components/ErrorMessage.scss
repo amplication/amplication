@@ -5,7 +5,7 @@
   box-sizing: border-box;
   background-color: var(--black5);
   padding: var(--default-spacing-small);
-  border-radius: 4px;
+  border-radius: var(--small-border-radius);
   color: var(--black80);
   text-align: left;
   display: flex;
