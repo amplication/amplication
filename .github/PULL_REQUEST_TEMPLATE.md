@@ -1,7 +1,7 @@
 <!--
 Thank you for contributing to Amplication :)
 
-PLEASE, GO THROUGH THESE STEPS BEFORE YOU SUBMIT A PR!
+PLEASE, GO THROUGH THESE STEPS BEFORE SUBMITTING A PR!
 
 Make sure that:
 
@@ -9,11 +9,11 @@ Make sure that:
 
 2. You have done your changes in a separate branch. Branches MUST have descriptive names that start with either the `fix/[issue #]-` or `feature/[issue #]-` prefixes. Good examples are: `fix/404-signin-issue` or `feature/201-new-templates`.
 
-3. Your pull request MUST NOT target this repository's `master` branch. You probably want to target a branch name that starts with `release/` instead.
+3. Your pull request MUST NOT target this repository's `master` branch. It is recommended that you target a branch name that starts with `release/` instead.
 
-4. You give a descriptive title to your PR.
+4. You are giving a descriptive title to your PR.
 
-5. You provide enough information about your changes so that others can review your pull request.
+5. You are providing enough information about your changes for others to review your pull request.
 
 -->
 
