@@ -16,9 +16,9 @@ import { Button } from "../Components/Button";
 import { Form } from "../Components/Form";
 import queryString from "query-string";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
-
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
+import {ErrorMessage} from "../Components/ErrorMessage";
 import "./Login.scss";
 
 type Values = {
@@ -89,12 +89,8 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
-          {urlError && (
-            <div className={`${CLASS_NAME}__login-error`}>
-              <Icon icon="alert_circle" />
-              {urlError}
-            </div>
-          )}
+
+          {urlError && <ErrorMessage errorMessage={urlError}/>}
 
           {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
@@ -112,6 +108,7 @@ const Login = () => {
             </>
           ) : (
             <>
+            {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
               <TextField
                 label="Email"
                 name="email"
