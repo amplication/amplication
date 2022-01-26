@@ -18,6 +18,8 @@ body:
     attributes:
       label: Feature description
       description: Describe your feature proposal
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Use case
@@ -33,13 +35,9 @@ body:
       multiple: true
       options:
         - "Yes I am willing to submit a PR!"
-  - type: dropdown
+  - type: markdown
     attributes:
-      label: Code of Conduct
-      description: The [Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md) helps create a safe space for everyone. We require
-        that everyone agrees to it.
-      multiple: true
-      options:
-        - "I agree to follow this project's Code of Conduct"
-    validations:
-      required: true
+      value: <br>
+  - type: markdown
+    attributes:
+      value: By submitting this issue I agree to follow this project`s [Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md)
