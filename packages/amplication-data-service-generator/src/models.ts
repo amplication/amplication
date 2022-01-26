@@ -1186,6 +1186,17 @@ export type Mutation = {
   updateWorkspace?: Maybe<Workspace>;
   createWorkspace?: Maybe<Workspace>;
   inviteUser?: Maybe<User>;
+  createApp: App;
+  createAppWithEntities: App;
+  deleteApp?: Maybe<App>;
+  updateApp?: Maybe<App>;
+  commit?: Maybe<Commit>;
+  discardPendingChanges?: Maybe<Scalars["Boolean"]>;
+  startAuthorizeAppWithGithub: AuthorizeAppWithGithubResult;
+  completeAuthorizeAppWithGithub: App;
+  removeAuthorizeAppWithGithub: App;
+  appEnableSyncWithGithubRepo: App;
+  appDisableSyncWithGithubRepo: App;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
   updateEntity?: Maybe<Entity>;
@@ -1200,23 +1211,12 @@ export type Mutation = {
   deleteEntityField: EntityField;
   updateEntityField: EntityField;
   createDefaultRelatedField: EntityField;
+  createBuild: Build;
   createAppRole: AppRole;
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
-  updateAppSettings?: Maybe<AppSettings>;
-  createBuild: Build;
   createDeployment: Deployment;
-  createApp: App;
-  createAppWithEntities: App;
-  deleteApp?: Maybe<App>;
-  updateApp?: Maybe<App>;
-  commit?: Maybe<Commit>;
-  discardPendingChanges?: Maybe<Scalars["Boolean"]>;
-  startAuthorizeAppWithGithub: AuthorizeAppWithGithubResult;
-  completeAuthorizeAppWithGithub: App;
-  removeAuthorizeAppWithGithub: App;
-  appEnableSyncWithGithubRepo: App;
-  appDisableSyncWithGithubRepo: App;
+  updateAppSettings?: Maybe<AppSettings>;
   signup: Auth;
   login: Auth;
   createApiToken: ApiToken;
@@ -1251,6 +1251,53 @@ export type MutationCreateWorkspaceArgs = {
 
 export type MutationInviteUserArgs = {
   data: InviteUserInput;
+};
+
+export type MutationCreateAppArgs = {
+  data: AppCreateInput;
+};
+
+export type MutationCreateAppWithEntitiesArgs = {
+  data: AppCreateWithEntitiesInput;
+};
+
+export type MutationDeleteAppArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationUpdateAppArgs = {
+  data: AppUpdateInput;
+  where: WhereUniqueInput;
+};
+
+export type MutationCommitArgs = {
+  data: CommitCreateInput;
+};
+
+export type MutationDiscardPendingChangesArgs = {
+  data: PendingChangesDiscardInput;
+};
+
+export type MutationStartAuthorizeAppWithGithubArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationCompleteAuthorizeAppWithGithubArgs = {
+  data: CompleteAuthorizeAppWithGithubInput;
+  where: WhereUniqueInput;
+};
+
+export type MutationRemoveAuthorizeAppWithGithubArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationAppEnableSyncWithGithubRepoArgs = {
+  data: AppEnableSyncWithGithubRepoInput;
+  where: WhereUniqueInput;
+};
+
+export type MutationAppDisableSyncWithGithubRepoArgs = {
+  where: WhereUniqueInput;
 };
 
 export type MutationCreateOneEntityArgs = {
@@ -1318,6 +1365,10 @@ export type MutationCreateDefaultRelatedFieldArgs = {
   relatedFieldDisplayName?: Maybe<Scalars["String"]>;
 };
 
+export type MutationCreateBuildArgs = {
+  data: BuildCreateInput;
+};
+
 export type MutationCreateAppRoleArgs = {
   data: AppRoleCreateInput;
 };
@@ -1331,63 +1382,12 @@ export type MutationUpdateAppRoleArgs = {
   where: WhereUniqueInput;
 };
 
-export type MutationUpdateAppSettingsArgs = {
-  data: AppSettingsUpdateInput;
-  where: WhereUniqueInput;
-};
-
-export type MutationCreateBuildArgs = {
-  data: BuildCreateInput;
-};
-
 export type MutationCreateDeploymentArgs = {
   data: DeploymentCreateInput;
 };
 
-export type MutationCreateAppArgs = {
-  data: AppCreateInput;
-};
-
-export type MutationCreateAppWithEntitiesArgs = {
-  data: AppCreateWithEntitiesInput;
-};
-
-export type MutationDeleteAppArgs = {
-  where: WhereUniqueInput;
-};
-
-export type MutationUpdateAppArgs = {
-  data: AppUpdateInput;
-  where: WhereUniqueInput;
-};
-
-export type MutationCommitArgs = {
-  data: CommitCreateInput;
-};
-
-export type MutationDiscardPendingChangesArgs = {
-  data: PendingChangesDiscardInput;
-};
-
-export type MutationStartAuthorizeAppWithGithubArgs = {
-  where: WhereUniqueInput;
-};
-
-export type MutationCompleteAuthorizeAppWithGithubArgs = {
-  data: CompleteAuthorizeAppWithGithubInput;
-  where: WhereUniqueInput;
-};
-
-export type MutationRemoveAuthorizeAppWithGithubArgs = {
-  where: WhereUniqueInput;
-};
-
-export type MutationAppEnableSyncWithGithubRepoArgs = {
-  data: AppEnableSyncWithGithubRepoInput;
-  where: WhereUniqueInput;
-};
-
-export type MutationAppDisableSyncWithGithubRepoArgs = {
+export type MutationUpdateAppSettingsArgs = {
+  data: AppSettingsUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -1497,24 +1497,24 @@ export type Query = {
   workspaces: Array<Workspace>;
   workspace?: Maybe<Workspace>;
   currentWorkspace?: Maybe<Workspace>;
-  entity?: Maybe<Entity>;
-  entities: Array<Entity>;
-  blocks: Array<Block>;
-  block: Block;
-  appRole?: Maybe<AppRole>;
-  appRoles: Array<AppRole>;
-  appSettings: AppSettings;
-  builds: Array<Build>;
-  build: Build;
-  action: Action;
-  deployments: Array<Deployment>;
-  deployment: Deployment;
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
   appValidateBeforeCommit: AppValidationResult;
+  entity?: Maybe<Entity>;
+  entities: Array<Entity>;
+  builds: Array<Build>;
+  build: Build;
+  appRole?: Maybe<AppRole>;
+  appRoles: Array<AppRole>;
+  action: Action;
+  deployments: Array<Deployment>;
+  deployment: Deployment;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
+  appSettings: AppSettings;
+  blocks: Array<Block>;
+  block: Block;
   me: User;
   userApiTokens: Array<ApiToken>;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
@@ -1528,70 +1528,6 @@ export type Query = {
 };
 
 export type QueryWorkspaceArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryEntityArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryEntitiesArgs = {
-  where?: Maybe<EntityWhereInput>;
-  orderBy?: Maybe<EntityOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryBlocksArgs = {
-  where?: Maybe<BlockWhereInput>;
-  orderBy?: Maybe<BlockOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryBlockArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryAppRoleArgs = {
-  where: WhereUniqueInput;
-  version?: Maybe<Scalars["Float"]>;
-};
-
-export type QueryAppRolesArgs = {
-  where?: Maybe<AppRoleWhereInput>;
-  orderBy?: Maybe<AppRoleOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryAppSettingsArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryBuildsArgs = {
-  where?: Maybe<BuildWhereInput>;
-  orderBy?: Maybe<BuildOrderByInput>;
-  take?: Maybe<Scalars["Int"]>;
-  skip?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryBuildArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryActionArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryDeploymentsArgs = {
-  where?: Maybe<DeploymentWhereInput>;
-  orderBy?: Maybe<DeploymentOrderByInput>;
-  take?: Maybe<Scalars["Int"]>;
-  skip?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryDeploymentArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1614,6 +1550,55 @@ export type QueryAppValidateBeforeCommitArgs = {
   where: WhereUniqueInput;
 };
 
+export type QueryEntityArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryEntitiesArgs = {
+  where?: Maybe<EntityWhereInput>;
+  orderBy?: Maybe<EntityOrderByInput>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryBuildsArgs = {
+  where?: Maybe<BuildWhereInput>;
+  orderBy?: Maybe<BuildOrderByInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryBuildArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryAppRoleArgs = {
+  where: WhereUniqueInput;
+  version?: Maybe<Scalars["Float"]>;
+};
+
+export type QueryAppRolesArgs = {
+  where?: Maybe<AppRoleWhereInput>;
+  orderBy?: Maybe<AppRoleOrderByInput>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryActionArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryDeploymentsArgs = {
+  where?: Maybe<DeploymentWhereInput>;
+  orderBy?: Maybe<DeploymentOrderByInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryDeploymentArgs = {
+  where: WhereUniqueInput;
+};
+
 export type QueryCommitArgs = {
   where: CommitWhereUniqueInput;
 };
@@ -1624,6 +1609,21 @@ export type QueryCommitsArgs = {
   cursor?: Maybe<CommitWhereUniqueInput>;
   take?: Maybe<Scalars["Int"]>;
   skip?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryAppSettingsArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryBlocksArgs = {
+  where?: Maybe<BlockWhereInput>;
+  orderBy?: Maybe<BlockOrderByInput>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryBlockArgs = {
+  where: WhereUniqueInput;
 };
 
 export type QueryConnectorRestApiArgs = {
