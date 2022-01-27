@@ -80,7 +80,7 @@ const CommitValidation = ({ applicationId }: Props) => {
 
         return (
           <div className={`${CLASS_NAME}__item`} key={index}>
-            <Icon icon="info_circle" />
+            <Icon icon="info_circle" size="small" />
             <div>
               {errorData.message}
               {errorData.url && (
