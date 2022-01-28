@@ -134,7 +134,7 @@ function ApplicationForm({ match }: Props) {
           </div>
         </>
       )}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(error?.message || updateError?.message)} message={errorMessage} />
     </div>
   );
 }
