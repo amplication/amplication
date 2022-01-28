@@ -13,4 +13,13 @@
     margin-top: var(--double-spacing);
     margin-bottom: var(--double-spacing);
   }
+
+  h3 {
+    display: flex;
+    align-items: center;
+
+    i {
+      margin-right: var(--icon-spacing);
+    }
+  }
 }

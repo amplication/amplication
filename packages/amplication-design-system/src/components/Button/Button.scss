@@ -1,6 +1,5 @@
 @import "../../style/index.scss";
 
-$icon-margin: 4px;
 $split-icon-font-size: 20px;
 
 .amp-button {
@@ -26,7 +25,7 @@ $split-icon-font-size: 20px;
   }
 
   &__icon {
-    margin: 0 $icon-margin;
+    margin: 0 var(--icon-spacing);
   }
 
   &.amp-button--primary {
