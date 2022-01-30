@@ -39,7 +39,7 @@ $button-height: 40px;
     .amp-button {
       width: $button-width;
       height: $button-height;
-      border-radius: $button-height / 2 !important;
+      border-radius: $button-height * 0.5 !important;
     }
   }
 }

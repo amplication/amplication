@@ -60,6 +60,7 @@ const Tab = ({ item, defaultTabUrl, tabsCount }: TabProps) => {
         disabled={item.url === defaultTabUrl && tabsCount === 1}
         buttonStyle={EnumButtonStyle.Clear}
         icon="close"
+        iconSize="xsmall"
         onClick={handleCloseTab}
       />
     </span>

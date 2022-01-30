@@ -37,7 +37,7 @@
     text-align: center;
     width: 340px;
     background-color: var(--black2);
-    border-radius: 4px;
+    border-radius: var(--small-border-radius);
     margin: 1rem;
     padding: 1rem;
     border: 1px solid var(--black10);
@@ -98,7 +98,7 @@
       padding: 0.5rem;
       margin-bottom: 1rem;
       outline: none;
-      border-radius: 4px;
+      border-radius: var(--small-border-radius);
       width: 300px;
       color: var(--black100);
       &:hover,
