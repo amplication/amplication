@@ -4,9 +4,6 @@ $modal-header-height: 42px;
 $modal-max-width: 50vw;
 $modal-top-position: 20vh;
 
-[data-reach-dialog-overlay] {
-  background-color: var(--modal-background) !important;
-}
 .amp-dialog {
   box-shadow: none;
   border-radius: var(--default-border-radius);
@@ -24,7 +21,7 @@ $modal-top-position: 20vh;
   }
 
   // hide the button added by primer
-  button[class*="Dialog__UnstyledButton"] {
+  button:not(.amp-button) {
     display: none;
   }
 

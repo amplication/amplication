@@ -5,7 +5,7 @@ import {
   SelectMenuModalProps as PrimerSelectMenuModalProps,
   SelectMenuItemProps as PrimerSelectMenuItemProps,
   SelectMenuListProps as PrimerSelectMenuListProps,
-} from "@primer/components";
+} from "@primer/react";
 import classNames from "classnames";
 import SearchField, {
   Props as SearchFieldProps,
