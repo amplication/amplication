@@ -1,8 +1,10 @@
-import { EnumPanelStyle, Panel } from "@amplication/design-system";
+import {
+  EnumPanelStyle,
+  Panel,
+  Icon,
+  CircularProgress,
+} from "@amplication/design-system";
 import { useQuery } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
-import { Icon } from "@rmwc/icon";
-import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
 import React, { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
@@ -78,7 +80,7 @@ function NewVersionTile({ applicationId }: Props) {
                 <CircularProgress />
               ) : (
                 <span className={`${CLASS_NAME}__content__details__summary`}>
-                  <Icon icon={{ icon: "info_circle", size: "medium" }} />
+                  <Icon icon="info_circle" size="medium" />
                   {requiredFixesCount}
                   {requiredFixesCount > 1
                     ? " relation needs "
