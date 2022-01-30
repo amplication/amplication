@@ -22,6 +22,8 @@ body:
         Please include links to the documentation that has the problem and possibly screenshots showing
         the problem. Explain why do you think it is an issue. Make sure you include view of the target
         audience of the documentation. Please explain why you think the docs are wrong.
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: How to solve the problem
@@ -38,17 +40,13 @@ body:
         This is absolutely not required, but we are happy to guide you in the contribution process
         especially if you already have a good understanding of how to implement the fix.
         Amplication is a community-managed project and we love to bring new contributors in.
-        Find us in #how-to-pr on [Discord](https://discord.gg/cEcS9zDA)!
+        Find us in #support on [Discord](https://amplication.com/discord)!
       multiple: true
       options:
         - "Yes I am willing to submit a PR!"
-  - type: dropdown
+  - type: markdown
     attributes:
-      label: Code of Conduct
-      description: The [Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md) helps create a safe space for everyone. We require
-        that everyone agrees to it.
-      multiple: true
-      options:
-        - "I agree to follow this project's Code of Conduct"
-    validations:
-      required: true
+      value: <br>
+  - type: markdown
+    attributes:
+      value: By submitting this issue I agree to follow this project`s [Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md)
