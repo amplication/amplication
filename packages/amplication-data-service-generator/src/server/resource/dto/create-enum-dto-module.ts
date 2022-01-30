@@ -2,6 +2,7 @@ import { namedTypes, builders } from "ast-types";
 import { print } from "recast";
 import { Module } from "../../../types";
 import {
+  addAutoGenerationComment,
   addImports,
   expressionStatement,
   importDeclaration,
@@ -24,6 +25,7 @@ export function createEnumDTOModule(
   addImports(file, [
     importDeclaration`import { ${REGISTER_ENUM_TYPE_ID} } from "@nestjs/graphql"`,
   ]);
+  addAutoGenerationComment(file);
 
   return {
     code: print(file).code,

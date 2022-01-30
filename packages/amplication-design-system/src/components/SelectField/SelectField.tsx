@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from "react";
 import { useField, ErrorMessage } from "formik";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
 
-import Select, { OptionProps, OptionTypeBase, components } from "react-select";
+import Select, { OptionProps, GroupBase } from "react-select";
 import { OptionItem } from "../types";
 import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
 
@@ -78,16 +78,44 @@ export const SelectField = ({
   );
 };
 
-const CustomOption = ({
-  children,
-  ...props
-}: OptionProps<OptionTypeBase, boolean>) => {
-  const icon = (props.data as OptionItem).icon;
+const CustomOption = <
+  Option,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option>
+>(
+  props: OptionProps<Option, IsMulti, Group>
+) => {
+  const {
+    children,
+    className,
+    cx,
+    isDisabled,
+    isFocused,
+    isSelected,
+    innerRef,
+    innerProps,
+    data,
+  } = props;
+
+  const icon = ((data as unknown) as OptionItem).icon;
 
   return (
-    <components.Option {...props}>
+    <div
+      className={cx(
+        {
+          option: true,
+          "option--is-disabled": isDisabled,
+          "option--is-focused": isFocused,
+          "option--is-selected": isSelected,
+        },
+        className
+      )}
+      ref={innerRef}
+      aria-disabled={isDisabled}
+      {...innerProps}
+    >
       {icon && <Icon icon={icon} />}
       {children}
-    </components.Option>
+    </div>
   );
 };

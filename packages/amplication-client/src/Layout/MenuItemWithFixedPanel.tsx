@@ -1,10 +1,9 @@
 import React, { ReactNode, useCallback } from "react";
 import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Tooltip } from "@primer/components";
 import { MenuFixedPanel } from "../util/teleporter";
 
-import { Icon } from "@rmwc/icon";
+import { Icon, Tooltip } from "@amplication/design-system";
 
 type Props = {
   /** Text to be displayed as a tooltip */
@@ -54,12 +53,7 @@ const MenuItemWithFixedPanel = ({
             noDelay
           >
             <Button buttonStyle={EnumButtonStyle.Clear} onClick={handleClick}>
-              <Icon
-                icon={{
-                  icon: icon,
-                  size: ICON_SIZE,
-                }}
-              />
+              <Icon icon={icon as string} size={ICON_SIZE} />
             </Button>
             {badgeValue && (
               <span className="amp-menu-item__badge">{badgeValue}</span>

@@ -93,5 +93,5 @@ jobs:
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
           DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"},{"name":"Install","value":"${{ steps.install.outcome }}","inline":true},{"name":"Build","value":"${{ steps.build.outcome }}","inline":true},{"name":"Test","value":"${{ steps.test.outcome }}","inline":true},{"name":"Format","value":"${{ steps.format.outcome }}","inline":true},{"name":"Lint","value":"${{ steps.lint.outcome }}","inline":true}]}]'

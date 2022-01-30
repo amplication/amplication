@@ -6,9 +6,7 @@ $step-status-width: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
-  i {
-    font-weight: bold;
-  }
+
   &--success {
     i {
       color: var(--positive-default) !important;
@@ -23,12 +21,6 @@ $step-status-width: 25px;
   &--waiting {
     i {
       color: var(--black20) !important;
-    }
-  }
-
-  &--running {
-    .rmwc-circular-progress {
-      color: var(--primary) !important;
     }
   }
 }
