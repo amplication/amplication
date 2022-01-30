@@ -3,14 +3,11 @@ import { match } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { validate } from "../util/formikValidateJsonSchema";
-import { Icon } from "@rmwc/icon";
 
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
-import { TextField } from "@amplication/design-system";
+import { TextField, Snackbar, Icon } from "@amplication/design-system";
 import { COLORS } from "./constants";
 import { ColorSelectButton } from "../Components/ColorSelectButton";
 import { useTracking } from "../util/analytics";
@@ -120,8 +117,7 @@ function ApplicationForm({ match }: Props) {
               );
             }}
           </Formik>
-         
-          
+
           <div>
             <hr />
             <h3>
@@ -138,7 +134,7 @@ function ApplicationForm({ match }: Props) {
           </div>
         </>
       )}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(error?.message || updateError?.message)} message={errorMessage} />
     </div>
   );
 }

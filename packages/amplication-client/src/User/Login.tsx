@@ -3,21 +3,22 @@ import { Location } from "history";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
-import { CircularProgress } from "@rmwc/circular-progress";
-import { Snackbar } from "@rmwc/snackbar";
 import { REACT_APP_GITHUB_CLIENT_ID } from "../env";
 import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
-import { TextField } from "@amplication/design-system";
+import {
+  TextField,
+  Snackbar,
+  CircularProgress,
+} from "@amplication/design-system";
 import { Button } from "../Components/Button";
 import { Form } from "../Components/Form";
 import queryString from "query-string";
-import { Icon } from "@rmwc/icon";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import useLocalStorage from "react-use-localstorage";
-
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
+import { ErrorMessage } from "../Components/ErrorMessage";
 import "./Login.scss";
 
 type Values = {
@@ -105,12 +106,7 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
-          {urlError && (
-            <div className={`${CLASS_NAME}__login-error`}>
-              <Icon icon="alert_circle" />
-              {urlError}
-            </div>
-          )}
+          {urlError && <ErrorMessage errorMessage={urlError} />}
 
           {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
@@ -128,6 +124,7 @@ const Login = () => {
             </>
           ) : (
             <>
+              {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
               <TextField
                 label="Email"
                 name="email"

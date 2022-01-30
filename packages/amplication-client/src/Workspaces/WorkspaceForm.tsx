@@ -3,12 +3,10 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { validate } from "../util/formikValidateJsonSchema";
 
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
-import { TextField } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/design-system";
 import { useTracking } from "../util/analytics";
 import { GET_CURRENT_WORKSPACE } from "./WorkspaceSelector";
 import "./WorkspaceForm.scss";

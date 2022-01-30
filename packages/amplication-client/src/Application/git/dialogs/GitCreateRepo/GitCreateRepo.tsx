@@ -1,4 +1,9 @@
-import { Button, TextField, Label } from "@amplication/design-system";
+import {
+  Button,
+  TextField,
+  Label,
+  CircularProgress,
+} from "@amplication/design-system";
 import { Form, Formik } from "formik";
 import React from "react";
 import useGitCreate from "../../hooks/useGitCreate";
@@ -11,7 +16,6 @@ import {
 } from "../../../../models";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
-import { CircularProgress } from "@rmwc/circular-progress";
 import { formatError } from "../../../../util/error";
 
 type Props = {

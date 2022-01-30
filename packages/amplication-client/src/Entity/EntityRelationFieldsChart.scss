@@ -114,14 +114,14 @@ $many-element-size: 16px;
         border-right: none;
         transform: rotate(45deg);
         position: absolute;
-        right: #{- ($many-element-size / 2)};
+        right: #{- ($many-element-size * 0.5)};
         border-top: none;
         border-right: none;
-        top: calc(50% - #{($many-element-size / 2)});
+        top: calc(50% - #{($many-element-size * 0.5)});
       }
       &--source {
         transform: rotate(-135deg);
-        left: #{- ($many-element-size / 2)};
+        left: #{- ($many-element-size * 0.5)};
         right: auto;
       }
       &--one {

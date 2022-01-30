@@ -34,7 +34,7 @@ $progress-bar-height: 4px;
       width: 100%;
       background: var(--primary);
       animation: progress-bar 4.5s linear infinite;
-      border-radius: $progress-bar-height / 2;
+      border-radius: $progress-bar-height * 0.5;
     }
   }
 

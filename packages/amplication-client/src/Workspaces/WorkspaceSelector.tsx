@@ -1,11 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { gql, useQuery, useMutation, useApolloClient } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
 import classNames from "classnames";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { setToken } from "../authentication/authentication";
-import { CircleBadge, Dialog } from "@amplication/design-system";
+import {
+  CircleBadge,
+  Dialog,
+  CircularProgress,
+} from "@amplication/design-system";
 import * as models from "../models";
 import WorkspaceSelectorList from "./WorkspaceSelectorList";
 import NewWorkspace from "./NewWorkspace";
