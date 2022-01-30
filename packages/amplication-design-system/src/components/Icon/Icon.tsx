@@ -4,7 +4,7 @@ import classNames from "classnames";
 
 import "./Icon.scss";
 
-type IconSize = "xsmall" | "small" | "medium" | "large" | "xlarge";
+export type IconSize = "xsmall" | "small" | "medium" | "large" | "xlarge";
 
 export type Props = {
   icon: string;

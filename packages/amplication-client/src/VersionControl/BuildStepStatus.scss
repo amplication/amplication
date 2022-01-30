@@ -6,9 +6,7 @@ $step-status-width: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
-  i {
-    font-weight: bold;
-  }
+
   &--success {
     i {
       color: var(--positive-default) !important;
