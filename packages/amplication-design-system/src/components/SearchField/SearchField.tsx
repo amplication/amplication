@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "../Icon/Icon";
 import "./SearchField.scss";
 
 export type Props = {

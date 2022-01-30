@@ -7,7 +7,6 @@ import {
   createHttpLink,
   ApolloProvider,
 } from "@apollo/client";
-import * as amplicationDesignSystem from "@amplication/design-system";
 import "@amplication/design-system/icons";
 import "./index.scss";
 import App from "./App";
@@ -45,11 +44,9 @@ const apolloClient = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
-      <amplicationDesignSystem.Provider>
-        <Router>
-          <App />
-        </Router>
-      </amplicationDesignSystem.Provider>
+      <Router>
+        <App />
+      </Router>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById("root")
