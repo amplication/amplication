@@ -115,6 +115,7 @@
     "@types/passport-github": "1.1.7",
     "@types/passport-jwt": "3.0.6",
     "@types/pluralize": "0.0.29",
+    "@types/semver": "7.3.9",
     "@types/supertest": "2.0.11",
     "@types/tar-stream": "2.2.2",
     "@types/triple-beam": "1.3.2",
