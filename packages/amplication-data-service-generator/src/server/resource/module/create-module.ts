@@ -6,6 +6,7 @@ import {
   interpolate,
   removeTSIgnoreComments,
   importNames,
+  addAutoGenerationComment,
   addImports,
   removeTSClassDeclares,
   removeESLintComments,
@@ -115,6 +116,7 @@ async function createBaseModule(
   removeTSIgnoreComments(file);
   removeESLintComments(file);
   removeTSClassDeclares(file);
+  addAutoGenerationComment(file);
 
   return {
     path: modulePath,

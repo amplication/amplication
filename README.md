@@ -24,7 +24,7 @@
 <div align="center">
  
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-41-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-43-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
@@ -128,17 +128,6 @@ Amplication is an open source project. We are committed to a fully transparent d
 
 Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
 
-## Sponsors ✨
-
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [Become a sponsor](https://commerce.coinbase.com/checkout/8d425faa-9e2a-4393-a029-4f7ed68c3e02)
-
-<table>
-  <tr>
-    <td align="center"><a href="https://digitalcopilote.io/"><img src="https://user-images.githubusercontent.com/43705455/126038318-fd8e927a-443b-45ba-9983-8e6449b6c024.png" width="100px;" alt=""/><br /><a href="https://digitalcopilote.io/">Digital Copilote</a></td>
-   
-  </tr>
-  </table>
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -199,6 +188,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/michizhou"><img src="https://avatars.githubusercontent.com/u/33012425?v=4?s=100" width="100px;" alt=""/><br /><sub><b>michizhou</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=michizhou" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/g-traub"><img src="https://avatars.githubusercontent.com/u/33841027?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Guillaume Traub</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=g-traub" title="Code">💻</a></td>
     <td align="center"><a href="https://leetcode.com/purpl3/"><img src="https://avatars.githubusercontent.com/u/82395440?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Asian Cat</b></sub></a><br /><a href="#blog-AsianCat54x" title="Blogposts">📝</a></td>
+    <td align="center"><a href="http://www.noyagasi.com"><img src="https://avatars.githubusercontent.com/u/25197581?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Noy Agasi</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=noyagasi" title="Code">💻</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Anoyagasi" title="Bug reports">🐛</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/Rutam21"><img src="https://avatars.githubusercontent.com/u/47860497?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Rutam Prita Mishra</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=Rutam21" title="Documentation">📖</a></td>
   </tr>
 </table>
 
