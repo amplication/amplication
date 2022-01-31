@@ -66,6 +66,7 @@
     background-color: var(--white);
     @include flexFullRow;
     justify-content: flex-start;
+    padding: var(--default-spacing-small);
 
     i {
       padding-right: var(--default-spacing);

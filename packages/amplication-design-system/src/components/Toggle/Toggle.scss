@@ -9,12 +9,14 @@ $thumb-gap-from-track: 2px;
 $thumb-translate: $track-width - $thumb-width - ($thumb-gap-from-track * 2);
 $input-translate: -22px;
 
+$thumb-position-offset: -6px;
+
 @mixin state($thumb, $track) {
-  .mdc-switch__track {
+  + .MuiSwitch-track {
     background-color: $track;
     opacity: 1;
   }
-  .mdc-switch__thumb {
+  .MuiSwitch-thumb {
     background-color: $thumb;
     border-color: $thumb;
   }
@@ -31,73 +33,63 @@ $input-translate: -22px;
     white-space: nowrap;
     display: flex;
     flex-direction: row-reverse;
+    align-items: center;
+    align-items: center;
 
     .input-label-value {
+      @include label;
       margin-left: var(--default-spacing);
+      margin-bottom: 0;
+      color: var(--black100);
     }
   }
 
-  .mdc-switch {
-    width: $track-width;
+  .MuiSwitch-root {
+    width: auto;
+    height: auto;
+    padding: 0;
 
-    &.mdc-switch--checked {
-      @include state(var(--static-white), var(--primary));
-      .mdc-switch__thumb-underlay {
-        transform: translateX(0);
+    .MuiSwitch-switchBase {
+      top: $thumb-position-offset;
+      left: $thumb-position-offset;
+
+      &.Mui-checked {
+        @include state(var(--static-white), var(--primary));
       }
-      .mdc-switch__native-control {
-        transform: translateX($input-translate);
+
+      &:not(.Mui-checked) {
+        @include state(var(--static-white), var(--black20));
       }
-    }
 
-    &:not(.mdc-switch--checked) {
-      @include state(var(--static-white), var(--black20));
-      .mdc-switch__thumb-underlay {
-        transform: translateX(-$thumb-translate);
+      + .MuiSwitch-track {
+        opacity: 1;
+        width: $track-width;
+        height: $track-height;
+        position: relative;
+        background: #e3ddf6;
+        border-radius: ($thumb-height * 0.5) + 2;
       }
-      .mdc-switch__native-control {
-        transform: translateX($thumb-gap-from-track);
+
+      .MuiSwitch-thumb {
+        box-shadow: none;
+        width: $thumb-width - 2;
+        height: $thumb-height - 2;
+        border: none;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1;
       }
-    }
 
-    &__track {
-      opacity: 1;
-      width: $track-width;
-      height: $track-height;
-      /* Primary purple 20 */
-      position: relative;
-      background: #e3ddf6;
-      border-radius: ($thumb-height / 2) + 2;
-    }
-
-    &__thumb-underlay {
-      top: ($track-height - $thumb-height) / 2;
-      right: $thumb-gap-from-track;
-      left: auto;
-      width: $thumb-width;
-      height: $thumb-height;
-
-      &:before,
-      &:after {
+      .MuiTouchRipple-root {
         display: none;
       }
 
-      input {
-        width: $track-width;
-        height: $track-height;
-        right: auto;
-        left: 0;
+      &.Mui-disabled {
+        opacity: 0.38;
+        + .MuiSwitch-track {
+          opacity: 0.38;
+        }
       }
-    }
-
-    &__thumb {
-      box-shadow: none;
-      width: $thumb-width - 2;
-      height: $thumb-height - 2;
-      border: none;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 1;
     }
   }
 }

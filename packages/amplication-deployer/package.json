@@ -1,6 +1,6 @@
 {
   "name": "@amplication/deployer",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -22,15 +22,17 @@
     "dockerode": "3.2.1",
     "get-stream": "6.0.0",
     "reflect-metadata": "0.1.13",
-    "tar-fs": "2.1.0",
-    "winston": "3.3.3"
+    "tar-fs": "2.1.1",
+    "tar-stream": "2.2.0",
+    "winston": "3.3.4"
   },
   "devDependencies": {
     "@types/dockerode": "2.5.34",
     "@types/get-stream": "3.0.2",
     "@types/jest": "26.0.14",
     "@types/normalize-path": "3.0.0",
-    "@types/tar-fs": "2.0.0",
+    "@types/tar-fs": "2.0.1",
+    "@types/tar-stream": "2.2.2",
     "fast-glob": "3.2.7",
     "jest": "27.0.6",
     "normalize-path": "3.0.0",

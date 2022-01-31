@@ -6,6 +6,7 @@ import { readFile, relativeImportPath } from "../../../util/module";
 import {
   interpolate,
   importNames,
+  addAutoGenerationComment,
   addImports,
   removeTSVariableDeclares,
   removeTSInterfaceDeclares,
@@ -234,6 +235,9 @@ async function createResolverModule(
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
   removeTSClassDeclares(file);
+  if (isBaseClass) {
+    addAutoGenerationComment(file);
+  }
 
   return {
     path: isBaseClass ? moduleBasePath : modulePath,

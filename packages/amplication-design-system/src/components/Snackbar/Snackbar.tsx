@@ -1,11 +1,13 @@
 import React from "react";
-import { Snackbar as RmwcSnackbar, SnackbarProps } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
+import classNames from "classnames";
+import { Snackbar as MuiSnackbar, SnackbarProps } from "@mui/material";
 
 import "./Snackbar.scss";
 
 export type Props = SnackbarProps;
 
-export function Snackbar(props: Props) {
-  return <RmwcSnackbar className="amp-snackbar" {...props} />;
+export function Snackbar({ className, ...rest }: Props) {
+  return (
+    <MuiSnackbar className={classNames("amp-snackbar", className)} {...rest} />
+  );
 }
