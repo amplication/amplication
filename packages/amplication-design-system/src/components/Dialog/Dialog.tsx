@@ -3,6 +3,7 @@ import classNames from "classnames";
 import {
   Dialog as PrimerDialog,
   DialogProps as PrimerDialogProps,
+  ThemeProvider,
 } from "@primer/react";
 import { Button, EnumButtonStyle } from "../Button/Button";
 import "./Dialog.scss";
@@ -31,25 +32,39 @@ export const Dialog = ({
   className,
   dialogStyle = EnumDialogStyle.Default,
 }: Props) => {
+  //colors.primer.canvas.backdrop
+  const theme = {
+    colors: {
+      primer: {
+        canvas: {
+          backdrop: "rgba(12, 11, 14, 0.48)",
+        },
+      },
+    },
+  };
+
   return (
-    <PrimerDialog
-      isOpen={isOpen}
-      onDismiss={onDismiss}
-      className={classNames(
-        CLASS_NAME,
-        className,
-        `${CLASS_NAME}--${dialogStyle}`
-      )}
-    >
-      <div className={`${CLASS_NAME}__header`}>
-        <h3>{title}</h3>
-        <Button
-          icon="close"
-          buttonStyle={EnumButtonStyle.Clear}
-          onClick={onDismiss}
-        />
-      </div>
-      <div className={`${CLASS_NAME}__body`}>{children}</div>
-    </PrimerDialog>
+    <ThemeProvider theme={theme}>
+      <PrimerDialog
+        isOpen={isOpen}
+        onDismiss={onDismiss}
+        className={classNames(
+          CLASS_NAME,
+          className,
+          `${CLASS_NAME}--${dialogStyle}`
+        )}
+        sx={{}}
+      >
+        <div className={`${CLASS_NAME}__header`}>
+          <h3>{title}</h3>
+          <Button
+            icon="close"
+            buttonStyle={EnumButtonStyle.Clear}
+            onClick={onDismiss}
+          />
+        </div>
+        <div className={`${CLASS_NAME}__body`}>{children}</div>
+      </PrimerDialog>
+    </ThemeProvider>
   );
 };
