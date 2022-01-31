@@ -1,7 +1,5 @@
-import "@rmwc/snackbar/styles";
 import React, { useMemo, useCallback, useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
 import { useTracking } from "../util/analytics";
 import "./Subscription.scss";
 import * as models from "../models";
@@ -11,11 +9,10 @@ import {
   cancelSubscription as cancelPaddleSubscription,
   updateSubscription as updatePaddleSubscription,
 } from "../util/paddle";
-import { EnumPanelStyle, Panel } from "@amplication/design-system";
+import { EnumPanelStyle, Panel,CircularProgress,Icon } from "@amplication/design-system";
 import { format } from "date-fns";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/WorkspaceSelector";
 import { SubscriptionStatus } from "./SubscriptionStatus";
-import { Icon } from "@rmwc/icon";
 
 const CLASS_NAME = "subscription";
 
