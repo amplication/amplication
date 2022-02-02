@@ -5091,7 +5091,7 @@ export class CustomerControllerBase {
   })
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
+    @common.Body() body: OrderWhereInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -9114,7 +9114,7 @@ export class OrganizationControllerBase {
   })
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: UserWhereInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -9311,7 +9311,7 @@ export class OrganizationControllerBase {
   })
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerWhereInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -9508,7 +9508,7 @@ export class OrganizationControllerBase {
   })
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerWhereInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -12133,7 +12133,7 @@ export class UserControllerBase {
   })
   async updateEmployees(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
+    @common.Body() body: UserWhereInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -12308,7 +12308,7 @@ export class UserControllerBase {
   })
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
+    @common.Body() body: OrganizationWhereInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {

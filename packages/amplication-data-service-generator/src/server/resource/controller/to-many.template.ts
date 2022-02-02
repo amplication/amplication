@@ -142,7 +142,7 @@ export class Mixin {
   })
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: WHERE_UNIQUE_INPUT[],
+    @common.Body() body: RELATED_ENTITY_WHERE_INPUT[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
