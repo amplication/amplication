@@ -34,7 +34,8 @@ const generateApiQueryObject = (prop: any, propType: any, required: boolean, isA
         }
     }
 }
-// eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-module-boundary-types
+
+// eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-module-boundary-types,@typescript-eslint/naming-convention
 export function ApiNestedQuery(query: Function) {
     const constructor = query.prototype;
     const properties = Reflect

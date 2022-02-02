@@ -4460,7 +4460,7 @@ import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
-import { OrderWhereInput } from \\"../../order/base/OrderWhereInput\\";
+import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
 @swagger.ApiBasicAuth()
 export class CustomerControllerBase {
@@ -4839,13 +4839,13 @@ export class CustomerControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @ApiNestedQuery(OrderWhereInput)
+  @ApiNestedQuery(OrderFindManyArgs)
   async findManyOrders(
     @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Order[]> {
-    const query: OrderWhereInput = request.query;
+    const query = plainToClass(OrderFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -4853,7 +4853,7 @@ export class CustomerControllerBase {
       resource: \\"Order\\",
     });
     const results = await this.service.findOrders(params.id, {
-      where: query,
+      ...query,
       select: {
         id: true,
         createdAt: true,
@@ -5493,7 +5493,8 @@ const generateApiQueryObject = (prop: any, propType: any, required: boolean, isA
         }
     }
 }
-// eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-module-boundary-types
+
+// eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-module-boundary-types,@typescript-eslint/naming-convention
 export function ApiNestedQuery(query: Function) {
     const constructor = query.prototype;
     const properties = Reflect
@@ -8158,9 +8159,9 @@ import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\
 import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
-import { UserWhereInput } from \\"../../user/base/UserWhereInput\\";
+import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
 import { User } from \\"../../user/base/User\\";
-import { CustomerWhereInput } from \\"../../customer/base/CustomerWhereInput\\";
+import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 @swagger.ApiBasicAuth()
 export class OrganizationControllerBase {
@@ -8401,13 +8402,13 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @ApiNestedQuery(UserWhereInput)
+  @ApiNestedQuery(UserFindManyArgs)
   async findManyUsers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User[]> {
-    const query: UserWhereInput = request.query;
+    const query = plainToClass(UserFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -8415,7 +8416,7 @@ export class OrganizationControllerBase {
       resource: \\"User\\",
     });
     const results = await this.service.findUsers(params.id, {
-      where: query,
+      ...query,
       select: {
         username: true,
         roles: true,
@@ -8589,13 +8590,13 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @ApiNestedQuery(CustomerWhereInput)
+  @ApiNestedQuery(CustomerFindManyArgs)
   async findManyCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
-    const query: CustomerWhereInput = request.query;
+    const query = plainToClass(CustomerFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -8603,7 +8604,7 @@ export class OrganizationControllerBase {
       resource: \\"Customer\\",
     });
     const results = await this.service.findCustomers(params.id, {
-      where: query,
+      ...query,
       select: {
         id: true,
         createdAt: true,
@@ -8782,13 +8783,13 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @ApiNestedQuery(CustomerWhereInput)
+  @ApiNestedQuery(CustomerFindManyArgs)
   async findManyVipCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
-    const query: CustomerWhereInput = request.query;
+    const query = plainToClass(CustomerFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -8796,7 +8797,7 @@ export class OrganizationControllerBase {
       resource: \\"Customer\\",
     });
     const results = await this.service.findVipCustomers(params.id, {
-      where: query,
+      ...query,
       select: {
         id: true,
         createdAt: true,
@@ -10876,7 +10877,7 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
-import { OrganizationWhereInput } from \\"../../organization/base/OrganizationWhereInput\\";
+import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 @swagger.ApiBasicAuth()
 export class UserControllerBase {
@@ -11218,13 +11219,13 @@ export class UserControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @ApiNestedQuery(UserWhereInput)
+  @ApiNestedQuery(UserFindManyArgs)
   async findManyEmployees(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User[]> {
-    const query: UserWhereInput = request.query;
+    const query = plainToClass(UserFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -11232,7 +11233,7 @@ export class UserControllerBase {
       resource: \\"User\\",
     });
     const results = await this.service.findEmployees(params.id, {
-      where: query,
+      ...query,
       select: {
         username: true,
         roles: true,
@@ -11406,13 +11407,13 @@ export class UserControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @ApiNestedQuery(OrganizationWhereInput)
+  @ApiNestedQuery(OrganizationFindManyArgs)
   async findManyOrganizations(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization[]> {
-    const query: OrganizationWhereInput = request.query;
+    const query = plainToClass(OrganizationFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -11420,7 +11421,7 @@ export class UserControllerBase {
       resource: \\"Organization\\",
     });
     const results = await this.service.findOrganizations(params.id, {
-      where: query,
+      ...query,
       select: {
         id: true,
         createdAt: true,
