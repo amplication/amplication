@@ -4615,6 +4615,7 @@ import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
 import { OrderWhereInput } from \\"../../order/base/OrderWhereInput\\";
 import { Order } from \\"../../order/base/Order\\";
+import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
 export class CustomerControllerBase {
   constructor(
@@ -5091,7 +5092,7 @@ export class CustomerControllerBase {
   })
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: OrderWhereInput[],
+    @common.Body() body: OrderWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -8765,8 +8766,10 @@ import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
 import { UserWhereInput } from \\"../../user/base/UserWhereInput\\";
 import { User } from \\"../../user/base/User\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { CustomerWhereInput } from \\"../../customer/base/CustomerWhereInput\\";
 import { Customer } from \\"../../customer/base/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
 export class OrganizationControllerBase {
   constructor(
@@ -9114,7 +9117,7 @@ export class OrganizationControllerBase {
   })
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: UserWhereInput[],
+    @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -9311,7 +9314,7 @@ export class OrganizationControllerBase {
   })
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereInput[],
+    @common.Body() body: CustomerWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -9508,7 +9511,7 @@ export class OrganizationControllerBase {
   })
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereInput[],
+    @common.Body() body: CustomerWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -11685,6 +11688,7 @@ import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
 import { OrganizationWhereInput } from \\"../../organization/base/OrganizationWhereInput\\";
 import { Organization } from \\"../../organization/base/Organization\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
 export class UserControllerBase {
   constructor(
@@ -12133,7 +12137,7 @@ export class UserControllerBase {
   })
   async updateEmployees(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereInput[],
+    @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -12308,7 +12312,7 @@ export class UserControllerBase {
   })
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: OrganizationWhereInput[],
+    @common.Body() body: OrganizationWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
