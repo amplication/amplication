@@ -4452,6 +4452,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { CustomerService } from \\"../customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
@@ -4563,11 +4564,7 @@ export class CustomerControllerBase {
   })
   @swagger.ApiOkResponse({ type: [Customer] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => CustomerFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(CustomerFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -4842,11 +4839,7 @@ export class CustomerControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => OrderWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(OrderWhereInput)
   async findManyOrders(
     @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5464,6 +5457,62 @@ export class CustomerService extends CustomerServiceBase {
   }
 }
 ",
+  "server/src/decorators/api-nested-query.decorator.ts": "import { applyDecorators } from '@nestjs/common';
+import {ApiExtraModels, ApiQuery, ApiQueryOptions, getSchemaPath} from '@nestjs/swagger';
+
+const generateApiQueryObject = (prop: any, propType: any, required: boolean, isArray: boolean): ApiQueryOptions => {
+    if (propType === Number) {
+        return {
+            required,
+            name: prop,
+            style: 'deepObject',
+            explode: true,
+            type: 'number',
+            isArray,
+        }
+    } else if (propType === String) {
+        return {
+            required,
+            name: prop,
+            style: 'deepObject',
+            explode: true,
+            type: 'string',
+            isArray,
+        }
+    } else {
+        return {
+            required,
+            name: prop,
+            style: 'deepObject',
+            explode: true,
+            type: 'object',
+            isArray,
+            schema: {
+                $ref: getSchemaPath(propType),
+            }
+        }
+    }
+}
+// eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-module-boundary-types
+export function ApiNestedQuery(query: Function) {
+    const constructor = query.prototype;
+    const properties = Reflect
+        .getMetadata('swagger/apiModelPropertiesArray', constructor)
+        .map((prop: any) => prop.substr(1));
+
+    const decorators = properties.map((property: any) => {
+        const {required, isArray} = Reflect.getMetadata('swagger/apiModelProperties', constructor, property);
+        const propertyType = Reflect.getMetadata('design:type', constructor, property);
+        const typedQuery = generateApiQueryObject(property, propertyType, required, isArray);
+        return [
+            ApiExtraModels(propertyType),
+            ApiQuery(typedQuery)
+        ]
+    }).flat();
+
+    return applyDecorators(...decorators);
+}
+",
   "server/src/empty/base/DeleteEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 
@@ -5817,6 +5866,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { EmptyService } from \\"../empty.service\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
@@ -5889,11 +5939,7 @@ export class EmptyControllerBase {
   })
   @swagger.ApiOkResponse({ type: [Empty] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => EmptyFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(EmptyFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -6987,6 +7033,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { OrderService } from \\"../order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
@@ -7074,11 +7121,7 @@ export class OrderControllerBase {
   })
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => OrderFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(OrderFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -8107,6 +8150,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { OrganizationService } from \\"../organization.service\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
@@ -8184,11 +8228,7 @@ export class OrganizationControllerBase {
   })
   @swagger.ApiOkResponse({ type: [Organization] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => OrganizationFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(OrganizationFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -8361,11 +8401,7 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => UserWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(UserWhereInput)
   async findManyUsers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8553,11 +8589,7 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => CustomerWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(CustomerWhereInput)
   async findManyCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8750,11 +8782,7 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => CustomerWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(CustomerWhereInput)
   async findManyVipCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10840,6 +10868,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { UserService } from \\"../user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -10940,11 +10969,7 @@ export class UserControllerBase {
   })
   @swagger.ApiOkResponse({ type: [User] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => UserFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(UserFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -11193,11 +11218,7 @@ export class UserControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => UserWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(UserWhereInput)
   async findManyEmployees(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
@@ -11385,11 +11406,7 @@ export class UserControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => OrganizationWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(OrganizationWhereInput)
   async findManyOrganizations(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,

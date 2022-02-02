@@ -7,12 +7,14 @@ import * as defaultAuthGuard from "../auth/defaultAuth.guard";
 // @ts-ignore
 import * as abacUtil from "../auth/abac.util";
 import { Request } from "express";
+// @ts-ignore
+import {ApiNestedQuery} from "../../decorators/api-nested-query.decorator";
 
 declare interface WHERE_UNIQUE_INPUT {
   id: string;
 }
 declare interface RELATED_ENTITY_WHERE_UNIQUE_INPUT {}
-declare interface RELATED_ENTITY_WHERE_INPUT {}
+declare class RELATED_ENTITY_WHERE_INPUT {}
 declare interface Select {}
 
 declare interface RELATED_ENTITY {}
@@ -61,12 +63,7 @@ export class Mixin {
     action: "read",
     possession: "any",
   })
-  @swagger.ApiQuery({
-    //@ts-ignore
-    type: () => RELATED_ENTITY_WHERE_INPUT,
-    style: "deepObject",
-    explode: true,
-  })
+  @ApiNestedQuery(RELATED_ENTITY_WHERE_INPUT)
   async FIND_MANY(
     @common.Req() request: Request,
     @common.Param() params: WHERE_UNIQUE_INPUT,
