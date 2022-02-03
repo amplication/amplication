@@ -84,7 +84,7 @@
     "@types/react-dom": "16.9.14",
     "@types/react-router-dom": "5.1.8",
     "@types/replace-ext": "2.0.0",
-    "@types/semver": "7.3.7",
+    "@types/semver": "7.3.9",
     "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "4.28.3",
     "@typescript-eslint/parser": "4.28.3",
