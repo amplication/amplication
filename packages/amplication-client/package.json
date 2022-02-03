@@ -17,7 +17,7 @@
     "ajv-errors": "3.0.0",
     "capital-case": "1.0.4",
     "classnames": "2.3.1",
-    "date-fns": "2.28.0",
+    "date-fns": "2.22.1",
     "deepdash-es": "5.3.9",
     "downloadjs": "1.4.7",
     "events": "3.3.0",
