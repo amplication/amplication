@@ -1,26 +1,20 @@
 @import "../style/index.scss";
 
 .pending-changes-menu-item {
-  &__popover {
-    width: 180px;
-    border-radius: var(--default-border-radius);
-    padding: var(--default-spacing);
-    background-color: var(--theme-blue);
-    color: var(--white);
+  border-radius: 0 0 var(--default-border-radius) var(--default-border-radius);
+  margin-top: -5px;
+  padding: var(--default-spacing-small);
 
-    --mdc-theme-on-surface: var(--theme-blue);
-
-    .rmwc-tooltip-inner {
-      background-color: var(--theme-blue);
-    }
+  &--open {
+    background: var(--white);
   }
 
-  &--popover-open {
-    .amp-menu-item__tooltip:hover {
-      &:before,
-      &:after {
-        display: none;
-      }
-    }
+  &__badge {
+    @include counterBadge;
+    background-color: var(--warning-default);
+    color: var(--static-bl);
+    top: auto;
+    bottom: -12px;
+    color: var(--static-black);
   }
 }

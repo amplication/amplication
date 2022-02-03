@@ -6,13 +6,11 @@ import { gql, useQuery } from "@apollo/client";
 import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import { RelatedFieldsMigrationFix } from "../Entity/RelatedFieldsMigrationFix";
-import Pages from "../Pages/Pages";
-import EntityPage from "../Pages/EntityPage";
 import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
-import NewEntityPage from "../Pages/NewEntityPage";
 import PendingChangesPage from "../VersionControl/PendingChangesPage";
+import { MenuFixedPanel } from "../util/teleporter";
 
 import "./ApplicationLayout.scss";
 import * as models from "../models";
@@ -26,16 +24,9 @@ import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
 import { track } from "../util/analytics";
-import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
 import Commits from "../VersionControl/Commits";
 import NavigationTabs from "../Layout/NavigationTabs";
-
-enum EnumFixedPanelKeys {
-  None = "None",
-  PendingChanges = "PendingChanges",
-}
 
 export type ApplicationData = {
   app: models.App;
@@ -62,27 +53,13 @@ function ApplicationLayout({ match }: Props) {
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
 
-  const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
-    EnumFixedPanelKeys.PendingChanges
-  );
-
-  const handleMenuItemWithFixedPanelClicked = useCallback(
-    (panelKey: string) => {
-      if (selectedFixedPanel === panelKey) {
-        setSelectedFixedPanel(EnumFixedPanelKeys.None);
-      } else {
-        setSelectedFixedPanel(panelKey);
-      }
+  const { data: pendingChangesData, refetch } = useQuery<
+    PendingChangeStatusData
+  >(GET_PENDING_CHANGES_STATUS, {
+    variables: {
+      applicationId: application,
     },
-    [selectedFixedPanel]
-  );
-
-  const { data: pendingChangesData, refetch } =
-    useQuery<PendingChangeStatusData>(GET_PENDING_CHANGES_STATUS, {
-      variables: {
-        applicationId: application,
-      },
-    });
+  });
 
   const { data: applicationData } = useQuery<ApplicationData>(GET_APPLICATION, {
     variables: {
@@ -180,9 +157,6 @@ function ApplicationLayout({ match }: Props) {
     ]
   );
 
-  const pendingChangesBadge =
-    (pendingChanges.length && pendingChanges.length.toString()) || null;
-
   return (
     <PendingChangesContext.Provider value={pendingChangesContextValue}>
       <MainLayout
@@ -200,21 +174,12 @@ function ApplicationLayout({ match }: Props) {
               color={applicationData?.app.color}
             />
           </MenuItem>
-          <PendingChangesMenuItem
-            applicationId={application}
-            isOpen={selectedFixedPanel === EnumFixedPanelKeys.PendingChanges}
-            onClick={handleMenuItemWithFixedPanelClicked}
-            panelKey={EnumFixedPanelKeys.PendingChanges}
-            badgeValue={pendingChangesBadge}
-          />
+
           <MenuItem
             title="Entities"
             to={`/${application}/entities`}
             icon="entity_outline"
           />
-          {SHOW_UI_ELEMENTS && (
-            <MenuItem title="Pages" to={`/${application}/pages`} icon="pages" />
-          )}
           <MenuItem
             title="Roles"
             to={`/${application}/roles`}
@@ -238,19 +203,6 @@ function ApplicationLayout({ match }: Props) {
 
               <Route path="/:application/entities/" component={Entities} />
 
-              {SHOW_UI_ELEMENTS && (
-                <>
-                  <Route path="/:application/pages/" component={Pages} />
-                  <Route
-                    path="/:application/entity-pages/new"
-                    component={NewEntityPage}
-                  />
-                  <Route
-                    path="/:application/entity-pages/:entityPageId"
-                    component={EntityPage}
-                  />
-                </>
-              )}
               <RouteWithAnalytics
                 path="/:application/builds/:buildId"
                 component={BuildPage}
@@ -269,6 +221,10 @@ function ApplicationLayout({ match }: Props) {
             </Switch>
           </div>
         </MainLayout.Content>
+        <MainLayout.Aside>
+          <MenuFixedPanel.Target className="main-layout__aside__expandable" />
+        </MainLayout.Aside>
+
         <ScreenResolutionMessage />
       </MainLayout>
     </PendingChangesContext.Provider>

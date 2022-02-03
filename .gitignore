@@ -3,3 +3,4 @@ terraform/envs/production/.terraform.lock.hcl
 terraform/envs/dev/.terraform.lock.hcl
 lerna-debug.log
 .DS_Store
+.idea/
