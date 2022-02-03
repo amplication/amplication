@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
-import { Snackbar } from "@rmwc/snackbar";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { GlobalHotKeys } from "react-hotkeys";
 import { pascalCase } from "pascal-case";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { TextField } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import {
   generatePluralDisplayName,
