@@ -3,6 +3,7 @@ import { pascalCase } from "pascal-case";
 import { print } from "recast";
 import { Entity, EntityField, EntityLookupField, Module } from "../../../types";
 import {
+  addAutoGenerationComment,
   addIdentifierToConstructorSuperCall,
   addImports,
   awaitExpression,
@@ -293,6 +294,7 @@ async function createServiceBaseModule(
   removeESLintComments(file);
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
+  addAutoGenerationComment(file);
 
   return {
     path: moduleBasePath,

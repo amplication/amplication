@@ -1,9 +1,12 @@
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { Panel, EnumPanelStyle } from "@amplication/design-system";
-import { Icon } from "@rmwc/icon";
-import { CircularProgress } from "@rmwc/circular-progress";
+import {
+  Panel,
+  EnumPanelStyle,
+  Icon,
+  CircularProgress,
+} from "@amplication/design-system";
 
 import { GET_APPLICATION } from "../Application/ApplicationHome";
 
@@ -60,7 +63,7 @@ function SyncWithGithubTile({ applicationId }: Props) {
             <CircularProgress />
           ) : (
             <span className={`${CLASS_NAME}__content__details__summary`}>
-              <Icon icon={{ icon: "github", size: "medium" }} />
+              <Icon icon="github" size="medium" />
 
               {!data?.app.githubSyncEnabled ? (
                 <>You are not connected to a GitHub repository</>
