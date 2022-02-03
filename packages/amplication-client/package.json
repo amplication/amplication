@@ -104,7 +104,7 @@
     "@types/ajv-errors": "1.0.3",
     "@types/amplitude-js": "5.11.2",
     "@types/chalk-pipe": "2.0.0",
-    "@types/downloadjs": "1.4.2",
+    "@types/downloadjs": "1.4.3",
     "@types/jest": "24.9.1",
     "@types/lodash.debounce": "4.0.6",
     "@types/lodash.groupby": "4.6.6",
