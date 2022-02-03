@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo } from "react";
 import download from "downloadjs";
 import { isEmpty } from "lodash";
-import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
-import { Panel, EnumPanelStyle } from "@amplication/design-system";
+import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 
 import { BuildStepsStatus } from "./BuildStepsStatus";
 
