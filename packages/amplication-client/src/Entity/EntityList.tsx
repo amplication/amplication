@@ -1,12 +1,15 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
-import { CircularProgress } from "@rmwc/circular-progress";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { Dialog, SearchField } from "@amplication/design-system";
+import {
+  Dialog,
+  SearchField,
+  Snackbar,
+  CircularProgress,
+} from "@amplication/design-system";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 import NewEntity from "./NewEntity";

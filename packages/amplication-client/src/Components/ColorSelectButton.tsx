@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { Tooltip } from "@primer/components";
 import * as designSystem from "@amplication/design-system";
 import "./ColorSelectButton.scss";
 
@@ -22,7 +21,11 @@ export const ColorSelectButton = ({ color, onColorSelected }: Props) => {
   );
 
   return (
-    <Tooltip aria-label={color.label} className="color-select-button" noDelay>
+    <designSystem.Tooltip
+      aria-label={color.label}
+      className="color-select-button"
+      noDelay
+    >
       <designSystem.Button
         type="button"
         onClick={handleClick}
@@ -33,6 +36,6 @@ export const ColorSelectButton = ({ color, onColorSelected }: Props) => {
           }
         }
       />
-    </Tooltip>
+    </designSystem.Tooltip>
   );
 };
