@@ -22,7 +22,7 @@ export async function readStaticModules(
   });
 
   return Promise.all(
-    staticModules.map(async (module) => ({
+    staticModules.sort().map(async (module) => ({
       path: module.replace(directory, basePath ? basePath + "/" : ""),
       code: await fs.promises.readFile(module, "utf-8"),
     }))
