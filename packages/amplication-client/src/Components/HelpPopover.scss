@@ -2,9 +2,14 @@
 
 .amp-help-popover {
   max-width: 500px;
-
   margin: var(--default-spacing);
 
+  .amp-popover__inner-content {
+    @include body2;
+    background-color: var(--white);
+    padding: var(--default-spacing);
+    color: var(--black100);
+  }
   &__details {
     display: flex;
     flex-direction: row;

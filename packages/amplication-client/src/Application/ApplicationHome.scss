@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import "../style/index.scss";
 
 $info-panel-height: 140px;
@@ -23,7 +25,7 @@ $circle-badge-border: 2px;
     background-repeat: no-repeat;
     background-size: auto 100%;
     border: none;
-    margin-bottom: ($application-badge-size-large / 2) + 20px;
+    margin-bottom: ($application-badge-size-large * 0.5) + 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -53,7 +55,7 @@ $circle-badge-border: 2px;
     height: $application-badge-size-large;
     font-size: $app-icon-large-font-size;
     position: absolute;
-    bottom: $application-badge-size-large / -2;
+    bottom: math.div($application-badge-size-large, -2);
     left: calc(var(--double-spacing) * 2);
 
     &:before {

@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { Tooltip } from "@primer/components";
 
 import * as models from "../models";
 
 import useAuthenticated from "../authentication/use-authenticated";
-import { UserAvatar } from "@amplication/design-system";
+import { UserAvatar, Tooltip } from "@amplication/design-system";
 
 import "./UserBadge.scss";
 import { identity } from "../util/analytics";

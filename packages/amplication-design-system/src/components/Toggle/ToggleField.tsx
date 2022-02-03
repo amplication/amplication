@@ -8,8 +8,9 @@ export type Props = ToggleProps & {
 };
 
 export const ToggleField = (props: Props) => {
+  const { name } = props;
   const [field] = useField({
-    ...props,
+    name,
     type: "checkbox",
   });
   return <Toggle {...props} {...field} />;

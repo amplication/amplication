@@ -23,16 +23,12 @@ $counter-height: 18px;
     .amp-button {
       margin-left: 0;
     }
-
-    .amp-icon {
-      font-size: 18px;
-    }
   }
 
   &__changes-count {
     background-color: var(--black10);
     height: $counter-height;
-    border-radius: $counter-height / 2;
+    border-radius: $counter-height * 0.5;
     display: flex;
     flex-direction: row;
     align-items: center;

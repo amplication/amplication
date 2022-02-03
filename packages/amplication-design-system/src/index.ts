@@ -31,35 +31,6 @@ export {
   Props as SelectMenuProps,
 } from "./components/SelectMenu/SelectMenu";
 
-export { SortData, DataField, DataFilter } from "./components/DataGrid/types";
-
-export {
-  DataGrid,
-  EnumTitleType,
-  Props as DataGridProps,
-} from "./components/DataGrid/DataGrid";
-
-export {
-  default as DataGridRow,
-  Props as DataGridRowProps,
-} from "./components/DataGrid/DataGridRow";
-export {
-  default as DataGridCell,
-  Props as DataGridCellProps,
-} from "./components/DataGrid/DataGridCell";
-
-export {
-  CheckboxField,
-  Props as CheckboxFieldProps,
-} from "./components/Checkbox/CheckboxField";
-
-export {
-  CheckboxListField,
-  Props as CheckboxListFieldProps,
-} from "./components/Checkbox/CheckboxListField";
-
-export { default as Provider } from "./components/Provider";
-
 export {
   SelectField,
   Props as SelectFieldProps,
@@ -128,19 +99,10 @@ export {
   EnumTimeSinceSize,
 } from "./components/TimeSince/TimeSince";
 
-export { Menu, Props as MenuProps } from "./components/Menu/Menu";
-
-export { MenuItem, Props as MenuItemProps } from "./components/Menu/MenuItem";
-
 export {
   CircleBadge,
   Props as CircleBadgeProps,
 } from "./components/CircleBadge/CircleBadge";
-
-export {
-  default as MainLayout,
-  Props as MainLayoutProps,
-} from "./components/MainLayout/MainLayout";
 
 export { default as Page, Props as PageProps } from "./components/Page/Page";
 
@@ -178,3 +140,8 @@ export {
   CircularProgress,
   Props as CircularProgressProps,
 } from "./components/CircularProgress/CircularProgress";
+
+export { Icon, Props as IconProps } from "./components/Icon/Icon";
+
+export { Tooltip, Props as TooltipProps } from "./components/Tooltip/Tooltip";
+export { SkeletonWrapper } from "./components/SkeletonWrapper/SkeletonWrapper";
