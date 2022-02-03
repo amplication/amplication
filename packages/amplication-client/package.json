@@ -118,7 +118,7 @@
     "@types/react-lazylog": "4.5.1",
     "@types/react-router-dom": "5.1.8",
     "@types/react-tracking": "7.0.4",
-    "@types/semver": "7.3.7",
+    "@types/semver": "7.3.9",
     "jest-mock-extended": "^2.0.4",
     "prettier": "2.0.5",
     "react-app-rewired": "2.1.8",
