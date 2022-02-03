@@ -2,11 +2,13 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { isEmpty } from "lodash";
 import { gql, useQuery } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
-import { CircularProgress } from "@rmwc/circular-progress";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { SearchField } from "@amplication/design-system";
+import {
+  SearchField,
+  Snackbar,
+  CircularProgress,
+} from "@amplication/design-system";
 import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";
 import "./RoleList.scss";

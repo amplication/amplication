@@ -1,5 +1,4 @@
-import { Panel } from "@amplication/design-system";
-import { Icon } from "@rmwc/icon";
+import { Panel, Icon } from "@amplication/design-system";
 import { Formik } from "formik";
 import React from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -41,7 +40,7 @@ export const CreateAppFromExcelForm = ({
             />
             <Panel className={`${CLASS_NAME}__notice`}>
               <div className={`${CLASS_NAME}__notice__title`}>
-                <Icon icon={{ size: "xsmall", icon: "info_circle" }} />
+                <Icon size="xsmall" icon="info_circle" />
                 <span>Good to know</span>
               </div>
               <ul className={`${CLASS_NAME}__layout__body__side__message`}>

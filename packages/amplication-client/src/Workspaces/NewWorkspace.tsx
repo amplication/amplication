@@ -1,6 +1,5 @@
-import { TextField } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/design-system";
 import { gql, Reference, useMutation } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
