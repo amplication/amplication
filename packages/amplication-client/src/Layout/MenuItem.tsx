@@ -2,9 +2,9 @@ import React, { ReactNode } from "react";
 import { useRouteMatch, NavLink } from "react-router-dom";
 import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Tooltip } from "@primer/components";
 
-import { Icon } from "@rmwc/icon";
+import { Icon, Tooltip } from "@amplication/design-system";
+import "./MenuItem.scss";
 
 type Props = {
   /** Optional URL to navigate to on click  */
@@ -49,16 +49,7 @@ const MenuItem = ({
       onClick={onClick}
       to={to}
     >
-      {children ? (
-        children
-      ) : (
-        <Icon
-          icon={{
-            icon: icon,
-            size: ICON_SIZE,
-          }}
-        />
-      )}
+      {children ? children : <Icon icon={icon || ""} size={ICON_SIZE} />}
     </Button>
   );
 

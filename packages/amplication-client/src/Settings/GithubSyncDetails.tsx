@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Snackbar } from "@rmwc/snackbar";
+import { Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";

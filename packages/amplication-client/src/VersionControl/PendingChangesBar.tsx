@@ -11,6 +11,7 @@ type Props = {
 const PendingChangesBar = ({ applicationId }: Props) => {
   return (
     <div className={CLASS_NAME}>
+      <h2>Pending Changes</h2>
       <PendingChanges applicationId={applicationId} />
     </div>
   );

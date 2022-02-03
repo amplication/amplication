@@ -2,6 +2,7 @@
   --surface: #ffffff; //solid white on the background
   --white: #ffffff; //main white
   --static-white: #ffffff; //static white stays white on dark mode, to be used on button and other color elements
+  --static-black: #121242; //static black stays black on dark mode, to be used on button and other color elements
 
   --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
     "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
@@ -42,7 +43,7 @@
   --warning-default: #f6aa50;
   --negative: #e93c51;
 
-  --modal-background: rgba(12, 11, 14, 0.48);
+  --tooltip-background: #1b1f23;
 
   --panel-background: var(--white);
   --panel-hover-background: var(--black5);
@@ -57,6 +58,7 @@
 
   --mdc-typography-body2-font-size: var(--normal-font-size);
 
+  --icon-spacing: 4px;
   --default-spacing: 12px;
   --default-spacing-small: 8px;
   --large-spacing: 16px;
@@ -90,6 +92,7 @@
   --application-card-height: 210px;
 
   --default-border-radius: 8px;
+  --small-border-radius: 4px;
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);

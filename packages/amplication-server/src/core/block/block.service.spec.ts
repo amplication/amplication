@@ -3,6 +3,7 @@ import { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
 import { PrismaService } from 'nestjs-prisma';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { DiffModule } from 'src/services/diff.module';
 import {
   App,
   Block,
@@ -12,6 +13,7 @@ import {
   User
 } from 'src/models';
 import { Prisma } from '@prisma/client';
+import { DiffService } from 'src/services/diff.service';
 
 const INITIAL_VERSION_NUMBER = 0;
 const NOW = new Date();
@@ -119,6 +121,7 @@ const prismaBlockVersionFindOneMock = jest.fn(() => {
 const prismaBlockVersionUpdateMock = jest.fn(() => {
   return EXAMPLE_BLOCK_VERSION;
 });
+const areDifferentMock = jest.fn(() => true);
 
 describe('BlockService', () => {
   let service: BlockService;
@@ -154,8 +157,11 @@ describe('BlockService', () => {
         },
         BlockService
       ],
-      imports: []
-    }).compile();
+      imports: [DiffModule]
+    })
+      .overrideProvider(DiffService)
+      .useValue({ areDifferent: areDifferentMock })
+      .compile();
 
     service = module.get<BlockService>(BlockService);
   });
@@ -353,6 +359,26 @@ describe('BlockService', () => {
     });
   });
 
+  it('should still call updateLock when an error occurs', async () => {
+    jest.spyOn(service, 'updateLock');
+    prismaBlockVersionUpdateMock.mockImplementation(() => {
+      throw new Error();
+    });
+
+    const args = {
+      where: {
+        id: EXAMPLE_BLOCK.id
+      },
+      data: {
+        displayName: EXAMPLE_BLOCK.displayName,
+        description: EXAMPLE_BLOCK.description,
+        ...EXAMPLE_BLOCK_SETTINGS
+      }
+    };
+    await expect(service.update(args, EXAMPLE_USER)).rejects.toThrowError();
+    expect(service.updateLock).toBeCalled();
+  });
+
   it('should find many blocks', async () => {
     const args = {};
     expect(await service.findMany(args)).toEqual([EXAMPLE_BLOCK]);
@@ -422,5 +448,73 @@ describe('BlockService', () => {
     expect(prismaBlockFindOneMock).toBeCalledWith({
       where: { id: block.parentBlockId }
     });
+  });
+
+  it('should have no pending changes when the current and last block versions are the same', async () => {
+    const LAST_BLOCK_VERSION = {
+      ...EXAMPLE_BLOCK_VERSION,
+      versionNumber: 2
+    };
+
+    prismaBlockVersionFindManyMock.mockImplementation(() => [
+      EXAMPLE_BLOCK_VERSION,
+      { ...EXAMPLE_BLOCK_VERSION, versionNumber: 1 },
+      LAST_BLOCK_VERSION
+    ]);
+    areDifferentMock.mockImplementationOnce(() => false);
+
+    expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(false);
+    expect(areDifferentMock).toBeCalledWith(
+      EXAMPLE_BLOCK_VERSION,
+      LAST_BLOCK_VERSION,
+      expect.anything()
+    );
+  });
+
+  it('should have pending changes when the current and last block versions are different', async () => {
+    const CURRENT_BLOCK_VERSION = {
+      ...EXAMPLE_BLOCK_VERSION,
+      displayName: 'new block name'
+    };
+
+    prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
+      CURRENT_BLOCK_VERSION,
+      EXAMPLE_BLOCK_VERSION
+    ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
+    expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(true);
+    expect(areDifferentMock).toBeCalledWith(
+      CURRENT_BLOCK_VERSION,
+      EXAMPLE_BLOCK_VERSION,
+      expect.anything()
+    );
+  });
+
+  it('should have pending changes when there is only one block version', async () => {
+    prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
+      EXAMPLE_BLOCK_VERSION
+    ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
+    expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(true);
+    expect(areDifferentMock).toBeCalledWith(
+      EXAMPLE_BLOCK_VERSION,
+      undefined,
+      expect.anything()
+    );
+  });
+
+  it('should have no pending changes when there is only one block version and it was deleted', async () => {
+    prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
+      {
+        ...EXAMPLE_BLOCK_VERSION,
+        deleted: true
+      }
+    ]);
+    areDifferentMock.mockImplementationOnce(() => true);
+
+    expect(await service.hasPendingChanges(EXAMPLE_BLOCK.id)).toBe(false);
+    expect(areDifferentMock).not.toBeCalled();
   });
 });

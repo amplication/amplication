@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import "./CommitValidation.scss";
@@ -80,7 +80,7 @@ const CommitValidation = ({ applicationId }: Props) => {
 
         return (
           <div className={`${CLASS_NAME}__item`} key={index}>
-            <Icon icon="info_circle" />
+            <Icon icon="info_circle" size="small" />
             <div>
               {errorData.message}
               {errorData.url && (

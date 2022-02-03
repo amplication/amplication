@@ -4,14 +4,13 @@ import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
-import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
-import { MultiStateToggle } from "@amplication/design-system";
+import { MultiStateToggle, Snackbar } from "@amplication/design-system";
 
 import "./PendingChangesPage.scss";
 

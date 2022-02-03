@@ -1,6 +1,10 @@
 import { builders } from "ast-types";
 import { print } from "recast";
-import { exportNames, importNames } from "../../../util/ast";
+import {
+  addAutoGenerationComment,
+  exportNames,
+  importNames,
+} from "../../../util/ast";
 import { Entity } from "../../../types";
 import {
   EXAMPLE_ID_FIELD,
@@ -55,9 +59,10 @@ describe("createDTOModule", () => {
       EXAMPLE_ENTITY_NAME_DIRECTORY,
       dto.id.name
     );
+    const file = createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH);
+    addAutoGenerationComment(file);
     expect(createDTOModule(dto, EXAMPLE_DTO_NAME_TO_PATH)).toEqual({
-      code: print(createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH))
-        .code,
+      code: print(file).code,
       path: modulePath,
     });
   });
