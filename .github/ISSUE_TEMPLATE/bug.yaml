@@ -52,8 +52,7 @@ body:
       label: Amplication version
       description: >
         What Amplication version are you using?
-    validations:
-      required: true
+
   - type: textarea
     attributes:
       label: Environment
@@ -66,17 +65,7 @@ body:
         OS Details (Linux): [cat /etc/os-release && uname -a]\n
         OS Details (Windows): [wmic os get Caption, Version, BuildNumber, OSArchitecture]
         "
-    validations:
-      required: true
-  - type: textarea
-    attributes:
-      label: Anything else
-      description: Anything else we need to know?
-      placeholder: >
-        How often does this problem occur? (Once? Every time? Only when certain conditions are met?)
-        Any relevant logs to include? Put them here inside fenced
-        ``` ``` blocks or inside a foldable details tag if it's long:
-        <details><summary>x.log</summary> lots of stuff </details>
+
   - type: dropdown
     attributes:
       label: Are you willing to submit PR?
@@ -84,17 +73,13 @@ body:
         This is absolutely not required, but we are happy to guide you in the contribution process
         especially if you already have a good understanding of how to implement the fix.
         Amplication is a community-managed project and we love to bring new contributors in.
-        Find us in #how-to-pr on [Discord](https://discord.gg/cEcS9zDA)!
+        Find us in #support on [Discord](https://amplication.com/discord)!
       multiple: true
       options:
         - "Yes I am willing to submit a PR!"
-  - type: dropdown
+  - type: markdown
     attributes:
-      label: Code of Conduct
-      description: The [Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md) helps create a safe space for everyone. We require
-        that everyone agrees to it.
-      multiple: true
-      options:
-        - "I agree to follow this project's Code of Conduct"
-    validations:
-      required: true
+      value: <br>
+  - type: markdown
+    attributes:
+      value: By submitting this issue I agree to follow this project`s [Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md)

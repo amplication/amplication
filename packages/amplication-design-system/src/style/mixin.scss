@@ -198,12 +198,12 @@
 
   &::-webkit-scrollbar-thumb {
     background: $foreground-color;
-    border-radius: $size / 2;
+    border-radius: $size * 0.5;
   }
 
   &::-webkit-scrollbar-track {
     background: $background-color;
-    border-radius: $size / 2;
+    border-radius: $size * 0.5;
     margin: 10px;
   }
 

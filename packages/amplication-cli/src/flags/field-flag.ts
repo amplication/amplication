@@ -10,7 +10,7 @@ function getField(params: any): string | undefined {
   return undefined;
 }
 export const field = flags.build({
-  char: 'f',
+  char: 'i',
   description: 'ID of the field',
   default: getField,
 });
