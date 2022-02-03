@@ -55,7 +55,7 @@
         margin-left: var(--default-spacing);
         @include flexFullRow;
         justify-content: flex-start;
-        align-items: flex-start;
+        align-items: center;
         .amp-icon {
           margin-right: var(--default-spacing-small);
           color: var(--positive-default);

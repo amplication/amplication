@@ -1,5 +1,4 @@
-import { SelectField, TextField } from "@amplication/design-system";
-import { Icon } from "@rmwc/icon";
+import { SelectField, TextField, Icon } from "@amplication/design-system";
 import classNames from "classnames";
 import React, { useCallback } from "react";
 import { Draggable } from "react-beautiful-dnd";
@@ -64,10 +63,8 @@ export const EntitiesDiagramField = React.memo(
               {...provided.dragHandleProps}
             >
               <Icon
-                icon={{
-                  icon: DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon,
-                  size: "xsmall",
-                }}
+                icon={DATA_TYPE_TO_LABEL_AND_ICON[dataType].icon}
+                size="xsmall"
               />
               <span>{field.name}</span>
               <span className="spacer" />

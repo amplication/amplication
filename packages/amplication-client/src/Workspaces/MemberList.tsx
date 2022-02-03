@@ -1,7 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { CircularProgress } from "@rmwc/circular-progress";
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
+import { CircularProgress, Snackbar } from "@amplication/design-system";
 import { isEmpty } from "lodash";
 import React, { useCallback, useState } from "react";
 import * as models from "../models";

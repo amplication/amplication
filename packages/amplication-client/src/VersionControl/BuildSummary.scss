@@ -4,6 +4,7 @@ $step-min-height: 32px;
 .build-summary {
   display: flex;
   flex-direction: row-reverse;
+  align-items: center;
 
   .amp-button {
     width: 100%;
@@ -14,6 +15,17 @@ $step-min-height: 32px;
     flex-direction: row-reverse;
     > * {
       margin-left: var(--default-spacing);
+    }
+  }
+
+  &__generating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--double-spacing);
+
+    .amp-circular-progress {
+      margin-right: var(--default-spacing-small);
     }
   }
 

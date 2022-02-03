@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import "../style/index.scss";
 
 $max-width: 700px;
@@ -255,7 +257,7 @@ $option-image-size: 70px;
       color: var(--black100);
       max-width: $max-width;
       text-align: center;
-      max-width: $max-width/1.5;
+      max-width: math.div($max-width, 1.5);
     }
 
     .svg-theme-image {

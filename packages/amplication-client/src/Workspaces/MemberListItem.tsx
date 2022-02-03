@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import { useTracking } from "../util/analytics";
-import { Tooltip } from "@primer/components";
 
 import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -11,6 +10,7 @@ import {
   EnumPanelStyle,
   Panel,
   UserAvatar,
+  Tooltip,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 

@@ -1,9 +1,6 @@
-import { TextField } from "@amplication/design-system";
+import { TextField,Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
-import "@rmwc/circular-progress/styles";
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
 import { GlobalHotKeys } from "react-hotkeys";

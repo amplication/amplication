@@ -1,5 +1,4 @@
 import { useQuery } from "@apollo/client";
-import "@rmwc/snackbar/styles";
 import React from "react";
 import * as models from "../models";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/WorkspaceSelector";
