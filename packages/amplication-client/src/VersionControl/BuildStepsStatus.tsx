@@ -17,7 +17,7 @@ export const BuildStepsStatus = ({ status }: Props) => {
   return (
     <span className={`${CLASS_NAME} ${CLASS_NAME}--${status.toLowerCase()}`}>
       {status === models.EnumActionStepStatus.Running ? (
-        <CircularProgress size={"xsmall"} />
+        <CircularProgress size={16} />
       ) : (
         <Icon icon={STEP_STATUS_TO_ICON[status]} />
       )}
