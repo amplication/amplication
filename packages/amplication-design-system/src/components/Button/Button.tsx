@@ -2,10 +2,11 @@ import React from "react";
 import {
   Button as PrimerButton,
   ButtonProps as PrimerButtonProps,
-} from "@primer/components";
+} from "@primer/react";
 import classNames from "classnames";
-import { Icon } from "@rmwc/icon";
+import { Icon, IconSize } from "../Icon/Icon";
 import { isEmpty } from "lodash";
+
 import "./Button.scss";
 
 export enum EnumButtonStyle {
@@ -23,6 +24,7 @@ type ButtonProps = {
   /** When isSplit === true, optional value to show instead of the default expand icon */
   splitValue?: string;
   icon?: string;
+  iconSize?: IconSize;
 };
 
 export type Props = PrimerButtonProps & ButtonProps;
@@ -34,6 +36,7 @@ export const Button = ({
   splitValue,
   children,
   icon,
+  iconSize,
   ...rest
 }: Props) => {
   if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
@@ -52,7 +55,16 @@ export const Button = ({
       )}
       {...rest}
     >
-      {!isEmpty(icon) && <Icon icon={icon} className="amp-button__icon" />}
+      {!isEmpty(icon) && (
+        <Icon
+          icon={icon as string}
+          size={
+            iconSize ||
+            (buttonStyle === EnumButtonStyle.Clear ? "small" : "xsmall")
+          }
+          className="amp-button__icon"
+        />
+      )}
       {children}
       {isSplit && (
         <span className="amp-button__split">

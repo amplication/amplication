@@ -79,8 +79,10 @@ $step-status-width: 15px;
       }
 
       &--running {
-        .rmwc-circular-progress {
-          color: var(--action-log-header-color);
+        .amp-circular-progress {
+          .MuiCircularProgress-root {
+            color: var(--action-log-header-color);
+          }
         }
       }
     }

@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
+import { Snackbar } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import InnerTabLink from "../Layout/InnerTabLink";
