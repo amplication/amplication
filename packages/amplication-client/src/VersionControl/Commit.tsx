@@ -1,13 +1,12 @@
 import React, { useContext, useCallback } from "react";
 import { Formik, Form } from "formik";
-import { Snackbar } from "@rmwc/snackbar";
 import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
 import PendingChangesContext from "./PendingChangesContext";
 import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { GET_LAST_COMMIT } from "./LastCommit";
-import { TextField } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/design-system";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import CommitValidation from "./CommitValidation";

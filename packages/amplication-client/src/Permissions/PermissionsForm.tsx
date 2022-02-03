@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
 
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
+import { Snackbar } from "@amplication/design-system";
 
 import "./PermissionsForm.scss";
 

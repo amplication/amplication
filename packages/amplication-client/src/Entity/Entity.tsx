@@ -1,8 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Switch, match, useLocation } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
+import { Snackbar } from "@amplication/design-system";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import * as models from "../models";
 import { formatError } from "../util/error";

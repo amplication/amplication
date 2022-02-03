@@ -4,9 +4,10 @@ import { BlockResolver } from './block.resolver';
 import { PrismaModule } from 'nestjs-prisma';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { UserModule } from '../user/user.module';
+import { DiffModule } from 'src/services/diff.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, PermissionsModule],
+  imports: [PrismaModule, UserModule, PermissionsModule, DiffModule],
   providers: [BlockService, BlockResolver],
   exports: [BlockService, BlockResolver]
 })

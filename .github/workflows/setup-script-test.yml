@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        node: [14.x,16.x]
+        node: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
@@ -18,7 +18,18 @@ jobs:
         with:
           node-version: ${{ matrix.node}}
       - name: Update npm
-        run: npm i -g npm@7.3.0
+        run: npm i -g npm@8.1.2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            */*/node_modules
+          key: SETUP-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            SETUP-${{ runner.os }}-${{ matrix.node }}-
+            SETUP-${{ runner.os }}-
       - run: npm ci
       - run: npm run setup:dev
       - run: cd ./packages/amplication-server && npm run test
