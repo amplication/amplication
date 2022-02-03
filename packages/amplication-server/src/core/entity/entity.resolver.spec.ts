@@ -55,6 +55,12 @@ const EXAMPLE_ENTITY: Entity = {
   lockedByUserId: EXAMPLE_USER_ID
 };
 
+const EXAMPLE_UNLOCKED_ENTITY = {
+  ...EXAMPLE_ENTITY,
+  id: EXAMPLE_UNLOCKED_ID,
+  lockedByUserId: null
+};
+
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   id: EXAMPLE_ENTITY_FIELD_ID,
   permanentId: 'examplePermanentId',
@@ -770,14 +776,18 @@ describe('EntityResolver', () => {
     expect(findUserMock).toBeCalledWith({ where: { id: EXAMPLE_USER_ID } });
   });
 
-  it.skip('should return null when no locking user', async () => {
+  it('should return null when no locking user', async () => {
+    entityMock.mockImplementationOnce(() => EXAMPLE_UNLOCKED_ENTITY);
+
     const res = await apolloClient.query({
       query: LOCKED_BY_USER_QUERY,
       variables: { id: EXAMPLE_UNLOCKED_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      entity: {}
+      entity: {
+        lockedByUser: null
+      }
     });
     expect(findUserMock).toBeCalledTimes(0);
   });
