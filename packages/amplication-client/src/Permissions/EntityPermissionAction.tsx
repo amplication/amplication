@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useContext } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { isEmpty, cloneDeep } from "lodash";
 import difference from "@extra-set/difference";
-import { Icon } from "@rmwc/icon";
 
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
@@ -11,6 +10,7 @@ import {
   MultiStateToggle,
   PanelCollapsible,
   Toggle,
+  Icon,
 } from "@amplication/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";

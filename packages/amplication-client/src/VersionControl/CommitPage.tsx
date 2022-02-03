@@ -4,9 +4,12 @@ import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
-import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
-import { UserAndTime, MultiStateToggle } from "@amplication/design-system";
+import {
+  UserAndTime,
+  MultiStateToggle,
+  Snackbar,
+} from "@amplication/design-system";
 
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import { EnumCompareType } from "./PendingChangeDiffEntity";

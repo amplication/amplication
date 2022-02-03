@@ -13,7 +13,7 @@ $icon-font-size-xlarge: 32px;
   font-variant: normal;
   text-transform: none;
   line-height: 1;
-  font-size: $icon-font-size-xsmall;
+  font-size: $icon-font-size-small;
   display: inline-block;
 
   /* Enable Ligatures ================ */
@@ -30,21 +30,19 @@ $icon-font-size-xlarge: 32px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  &.rmwc-icon {
-    &--size-xsmall {
-      font-size: $icon-font-size-xsmall;
-    }
-    &--size-small {
-      font-size: $icon-font-size-small;
-    }
-    &--size-medium {
-      font-size: $icon-font-size-medium;
-    }
-    &--size-large {
-      font-size: $icon-font-size-large;
-    }
-    &--size-xlarge {
-      font-size: $icon-font-size-xlarge;
-    }
+  &--size-xsmall {
+    font-size: $icon-font-size-xsmall;
+  }
+  &--size-small {
+    font-size: $icon-font-size-small;
+  }
+  &--size-medium {
+    font-size: $icon-font-size-medium;
+  }
+  &--size-large {
+    font-size: $icon-font-size-large;
+  }
+  &--size-xlarge {
+    font-size: $icon-font-size-xlarge;
   }
 }
