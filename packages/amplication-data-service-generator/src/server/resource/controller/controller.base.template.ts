@@ -13,7 +13,7 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
-import {ApiNestedQuery} from "../../decorators/api-nested-query.decorator";
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
