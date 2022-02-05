@@ -32,6 +32,7 @@ import { DiffService } from 'src/services/diff.service';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { isReservedName } from './reservedNames';
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
@@ -124,6 +125,8 @@ export const NAME_VALIDATION_ERROR_MESSAGE =
   'Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number';
 
 export const DELETE_ONE_USER_ENTITY_ERROR_MESSAGE = `The 'user' entity is a reserved entity and it cannot be deleted`;
+
+export const CANNOT_USE_RESERVED_NAME_ERROR_MESSAGE = `"class" is a reserved name and cannot be used.`;
 
 const RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
   'When data.dataType is Lookup and data.properties.relatedFieldId is defined, relatedFieldName and relatedFieldDisplayName must be null';
@@ -234,7 +237,14 @@ export class EntityService {
         `The entity name and plural display name cannot be the same.`
       );
     }
-
+    if (
+      isReservedName(args.data?.name?.toLowerCase().trim())
+    ) {
+      throw new AmplicationError(
+        `"${args.data?.name?.toLowerCase().trim()}" is a reserved name and cannot be used.`
+      );
+    }
+    
     const newEntity = await this.prisma.entity.create({
       data: {
         ...args.data,
@@ -564,6 +574,14 @@ export class EntityService {
       if (newName === newPluralDisplayName) {
         throw new AmplicationError(
           `The entity name and plural display name cannot be the same.`
+        );
+      }
+
+      if (
+        isReservedName(args.data?.name?.toLowerCase().trim())
+      ) {
+        throw new AmplicationError(
+          `"${args.data?.name?.toLowerCase().trim()}" is a reserved name and cannot be used.`
         );
       }
 
@@ -1812,6 +1830,14 @@ export class EntityService {
     args: CreateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
+    if (
+      isReservedName(args.data?.name?.toLowerCase().trim())
+    ) {
+      throw new AmplicationError(
+        `"${args.data?.name?.toLowerCase().trim()}" is a reserved name and cannot be used.`
+      );
+    }
+
     // Omit entity from received data
     const data = omit(args.data, ['entity']);
 
@@ -2015,6 +2041,13 @@ export class EntityService {
     args: UpdateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
+    if (
+      isReservedName(args.data?.name?.toLowerCase().trim())
+    ) {
+      throw new AmplicationError(
+        `"${args.data?.name?.toLowerCase().trim()}" is a reserved name and cannot be used.`
+      );
+    }
     // Get field to update
     const field = await this.getField({
       where: args.where,

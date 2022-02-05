@@ -5,6 +5,7 @@ import { pick, omit } from 'lodash';
 import {
   createEntityNamesWhereInput,
   DELETE_ONE_USER_ENTITY_ERROR_MESSAGE,
+  CANNOT_USE_RESERVED_NAME_ERROR_MESSAGE,
   EntityPendingChange,
   EntityService,
   NAME_VALIDATION_ERROR_MESSAGE
@@ -26,6 +27,8 @@ import {
   EnumPendingChangeResourceType
 } from '../app/dto';
 import { DiffService } from 'src/services/diff.service';
+import { isReservedName } from './reservedNames';
+import { AmplicationError } from 'src/errors/AmplicationError';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
@@ -174,6 +177,9 @@ const EXAMPLE_USER: User = {
   createdAt: new Date(),
   updatedAt: new Date()
 };
+
+const RESERVED_NAME = 'class';
+const UNRESERVED_NAME = 'person';
 
 const EXAMPLE_ENTITY_WHERE_PARENT_ID = { connect: { id: 'EXAMPLE_ID' } };
 
@@ -1298,5 +1304,28 @@ describe('EntityService', () => {
 
     expect(await service.hasPendingChanges(EXAMPLE_ENTITY.id)).toBe(false);
     expect(areDifferentMock).not.toBeCalled();
+  });
+  it('should fail to create one entity with a reserved name', async () => {
+    const createArgs = {
+      args: {
+        data: {
+          name: RESERVED_NAME,
+          displayName: EXAMPLE_ENTITY.displayName,
+          description: EXAMPLE_ENTITY.description,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          app: { connect: { id: EXAMPLE_ENTITY.appId } }
+        }
+      },
+      user: EXAMPLE_USER
+    };
+    await expect(
+      service.createOneEntity(createArgs.args, createArgs.user)
+    ).rejects.toThrow(new AmplicationError(CANNOT_USE_RESERVED_NAME_ERROR_MESSAGE));
+  });
+  it('should send unreserved name to a function that checks if its a reserved name', async () => {
+    expect(isReservedName(UNRESERVED_NAME)).toBe(false);
+  });
+  it('should send a reserved name to a function that checks if its a reserved name', async () => {
+    expect(isReservedName(RESERVED_NAME)).toBe(true);
   });
 });
