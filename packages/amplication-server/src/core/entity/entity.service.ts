@@ -237,14 +237,14 @@ export class EntityService {
         `The entity name and plural display name cannot be the same.`
       );
     }
-    if (
-      isReservedName(args.data?.name?.toLowerCase().trim())
-    ) {
+    if (isReservedName(args.data?.name?.toLowerCase().trim())) {
       throw new AmplicationError(
-        `"${args.data?.name?.toLowerCase().trim()}" is a reserved name and cannot be used.`
+        `"${args.data?.name
+          ?.toLowerCase()
+          .trim()}" is a reserved name and cannot be used.`
       );
     }
-    
+
     const newEntity = await this.prisma.entity.create({
       data: {
         ...args.data,
@@ -577,11 +577,11 @@ export class EntityService {
         );
       }
 
-      if (
-        isReservedName(args.data?.name?.toLowerCase().trim())
-      ) {
+      if (isReservedName(args.data?.name?.toLowerCase().trim())) {
         throw new AmplicationError(
-          `"${args.data?.name?.toLowerCase().trim()}" is a reserved name and cannot be used.`
+          `"${args.data?.name
+            ?.toLowerCase()
+            .trim()}" is a reserved name and cannot be used.`
         );
       }
 
@@ -1830,11 +1830,11 @@ export class EntityService {
     args: CreateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
-    if (
-      isReservedName(args.data?.name?.toLowerCase().trim())
-    ) {
+    if (isReservedName(args.data?.name?.toLowerCase().trim())) {
       throw new AmplicationError(
-        `"${args.data?.name?.toLowerCase().trim()}" is a reserved name and cannot be used.`
+        `"${args.data?.name
+          ?.toLowerCase()
+          .trim()}" is a reserved name and cannot be used.`
       );
     }
 
@@ -2041,11 +2041,11 @@ export class EntityService {
     args: UpdateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
-    if (
-      isReservedName(args.data?.name?.toLowerCase().trim())
-    ) {
+    if (isReservedName(args.data?.name?.toLowerCase().trim())) {
       throw new AmplicationError(
-        `"${args.data?.name?.toLowerCase().trim()}" is a reserved name and cannot be used.`
+        `"${args.data?.name
+          ?.toLowerCase()
+          .trim()}" is a reserved name and cannot be used.`
       );
     }
     // Get field to update

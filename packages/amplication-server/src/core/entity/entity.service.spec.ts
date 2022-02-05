@@ -1320,7 +1320,9 @@ describe('EntityService', () => {
     };
     await expect(
       service.createOneEntity(createArgs.args, createArgs.user)
-    ).rejects.toThrow(new AmplicationError(CANNOT_USE_RESERVED_NAME_ERROR_MESSAGE));
+    ).rejects.toThrow(
+      new AmplicationError(CANNOT_USE_RESERVED_NAME_ERROR_MESSAGE)
+    );
   });
   it('should send unreserved name to a function that checks if its a reserved name', async () => {
     expect(isReservedName(UNRESERVED_NAME)).toBe(false);
