@@ -75,6 +75,7 @@ import {
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
+import { ReservedNameError } from '../app/ReservedNameError';
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -125,8 +126,6 @@ export const NAME_VALIDATION_ERROR_MESSAGE =
   'Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number';
 
 export const DELETE_ONE_USER_ENTITY_ERROR_MESSAGE = `The 'user' entity is a reserved entity and it cannot be deleted`;
-
-export const CANNOT_USE_RESERVED_NAME_ERROR_MESSAGE = `"class" is a reserved name and cannot be used.`;
 
 const RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
   'When data.dataType is Lookup and data.properties.relatedFieldId is defined, relatedFieldName and relatedFieldDisplayName must be null';
@@ -238,11 +237,7 @@ export class EntityService {
       );
     }
     if (isReservedName(args.data?.name?.toLowerCase().trim())) {
-      throw new AmplicationError(
-        `"${args.data?.name
-          ?.toLowerCase()
-          .trim()}" is a reserved name and cannot be used.`
-      );
+      throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
     }
 
     const newEntity = await this.prisma.entity.create({
@@ -578,11 +573,7 @@ export class EntityService {
       }
 
       if (isReservedName(args.data?.name?.toLowerCase().trim())) {
-        throw new AmplicationError(
-          `"${args.data?.name
-            ?.toLowerCase()
-            .trim()}" is a reserved name and cannot be used.`
-        );
+        throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
       }
 
       if (entity.name === USER_ENTITY_NAME) {
@@ -1831,11 +1822,7 @@ export class EntityService {
     user: User
   ): Promise<EntityField> {
     if (isReservedName(args.data?.name?.toLowerCase().trim())) {
-      throw new AmplicationError(
-        `"${args.data?.name
-          ?.toLowerCase()
-          .trim()}" is a reserved name and cannot be used.`
-      );
+      throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
     }
 
     // Omit entity from received data
@@ -2042,11 +2029,7 @@ export class EntityService {
     user: User
   ): Promise<EntityField> {
     if (isReservedName(args.data?.name?.toLowerCase().trim())) {
-      throw new AmplicationError(
-        `"${args.data?.name
-          ?.toLowerCase()
-          .trim()}" is a reserved name and cannot be used.`
-      );
+      throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
     }
     // Get field to update
     const field = await this.getField({

@@ -5,7 +5,6 @@ import { pick, omit } from 'lodash';
 import {
   createEntityNamesWhereInput,
   DELETE_ONE_USER_ENTITY_ERROR_MESSAGE,
-  CANNOT_USE_RESERVED_NAME_ERROR_MESSAGE,
   EntityPendingChange,
   EntityService,
   NAME_VALIDATION_ERROR_MESSAGE
@@ -28,7 +27,7 @@ import {
 } from '../app/dto';
 import { DiffService } from 'src/services/diff.service';
 import { isReservedName } from './reservedNames';
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { ReservedNameError } from '../app/ReservedNameError';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
@@ -1320,9 +1319,7 @@ describe('EntityService', () => {
     };
     await expect(
       service.createOneEntity(createArgs.args, createArgs.user)
-    ).rejects.toThrow(
-      new AmplicationError(CANNOT_USE_RESERVED_NAME_ERROR_MESSAGE)
-    );
+    ).rejects.toThrow(new ReservedNameError(RESERVED_NAME));
   });
   it('should send unreserved name to a function that checks if its a reserved name', async () => {
     expect(isReservedName(UNRESERVED_NAME)).toBe(false);
