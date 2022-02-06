@@ -10,7 +10,7 @@ import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
 import PendingChangesPage from "../VersionControl/PendingChangesPage";
-import { MenuFixedPanel } from "../util/teleporter";
+import { AsidePanel } from "../util/teleporter";
 
 import "./ApplicationLayout.scss";
 import * as models from "../models";
@@ -222,7 +222,7 @@ function ApplicationLayout({ match }: Props) {
           </div>
         </MainLayout.Content>
         <MainLayout.Aside>
-          <MenuFixedPanel.Target className="main-layout__aside__expandable" />
+          <AsidePanel.Target className="main-layout__aside__expandable" />
         </MainLayout.Aside>
 
         <ScreenResolutionMessage />

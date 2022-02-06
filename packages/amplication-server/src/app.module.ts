@@ -36,7 +36,8 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
         '..',
         'amplication-client',
         'build'
-      )
+      ),
+      exclude: ['/graphql']
     }),
 
     RootWinstonModule,
