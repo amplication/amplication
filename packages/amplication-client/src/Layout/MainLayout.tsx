@@ -9,6 +9,7 @@ import { ReactComponent as LogoTextual } from "../assets/logo-textual.svg";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 import UserBadge from "../Components/UserBadge";
+import { FixedMenuPanel } from "../util/teleporter";
 import { Popover, Icon } from "@amplication/design-system";
 import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
@@ -109,6 +110,7 @@ const Menu = ({ children }: MenuProps) => {
             />
           </div>
         </div>
+        <FixedMenuPanel.Target className="main-layout__menu__wrapper__menu-fixed-panel" />
       </div>
     </div>
   );
