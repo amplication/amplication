@@ -413,6 +413,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "alexbass86",
+      "name": "Alex Bass",
+      "avatar_url": "https://avatars.githubusercontent.com/u/96179897?v=4",
+      "profile": "https://github.com/alexbass86",
+      "contributions": [
+        "design",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
