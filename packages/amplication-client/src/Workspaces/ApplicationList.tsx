@@ -1,15 +1,16 @@
 import React, { useCallback, useState } from "react";
 import { gql, Reference, useMutation, useQuery } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
-import { CircularProgress } from "@rmwc/circular-progress";
 import { formatError } from "../util/error";
 import { isMobileOnly } from "react-device-detect";
 import { useTracking } from "../util/analytics";
 
-import { SearchField } from "@amplication/design-system";
+import {
+  SearchField,
+  Snackbar,
+  CircularProgress,
+} from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 

@@ -1,20 +1,22 @@
 import React, { useMemo } from "react";
 import { LazyLog } from "react-lazylog";
 import { isEmpty, last } from "lodash";
-import { Icon } from "@rmwc/icon";
 
-import { CircularProgress } from "@rmwc/circular-progress";
 import Timer from "../Components/Timer";
 
 import { differenceInSeconds } from "date-fns";
 
-import "@rmwc/snackbar/styles";
 import chalk from "chalk";
 import * as models from "../models";
 import logsImage from "../assets/images/logs.svg";
 
 import "./ActionLog.scss";
-import { CircleIcon, EnumCircleIconSize } from "@amplication/design-system";
+import {
+  CircleIcon,
+  EnumCircleIconSize,
+  Icon,
+  CircularProgress,
+} from "@amplication/design-system";
 import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
 
 type Props = {
@@ -130,7 +132,7 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
                 className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${stepData.status.toLowerCase()}`}
               >
                 {stepData.status === models.EnumActionStepStatus.Running ? (
-                  <CircularProgress size={"xsmall"} />
+                  <CircularProgress size={16} />
                 ) : (
                   <Icon icon={STEP_STATUS_TO_ICON[stepData.status]} />
                 )}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon } from "@rmwc/icon";
+import { Icon } from "@amplication/design-system";
 import { head } from "lodash";
 import { Link } from "react-router-dom";
 

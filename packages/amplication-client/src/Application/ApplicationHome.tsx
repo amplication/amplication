@@ -1,7 +1,5 @@
-import { CircleBadge } from "@amplication/design-system";
+import { CircleBadge, Snackbar } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
 import classNames from "classnames";
 import React from "react";
 import { match, Route, Switch, useLocation } from "react-router-dom";
