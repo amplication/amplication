@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/classnames": "2.3.1",
-    "@types/lodash": "4.14.162",
+    "@types/lodash": "4.14.178",
     "@types/react": "17.0.34",
     "@typescript-eslint/eslint-plugin": "5.9.1",
     "@typescript-eslint/parser": "5.9.1",
@@ -42,7 +42,7 @@
     "prettier": "2.1.2",
     "react-is": "16.13.1",
     "react-scripts": "5.0.0",
-    "rollup": "2.53.2",
+    "rollup": "2.63.0",
     "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-postcss": "3.1.8",
     "rollup-plugin-typescript2": "0.30.0",
