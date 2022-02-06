@@ -12,6 +12,8 @@ import { isRecordNotFoundError } from "../../prisma.util";
 import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
+// @ts-ignore
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -111,12 +113,7 @@ export class CONTROLLER_BASE {
   })
   @swagger.ApiOkResponse({ type: [ENTITY] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    //@ts-ignore
-    type: () => FIND_MANY_ARGS,
-    style: "deepObject",
-    explode: true,
-  })
+  @ApiNestedQuery(FIND_MANY_ARGS)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
