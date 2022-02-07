@@ -3,6 +3,7 @@ import { Entity } from './Entity'; // eslint-disable-line import/no-cycle
 import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../core/environment/dto/Environment'; // eslint-disable-line import/no-cycle
+import { GitRepository } from './GitRepository';
 
 @ObjectType({
   isAbstract: true,
@@ -28,6 +29,8 @@ export class App {
   updatedAt!: Date;
 
   workspace?: Workspace;
+
+  gitRepository?: GitRepository;
 
   @Field(() => String, {
     nullable: false,
