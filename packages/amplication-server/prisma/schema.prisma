@@ -19,6 +19,7 @@ model Account {
   githubId      String?
   currentUser   User?    @relation(fields: [currentUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   users         User[]   @relation("AccountOnUser")
+  gitOrganizations GitOrganization[]
 }
 
 model Workspace {
@@ -99,9 +100,34 @@ model App {
   commits                Commit[]
   entities               Entity[]
   environments           Environment[]
+  gitRepository   GitRepository? @relation(fields: [gitRepositoryId], references: [id])
+  gitRepositoryId String?
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
 }
+
+model GitOrganization {
+  id             String          @id @default(cuid())
+  provider       EnumProvider
+  name           String
+  installationId Int
+  code           String
+  createdAt      DateTime
+  updatedAt      DateTime
+  gitRepository  GitRepository[]
+  accounts       Account[]
+}
+
+model GitRepository {
+  id                String           @id @default(cuid())
+  name              String
+  app               App[]
+  createdAt         DateTime
+  updatedAt         DateTime
+  gitOrganization   GitOrganization? @relation(fields: [gitOrganizationId], references: [id])
+  gitOrganizationId String?
+}
+
 
 model AppRole {
   id                    String                 @id @default(cuid())
@@ -383,6 +409,10 @@ enum EnumEntityPermissionType {
   AllRoles
   Granular
   Disabled
+}
+
+enum EnumProvider {
+  gitHub
 }
 
 enum EnumDataType {
