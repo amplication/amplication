@@ -219,35 +219,8 @@ export function createFieldClassProperty(
       builders.decorator(builders.callExpression(IS_ENUM_ID, isEnumArgs))
     );
   } else if (prismaField.kind === FieldKind.Object) {
-    let typeName;
-    if (namedTypes.TSUnionType.check(type)) {
-      const objectType = type.types.find(
-        (type) =>
-          namedTypes.TSTypeReference.check(type) &&
-          namedTypes.Identifier.check(type.typeName)
-      ) as namedTypes.TSTypeReference & { typeName: namedTypes.Identifier };
-      typeName = objectType.typeName;
-    } else if (
-      namedTypes.TSTypeReference.check(type) &&
-      namedTypes.Identifier.check(type.typeName)
-    ) {
-      if (prismaField.isList) {
-        if (
-          namedTypes.TSTypeReference.check(arrayElementType) &&
-          namedTypes.Identifier.check(arrayElementType.typeName)
-        ) {
-          typeName = arrayElementType.typeName;
-        } else {
-          typeName = type.typeName;
-        }
-      } else {
-        typeName = type.typeName;
-      }
-    }
+    const typeName = getTypeName(type, arrayElementType, prismaField.isList);
 
-    if (!typeName) {
-      throw new Error(`Unexpected type: ${type}`);
-    }
     createApiPropertyDecorator.objectType(typeName);
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
@@ -461,4 +434,41 @@ function getFilterASTIdentifier(
   } else {
     return PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[type];
   }
+}
+
+export function getTypeName(
+  type: TSTypeKind,
+  arrayElementType: TSTypeKind,
+  isList: boolean
+): namedTypes.Identifier {
+  let typeName;
+  if (namedTypes.TSUnionType.check(type)) {
+    const objectType = type.types.find(
+      (type) =>
+        namedTypes.TSTypeReference.check(type) &&
+        namedTypes.Identifier.check(type.typeName)
+    ) as namedTypes.TSTypeReference & { typeName: namedTypes.Identifier };
+    typeName = objectType.typeName;
+  } else if (
+    namedTypes.TSTypeReference.check(type) &&
+    namedTypes.Identifier.check(type.typeName)
+  ) {
+    if (isList) {
+      if (
+        namedTypes.TSTypeReference.check(arrayElementType) &&
+        namedTypes.Identifier.check(arrayElementType.typeName)
+      ) {
+        typeName = arrayElementType.typeName;
+      } else {
+        typeName = type.typeName;
+      }
+    } else {
+      typeName = type.typeName;
+    }
+  }
+
+  if (!typeName) {
+    throw new Error(`Unexpected type: ${type}`);
+  }
+  return typeName;
 }

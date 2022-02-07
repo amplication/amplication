@@ -26,11 +26,11 @@ describe("Test that the entity dto is creating properly", () => {
       expect(code).toMatchInlineSnapshot(`
 "@ObjectType()
 class ClassName {
+  @IsJSON()
+  @Field(() => GraphQLJSONObject)
   @ApiProperty({
     required: true,
   })
-  @IsJSON()
-  @Field(() => GraphQLJSONObject)
   JsonFieldName!: JsonValue;
 }
 "
@@ -48,13 +48,13 @@ class ClassName {
       expect(code).toMatchInlineSnapshot(`
 "@ObjectType()
 class ClassName {
-  @ApiProperty({
-    required: false,
-  })
   @IsJSON()
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
     nullable: true,
+  })
+  @ApiProperty({
+    required: false,
   })
   JsonFieldName!: JsonValue;
 }
