@@ -87,7 +87,7 @@ export class Mixin {
     });
     if (results === null) {
       throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`
+        `No resource was found for ${JSON.stringify(params)}`
       );
     }
     return results.map((result) => permission.filter(result));
