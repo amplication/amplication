@@ -122,6 +122,7 @@
     "ra-data-graphql-amplication": "0.0.6",
     "react": "16.14.0",
     "react-admin": "3.17.0",
+    "reflect-metadata": "0.1.13",
     "sleep-promise": "9.1.0",
     "ts-jest": "27.0.3",
     "ts-node": "9.1.1",
