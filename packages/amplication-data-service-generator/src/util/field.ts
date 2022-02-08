@@ -14,8 +14,7 @@ export const ENUM_DATA_TYPES: Set<EnumDataType> = new Set([
 export function isEditableField(field: EntityField): boolean {
   const editableFieldName = !UNEDITABLE_FIELD_NAMES.has(field.name);
   return (
-    (editableFieldName && !isRelationField(field)) ||
-    isOneToOneRelationField(field)
+    (editableFieldName && !isRelationField(field)) || isRelationField(field)
   );
 }
 

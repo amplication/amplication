@@ -23,6 +23,7 @@ export function createCreateNestedManyProperties(
 ): namedTypes.ClassProperty[] {
   const [prismaField] = createPrismaFields(field, entity);
   const [type, arrayType] = createFieldValueTypeFromPrismaField(
+    entity.pluralDisplayName,
     field,
     prismaField,
     true,
@@ -68,7 +69,7 @@ function createNestedManyProperty(
   );
 
   decorators.push(
-    new CreateApiPropertyDecorator(true)
+    new CreateApiPropertyDecorator(true, field)
       .optional(true)
       .objectType(typeName)
       .build()

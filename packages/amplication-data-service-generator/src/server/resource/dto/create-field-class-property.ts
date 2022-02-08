@@ -12,6 +12,7 @@ import {
   isEnumField,
   isOneToOneRelationField,
   isRelationField,
+  isToManyRelationField,
 } from "../../../util/field";
 import {
   createEnumName,
@@ -39,6 +40,7 @@ import {
 } from "./filters.util";
 import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
 import { FIELD_ID } from "./nestjs-graphql.util";
+import { createCreateNestedManyWithoutInputID } from "./to-many/create-create-nested-many-without-input";
 import { JSON_VALUE_ID } from "./type-fest.util";
 
 const DATE_ID = builders.identifier("Date");
@@ -150,6 +152,7 @@ export function createFieldClassProperty(
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
   const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
+    entity.pluralDisplayName,
     field,
     prismaField,
     optional,
@@ -160,7 +163,8 @@ export function createFieldClassProperty(
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
   const createApiPropertyDecorator = new CreateApiPropertyDecorator(
-    prismaField.isList
+    prismaField.isList,
+    field
   );
   createApiPropertyDecorator.optional(optional);
   const decorators: namedTypes.Decorator[] = [];
@@ -349,6 +353,7 @@ export function createTypeDecorator(
 //element [0] is always the type of the property,
 //element [1] is only returned when the type is an array, with the array element type
 export function createFieldValueTypeFromPrismaField(
+  entityPluralName: string,
   field: EntityField,
   prismaField: ScalarField | ObjectField,
   optional: boolean,
@@ -365,6 +370,7 @@ export function createFieldValueTypeFromPrismaField(
     //TODO add a ui update that make json required and remove this
   ) {
     const [type] = createFieldValueTypeFromPrismaField(
+      entityPluralName,
       field,
       {
         ...prismaField,
@@ -378,12 +384,24 @@ export function createFieldValueTypeFromPrismaField(
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
+  if (isToManyRelationField(field) && !isObjectType) {
+    return [
+      builders.tsTypeReference(
+        createCreateNestedManyWithoutInputID(
+          entityPluralName,
+          field.displayName
+        )
+      ),
+    ];
+    //TODo if create then TagCreateNestedManyWithoutPostsInput if update so update
+  }
   if (prismaField.isList) {
     const itemPrismaField = {
       ...prismaField,
       isList: false,
     };
     const [itemType] = createFieldValueTypeFromPrismaField(
+      entityPluralName,
       field,
       itemPrismaField,
       optional,

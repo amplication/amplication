@@ -264,6 +264,7 @@ export type Customer = {
 };
 ",
   "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrdersCreateNestedManyWithoutCustomersInput } from \\"./OrdersCreateNestedManyWithoutCustomersInput\\";
 
 export type CustomerCreateInput = {
   email: string;
@@ -279,6 +280,7 @@ export type CustomerCreateInput = {
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
+  orders?: OrdersCreateNestedManyWithoutCustomersInput;
 };
 ",
   "admin-ui/src/api/customer/CustomerFindManyArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
@@ -319,6 +321,7 @@ export type CustomerOrderByInput = {
 };
 ",
   "admin-ui/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrdersCreateNestedManyWithoutCustomersInput } from \\"./OrdersCreateNestedManyWithoutCustomersInput\\";
 
 export type CustomerUpdateInput = {
   email?: string;
@@ -334,6 +337,7 @@ export type CustomerUpdateInput = {
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
+  orders?: OrdersCreateNestedManyWithoutCustomersInput;
 };
 ",
   "admin-ui/src/api/customer/CustomerWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
@@ -387,10 +391,8 @@ export type DeleteCustomerArgs = {
   Yellow = \\"yellow\\",
 }
 ",
-  "admin-ui/src/api/customer/OrdersCreateNestedManyWithoutCustomersInput.ts": "import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
-
-export type OrdersCreateNestedManyWithoutCustomersInput = {
-  connect?: Array<OrderWhereUniqueInput>;
+  "admin-ui/src/api/customer/OrdersCreateNestedManyWithoutCustomersInput.ts": "export type OrdersCreateNestedManyWithoutCustomersInput = {
+  connect?: OrdersCreateNestedManyWithoutCustomersInput;
 };
 ",
   "admin-ui/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -561,10 +563,8 @@ export type CreateOrganizationArgs = {
   data: OrganizationCreateInput;
 };
 ",
-  "admin-ui/src/api/organization/CustomersCreateNestedManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
-
-export type CustomersCreateNestedManyWithoutOrganizationsInput = {
-  connect?: Array<CustomerWhereUniqueInput>;
+  "admin-ui/src/api/organization/CustomersCreateNestedManyWithoutOrganizationsInput.ts": "export type CustomersCreateNestedManyWithoutOrganizationsInput = {
+  connect?: CustomersCreateNestedManyWithoutOrganizationsInput;
 };
 ",
   "admin-ui/src/api/organization/DeleteOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
@@ -586,8 +586,15 @@ export type Organization = {
   vipCustomers?: Array<Customer>;
 };
 ",
-  "admin-ui/src/api/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
+  "admin-ui/src/api/organization/OrganizationCreateInput.ts": "import { UsersCreateNestedManyWithoutOrganizationsInput } from \\"./UsersCreateNestedManyWithoutOrganizationsInput\\";
+import { CustomersCreateNestedManyWithoutOrganizationsInput } from \\"./CustomersCreateNestedManyWithoutOrganizationsInput\\";
+import { VipCustomersCreateNestedManyWithoutOrganizationsInput } from \\"./VipCustomersCreateNestedManyWithoutOrganizationsInput\\";
+
+export type OrganizationCreateInput = {
   name: string;
+  users?: UsersCreateNestedManyWithoutOrganizationsInput;
+  customers?: CustomersCreateNestedManyWithoutOrganizationsInput;
+  vipCustomers?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
 };
 ",
   "admin-ui/src/api/organization/OrganizationFindManyArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
@@ -615,8 +622,15 @@ export type OrganizationOrderByInput = {
   name?: SortOrder;
 };
 ",
-  "admin-ui/src/api/organization/OrganizationUpdateInput.ts": "export type OrganizationUpdateInput = {
+  "admin-ui/src/api/organization/OrganizationUpdateInput.ts": "import { UsersCreateNestedManyWithoutOrganizationsInput } from \\"./UsersCreateNestedManyWithoutOrganizationsInput\\";
+import { CustomersCreateNestedManyWithoutOrganizationsInput } from \\"./CustomersCreateNestedManyWithoutOrganizationsInput\\";
+import { VipCustomersCreateNestedManyWithoutOrganizationsInput } from \\"./VipCustomersCreateNestedManyWithoutOrganizationsInput\\";
+
+export type OrganizationUpdateInput = {
   name?: string;
+  users?: UsersCreateNestedManyWithoutOrganizationsInput;
+  customers?: CustomersCreateNestedManyWithoutOrganizationsInput;
+  vipCustomers?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
 };
 ",
   "admin-ui/src/api/organization/OrganizationWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
@@ -641,16 +655,12 @@ export type UpdateOrganizationArgs = {
   data: OrganizationUpdateInput;
 };
 ",
-  "admin-ui/src/api/organization/UsersCreateNestedManyWithoutOrganizationsInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
-
-export type UsersCreateNestedManyWithoutOrganizationsInput = {
-  connect?: Array<UserWhereUniqueInput>;
+  "admin-ui/src/api/organization/UsersCreateNestedManyWithoutOrganizationsInput.ts": "export type UsersCreateNestedManyWithoutOrganizationsInput = {
+  connect?: UsersCreateNestedManyWithoutOrganizationsInput;
 };
 ",
-  "admin-ui/src/api/organization/VipCustomersCreateNestedManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
-
-export type VipCustomersCreateNestedManyWithoutOrganizationsInput = {
-  connect?: Array<CustomerWhereUniqueInput>;
+  "admin-ui/src/api/organization/VipCustomersCreateNestedManyWithoutOrganizationsInput.ts": "export type VipCustomersCreateNestedManyWithoutOrganizationsInput = {
+  connect?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
 };
 ",
   "admin-ui/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from \\"./UserCreateInput\\";
@@ -665,10 +675,8 @@ export type DeleteUserArgs = {
   where: UserWhereUniqueInput;
 };
 ",
-  "admin-ui/src/api/user/EmployeesCreateNestedManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-
-export type EmployeesCreateNestedManyWithoutUsersInput = {
-  connect?: Array<UserWhereUniqueInput>;
+  "admin-ui/src/api/user/EmployeesCreateNestedManyWithoutUsersInput.ts": "export type EmployeesCreateNestedManyWithoutUsersInput = {
+  connect?: EmployeesCreateNestedManyWithoutUsersInput;
 };
 ",
   "admin-ui/src/api/user/EnumUserInterests.ts": "export enum EnumUserInterests {
@@ -682,10 +690,8 @@ export type EmployeesCreateNestedManyWithoutUsersInput = {
   Low = \\"low\\",
 }
 ",
-  "admin-ui/src/api/user/OrganizationsCreateNestedManyWithoutUsersInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-
-export type OrganizationsCreateNestedManyWithoutUsersInput = {
-  connect?: Array<OrganizationWhereUniqueInput>;
+  "admin-ui/src/api/user/OrganizationsCreateNestedManyWithoutUsersInput.ts": "export type OrganizationsCreateNestedManyWithoutUsersInput = {
+  connect?: OrganizationsCreateNestedManyWithoutUsersInput;
 };
 ",
   "admin-ui/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -720,6 +726,8 @@ export type User = {
 };
 ",
   "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { EmployeesCreateNestedManyWithoutUsersInput } from \\"./EmployeesCreateNestedManyWithoutUsersInput\\";
+import { OrganizationsCreateNestedManyWithoutUsersInput } from \\"./OrganizationsCreateNestedManyWithoutUsersInput\\";
 import { InputJsonValue } from \\"../../types\\";
 
 export type UserCreateInput = {
@@ -733,6 +741,8 @@ export type UserCreateInput = {
   birthDate: Date;
   score: number;
   manager?: UserWhereUniqueInput | null;
+  employees?: EmployeesCreateNestedManyWithoutUsersInput;
+  organizations?: OrganizationsCreateNestedManyWithoutUsersInput;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -778,6 +788,8 @@ export type UserOrderByInput = {
 };
 ",
   "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { EmployeesCreateNestedManyWithoutUsersInput } from \\"./EmployeesCreateNestedManyWithoutUsersInput\\";
+import { OrganizationsCreateNestedManyWithoutUsersInput } from \\"./OrganizationsCreateNestedManyWithoutUsersInput\\";
 import { InputJsonValue } from \\"../../types\\";
 
 export type UserUpdateInput = {
@@ -791,6 +803,8 @@ export type UserUpdateInput = {
   birthDate?: Date;
   score?: number;
   manager?: UserWhereUniqueInput | null;
+  employees?: EmployeesCreateNestedManyWithoutUsersInput;
+  organizations?: OrganizationsCreateNestedManyWithoutUsersInput;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
@@ -1036,6 +1050,7 @@ import {
 } from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { OrderTitle } from \\"../order/OrderTitle\\";
 
 export const CustomerCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -1100,6 +1115,9 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
         >
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
+        <ReferenceInput source=\\"order.id\\" reference=\\"Order\\" label=\\"Orders\\">
+          <SelectInput optionText={OrderTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Create>
   );
@@ -1121,6 +1139,7 @@ import {
 } from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { OrderTitle } from \\"../order/OrderTitle\\";
 
 export const CustomerEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -1184,6 +1203,9 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
           label=\\"VIP Organization\\"
         >
           <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceInput source=\\"order.id\\" reference=\\"Order\\" label=\\"Orders\\">
+          <SelectInput optionText={OrderTitle} />
         </ReferenceInput>
       </SimpleForm>
     </Edit>
@@ -1636,26 +1658,78 @@ export const OrderTitle = (record: TOrder): string => {
 };
 ",
   "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
-import { Create, SimpleForm, CreateProps, TextInput } from \\"react-admin\\";
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  TextInput,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { UserTitle } from \\"../user/UserTitle\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 
 export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Users\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"Customers\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"VIP Customers\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Create>
   );
 };
 ",
   "admin-ui/src/organization/OrganizationEdit.tsx": "import * as React from \\"react\\";
-import { Edit, SimpleForm, EditProps, TextInput } from \\"react-admin\\";
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  TextInput,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { UserTitle } from \\"../user/UserTitle\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 
 export const OrganizationEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Users\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"Customers\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"VIP Customers\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Edit>
   );
@@ -1936,6 +2010,7 @@ import {
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
@@ -1958,6 +2033,16 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <NumberInput label=\\"Score\\" source=\\"score\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Employees\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organizations\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <SelectArrayInput
           label=\\"Interests\\"
@@ -2005,6 +2090,7 @@ import {
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
@@ -2027,6 +2113,16 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <NumberInput label=\\"Score\\" source=\\"score\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Employees\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organizations\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <SelectArrayInput
           label=\\"Interests\\"
@@ -3513,7 +3609,7 @@ class Customer {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [Order],
+    type: () => Order,
   })
   orders?: Array<Order>;
 }
@@ -3548,6 +3644,7 @@ import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { OrdersCreateNestedManyWithoutCustomersInput } from \\"./OrdersCreateNestedManyWithoutCustomersInput\\";
 @InputType()
 class CustomerCreateInput {
   @IsString()
@@ -3692,6 +3789,15 @@ class CustomerCreateInput {
     type: () => OrganizationWhereUniqueInput,
   })
   vipOrganization?: OrganizationWhereUniqueInput | null;
+
+  @ValidateNested()
+  @Type(() => OrdersCreateNestedManyWithoutCustomersInput)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: () => OrdersCreateNestedManyWithoutCustomersInput,
+  })
+  orders?: OrdersCreateNestedManyWithoutCustomersInput;
 }
 export { CustomerCreateInput };
 ",
@@ -3967,6 +4073,7 @@ import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { OrdersCreateNestedManyWithoutCustomersInput } from \\"./OrdersCreateNestedManyWithoutCustomersInput\\";
 @InputType()
 class CustomerUpdateInput {
   @IsString()
@@ -4114,6 +4221,15 @@ class CustomerUpdateInput {
     type: () => OrganizationWhereUniqueInput,
   })
   vipOrganization?: OrganizationWhereUniqueInput | null;
+
+  @ValidateNested()
+  @Type(() => OrdersCreateNestedManyWithoutCustomersInput)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: () => OrdersCreateNestedManyWithoutCustomersInput,
+  })
+  orders?: OrdersCreateNestedManyWithoutCustomersInput;
 }
 export { CustomerUpdateInput };
 ",
@@ -4429,9 +4545,9 @@ class OrdersCreateNestedManyWithoutCustomersInput {
   })
   @ApiProperty({
     required: false,
-    type: () => [OrderWhereUniqueInput],
+    type: () => OrdersCreateNestedManyWithoutCustomersInput,
   })
-  connect?: Array<OrderWhereUniqueInput>;
+  connect?: OrdersCreateNestedManyWithoutCustomersInput;
 }
 export { OrdersCreateNestedManyWithoutCustomersInput };
 ",
@@ -4730,6 +4846,12 @@ export class CustomerControllerBase {
               connect: data.vipOrganization,
             }
           : undefined,
+
+        orders: data.orders
+          ? {
+              connect: data.orders,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -4938,6 +5060,12 @@ export class CustomerControllerBase {
           vipOrganization: data.vipOrganization
             ? {
                 connect: data.vipOrganization,
+              }
+            : undefined,
+
+          orders: data.orders
+            ? {
+                connect: data.orders,
               }
             : undefined,
         },
@@ -5398,6 +5526,12 @@ export class CustomerResolverBase {
               connect: args.data.vipOrganization,
             }
           : undefined,
+
+        orders: args.data.orders
+          ? {
+              connect: args.data.orders,
+            }
+          : undefined,
       },
     });
   }
@@ -5449,6 +5583,12 @@ export class CustomerResolverBase {
           vipOrganization: args.data.vipOrganization
             ? {
                 connect: args.data.vipOrganization,
+              }
+            : undefined,
+
+          orders: args.data.orders
+            ? {
+                connect: args.data.orders,
               }
             : undefined,
         },
@@ -8325,9 +8465,9 @@ class CustomersCreateNestedManyWithoutOrganizationsInput {
   })
   @ApiProperty({
     required: false,
-    type: () => [CustomerWhereUniqueInput],
+    type: () => CustomersCreateNestedManyWithoutOrganizationsInput,
   })
-  connect?: Array<CustomerWhereUniqueInput>;
+  connect?: CustomersCreateNestedManyWithoutOrganizationsInput;
 }
 export { CustomersCreateNestedManyWithoutOrganizationsInput };
 ",
@@ -8409,7 +8549,7 @@ class Organization {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => [User],
+    type: () => User,
   })
   users?: Array<User>;
 
@@ -8418,7 +8558,7 @@ class Organization {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => [Customer],
+    type: () => Customer,
   })
   customers?: Array<Customer>;
 
@@ -8427,7 +8567,7 @@ class Organization {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => [Customer],
+    type: () => Customer,
   })
   vipCustomers?: Array<Customer>;
 }
@@ -8445,8 +8585,12 @@ export { Organization };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
+import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { Type } from \\"class-transformer\\";
+import { UsersCreateNestedManyWithoutOrganizationsInput } from \\"./UsersCreateNestedManyWithoutOrganizationsInput\\";
+import { CustomersCreateNestedManyWithoutOrganizationsInput } from \\"./CustomersCreateNestedManyWithoutOrganizationsInput\\";
+import { VipCustomersCreateNestedManyWithoutOrganizationsInput } from \\"./VipCustomersCreateNestedManyWithoutOrganizationsInput\\";
 @InputType()
 class OrganizationCreateInput {
   @IsString()
@@ -8456,6 +8600,33 @@ class OrganizationCreateInput {
     type: String,
   })
   name!: string;
+
+  @ValidateNested()
+  @Type(() => UsersCreateNestedManyWithoutOrganizationsInput)
+  @IsOptional()
+  @ApiProperty({
+    required: true,
+    type: () => UsersCreateNestedManyWithoutOrganizationsInput,
+  })
+  users?: UsersCreateNestedManyWithoutOrganizationsInput;
+
+  @ValidateNested()
+  @Type(() => CustomersCreateNestedManyWithoutOrganizationsInput)
+  @IsOptional()
+  @ApiProperty({
+    required: true,
+    type: () => CustomersCreateNestedManyWithoutOrganizationsInput,
+  })
+  customers?: CustomersCreateNestedManyWithoutOrganizationsInput;
+
+  @ValidateNested()
+  @Type(() => VipCustomersCreateNestedManyWithoutOrganizationsInput)
+  @IsOptional()
+  @ApiProperty({
+    required: true,
+    type: () => VipCustomersCreateNestedManyWithoutOrganizationsInput,
+  })
+  vipCustomers?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
 }
 export { OrganizationCreateInput };
 ",
@@ -8606,8 +8777,12 @@ export { OrganizationOrderByInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString, IsOptional } from \\"class-validator\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { Type } from \\"class-transformer\\";
+import { UsersCreateNestedManyWithoutOrganizationsInput } from \\"./UsersCreateNestedManyWithoutOrganizationsInput\\";
+import { CustomersCreateNestedManyWithoutOrganizationsInput } from \\"./CustomersCreateNestedManyWithoutOrganizationsInput\\";
+import { VipCustomersCreateNestedManyWithoutOrganizationsInput } from \\"./VipCustomersCreateNestedManyWithoutOrganizationsInput\\";
 @InputType()
 class OrganizationUpdateInput {
   @IsString()
@@ -8620,6 +8795,33 @@ class OrganizationUpdateInput {
     type: String,
   })
   name?: string;
+
+  @ValidateNested()
+  @Type(() => UsersCreateNestedManyWithoutOrganizationsInput)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: () => UsersCreateNestedManyWithoutOrganizationsInput,
+  })
+  users?: UsersCreateNestedManyWithoutOrganizationsInput;
+
+  @ValidateNested()
+  @Type(() => CustomersCreateNestedManyWithoutOrganizationsInput)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: () => CustomersCreateNestedManyWithoutOrganizationsInput,
+  })
+  customers?: CustomersCreateNestedManyWithoutOrganizationsInput;
+
+  @ValidateNested()
+  @Type(() => VipCustomersCreateNestedManyWithoutOrganizationsInput)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: () => VipCustomersCreateNestedManyWithoutOrganizationsInput,
+  })
+  vipCustomers?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
 }
 export { OrganizationUpdateInput };
 ",
@@ -8760,9 +8962,9 @@ class UsersCreateNestedManyWithoutOrganizationsInput {
   })
   @ApiProperty({
     required: false,
-    type: () => [UserWhereUniqueInput],
+    type: () => UsersCreateNestedManyWithoutOrganizationsInput,
   })
-  connect?: Array<UserWhereUniqueInput>;
+  connect?: UsersCreateNestedManyWithoutOrganizationsInput;
 }
 export { UsersCreateNestedManyWithoutOrganizationsInput };
 ",
@@ -8787,9 +8989,9 @@ class VipCustomersCreateNestedManyWithoutOrganizationsInput {
   })
   @ApiProperty({
     required: false,
-    type: () => [CustomerWhereUniqueInput],
+    type: () => VipCustomersCreateNestedManyWithoutOrganizationsInput,
   })
-  connect?: Array<CustomerWhereUniqueInput>;
+  connect?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
 }
 export { VipCustomersCreateNestedManyWithoutOrganizationsInput };
 ",
@@ -9016,7 +9218,21 @@ export class OrganizationControllerBase {
       );
     }
     return await this.service.create({
-      data: data,
+      data: {
+        ...data,
+
+        users: {
+          connect: data.users,
+        },
+
+        customers: {
+          connect: data.customers,
+        },
+
+        vipCustomers: {
+          connect: data.vipCustomers,
+        },
+      },
       select: {
         id: true,
         createdAt: true,
@@ -9146,7 +9362,21 @@ export class OrganizationControllerBase {
     try {
       return await this.service.update({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          users: {
+            connect: data.users,
+          },
+
+          customers: {
+            connect: data.customers,
+          },
+
+          vipCustomers: {
+            connect: data.vipCustomers,
+          },
+        },
         select: {
           id: true,
           createdAt: true,
@@ -9942,7 +10172,21 @@ export class OrganizationResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: args.data,
+      data: {
+        ...args.data,
+
+        users: {
+          connect: args.data.users,
+        },
+
+        customers: {
+          connect: args.data.customers,
+        },
+
+        vipCustomers: {
+          connect: args.data.vipCustomers,
+        },
+      },
     });
   }
 
@@ -9981,7 +10225,21 @@ export class OrganizationResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: args.data,
+        data: {
+          ...args.data,
+
+          users: {
+            connect: args.data.users,
+          },
+
+          customers: {
+            connect: args.data.customers,
+          },
+
+          vipCustomers: {
+            connect: args.data.vipCustomers,
+          },
+        },
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -10657,9 +10915,9 @@ class EmployeesCreateNestedManyWithoutUsersInput {
   })
   @ApiProperty({
     required: false,
-    type: () => [UserWhereUniqueInput],
+    type: () => EmployeesCreateNestedManyWithoutUsersInput,
   })
-  connect?: Array<UserWhereUniqueInput>;
+  connect?: EmployeesCreateNestedManyWithoutUsersInput;
 }
 export { EmployeesCreateNestedManyWithoutUsersInput };
 ",
@@ -10729,9 +10987,9 @@ class OrganizationsCreateNestedManyWithoutUsersInput {
   })
   @ApiProperty({
     required: false,
-    type: () => [OrganizationWhereUniqueInput],
+    type: () => OrganizationsCreateNestedManyWithoutUsersInput,
   })
-  connect?: Array<OrganizationWhereUniqueInput>;
+  connect?: OrganizationsCreateNestedManyWithoutUsersInput;
 }
 export { OrganizationsCreateNestedManyWithoutUsersInput };
 ",
@@ -10882,7 +11140,7 @@ class User {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [User],
+    type: () => User,
   })
   employees?: Array<User>;
 
@@ -10891,7 +11149,7 @@ class User {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [Organization],
+    type: () => Organization,
   })
   organizations?: Array<Organization>;
 
@@ -10970,6 +11228,8 @@ import {
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { EmployeesCreateNestedManyWithoutUsersInput } from \\"./EmployeesCreateNestedManyWithoutUsersInput\\";
+import { OrganizationsCreateNestedManyWithoutUsersInput } from \\"./OrganizationsCreateNestedManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -11061,6 +11321,24 @@ class UserCreateInput {
     type: () => UserWhereUniqueInput,
   })
   manager?: UserWhereUniqueInput | null;
+
+  @ValidateNested()
+  @Type(() => EmployeesCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: () => EmployeesCreateNestedManyWithoutUsersInput,
+  })
+  employees?: EmployeesCreateNestedManyWithoutUsersInput;
+
+  @ValidateNested()
+  @Type(() => OrganizationsCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationsCreateNestedManyWithoutUsersInput,
+  })
+  organizations?: OrganizationsCreateNestedManyWithoutUsersInput;
 
   @IsEnum(EnumUserInterests, {
     each: true,
@@ -11378,6 +11656,8 @@ import {
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { EmployeesCreateNestedManyWithoutUsersInput } from \\"./EmployeesCreateNestedManyWithoutUsersInput\\";
+import { OrganizationsCreateNestedManyWithoutUsersInput } from \\"./OrganizationsCreateNestedManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -11496,6 +11776,24 @@ class UserUpdateInput {
     type: () => UserWhereUniqueInput,
   })
   manager?: UserWhereUniqueInput | null;
+
+  @ValidateNested()
+  @Type(() => EmployeesCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: () => EmployeesCreateNestedManyWithoutUsersInput,
+  })
+  employees?: EmployeesCreateNestedManyWithoutUsersInput;
+
+  @ValidateNested()
+  @Type(() => OrganizationsCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationsCreateNestedManyWithoutUsersInput,
+  })
+  organizations?: OrganizationsCreateNestedManyWithoutUsersInput;
 
   @IsEnum(EnumUserInterests, {
     each: true,
@@ -11975,6 +12273,18 @@ export class UserControllerBase {
               connect: data.manager,
             }
           : undefined,
+
+        employees: data.employees
+          ? {
+              connect: data.employees,
+            }
+          : undefined,
+
+        organizations: data.organizations
+          ? {
+              connect: data.organizations,
+            }
+          : undefined,
       },
       select: {
         username: true,
@@ -12162,6 +12472,18 @@ export class UserControllerBase {
           manager: data.manager
             ? {
                 connect: data.manager,
+              }
+            : undefined,
+
+          employees: data.employees
+            ? {
+                connect: data.employees,
+              }
+            : undefined,
+
+          organizations: data.organizations
+            ? {
+                connect: data.organizations,
               }
             : undefined,
         },
@@ -12785,6 +13107,18 @@ export class UserResolverBase {
               connect: args.data.manager,
             }
           : undefined,
+
+        employees: args.data.employees
+          ? {
+              connect: args.data.employees,
+            }
+          : undefined,
+
+        organizations: args.data.organizations
+          ? {
+              connect: args.data.organizations,
+            }
+          : undefined,
       },
     });
   }
@@ -12830,6 +13164,18 @@ export class UserResolverBase {
           manager: args.data.manager
             ? {
                 connect: args.data.manager,
+              }
+            : undefined,
+
+          employees: args.data.employees
+            ? {
+                connect: args.data.employees,
+              }
+            : undefined,
+
+          organizations: args.data.organizations
+            ? {
+                connect: args.data.organizations,
               }
             : undefined,
         },

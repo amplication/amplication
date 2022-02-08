@@ -1,4 +1,6 @@
 import { builders, namedTypes } from "ast-types";
+import { isToManyRelationField } from "../../../util/field";
+import { EntityField } from "../../../types";
 import {
   ENUM_ID,
   IS_ARRAY_ID,
@@ -10,7 +12,10 @@ import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 
 class CreateApiPropertyDecorator {
   apiPropertyOptionsObjectExpression = builders.objectExpression([]);
-  constructor(protected readonly isList: boolean) {}
+  constructor(
+    protected readonly isList: boolean,
+    private readonly field: EntityField
+  ) {}
   optional(optional: boolean): this {
     this.apiPropertyOptionsObjectExpression.properties.push(
       builders.objectProperty(REQUIRED_ID, builders.booleanLiteral(!optional))
@@ -24,7 +29,9 @@ class CreateApiPropertyDecorator {
         TYPE_ID,
         builders.arrowFunctionExpression(
           [],
-          this.isList ? builders.arrayExpression([typeName]) : typeName
+          this.isList && !isToManyRelationField(this.field)
+            ? builders.arrayExpression([typeName])
+            : typeName
         )
       )
     );
