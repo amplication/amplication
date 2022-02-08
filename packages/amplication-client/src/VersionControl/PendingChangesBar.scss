@@ -10,6 +10,12 @@
   h2 {
     @include title1;
     margin: var(--default-spacing);
+    display: inline-block;
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
   }
 
   .last-commit {

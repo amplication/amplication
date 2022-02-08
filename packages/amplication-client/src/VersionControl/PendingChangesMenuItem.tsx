@@ -54,7 +54,10 @@ const PendingChangesMenuItem = ({ applicationId }: Props) => {
       </div>
       {panelOpen && (
         <MenuFixedPanel.Source>
-          <PendingChangesBar applicationId={applicationId} />
+          <PendingChangesBar
+            applicationId={applicationId}
+            handleClick={handleClick}
+          />
         </MenuFixedPanel.Source>
       )}
     </div>

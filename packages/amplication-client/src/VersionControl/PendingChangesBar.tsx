@@ -1,4 +1,5 @@
 import React from "react";
+import { Button, EnumButtonStyle } from "@amplication/design-system";
 import "./PendingChangesBar.scss";
 import PendingChanges from "./PendingChanges";
 
@@ -6,12 +7,21 @@ const CLASS_NAME = "pending-changes-bar";
 
 type Props = {
   applicationId: string;
+  handleClick: () => void;
 };
 
-const PendingChangesBar = ({ applicationId }: Props) => {
+const PendingChangesBar = ({ applicationId, handleClick }: Props) => {
   return (
     <div className={CLASS_NAME}>
-      <h2>Pending Changes</h2>
+      <div className={`${CLASS_NAME}__heading`}>
+        <Button
+          buttonStyle={EnumButtonStyle.Clear}
+          icon="close"
+          iconSize="xsmall"
+          onClick={handleClick}
+        />
+        <h2>Pending Changes</h2>
+      </div>
       <PendingChanges applicationId={applicationId} />
     </div>
   );
