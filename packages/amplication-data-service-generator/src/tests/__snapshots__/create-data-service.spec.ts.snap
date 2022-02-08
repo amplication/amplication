@@ -5006,6 +5006,7 @@ export class CustomerControllerBase {
       possession: \\"any\\",
       resource: \\"Order\\",
     });
+
     const results = await this.service.findOrders(params.id, {
       ...query,
       select: {
@@ -5023,11 +5024,13 @@ export class CustomerControllerBase {
         label: true,
       },
     });
+
     if (results === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
+
     return results.map((result) => permission.filter(result));
   }
 
@@ -9092,6 +9095,7 @@ export class OrganizationControllerBase {
       possession: \\"any\\",
       resource: \\"User\\",
     });
+
     const results = await this.service.findUsers(params.id, {
       ...query,
       select: {
@@ -9118,11 +9122,13 @@ export class OrganizationControllerBase {
         extendedProperties: true,
       },
     });
+
     if (results === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
+
     return results.map((result) => permission.filter(result));
   }
 
@@ -9285,6 +9291,7 @@ export class OrganizationControllerBase {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
+
     const results = await this.service.findCustomers(params.id, {
       ...query,
       select: {
@@ -9316,11 +9323,13 @@ export class OrganizationControllerBase {
         },
       },
     });
+
     if (results === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
+
     return results.map((result) => permission.filter(result));
   }
 
@@ -9483,6 +9492,7 @@ export class OrganizationControllerBase {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
+
     const results = await this.service.findVipCustomers(params.id, {
       ...query,
       select: {
@@ -9514,11 +9524,13 @@ export class OrganizationControllerBase {
         },
       },
     });
+
     if (results === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
+
     return results.map((result) => permission.filter(result));
   }
 
@@ -12111,6 +12123,7 @@ export class UserControllerBase {
       possession: \\"any\\",
       resource: \\"User\\",
     });
+
     const results = await this.service.findEmployees(params.id, {
       ...query,
       select: {
@@ -12137,11 +12150,13 @@ export class UserControllerBase {
         extendedProperties: true,
       },
     });
+
     if (results === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
+
     return results.map((result) => permission.filter(result));
   }
 
@@ -12304,6 +12319,7 @@ export class UserControllerBase {
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
+
     const results = await this.service.findOrganizations(params.id, {
       ...query,
       select: {
@@ -12313,11 +12329,13 @@ export class UserControllerBase {
         name: true,
       },
     });
+
     if (results === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
+
     return results.map((result) => permission.filter(result));
   }
 

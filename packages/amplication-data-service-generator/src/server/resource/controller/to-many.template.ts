@@ -81,15 +81,18 @@ export class Mixin {
       possession: "any",
       resource: RELATED_ENTITY_NAME,
     });
+
     const results = await this.service.FIND_PROPERTY(params.id, {
       ...query,
       select: SELECT,
     });
+
     if (results === null) {
       throw new errors.NotFoundException(
         `No resource was found for ${JSON.stringify(params)}`
       );
     }
+
     return results.map((result) => permission.filter(result));
   }
 
