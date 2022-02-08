@@ -26,7 +26,8 @@ import { RootStorageModule } from './core/storage/root-storage.module';
         '..',
         'amplication-client',
         'build'
-      )
+      ),
+      exclude: ['/graphql']
     }),
 
     RootWinstonModule,
