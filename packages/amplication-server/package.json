@@ -1,6 +1,6 @@
 {
   "name": "@amplication/server",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "private": true,
   "scripts": {
     "prebuild": "rimraf dist",
@@ -33,7 +33,7 @@
   "dependencies": {
     "@amplication/container-builder": "^0.11.1",
     "@amplication/data": "^0.11.1",
-    "@amplication/data-service-generator": "^0.11.1",
+    "@amplication/data-service-generator": "^0.11.2",
     "@amplication/deployer": "^0.11.1",
     "@apollo/gateway": "0.42.3",
     "@codebrew/nestjs-storage": "0.1.6",
@@ -133,7 +133,7 @@
     "ts-jest": "27.0.3",
     "ts-loader": "6.2.2",
     "ts-node": "9.1.1",
-    "tsconfig-paths": "3.10.1",
+    "tsconfig-paths": "3.12.0",
     "type-fest": "0.15.1",
     "typescript": "4.2.3"
   },
