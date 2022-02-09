@@ -102,6 +102,13 @@ function WelcomePage({
         </Panel>
         <div className={`${CLASS_NAME}__form__open-source-message`}>
           {openSourceMessage}
+          <a
+            href="https://discord.gg/Z2CG3rUFnu"
+            target="discord"
+            className="discord-button"
+          >
+            <DiscordButton />
+          </a>
         </div>
       </div>
     </div>

@@ -1,13 +1,13 @@
 @import "../style/index.scss";
 
 $stripe-top-height: 120px;
-$stripe-top-height-small: 90px;
+$stripe-top-height-small: 45px;
 $stripe-side-width: 550px;
 $stripe-side-padding: 75px;
 $form-min-width: 550px;
 $form-mobile-max-width: 400px;
 $panel-min-width: 400px;
-$panel-padding: 64px 48px;
+$panel-padding: 48px 32px;
 $button-padding: 24px;
 
 $title-font-size: 30px;
@@ -37,10 +37,11 @@ $sub-title-font-size: 28px;
 
     .discord-button {
       margin-top: calc(var(--large-spacing) * 2);
+      display: none;
     }
 
     &__logo {
-      margin-bottom: calc(var(--large-spacing) * 2);
+      // margin-bottom: calc(var(--large-spacing) * 2);
       img,
       svg {
         width: 150px;
@@ -90,6 +91,17 @@ $sub-title-font-size: 28px;
     max-width: $form-mobile-max-width;
 
     &__open-source-message {
+      padding: var(--double-spacing);
+      background-color: var(--panel-background);
+
+      display: block;
+
+      .open-source-message {
+        color: var(--black100);
+      }
+    }
+    .discord-button {
+      margin-top: calc(var(--large-spacing) * 2);
       display: block;
     }
   }
@@ -100,6 +112,8 @@ $sub-title-font-size: 28px;
     text-align: center;
     padding: $panel-padding !important;
     border: $border-black10;
+    margin-left: var(--double-spacing);
+    margin-right: var(--double-spacing);
 
     label {
       text-align: left;
@@ -146,6 +160,10 @@ $sub-title-font-size: 28px;
       }
 
       .open-source-message {
+        display: block;
+      }
+
+      .discord-button {
         display: block;
       }
     }
