@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback } from "react";
 import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { MenuFixedPanel } from "../util/teleporter";
+import { AsidePanel } from "../util/teleporter";
 
 import { Icon, Tooltip } from "@amplication/design-system";
 
@@ -61,7 +61,7 @@ const MenuItemWithFixedPanel = ({
           </Tooltip>
         )}
       </div>
-      {isOpen && <MenuFixedPanel.Source>{children}</MenuFixedPanel.Source>}
+      {isOpen && <AsidePanel.Source>{children}</AsidePanel.Source>}
     </div>
   );
 };

@@ -10,6 +10,8 @@ import { Request } from "express";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { plainToClass } from "class-transformer";
+// @ts-ignore
+import * as errors from "../../errors";
 
 declare interface WHERE_UNIQUE_INPUT {
   id: string;
@@ -83,6 +85,11 @@ export class Mixin {
       ...query,
       select: SELECT,
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
