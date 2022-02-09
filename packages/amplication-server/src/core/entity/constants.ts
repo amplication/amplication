@@ -56,7 +56,7 @@ export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
     name: 'id',
     displayName: 'ID',
     description: 'An automatically created unique identifier of the entity',
-    unique: false,
+    unique: true,
     required: true,
     searchable: true,
     properties: {}
