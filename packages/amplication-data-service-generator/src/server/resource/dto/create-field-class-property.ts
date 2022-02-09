@@ -392,7 +392,7 @@ export function createFieldValueTypeFromPrismaField(
       builders.tsTypeReference(
         createCreateNestedManyWithoutInputID(
           entityPluralName,
-          field.displayName
+          field.properties.relatedEntity.name
         )
       ),
     ];

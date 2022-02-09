@@ -28,7 +28,7 @@ export function createCreateNestedManyDTO(
   return classDeclaration(
     createCreateNestedManyWithoutInputID(
       entity.pluralDisplayName,
-      toManyField.displayName
+      toManyField.properties.relatedEntity.name
     ),
     builders.classBody(properties),
     null,
