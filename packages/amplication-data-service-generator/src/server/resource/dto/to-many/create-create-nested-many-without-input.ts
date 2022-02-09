@@ -25,7 +25,6 @@ export function createCreateNestedManyDTO(
 ): NamedClassDeclaration {
   const properties = createCreateNestedManyProperties(toManyField, entity);
   const decorators = properties.length ? [INPUT_TYPE_DECORATOR] : [];
-  //TODO decorators
   return classDeclaration(
     createCreateNestedManyWithoutInputID(
       entity.pluralDisplayName,

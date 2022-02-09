@@ -29,9 +29,7 @@ class CreateApiPropertyDecorator {
         TYPE_ID,
         builders.arrowFunctionExpression(
           [],
-          this.isList && !isToManyRelationField(this.field)
-            ? builders.arrayExpression([typeName])
-            : typeName
+          this.isList ? builders.arrayExpression([typeName]) : typeName
         )
       )
     );
