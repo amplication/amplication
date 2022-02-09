@@ -3,7 +3,6 @@ import { gql, Reference, useMutation, useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
-import { isMobileOnly } from "react-device-detect";
 import { useTracking } from "../util/analytics";
 
 import {
@@ -16,7 +15,6 @@ import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import * as models from "../models";
 import ApplicationListItem from "./ApplicationListItem";
-import MobileMessage from "../Layout/MobileMessage";
 import "./ApplicationList.scss";
 
 type TData = {
@@ -95,10 +93,6 @@ function ApplicationList() {
       eventName: "createNewAppCardClick",
     });
   }, [trackEvent]);
-
-  if (isMobileOnly) {
-    return <MobileMessage />;
-  }
 
   return (
     <div className={CLASS_NAME}>

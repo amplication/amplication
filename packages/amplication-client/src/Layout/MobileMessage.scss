@@ -26,7 +26,7 @@ $button-height: 40px;
   }
 
   &__message {
-    @include body2;
+    @include body1;
     padding-right: $content-padding;
     padding-left: $content-padding;
     text-align: center;

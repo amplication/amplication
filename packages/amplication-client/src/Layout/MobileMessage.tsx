@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as MobileImage } from "../assets/images/mobile-message.svg";
+import { ReactComponent as MobileImage } from "../assets/images/mobile-message-white.svg";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 import "./MobileMessage.scss";
