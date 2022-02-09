@@ -159,7 +159,8 @@ export function createFieldClassProperty(
     isInput,
     isEnum,
     isQuery,
-    isObjectType
+    isObjectType,
+    false
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
   const createApiPropertyDecorator = new CreateApiPropertyDecorator(
@@ -360,7 +361,8 @@ export function createFieldValueTypeFromPrismaField(
   isInput: boolean,
   isEnum: boolean,
   isQuery: boolean,
-  isObjectType: boolean
+  isObjectType: boolean,
+  isNestedInput: boolean
 ): TSTypeKind[] {
   // add  "| null" to the end of the type
   if (
@@ -380,11 +382,12 @@ export function createFieldValueTypeFromPrismaField(
       isInput,
       isEnum,
       isQuery,
-      isObjectType
+      isObjectType,
+      isNestedInput
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
-  if (isToManyRelationField(field) && !isObjectType) {
+  if (isToManyRelationField(field) && !isObjectType && !isNestedInput) {
     return [
       builders.tsTypeReference(
         createCreateNestedManyWithoutInputID(
@@ -408,7 +411,8 @@ export function createFieldValueTypeFromPrismaField(
       isInput,
       isEnum,
       isQuery,
-      isObjectType
+      isObjectType,
+      isNestedInput
     );
     return [createGenericArray(itemType), itemType];
   }
@@ -434,7 +438,7 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-  if (isQuery || isInput) {
+  if (isQuery || isInput || isNestedInput) {
     return [
       builders.tsTypeReference(createWhereUniqueInputID(prismaField.type)),
     ];

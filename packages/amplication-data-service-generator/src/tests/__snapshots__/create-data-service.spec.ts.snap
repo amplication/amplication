@@ -391,8 +391,10 @@ export type DeleteCustomerArgs = {
   Yellow = \\"yellow\\",
 }
 ",
-  "admin-ui/src/api/customer/OrdersCreateNestedManyWithoutCustomersInput.ts": "export type OrdersCreateNestedManyWithoutCustomersInput = {
-  connect?: OrdersCreateNestedManyWithoutCustomersInput;
+  "admin-ui/src/api/customer/OrdersCreateNestedManyWithoutCustomersInput.ts": "import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
+
+export type OrdersCreateNestedManyWithoutCustomersInput = {
+  connect?: Array<OrderWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -563,8 +565,10 @@ export type CreateOrganizationArgs = {
   data: OrganizationCreateInput;
 };
 ",
-  "admin-ui/src/api/organization/CustomersCreateNestedManyWithoutOrganizationsInput.ts": "export type CustomersCreateNestedManyWithoutOrganizationsInput = {
-  connect?: CustomersCreateNestedManyWithoutOrganizationsInput;
+  "admin-ui/src/api/organization/CustomersCreateNestedManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export type CustomersCreateNestedManyWithoutOrganizationsInput = {
+  connect?: Array<CustomerWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/organization/DeleteOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
@@ -655,12 +659,16 @@ export type UpdateOrganizationArgs = {
   data: OrganizationUpdateInput;
 };
 ",
-  "admin-ui/src/api/organization/UsersCreateNestedManyWithoutOrganizationsInput.ts": "export type UsersCreateNestedManyWithoutOrganizationsInput = {
-  connect?: UsersCreateNestedManyWithoutOrganizationsInput;
+  "admin-ui/src/api/organization/UsersCreateNestedManyWithoutOrganizationsInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
+
+export type UsersCreateNestedManyWithoutOrganizationsInput = {
+  connect?: Array<UserWhereUniqueInput>;
 };
 ",
-  "admin-ui/src/api/organization/VipCustomersCreateNestedManyWithoutOrganizationsInput.ts": "export type VipCustomersCreateNestedManyWithoutOrganizationsInput = {
-  connect?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
+  "admin-ui/src/api/organization/VipCustomersCreateNestedManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export type VipCustomersCreateNestedManyWithoutOrganizationsInput = {
+  connect?: Array<CustomerWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from \\"./UserCreateInput\\";
@@ -675,8 +683,10 @@ export type DeleteUserArgs = {
   where: UserWhereUniqueInput;
 };
 ",
-  "admin-ui/src/api/user/EmployeesCreateNestedManyWithoutUsersInput.ts": "export type EmployeesCreateNestedManyWithoutUsersInput = {
-  connect?: EmployeesCreateNestedManyWithoutUsersInput;
+  "admin-ui/src/api/user/EmployeesCreateNestedManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+
+export type EmployeesCreateNestedManyWithoutUsersInput = {
+  connect?: Array<UserWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/EnumUserInterests.ts": "export enum EnumUserInterests {
@@ -690,8 +700,10 @@ export type DeleteUserArgs = {
   Low = \\"low\\",
 }
 ",
-  "admin-ui/src/api/user/OrganizationsCreateNestedManyWithoutUsersInput.ts": "export type OrganizationsCreateNestedManyWithoutUsersInput = {
-  connect?: OrganizationsCreateNestedManyWithoutUsersInput;
+  "admin-ui/src/api/user/OrganizationsCreateNestedManyWithoutUsersInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type OrganizationsCreateNestedManyWithoutUsersInput = {
+  connect?: Array<OrganizationWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -3609,7 +3621,7 @@ class Customer {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => Order,
+    type: () => [Order],
   })
   orders?: Array<Order>;
 }
@@ -3795,7 +3807,7 @@ class CustomerCreateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => OrdersCreateNestedManyWithoutCustomersInput,
+    type: () => [OrdersCreateNestedManyWithoutCustomersInput],
   })
   orders?: OrdersCreateNestedManyWithoutCustomersInput;
 }
@@ -4227,7 +4239,7 @@ class CustomerUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => OrdersCreateNestedManyWithoutCustomersInput,
+    type: () => [OrdersCreateNestedManyWithoutCustomersInput],
   })
   orders?: OrdersCreateNestedManyWithoutCustomersInput;
 }
@@ -4545,9 +4557,9 @@ class OrdersCreateNestedManyWithoutCustomersInput {
   })
   @ApiProperty({
     required: false,
-    type: () => OrdersCreateNestedManyWithoutCustomersInput,
+    type: () => [OrderWhereUniqueInput],
   })
-  connect?: OrdersCreateNestedManyWithoutCustomersInput;
+  connect?: Array<OrderWhereUniqueInput>;
 }
 export { OrdersCreateNestedManyWithoutCustomersInput };
 ",
@@ -8471,9 +8483,9 @@ class CustomersCreateNestedManyWithoutOrganizationsInput {
   })
   @ApiProperty({
     required: false,
-    type: () => CustomersCreateNestedManyWithoutOrganizationsInput,
+    type: () => [CustomerWhereUniqueInput],
   })
-  connect?: CustomersCreateNestedManyWithoutOrganizationsInput;
+  connect?: Array<CustomerWhereUniqueInput>;
 }
 export { CustomersCreateNestedManyWithoutOrganizationsInput };
 ",
@@ -8555,7 +8567,7 @@ class Organization {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => User,
+    type: () => [User],
   })
   users?: Array<User>;
 
@@ -8564,7 +8576,7 @@ class Organization {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => Customer,
+    type: () => [Customer],
   })
   customers?: Array<Customer>;
 
@@ -8573,7 +8585,7 @@ class Organization {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => Customer,
+    type: () => [Customer],
   })
   vipCustomers?: Array<Customer>;
 }
@@ -8612,7 +8624,7 @@ class OrganizationCreateInput {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => UsersCreateNestedManyWithoutOrganizationsInput,
+    type: () => [UsersCreateNestedManyWithoutOrganizationsInput],
   })
   users?: UsersCreateNestedManyWithoutOrganizationsInput;
 
@@ -8621,7 +8633,7 @@ class OrganizationCreateInput {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => CustomersCreateNestedManyWithoutOrganizationsInput,
+    type: () => [CustomersCreateNestedManyWithoutOrganizationsInput],
   })
   customers?: CustomersCreateNestedManyWithoutOrganizationsInput;
 
@@ -8630,7 +8642,7 @@ class OrganizationCreateInput {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => VipCustomersCreateNestedManyWithoutOrganizationsInput,
+    type: () => [VipCustomersCreateNestedManyWithoutOrganizationsInput],
   })
   vipCustomers?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
 }
@@ -8807,7 +8819,7 @@ class OrganizationUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => UsersCreateNestedManyWithoutOrganizationsInput,
+    type: () => [UsersCreateNestedManyWithoutOrganizationsInput],
   })
   users?: UsersCreateNestedManyWithoutOrganizationsInput;
 
@@ -8816,7 +8828,7 @@ class OrganizationUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => CustomersCreateNestedManyWithoutOrganizationsInput,
+    type: () => [CustomersCreateNestedManyWithoutOrganizationsInput],
   })
   customers?: CustomersCreateNestedManyWithoutOrganizationsInput;
 
@@ -8825,7 +8837,7 @@ class OrganizationUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => VipCustomersCreateNestedManyWithoutOrganizationsInput,
+    type: () => [VipCustomersCreateNestedManyWithoutOrganizationsInput],
   })
   vipCustomers?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
 }
@@ -8968,9 +8980,9 @@ class UsersCreateNestedManyWithoutOrganizationsInput {
   })
   @ApiProperty({
     required: false,
-    type: () => UsersCreateNestedManyWithoutOrganizationsInput,
+    type: () => [UserWhereUniqueInput],
   })
-  connect?: UsersCreateNestedManyWithoutOrganizationsInput;
+  connect?: Array<UserWhereUniqueInput>;
 }
 export { UsersCreateNestedManyWithoutOrganizationsInput };
 ",
@@ -8995,9 +9007,9 @@ class VipCustomersCreateNestedManyWithoutOrganizationsInput {
   })
   @ApiProperty({
     required: false,
-    type: () => VipCustomersCreateNestedManyWithoutOrganizationsInput,
+    type: () => [CustomerWhereUniqueInput],
   })
-  connect?: VipCustomersCreateNestedManyWithoutOrganizationsInput;
+  connect?: Array<CustomerWhereUniqueInput>;
 }
 export { VipCustomersCreateNestedManyWithoutOrganizationsInput };
 ",
@@ -10936,9 +10948,9 @@ class EmployeesCreateNestedManyWithoutUsersInput {
   })
   @ApiProperty({
     required: false,
-    type: () => EmployeesCreateNestedManyWithoutUsersInput,
+    type: () => [UserWhereUniqueInput],
   })
-  connect?: EmployeesCreateNestedManyWithoutUsersInput;
+  connect?: Array<UserWhereUniqueInput>;
 }
 export { EmployeesCreateNestedManyWithoutUsersInput };
 ",
@@ -11008,9 +11020,9 @@ class OrganizationsCreateNestedManyWithoutUsersInput {
   })
   @ApiProperty({
     required: false,
-    type: () => OrganizationsCreateNestedManyWithoutUsersInput,
+    type: () => [OrganizationWhereUniqueInput],
   })
-  connect?: OrganizationsCreateNestedManyWithoutUsersInput;
+  connect?: Array<OrganizationWhereUniqueInput>;
 }
 export { OrganizationsCreateNestedManyWithoutUsersInput };
 ",
@@ -11161,7 +11173,7 @@ class User {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => User,
+    type: () => [User],
   })
   employees?: Array<User>;
 
@@ -11170,7 +11182,7 @@ class User {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => Organization,
+    type: () => [Organization],
   })
   organizations?: Array<Organization>;
 
@@ -11348,7 +11360,7 @@ class UserCreateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => EmployeesCreateNestedManyWithoutUsersInput,
+    type: () => [EmployeesCreateNestedManyWithoutUsersInput],
   })
   employees?: EmployeesCreateNestedManyWithoutUsersInput;
 
@@ -11357,7 +11369,7 @@ class UserCreateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => OrganizationsCreateNestedManyWithoutUsersInput,
+    type: () => [OrganizationsCreateNestedManyWithoutUsersInput],
   })
   organizations?: OrganizationsCreateNestedManyWithoutUsersInput;
 
@@ -11803,7 +11815,7 @@ class UserUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => EmployeesCreateNestedManyWithoutUsersInput,
+    type: () => [EmployeesCreateNestedManyWithoutUsersInput],
   })
   employees?: EmployeesCreateNestedManyWithoutUsersInput;
 
@@ -11812,7 +11824,7 @@ class UserUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => OrganizationsCreateNestedManyWithoutUsersInput,
+    type: () => [OrganizationsCreateNestedManyWithoutUsersInput],
   })
   organizations?: OrganizationsCreateNestedManyWithoutUsersInput;
 
