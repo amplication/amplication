@@ -4606,6 +4606,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { CustomerService } from \\"../customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
@@ -4613,7 +4614,7 @@ import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
-import { OrderWhereInput } from \\"../../order/base/OrderWhereInput\\";
+import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
 @swagger.ApiBasicAuth()
 export class CustomerControllerBase {
@@ -4717,11 +4718,7 @@ export class CustomerControllerBase {
   })
   @swagger.ApiOkResponse({ type: [Customer] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => CustomerFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(CustomerFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -4996,17 +4993,13 @@ export class CustomerControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => OrderWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(OrderFindManyArgs)
   async findManyOrders(
     @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Order[]> {
-    const query: OrderWhereInput = request.query;
+    const query = plainToClass(OrderFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -5014,7 +5007,7 @@ export class CustomerControllerBase {
       resource: \\"Order\\",
     });
     const results = await this.service.findOrders(params.id, {
-      where: query,
+      ...query,
       select: {
         id: true,
         createdAt: true,
@@ -5030,6 +5023,11 @@ export class CustomerControllerBase {
         label: true,
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -5651,6 +5649,87 @@ export class CustomerService extends CustomerServiceBase {
   }
 }
 ",
+  "server/src/decorators/api-nested-query.decorator.ts": "import { applyDecorators } from \\"@nestjs/common\\";
+import {
+  ApiExtraModels,
+  ApiQuery,
+  ApiQueryOptions,
+  getSchemaPath,
+} from \\"@nestjs/swagger\\";
+import \\"reflect-metadata\\";
+
+const generateApiQueryObject = (
+  prop: any,
+  propType: any,
+  required: boolean,
+  isArray: boolean
+): ApiQueryOptions => {
+  if (propType === Number) {
+    return {
+      required,
+      name: prop,
+      style: \\"deepObject\\",
+      explode: true,
+      type: \\"number\\",
+      isArray,
+    };
+  } else if (propType === String) {
+    return {
+      required,
+      name: prop,
+      style: \\"deepObject\\",
+      explode: true,
+      type: \\"string\\",
+      isArray,
+    };
+  } else {
+    return {
+      required,
+      name: prop,
+      style: \\"deepObject\\",
+      explode: true,
+      type: \\"object\\",
+      isArray,
+      schema: {
+        $ref: getSchemaPath(propType),
+      },
+    };
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-module-boundary-types,@typescript-eslint/naming-convention
+export function ApiNestedQuery(query: Function) {
+  const constructor = query.prototype;
+  const properties = Reflect.getMetadata(
+    \\"swagger/apiModelPropertiesArray\\",
+    constructor
+  ).map((prop: any) => prop.substr(1));
+
+  const decorators = properties
+    .map((property: any) => {
+      const { required, isArray } = Reflect.getMetadata(
+        \\"swagger/apiModelProperties\\",
+        constructor,
+        property
+      );
+      const propertyType = Reflect.getMetadata(
+        \\"design:type\\",
+        constructor,
+        property
+      );
+      const typedQuery = generateApiQueryObject(
+        property,
+        propertyType,
+        required,
+        isArray
+      );
+      return [ApiExtraModels(propertyType), ApiQuery(typedQuery)];
+    })
+    .flat();
+
+  return applyDecorators(...decorators);
+}
+",
   "server/src/empty/base/DeleteEmptyArgs.ts": "/*
 //------------------------------------------------------------------------------ 
 // This code was generated by Amplication. 
@@ -6114,6 +6193,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { EmptyService } from \\"../empty.service\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
@@ -6186,11 +6266,7 @@ export class EmptyControllerBase {
   })
   @swagger.ApiOkResponse({ type: [Empty] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => EmptyFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(EmptyFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -7471,6 +7547,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { OrderService } from \\"../order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
@@ -7558,11 +7635,7 @@ export class OrderControllerBase {
   })
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => OrderFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(OrderFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -8756,6 +8829,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { OrganizationService } from \\"../organization.service\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
@@ -8763,9 +8837,9 @@ import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\
 import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
-import { UserWhereInput } from \\"../../user/base/UserWhereInput\\";
+import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
 import { User } from \\"../../user/base/User\\";
-import { CustomerWhereInput } from \\"../../customer/base/CustomerWhereInput\\";
+import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 @swagger.ApiBasicAuth()
 export class OrganizationControllerBase {
@@ -8833,11 +8907,7 @@ export class OrganizationControllerBase {
   })
   @swagger.ApiOkResponse({ type: [Organization] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => OrganizationFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(OrganizationFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -9010,17 +9080,13 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => UserWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(UserFindManyArgs)
   async findManyUsers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User[]> {
-    const query: UserWhereInput = request.query;
+    const query = plainToClass(UserFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -9028,7 +9094,7 @@ export class OrganizationControllerBase {
       resource: \\"User\\",
     });
     const results = await this.service.findUsers(params.id, {
-      where: query,
+      ...query,
       select: {
         username: true,
         roles: true,
@@ -9053,6 +9119,11 @@ export class OrganizationControllerBase {
         extendedProperties: true,
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -9202,17 +9273,13 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => CustomerWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(CustomerFindManyArgs)
   async findManyCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
-    const query: CustomerWhereInput = request.query;
+    const query = plainToClass(CustomerFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -9220,7 +9287,7 @@ export class OrganizationControllerBase {
       resource: \\"Customer\\",
     });
     const results = await this.service.findCustomers(params.id, {
-      where: query,
+      ...query,
       select: {
         id: true,
         createdAt: true,
@@ -9250,6 +9317,11 @@ export class OrganizationControllerBase {
         },
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -9399,17 +9471,13 @@ export class OrganizationControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => CustomerWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(CustomerFindManyArgs)
   async findManyVipCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
-    const query: CustomerWhereInput = request.query;
+    const query = plainToClass(CustomerFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -9417,7 +9485,7 @@ export class OrganizationControllerBase {
       resource: \\"Customer\\",
     });
     const results = await this.service.findVipCustomers(params.id, {
-      where: query,
+      ...query,
       select: {
         id: true,
         createdAt: true,
@@ -9447,6 +9515,11 @@ export class OrganizationControllerBase {
         },
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -11676,6 +11749,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
+import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { UserService } from \\"../user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -11683,7 +11757,7 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
-import { OrganizationWhereInput } from \\"../../organization/base/OrganizationWhereInput\\";
+import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 @swagger.ApiBasicAuth()
 export class UserControllerBase {
@@ -11776,11 +11850,7 @@ export class UserControllerBase {
   })
   @swagger.ApiOkResponse({ type: [User] })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiQuery({
-    type: () => UserFindManyArgs,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(UserFindManyArgs)
   async findMany(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -12029,17 +12099,13 @@ export class UserControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => UserWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(UserFindManyArgs)
   async findManyEmployees(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User[]> {
-    const query: UserWhereInput = request.query;
+    const query = plainToClass(UserFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -12047,7 +12113,7 @@ export class UserControllerBase {
       resource: \\"User\\",
     });
     const results = await this.service.findEmployees(params.id, {
-      where: query,
+      ...query,
       select: {
         username: true,
         roles: true,
@@ -12072,6 +12138,11 @@ export class UserControllerBase {
         extendedProperties: true,
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -12221,17 +12292,13 @@ export class UserControllerBase {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  @swagger.ApiQuery({
-    type: () => OrganizationWhereInput,
-    style: \\"deepObject\\",
-    explode: true,
-  })
+  @ApiNestedQuery(OrganizationFindManyArgs)
   async findManyOrganizations(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization[]> {
-    const query: OrganizationWhereInput = request.query;
+    const query = plainToClass(OrganizationFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: \\"read\\",
@@ -12239,7 +12306,7 @@ export class UserControllerBase {
       resource: \\"Organization\\",
     });
     const results = await this.service.findOrganizations(params.id, {
-      where: query,
+      ...query,
       select: {
         id: true,
         createdAt: true,
@@ -12247,6 +12314,11 @@ export class UserControllerBase {
         name: true,
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
