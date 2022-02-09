@@ -334,6 +334,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
           isInput,
           isEnum,
           false,
+          false,
           false
         )
       ).toEqual(expected);
