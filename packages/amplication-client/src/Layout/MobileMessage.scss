@@ -1,5 +1,5 @@
 @import "../style/index.scss";
-$title-margin-top: 20px;
+$title-margin-top: 40px;
 $content-padding: 24px;
 $button-width: 90vw;
 $button-height: 40px;
@@ -16,22 +16,25 @@ $button-height: 40px;
   flex-direction: column;
 
   &__title {
-    @include sectionTitle;
+    @include pageTitle;
     @include semiBold;
+
     padding-right: $content-padding;
     padding-left: $content-padding;
     text-align: center;
     margin-top: $title-margin-top;
     color: var(--black100);
+    line-height: 1.2;
   }
 
   &__message {
-    @include body2;
+    @include body1;
     padding-right: $content-padding;
     padding-left: $content-padding;
     text-align: center;
-    color: var(--black60);
+    color: var(--black90);
     margin-bottom: var(--large-spacing);
+    margin-top: var(--large-spacing);
   }
   &__action {
     padding-top: $content-padding;
@@ -39,7 +42,7 @@ $button-height: 40px;
     .amp-button {
       width: $button-width;
       height: $button-height;
-      border-radius: $button-height * 0.5 !important;
+      // border-radius: $button-height * 0.5 !important;
     }
   }
 }
