@@ -14,8 +14,7 @@ function MobileMessage() {
         We are working on giving you the best experience
       </div>
       <div className={`${CLASS_NAME}__message`}>
-        Soon, you will be able to create low-code applications on your mobile.
-        Meanwhile, please switch to a computer or a tablet.
+        To work with Amplication, please switch to a computer or a tablet.
       </div>
       <div className={`${CLASS_NAME}__action`}>
         <a href="https://docs.amplication.com">
