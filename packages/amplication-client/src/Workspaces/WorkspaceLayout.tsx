@@ -12,6 +12,8 @@ import WorkspaceSelector from "./WorkspaceSelector";
 import WorkspaceForm from "./WorkspaceForm";
 import PageContent from "../Layout/PageContent";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
+import { isMobileOnly } from "react-device-detect";
+import MobileMessage from "../Layout/MobileMessage";
 import "./WorkspaceLayout.scss";
 
 export type ApplicationData = {
@@ -31,6 +33,10 @@ type Props = {
 };
 
 function WorkspaceLayout({ match }: Props) {
+  if (isMobileOnly) {
+    return <MobileMessage />;
+  }
+
   return (
     <MainLayout className={CLASS_NAME}>
       <MainLayout.Menu>

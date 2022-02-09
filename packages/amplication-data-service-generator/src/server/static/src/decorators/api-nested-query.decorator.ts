@@ -5,6 +5,7 @@ import {
   ApiQueryOptions,
   getSchemaPath,
 } from "@nestjs/swagger";
+import "reflect-metadata";
 
 const generateApiQueryObject = (
   prop: any,

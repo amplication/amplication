@@ -5023,6 +5023,11 @@ export class CustomerControllerBase {
         label: true,
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -5651,6 +5656,7 @@ import {
   ApiQueryOptions,
   getSchemaPath,
 } from \\"@nestjs/swagger\\";
+import \\"reflect-metadata\\";
 
 const generateApiQueryObject = (
   prop: any,
@@ -9113,6 +9119,11 @@ export class OrganizationControllerBase {
         extendedProperties: true,
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -9306,6 +9317,11 @@ export class OrganizationControllerBase {
         },
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -9499,6 +9515,11 @@ export class OrganizationControllerBase {
         },
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -12117,6 +12138,11 @@ export class UserControllerBase {
         extendedProperties: true,
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
@@ -12288,6 +12314,11 @@ export class UserControllerBase {
         name: true,
       },
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 
