@@ -69,20 +69,27 @@ describe("createDTOModule", () => {
 });
 
 describe("createDTOFile", () => {
-  const dto = createCreateInput(EXAMPLE_ENTITY);
-  const modulePath = createDTOModulePath(
-    EXAMPLE_ENTITY_NAME_DIRECTORY,
-    dto.id.name
-  );
-  const astFile = createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH);
-  const astFileBody = astFile.program.body;
-  test("make sure that it import all the relevant libs", () => {
-    expect(astFileBody[0].type === "ImportDeclaration").toBe(true);
-    expect(astFileBody[1].type === "ImportDeclaration").toBe(true);
-    expect(astFileBody[2].type === "ImportDeclaration").toBe(true);
-  });
-  test("make sure that it export the class properly", () => {
-    expect(astFileBody[4].type === "ExportNamedDeclaration").toBe(true);
+  test("creates file", () => {
+    const dto = createCreateInput(EXAMPLE_ENTITY);
+    const modulePath = createDTOModulePath(
+      EXAMPLE_ENTITY_NAME_DIRECTORY,
+      dto.id.name
+    );
+    expect(
+      print(createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH)).code
+    ).toEqual(
+      print(
+        builders.file(
+          builders.program([
+            importNames([INPUT_TYPE_ID, FIELD_ID], NESTJS_GRAPHQL_MODULE),
+            importNames([IS_STRING_ID], CLASS_VALIDATOR_MODULE),
+            importNames([API_PROPERTY_ID], NESTJS_SWAGGER_MODULE),
+            dto,
+            exportNames([dto.id]),
+          ])
+        )
+      ).code
+    );
   });
 });
 
