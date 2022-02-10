@@ -3819,7 +3819,7 @@ class CustomerCreateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [OrderCreateNestedManyWithoutCustomersInput],
+    type: () => OrderCreateNestedManyWithoutCustomersInput,
   })
   orders?: OrderCreateNestedManyWithoutCustomersInput;
 }
@@ -4253,7 +4253,7 @@ class CustomerUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [OrderCreateNestedManyWithoutCustomersInput],
+    type: () => OrderCreateNestedManyWithoutCustomersInput,
   })
   orders?: OrderCreateNestedManyWithoutCustomersInput;
 }
@@ -8637,7 +8637,7 @@ class OrganizationCreateInput {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => [UserCreateNestedManyWithoutOrganizationsInput],
+    type: () => UserCreateNestedManyWithoutOrganizationsInput,
   })
   users?: UserCreateNestedManyWithoutOrganizationsInput;
 
@@ -8646,7 +8646,7 @@ class OrganizationCreateInput {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => [CustomerCreateNestedManyWithoutOrganizationsInput],
+    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
   })
   customers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 
@@ -8655,7 +8655,7 @@ class OrganizationCreateInput {
   @IsOptional()
   @ApiProperty({
     required: true,
-    type: () => [CustomerCreateNestedManyWithoutOrganizationsInput],
+    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
   })
   vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 }
@@ -8831,7 +8831,7 @@ class OrganizationUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [UserCreateNestedManyWithoutOrganizationsInput],
+    type: () => UserCreateNestedManyWithoutOrganizationsInput,
   })
   users?: UserCreateNestedManyWithoutOrganizationsInput;
 
@@ -8840,7 +8840,7 @@ class OrganizationUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [CustomerCreateNestedManyWithoutOrganizationsInput],
+    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
   })
   customers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 
@@ -8849,7 +8849,7 @@ class OrganizationUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [CustomerCreateNestedManyWithoutOrganizationsInput],
+    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
   })
   vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 }
@@ -11320,7 +11320,7 @@ class UserCreateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [UserCreateNestedManyWithoutUsersInput],
+    type: () => UserCreateNestedManyWithoutUsersInput,
   })
   employees?: UserCreateNestedManyWithoutUsersInput;
 
@@ -11329,7 +11329,7 @@ class UserCreateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [OrganizationCreateNestedManyWithoutUsersInput],
+    type: () => OrganizationCreateNestedManyWithoutUsersInput,
   })
   organizations?: OrganizationCreateNestedManyWithoutUsersInput;
 
@@ -11804,7 +11804,7 @@ class UserUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [UserCreateNestedManyWithoutUsersInput],
+    type: () => UserCreateNestedManyWithoutUsersInput,
   })
   employees?: UserCreateNestedManyWithoutUsersInput;
 
@@ -11813,7 +11813,7 @@ class UserUpdateInput {
   @IsOptional()
   @ApiProperty({
     required: false,
-    type: () => [OrganizationCreateNestedManyWithoutUsersInput],
+    type: () => OrganizationCreateNestedManyWithoutUsersInput,
   })
   organizations?: OrganizationCreateNestedManyWithoutUsersInput;
 

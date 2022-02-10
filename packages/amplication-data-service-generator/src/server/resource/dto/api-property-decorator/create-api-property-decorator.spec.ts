@@ -1,16 +1,12 @@
-import { namedTypes, builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { CreateApiPropertyDecorator } from ".";
-import { EXAMPLE_SINGLE_LINE_TEXT_FIELD } from "../../../../server/resource/util/test-data";
 import { ENUM, REQUIRED } from "../create-field-class-property";
 import { API_PROPERTY } from "../nestjs-swagger.util";
 
 describe("Testing the generation of the ApiProperty decorator", () => {
   let creator: CreateApiPropertyDecorator;
   beforeEach(() => {
-    creator = new CreateApiPropertyDecorator(
-      true,
-      EXAMPLE_SINGLE_LINE_TEXT_FIELD
-    );
+    creator = new CreateApiPropertyDecorator(true, false);
   });
   describe("Testing the optional option", () => {
     const getScopeDecorator = (optional: boolean) => {
@@ -75,6 +71,19 @@ describe("Testing the generation of the ApiProperty decorator", () => {
       const value = getObjectProperty(decoratorBody)
         .value as namedTypes.Identifier;
       expect(value.name).toBe(EXAMPLE_ENUM_NAME);
+    });
+  });
+  describe("Testing the objectType option", () => {
+    const EXAMPLE_OBJECT_NAME = "ObjectName";
+    const EXAMPLE_OBJECT_TYPE_ID = builders.identifier(EXAMPLE_OBJECT_NAME);
+    const getScopeDecorator = () => {
+      const decorator = creator.objectType(EXAMPLE_OBJECT_TYPE_ID).build();
+      return decorator;
+    };
+    it("should have type property", () => {
+      expect(getObjectProperty(getDecoratorBody(getScopeDecorator())).key).toBe(
+        EXAMPLE_OBJECT_NAME
+      );
     });
   });
 });

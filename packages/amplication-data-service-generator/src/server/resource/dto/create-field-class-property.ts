@@ -167,7 +167,7 @@ export function createFieldClassProperty(
   const typeAnnotation = builders.tsTypeAnnotation(type);
   const createApiPropertyDecorator = new CreateApiPropertyDecorator(
     prismaField.isList,
-    field
+    isToManyRelationField(field) && !isObjectType
   );
   createApiPropertyDecorator.optional(optional);
   const decorators: namedTypes.Decorator[] = [];

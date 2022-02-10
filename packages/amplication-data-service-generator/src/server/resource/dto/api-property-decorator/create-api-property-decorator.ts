@@ -1,5 +1,4 @@
 import { builders, namedTypes } from "ast-types";
-import { EntityField } from "../../../../types";
 import {
   ENUM_ID,
   IS_ARRAY_ID,
@@ -13,7 +12,7 @@ class CreateApiPropertyDecorator {
   private apiPropertyOptionsObjectExpression = builders.objectExpression([]);
   constructor(
     protected readonly isList: boolean,
-    private readonly field: EntityField
+    protected readonly isNestedInput: boolean
   ) {}
   optional(optional: boolean): this {
     this.apiPropertyOptionsObjectExpression.properties.push(
@@ -28,7 +27,9 @@ class CreateApiPropertyDecorator {
         TYPE_ID,
         builders.arrowFunctionExpression(
           [],
-          this.isList ? builders.arrayExpression([typeName]) : typeName
+          this.isList && !this.isNestedInput
+            ? builders.arrayExpression([typeName])
+            : typeName
         )
       )
     );

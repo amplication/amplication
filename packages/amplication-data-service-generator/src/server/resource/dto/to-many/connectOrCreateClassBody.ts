@@ -70,7 +70,7 @@ function createNestedManyProperty(
   );
 
   decorators.push(
-    new CreateApiPropertyDecorator(true, field)
+    new CreateApiPropertyDecorator(true, false)
       .optional(true)
       .objectType(typeName)
       .build()
