@@ -31,7 +31,7 @@ import {
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
-import { CreateApiPropertyDecorator } from "./create-api-property-decorator";
+import { CreateApiPropertyDecorator } from "./api-property-decorator/create-api-property-decorator";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
@@ -120,8 +120,10 @@ const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
 };
 export const EACH_ID = builders.identifier("each");
 export const TRUE_LITERAL = builders.booleanLiteral(true);
-export const ENUM_ID = builders.identifier("enum");
-export const REQUIRED_ID = builders.identifier("required");
+export const ENUM = "enum";
+export const ENUM_ID = builders.identifier(ENUM);
+export const REQUIRED = "required";
+export const REQUIRED_ID = builders.identifier(REQUIRED);
 export const TYPE_ID = builders.identifier("type");
 export const JSON_ID = builders.identifier("JSON");
 export const PARSE_ID = builders.identifier("parse");

@@ -1,17 +1,16 @@
 import { builders, namedTypes } from "ast-types";
-import { isToManyRelationField } from "../../../util/field";
-import { EntityField } from "../../../types";
+import { EntityField } from "../../../../types";
 import {
   ENUM_ID,
   IS_ARRAY_ID,
   REQUIRED_ID,
   TRUE_LITERAL,
   TYPE_ID,
-} from "./create-field-class-property";
-import { API_PROPERTY_ID } from "./nestjs-swagger.util";
+} from "../create-field-class-property";
+import { API_PROPERTY_ID } from "../nestjs-swagger.util";
 
 class CreateApiPropertyDecorator {
-  apiPropertyOptionsObjectExpression = builders.objectExpression([]);
+  private apiPropertyOptionsObjectExpression = builders.objectExpression([]);
   constructor(
     protected readonly isList: boolean,
     private readonly field: EntityField
@@ -47,10 +46,12 @@ class CreateApiPropertyDecorator {
   enum(enumId: namedTypes.Identifier): this {
     const enumAPIProperty = builders.objectProperty(ENUM_ID, enumId);
     if (this.isList) {
-      this.apiPropertyOptionsObjectExpression.properties.concat([
+      [
         enumAPIProperty,
         builders.objectProperty(IS_ARRAY_ID, TRUE_LITERAL),
-      ]);
+      ].forEach((value) => {
+        this.apiPropertyOptionsObjectExpression.properties.push(value);
+      });
     } else {
       this.apiPropertyOptionsObjectExpression.properties.push(enumAPIProperty);
     }

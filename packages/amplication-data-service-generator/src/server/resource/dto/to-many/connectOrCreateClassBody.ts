@@ -4,7 +4,7 @@ import { ObjectField, ScalarField } from "prisma-schema-dsl";
 import { Entity, EntityField } from "../../../../types";
 import { classProperty } from "../../../../util/ast";
 import { createPrismaFields } from "../../../prisma/create-prisma-schema";
-import { CreateApiPropertyDecorator } from "../create-api-property-decorator";
+import { CreateApiPropertyDecorator } from "../api-property-decorator/create-api-property-decorator";
 import {
   createFieldValueTypeFromPrismaField,
   createGraphQLFieldDecorator,

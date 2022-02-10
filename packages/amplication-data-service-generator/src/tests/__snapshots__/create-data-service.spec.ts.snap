@@ -3576,6 +3576,8 @@ class Customer {
   })
   @ApiProperty({
     required: false,
+    enum: EnumCustomerFavoriteColors,
+    isArray: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
 
@@ -3756,6 +3758,8 @@ class CustomerCreateInput {
   })
   @ApiProperty({
     required: false,
+    enum: EnumCustomerFavoriteColors,
+    isArray: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
 
@@ -4188,6 +4192,8 @@ class CustomerUpdateInput {
   })
   @ApiProperty({
     required: false,
+    enum: EnumCustomerFavoriteColors,
+    isArray: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
 
@@ -11131,6 +11137,8 @@ class User {
   })
   @ApiProperty({
     required: true,
+    enum: EnumUserInterests,
+    isArray: true,
   })
   interests?: Array<\\"programming\\" | \\"design\\">;
 
@@ -11318,6 +11326,8 @@ class UserCreateInput {
   })
   @ApiProperty({
     required: true,
+    enum: EnumUserInterests,
+    isArray: true,
   })
   interests?: Array<\\"programming\\" | \\"design\\">;
 
@@ -11800,6 +11810,8 @@ class UserUpdateInput {
   })
   @ApiProperty({
     required: false,
+    enum: EnumUserInterests,
+    isArray: true,
   })
   interests?: Array<\\"programming\\" | \\"design\\">;
 
