@@ -13,9 +13,9 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.19",
-    "@types/json-schema": "7.0.8",
+    "@types/json-schema": "7.0.9",
     "@types/normalize-path": "3.0.0",
-    "fast-glob": "3.2.7",
+    "fast-glob": "3.2.10",
     "jest": "27.0.6",
     "json-schema-to-typescript": "10.1.5",
     "normalize-path": "3.0.0",

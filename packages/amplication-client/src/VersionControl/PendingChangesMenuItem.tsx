@@ -54,7 +54,10 @@ const PendingChangesMenuItem = ({ applicationId }: Props) => {
       </div>
       {panelOpen && (
         <AsidePanel.Source>
-          <PendingChangesBar applicationId={applicationId} />
+          <PendingChangesBar
+            applicationId={applicationId}
+            handleClick={handleClick}
+          />
         </AsidePanel.Source>
       )}
     </div>

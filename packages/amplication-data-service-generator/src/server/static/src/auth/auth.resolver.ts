@@ -3,7 +3,7 @@ import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import * as gqlACGuard from "../auth/gqlAC.guard";
 import { AuthService } from "./auth.service";
 import { GqlDefaultAuthGuard } from "./gqlDefaultAuth.guard";
-import { UserData } from "./gqlUserData.decorator";
+import { UserData } from "./userData.decorator";
 import { LoginArgs } from "./LoginArgs";
 import { UserInfo } from "./UserInfo";
 

@@ -1,13 +1,17 @@
 schema: "packages/amplication-server/src/schema.graphql"
 generates:
   packages/amplication-client/src/models.ts:
-    - typescript
+    plugins:
+      - "typescript"
   packages/amplication-data-service-generator/src/models.ts:
-    - typescript
+    plugins:
+      - "typescript"
   packages/amplication-data/src/models.ts:
-    - typescript
+    plugins:
+      - "typescript"
   packages/amplication-cli/src/models.ts:
-    - typescript
+    plugins:
+      - "typescript"
 hooks:
   afterAllFileWrite:
     - prettier --write
