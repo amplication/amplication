@@ -14,16 +14,16 @@
     "build:compile": "tsc"
   },
   "dependencies": {
-    "@types/node-fetch": "2.5.7",
     "ajv": "6.12.6",
     "cron": "1.8.2",
     "cronstrue": "1.122.0",
-    "node-fetch": "2.6.1",
+    "node-fetch": "2.6.6",
     "rc": "1.2.8",
     "typescript": "4.1.2"
   },
   "devDependencies": {
     "@types/cron": "^1.7.3",
+    "@types/node-fetch": "2.5.12",
     "@types/rc": "1.2.0",
     "json-schema-to-typescript": "10.1.5",
     "npm-run-all": "4.1.5",

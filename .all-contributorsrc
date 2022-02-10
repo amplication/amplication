@@ -423,6 +423,16 @@
         "design",
         "bug"
       ]
+    },
+    {
+      "login": "mikenussbaumer",
+      "name": "Mike Nußbaumer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43721860?v=4",
+      "profile": "http://linkedin.com/in/mike-nußbaumer",
+      "contributions": [
+        "ideas",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
