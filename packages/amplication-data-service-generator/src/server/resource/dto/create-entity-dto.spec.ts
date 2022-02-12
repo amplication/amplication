@@ -5,6 +5,7 @@ import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import { classDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { createEntityDTO, OBJECT_TYPE_DECORATOR } from "./create-entity-dto";
+import { InputTypeEnum } from "./create-input";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -30,7 +31,8 @@ describe("createEntityDTO", () => {
               EXAMPLE_ENTITY,
               !EXAMPLE_ID_FIELD.required,
               false,
-              false
+              true,
+              InputTypeEnum.NotInput
             ),
           ]),
           null,

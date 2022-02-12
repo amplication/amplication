@@ -2,7 +2,7 @@ import { builders } from "ast-types";
 import { print } from "recast";
 import { Entity } from "../../../types";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";
-import { createInput } from "./create-input";
+import { createInput, InputTypeEnum } from "./create-input";
 import {
   createWhereUniqueInput,
   createWhereUniqueInputID,
@@ -28,7 +28,8 @@ describe("createWhereUniqueInput", () => {
           [EXAMPLE_ID_FIELD],
           EXAMPLE_ENTITY,
           false,
-          false
+          false,
+          InputTypeEnum.WhereUnique
         )
       ).code
     );

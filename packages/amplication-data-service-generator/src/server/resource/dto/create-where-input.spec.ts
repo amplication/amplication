@@ -37,7 +37,8 @@ describe("createWhereInput", () => {
           [EXAMPLE_ID_FIELD],
           EXAMPLE_ENTITY,
           true,
-          true
+          true,
+          InputTypeEnum.Where
         )
       ).code
     );

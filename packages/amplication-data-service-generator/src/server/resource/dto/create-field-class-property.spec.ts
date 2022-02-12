@@ -77,14 +77,12 @@ describe("createFieldClassProperty", () => {
     boolean,
     boolean,
     boolean,
-    boolean,
     namedTypes.ClassProperty
   ]> = [
     [
       "id field (not input)",
       EXAMPLE_ID_FIELD,
       !EXAMPLE_ID_FIELD.required,
-      false,
       false,
       false,
       classProperty(
@@ -115,7 +113,6 @@ describe("createFieldClassProperty", () => {
       "optional id field (not input)",
       EXAMPLE_OPTIONAL_ENTITY_FIELD,
       !EXAMPLE_OPTIONAL_ENTITY_FIELD.required,
-      false,
       false,
       false,
       classProperty(
@@ -160,7 +157,6 @@ describe("createFieldClassProperty", () => {
       !EXAMPLE_LOOKUP_FIELD.required,
       false,
       false,
-      false,
       classProperty(
         builders.identifier(EXAMPLE_LOOKUP_FIELD.name),
         builders.tsTypeAnnotation(
@@ -201,15 +197,16 @@ describe("createFieldClassProperty", () => {
   ];
   test.each(cases)(
     "%s",
-    (name, field, optional, isInput, isQuery, isObjectType, expected) => {
+    (name, field, optional, isQuery, isObjectType, expected) => {
       expect(
         print(
           createFieldClassProperty(
             field,
             EXAMPLE_ENTITY,
             optional,
-            isInput,
-            isQuery
+            isQuery,
+            isObjectType,
+            InputTypeEnum.NotInput
           )
         ).code
       ).toEqual(print(expected).code);
@@ -323,23 +320,19 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ],
     ],
   ];
-  test.each(cases)(
-    "%s",
-    (name, field, prismaField, isInput, isEnum, expected) => {
-      expect(
-        createFieldValueTypeFromPrismaField(
-          "Names",
-          field,
-          prismaField,
-          field.required,
-          isInput,
-          isEnum,
-          false,
-          false,
-          false,
-          InputTypeEnum.NotInput
-        )
-      ).toEqual(expected);
-    }
-  );
+  test.each(cases)("%s", (name, field, prismaField, isEnum, expected) => {
+    expect(
+      createFieldValueTypeFromPrismaField(
+        "Names",
+        field,
+        prismaField,
+        field.required,
+        isEnum,
+        false,
+        false,
+        false,
+        InputTypeEnum.NotInput
+      )
+    ).toEqual(expected);
+  });
 });
