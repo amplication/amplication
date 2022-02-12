@@ -42,6 +42,8 @@ import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
 import { FIELD_ID } from "./nestjs-graphql.util";
 import { createCreateNestedManyWithoutInputID } from "./to-many/create-create-nested-many-without-input";
 import { JSON_VALUE_ID } from "./type-fest.util";
+import { InputTypeEnum } from "./create-input";
+import { createUpdateManyWithoutInputID } from "./to-many/create-update-many-without-input";
 
 const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
@@ -148,7 +150,8 @@ export function createFieldClassProperty(
   optional: boolean,
   isInput: boolean,
   isQuery: boolean,
-  isObjectType = false
+  isObjectType = false,
+  inputType: InputTypeEnum
 ): namedTypes.ClassProperty {
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
@@ -162,7 +165,8 @@ export function createFieldClassProperty(
     isEnum,
     isQuery,
     isObjectType,
-    false
+    false,
+    inputType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
   const createApiPropertyDecorator = new CreateApiPropertyDecorator(
@@ -242,7 +246,7 @@ export function createFieldClassProperty(
   if (
     prismaField.kind !== FieldKind.Object ||
     isEnum ||
-    (isInput && isOneToOneRelationField(field))
+    (isInput && isToManyRelationField(field))
   ) {
     decorators.push(
       createGraphQLFieldDecorator(
@@ -364,7 +368,8 @@ export function createFieldValueTypeFromPrismaField(
   isEnum: boolean,
   isQuery: boolean,
   isObjectType: boolean,
-  isNestedInput: boolean
+  isNestedInput: boolean,
+  inputType: InputTypeEnum
 ): TSTypeKind[] {
   // add  "| null" to the end of the type
   if (
@@ -385,20 +390,34 @@ export function createFieldValueTypeFromPrismaField(
       isEnum,
       isQuery,
       isObjectType,
-      isNestedInput
+      isNestedInput,
+      inputType
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
   if (isToManyRelationField(field) && !isObjectType && !isNestedInput) {
-    return [
-      builders.tsTypeReference(
-        createCreateNestedManyWithoutInputID(
-          entityPluralName,
-          field.properties.relatedEntity.name
-        )
-      ),
-    ];
-    //TODo if create then TagCreateNestedManyWithoutPostsInput if update so update
+    switch (inputType) {
+      case InputTypeEnum.Create:
+        return [
+          builders.tsTypeReference(
+            createCreateNestedManyWithoutInputID(
+              entityPluralName,
+              field.properties.relatedEntity.name
+            )
+          ),
+        ];
+      case InputTypeEnum.Update:
+        return [
+          builders.tsTypeReference(
+            createUpdateManyWithoutInputID(
+              entityPluralName,
+              field.properties.relatedEntity.name
+            )
+          ),
+        ];
+      default:
+        throw new Error("Didnt got an input type");
+    }
   }
   if (prismaField.isList) {
     const itemPrismaField = {
@@ -414,7 +433,8 @@ export function createFieldValueTypeFromPrismaField(
       isEnum,
       isQuery,
       isObjectType,
-      isNestedInput
+      isNestedInput,
+      inputType
     );
     return [createGenericArray(itemType), itemType];
   }

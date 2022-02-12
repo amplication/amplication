@@ -10,6 +10,7 @@ import {
   createGraphQLFieldDecorator,
   getTypeName,
 } from "../create-field-class-property";
+import { InputTypeEnum } from "../create-input";
 
 export enum NestedMutationOptions {
   "Create" = "create",
@@ -31,7 +32,8 @@ export function createCreateNestedManyProperties(
     false,
     false,
     false,
-    true
+    true,
+    InputTypeEnum.Create
   );
   return [
     createNestedManyProperty(

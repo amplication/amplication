@@ -19,6 +19,7 @@ import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
 import { createOrderByInput } from "./dto/graphql/order-by-input/order-by-input";
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
 import { createCreateNestedManyDTOs } from "./dto/to-many/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputDTOs } from "./dto/to-many/create-update-many-without-input";
 
 type EntityDTOs = {
   entity: NamedClassDeclaration;
@@ -138,5 +139,6 @@ function createEntityEnumDTOs(entity: Entity): EntityEnumDTOs {
 
 function createToManyDTOs(entity: Entity): NamedClassDeclaration[] {
   const allCreateNestedManyWithoutInput = createCreateNestedManyDTOs(entity);
-  return [...allCreateNestedManyWithoutInput];
+  const allUpdateManyWithoutInput = createUpdateManyWithoutInputDTOs(entity);
+  return [...allCreateNestedManyWithoutInput, ...allUpdateManyWithoutInput];
 }
