@@ -1,12 +1,12 @@
-import {Entity} from "../../../../../types";
+import { namedTypes, builders } from "ast-types";
+import { Entity } from "../../../../../types";
+import {readFile} from "../../../../../util/module";
 import {
     getClassDeclarationById,
     interpolate,
     NamedClassDeclaration,
     removeTSClassDeclares
 } from "../../../../../util/ast";
-import {readFile} from "../../../../../util/module";
-import {namedTypes, builders} from "ast-types";
 
 const templatePath = require.resolve("./entity-list-relation-filter.template.ts");
 
@@ -27,6 +27,8 @@ export async function createEntityListRelationFilter(
     return getClassDeclarationById(file, id) as NamedClassDeclaration;
 }
 
-export function createEntityListRelationFilterId(entityType: string): namedTypes.Identifier {
+export function createEntityListRelationFilterId(
+    entityType: string
+): namedTypes.Identifier {
     return builders.identifier(`${entityType}ListRelationFilter`);
 }

@@ -59,6 +59,7 @@ export async function createResolverModules(
     deleteArgs,
     findManyArgs,
     findOneArgs,
+    entityListRelationFilter
   } = entityDTOs;
   const createMutationId = builders.identifier(`create${entityType}`);
   const updateMutationId = builders.identifier(`update${entityType}`);
@@ -88,6 +89,7 @@ export async function createResolverModules(
     DELETE_ARGS: deleteArgs.id,
     FIND_MANY_ARGS: findManyArgs.id,
     FIND_ONE_ARGS: findOneArgs.id,
+    RELATED_ENTITY_LIST_RELATION_FILTER: entityListRelationFilter.id,
     CREATE_DATA_MAPPING: createDataMapping(
       entity,
       entityDTOs.createInput,
@@ -299,6 +301,7 @@ async function createToManyRelationMethods(
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     FIND_MANY: builders.identifier(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findManyArgs.id,
+    RELATION_FILTER: relatedEntityDTOs.entityListRelationFilter.id,
   });
 
   return getMethods(getClassDeclarationById(toManyFile, MIXIN_ID));

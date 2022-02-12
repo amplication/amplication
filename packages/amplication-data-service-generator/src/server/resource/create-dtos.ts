@@ -99,15 +99,15 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
     whereInput,
     orderByInput
   );
-  const entityListRelationFilter = await createEntityListRelationFilter(
-      entity,
-      whereInput
-  );
   const findOneArgs = await createFindOneArgs(entity, whereUniqueInput);
   const updateArgs = await createUpdateArgs(
     entity,
     whereUniqueInput,
     updateInput
+  );
+  const entityListRelationFilter = await createEntityListRelationFilter(
+      entity,
+      whereInput
   );
   const dtos: EntityDTOs = {
     entity: entityDTO,
