@@ -18,7 +18,7 @@ import { createDeleteArgs } from "./dto/graphql/delete/create-delete-args";
 import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-args";
 import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
-import {createEntityListRelationFilter} from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
+import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 
 type EntityDTOs = {
   entity: NamedClassDeclaration;
@@ -106,8 +106,8 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
     updateInput
   );
   const entityListRelationFilter = await createEntityListRelationFilter(
-      entity,
-      whereInput
+    entity,
+    whereInput
   );
   const dtos: EntityDTOs = {
     entity: entityDTO,

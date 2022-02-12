@@ -14,9 +14,9 @@ declare interface ARGS {
 }
 
 declare interface RELATION_FILTER {
-  every?: RELATED_ENTITY_WHERE_INPUT,
-  some?: RELATED_ENTITY_WHERE_INPUT,
-  none?: RELATED_ENTITY_WHERE_INPUT,
+  every?: RELATED_ENTITY_WHERE_INPUT;
+  some?: RELATED_ENTITY_WHERE_INPUT;
+  none?: RELATED_ENTITY_WHERE_INPUT;
 }
 
 declare interface SERVICE {

@@ -59,7 +59,7 @@ export async function createResolverModules(
     deleteArgs,
     findManyArgs,
     findOneArgs,
-    entityListRelationFilter
+    entityListRelationFilter,
   } = entityDTOs;
   const createMutationId = builders.identifier(`create${entityType}`);
   const updateMutationId = builders.identifier(`update${entityType}`);
