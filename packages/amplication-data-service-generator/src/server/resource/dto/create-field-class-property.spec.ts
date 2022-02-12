@@ -33,6 +33,7 @@ import {
 } from "./create-field-class-property";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { FIELD_ID } from "./nestjs-graphql.util";
+import { InputTypeEnum } from "./create-input";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -335,7 +336,8 @@ describe("createFieldValueTypeFromPrismaField", () => {
           isEnum,
           false,
           false,
-          false
+          false,
+          InputTypeEnum.NotInput
         )
       ).toEqual(expected);
     }

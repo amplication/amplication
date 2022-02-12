@@ -27,7 +27,6 @@ export function createCreateNestedManyProperties(
     entity.pluralDisplayName,
     field,
     prismaField,
-    true,
     false,
     false,
     false,

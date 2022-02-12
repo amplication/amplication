@@ -25,7 +25,6 @@ export function createInput(
       field,
       entity,
       allFieldsOptional || !field.required,
-      true,
       isQuery,
       false,
       inputType

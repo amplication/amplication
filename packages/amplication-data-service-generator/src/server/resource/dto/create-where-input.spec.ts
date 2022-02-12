@@ -5,8 +5,8 @@ import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_NON_SEARCHABLE_SINGLE_LINE_TEXT_FIELD,
 } from "../util/test-data";
+import { createInput, InputTypeEnum } from "./create-input";
 import { createWhereInput, createWhereInputID } from "./create-where-input";
-import { createInput } from "./create-input";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -53,7 +53,8 @@ describe("createWhereInput", () => {
           [EXAMPLE_ID_FIELD],
           EXAMPLE_ENTITY,
           true,
-          true
+          true,
+          InputTypeEnum.Where
         )
       ).code
     );

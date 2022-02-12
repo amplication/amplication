@@ -138,7 +138,6 @@ export const NULLABLE_ID = builders.identifier("nullable");
  * @param field
  * @param entity
  * @param optional
- * @param isInput represent is the class is input object
  * @param isQuery
  * @param isObjectType true only for the entity object type.
  * is User entity so only for the User.ts
@@ -148,7 +147,6 @@ export function createFieldClassProperty(
   field: EntityField,
   entity: Entity,
   optional: boolean,
-  isInput: boolean,
   isQuery: boolean,
   isObjectType = false,
   inputType: InputTypeEnum
@@ -156,12 +154,12 @@ export function createFieldClassProperty(
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
+  const isInput = !(inputType === InputTypeEnum.NotInput);
   const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
     entity.pluralDisplayName,
     field,
     prismaField,
     optional,
-    isInput,
     isEnum,
     isQuery,
     isObjectType,
@@ -364,13 +362,14 @@ export function createFieldValueTypeFromPrismaField(
   field: EntityField,
   prismaField: ScalarField | ObjectField,
   optional: boolean,
-  isInput: boolean,
   isEnum: boolean,
   isQuery: boolean,
   isObjectType: boolean,
   isNestedInput: boolean,
   inputType: InputTypeEnum
 ): TSTypeKind[] {
+  const isInput = !(inputType === InputTypeEnum.NotInput);
+
   // add  "| null" to the end of the type
   if (
     !prismaField.isRequired &&
@@ -386,7 +385,7 @@ export function createFieldValueTypeFromPrismaField(
         isRequired: true,
       },
       optional,
-      isInput,
+
       isEnum,
       isQuery,
       isObjectType,
@@ -429,7 +428,6 @@ export function createFieldValueTypeFromPrismaField(
       field,
       itemPrismaField,
       optional,
-      isInput,
       isEnum,
       isQuery,
       isObjectType,
