@@ -12,8 +12,8 @@ RUN npm config set fund false
 
 WORKDIR /app
 COPY lerna.json /app
-COPY package*.json /app
-RUN npm ci --production
+COPY package.json /app
+RUN npm install
 
 COPY packages packages
 RUN npm run bootstrap -- --scope @amplication/client --include-dependencies

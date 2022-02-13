@@ -1,0 +1,34 @@
+{{- if .Values.traefik.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "traefik.names.fullname" . }}
+  labels:
+  {{- include "common.labels" . | nindent 4 }}
+  {{- include "traefik.labels" . | nindent 4 }}
+spec:
+  selector: {{- include "traefik.labels" . | nindent 4 }}
+  type: {{ .Values.traefik.service.type }}
+  ports:
+    - name: {{ .Values.traefik.entrypoints.http.name }}
+      port: {{ .Values.traefik.entrypoints.http.port }}
+    - name: {{ .Values.traefik.entrypoints.https.name }}
+      port: {{ .Values.traefik.entrypoints.https.port }}
+   
+{{- if .Values.traefik.metrics.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "traefik.metrics.names.fullname" . }}
+  labels:
+  {{- include "common.labels" . | nindent 4 }}
+  {{- include "traefik.metrics.labels" . | nindent 4 }}
+spec:
+  selector: {{- include "traefik.labels" . | nindent 4 }}
+  type: {{ .Values.traefik.metrics.service.type }}
+  ports:
+    - name: {{ .Values.traefik.entrypoints.traefik.name }}
+      port: {{ .Values.traefik.entrypoints.traefik.port }}
+{{- end }}
+{{- end }}

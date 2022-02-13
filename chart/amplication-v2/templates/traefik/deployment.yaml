@@ -1,0 +1,74 @@
+{{- if .Values.traefik.enabled }}
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ include "traefik.names.fullname" . }}
+  labels: 
+  {{- include "common.labels" . | nindent 4 }}
+  {{- include "traefik.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.traefik.replicas }}
+  selector:
+    matchLabels: {{- include "traefik.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "common.labels" . | nindent 8 }}
+      {{- include "traefik.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "traefik.names.fullname" . }}
+      containers:
+        - name: {{ include "traefik.names.fullname" . }}
+          image: "{{ .Values.traefik.image.repository}}:{{ .Values.traefik.image.tag }}"
+          args:
+            # general configuration
+            - --accesslog
+            - --ping=true
+
+            # entrypoints
+            - --entrypoints.{{ .Values.traefik.entrypoints.http.name }}.Address=:{{ .Values.traefik.entrypoints.http.port }}
+            - --entrypoints.{{ .Values.traefik.entrypoints.https.name }}.Address=:{{ .Values.traefik.entrypoints.https.port }}
+            - --entrypoints.{{ .Values.traefik.entrypoints.traefik.name }}.Address=:{{ .Values.traefik.entrypoints.traefik.port }}
+
+            # http-to-https entrypoint redirection
+            - --entrypoints.{{ .Values.traefik.entrypoints.http.name }}.http.redirections.entryPoint.to={{ .Values.traefik.entrypoints.https.name }}
+            - --entrypoints.{{ .Values.traefik.entrypoints.http.name }}.http.redirections.entryPoint.scheme=https
+
+            # traefik CRD's
+            - --providers.kubernetescrd
+            - --providers.kubernetescrd.namespaces={{ .Release.Namespace }}
+
+          {{- if .Values.traefik.metrics.enabled }}
+            # Prometheus metrics
+            - --metrics.prometheus=true
+          {{- end }}
+
+          ports:
+            - name: {{ .Values.traefik.entrypoints.http.name }}
+              containerPort: {{ .Values.traefik.entrypoints.http.port }}
+            - name: {{ .Values.traefik.entrypoints.https.name }}
+              containerPort: {{ .Values.traefik.entrypoints.https.port }}
+            - name: {{ .Values.traefik.entrypoints.traefik.name }}
+              containerPort: {{ .Values.traefik.entrypoints.traefik.port }}
+          {{- if .Values.traefik.resources }}
+          resources: {{- toYaml .Values.traefik.resources | nindent 12 }}
+          {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: {{ .Values.traefik.entrypoints.traefik.port }}
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: {{ .Values.traefik.entrypoints.traefik.port }}
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+{{- end }}
