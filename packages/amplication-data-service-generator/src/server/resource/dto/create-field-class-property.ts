@@ -472,7 +472,14 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-  if (isQuery || isInput) {
+
+  if ((isQuery || isInput) && isToManyRelationField(field)) {
+    return [
+      builders.tsTypeReference(
+          createEntityListRelationFilterID(prismaField.type)
+      ),
+    ];
+  } else if (isQuery || isInput) {
     return [
       builders.tsTypeReference(createWhereUniqueInputID(prismaField.type)),
     ];
