@@ -4905,27 +4905,7 @@ export class CustomerControllerBase {
       );
     }
     return await this.service.create({
-      data: {
-        ...data,
-
-        organization: data.organization
-          ? {
-              connect: data.organization,
-            }
-          : undefined,
-
-        vipOrganization: data.vipOrganization
-          ? {
-              connect: data.vipOrganization,
-            }
-          : undefined,
-
-        orders: data.orders
-          ? {
-              connect: data.orders,
-            }
-          : undefined,
-      },
+      data: data,
       select: {
         id: true,
         createdAt: true,
@@ -5121,27 +5101,7 @@ export class CustomerControllerBase {
     try {
       return await this.service.update({
         where: params,
-        data: {
-          ...data,
-
-          organization: data.organization
-            ? {
-                connect: data.organization,
-              }
-            : undefined,
-
-          vipOrganization: data.vipOrganization
-            ? {
-                connect: data.vipOrganization,
-              }
-            : undefined,
-
-          orders: data.orders
-            ? {
-                connect: data.orders,
-              }
-            : undefined,
-        },
+        data: data,
         select: {
           id: true,
           createdAt: true,
@@ -5590,27 +5550,7 @@ export class CustomerResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: {
-        ...args.data,
-
-        organization: args.data.organization
-          ? {
-              connect: args.data.organization,
-            }
-          : undefined,
-
-        vipOrganization: args.data.vipOrganization
-          ? {
-              connect: args.data.vipOrganization,
-            }
-          : undefined,
-
-        orders: args.data.orders
-          ? {
-              connect: args.data.orders,
-            }
-          : undefined,
-      },
+      data: args.data,
     });
   }
 
@@ -5649,27 +5589,7 @@ export class CustomerResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: {
-          ...args.data,
-
-          organization: args.data.organization
-            ? {
-                connect: args.data.organization,
-              }
-            : undefined,
-
-          vipOrganization: args.data.vipOrganization
-            ? {
-                connect: args.data.vipOrganization,
-              }
-            : undefined,
-
-          orders: args.data.orders
-            ? {
-                connect: args.data.orders,
-              }
-            : undefined,
-        },
+        data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -7861,13 +7781,7 @@ export class OrderControllerBase {
       );
     }
     return await this.service.create({
-      data: {
-        ...data,
-
-        customer: {
-          connect: data.customer,
-        },
-      },
+      data: data,
       select: {
         id: true,
         createdAt: true,
@@ -8021,13 +7935,7 @@ export class OrderControllerBase {
     try {
       return await this.service.update({
         where: params,
-        data: {
-          ...data,
-
-          customer: {
-            connect: data.customer,
-          },
-        },
+        data: data,
         select: {
           id: true,
           createdAt: true,
@@ -8262,13 +8170,7 @@ export class OrderResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: {
-        ...args.data,
-
-        customer: {
-          connect: args.data.customer,
-        },
-      },
+      data: args.data,
     });
   }
 
@@ -8307,13 +8209,7 @@ export class OrderResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: {
-          ...args.data,
-
-          customer: {
-            connect: args.data.customer,
-          },
-        },
+        data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -9337,21 +9233,7 @@ export class OrganizationControllerBase {
       );
     }
     return await this.service.create({
-      data: {
-        ...data,
-
-        users: {
-          connect: data.users,
-        },
-
-        customers: {
-          connect: data.customers,
-        },
-
-        vipCustomers: {
-          connect: data.vipCustomers,
-        },
-      },
+      data: data,
       select: {
         id: true,
         createdAt: true,
@@ -9481,21 +9363,7 @@ export class OrganizationControllerBase {
     try {
       return await this.service.update({
         where: params,
-        data: {
-          ...data,
-
-          users: {
-            connect: data.users,
-          },
-
-          customers: {
-            connect: data.customers,
-          },
-
-          vipCustomers: {
-            connect: data.vipCustomers,
-          },
-        },
+        data: data,
         select: {
           id: true,
           createdAt: true,
@@ -10306,21 +10174,7 @@ export class OrganizationResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: {
-        ...args.data,
-
-        users: {
-          connect: args.data.users,
-        },
-
-        customers: {
-          connect: args.data.customers,
-        },
-
-        vipCustomers: {
-          connect: args.data.vipCustomers,
-        },
-      },
+      data: args.data,
     });
   }
 
@@ -10359,21 +10213,7 @@ export class OrganizationResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: {
-          ...args.data,
-
-          users: {
-            connect: args.data.users,
-          },
-
-          customers: {
-            connect: args.data.customers,
-          },
-
-          vipCustomers: {
-            connect: args.data.vipCustomers,
-          },
-        },
+        data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -12464,27 +12304,7 @@ export class UserControllerBase {
       );
     }
     return await this.service.create({
-      data: {
-        ...data,
-
-        manager: data.manager
-          ? {
-              connect: data.manager,
-            }
-          : undefined,
-
-        employees: data.employees
-          ? {
-              connect: data.employees,
-            }
-          : undefined,
-
-        organizations: data.organizations
-          ? {
-              connect: data.organizations,
-            }
-          : undefined,
-      },
+      data: data,
       select: {
         username: true,
         roles: true,
@@ -12665,27 +12485,7 @@ export class UserControllerBase {
     try {
       return await this.service.update({
         where: params,
-        data: {
-          ...data,
-
-          manager: data.manager
-            ? {
-                connect: data.manager,
-              }
-            : undefined,
-
-          employees: data.employees
-            ? {
-                connect: data.employees,
-              }
-            : undefined,
-
-          organizations: data.organizations
-            ? {
-                connect: data.organizations,
-              }
-            : undefined,
-        },
+        data: data,
         select: {
           username: true,
           roles: true,
@@ -13308,27 +13108,7 @@ export class UserResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: {
-        ...args.data,
-
-        manager: args.data.manager
-          ? {
-              connect: args.data.manager,
-            }
-          : undefined,
-
-        employees: args.data.employees
-          ? {
-              connect: args.data.employees,
-            }
-          : undefined,
-
-        organizations: args.data.organizations
-          ? {
-              connect: args.data.organizations,
-            }
-          : undefined,
-      },
+      data: args.data,
     });
   }
 
@@ -13367,27 +13147,7 @@ export class UserResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: {
-          ...args.data,
-
-          manager: args.data.manager
-            ? {
-                connect: args.data.manager,
-              }
-            : undefined,
-
-          employees: args.data.employees
-            ? {
-                connect: args.data.employees,
-              }
-            : undefined,
-
-          organizations: args.data.organizations
-            ? {
-                connect: args.data.organizations,
-              }
-            : undefined,
-        },
+        data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
