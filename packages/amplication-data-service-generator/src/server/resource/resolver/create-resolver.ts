@@ -1,38 +1,37 @@
-import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
+import { print } from "recast";
 import { Entity, EntityLookupField, Module } from "../../../types";
-import { readFile, relativeImportPath } from "../../../util/module";
 import {
-  interpolate,
-  importNames,
   addAutoGenerationComment,
   addImports,
-  removeTSVariableDeclares,
-  removeTSInterfaceDeclares,
-  removeTSClassDeclares,
-  getClassDeclarationById,
-  removeESLintComments,
-  importContainedIdentifiers,
-  removeImportsTSIgnoreComments,
-  NamedClassDeclaration,
-  getMethods,
   deleteClassMemberByKey,
+  getClassDeclarationById,
+  getMethods,
+  importContainedIdentifiers,
+  importNames,
+  interpolate,
   memberExpression,
+  NamedClassDeclaration,
+  removeESLintComments,
+  removeImportsTSIgnoreComments,
+  removeTSClassDeclares,
+  removeTSInterfaceDeclares,
+  removeTSVariableDeclares,
 } from "../../../util/ast";
 import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../util/field";
+import { readFile, relativeImportPath } from "../../../util/module";
 import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
-  createServiceId,
   createFieldFindManyFunctionId,
   createFieldFindOneFunctionId,
+  createServiceId,
 } from "../service/create-service";
-import { createDataMapping } from "../controller/create-data-mapping";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -88,16 +87,8 @@ export async function createResolverModules(
     DELETE_ARGS: deleteArgs.id,
     FIND_MANY_ARGS: findManyArgs.id,
     FIND_ONE_ARGS: findOneArgs.id,
-    CREATE_DATA_MAPPING: createDataMapping(
-      entity,
-      entityDTOs.createInput,
-      DATA_MEMBER_EXPRESSION
-    ),
-    UPDATE_DATA_MAPPING: createDataMapping(
-      entity,
-      entityDTOs.updateInput,
-      DATA_MEMBER_EXPRESSION
-    ),
+    CREATE_DATA_MAPPING: DATA_MEMBER_EXPRESSION,
+    UPDATE_DATA_MAPPING: DATA_MEMBER_EXPRESSION,
   };
 
   return [
