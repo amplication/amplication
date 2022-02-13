@@ -29,7 +29,7 @@ export function createDataMapping(
     return data;
   }
   return builders.objectExpression([
-    builders.spreadElement(data),
+    builders.spreadElement(data), // ...data
     ...objectProperties.map((property) => {
       const member = builders.memberExpression(data, property.key);
       const connect = builders.objectExpression([

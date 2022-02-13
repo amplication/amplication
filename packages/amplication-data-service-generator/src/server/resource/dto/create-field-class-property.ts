@@ -253,7 +253,8 @@ export function createFieldClassProperty(
         field,
         optionalProperty,
         entity,
-        isQuery
+        isQuery,
+        inputType
       )
     );
   }
@@ -274,12 +275,22 @@ export function createGraphQLFieldDecorator(
   field: EntityField,
   optional: boolean,
   entity: Entity,
-  isQuery: boolean
+  isQuery: boolean,
+  inputType: InputTypeEnum
 ): namedTypes.Decorator {
   const type = builders.arrowFunctionExpression(
     [],
-    createGraphQLFieldType(prismaField, field, isEnum, entity, isQuery)
+    createGraphQLFieldType(
+      prismaField,
+      field,
+      isEnum,
+      entity,
+      isQuery,
+      inputType,
+      entity.pluralDisplayName
+    )
   );
+  //TODO remove array from nested many
   return builders.decorator(
     builders.callExpression(
       FIELD_ID,
@@ -300,7 +311,9 @@ function createGraphQLFieldType(
   field: EntityField,
   isEnum: boolean,
   entity: Entity,
-  isQuery: boolean
+  isQuery: boolean,
+  inputType: InputTypeEnum,
+  entityPluralName: string
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (prismaField.isList) {
     const itemType = createGraphQLFieldType(
@@ -308,7 +321,9 @@ function createGraphQLFieldType(
       field,
       isEnum,
       entity,
-      isQuery
+      isQuery,
+      inputType,
+      entityPluralName
     );
     return builders.arrayExpression([itemType]);
   }
@@ -339,6 +354,23 @@ function createGraphQLFieldType(
     return enumId;
   }
   if (isRelationField(field)) {
+    if (isToManyRelationField(field)) {
+      switch (inputType) {
+        case InputTypeEnum.Create:
+          return createCreateNestedManyWithoutInputID(
+            entityPluralName,
+            field.properties.relatedEntity.name
+          );
+
+        case InputTypeEnum.Update:
+          return createUpdateManyWithoutInputID(
+            entityPluralName,
+            field.properties.relatedEntity.name
+          );
+        default:
+          throw new Error("Didnt got an input type");
+      }
+    }
     return createWhereUniqueInputID(prismaField.type);
   }
   throw new Error("Could not create GraphQL Field type");

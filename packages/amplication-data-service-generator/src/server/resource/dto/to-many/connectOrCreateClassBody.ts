@@ -62,7 +62,15 @@ function createNestedManyProperty(
   const decorators: namedTypes.Decorator[] = [];
 
   decorators.push(
-    createGraphQLFieldDecorator(prismaField, false, field, true, entity, false)
+    createGraphQLFieldDecorator(
+      prismaField,
+      false,
+      field,
+      true,
+      entity,
+      false,
+      InputTypeEnum.Create
+    )
   );
   const typeName = getTypeName(
     propertyValueType,

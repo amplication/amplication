@@ -67,17 +67,9 @@ export async function createControllerModules(
     SELECT: createSelect(entityDTO, entity),
 
     CREATE_INPUT: entityDTOs.createInput.id,
-    CREATE_DATA_MAPPING: createDataMapping(
-      entity,
-      entityDTOs.createInput,
-      DATA_ID
-    ),
+    CREATE_DATA_MAPPING: DATA_ID,
     UPDATE_INPUT: entityDTOs.updateInput.id,
-    UPDATE_DATA_MAPPING: createDataMapping(
-      entity,
-      entityDTOs.updateInput,
-      DATA_ID
-    ),
+    UPDATE_DATA_MAPPING: DATA_ID,
     FIND_MANY_ARGS: entityDTOs.findManyArgs.id,
     WHERE_INPUT: entityDTOs.whereInput.id,
     /** @todo make dynamic */

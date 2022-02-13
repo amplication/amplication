@@ -3697,7 +3697,6 @@ import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
-import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @InputType()
 class CustomerCreateInput {
   @IsString()
@@ -3842,7 +3841,7 @@ class CustomerCreateInput {
   @ValidateNested()
   @Type(() => OrderCreateNestedManyWithoutCustomersInput)
   @IsOptional()
-  @Field(() => [OrderWhereUniqueInput], {
+  @Field(() => [OrderCreateNestedManyWithoutCustomersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -4126,7 +4125,6 @@ import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { OrderUpdateManyWithoutCustomersInput } from \\"./OrderUpdateManyWithoutCustomersInput\\";
-import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @InputType()
 class CustomerUpdateInput {
   @IsString()
@@ -4274,7 +4272,7 @@ class CustomerUpdateInput {
   @ValidateNested()
   @Type(() => OrderUpdateManyWithoutCustomersInput)
   @IsOptional()
-  @Field(() => [OrderWhereUniqueInput], {
+  @Field(() => [OrderUpdateManyWithoutCustomersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -4582,11 +4580,11 @@ registerEnumType(EnumCustomerFavoriteColors, {
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @InputType()
 class OrderCreateNestedManyWithoutCustomersInput {
-  @Field(() => [OrderWhereUniqueInput], {
+  @Field(() => [OrderCreateNestedManyWithoutCustomersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -4609,11 +4607,12 @@ export { OrderCreateNestedManyWithoutCustomersInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
+import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @InputType()
 class OrderUpdateManyWithoutCustomersInput {
-  @Field(() => [OrderWhereUniqueInput], {
+  @Field(() => [OrderCreateNestedManyWithoutCustomersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -5550,7 +5549,27 @@ export class CustomerResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: args.data,
+      data: {
+        ...args.data,
+
+        organization: args.data.organization
+          ? {
+              connect: args.data.organization,
+            }
+          : undefined,
+
+        vipOrganization: args.data.vipOrganization
+          ? {
+              connect: args.data.vipOrganization,
+            }
+          : undefined,
+
+        orders: args.data.orders
+          ? {
+              connect: args.data.orders,
+            }
+          : undefined,
+      },
     });
   }
 
@@ -5589,7 +5608,27 @@ export class CustomerResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: args.data,
+        data: {
+          ...args.data,
+
+          organization: args.data.organization
+            ? {
+                connect: args.data.organization,
+              }
+            : undefined,
+
+          vipOrganization: args.data.vipOrganization
+            ? {
+                connect: args.data.vipOrganization,
+              }
+            : undefined,
+
+          orders: args.data.orders
+            ? {
+                connect: args.data.orders,
+              }
+            : undefined,
+        },
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -8170,7 +8209,13 @@ export class OrderResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: args.data,
+      data: {
+        ...args.data,
+
+        customer: {
+          connect: args.data.customer,
+        },
+      },
     });
   }
 
@@ -8209,7 +8254,13 @@ export class OrderResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: args.data,
+        data: {
+          ...args.data,
+
+          customer: {
+            connect: args.data.customer,
+          },
+        },
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -8424,11 +8475,11 @@ export { CreateOrganizationArgs };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @InputType()
 class CustomerCreateNestedManyWithoutOrganizationsInput {
-  @Field(() => [CustomerWhereUniqueInput], {
+  @Field(() => [CustomerCreateNestedManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8451,11 +8502,12 @@ export { CustomerCreateNestedManyWithoutOrganizationsInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { CustomerCreateNestedManyWithoutOrganizationsInput } from \\"./CustomerCreateNestedManyWithoutOrganizationsInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @InputType()
 class CustomerUpdateManyWithoutOrganizationsInput {
-  @Field(() => [CustomerWhereUniqueInput], {
+  @Field(() => [CustomerCreateNestedManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8584,9 +8636,7 @@ import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { UserCreateNestedManyWithoutOrganizationsInput } from \\"./UserCreateNestedManyWithoutOrganizationsInput\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { CustomerCreateNestedManyWithoutOrganizationsInput } from \\"./CustomerCreateNestedManyWithoutOrganizationsInput\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @InputType()
 class OrganizationCreateInput {
   @IsString()
@@ -8600,7 +8650,7 @@ class OrganizationCreateInput {
   @ValidateNested()
   @Type(() => UserCreateNestedManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [UserWhereUniqueInput], {
+  @Field(() => [UserCreateNestedManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8612,7 +8662,7 @@ class OrganizationCreateInput {
   @ValidateNested()
   @Type(() => CustomerCreateNestedManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [CustomerWhereUniqueInput], {
+  @Field(() => [CustomerCreateNestedManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8624,7 +8674,7 @@ class OrganizationCreateInput {
   @ValidateNested()
   @Type(() => CustomerCreateNestedManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [CustomerWhereUniqueInput], {
+  @Field(() => [CustomerCreateNestedManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8786,9 +8836,7 @@ import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { UserUpdateManyWithoutOrganizationsInput } from \\"./UserUpdateManyWithoutOrganizationsInput\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { CustomerUpdateManyWithoutOrganizationsInput } from \\"./CustomerUpdateManyWithoutOrganizationsInput\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @InputType()
 class OrganizationUpdateInput {
   @IsString()
@@ -8805,7 +8853,7 @@ class OrganizationUpdateInput {
   @ValidateNested()
   @Type(() => UserUpdateManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [UserWhereUniqueInput], {
+  @Field(() => [UserUpdateManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8817,7 +8865,7 @@ class OrganizationUpdateInput {
   @ValidateNested()
   @Type(() => CustomerUpdateManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [CustomerWhereUniqueInput], {
+  @Field(() => [CustomerUpdateManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8829,7 +8877,7 @@ class OrganizationUpdateInput {
   @ValidateNested()
   @Type(() => CustomerUpdateManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [CustomerWhereUniqueInput], {
+  @Field(() => [CustomerUpdateManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8968,11 +9016,11 @@ export { UpdateOrganizationArgs };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 @InputType()
 class UserCreateNestedManyWithoutOrganizationsInput {
-  @Field(() => [UserWhereUniqueInput], {
+  @Field(() => [UserCreateNestedManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8995,11 +9043,12 @@ export { UserCreateNestedManyWithoutOrganizationsInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { UserCreateNestedManyWithoutOrganizationsInput } from \\"./UserCreateNestedManyWithoutOrganizationsInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 @InputType()
 class UserUpdateManyWithoutOrganizationsInput {
-  @Field(() => [UserWhereUniqueInput], {
+  @Field(() => [UserCreateNestedManyWithoutOrganizationsInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -10174,7 +10223,21 @@ export class OrganizationResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: args.data,
+      data: {
+        ...args.data,
+
+        users: {
+          connect: args.data.users,
+        },
+
+        customers: {
+          connect: args.data.customers,
+        },
+
+        vipCustomers: {
+          connect: args.data.vipCustomers,
+        },
+      },
     });
   }
 
@@ -10213,7 +10276,21 @@ export class OrganizationResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: args.data,
+        data: {
+          ...args.data,
+
+          users: {
+            connect: args.data.users,
+          },
+
+          customers: {
+            connect: args.data.customers,
+          },
+
+          vipCustomers: {
+            connect: args.data.vipCustomers,
+          },
+        },
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -10925,11 +11002,11 @@ registerEnumType(EnumUserPriority, {
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @InputType()
 class OrganizationCreateNestedManyWithoutUsersInput {
-  @Field(() => [OrganizationWhereUniqueInput], {
+  @Field(() => [OrganizationCreateNestedManyWithoutUsersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -10952,11 +11029,12 @@ export { OrganizationCreateNestedManyWithoutUsersInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @InputType()
 class OrganizationUpdateManyWithoutUsersInput {
-  @Field(() => [OrganizationWhereUniqueInput], {
+  @Field(() => [OrganizationCreateNestedManyWithoutUsersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11206,7 +11284,6 @@ import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -11299,7 +11376,7 @@ class UserCreateInput {
   @ValidateNested()
   @Type(() => UserCreateNestedManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => [UserWhereUniqueInput], {
+  @Field(() => [UserCreateNestedManyWithoutUsersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11311,7 +11388,7 @@ class UserCreateInput {
   @ValidateNested()
   @Type(() => OrganizationCreateNestedManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => [OrganizationWhereUniqueInput], {
+  @Field(() => [OrganizationCreateNestedManyWithoutUsersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11379,11 +11456,11 @@ export { UserCreateInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 @InputType()
 class UserCreateNestedManyWithoutUsersInput {
-  @Field(() => [UserWhereUniqueInput], {
+  @Field(() => [UserCreateNestedManyWithoutUsersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11667,7 +11744,6 @@ import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -11787,7 +11863,7 @@ class UserUpdateInput {
   @ValidateNested()
   @Type(() => UserUpdateManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => [UserWhereUniqueInput], {
+  @Field(() => [UserUpdateManyWithoutUsersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11799,7 +11875,7 @@ class UserUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationUpdateManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => [OrganizationWhereUniqueInput], {
+  @Field(() => [OrganizationUpdateManyWithoutUsersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11879,11 +11955,12 @@ export { UserUpdateInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 @InputType()
 class UserUpdateManyWithoutUsersInput {
-  @Field(() => [UserWhereUniqueInput], {
+  @Field(() => [UserCreateNestedManyWithoutUsersInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -13108,7 +13185,27 @@ export class UserResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: args.data,
+      data: {
+        ...args.data,
+
+        manager: args.data.manager
+          ? {
+              connect: args.data.manager,
+            }
+          : undefined,
+
+        employees: args.data.employees
+          ? {
+              connect: args.data.employees,
+            }
+          : undefined,
+
+        organizations: args.data.organizations
+          ? {
+              connect: args.data.organizations,
+            }
+          : undefined,
+      },
     });
   }
 
@@ -13147,7 +13244,27 @@ export class UserResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: args.data,
+        data: {
+          ...args.data,
+
+          manager: args.data.manager
+            ? {
+                connect: args.data.manager,
+              }
+            : undefined,
+
+          employees: args.data.employees
+            ? {
+                connect: args.data.employees,
+              }
+            : undefined,
+
+          organizations: args.data.organizations
+            ? {
+                connect: args.data.organizations,
+              }
+            : undefined,
+        },
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
