@@ -352,6 +352,7 @@ import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
 import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
 
 export type CustomerWhereInput = {
   id?: StringFilter;
@@ -369,6 +370,7 @@ export type CustomerWhereInput = {
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
   organization?: OrganizationWhereUniqueInput;
   vipOrganization?: OrganizationWhereUniqueInput;
+  orders?: Array<OrderWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
@@ -641,12 +643,17 @@ export type OrganizationOrderByInput = {
 ",
   "admin-ui/src/api/organization/OrganizationWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export type OrganizationWhereInput = {
   id?: StringFilter;
   createdAt?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
   name?: StringFilter;
+  users?: Array<UserWhereUniqueInput>;
+  customers?: Array<CustomerWhereUniqueInput>;
+  vipCustomers?: Array<CustomerWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/organization/OrganizationWhereUniqueInput.ts": "export type OrganizationWhereUniqueInput = {
@@ -806,6 +813,7 @@ export type UserUpdateInput = {
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonFilter } from \\"../../util/JsonFilter\\";
 
@@ -816,6 +824,7 @@ export type UserWhereInput = {
   age?: IntFilter;
   birthDate?: DateTimeFilter;
   manager?: UserWhereUniqueInput;
+  organizations?: Array<OrganizationWhereUniqueInput>;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: BooleanFilter;
   location?: StringFilter;
@@ -3806,13 +3815,13 @@ export { CustomerFindUniqueArgs };
 //
 //------------------------------------------------------------------------------
   */
-import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 
-@ArgsType()
+@InputType()
 class CustomerListRelationFilter {
   @ApiProperty({
     required: false,
@@ -4224,6 +4233,8 @@ import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
+import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFilter\\";
 @InputType()
 class CustomerWhereInput {
   @ApiProperty({
@@ -4392,6 +4403,18 @@ class CustomerWhereInput {
     nullable: true,
   })
   vipOrganization?: OrganizationWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => [OrderWhereUniqueInput],
+  })
+  @ValidateNested()
+  @Type(() => OrderWhereUniqueInput)
+  @IsOptional()
+  @Field(() => [OrderListRelationFilter], {
+    nullable: true,
+  })
+  orders?: Array<OrderWhereUniqueInput>;
 }
 export { CustomerWhereInput };
 ",
@@ -6009,13 +6032,13 @@ export { EmptyFindUniqueArgs };
 //
 //------------------------------------------------------------------------------
   */
-import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 
-@ArgsType()
+@InputType()
 class EmptyListRelationFilter {
   @ApiProperty({
     required: false,
@@ -7289,13 +7312,13 @@ export { OrderFindUniqueArgs };
 //
 //------------------------------------------------------------------------------
   */
-import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 
-@ArgsType()
+@InputType()
 class OrderListRelationFilter {
   @ApiProperty({
     required: false,
@@ -8695,13 +8718,13 @@ export { OrganizationFindUniqueArgs };
 //
 //------------------------------------------------------------------------------
   */
-import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 
-@ArgsType()
+@InputType()
 class OrganizationListRelationFilter {
   @ApiProperty({
     required: false,
@@ -8844,8 +8867,12 @@ import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
 import { Type } from \\"class-transformer\\";
-import { IsOptional } from \\"class-validator\\";
+import { IsOptional, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { UserListRelationFilter } from \\"../../user/base/UserListRelationFilter\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { CustomerListRelationFilter } from \\"../../customer/base/CustomerListRelationFilter\\";
 @InputType()
 class OrganizationWhereInput {
   @ApiProperty({
@@ -8891,6 +8918,42 @@ class OrganizationWhereInput {
     nullable: true,
   })
   name?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
+  @IsOptional()
+  @Field(() => [UserListRelationFilter], {
+    nullable: true,
+  })
+  users?: Array<UserWhereUniqueInput>;
+
+  @ApiProperty({
+    required: false,
+    type: () => [CustomerWhereUniqueInput],
+  })
+  @ValidateNested()
+  @Type(() => CustomerWhereUniqueInput)
+  @IsOptional()
+  @Field(() => [CustomerListRelationFilter], {
+    nullable: true,
+  })
+  customers?: Array<CustomerWhereUniqueInput>;
+
+  @ApiProperty({
+    required: false,
+    type: () => [CustomerWhereUniqueInput],
+  })
+  @ValidateNested()
+  @Type(() => CustomerWhereUniqueInput)
+  @IsOptional()
+  @Field(() => [CustomerListRelationFilter], {
+    nullable: true,
+  })
+  vipCustomers?: Array<CustomerWhereUniqueInput>;
 }
 export { OrganizationWhereInput };
 ",
@@ -11311,13 +11374,13 @@ export { UserFindUniqueArgs };
 //
 //------------------------------------------------------------------------------
   */
-import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 
-@ArgsType()
+@InputType()
 class UserListRelationFilter {
   @ApiProperty({
     required: false,
@@ -11749,6 +11812,8 @@ import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { OrganizationListRelationFilter } from \\"../../organization/base/OrganizationListRelationFilter\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonFilter } from \\"../../util/JsonFilter\\";
@@ -11820,6 +11885,18 @@ class UserWhereInput {
     nullable: true,
   })
   manager?: UserWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => [OrganizationWhereUniqueInput],
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  @Field(() => [OrganizationListRelationFilter], {
+    nullable: true,
+  })
+  organizations?: Array<OrganizationWhereUniqueInput>;
 
   @ApiProperty({
     required: false,

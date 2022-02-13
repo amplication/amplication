@@ -1,11 +1,11 @@
-import { ArgsType, Field } from "@nestjs/graphql";
+import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { ValidateNested, IsOptional } from "class-validator";
 
 declare class WHERE_INPUT {}
 
-@ArgsType()
+@InputType()
 class ID {
   @ApiProperty({
     required: false,

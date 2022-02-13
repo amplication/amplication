@@ -1,12 +1,7 @@
 import { builders, namedTypes } from "ast-types";
 import { Entity, EntityField } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
-import {
-  isRelationField,
-  isOneToOneRelationField,
-  isScalarListField,
-  isPasswordField,
-} from "../../../util/field";
+import { isScalarListField, isPasswordField } from "../../../util/field";
 import { createInput } from "./create-input";
 
 export function createWhereInput(entity: Entity): NamedClassDeclaration {
@@ -26,9 +21,6 @@ export function createWhereInputID(entityName: string): namedTypes.Identifier {
 
 export function isQueryableField(field: EntityField): boolean {
   return (
-    field.searchable &&
-    !isScalarListField(field) &&
-    (!isRelationField(field) || isOneToOneRelationField(field)) &&
-    !isPasswordField(field)
+    field.searchable && !isScalarListField(field) && !isPasswordField(field)
   );
 }

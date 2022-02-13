@@ -17,7 +17,7 @@ export async function createEntityListRelationFilter(
   whereInput: NamedClassDeclaration
 ): Promise<NamedClassDeclaration> {
   const file = await readFile(templatePath);
-  const id = createEntityListRelationFilterId(entity.name);
+  const id = createEntityListRelationFilterID(entity.name);
 
   interpolate(file, {
     ID: id,
@@ -29,7 +29,7 @@ export async function createEntityListRelationFilter(
   return getClassDeclarationById(file, id) as NamedClassDeclaration;
 }
 
-export function createEntityListRelationFilterId(
+export function createEntityListRelationFilterID(
   entityType: string
 ): namedTypes.Identifier {
   return builders.identifier(`${entityType}ListRelationFilter`);

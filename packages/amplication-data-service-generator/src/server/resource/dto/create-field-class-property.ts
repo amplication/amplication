@@ -12,7 +12,11 @@ import {
   createPrismaFields,
 } from "../../prisma/create-prisma-schema";
 import { classProperty, createGenericArray } from "../../../util/ast";
-import { isEnumField, isOneToOneRelationField } from "../../../util/field";
+import {
+  isEnumField,
+  isOneToOneRelationField,
+  isToManyRelationField,
+} from "../../../util/field";
 import {
   IS_BOOLEAN_ID,
   IS_DATE_ID,
@@ -37,6 +41,7 @@ import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { FIELD_ID } from "./nestjs-graphql.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
+import { createEntityListRelationFilterID } from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 
 const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
@@ -283,7 +288,8 @@ export function createFieldClassProperty(
   if (
     prismaField.kind !== FieldKind.Object ||
     isEnum ||
-    (isInput && isOneToOneRelationField(field))
+    (isInput && isOneToOneRelationField(field)) ||
+    (isInput && isToManyRelationField(field))
   ) {
     decorators.push(
       createGraphQLFieldDecorator(
@@ -378,6 +384,9 @@ function createGraphQLFieldType(
   }
   if (isOneToOneRelationField(field)) {
     return createWhereUniqueInputID(prismaField.type);
+  }
+  if (isToManyRelationField(field)) {
+    return createEntityListRelationFilterID(prismaField.type);
   }
   throw new Error("Could not create GraphQL Field type");
 }
