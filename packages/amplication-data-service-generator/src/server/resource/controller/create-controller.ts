@@ -1,33 +1,34 @@
+import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
-import { print } from "recast";
-import { AppInfo, Entity, EntityLookupField, Module } from "../../../types";
+import { Entity, EntityLookupField, Module, AppInfo } from "../../../types";
+import { readFile, relativeImportPath } from "../../../util/module";
 import {
+  interpolate,
+  importNames,
   addAutoGenerationComment,
   addImports,
-  getClassDeclarationById,
-  getMethods,
-  importContainedIdentifiers,
-  importNames,
-  interpolate,
-  NamedClassDeclaration,
-  removeESLintComments,
-  removeTSClassDeclares,
-  removeTSIgnoreComments,
-  removeTSInterfaceDeclares,
   removeTSVariableDeclares,
+  removeTSInterfaceDeclares,
+  removeTSClassDeclares,
+  getClassDeclarationById,
+  removeESLintComments,
+  importContainedIdentifiers,
+  getMethods,
+  NamedClassDeclaration,
+  removeTSIgnoreComments,
 } from "../../../util/ast";
 import { isToManyRelationField } from "../../../util/field";
-import { readFile, relativeImportPath } from "../../../util/module";
 import { SRC_DIRECTORY } from "../../constants";
-import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
-  createFieldFindManyFunctionId,
   createServiceId,
+  createFieldFindManyFunctionId,
 } from "../service/create-service";
+import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
+import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
@@ -66,9 +67,17 @@ export async function createControllerModules(
     SELECT: createSelect(entityDTO, entity),
 
     CREATE_INPUT: entityDTOs.createInput.id,
-    CREATE_DATA_MAPPING: DATA_ID,
+    CREATE_DATA_MAPPING: createDataMapping(
+      entity,
+      entityDTOs.createInput,
+      DATA_ID
+    ),
     UPDATE_INPUT: entityDTOs.updateInput.id,
-    UPDATE_DATA_MAPPING: DATA_ID,
+    UPDATE_DATA_MAPPING: createDataMapping(
+      entity,
+      entityDTOs.updateInput,
+      DATA_ID
+    ),
     FIND_MANY_ARGS: entityDTOs.findManyArgs.id,
     WHERE_INPUT: entityDTOs.whereInput.id,
     /** @todo make dynamic */
