@@ -88,6 +88,12 @@ describe("Testing the generation of the ApiProperty decorator", () => {
       ).toBe(TYPE);
     });
   });
+  describe("Testing the build function", () => {
+    it("should return a decorator", () => {
+      const decorator = creator.build();
+      expect(decorator.type).toBe("Decorator");
+    });
+  });
 });
 
 const getDecoratorTitle = (decorator: namedTypes.Decorator) => {
