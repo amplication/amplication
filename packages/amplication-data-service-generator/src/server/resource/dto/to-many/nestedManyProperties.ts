@@ -17,7 +17,7 @@ export enum NestedMutationOptions {
   "ConnectOrCreate" = "connectOrCreate",
 }
 
-export function createCreateNestedManyProperties(
+export function createNestedManyProperties(
   field: EntityField,
   entity: Entity
 ): namedTypes.ClassProperty[] {
