@@ -16,6 +16,7 @@ import {
   isEnumField,
   isOneToOneRelationField,
   isRelationField,
+  isScalarListField,
   isToManyRelationField,
 } from "../../../util/field";
 import {
@@ -43,6 +44,7 @@ import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { FIELD_ID } from "./nestjs-graphql.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEntityListRelationFilterID } from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
+import { isScalarType } from "graphql";
 
 const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
@@ -436,7 +438,7 @@ export function createFieldValueTypeFromPrismaField(
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
-  if (prismaField.isList && isToManyRelationField(field) && !isQuery) {
+  if (prismaField.isList && !isQuery) {
     const itemPrismaField = {
       ...prismaField,
       isList: false,

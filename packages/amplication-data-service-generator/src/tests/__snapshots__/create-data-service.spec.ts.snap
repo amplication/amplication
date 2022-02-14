@@ -256,7 +256,7 @@ export type Customer = {
   favoriteNumber: number | null;
   geoLocation: string | null;
   comments: string | null;
-  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: Organization | null;
   vipOrganization?: Organization | null;
@@ -275,7 +275,7 @@ export type CustomerCreateInput = {
   favoriteNumber?: number | null;
   geoLocation?: string | null;
   comments?: string | null;
-  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
@@ -338,7 +338,7 @@ export type CustomerUpdateInput = {
   favoriteNumber?: number | null;
   geoLocation?: string | null;
   comments?: string | null;
-  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
@@ -704,7 +704,7 @@ import { JsonValue } from \\"type-fest\\";
 
 export type User = {
   username: string;
-  roles: string;
+  roles: Array<string>;
   id: string;
   name: string;
   bio: string;
@@ -715,7 +715,7 @@ export type User = {
   manager?: User | null;
   employees?: Array<User>;
   organizations?: Array<Organization>;
-  interests?: \\"programming\\" | \\"design\\";
+  interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
@@ -728,7 +728,7 @@ import { InputJsonValue } from \\"../../types\\";
 export type UserCreateInput = {
   username: string;
   password: string;
-  roles: string;
+  roles: Array<string>;
   name: string;
   bio: string;
   email: string;
@@ -736,7 +736,7 @@ export type UserCreateInput = {
   birthDate: Date;
   score: number;
   manager?: UserWhereUniqueInput | null;
-  interests?: \\"programming\\" | \\"design\\";
+  interests?: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
@@ -794,7 +794,7 @@ import { InputJsonValue } from \\"../../types\\";
 export type UserUpdateInput = {
   username?: string;
   password?: string;
-  roles?: string;
+  roles?: Array<string>;
   name?: string;
   bio?: string;
   email?: string;
@@ -802,7 +802,7 @@ export type UserUpdateInput = {
   birthDate?: Date;
   score?: number;
   manager?: UserWhereUniqueInput | null;
-  interests?: \\"programming\\" | \\"design\\";
+  interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
@@ -3508,7 +3508,7 @@ class Customer {
   @Field(() => EnumCustomerFavoriteColors, {
     nullable: true,
   })
-  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
 
   @ApiProperty({
     required: false,
@@ -3689,7 +3689,7 @@ class CustomerCreateInput {
   @Field(() => EnumCustomerFavoriteColors, {
     nullable: true,
   })
-  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
 
   @ApiProperty({
     required: false,
@@ -4170,7 +4170,7 @@ class CustomerUpdateInput {
   @Field(() => EnumCustomerFavoriteColors, {
     nullable: true,
   })
-  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
 
   @ApiProperty({
     required: false,
@@ -10983,7 +10983,7 @@ class User {
     each: true,
   })
   @Field(() => String)
-  roles!: string;
+  roles!: Array<string>;
 
   @ApiProperty({
     required: true,
@@ -11080,7 +11080,7 @@ class User {
   @Field(() => EnumUserInterests, {
     nullable: true,
   })
-  interests?: \\"programming\\" | \\"design\\";
+  interests?: Array<\\"programming\\" | \\"design\\">;
 
   @ApiProperty({
     required: true,
@@ -11175,7 +11175,7 @@ class UserCreateInput {
     each: true,
   })
   @Field(() => String)
-  roles!: string;
+  roles!: Array<string>;
 
   @ApiProperty({
     required: true,
@@ -11249,7 +11249,7 @@ class UserCreateInput {
   @Field(() => EnumUserInterests, {
     nullable: true,
   })
-  interests?: \\"programming\\" | \\"design\\";
+  interests?: Array<\\"programming\\" | \\"design\\">;
 
   @ApiProperty({
     required: true,
@@ -11651,7 +11651,7 @@ class UserUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  roles?: string;
+  roles?: Array<string>;
 
   @ApiProperty({
     required: false,
@@ -11743,7 +11743,7 @@ class UserUpdateInput {
   @Field(() => EnumUserInterests, {
     nullable: true,
   })
-  interests?: \\"programming\\" | \\"design\\";
+  interests?: Array<\\"programming\\" | \\"design\\">;
 
   @ApiProperty({
     required: false,
