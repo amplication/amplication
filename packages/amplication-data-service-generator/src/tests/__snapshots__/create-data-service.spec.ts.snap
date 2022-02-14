@@ -4904,7 +4904,21 @@ export class CustomerControllerBase {
       );
     }
     return await this.service.create({
-      data: data,
+      data: {
+        ...data,
+
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
+
+        vipOrganization: data.vipOrganization
+          ? {
+              connect: data.vipOrganization,
+            }
+          : undefined,
+      },
       select: {
         id: true,
         createdAt: true,
@@ -5100,7 +5114,21 @@ export class CustomerControllerBase {
     try {
       return await this.service.update({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          organization: data.organization
+            ? {
+                connect: data.organization,
+              }
+            : undefined,
+
+          vipOrganization: data.vipOrganization
+            ? {
+                connect: data.vipOrganization,
+              }
+            : undefined,
+        },
         select: {
           id: true,
           createdAt: true,
@@ -5563,12 +5591,6 @@ export class CustomerResolverBase {
               connect: args.data.vipOrganization,
             }
           : undefined,
-
-        orders: args.data.orders
-          ? {
-              connect: args.data.orders,
-            }
-          : undefined,
       },
     });
   }
@@ -5620,12 +5642,6 @@ export class CustomerResolverBase {
           vipOrganization: args.data.vipOrganization
             ? {
                 connect: args.data.vipOrganization,
-              }
-            : undefined,
-
-          orders: args.data.orders
-            ? {
-                connect: args.data.orders,
               }
             : undefined,
         },
@@ -7820,7 +7836,13 @@ export class OrderControllerBase {
       );
     }
     return await this.service.create({
-      data: data,
+      data: {
+        ...data,
+
+        customer: {
+          connect: data.customer,
+        },
+      },
       select: {
         id: true,
         createdAt: true,
@@ -7974,7 +7996,13 @@ export class OrderControllerBase {
     try {
       return await this.service.update({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          customer: {
+            connect: data.customer,
+          },
+        },
         select: {
           id: true,
           createdAt: true,
@@ -10223,21 +10251,7 @@ export class OrganizationResolverBase {
     // @ts-ignore
     return await this.service.create({
       ...args,
-      data: {
-        ...args.data,
-
-        users: {
-          connect: args.data.users,
-        },
-
-        customers: {
-          connect: args.data.customers,
-        },
-
-        vipCustomers: {
-          connect: args.data.vipCustomers,
-        },
-      },
+      data: args.data,
     });
   }
 
@@ -10276,21 +10290,7 @@ export class OrganizationResolverBase {
       // @ts-ignore
       return await this.service.update({
         ...args,
-        data: {
-          ...args.data,
-
-          users: {
-            connect: args.data.users,
-          },
-
-          customers: {
-            connect: args.data.customers,
-          },
-
-          vipCustomers: {
-            connect: args.data.vipCustomers,
-          },
-        },
+        data: args.data,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -12381,7 +12381,15 @@ export class UserControllerBase {
       );
     }
     return await this.service.create({
-      data: data,
+      data: {
+        ...data,
+
+        manager: data.manager
+          ? {
+              connect: data.manager,
+            }
+          : undefined,
+      },
       select: {
         username: true,
         roles: true,
@@ -12562,7 +12570,15 @@ export class UserControllerBase {
     try {
       return await this.service.update({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          manager: data.manager
+            ? {
+                connect: data.manager,
+              }
+            : undefined,
+        },
         select: {
           username: true,
           roles: true,
@@ -13193,18 +13209,6 @@ export class UserResolverBase {
               connect: args.data.manager,
             }
           : undefined,
-
-        employees: args.data.employees
-          ? {
-              connect: args.data.employees,
-            }
-          : undefined,
-
-        organizations: args.data.organizations
-          ? {
-              connect: args.data.organizations,
-            }
-          : undefined,
       },
     });
   }
@@ -13250,18 +13254,6 @@ export class UserResolverBase {
           manager: args.data.manager
             ? {
                 connect: args.data.manager,
-              }
-            : undefined,
-
-          employees: args.data.employees
-            ? {
-                connect: args.data.employees,
-              }
-            : undefined,
-
-          organizations: args.data.organizations
-            ? {
-                connect: args.data.organizations,
               }
             : undefined,
         },
