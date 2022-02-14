@@ -9,7 +9,6 @@ export enum InputTypeEnum {
   Update = "update",
   Where = "where",
   WhereUnique = "whereUnique",
-  NotInput = "not",
 }
 
 export function createInput(

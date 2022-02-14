@@ -206,7 +206,7 @@ describe("createFieldClassProperty", () => {
             optional,
             isQuery,
             isObjectType,
-            InputTypeEnum.NotInput
+            null
           )
         ).code
       ).toEqual(print(expected).code);
@@ -219,7 +219,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     string,
     EntityField,
     ScalarField | ObjectField,
-    InputTypeEnum,
+    InputTypeEnum | null,
     boolean,
     boolean,
     TSTypeKind[]
@@ -228,7 +228,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       "scalar type",
       EXAMPLE_ID_FIELD,
       createScalarField(EXAMPLE_ID_FIELD.name, ScalarType.String, false, true),
-      InputTypeEnum.NotInput,
+      null,
       false,
       false,
       [builders.tsStringKeyword()],
@@ -242,7 +242,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         true
       ),
-      InputTypeEnum.NotInput,
+      null,
       false,
       false,
       [
@@ -299,7 +299,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         false
       ),
-      InputTypeEnum.NotInput,
+      null,
       false,
       false,
       [
@@ -318,7 +318,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         true,
         true
       ),
-      InputTypeEnum.NotInput,
+      null,
       false,
       false,
       [

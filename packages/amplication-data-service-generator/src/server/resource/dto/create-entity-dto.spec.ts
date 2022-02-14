@@ -32,7 +32,7 @@ describe("createEntityDTO", () => {
               !EXAMPLE_ID_FIELD.required,
               false,
               true,
-              InputTypeEnum.NotInput
+              null
             ),
           ]),
           null,

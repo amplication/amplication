@@ -21,7 +21,7 @@ export function createEntityDTO(entity: Entity): NamedClassDeclaration {
         !field.required,
         false,
         true,
-        InputTypeEnum.NotInput
+        null
       )
     );
   return classDeclaration(

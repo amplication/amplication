@@ -7,9 +7,9 @@ import { createPrismaFields } from "../../../prisma/create-prisma-schema";
 import { CreateApiPropertyDecorator } from "../api-property-decorator/create-api-property-decorator";
 import {
   createFieldValueTypeFromPrismaField,
-  createGraphQLFieldDecorator,
   getTypeName,
 } from "../create-field-class-property";
+import { createGraphQLFieldDecorator } from "../create-graphql-field-decorator";
 import { InputTypeEnum } from "../create-input";
 
 export enum NestedMutationOptions {
