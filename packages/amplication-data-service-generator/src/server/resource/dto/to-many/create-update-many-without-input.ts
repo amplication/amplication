@@ -10,13 +10,10 @@ export function createUpdateManyWithoutInputDTOs(
   entity: Entity
 ): NamedClassDeclaration[] {
   const toManyFields = entity.fields.filter(isToManyRelationField);
-  if (toManyFields.length > 0) {
-    const createNestedManyWithoutInputDtos = toManyFields.map((field) =>
-      createUpdateManyWithoutInputDTO(entity, field)
-    );
-    return createNestedManyWithoutInputDtos;
-  }
-  return [];
+  const createNestedManyWithoutInputDtos = toManyFields.map((field) =>
+    createUpdateManyWithoutInputDTO(entity, field)
+  );
+  return createNestedManyWithoutInputDtos;
 }
 
 export function createUpdateManyWithoutInputDTO(

@@ -10,13 +10,10 @@ export function createCreateNestedManyDTOs(
   entity: Entity
 ): NamedClassDeclaration[] {
   const toManyFields = entity.fields.filter(isToManyRelationField);
-  if (toManyFields.length > 0) {
-    const createNestedManyWithoutInputDtos = toManyFields.map((field) =>
-      createCreateNestedManyDTO(entity, field)
-    );
-    return createNestedManyWithoutInputDtos;
-  }
-  return [];
+  const createNestedManyWithoutInputDtos = toManyFields.map((field) =>
+    createCreateNestedManyDTO(entity, field)
+  );
+  return createNestedManyWithoutInputDtos;
 }
 
 export function createCreateNestedManyDTO(
