@@ -9,7 +9,7 @@ export function createCreateNestedManyDTOs(
   entity: Entity
 ): NamedClassDeclaration[] {
   const toManyFields = entity.fields.filter(isToManyRelationField);
-  const createNestedManyWithoutInputDtos = toManyFields.map((field) =>
+  return toManyFields.map((field) =>
     createNestedInputDTO(
       createCreateNestedManyWithoutInputID(
         entity.pluralDisplayName,
@@ -19,7 +19,6 @@ export function createCreateNestedManyDTOs(
       field
     )
   );
-  return createNestedManyWithoutInputDtos;
 }
 
 export function createCreateNestedManyWithoutInputID(

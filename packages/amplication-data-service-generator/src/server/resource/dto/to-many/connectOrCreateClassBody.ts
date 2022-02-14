@@ -43,7 +43,7 @@ export function createCreateNestedManyProperties(
       entity,
       arrayType
     ),
-    //TODO
+    //TODO disconnect
     // createNestedManyProperty(NestedMutationOptions.Create, type),
     // createNestedManyProperty(NestedMutationOptions.ConnectOrCreate, type),
   ];
@@ -69,7 +69,7 @@ function createNestedManyProperty(
       true,
       entity,
       false,
-      InputTypeEnum.Create,
+      null,
       true
     )
   );
