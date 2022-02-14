@@ -3505,7 +3505,7 @@ class Customer {
     each: true,
   })
   @IsOptional()
-  @Field(() => EnumCustomerFavoriteColors, {
+  @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
@@ -3686,7 +3686,7 @@ class CustomerCreateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => EnumCustomerFavoriteColors, {
+  @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
@@ -4167,7 +4167,7 @@ class CustomerUpdateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => EnumCustomerFavoriteColors, {
+  @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
@@ -10982,7 +10982,7 @@ class User {
   @IsString({
     each: true,
   })
-  @Field(() => String)
+  @Field(() => [String])
   roles!: Array<string>;
 
   @ApiProperty({
@@ -11077,7 +11077,7 @@ class User {
     each: true,
   })
   @IsOptional()
-  @Field(() => EnumUserInterests, {
+  @Field(() => [EnumUserInterests], {
     nullable: true,
   })
   interests?: Array<\\"programming\\" | \\"design\\">;
@@ -11174,7 +11174,7 @@ class UserCreateInput {
   @IsString({
     each: true,
   })
-  @Field(() => String)
+  @Field(() => [String])
   roles!: Array<string>;
 
   @ApiProperty({
@@ -11246,7 +11246,7 @@ class UserCreateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => EnumUserInterests, {
+  @Field(() => [EnumUserInterests], {
     nullable: true,
   })
   interests?: Array<\\"programming\\" | \\"design\\">;
@@ -11648,7 +11648,7 @@ class UserUpdateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => String, {
+  @Field(() => [String], {
     nullable: true,
   })
   roles?: Array<string>;
@@ -11740,7 +11740,7 @@ class UserUpdateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => EnumUserInterests, {
+  @Field(() => [EnumUserInterests], {
     nullable: true,
   })
   interests?: Array<\\"programming\\" | \\"design\\">;

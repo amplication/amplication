@@ -32,7 +32,7 @@ type EntityDTOs = {
   createArgs?: NamedClassDeclaration;
   updateArgs?: NamedClassDeclaration;
   orderByInput: NamedClassDeclaration;
-  entityListRelationFilter: NamedClassDeclaration;
+  listRelationFilter: NamedClassDeclaration;
 };
 
 type EntityEnumDTOs = {
@@ -105,7 +105,7 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
     whereUniqueInput,
     updateInput
   );
-  const entityListRelationFilter = await createEntityListRelationFilter(
+  const listRelationFilter = await createEntityListRelationFilter(
     entity,
     whereInput
   );
@@ -119,7 +119,7 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
     findManyArgs,
     findOneArgs,
     orderByInput,
-    entityListRelationFilter,
+    listRelationFilter,
   };
   if (createArgs) {
     dtos.createArgs = createArgs;
