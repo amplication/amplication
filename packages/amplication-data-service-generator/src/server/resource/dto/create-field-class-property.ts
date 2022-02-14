@@ -271,7 +271,9 @@ export function createFieldClassProperty(
         TYPE_ID,
         builders.arrowFunctionExpression(
           [],
-          prismaField.isList && !isToManyRelationField(field) ? builders.arrayExpression([typeName]) : typeName
+          prismaField.isList && !isToManyRelationField(field)
+            ? builders.arrayExpression([typeName])
+            : typeName
         )
       )
     );
@@ -434,7 +436,7 @@ export function createFieldValueTypeFromPrismaField(
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
-  if (prismaField.isList) {
+  if (prismaField.isList && !isToManyRelationField(field)) {
     const itemPrismaField = {
       ...prismaField,
       isList: false,
@@ -475,7 +477,7 @@ export function createFieldValueTypeFromPrismaField(
   if (isToManyRelationField(field)) {
     return [
       builders.tsTypeReference(
-          createEntityListRelationFilterID(prismaField.type)
+        createEntityListRelationFilterID(prismaField.type)
       ),
     ];
   } else if (isQuery || isInput) {

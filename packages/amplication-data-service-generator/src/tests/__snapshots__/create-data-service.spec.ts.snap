@@ -241,7 +241,7 @@ export type CreateCustomerArgs = {
 };
 ",
   "admin-ui/src/api/customer/Customer.ts": "import { Organization } from \\"../organization/Organization\\";
-import { Order } from \\"../order/Order\\";
+import { OrderListRelationFilter } from \\"../order/OrderListRelationFilter\\";
 
 export type Customer = {
   id: string;
@@ -260,7 +260,7 @@ export type Customer = {
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: Organization | null;
   vipOrganization?: Organization | null;
-  orders?: Array<Order>;
+  orders?: OrderListRelationFilter;
 };
 ",
   "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -352,7 +352,7 @@ import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
 import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
+import { OrderListRelationFilter } from \\"../order/OrderListRelationFilter\\";
 
 export type CustomerWhereInput = {
   id?: StringFilter;
@@ -370,7 +370,7 @@ export type CustomerWhereInput = {
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
   organization?: OrganizationWhereUniqueInput;
   vipOrganization?: OrganizationWhereUniqueInput;
-  orders?: Array<OrderWhereUniqueInput>;
+  orders?: OrderListRelationFilter;
 };
 ",
   "admin-ui/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
@@ -587,17 +587,17 @@ export type DeleteOrganizationArgs = {
   where: OrganizationWhereUniqueInput;
 };
 ",
-  "admin-ui/src/api/organization/Organization.ts": "import { User } from \\"../user/User\\";
-import { Customer } from \\"../customer/Customer\\";
+  "admin-ui/src/api/organization/Organization.ts": "import { UserListRelationFilter } from \\"../user/UserListRelationFilter\\";
+import { CustomerListRelationFilter } from \\"../customer/CustomerListRelationFilter\\";
 
 export type Organization = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
   name: string;
-  users?: Array<User>;
-  customers?: Array<Customer>;
-  vipCustomers?: Array<Customer>;
+  users?: UserListRelationFilter;
+  customers?: CustomerListRelationFilter;
+  vipCustomers?: CustomerListRelationFilter;
 };
 ",
   "admin-ui/src/api/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
@@ -643,17 +643,17 @@ export type OrganizationOrderByInput = {
 ",
   "admin-ui/src/api/organization/OrganizationWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
-import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
-import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { UserListRelationFilter } from \\"../user/UserListRelationFilter\\";
+import { CustomerListRelationFilter } from \\"../customer/CustomerListRelationFilter\\";
 
 export type OrganizationWhereInput = {
   id?: StringFilter;
   createdAt?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
   name?: StringFilter;
-  users?: Array<UserWhereUniqueInput>;
-  customers?: Array<CustomerWhereUniqueInput>;
-  vipCustomers?: Array<CustomerWhereUniqueInput>;
+  users?: UserListRelationFilter;
+  customers?: CustomerListRelationFilter;
+  vipCustomers?: CustomerListRelationFilter;
 };
 ",
   "admin-ui/src/api/organization/OrganizationWhereUniqueInput.ts": "export type OrganizationWhereUniqueInput = {
@@ -699,7 +699,8 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { Organization } from \\"../organization/Organization\\";
+  "admin-ui/src/api/user/User.ts": "import { UserListRelationFilter } from \\"./UserListRelationFilter\\";
+import { OrganizationListRelationFilter } from \\"../organization/OrganizationListRelationFilter\\";
 import { JsonValue } from \\"type-fest\\";
 
 export type User = {
@@ -713,8 +714,8 @@ export type User = {
   birthDate: Date;
   score: number;
   manager?: User | null;
-  employees?: Array<User>;
-  organizations?: Array<Organization>;
+  employees?: UserListRelationFilter;
+  organizations?: OrganizationListRelationFilter;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -813,7 +814,7 @@ export type UserUpdateInput = {
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrganizationListRelationFilter } from \\"../organization/OrganizationListRelationFilter\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonFilter } from \\"../../util/JsonFilter\\";
 
@@ -824,7 +825,7 @@ export type UserWhereInput = {
   age?: IntFilter;
   birthDate?: DateTimeFilter;
   manager?: UserWhereUniqueInput;
-  organizations?: Array<OrganizationWhereUniqueInput>;
+  organizations?: OrganizationListRelationFilter;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: BooleanFilter;
   location?: StringFilter;
@@ -3373,7 +3374,7 @@ import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { Organization } from \\"../../organization/base/Organization\\";
-import { Order } from \\"../../order/base/Order\\";
+import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFilter\\";
 @ObjectType()
 class Customer {
   @ApiProperty({
@@ -3541,12 +3542,12 @@ class Customer {
 
   @ApiProperty({
     required: false,
-    type: () => [Order],
+    type: () => OrderListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => Order)
+  @Type(() => OrderListRelationFilter)
   @IsOptional()
-  orders?: Array<Order>;
+  orders?: OrderListRelationFilter;
 }
 export { Customer };
 ",
@@ -4233,7 +4234,6 @@ import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
-import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFilter\\";
 @InputType()
 class CustomerWhereInput {
@@ -4406,15 +4406,15 @@ class CustomerWhereInput {
 
   @ApiProperty({
     required: false,
-    type: () => [OrderWhereUniqueInput],
+    type: () => OrderListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => OrderWhereUniqueInput)
+  @Type(() => OrderListRelationFilter)
   @IsOptional()
-  @Field(() => [OrderListRelationFilter], {
+  @Field(() => OrderListRelationFilter, {
     nullable: true,
   })
-  orders?: Array<OrderWhereUniqueInput>;
+  orders?: OrderListRelationFilter;
 }
 export { CustomerWhereInput };
 ",
@@ -8540,8 +8540,8 @@ import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { User } from \\"../../user/base/User\\";
-import { Customer } from \\"../../customer/base/Customer\\";
+import { UserListRelationFilter } from \\"../../user/base/UserListRelationFilter\\";
+import { CustomerListRelationFilter } from \\"../../customer/base/CustomerListRelationFilter\\";
 @ObjectType()
 class Organization {
   @ApiProperty({
@@ -8578,30 +8578,30 @@ class Organization {
 
   @ApiProperty({
     required: true,
-    type: () => [User],
+    type: () => UserListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => User)
+  @Type(() => UserListRelationFilter)
   @IsOptional()
-  users?: Array<User>;
+  users?: UserListRelationFilter;
 
   @ApiProperty({
     required: true,
-    type: () => [Customer],
+    type: () => CustomerListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerListRelationFilter)
   @IsOptional()
-  customers?: Array<Customer>;
+  customers?: CustomerListRelationFilter;
 
   @ApiProperty({
     required: true,
-    type: () => [Customer],
+    type: () => CustomerListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerListRelationFilter)
   @IsOptional()
-  vipCustomers?: Array<Customer>;
+  vipCustomers?: CustomerListRelationFilter;
 }
 export { Organization };
 ",
@@ -8869,9 +8869,7 @@ import { StringFilter } from \\"../../util/StringFilter\\";
 import { Type } from \\"class-transformer\\";
 import { IsOptional, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { UserListRelationFilter } from \\"../../user/base/UserListRelationFilter\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { CustomerListRelationFilter } from \\"../../customer/base/CustomerListRelationFilter\\";
 @InputType()
 class OrganizationWhereInput {
@@ -8921,39 +8919,39 @@ class OrganizationWhereInput {
 
   @ApiProperty({
     required: false,
-    type: () => [UserWhereUniqueInput],
+    type: () => UserListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => UserWhereUniqueInput)
+  @Type(() => UserListRelationFilter)
   @IsOptional()
-  @Field(() => [UserListRelationFilter], {
+  @Field(() => UserListRelationFilter, {
     nullable: true,
   })
-  users?: Array<UserWhereUniqueInput>;
+  users?: UserListRelationFilter;
 
   @ApiProperty({
     required: false,
-    type: () => [CustomerWhereUniqueInput],
+    type: () => CustomerListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => CustomerWhereUniqueInput)
+  @Type(() => CustomerListRelationFilter)
   @IsOptional()
-  @Field(() => [CustomerListRelationFilter], {
+  @Field(() => CustomerListRelationFilter, {
     nullable: true,
   })
-  customers?: Array<CustomerWhereUniqueInput>;
+  customers?: CustomerListRelationFilter;
 
   @ApiProperty({
     required: false,
-    type: () => [CustomerWhereUniqueInput],
+    type: () => CustomerListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => CustomerWhereUniqueInput)
+  @Type(() => CustomerListRelationFilter)
   @IsOptional()
-  @Field(() => [CustomerListRelationFilter], {
+  @Field(() => CustomerListRelationFilter, {
     nullable: true,
   })
-  vipCustomers?: Array<CustomerWhereUniqueInput>;
+  vipCustomers?: CustomerListRelationFilter;
 }
 export { OrganizationWhereInput };
 ",
@@ -10963,7 +10961,8 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../../organization/base/Organization\\";
+import { UserListRelationFilter } from \\"./UserListRelationFilter\\";
+import { OrganizationListRelationFilter } from \\"../../organization/base/OrganizationListRelationFilter\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -11055,21 +11054,21 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: () => [User],
+    type: () => UserListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => User)
+  @Type(() => UserListRelationFilter)
   @IsOptional()
-  employees?: Array<User>;
+  employees?: UserListRelationFilter;
 
   @ApiProperty({
     required: false,
-    type: () => [Organization],
+    type: () => OrganizationListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationListRelationFilter)
   @IsOptional()
-  organizations?: Array<Organization>;
+  organizations?: OrganizationListRelationFilter;
 
   @ApiProperty({
     required: true,
@@ -11812,7 +11811,6 @@ import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { OrganizationListRelationFilter } from \\"../../organization/base/OrganizationListRelationFilter\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
@@ -11888,15 +11886,15 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
-    type: () => [OrganizationWhereUniqueInput],
+    type: () => OrganizationListRelationFilter,
   })
   @ValidateNested()
-  @Type(() => OrganizationWhereUniqueInput)
+  @Type(() => OrganizationListRelationFilter)
   @IsOptional()
-  @Field(() => [OrganizationListRelationFilter], {
+  @Field(() => OrganizationListRelationFilter, {
     nullable: true,
   })
-  organizations?: Array<OrganizationWhereUniqueInput>;
+  organizations?: OrganizationListRelationFilter;
 
   @ApiProperty({
     required: false,
