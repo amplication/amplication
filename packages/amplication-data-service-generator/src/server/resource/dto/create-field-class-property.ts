@@ -271,7 +271,7 @@ export function createFieldClassProperty(
         TYPE_ID,
         builders.arrowFunctionExpression(
           [],
-          prismaField.isList ? builders.arrayExpression([typeName]) : typeName
+          prismaField.isList && !isToManyRelationField(field) ? builders.arrayExpression([typeName]) : typeName
         )
       )
     );
@@ -346,7 +346,7 @@ function createGraphQLFieldType(
   entity: Entity,
   isQuery: boolean
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
-  if (prismaField.isList) {
+  if (prismaField.isList && !isToManyRelationField(field)) {
     const itemType = createGraphQLFieldType(
       { ...prismaField, isList: false },
       field,
@@ -472,8 +472,7 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-
-  if ((isQuery || isInput) && isToManyRelationField(field)) {
+  if (isToManyRelationField(field)) {
     return [
       builders.tsTypeReference(
           createEntityListRelationFilterID(prismaField.type)
