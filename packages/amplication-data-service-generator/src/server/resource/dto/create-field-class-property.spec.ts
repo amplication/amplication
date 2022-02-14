@@ -219,6 +219,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     string,
     EntityField,
     ScalarField | ObjectField,
+    InputTypeEnum,
     boolean,
     boolean,
     TSTypeKind[]
@@ -227,6 +228,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       "scalar type",
       EXAMPLE_ID_FIELD,
       createScalarField(EXAMPLE_ID_FIELD.name, ScalarType.String, false, true),
+      InputTypeEnum.NotInput,
       false,
       false,
       [builders.tsStringKeyword()],
@@ -240,6 +242,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         true
       ),
+      InputTypeEnum.NotInput,
       false,
       false,
       [
@@ -257,7 +260,8 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         true
       ),
-      true,
+      InputTypeEnum.Create,
+      false,
       false,
       [
         builders.tsTypeReference(
@@ -274,7 +278,8 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         false
       ),
-      true,
+      InputTypeEnum.Create,
+      false,
       false,
       [
         builders.tsUnionType([
@@ -294,6 +299,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         false
       ),
+      InputTypeEnum.NotInput,
       false,
       false,
       [
@@ -312,6 +318,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         true,
         true
       ),
+      InputTypeEnum.NotInput,
       false,
       false,
       [
@@ -322,7 +329,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
   ];
   test.each(cases)(
     "%s",
-    (name, field, prismaField, isEnum, isNestedInput, expected) => {
+    (name, field, prismaField, inputType, isEnum, isNestedInput, expected) => {
       expect(
         createFieldValueTypeFromPrismaField(
           "Names",
@@ -333,7 +340,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
           false,
           false,
           isNestedInput,
-          InputTypeEnum.NotInput
+          inputType
         )
       ).toEqual(expected);
     }
