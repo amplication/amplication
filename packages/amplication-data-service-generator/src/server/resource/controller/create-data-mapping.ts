@@ -1,8 +1,8 @@
-import { namedTypes, builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { ExpressionKind } from "ast-types/gen/kinds";
-import { isRelationField } from "../../../util/field";
 import { Entity } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
+import { isOneToOneRelationField } from "../../../util/field";
 
 export const CONNECT_ID = builders.identifier("connect");
 export const UNDEFINED_ID = builders.identifier("undefined");
@@ -13,7 +13,7 @@ export function createDataMapping(
   data: ExpressionKind
 ): ExpressionKind {
   const relationFields = entity.fields.filter((field) =>
-    isRelationField(field)
+    isOneToOneRelationField(field)
   );
   const relationFieldNames = new Set(relationFields.map((field) => field.name));
   const optionalRelationFieldNames = new Set(
