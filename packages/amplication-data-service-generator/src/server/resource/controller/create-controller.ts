@@ -88,31 +88,32 @@ export async function createControllerModules(
 
     SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
   };
-  const controllerClass = await createControllerModule(
-    controllerTemplatePath,
-    entityName,
-    entityType,
-    entityServiceModule,
-    entity,
-    dtos,
-    mapping,
-    controllerBaseId,
-    serviceId,
-    false
-  );
-  const baseControllerClass = await createControllerModule(
-    controllerBaseTemplatePath,
-    entityName,
-    entityType,
-    entityServiceModule,
-    entity,
-    dtos,
-    mapping,
-    controllerBaseId,
-    serviceId,
-    true
-  );
-  return [controllerClass, baseControllerClass];
+  return [
+    await createControllerModule(
+      controllerTemplatePath,
+      entityName,
+      entityType,
+      entityServiceModule,
+      entity,
+      dtos,
+      mapping,
+      controllerBaseId,
+      serviceId,
+      false
+    ),
+    await createControllerModule(
+      controllerBaseTemplatePath,
+      entityName,
+      entityType,
+      entityServiceModule,
+      entity,
+      dtos,
+      mapping,
+      controllerBaseId,
+      serviceId,
+      true
+    ),
+  ];
 }
 
 async function createControllerModule(
