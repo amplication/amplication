@@ -16,7 +16,6 @@ import {
   isEnumField,
   isOneToOneRelationField,
   isRelationField,
-  isScalarListField,
   isToManyRelationField,
 } from "../../../util/field";
 import {
