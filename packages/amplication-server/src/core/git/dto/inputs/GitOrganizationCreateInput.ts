@@ -3,19 +3,19 @@ import { Field, InputType } from '@nestjs/graphql';
 @InputType({
   isAbstract: true
 })
-export class CompleteAuthorizeAppWithGithubInput {
+export class GitOrganizationCreateInput {
   @Field(() => String, {
     nullable: false
   })
-  code!: string;
+  name!: string;
+
+  @Field(() => Number, {
+    nullable: false
+  })
+  installationId!: number;
 
   @Field(() => String, {
     nullable: false
   })
-  state!: string;
-
-  @Field(() => String, {
-    nullable: false
-  })
-  installationId!: string;
+  code: string;
 }

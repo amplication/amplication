@@ -9,6 +9,10 @@ github_redirect_uri = "https://app.amplication.com/github/callback"
 
 github_app_auth_scope       = "user:email,repo,read:org"
 github_app_auth_redirect_uri = "https://app.amplication.com/github-auth-app/callback/{appId}"
+github_app_private_key = "value" //todo
+github_app_client_secret = "value" //todo         
+github_app_client_id = "value" //todo        
+github_app_app_id = "value" //todo
 
 # Amplitude
 amplitude_api_key = "d6c2950cd60b91196e678f9a3a7ac705"

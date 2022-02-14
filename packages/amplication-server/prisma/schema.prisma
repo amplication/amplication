@@ -8,18 +8,17 @@ datasource db {
 }
 
 model Account {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  email         String   @unique(map: "Account.email_unique")
-  firstName     String
-  lastName      String
-  password      String
-  currentUserId String?  @unique(map: "Account.currentUserId_unique")
-  githubId      String?
-  currentUser   User?    @relation(fields: [currentUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  users         User[]   @relation("AccountOnUser")
-  gitOrganizations GitOrganization[]
+  id               String            @id @default(cuid())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  email            String            @unique(map: "Account.email_unique")
+  firstName        String
+  lastName         String
+  password         String
+  currentUserId    String?           @unique(map: "Account.currentUserId_unique")
+  githubId         String?
+  currentUser      User?             @relation(fields: [currentUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  users            User[]            @relation("AccountOnUser")
 }
 
 model Workspace {
@@ -29,6 +28,30 @@ model Workspace {
   name      String   @unique(map: "Workspace.name_unique")
   apps      App[]
   users     User[]
+  gitOrganizations GitOrganization[]
+}
+
+model GitOrganization {
+  id             String          @id @default(cuid())
+  provider       EnumProvider
+  name           String
+  installationId Int
+  code           String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  gitRepository  GitRepository[]
+  workspaceId    String
+  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+}
+
+model GitRepository {
+  id                String           @id @default(cuid())
+  name              String
+  app               App[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  gitOrganization   GitOrganization? @relation(fields: [gitOrganizationId], references: [id])
+  gitOrganizationId String?
 }
 
 model User {
@@ -105,29 +128,6 @@ model App {
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
 }
-
-model GitOrganization {
-  id             String          @id @default(cuid())
-  provider       EnumProvider
-  name           String
-  installationId Int
-  code           String
-  createdAt      DateTime
-  updatedAt      DateTime
-  gitRepository  GitRepository[]
-  accounts       Account[]
-}
-
-model GitRepository {
-  id                String           @id @default(cuid())
-  name              String
-  app               App[]
-  createdAt         DateTime
-  updatedAt         DateTime
-  gitOrganization   GitOrganization? @relation(fields: [gitOrganizationId], references: [id])
-  gitOrganizationId String?
-}
-
 
 model AppRole {
   id                    String                 @id @default(cuid())

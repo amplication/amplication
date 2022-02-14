@@ -8,23 +8,11 @@ import { GitOrganization } from './GitOrganization';
 })
 export class GitRepository {
 
-  @Field(() => Number, {
-    nullable: false,
-    description: undefined
-  })
-  id!: number;
-  
   @Field(() => String, {
     nullable: false,
     description: undefined
   })
-  uid!: string;
-
-  @Field(() => Number, {
-    nullable: false,
-    description: undefined
-  })
-  organizationId!: number;
+  id!: string;
 
   @Field(() => GitOrganization, {
     nullable: false,
@@ -37,12 +25,6 @@ export class GitRepository {
     description: undefined
   })
   name!: string;
-
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
-  appId!: string;
 
   @Field(() => Date, {
     nullable: false,
@@ -57,5 +39,5 @@ export class GitRepository {
   updatedAt?: Date; 
 
   @Field(() => [App])
-  apps?: App[];
+  app?: App;
 } 

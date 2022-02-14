@@ -24,6 +24,10 @@ module "env" {
   image_id                         = var.image_id
   bcrypt_salt_or_rounds            = var.bcrypt_salt_or_rounds
   github_client_secret_id          = var.github_client_secret_id
+  github_app_private_key           = var.github_app_private_key
+  github_app_client_secret         = var.github_app_client_secret
+  github_app_client_id             = var.github_app_client_id
+  github_app_app_id                = var.github_app_app_id
   feature_flags                    = var.feature_flags
   default_disk                     = var.default_disk
   host                             = var.host

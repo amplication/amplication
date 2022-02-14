@@ -10,8 +10,10 @@ github_redirect_uri = "https://staging.amplication.com/github/callback"
 
 github_app_auth_scope       = "user:email,repo,read:org"
 github_app_auth_redirect_uri = "https://staging.amplication.com/github-auth-app/callback/{appId}"
-
-
+github_app_private_key = "value" //todo
+github_app_client_secret = "value" //todo         
+github_app_client_id = "value" //todo        
+github_app_app_id = "value" //todo 
 # Segment
 amplitude_api_key = "aVqxCAcXOdCx5DPI41s6EmwsSCB8Kjz6"
 

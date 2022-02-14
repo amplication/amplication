@@ -3,7 +3,7 @@ import { CompleteAuthorizeAppWithGithubInput } from './CompleteAuthorizeAppWithG
 import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()
-export class CompleteAuthorizeAppWithGithubArgs {
+export class CompleteAuthorizeAppWithGithubArgs{
   @Field(() => CompleteAuthorizeAppWithGithubInput, { nullable: false })
   data!: CompleteAuthorizeAppWithGithubInput;
 
