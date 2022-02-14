@@ -15,6 +15,7 @@ import { classProperty, createGenericArray } from "../../../util/ast";
 import {
   isEnumField,
   isOneToOneRelationField,
+  isRelationField,
   isToManyRelationField,
 } from "../../../util/field";
 import {
@@ -271,7 +272,7 @@ export function createFieldClassProperty(
         TYPE_ID,
         builders.arrowFunctionExpression(
           [],
-          prismaField.isList && !isToManyRelationField(field)
+          prismaField.isList && isToManyRelationField(field) && !isQuery
             ? builders.arrayExpression([typeName])
             : typeName
         )
@@ -290,8 +291,7 @@ export function createFieldClassProperty(
   if (
     prismaField.kind !== FieldKind.Object ||
     isEnum ||
-    (isInput && isOneToOneRelationField(field)) ||
-    (isInput && isToManyRelationField(field))
+    (isInput && isRelationField(field))
   ) {
     decorators.push(
       createGraphQLFieldDecorator(
@@ -348,7 +348,7 @@ function createGraphQLFieldType(
   entity: Entity,
   isQuery: boolean
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
-  if (prismaField.isList && !isToManyRelationField(field)) {
+  if (prismaField.isList && isToManyRelationField(field) && !isQuery) {
     const itemType = createGraphQLFieldType(
       { ...prismaField, isList: false },
       field,
@@ -436,7 +436,7 @@ export function createFieldValueTypeFromPrismaField(
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
-  if (prismaField.isList && !isToManyRelationField(field)) {
+  if (prismaField.isList && isToManyRelationField(field) && !isQuery) {
     const itemPrismaField = {
       ...prismaField,
       isList: false,
@@ -474,7 +474,7 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-  if (isToManyRelationField(field)) {
+  if (isToManyRelationField(field) && isQuery) {
     return [
       builders.tsTypeReference(
         createEntityListRelationFilterID(prismaField.type)

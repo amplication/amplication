@@ -241,7 +241,7 @@ export type CreateCustomerArgs = {
 };
 ",
   "admin-ui/src/api/customer/Customer.ts": "import { Organization } from \\"../organization/Organization\\";
-import { OrderListRelationFilter } from \\"../order/OrderListRelationFilter\\";
+import { Order } from \\"../order/Order\\";
 
 export type Customer = {
   id: string;
@@ -256,11 +256,11 @@ export type Customer = {
   favoriteNumber: number | null;
   geoLocation: string | null;
   comments: string | null;
-  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: Organization | null;
   vipOrganization?: Organization | null;
-  orders?: OrderListRelationFilter;
+  orders?: Array<Order>;
 };
 ",
   "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -275,7 +275,7 @@ export type CustomerCreateInput = {
   favoriteNumber?: number | null;
   geoLocation?: string | null;
   comments?: string | null;
-  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
@@ -338,7 +338,7 @@ export type CustomerUpdateInput = {
   favoriteNumber?: number | null;
   geoLocation?: string | null;
   comments?: string | null;
-  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
@@ -587,17 +587,17 @@ export type DeleteOrganizationArgs = {
   where: OrganizationWhereUniqueInput;
 };
 ",
-  "admin-ui/src/api/organization/Organization.ts": "import { UserListRelationFilter } from \\"../user/UserListRelationFilter\\";
-import { CustomerListRelationFilter } from \\"../customer/CustomerListRelationFilter\\";
+  "admin-ui/src/api/organization/Organization.ts": "import { User } from \\"../user/User\\";
+import { Customer } from \\"../customer/Customer\\";
 
 export type Organization = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
   name: string;
-  users?: UserListRelationFilter;
-  customers?: CustomerListRelationFilter;
-  vipCustomers?: CustomerListRelationFilter;
+  users?: Array<User>;
+  customers?: Array<Customer>;
+  vipCustomers?: Array<Customer>;
 };
 ",
   "admin-ui/src/api/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
@@ -699,13 +699,12 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { UserListRelationFilter } from \\"./UserListRelationFilter\\";
-import { OrganizationListRelationFilter } from \\"../organization/OrganizationListRelationFilter\\";
+  "admin-ui/src/api/user/User.ts": "import { Organization } from \\"../organization/Organization\\";
 import { JsonValue } from \\"type-fest\\";
 
 export type User = {
   username: string;
-  roles: Array<string>;
+  roles: string;
   id: string;
   name: string;
   bio: string;
@@ -714,9 +713,9 @@ export type User = {
   birthDate: Date;
   score: number;
   manager?: User | null;
-  employees?: UserListRelationFilter;
-  organizations?: OrganizationListRelationFilter;
-  interests?: Array<\\"programming\\" | \\"design\\">;
+  employees?: Array<User>;
+  organizations?: Array<Organization>;
+  interests?: \\"programming\\" | \\"design\\";
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
@@ -729,7 +728,7 @@ import { InputJsonValue } from \\"../../types\\";
 export type UserCreateInput = {
   username: string;
   password: string;
-  roles: Array<string>;
+  roles: string;
   name: string;
   bio: string;
   email: string;
@@ -737,7 +736,7 @@ export type UserCreateInput = {
   birthDate: Date;
   score: number;
   manager?: UserWhereUniqueInput | null;
-  interests?: Array<\\"programming\\" | \\"design\\">;
+  interests?: \\"programming\\" | \\"design\\";
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
@@ -795,7 +794,7 @@ import { InputJsonValue } from \\"../../types\\";
 export type UserUpdateInput = {
   username?: string;
   password?: string;
-  roles?: Array<string>;
+  roles?: string;
   name?: string;
   bio?: string;
   email?: string;
@@ -803,7 +802,7 @@ export type UserUpdateInput = {
   birthDate?: Date;
   score?: number;
   manager?: UserWhereUniqueInput | null;
-  interests?: Array<\\"programming\\" | \\"design\\">;
+  interests?: \\"programming\\" | \\"design\\";
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
@@ -3374,7 +3373,7 @@ import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { Organization } from \\"../../organization/base/Organization\\";
-import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFilter\\";
+import { Order } from \\"../../order/base/Order\\";
 @ObjectType()
 class Customer {
   @ApiProperty({
@@ -3506,10 +3505,10 @@ class Customer {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumCustomerFavoriteColors], {
+  @Field(() => EnumCustomerFavoriteColors, {
     nullable: true,
   })
-  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
 
   @ApiProperty({
     required: false,
@@ -3542,12 +3541,12 @@ class Customer {
 
   @ApiProperty({
     required: false,
-    type: () => OrderListRelationFilter,
+    type: () => [Order],
   })
   @ValidateNested()
-  @Type(() => OrderListRelationFilter)
+  @Type(() => Order)
   @IsOptional()
-  orders?: OrderListRelationFilter;
+  orders?: Array<Order>;
 }
 export { Customer };
 ",
@@ -3687,10 +3686,10 @@ class CustomerCreateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumCustomerFavoriteColors], {
+  @Field(() => EnumCustomerFavoriteColors, {
     nullable: true,
   })
-  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
 
   @ApiProperty({
     required: false,
@@ -4168,10 +4167,10 @@ class CustomerUpdateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumCustomerFavoriteColors], {
+  @Field(() => EnumCustomerFavoriteColors, {
     nullable: true,
   })
-  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  favoriteColors?: \\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\";
 
   @ApiProperty({
     required: false,
@@ -8540,8 +8539,8 @@ import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { UserListRelationFilter } from \\"../../user/base/UserListRelationFilter\\";
-import { CustomerListRelationFilter } from \\"../../customer/base/CustomerListRelationFilter\\";
+import { User } from \\"../../user/base/User\\";
+import { Customer } from \\"../../customer/base/Customer\\";
 @ObjectType()
 class Organization {
   @ApiProperty({
@@ -8578,30 +8577,30 @@ class Organization {
 
   @ApiProperty({
     required: true,
-    type: () => UserListRelationFilter,
+    type: () => [User],
   })
   @ValidateNested()
-  @Type(() => UserListRelationFilter)
+  @Type(() => User)
   @IsOptional()
-  users?: UserListRelationFilter;
+  users?: Array<User>;
 
   @ApiProperty({
     required: true,
-    type: () => CustomerListRelationFilter,
+    type: () => [Customer],
   })
   @ValidateNested()
-  @Type(() => CustomerListRelationFilter)
+  @Type(() => Customer)
   @IsOptional()
-  customers?: CustomerListRelationFilter;
+  customers?: Array<Customer>;
 
   @ApiProperty({
     required: true,
-    type: () => CustomerListRelationFilter,
+    type: () => [Customer],
   })
   @ValidateNested()
-  @Type(() => CustomerListRelationFilter)
+  @Type(() => Customer)
   @IsOptional()
-  vipCustomers?: CustomerListRelationFilter;
+  vipCustomers?: Array<Customer>;
 }
 export { Organization };
 ",
@@ -10961,8 +10960,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
-import { UserListRelationFilter } from \\"./UserListRelationFilter\\";
-import { OrganizationListRelationFilter } from \\"../../organization/base/OrganizationListRelationFilter\\";
+import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -10984,8 +10982,8 @@ class User {
   @IsString({
     each: true,
   })
-  @Field(() => [String])
-  roles!: Array<string>;
+  @Field(() => String)
+  roles!: string;
 
   @ApiProperty({
     required: true,
@@ -11054,21 +11052,21 @@ class User {
 
   @ApiProperty({
     required: false,
-    type: () => UserListRelationFilter,
+    type: () => [User],
   })
   @ValidateNested()
-  @Type(() => UserListRelationFilter)
+  @Type(() => User)
   @IsOptional()
-  employees?: UserListRelationFilter;
+  employees?: Array<User>;
 
   @ApiProperty({
     required: false,
-    type: () => OrganizationListRelationFilter,
+    type: () => [Organization],
   })
   @ValidateNested()
-  @Type(() => OrganizationListRelationFilter)
+  @Type(() => Organization)
   @IsOptional()
-  organizations?: OrganizationListRelationFilter;
+  organizations?: Array<Organization>;
 
   @ApiProperty({
     required: true,
@@ -11079,10 +11077,10 @@ class User {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumUserInterests], {
+  @Field(() => EnumUserInterests, {
     nullable: true,
   })
-  interests?: Array<\\"programming\\" | \\"design\\">;
+  interests?: \\"programming\\" | \\"design\\";
 
   @ApiProperty({
     required: true,
@@ -11176,8 +11174,8 @@ class UserCreateInput {
   @IsString({
     each: true,
   })
-  @Field(() => [String])
-  roles!: Array<string>;
+  @Field(() => String)
+  roles!: string;
 
   @ApiProperty({
     required: true,
@@ -11248,10 +11246,10 @@ class UserCreateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumUserInterests], {
+  @Field(() => EnumUserInterests, {
     nullable: true,
   })
-  interests?: Array<\\"programming\\" | \\"design\\">;
+  interests?: \\"programming\\" | \\"design\\";
 
   @ApiProperty({
     required: true,
@@ -11650,10 +11648,10 @@ class UserUpdateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => [String], {
+  @Field(() => String, {
     nullable: true,
   })
-  roles?: Array<string>;
+  roles?: string;
 
   @ApiProperty({
     required: false,
@@ -11742,10 +11740,10 @@ class UserUpdateInput {
     each: true,
   })
   @IsOptional()
-  @Field(() => [EnumUserInterests], {
+  @Field(() => EnumUserInterests, {
     nullable: true,
   })
-  interests?: Array<\\"programming\\" | \\"design\\">;
+  interests?: \\"programming\\" | \\"design\\";
 
   @ApiProperty({
     required: false,

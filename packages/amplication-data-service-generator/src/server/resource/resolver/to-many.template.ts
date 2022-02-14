@@ -13,12 +13,6 @@ declare interface ARGS {
   where: RELATED_ENTITY_WHERE_INPUT;
 }
 
-declare interface RELATION_FILTER {
-  every?: RELATED_ENTITY_WHERE_INPUT;
-  some?: RELATED_ENTITY_WHERE_INPUT;
-  none?: RELATED_ENTITY_WHERE_INPUT;
-}
-
 declare interface SERVICE {
   FIND_PROPERTY(
     parentId: string,
