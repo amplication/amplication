@@ -10,7 +10,6 @@ import {
   getTypeName,
 } from "../create-field-class-property";
 import { createGraphQLFieldDecorator } from "../create-graphql-field-decorator";
-import { InputTypeEnum } from "../create-input";
 
 export enum NestedMutationOptions {
   "Create" = "create",

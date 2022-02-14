@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
-import { classDeclaration, NamedClassDeclaration } from "../../../../util/ast";
 import { Entity, EntityField } from "../../../../types";
+import { classDeclaration, NamedClassDeclaration } from "../../../../util/ast";
 import { INPUT_TYPE_DECORATOR } from "../nestjs-graphql.util";
 import { createCreateNestedManyProperties } from "./connectOrCreateClassBody";
 
