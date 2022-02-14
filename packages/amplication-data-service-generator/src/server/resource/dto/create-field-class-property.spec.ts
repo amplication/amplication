@@ -320,19 +320,22 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ],
     ],
   ];
-  test.each(cases)("%s", (name, field, prismaField, isEnum, expected) => {
-    expect(
-      createFieldValueTypeFromPrismaField(
-        "Names",
-        field,
-        prismaField,
-        field.required,
-        isEnum,
-        false,
-        false,
-        false,
-        InputTypeEnum.NotInput
-      )
-    ).toEqual(expected);
-  });
+  test.each(cases)(
+    "%s",
+    (name, field, prismaField, isEnum, isNestedInput, expected) => {
+      expect(
+        createFieldValueTypeFromPrismaField(
+          "Names",
+          field,
+          prismaField,
+          field.required,
+          isEnum,
+          false,
+          false,
+          isNestedInput,
+          InputTypeEnum.NotInput
+        )
+      ).toEqual(expected);
+    }
+  );
 });

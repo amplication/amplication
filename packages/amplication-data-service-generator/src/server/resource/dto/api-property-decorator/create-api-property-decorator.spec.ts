@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { CreateApiPropertyDecorator } from ".";
-import { ENUM, REQUIRED } from "../create-field-class-property";
+import { ENUM, REQUIRED, TYPE } from "../create-field-class-property";
 import { API_PROPERTY } from "../nestjs-swagger.util";
 
 describe("Testing the generation of the ApiProperty decorator", () => {
@@ -81,9 +81,11 @@ describe("Testing the generation of the ApiProperty decorator", () => {
       return decorator;
     };
     it("should have type property", () => {
-      expect(getObjectProperty(getDecoratorBody(getScopeDecorator())).key).toBe(
-        EXAMPLE_OBJECT_NAME
-      );
+      const decorator = getScopeDecorator();
+      expect(
+        (getObjectProperty(getDecoratorBody(decorator))
+          .key as namedTypes.Identifier).name
+      ).toBe(TYPE);
     });
   });
 });
