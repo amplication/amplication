@@ -1,9 +1,8 @@
 import { builders, namedTypes } from "ast-types";
 import {
   ENUM_ID,
-  IS_ARRAY_ID,
+  isArrayTrueObjectProperty,
   REQUIRED_ID,
-  TRUE_LITERAL,
   TYPE_ID,
 } from "../create-field-class-property";
 import { API_PROPERTY_ID } from "../nestjs-swagger.util";
@@ -46,17 +45,11 @@ class CreateApiPropertyDecorator {
 
   enum(enumId: namedTypes.Identifier): this {
     const enumAPIProperty = builders.objectProperty(ENUM_ID, enumId);
-    if (this.isList) {
-      [
-        enumAPIProperty,
-        builders.objectProperty(IS_ARRAY_ID, TRUE_LITERAL),
-      ].forEach((value) => {
-        this.apiPropertyOptionsObjectExpression.properties.push(value);
-      });
-    } else {
-      this.apiPropertyOptionsObjectExpression.properties.push(enumAPIProperty);
-    }
-
+    this.apiPropertyOptionsObjectExpression.properties.push(enumAPIProperty);
+    this.isList &&
+      this.apiPropertyOptionsObjectExpression.properties.push(
+        isArrayTrueObjectProperty
+      );
     return this;
   }
   build(): namedTypes.Decorator {

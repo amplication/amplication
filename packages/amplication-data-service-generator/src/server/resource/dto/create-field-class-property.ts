@@ -127,6 +127,10 @@ export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
 export const NULLABLE_ID = builders.identifier("nullable");
 
+export const isArrayTrueObjectProperty = builders.objectProperty(
+  IS_ARRAY_ID,
+  TRUE_LITERAL
+);
 /**
  *
  * create all the body of the classes of the dto like input, object, args, etc...
