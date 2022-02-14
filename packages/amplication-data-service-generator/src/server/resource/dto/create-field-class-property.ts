@@ -292,7 +292,6 @@ export function createGraphQLFieldDecorator(
       isNestedInput
     )
   );
-  //TODO remove array from nested many
   return builders.decorator(
     builders.callExpression(
       FIELD_ID,
@@ -358,6 +357,9 @@ function createGraphQLFieldType(
     return enumId;
   }
   if (isRelationField(field)) {
+    if (isNestedInput) {
+      return createWhereUniqueInputID(prismaField.type);
+    }
     if (isToManyRelationField(field)) {
       switch (inputType) {
         case InputTypeEnum.Create:
@@ -377,6 +379,7 @@ function createGraphQLFieldType(
     }
     return createWhereUniqueInputID(prismaField.type);
   }
+
   throw new Error("Could not create GraphQL Field type");
 }
 

@@ -4580,11 +4580,11 @@ registerEnumType(EnumCustomerFavoriteColors, {
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class OrderCreateNestedManyWithoutCustomersInput {
-  @Field(() => [OrderCreateNestedManyWithoutCustomersInput], {
+  @Field(() => [OrderWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -4607,12 +4607,11 @@ export { OrderCreateNestedManyWithoutCustomersInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class OrderUpdateManyWithoutCustomersInput {
-  @Field(() => [OrderCreateNestedManyWithoutCustomersInput], {
+  @Field(() => [OrderWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8503,11 +8502,11 @@ export { CreateOrganizationArgs };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class CustomerCreateNestedManyWithoutOrganizationsInput {
-  @Field(() => [CustomerCreateNestedManyWithoutOrganizationsInput], {
+  @Field(() => [CustomerWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -8530,12 +8529,11 @@ export { CustomerCreateNestedManyWithoutOrganizationsInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { CustomerCreateNestedManyWithoutOrganizationsInput } from \\"./CustomerCreateNestedManyWithoutOrganizationsInput\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class CustomerUpdateManyWithoutOrganizationsInput {
-  @Field(() => [CustomerCreateNestedManyWithoutOrganizationsInput], {
+  @Field(() => [CustomerWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -9044,11 +9042,11 @@ export { UpdateOrganizationArgs };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class UserCreateNestedManyWithoutOrganizationsInput {
-  @Field(() => [UserCreateNestedManyWithoutOrganizationsInput], {
+  @Field(() => [UserWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -9071,12 +9069,11 @@ export { UserCreateNestedManyWithoutOrganizationsInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { UserCreateNestedManyWithoutOrganizationsInput } from \\"./UserCreateNestedManyWithoutOrganizationsInput\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class UserUpdateManyWithoutOrganizationsInput {
-  @Field(() => [UserCreateNestedManyWithoutOrganizationsInput], {
+  @Field(() => [UserWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11002,11 +10999,11 @@ registerEnumType(EnumUserPriority, {
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class OrganizationCreateNestedManyWithoutUsersInput {
-  @Field(() => [OrganizationCreateNestedManyWithoutUsersInput], {
+  @Field(() => [OrganizationWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11029,12 +11026,11 @@ export { OrganizationCreateNestedManyWithoutUsersInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class OrganizationUpdateManyWithoutUsersInput {
-  @Field(() => [OrganizationCreateNestedManyWithoutUsersInput], {
+  @Field(() => [OrganizationWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11456,11 +11452,11 @@ export { UserCreateInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class UserCreateNestedManyWithoutUsersInput {
-  @Field(() => [UserCreateNestedManyWithoutUsersInput], {
+  @Field(() => [UserWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
@@ -11955,12 +11951,11 @@ export { UserUpdateInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 @InputType()
 class UserUpdateManyWithoutUsersInput {
-  @Field(() => [UserCreateNestedManyWithoutUsersInput], {
+  @Field(() => [UserWhereUniqueInput], {
     nullable: true,
   })
   @ApiProperty({
