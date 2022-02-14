@@ -33,7 +33,7 @@ import {
 } from "./create-field-class-property";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { FIELD_ID } from "./nestjs-graphql.util";
-import { InputTypeEnum } from "./create-input";
+import { InputTypeEnum } from "./input-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";

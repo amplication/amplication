@@ -5,8 +5,9 @@ import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_NON_SEARCHABLE_SINGLE_LINE_TEXT_FIELD,
 } from "../util/test-data";
-import { createInput, InputTypeEnum } from "./create-input";
+import { createInput } from "./create-input";
 import { createWhereInput, createWhereInputID } from "./create-where-input";
+import { InputTypeEnum } from "./input-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";

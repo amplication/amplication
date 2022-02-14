@@ -2,14 +2,8 @@ import { builders, namedTypes } from "ast-types";
 import { Entity, EntityField } from "../../../types";
 import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
+import { InputTypeEnum } from "./input-type-enum";
 import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
-
-export enum InputTypeEnum {
-  Create = "create",
-  Update = "update",
-  Where = "where",
-  WhereUnique = "whereUnique",
-}
 
 export function createInput(
   id: namedTypes.Identifier,

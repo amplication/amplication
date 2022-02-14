@@ -29,12 +29,12 @@ import {
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
 import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
-import { InputTypeEnum } from "./create-input";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
+import { InputTypeEnum } from "./input-type-enum";
 import { createCreateNestedManyWithoutInputID } from "./to-many/create-create-nested-many-without-input";
 import { createUpdateManyWithoutInputID } from "./to-many/create-update-many-without-input";
 import { JSON_VALUE_ID } from "./type-fest.util";

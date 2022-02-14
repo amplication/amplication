@@ -7,7 +7,8 @@ import {
   isScalarListField,
   isPasswordField,
 } from "../../../util/field";
-import { createInput, InputTypeEnum } from "./create-input";
+import { createInput } from "./create-input";
+import { InputTypeEnum } from "./input-type-enum";
 
 export function createWhereInput(entity: Entity): NamedClassDeclaration {
   const fields = entity.fields.filter((field) => isQueryableField(field));

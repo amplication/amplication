@@ -1,7 +1,8 @@
 import { builders, namedTypes } from "ast-types";
 import { Entity, EntityField, EnumDataType } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
-import { createInput, InputTypeEnum } from "./create-input";
+import { createInput } from "./create-input";
+import { InputTypeEnum } from "./input-type-enum";
 
 export function createWhereUniqueInput(entity: Entity): NamedClassDeclaration {
   const fields = entity.fields.filter(isUniqueField);

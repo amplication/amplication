@@ -2,11 +2,12 @@ import { builders } from "ast-types";
 import { print } from "recast";
 import { Entity } from "../../../types";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";
-import { createInput, InputTypeEnum } from "./create-input";
+import { createInput } from "./create-input";
 import {
   createWhereUniqueInput,
   createWhereUniqueInputID,
 } from "./create-where-unique-input";
+import { InputTypeEnum } from "./input-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";

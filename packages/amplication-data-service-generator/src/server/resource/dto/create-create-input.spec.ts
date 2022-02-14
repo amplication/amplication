@@ -6,7 +6,8 @@ import {
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
 } from "../util/test-data";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
-import { createInput, InputTypeEnum } from "./create-input";
+import { createInput } from "./create-input";
+import { InputTypeEnum } from "./input-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";

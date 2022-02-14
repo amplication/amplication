@@ -5,7 +5,6 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { EntityField, Entity } from "../../../../types";
-import { InputTypeEnum } from "../create-input";
 import { builders, namedTypes } from "ast-types";
 import { FIELD_ID } from "../nestjs-graphql.util";
 import {
@@ -23,6 +22,7 @@ import { createEnumName } from "../../../../server/prisma/create-prisma-schema";
 import { createWhereUniqueInputID } from "../create-where-unique-input";
 import { createCreateNestedManyWithoutInputID } from "../to-many/create-create-nested-many-without-input";
 import { createUpdateManyWithoutInputID } from "../to-many/create-update-many-without-input";
+import { InputTypeEnum } from "../input-type-enum";
 
 export function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
