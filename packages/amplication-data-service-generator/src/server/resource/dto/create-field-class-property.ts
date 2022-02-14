@@ -43,7 +43,6 @@ import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { FIELD_ID } from "./nestjs-graphql.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEntityListRelationFilterID } from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
-import { isScalarType } from "graphql";
 
 const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
