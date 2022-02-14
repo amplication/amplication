@@ -12,8 +12,8 @@ export function createDataMapping(
   dto: NamedClassDeclaration,
   data: ExpressionKind
 ): ExpressionKind {
-  const relationFields = entity.fields.filter((field) =>
-    isOneToOneRelationField(field)
+  const relationFields = entity.fields.filter(
+    (field) => isOneToOneRelationField(field) // only one to one relation because the implementation of the to many is happening as a nested input dto
   );
   const relationFieldNames = new Set(relationFields.map((field) => field.name));
   const optionalRelationFieldNames = new Set(
@@ -29,7 +29,7 @@ export function createDataMapping(
     return data;
   }
   return builders.objectExpression([
-    builders.spreadElement(data), // ...data
+    builders.spreadElement(data),
     ...objectProperties.map((property) => {
       const member = builders.memberExpression(data, property.key);
       const connect = builders.objectExpression([
