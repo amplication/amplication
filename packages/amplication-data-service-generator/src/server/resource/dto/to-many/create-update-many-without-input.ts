@@ -1,36 +1,25 @@
 import { builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { Entity, EntityField } from "../../../../types";
-import { classDeclaration, NamedClassDeclaration } from "../../../../util/ast";
+import { Entity } from "../../../../types";
+import { NamedClassDeclaration } from "../../../../util/ast";
 import { isToManyRelationField } from "../../../../util/field";
-import { INPUT_TYPE_DECORATOR } from "../nestjs-graphql.util";
-import { createCreateNestedManyProperties } from "./connectOrCreateClassBody";
+import { createNestedInputDTO } from "./create-nested";
 
 export function createUpdateManyWithoutInputDTOs(
   entity: Entity
 ): NamedClassDeclaration[] {
   const toManyFields = entity.fields.filter(isToManyRelationField);
   const createNestedManyWithoutInputDtos = toManyFields.map((field) =>
-    createUpdateManyWithoutInputDTO(entity, field)
+    createNestedInputDTO(
+      createUpdateManyWithoutInputID(
+        entity.pluralDisplayName,
+        field.properties.relatedEntity.name
+      ),
+      entity,
+      field
+    )
   );
   return createNestedManyWithoutInputDtos;
-}
-
-export function createUpdateManyWithoutInputDTO(
-  entity: Entity,
-  toManyField: EntityField
-): NamedClassDeclaration {
-  const properties = createCreateNestedManyProperties(toManyField, entity);
-  const decorators = properties.length ? [INPUT_TYPE_DECORATOR] : [];
-  return classDeclaration(
-    createUpdateManyWithoutInputID(
-      entity.pluralDisplayName,
-      toManyField.properties.relatedEntity.name
-    ),
-    builders.classBody(properties),
-    null,
-    decorators
-  ) as NamedClassDeclaration;
 }
 
 export function createUpdateManyWithoutInputID(
