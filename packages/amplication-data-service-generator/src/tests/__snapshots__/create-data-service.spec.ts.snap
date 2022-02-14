@@ -3841,7 +3841,7 @@ class CustomerCreateInput {
   @ValidateNested()
   @Type(() => OrderCreateNestedManyWithoutCustomersInput)
   @IsOptional()
-  @Field(() => [OrderCreateNestedManyWithoutCustomersInput], {
+  @Field(() => OrderCreateNestedManyWithoutCustomersInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -4272,7 +4272,7 @@ class CustomerUpdateInput {
   @ValidateNested()
   @Type(() => OrderUpdateManyWithoutCustomersInput)
   @IsOptional()
-  @Field(() => [OrderUpdateManyWithoutCustomersInput], {
+  @Field(() => OrderUpdateManyWithoutCustomersInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -8678,7 +8678,7 @@ class OrganizationCreateInput {
   @ValidateNested()
   @Type(() => UserCreateNestedManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [UserCreateNestedManyWithoutOrganizationsInput], {
+  @Field(() => UserCreateNestedManyWithoutOrganizationsInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -8690,7 +8690,7 @@ class OrganizationCreateInput {
   @ValidateNested()
   @Type(() => CustomerCreateNestedManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [CustomerCreateNestedManyWithoutOrganizationsInput], {
+  @Field(() => CustomerCreateNestedManyWithoutOrganizationsInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -8702,7 +8702,7 @@ class OrganizationCreateInput {
   @ValidateNested()
   @Type(() => CustomerCreateNestedManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [CustomerCreateNestedManyWithoutOrganizationsInput], {
+  @Field(() => CustomerCreateNestedManyWithoutOrganizationsInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -8881,7 +8881,7 @@ class OrganizationUpdateInput {
   @ValidateNested()
   @Type(() => UserUpdateManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [UserUpdateManyWithoutOrganizationsInput], {
+  @Field(() => UserUpdateManyWithoutOrganizationsInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -8893,7 +8893,7 @@ class OrganizationUpdateInput {
   @ValidateNested()
   @Type(() => CustomerUpdateManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [CustomerUpdateManyWithoutOrganizationsInput], {
+  @Field(() => CustomerUpdateManyWithoutOrganizationsInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -8905,7 +8905,7 @@ class OrganizationUpdateInput {
   @ValidateNested()
   @Type(() => CustomerUpdateManyWithoutOrganizationsInput)
   @IsOptional()
-  @Field(() => [CustomerUpdateManyWithoutOrganizationsInput], {
+  @Field(() => CustomerUpdateManyWithoutOrganizationsInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -11376,7 +11376,7 @@ class UserCreateInput {
   @ValidateNested()
   @Type(() => UserCreateNestedManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => [UserCreateNestedManyWithoutUsersInput], {
+  @Field(() => UserCreateNestedManyWithoutUsersInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -11388,7 +11388,7 @@ class UserCreateInput {
   @ValidateNested()
   @Type(() => OrganizationCreateNestedManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => [OrganizationCreateNestedManyWithoutUsersInput], {
+  @Field(() => OrganizationCreateNestedManyWithoutUsersInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -11863,7 +11863,7 @@ class UserUpdateInput {
   @ValidateNested()
   @Type(() => UserUpdateManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => [UserUpdateManyWithoutUsersInput], {
+  @Field(() => UserUpdateManyWithoutUsersInput, {
     nullable: true,
   })
   @ApiProperty({
@@ -11875,7 +11875,7 @@ class UserUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationUpdateManyWithoutUsersInput)
   @IsOptional()
-  @Field(() => [OrganizationUpdateManyWithoutUsersInput], {
+  @Field(() => OrganizationUpdateManyWithoutUsersInput, {
     nullable: true,
   })
   @ApiProperty({

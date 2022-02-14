@@ -253,7 +253,8 @@ export function createFieldClassProperty(
         optionalProperty,
         entity,
         isQuery,
-        inputType
+        inputType,
+        false
       )
     );
   }
@@ -275,7 +276,8 @@ export function createGraphQLFieldDecorator(
   optional: boolean,
   entity: Entity,
   isQuery: boolean,
-  inputType: InputTypeEnum
+  inputType: InputTypeEnum,
+  isNestedInput: boolean
 ): namedTypes.Decorator {
   const type = builders.arrowFunctionExpression(
     [],
@@ -286,7 +288,8 @@ export function createGraphQLFieldDecorator(
       entity,
       isQuery,
       inputType,
-      entity.pluralDisplayName
+      entity.pluralDisplayName,
+      isNestedInput
     )
   );
   //TODO remove array from nested many
@@ -312,9 +315,10 @@ function createGraphQLFieldType(
   entity: Entity,
   isQuery: boolean,
   inputType: InputTypeEnum,
-  entityPluralName: string
+  entityPluralName: string,
+  isNestedInput: boolean
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
-  if (prismaField.isList) {
+  if (prismaField.isList && (!isToManyRelationField(field) || isNestedInput)) {
     const itemType = createGraphQLFieldType(
       { ...prismaField, isList: false },
       field,
@@ -322,7 +326,8 @@ function createGraphQLFieldType(
       entity,
       isQuery,
       inputType,
-      entityPluralName
+      entityPluralName,
+      isNestedInput
     );
     return builders.arrayExpression([itemType]);
   }

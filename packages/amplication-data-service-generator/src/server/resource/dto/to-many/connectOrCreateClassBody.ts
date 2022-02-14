@@ -69,7 +69,8 @@ function createNestedManyProperty(
       true,
       entity,
       false,
-      InputTypeEnum.Create
+      InputTypeEnum.Create,
+      true
     )
   );
   const typeName = getTypeName(
