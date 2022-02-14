@@ -7,15 +7,22 @@ import * as defaultAuthGuard from "../auth/defaultAuth.guard";
 // @ts-ignore
 import * as abacUtil from "../auth/abac.util";
 import { Request } from "express";
+// @ts-ignore
+import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import { plainToClass } from "class-transformer";
+// @ts-ignore
+import * as errors from "../../errors";
 
 declare interface WHERE_UNIQUE_INPUT {
   id: string;
 }
 declare interface RELATED_ENTITY_WHERE_UNIQUE_INPUT {}
-declare interface RELATED_ENTITY_WHERE_INPUT {}
+declare class RELATED_ENTITY_WHERE_INPUT {}
 declare interface Select {}
 
 declare interface RELATED_ENTITY {}
+
+declare class RELATED_ENTITY_FIND_MANY_ARGS {}
 
 declare interface SERVICE {
   FIND_PROPERTY(
@@ -61,18 +68,13 @@ export class Mixin {
     action: "read",
     possession: "any",
   })
-  @swagger.ApiQuery({
-    //@ts-ignore
-    type: () => RELATED_ENTITY_WHERE_INPUT,
-    style: "deepObject",
-    explode: true,
-  })
+  @ApiNestedQuery(RELATED_ENTITY_FIND_MANY_ARGS)
   async FIND_MANY(
     @common.Req() request: Request,
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<RELATED_ENTITY[]> {
-    const query: RELATED_ENTITY_WHERE_INPUT = request.query;
+    const query = plainToClass(RELATED_ENTITY_FIND_MANY_ARGS, request.query);
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: "read",
@@ -80,9 +82,14 @@ export class Mixin {
       resource: RELATED_ENTITY_NAME,
     });
     const results = await this.service.FIND_PROPERTY(params.id, {
-      where: query,
+      ...query,
       select: SELECT,
     });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
     return results.map((result) => permission.filter(result));
   }
 

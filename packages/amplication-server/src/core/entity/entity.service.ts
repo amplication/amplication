@@ -32,6 +32,7 @@ import { DiffService } from 'src/services/diff.service';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { isReservedName } from './reservedNames';
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
@@ -74,6 +75,7 @@ import {
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
+import { ReservedNameError } from '../app/ReservedNameError';
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -233,6 +235,9 @@ export class EntityService {
       throw new AmplicationError(
         `The entity name and plural display name cannot be the same.`
       );
+    }
+    if (isReservedName(args.data?.name?.toLowerCase().trim())) {
+      throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
     }
 
     const newEntity = await this.prisma.entity.create({
@@ -565,6 +570,10 @@ export class EntityService {
         throw new AmplicationError(
           `The entity name and plural display name cannot be the same.`
         );
+      }
+
+      if (isReservedName(args.data?.name?.toLowerCase().trim())) {
+        throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
       }
 
       if (entity.name === USER_ENTITY_NAME) {
@@ -1812,6 +1821,10 @@ export class EntityService {
     args: CreateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
+    if (isReservedName(args.data?.name?.toLowerCase().trim())) {
+      throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
+    }
+
     // Omit entity from received data
     const data = omit(args.data, ['entity']);
 
@@ -2015,6 +2028,9 @@ export class EntityService {
     args: UpdateOneEntityFieldArgs,
     user: User
   ): Promise<EntityField> {
+    if (isReservedName(args.data?.name?.toLowerCase().trim())) {
+      throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
+    }
     // Get field to update
     const field = await this.getField({
       where: args.where,

@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useState } from "react";
 import classNames from "classnames";
 import PendingChangesBar from "../VersionControl/PendingChangesBar";
 import "./PendingChangesMenuItem.scss";
-import { MenuFixedPanel } from "../util/teleporter";
+import { AsidePanel } from "../util/teleporter";
 import PendingChangesContext from "./PendingChangesContext";
 import { Tooltip } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -53,9 +53,12 @@ const PendingChangesMenuItem = ({ applicationId }: Props) => {
         </Tooltip>
       </div>
       {panelOpen && (
-        <MenuFixedPanel.Source>
-          <PendingChangesBar applicationId={applicationId} />
-        </MenuFixedPanel.Source>
+        <AsidePanel.Source>
+          <PendingChangesBar
+            applicationId={applicationId}
+            handleClick={handleClick}
+          />
+        </AsidePanel.Source>
       )}
     </div>
   );

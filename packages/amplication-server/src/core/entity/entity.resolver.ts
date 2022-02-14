@@ -120,9 +120,6 @@ export class EntityResolver {
     @Parent() entity: Entity,
     @Args() args: FindManyEntityFieldArgs
   ) {
-    if (entity.fields && entity.fields.length) {
-      return entity.fields;
-    }
     //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
     return this.entityService.getFields(entity.id, args);
   }
