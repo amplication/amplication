@@ -32,7 +32,7 @@ export function createCreateNestedManyProperties(
     false,
     false,
     true,
-    InputTypeEnum.Create
+    null
   );
   return [
     createNestedManyProperty(
