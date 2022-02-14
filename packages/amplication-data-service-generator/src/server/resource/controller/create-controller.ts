@@ -69,7 +69,7 @@ export async function createControllerModules(
     CREATE_INPUT: entityDTOs.createInput.id,
     CREATE_DATA_MAPPING: createDataMapping(
       entity,
-      entityDTOs.updateInput,
+      entityDTOs.createInput,
       DATA_ID
     ),
     UPDATE_INPUT: entityDTOs.updateInput.id,
