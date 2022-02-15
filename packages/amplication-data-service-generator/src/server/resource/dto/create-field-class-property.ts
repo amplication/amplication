@@ -147,7 +147,7 @@ export function createFieldClassProperty(
   entity: Entity,
   optional: boolean,
   isQuery: boolean,
-  isObjectType = false,
+  isObjectType: boolean,
   inputType: InputTypeEnum | null
 ): namedTypes.ClassProperty {
   const [prismaField] = createPrismaFields(field, entity);
