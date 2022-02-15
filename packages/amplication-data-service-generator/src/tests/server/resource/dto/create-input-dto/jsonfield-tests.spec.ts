@@ -22,13 +22,13 @@ describe("Testing the <Entity>CreateInput class with json field", () => {
     expect(code).toMatchInlineSnapshot(`
 "@InputType()
 class ClassNameCreateInput {
-  @ApiProperty({
-    required: false,
-  })
   @IsJSON()
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
     nullable: true,
+  })
+  @ApiProperty({
+    required: false,
   })
   JsonFieldName?: InputJsonValue;
 }
