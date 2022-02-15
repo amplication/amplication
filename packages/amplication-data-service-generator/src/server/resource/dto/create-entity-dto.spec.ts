@@ -1,10 +1,11 @@
 import { builders } from "ast-types";
 import { print } from "recast";
 import { Entity } from "../../../types";
-import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import { classDeclaration } from "../../../util/ast";
-import { createFieldClassProperty } from "./create-field-class-property";
+import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import { createEntityDTO, OBJECT_TYPE_DECORATOR } from "./create-entity-dto";
+import { createFieldClassProperty } from "./create-field-class-property";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -30,7 +31,8 @@ describe("createEntityDTO", () => {
               EXAMPLE_ENTITY,
               !EXAMPLE_ID_FIELD.required,
               false,
-              false
+              true,
+              EntityDtoTypeEnum.Entity
             ),
           ]),
           null,
