@@ -8,7 +8,7 @@ import {
   isPasswordField,
 } from "../../../util/field";
 import { createInput } from "./create-input";
-import { InputTypeEnum } from "./input-type-enum";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 
 export function createWhereInput(entity: Entity): NamedClassDeclaration {
   const fields = entity.fields.filter((field) => isQueryableField(field));
@@ -18,7 +18,7 @@ export function createWhereInput(entity: Entity): NamedClassDeclaration {
     entity,
     true,
     true,
-    InputTypeEnum.Where
+    EntityDtoTypeEnum.WhereInput
   );
 }
 

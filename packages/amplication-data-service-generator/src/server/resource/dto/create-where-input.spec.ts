@@ -7,7 +7,7 @@ import {
 } from "../util/test-data";
 import { createInput } from "./create-input";
 import { createWhereInput, createWhereInputID } from "./create-where-input";
-import { InputTypeEnum } from "./input-type-enum";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -39,7 +39,7 @@ describe("createWhereInput", () => {
           EXAMPLE_ENTITY,
           true,
           true,
-          InputTypeEnum.Where
+          EntityDtoTypeEnum.WhereInput
         )
       ).code
     );
@@ -56,7 +56,7 @@ describe("createWhereInput", () => {
           EXAMPLE_ENTITY,
           true,
           true,
-          InputTypeEnum.Where
+          EntityDtoTypeEnum.WhereInput
         )
       ).code
     );

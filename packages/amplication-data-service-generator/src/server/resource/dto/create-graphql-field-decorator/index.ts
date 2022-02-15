@@ -1,12 +1,13 @@
+import { builders, namedTypes } from "ast-types";
 import {
   FieldKind,
   ObjectField,
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { EntityField, Entity } from "../../../../types";
-import { builders, namedTypes } from "ast-types";
-import { FIELD_ID } from "../nestjs-graphql.util";
+import { createEnumName } from "../../../../server/prisma/create-prisma-schema";
+import { Entity, EntityField } from "../../../../types";
+import { isRelationField, isToManyRelationField } from "../../../../util/field";
 import {
   BOOLEAN_ID,
   DATE_ID,
@@ -16,13 +17,12 @@ import {
   STRING_ID,
   TRUE_LITERAL,
 } from "../create-field-class-property";
-import { isRelationField, isToManyRelationField } from "../../../../util/field";
-import { GRAPHQL_JSON_OBJECT_ID } from "../graphql-type-json.util";
-import { createEnumName } from "../../../../server/prisma/create-prisma-schema";
 import { createWhereUniqueInputID } from "../create-where-unique-input";
+import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
+import { GRAPHQL_JSON_OBJECT_ID } from "../graphql-type-json.util";
 // import { createCreateNestedManyWithoutInputID } from "../to-many/create-create-nested-many-without-input";
 // import { createUpdateManyWithoutInputID } from "../to-many/create-update-many-without-input";
-import { InputTypeEnum } from "../input-type-enum";
+import { FIELD_ID } from "../nestjs-graphql.util";
 
 export function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
@@ -31,7 +31,7 @@ export function createGraphQLFieldDecorator(
   optional: boolean,
   entity: Entity,
   isQuery: boolean,
-  inputType: InputTypeEnum | null,
+  dtoType: EntityDtoTypeEnum,
   isNestedInput: boolean
 ): namedTypes.Decorator {
   const type = builders.arrowFunctionExpression(
@@ -42,7 +42,7 @@ export function createGraphQLFieldDecorator(
       isEnum,
       entity,
       isQuery,
-      inputType,
+      dtoType,
       entity.pluralDisplayName,
       isNestedInput
     )
@@ -68,7 +68,7 @@ function createGraphQLFieldType(
   isEnum: boolean,
   entity: Entity,
   isQuery: boolean,
-  inputType: InputTypeEnum | null,
+  dtoType: EntityDtoTypeEnum,
   entityPluralName: string,
   isNestedInput: boolean
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
@@ -79,7 +79,7 @@ function createGraphQLFieldType(
       isEnum,
       entity,
       isQuery,
-      inputType,
+      dtoType,
       entityPluralName,
       isNestedInput
     );
