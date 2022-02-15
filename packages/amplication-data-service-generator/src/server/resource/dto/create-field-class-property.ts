@@ -162,11 +162,11 @@ export function createFieldClassProperty(
     isObjectType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
-  const createApiPropertyDecorator = new ApiPropertyDecoratorBuilder(
+  const apiPropertyDecoratorBuilder = new ApiPropertyDecoratorBuilder(
     prismaField.isList,
     isToManyRelationField(field) && !isObjectType
   );
-  createApiPropertyDecorator.optional(optional);
+  apiPropertyDecoratorBuilder.optional(optional);
   const decorators: namedTypes.Decorator[] = [];
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;
@@ -201,7 +201,7 @@ export function createFieldClassProperty(
       if (isQuery) {
         decorators.push(createTypeDecorator(swaggerType));
       }
-      createApiPropertyDecorator.scalarType(swaggerType);
+      apiPropertyDecoratorBuilder.scalarType(swaggerType);
     }
   }
   if (prismaField.type === ScalarType.DateTime && !isQuery) {
@@ -209,7 +209,7 @@ export function createFieldClassProperty(
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));
-    createApiPropertyDecorator.enum(enumId);
+    apiPropertyDecoratorBuilder.enum(enumId);
 
     const isEnumArgs = prismaField.isList
       ? [
@@ -252,7 +252,7 @@ export function createFieldClassProperty(
     if (!typeName) {
       throw new Error(`Unexpected type: ${type}`);
     }
-    createApiPropertyDecorator.objectType(typeName);
+    apiPropertyDecoratorBuilder.objectType(typeName);
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       createTypeDecorator(typeName)
@@ -279,7 +279,7 @@ export function createFieldClassProperty(
       )
     );
   }
-  decorators.push(createApiPropertyDecorator.build());
+  decorators.push(apiPropertyDecoratorBuilder.build());
   return classProperty(
     id,
     typeAnnotation,
