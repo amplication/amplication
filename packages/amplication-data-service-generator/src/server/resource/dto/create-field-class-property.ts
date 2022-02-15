@@ -17,7 +17,7 @@ import {
   createEnumName,
   createPrismaFields,
 } from "../../prisma/create-prisma-schema";
-import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
+import { ApiPropertyDecoratorBuilder } from "./api-property-decorator-builder";
 import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
