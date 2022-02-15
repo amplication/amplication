@@ -1,27 +1,26 @@
 import { builders, namedTypes } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
-import { print } from "recast";
 import {
+  createObjectField,
+  createScalarField,
   ObjectField,
   ScalarField,
-  createScalarField,
-  createObjectField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { classProperty, createGenericArray } from "../../../util/ast";
+import { print } from "recast";
 import { Entity, EntityField, EnumDataType } from "../../../types";
+import { classProperty, createGenericArray } from "../../../util/ast";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_LOOKUP_FIELD,
   EXAMPLE_OTHER_ENTITY,
 } from "../util/test-data";
+import * as classTransformerUtil from "./class-transformer.util";
 import {
+  IS_OPTIONAL_ID,
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
-  IS_OPTIONAL_ID,
 } from "./class-validator.util";
-import * as classTransformerUtil from "./class-transformer.util";
-import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
   createFieldClassProperty,
   createFieldValueTypeFromPrismaField,
@@ -31,9 +30,10 @@ import {
   TRUE_LITERAL,
   TYPE_ID,
 } from "./create-field-class-property";
-import { API_PROPERTY_ID } from "./nestjs-swagger.util";
-import { FIELD_ID } from "./nestjs-graphql.util";
+import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { InputTypeEnum } from "./input-type-enum";
+import { FIELD_ID } from "./nestjs-graphql.util";
+import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -221,6 +221,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     ScalarField | ObjectField,
     InputTypeEnum | null,
     boolean,
+    boolean,
     TSTypeKind[]
   ]> = [
     [
@@ -228,6 +229,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       EXAMPLE_ID_FIELD,
       createScalarField(EXAMPLE_ID_FIELD.name, ScalarType.String, false, true),
       null,
+      false,
       false,
       [builders.tsStringKeyword()],
     ],
@@ -241,6 +243,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         true
       ),
       null,
+      false,
       false,
       [
         builders.tsTypeReference(
@@ -259,6 +262,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       InputTypeEnum.Create,
       false,
+      false,
       [
         builders.tsTypeReference(
           createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
@@ -275,6 +279,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false
       ),
       InputTypeEnum.Create,
+      false,
       false,
       [
         builders.tsUnionType([
@@ -296,6 +301,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       null,
       false,
+      false,
       [
         builders.tsUnionType([
           builders.tsStringKeyword(),
@@ -314,6 +320,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       null,
       false,
+      false,
       [
         createGenericArray(builders.tsStringKeyword()),
         builders.tsStringKeyword(),
@@ -322,15 +329,17 @@ describe("createFieldValueTypeFromPrismaField", () => {
   ];
   test.each(cases)(
     "%s",
-    (name, field, prismaField, inputType, isEnum, expected) => {
+    (name, field, prismaField, inputType, isEnum, isNestedInput, expected) => {
       expect(
         createFieldValueTypeFromPrismaField(
+          "Names",
           field,
           prismaField,
           field.required,
           isEnum,
           false,
           false,
+          isNestedInput,
           inputType
         )
       ).toEqual(expected);

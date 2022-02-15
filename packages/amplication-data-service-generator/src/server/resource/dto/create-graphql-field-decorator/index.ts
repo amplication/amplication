@@ -1,12 +1,13 @@
+import { builders, namedTypes } from "ast-types";
 import {
   FieldKind,
   ObjectField,
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { EntityField, Entity } from "../../../../types";
-import { builders, namedTypes } from "ast-types";
-import { FIELD_ID } from "../nestjs-graphql.util";
+import { createEnumName } from "../../../../server/prisma/create-prisma-schema";
+import { Entity, EntityField } from "../../../../types";
+import { isRelationField, isToManyRelationField } from "../../../../util/field";
 import {
   BOOLEAN_ID,
   DATE_ID,
@@ -16,13 +17,12 @@ import {
   STRING_ID,
   TRUE_LITERAL,
 } from "../create-field-class-property";
-import { isRelationField, isToManyRelationField } from "../../../../util/field";
-import { GRAPHQL_JSON_OBJECT_ID } from "../graphql-type-json.util";
-import { createEnumName } from "../../../../server/prisma/create-prisma-schema";
 import { createWhereUniqueInputID } from "../create-where-unique-input";
-// import { createCreateNestedManyWithoutInputID } from "../to-many/create-create-nested-many-without-input";
-// import { createUpdateManyWithoutInputID } from "../to-many/create-update-many-without-input";
+import { GRAPHQL_JSON_OBJECT_ID } from "../graphql-type-json.util";
 import { InputTypeEnum } from "../input-type-enum";
+import { FIELD_ID } from "../nestjs-graphql.util";
+import { createCreateNestedManyWithoutInputID } from "../to-many/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputID } from "../to-many/create-update-many-without-input";
 
 export function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
@@ -116,20 +116,21 @@ function createGraphQLFieldType(
       return createWhereUniqueInputID(prismaField.type);
     }
     if (isToManyRelationField(field)) {
-      //   switch (inputType) {
-      //     case InputTypeEnum.Create:
-      //       return createCreateNestedManyWithoutInputID(
-      //         entityPluralName,
-      //         field.properties.relatedEntity.name
-      //       );
-      //     case InputTypeEnum.Update:
-      //       return createUpdateManyWithoutInputID(
-      //         entityPluralName,
-      //         field.properties.relatedEntity.name
-      //       );
-      //     default:
-      //       throw new Error("Didn't got an input type");
-      //   }
+      switch (inputType) {
+        case InputTypeEnum.Create:
+          return createCreateNestedManyWithoutInputID(
+            entityPluralName,
+            field.properties.relatedEntity.name
+          );
+
+        case InputTypeEnum.Update:
+          return createUpdateManyWithoutInputID(
+            entityPluralName,
+            field.properties.relatedEntity.name
+          );
+        default:
+          throw new Error("Didn't got an input type");
+      }
     }
     return createWhereUniqueInputID(prismaField.type);
   }
