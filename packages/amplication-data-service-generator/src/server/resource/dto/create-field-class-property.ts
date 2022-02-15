@@ -8,7 +8,11 @@ import {
 } from "prisma-schema-dsl";
 import { Entity, EntityField } from "../../../types";
 import { classProperty, createGenericArray } from "../../../util/ast";
-import { isEnumField, isToManyRelationField } from "../../../util/field";
+import {
+  isEnumField,
+  isOneToOneRelationField,
+  isToManyRelationField,
+} from "../../../util/field";
 import {
   createEnumName,
   createPrismaFields,
@@ -243,7 +247,8 @@ export function createFieldClassProperty(
   if (
     prismaField.kind !== FieldKind.Object ||
     isEnum ||
-    (isInput && isToManyRelationField(field))
+    (isInput &&
+      (isToManyRelationField(field) || isOneToOneRelationField(field)))
   ) {
     decorators.push(
       createGraphQLFieldDecorator(

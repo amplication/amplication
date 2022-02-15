@@ -3823,6 +3823,9 @@ class CustomerCreateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => OrganizationWhereUniqueInput,
@@ -3832,6 +3835,9 @@ class CustomerCreateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => OrganizationWhereUniqueInput,
@@ -4254,6 +4260,9 @@ class CustomerUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => OrganizationWhereUniqueInput,
@@ -4263,6 +4272,9 @@ class CustomerUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => OrganizationWhereUniqueInput,
@@ -4455,6 +4467,9 @@ class CustomerWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => OrganizationWhereUniqueInput,
@@ -4464,6 +4479,9 @@ class CustomerWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
+  @Field(() => OrganizationWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => OrganizationWhereUniqueInput,
@@ -7248,6 +7266,7 @@ import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 class OrderCreateInput {
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
+  @Field(() => CustomerWhereUniqueInput)
   @ApiProperty({
     required: true,
     type: () => CustomerWhereUniqueInput,
@@ -7451,6 +7470,9 @@ class OrderUpdateInput {
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
+  @Field(() => CustomerWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => CustomerWhereUniqueInput,
@@ -7539,6 +7561,9 @@ class OrderWhereInput {
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
+  @Field(() => CustomerWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => CustomerWhereUniqueInput,
@@ -11363,6 +11388,9 @@ class UserCreateInput {
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
+  @Field(() => UserWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => UserWhereUniqueInput,
@@ -11850,6 +11878,9 @@ class UserUpdateInput {
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
+  @Field(() => UserWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => UserWhereUniqueInput,
@@ -12048,6 +12079,9 @@ class UserWhereInput {
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
+  @Field(() => UserWhereUniqueInput, {
+    nullable: true,
+  })
   @ApiProperty({
     required: false,
     type: () => UserWhereUniqueInput,
