@@ -7,7 +7,7 @@ import {
   createWhereUniqueInput,
   createWhereUniqueInputID,
 } from "./create-where-unique-input";
-import { entityDtoTypeEnum } from "./entity-dto-type-enum";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -30,7 +30,7 @@ describe("createWhereUniqueInput", () => {
           EXAMPLE_ENTITY,
           false,
           false,
-          entityDtoTypeEnum.WhereUniqueInput
+          EntityDtoTypeEnum.WhereUniqueInput
         )
       ).code
     );
