@@ -114,7 +114,7 @@ const BuildSteps = ({ build, onError }: Props) => {
         <span className="spacer" />
         <Button
           buttonStyle={EnumButtonStyle.Clear}
-          icon="download"
+          icon="download1"
           disabled={
             stepGenerateCode.status !== models.EnumActionStepStatus.Success
           }
@@ -165,7 +165,7 @@ const BuildSteps = ({ build, onError }: Props) => {
         <Button
           className="hidden"
           buttonStyle={EnumButtonStyle.Clear}
-          icon="download"
+          icon="download1"
           disabled={data.build.status !== models.EnumBuildStatus.Completed}
           onClick={handleDownloadClick}
           eventData={{
