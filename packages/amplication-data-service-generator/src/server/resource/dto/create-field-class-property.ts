@@ -38,7 +38,7 @@ import {
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
 import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
-import { InputTypeEnum } from "./input-type-enum";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { FIELD_ID } from "./nestjs-graphql.util";
 import { JSON_VALUE_ID } from "./type-fest.util";
 
@@ -147,7 +147,7 @@ export function createFieldClassProperty(
   optional: boolean,
   isQuery: boolean,
   isObjectType: boolean,
-  inputType: InputTypeEnum | null
+  inputType: EntityDtoTypeEnum | null
 ): namedTypes.ClassProperty {
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
@@ -299,7 +299,7 @@ function createGraphQLFieldDecorator(
   optional: boolean,
   entity: Entity,
   isQuery: boolean,
-  inputType: InputTypeEnum | null
+  inputType: EntityDtoTypeEnum | null
 ): namedTypes.Decorator {
   const type = builders.arrowFunctionExpression(
     [],
@@ -389,7 +389,7 @@ export function createFieldValueTypeFromPrismaField(
   isEnum: boolean,
   isQuery: boolean,
   isObjectType: boolean,
-  inputType: InputTypeEnum | null
+  inputType: EntityDtoTypeEnum | null
 ): TSTypeKind[] {
   // add  "| null" to the end of the type
   if (

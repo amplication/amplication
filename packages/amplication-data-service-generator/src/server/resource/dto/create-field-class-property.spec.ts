@@ -33,7 +33,7 @@ import {
 } from "./create-field-class-property";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { FIELD_ID } from "./nestjs-graphql.util";
-import { InputTypeEnum } from "./input-type-enum";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -219,7 +219,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     string,
     EntityField,
     ScalarField | ObjectField,
-    InputTypeEnum | null,
+    EntityDtoTypeEnum | null,
     boolean,
     TSTypeKind[]
   ]> = [
@@ -257,7 +257,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         true
       ),
-      InputTypeEnum.Create,
+      EntityDtoTypeEnum.Create,
       false,
       [
         builders.tsTypeReference(
@@ -274,7 +274,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         false
       ),
-      InputTypeEnum.Create,
+      EntityDtoTypeEnum.Create,
       false,
       [
         builders.tsUnionType([

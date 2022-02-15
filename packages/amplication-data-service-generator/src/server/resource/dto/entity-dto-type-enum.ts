@@ -1,4 +1,4 @@
-export enum InputTypeEnum {
+export enum EntityDtoTypeEnum {
   Create = "create",
   Update = "update",
   Where = "where",
