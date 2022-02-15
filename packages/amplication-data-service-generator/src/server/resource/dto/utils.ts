@@ -1,12 +1,12 @@
-import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { EntityDtoType, entityDtoTypeEnum } from "./entity-dto-type-enum";
 
-export function isCRUDEntityDtoInput(dtoType: EntityDtoTypeEnum): boolean {
+export function isCRUDEntityDtoInput(dtoType: EntityDtoType): boolean {
   if (
     dtoType ===
-    (EntityDtoTypeEnum.CreateInput ||
-      EntityDtoTypeEnum.UpdateInput ||
-      EntityDtoTypeEnum.WhereInput ||
-      EntityDtoTypeEnum.WhereUniqueInput)
+    (entityDtoTypeEnum.CreateInput ||
+      entityDtoTypeEnum.UpdateInput ||
+      entityDtoTypeEnum.WhereInput ||
+      entityDtoTypeEnum.WhereUniqueInput)
   ) {
     return true;
   }

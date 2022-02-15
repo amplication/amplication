@@ -7,7 +7,7 @@ import {
 } from "../util/test-data";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
 import { createInput } from "./create-input";
-import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { entityDtoTypeEnum } from "./entity-dto-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -31,7 +31,7 @@ describe("createCreateInput", () => {
           EXAMPLE_ENTITY,
           false,
           false,
-          EntityDtoTypeEnum.CreateInput
+          entityDtoTypeEnum.CreateInput
         )
       ).code
     );

@@ -1,27 +1,26 @@
 import { builders, namedTypes } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
-import { print } from "recast";
 import {
+  createObjectField,
+  createScalarField,
   ObjectField,
   ScalarField,
-  createScalarField,
-  createObjectField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { classProperty, createGenericArray } from "../../../util/ast";
+import { print } from "recast";
 import { Entity, EntityField, EnumDataType } from "../../../types";
+import { classProperty, createGenericArray } from "../../../util/ast";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_LOOKUP_FIELD,
   EXAMPLE_OTHER_ENTITY,
 } from "../util/test-data";
+import * as classTransformerUtil from "./class-transformer.util";
 import {
+  IS_OPTIONAL_ID,
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
-  IS_OPTIONAL_ID,
 } from "./class-validator.util";
-import * as classTransformerUtil from "./class-transformer.util";
-import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
   createFieldClassProperty,
   createFieldValueTypeFromPrismaField,
@@ -31,9 +30,10 @@ import {
   TRUE_LITERAL,
   TYPE_ID,
 } from "./create-field-class-property";
-import { API_PROPERTY_ID } from "./nestjs-swagger.util";
+import { createWhereUniqueInputID } from "./create-where-unique-input";
+import { EntityDtoType, entityDtoTypeEnum } from "./entity-dto-type-enum";
 import { FIELD_ID } from "./nestjs-graphql.util";
-import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -219,7 +219,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     string,
     EntityField,
     ScalarField | ObjectField,
-    EntityDtoTypeEnum | null,
+    EntityDtoType | null,
     boolean,
     TSTypeKind[]
   ]> = [
@@ -257,7 +257,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         true
       ),
-      EntityDtoTypeEnum.CreateInput,
+      entityDtoTypeEnum.CreateInput,
       false,
       [
         builders.tsTypeReference(
@@ -274,7 +274,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         false
       ),
-      EntityDtoTypeEnum.CreateInput,
+      entityDtoTypeEnum.CreateInput,
       false,
       [
         builders.tsUnionType([

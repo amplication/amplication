@@ -2,7 +2,7 @@ import { builders, namedTypes } from "ast-types";
 import { Entity, EntityField, EnumDataType } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
 import { createInput } from "./create-input";
-import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { entityDtoTypeEnum } from "./entity-dto-type-enum";
 
 export function createWhereUniqueInput(entity: Entity): NamedClassDeclaration {
   const fields = entity.fields.filter(isUniqueField);
@@ -12,7 +12,7 @@ export function createWhereUniqueInput(entity: Entity): NamedClassDeclaration {
     entity,
     false,
     false, //do not use as query since the ID field in WhereUniqueInput is required
-    EntityDtoTypeEnum.WhereUniqueInput
+    entityDtoTypeEnum.WhereUniqueInput
   );
 }
 
