@@ -17,7 +17,7 @@ import {
   createEnumName,
   createPrismaFields,
 } from "../../prisma/create-prisma-schema";
-import { CreateApiPropertyDecorator } from "./api-property-decorator";
+import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
 import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
@@ -129,10 +129,6 @@ export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
 export const NULLABLE_ID = builders.identifier("nullable");
 
-export const isArrayTrueObjectProperty = builders.objectProperty(
-  IS_ARRAY_ID,
-  TRUE_LITERAL
-);
 /**
  *
  * create all the body of the classes of the dto like input, object, args, etc...
@@ -166,7 +162,7 @@ export function createFieldClassProperty(
     isObjectType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
-  const createApiPropertyDecorator = new CreateApiPropertyDecorator(
+  const createApiPropertyDecorator = new ApiPropertyDecoratorBuilder(
     prismaField.isList,
     isToManyRelationField(field) && !isObjectType
   );

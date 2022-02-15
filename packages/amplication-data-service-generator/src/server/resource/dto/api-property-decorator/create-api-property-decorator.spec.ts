@@ -1,12 +1,12 @@
 import { builders, namedTypes } from "ast-types";
-import { CreateApiPropertyDecorator } from ".";
+import { ApiPropertyDecoratorBuilder } from ".";
 import { ENUM, REQUIRED, TYPE } from "../create-field-class-property";
 import { API_PROPERTY } from "../nestjs-swagger.util";
 
 describe("Testing the generation of the ApiProperty decorator", () => {
-  let creator: CreateApiPropertyDecorator;
+  let creator: ApiPropertyDecoratorBuilder;
   beforeEach(() => {
-    creator = new CreateApiPropertyDecorator(true, false);
+    creator = new ApiPropertyDecoratorBuilder(true, false);
   });
   describe("Testing the optional option", () => {
     const getScopeDecorator = (optional: boolean) => {
