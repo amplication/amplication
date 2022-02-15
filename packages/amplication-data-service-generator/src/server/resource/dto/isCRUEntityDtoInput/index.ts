@@ -1,6 +1,6 @@
 import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 
-export function isCRUDEntityDtoInput(dtoType: EntityDtoTypeEnum): boolean {
+export function isCRUEntityDtoInput(dtoType: EntityDtoTypeEnum): boolean {
   if (
     dtoType === EntityDtoTypeEnum.CreateInput ||
     dtoType === EntityDtoTypeEnum.UpdateInput ||

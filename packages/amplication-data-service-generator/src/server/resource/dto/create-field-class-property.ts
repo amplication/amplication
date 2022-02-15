@@ -39,7 +39,7 @@ import {
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
 import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
-import { isCRUDEntityDtoInput } from "./isCRUEntityDtoInput";
+import { isCRUEntityDtoInput } from "./isCRUEntityDtoInput";
 import { FIELD_ID } from "./nestjs-graphql.util";
 import { JSON_VALUE_ID } from "./type-fest.util";
 
@@ -153,7 +153,7 @@ export function createFieldClassProperty(
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
-  const isInput = isCRUDEntityDtoInput(inputType);
+  const isInput = isCRUEntityDtoInput(inputType);
   const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
     field,
     prismaField,
@@ -451,7 +451,7 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-  if (isQuery || isCRUDEntityDtoInput(dtoType)) {
+  if (isQuery || isCRUEntityDtoInput(dtoType)) {
     return [
       builders.tsTypeReference(createWhereUniqueInputID(prismaField.type)),
     ];
