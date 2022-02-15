@@ -2,15 +2,15 @@ import { Entity } from "../../../../../types";
 import { NamedClassDeclaration } from "../../../../../util/ast";
 import { isToManyRelationField } from "../../../../../util/field";
 import { createNestedInputDTO } from "../create-nested";
-import { createUpdateManyWithoutInputID } from "./create-ast-id";
+import { createCreateNestedManyWithoutInputID } from "./create-ast-id";
 
-export function createUpdateManyWithoutInputDTOs(
+export function createCreateNestedManyDTOs(
   entity: Entity
 ): NamedClassDeclaration[] {
   const toManyFields = entity.fields.filter(isToManyRelationField);
   return toManyFields.map((field) =>
     createNestedInputDTO(
-      createUpdateManyWithoutInputID(
+      createCreateNestedManyWithoutInputID(
         entity.pluralDisplayName,
         field.properties.relatedEntity.name
       ),
