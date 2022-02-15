@@ -3,6 +3,7 @@ import { Entity } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
 import { isEditableField } from "../../../util/field";
 import { createInput } from "./create-input";
+import { InputTypeEnum } from "./input-type-enum";
 
 export function createUpdateInput(entity: Entity): NamedClassDeclaration {
   const fields = entity.fields.filter(isEditableField);
@@ -11,7 +12,8 @@ export function createUpdateInput(entity: Entity): NamedClassDeclaration {
     fields,
     entity,
     true,
-    false
+    false,
+    InputTypeEnum.Update
   );
 }
 

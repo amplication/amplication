@@ -7,6 +7,7 @@ import {
 } from "../util/test-data";
 import { createInput } from "./create-input";
 import { createUpdateInput, createUpdateInputID } from "./create-update-input";
+import { InputTypeEnum } from "./input-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -29,7 +30,8 @@ describe("createUpdateInput", () => {
             [EXAMPLE_SINGLE_LINE_TEXT_FIELD],
             EXAMPLE_ENTITY,
             true,
-            false
+            false,
+            InputTypeEnum.Update
           )
         ).code
       );

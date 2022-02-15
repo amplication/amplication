@@ -38,6 +38,7 @@ import {
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
 import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
+import { InputTypeEnum } from "./input-type-enum";
 import { FIELD_ID } from "./nestjs-graphql.util";
 import { JSON_VALUE_ID } from "./type-fest.util";
 
@@ -139,7 +140,6 @@ export const isArrayTrueObjectProperty = builders.objectProperty(
  * @param field
  * @param entity
  * @param optional
- * @param isInput represent is the class is input object
  * @param isQuery
  * @param isObjectType true only for the entity object type.
  * is User entity so only for the User.ts
@@ -149,21 +149,22 @@ export function createFieldClassProperty(
   field: EntityField,
   entity: Entity,
   optional: boolean,
-  isInput: boolean,
   isQuery: boolean,
-  isObjectType = false
+  isObjectType: boolean,
+  inputType: InputTypeEnum | null
 ): namedTypes.ClassProperty {
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
+  const isInput = inputType ? true : false;
   const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
     field,
     prismaField,
     optional,
-    isInput,
     isEnum,
     isQuery,
-    isObjectType
+    isObjectType,
+    inputType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
   const createApiPropertyDecorator = new CreateApiPropertyDecorator(
@@ -279,7 +280,8 @@ export function createFieldClassProperty(
         field,
         optionalProperty,
         entity,
-        isQuery
+        isQuery,
+        inputType
       )
     );
   }
@@ -300,7 +302,8 @@ function createGraphQLFieldDecorator(
   field: EntityField,
   optional: boolean,
   entity: Entity,
-  isQuery: boolean
+  isQuery: boolean,
+  inputType: InputTypeEnum | null
 ): namedTypes.Decorator {
   const type = builders.arrowFunctionExpression(
     [],
@@ -387,10 +390,10 @@ export function createFieldValueTypeFromPrismaField(
   field: EntityField,
   prismaField: ScalarField | ObjectField,
   optional: boolean,
-  isInput: boolean,
   isEnum: boolean,
   isQuery: boolean,
-  isObjectType: boolean
+  isObjectType: boolean,
+  inputType: InputTypeEnum | null
 ): TSTypeKind[] {
   // add  "| null" to the end of the type
   if (
@@ -406,10 +409,10 @@ export function createFieldValueTypeFromPrismaField(
         isRequired: true,
       },
       optional,
-      isInput,
       isEnum,
       isQuery,
-      isObjectType
+      isObjectType,
+      inputType
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
@@ -422,10 +425,10 @@ export function createFieldValueTypeFromPrismaField(
       field,
       itemPrismaField,
       optional,
-      isInput,
       isEnum,
       isQuery,
-      isObjectType
+      isObjectType,
+      inputType
     );
     return [createGenericArray(itemType), itemType];
   }
@@ -451,7 +454,7 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-  if (isQuery || isInput) {
+  if (isQuery || inputType) {
     return [
       builders.tsTypeReference(createWhereUniqueInputID(prismaField.type)),
     ];

@@ -7,6 +7,7 @@ import {
   createWhereUniqueInput,
   createWhereUniqueInputID,
 } from "./create-where-unique-input";
+import { InputTypeEnum } from "./input-type-enum";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -28,7 +29,8 @@ describe("createWhereUniqueInput", () => {
           [EXAMPLE_ID_FIELD],
           EXAMPLE_ENTITY,
           false,
-          false
+          false,
+          InputTypeEnum.WhereUnique
         )
       ).code
     );
