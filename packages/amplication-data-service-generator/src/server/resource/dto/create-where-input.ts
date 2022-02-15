@@ -18,7 +18,7 @@ export function createWhereInput(entity: Entity): NamedClassDeclaration {
     entity,
     true,
     true,
-    EntityDtoTypeEnum.Where
+    EntityDtoTypeEnum.WhereInput
   );
 }
 

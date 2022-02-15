@@ -13,7 +13,7 @@ export function createCreateInput(entity: Entity): NamedClassDeclaration {
     entity,
     false,
     false,
-    EntityDtoTypeEnum.Create
+    EntityDtoTypeEnum.CreateInput
   );
 }
 

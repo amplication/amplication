@@ -13,7 +13,7 @@ export function createUpdateInput(entity: Entity): NamedClassDeclaration {
     entity,
     true,
     false,
-    EntityDtoTypeEnum.Update
+    EntityDtoTypeEnum.UpdateInput
   );
 }
 

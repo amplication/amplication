@@ -39,7 +39,7 @@ describe("createWhereInput", () => {
           EXAMPLE_ENTITY,
           true,
           true,
-          EntityDtoTypeEnum.Where
+          EntityDtoTypeEnum.WhereInput
         )
       ).code
     );
@@ -56,7 +56,7 @@ describe("createWhereInput", () => {
           EXAMPLE_ENTITY,
           true,
           true,
-          EntityDtoTypeEnum.Where
+          EntityDtoTypeEnum.WhereInput
         )
       ).code
     );

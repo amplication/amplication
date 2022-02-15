@@ -30,7 +30,7 @@ describe("createWhereUniqueInput", () => {
           EXAMPLE_ENTITY,
           false,
           false,
-          EntityDtoTypeEnum.WhereUnique
+          EntityDtoTypeEnum.WhereUniqueInput
         )
       ).code
     );

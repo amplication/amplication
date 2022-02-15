@@ -31,7 +31,7 @@ describe("createCreateInput", () => {
           EXAMPLE_ENTITY,
           false,
           false,
-          EntityDtoTypeEnum.Create
+          EntityDtoTypeEnum.CreateInput
         )
       ).code
     );

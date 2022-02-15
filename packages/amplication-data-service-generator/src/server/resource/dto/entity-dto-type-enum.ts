@@ -1,6 +1,6 @@
 export enum EntityDtoTypeEnum {
-  Create = "create",
-  Update = "update",
-  Where = "where",
-  WhereUnique = "whereUnique",
+  CreateInput = "createInput",
+  UpdateInput = "updateInput",
+  WhereInput = "whereInput",
+  WhereUniqueInput = "whereUniqueInput",
 }

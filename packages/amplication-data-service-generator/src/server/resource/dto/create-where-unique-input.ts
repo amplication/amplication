@@ -12,7 +12,7 @@ export function createWhereUniqueInput(entity: Entity): NamedClassDeclaration {
     entity,
     false,
     false, //do not use as query since the ID field in WhereUniqueInput is required
-    EntityDtoTypeEnum.WhereUnique
+    EntityDtoTypeEnum.WhereUniqueInput
   );
 }
 

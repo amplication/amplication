@@ -257,7 +257,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         true
       ),
-      EntityDtoTypeEnum.Create,
+      EntityDtoTypeEnum.CreateInput,
       false,
       [
         builders.tsTypeReference(
@@ -274,7 +274,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         false
       ),
-      EntityDtoTypeEnum.Create,
+      EntityDtoTypeEnum.CreateInput,
       false,
       [
         builders.tsUnionType([
