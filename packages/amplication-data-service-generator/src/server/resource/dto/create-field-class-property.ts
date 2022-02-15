@@ -17,7 +17,7 @@ import {
   createEnumName,
   createPrismaFields,
 } from "../../prisma/create-prisma-schema";
-import { CreateApiPropertyDecorator } from "./api-property-decorator";
+import { ApiPropertyDecoratorBuilder } from "./api-property-decorator-builder";
 import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
@@ -130,10 +130,6 @@ export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
 export const NULLABLE_ID = builders.identifier("nullable");
 
-export const isArrayTrueObjectProperty = builders.objectProperty(
-  IS_ARRAY_ID,
-  TRUE_LITERAL
-);
 /**
  *
  * create all the body of the classes of the dto like input, object, args, etc...
@@ -167,11 +163,11 @@ export function createFieldClassProperty(
     inputType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
-  const createApiPropertyDecorator = new CreateApiPropertyDecorator(
+  const apiPropertyDecoratorBuilder = new ApiPropertyDecoratorBuilder(
     prismaField.isList,
     isToManyRelationField(field) && !isObjectType
   );
-  createApiPropertyDecorator.optional(optional);
+  apiPropertyDecoratorBuilder.optional(optional);
   const decorators: namedTypes.Decorator[] = [];
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;
@@ -206,7 +202,7 @@ export function createFieldClassProperty(
       if (isQuery) {
         decorators.push(createTypeDecorator(swaggerType));
       }
-      createApiPropertyDecorator.scalarType(swaggerType);
+      apiPropertyDecoratorBuilder.scalarType(swaggerType);
     }
   }
   if (prismaField.type === ScalarType.DateTime && !isQuery) {
@@ -214,7 +210,7 @@ export function createFieldClassProperty(
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));
-    createApiPropertyDecorator.enum(enumId);
+    apiPropertyDecoratorBuilder.enum(enumId);
 
     const isEnumArgs = prismaField.isList
       ? [
@@ -257,7 +253,7 @@ export function createFieldClassProperty(
     if (!typeName) {
       throw new Error(`Unexpected type: ${type}`);
     }
-    createApiPropertyDecorator.objectType(typeName);
+    apiPropertyDecoratorBuilder.objectType(typeName);
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       createTypeDecorator(typeName)
@@ -285,7 +281,7 @@ export function createFieldClassProperty(
       )
     );
   }
-  decorators.push(createApiPropertyDecorator.build());
+  decorators.push(apiPropertyDecoratorBuilder.build());
   return classProperty(
     id,
     typeAnnotation,
