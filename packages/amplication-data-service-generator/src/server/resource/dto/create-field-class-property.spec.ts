@@ -93,18 +93,18 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
+          builders.decorator(builders.callExpression(IS_STRING_ID, [])),
+          builders.decorator(
+            builders.callExpression(FIELD_ID, [
+              builders.arrowFunctionExpression([], STRING_ID),
+            ])
+          ),
           builders.decorator(
             builders.callExpression(API_PROPERTY_ID, [
               builders.objectExpression([
                 builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
                 builders.objectProperty(TYPE_ID, STRING_ID),
               ]),
-            ])
-          ),
-          builders.decorator(builders.callExpression(IS_STRING_ID, [])),
-          builders.decorator(
-            builders.callExpression(FIELD_ID, [
-              builders.arrowFunctionExpression([], STRING_ID),
             ])
           ),
         ]
@@ -129,6 +129,16 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
+          builders.decorator(builders.callExpression(IS_STRING_ID, [])),
+          builders.decorator(builders.callExpression(IS_OPTIONAL_ID, [])),
+          builders.decorator(
+            builders.callExpression(FIELD_ID, [
+              builders.arrowFunctionExpression([], STRING_ID),
+              builders.objectExpression([
+                builders.objectProperty(NULLABLE_ID, TRUE_LITERAL),
+              ]),
+            ])
+          ),
           builders.decorator(
             builders.callExpression(API_PROPERTY_ID, [
               builders.objectExpression([
@@ -137,16 +147,6 @@ describe("createFieldClassProperty", () => {
                   builders.booleanLiteral(false)
                 ),
                 builders.objectProperty(TYPE_ID, STRING_ID),
-              ]),
-            ])
-          ),
-          builders.decorator(builders.callExpression(IS_STRING_ID, [])),
-          builders.decorator(builders.callExpression(IS_OPTIONAL_ID, [])),
-          builders.decorator(
-            builders.callExpression(FIELD_ID, [
-              builders.arrowFunctionExpression([], STRING_ID),
-              builders.objectExpression([
-                builders.objectProperty(NULLABLE_ID, TRUE_LITERAL),
               ]),
             ])
           ),
@@ -171,6 +171,15 @@ describe("createFieldClassProperty", () => {
         true,
         null,
         [
+          builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
+          builders.decorator(
+            builders.callExpression(classTransformerUtil.TYPE_ID, [
+              builders.arrowFunctionExpression(
+                [],
+                builders.identifier(EXAMPLE_OTHER_ENTITY.name)
+              ),
+            ])
+          ),
           builders.decorator(
             builders.callExpression(API_PROPERTY_ID, [
               builders.objectExpression([
@@ -183,15 +192,6 @@ describe("createFieldClassProperty", () => {
                   )
                 ),
               ]),
-            ])
-          ),
-          builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
-          builders.decorator(
-            builders.callExpression(classTransformerUtil.TYPE_ID, [
-              builders.arrowFunctionExpression(
-                [],
-                builders.identifier(EXAMPLE_OTHER_ENTITY.name)
-              ),
             ])
           ),
         ]

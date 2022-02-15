@@ -1,4 +1,4 @@
-import { namedTypes, builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import {
   FieldKind,
@@ -7,36 +7,39 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { Entity, EntityField } from "../../../types";
+import { classProperty, createGenericArray } from "../../../util/ast";
+import {
+  isEnumField,
+  isOneToOneRelationField,
+  isToManyRelationField,
+} from "../../../util/field";
 import {
   createEnumName,
   createPrismaFields,
 } from "../../prisma/create-prisma-schema";
-import { classProperty, createGenericArray } from "../../../util/ast";
-import { isEnumField, isOneToOneRelationField } from "../../../util/field";
+import { CreateApiPropertyDecorator } from "./api-property-decorator";
+import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
   IS_DATE_ID,
   IS_ENUM_ID,
   IS_INT_ID,
+  IS_JSON_ID,
   IS_NUMBER_ID,
   IS_OPTIONAL_ID,
   IS_STRING_ID,
-  IS_JSON_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
-import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
-import { JSON_VALUE_ID } from "./type-fest.util";
+import { INPUT_JSON_VALUE_KEY } from "./constants";
+import { createEnumMembers } from "./create-enum-dto";
+import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
-
-import * as classTransformerUtil from "./class-transformer.util";
-import { API_PROPERTY_ID } from "./nestjs-swagger.util";
-import { createEnumMembers } from "./create-enum-dto";
-import { createWhereUniqueInputID } from "./create-where-unique-input";
+import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
 import { FIELD_ID } from "./nestjs-graphql.util";
-import { INPUT_JSON_VALUE_KEY } from "./constants";
+import { JSON_VALUE_ID } from "./type-fest.util";
 
 const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
@@ -115,14 +118,21 @@ const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
 };
 export const EACH_ID = builders.identifier("each");
 export const TRUE_LITERAL = builders.booleanLiteral(true);
-export const ENUM_ID = builders.identifier("enum");
-export const REQUIRED_ID = builders.identifier("required");
-export const TYPE_ID = builders.identifier("type");
+export const ENUM = "enum";
+export const ENUM_ID = builders.identifier(ENUM);
+export const REQUIRED = "required";
+export const REQUIRED_ID = builders.identifier(REQUIRED);
+export const TYPE = "type";
+export const TYPE_ID = builders.identifier(TYPE);
 export const JSON_ID = builders.identifier("JSON");
 export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
 export const NULLABLE_ID = builders.identifier("nullable");
 
+export const isArrayTrueObjectProperty = builders.objectProperty(
+  IS_ARRAY_ID,
+  TRUE_LITERAL
+);
 /**
  *
  * create all the body of the classes of the dto like input, object, args, etc...
@@ -156,16 +166,12 @@ export function createFieldClassProperty(
     isObjectType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
-  const apiPropertyOptionsObjectExpression = builders.objectExpression([
-    builders.objectProperty(REQUIRED_ID, builders.booleanLiteral(!optional)),
-  ]);
-  const decorators: namedTypes.Decorator[] = [
-    builders.decorator(
-      builders.callExpression(API_PROPERTY_ID, [
-        apiPropertyOptionsObjectExpression,
-      ])
-    ),
-  ];
+  const createApiPropertyDecorator = new CreateApiPropertyDecorator(
+    prismaField.isList,
+    isToManyRelationField(field) && !isObjectType
+  );
+  createApiPropertyDecorator.optional(optional);
+  const decorators: namedTypes.Decorator[] = [];
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;
   }
@@ -199,13 +205,7 @@ export function createFieldClassProperty(
       if (isQuery) {
         decorators.push(createTypeDecorator(swaggerType));
       }
-
-      const type = prismaField.isList
-        ? builders.arrayExpression([swaggerType])
-        : swaggerType;
-      apiPropertyOptionsObjectExpression.properties.push(
-        builders.objectProperty(TYPE_ID, type)
-      );
+      createApiPropertyDecorator.scalarType(swaggerType);
     }
   }
   if (prismaField.type === ScalarType.DateTime && !isQuery) {
@@ -213,13 +213,8 @@ export function createFieldClassProperty(
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));
-    const enumAPIProperty = builders.objectProperty(ENUM_ID, enumId);
-    const apiPropertyOptionsProperties = prismaField.isList
-      ? [enumAPIProperty, builders.objectProperty(IS_ARRAY_ID, TRUE_LITERAL)]
-      : [enumAPIProperty];
-    apiPropertyOptionsObjectExpression.properties.push(
-      ...apiPropertyOptionsProperties
-    );
+    createApiPropertyDecorator.enum(enumId);
+
     const isEnumArgs = prismaField.isList
       ? [
           enumId,
@@ -261,15 +256,7 @@ export function createFieldClassProperty(
     if (!typeName) {
       throw new Error(`Unexpected type: ${type}`);
     }
-    apiPropertyOptionsObjectExpression.properties.push(
-      builders.objectProperty(
-        TYPE_ID,
-        builders.arrowFunctionExpression(
-          [],
-          prismaField.isList ? builders.arrayExpression([typeName]) : typeName
-        )
-      )
-    );
+    createApiPropertyDecorator.objectType(typeName);
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       createTypeDecorator(typeName)
@@ -296,6 +283,7 @@ export function createFieldClassProperty(
       )
     );
   }
+  decorators.push(createApiPropertyDecorator.build());
   return classProperty(
     id,
     typeAnnotation,
