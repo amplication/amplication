@@ -32,17 +32,16 @@ import {
 } from "./class-validator.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
+import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
-import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
 import { InputTypeEnum } from "./input-type-enum";
-import { FIELD_ID } from "./nestjs-graphql.util";
 import { JSON_VALUE_ID } from "./type-fest.util";
 
-const DATE_ID = builders.identifier("Date");
+export const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
   [scalar in ScalarType]: TSTypeKind;
 } = {
@@ -281,7 +280,8 @@ export function createFieldClassProperty(
         optionalProperty,
         entity,
         isQuery,
-        inputType
+        inputType,
+        false
       )
     );
   }
@@ -294,83 +294,6 @@ export function createFieldClassProperty(
     null,
     decorators
   );
-}
-
-function createGraphQLFieldDecorator(
-  prismaField: ScalarField | ObjectField,
-  isEnum: boolean,
-  field: EntityField,
-  optional: boolean,
-  entity: Entity,
-  isQuery: boolean,
-  inputType: InputTypeEnum | null
-): namedTypes.Decorator {
-  const type = builders.arrowFunctionExpression(
-    [],
-    createGraphQLFieldType(prismaField, field, isEnum, entity, isQuery)
-  );
-  return builders.decorator(
-    builders.callExpression(
-      FIELD_ID,
-      optional || isQuery || !field.required
-        ? [
-            type,
-            builders.objectExpression([
-              builders.objectProperty(NULLABLE_ID, TRUE_LITERAL),
-            ]),
-          ]
-        : [type]
-    )
-  );
-}
-
-function createGraphQLFieldType(
-  prismaField: ScalarField | ObjectField,
-  field: EntityField,
-  isEnum: boolean,
-  entity: Entity,
-  isQuery: boolean
-): namedTypes.Identifier | namedTypes.ArrayExpression {
-  if (prismaField.isList) {
-    const itemType = createGraphQLFieldType(
-      { ...prismaField, isList: false },
-      field,
-      isEnum,
-      entity,
-      isQuery
-    );
-    return builders.arrayExpression([itemType]);
-  }
-  if (isQuery && prismaField.kind === FieldKind.Scalar) {
-    return getFilterASTIdentifier(field.required, prismaField.type);
-  }
-
-  if (prismaField.type === ScalarType.Boolean) {
-    return BOOLEAN_ID;
-  }
-  if (prismaField.type === ScalarType.DateTime) {
-    return DATE_ID;
-  }
-  if (
-    prismaField.type === ScalarType.Float ||
-    prismaField.type === ScalarType.Int
-  ) {
-    return NUMBER_ID;
-  }
-  if (prismaField.type === ScalarType.String) {
-    return STRING_ID;
-  }
-  if (prismaField.type === ScalarType.Json) {
-    return GRAPHQL_JSON_OBJECT_ID;
-  }
-  if (isEnum) {
-    const enumId = builders.identifier(createEnumName(field, entity));
-    return enumId;
-  }
-  if (isOneToOneRelationField(field)) {
-    return createWhereUniqueInputID(prismaField.type);
-  }
-  throw new Error("Could not create GraphQL Field type");
 }
 
 export function createTypeDecorator(
@@ -463,7 +386,7 @@ export function createFieldValueTypeFromPrismaField(
   }
 }
 
-function getFilterASTIdentifier(
+export function getFilterASTIdentifier(
   isRequired: boolean,
   type: ScalarType
 ): namedTypes.Identifier {
