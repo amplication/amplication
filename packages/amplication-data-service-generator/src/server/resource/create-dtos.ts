@@ -9,10 +9,6 @@ import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
 import { createEntityDTO } from "./dto/create-entity-dto";
 import { createEnumDTO } from "./dto/create-enum-dto";
 import { createEnumDTOModule } from "./dto/create-enum-dto-module";
-import {
-  createCreateNestedManyDTOs,
-  createUpdateManyWithoutInputDTOs,
-} from "./dto/create-nested";
 import { createUpdateInput } from "./dto/create-update-input";
 import { createWhereInput } from "./dto/create-where-input";
 import { createWhereUniqueInput } from "./dto/create-where-unique-input";
@@ -22,6 +18,8 @@ import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-arg
 import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
 import { createOrderByInput } from "./dto/graphql/order-by-input/order-by-input";
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
+import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/create-update-many-without-input";
 
 type EntityDTOs = {
   entity: NamedClassDeclaration;
