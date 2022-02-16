@@ -233,6 +233,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     ScalarField | ObjectField,
     EntityDtoTypeEnum,
     boolean,
+    boolean,
     TSTypeKind[]
   ]> = [
     [
@@ -240,6 +241,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       EXAMPLE_ID_FIELD,
       createScalarField(EXAMPLE_ID_FIELD.name, ScalarType.String, false, true),
       EntityDtoTypeEnum.Entity,
+      false,
       false,
       [builders.tsStringKeyword()],
     ],
@@ -253,6 +255,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         true
       ),
       EntityDtoTypeEnum.Entity,
+      false,
       false,
       [
         builders.tsTypeReference(
@@ -271,6 +274,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       EntityDtoTypeEnum.CreateInput,
       false,
+      false,
       [
         builders.tsTypeReference(
           createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY.name)
@@ -287,6 +291,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false
       ),
       EntityDtoTypeEnum.CreateInput,
+      false,
       false,
       [
         builders.tsUnionType([
@@ -308,6 +313,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       EntityDtoTypeEnum.Entity,
       false,
+      false,
       [
         builders.tsUnionType([
           builders.tsStringKeyword(),
@@ -326,6 +332,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       EntityDtoTypeEnum.Entity,
       false,
+      false,
       [
         createGenericArray(builders.tsStringKeyword()),
         builders.tsStringKeyword(),
@@ -334,15 +341,17 @@ describe("createFieldValueTypeFromPrismaField", () => {
   ];
   test.each(cases)(
     "%s",
-    (name, field, prismaField, inputType, isEnum, expected) => {
+    (name, field, prismaField, inputType, isEnum, isNestedInput, expected) => {
       expect(
         createFieldValueTypeFromPrismaField(
+          "Names",
           field,
           prismaField,
           field.required,
           isEnum,
           false,
           false,
+          isNestedInput,
           inputType
         )
       ).toEqual(expected);

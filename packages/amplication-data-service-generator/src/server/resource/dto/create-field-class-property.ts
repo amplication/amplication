@@ -32,14 +32,15 @@ import {
 } from "./class-validator.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
-import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
-import { isCRUEntityDtoInput } from "./isCRUEntityDtoInput";
+import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
+import { createCreateNestedManyWithoutInputID } from "./nested-input-dto/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputID } from "./nested-input-dto/create-update-many-without-input";
 import { JSON_VALUE_ID } from "./type-fest.util";
 
 export const DATE_ID = builders.identifier("Date");
@@ -152,14 +153,16 @@ export function createFieldClassProperty(
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
-  const isInput = isCRUEntityDtoInput(inputType);
+  const isInput = isEntityInputExceptRelationInput(inputType);
   const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
+    entity.pluralDisplayName,
     field,
     prismaField,
     optional,
     isEnum,
     isQuery,
     isObjectType,
+    false,
     inputType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
@@ -240,7 +243,8 @@ export function createFieldClassProperty(
   if (
     prismaField.kind !== FieldKind.Object ||
     isEnum ||
-    (isInput && isOneToOneRelationField(field))
+    (isInput &&
+      (isToManyRelationField(field) || isOneToOneRelationField(field)))
   ) {
     decorators.push(
       createGraphQLFieldDecorator(
@@ -280,12 +284,14 @@ export function createTypeDecorator(
 //element [0] is always the type of the property,
 //element [1] is only returned when the type is an array, with the array element type
 export function createFieldValueTypeFromPrismaField(
+  entityPluralName: string,
   field: EntityField,
   prismaField: ScalarField | ObjectField,
   optional: boolean,
   isEnum: boolean,
   isQuery: boolean,
   isObjectType: boolean,
+  isNestedInput: boolean,
   dtoType: EntityDtoTypeEnum
 ): TSTypeKind[] {
   // add  "| null" to the end of the type
@@ -296,18 +302,45 @@ export function createFieldValueTypeFromPrismaField(
     //TODO add a ui update that make json required and remove this
   ) {
     const [type] = createFieldValueTypeFromPrismaField(
+      entityPluralName,
       field,
       {
         ...prismaField,
         isRequired: true,
       },
       optional,
+
       isEnum,
       isQuery,
       isObjectType,
+      isNestedInput,
       dtoType
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
+  }
+  if (isToManyRelationField(field) && !isObjectType && !isNestedInput) {
+    switch (dtoType) {
+      case EntityDtoTypeEnum.CreateInput:
+        return [
+          builders.tsTypeReference(
+            createCreateNestedManyWithoutInputID(
+              entityPluralName,
+              field.properties.relatedEntity.name
+            )
+          ),
+        ];
+      case EntityDtoTypeEnum.UpdateInput:
+        return [
+          builders.tsTypeReference(
+            createUpdateManyWithoutInputID(
+              entityPluralName,
+              field.properties.relatedEntity.name
+            )
+          ),
+        ];
+      default:
+        throw new Error("Didnt got an input type");
+    }
   }
   if (prismaField.isList) {
     const itemPrismaField = {
@@ -315,12 +348,14 @@ export function createFieldValueTypeFromPrismaField(
       isList: false,
     };
     const [itemType] = createFieldValueTypeFromPrismaField(
+      entityPluralName,
       field,
       itemPrismaField,
       optional,
       isEnum,
       isQuery,
       isObjectType,
+      isNestedInput,
       dtoType
     );
     return [createGenericArray(itemType), itemType];
@@ -347,7 +382,7 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-  if (isQuery || isCRUEntityDtoInput(dtoType)) {
+  if (isQuery || isEntityInputExceptRelationInput(dtoType) || isNestedInput) {
     return [
       builders.tsTypeReference(createWhereUniqueInputID(prismaField.type)),
     ];
@@ -402,4 +437,16 @@ export function getTypeName(
     throw new Error(`Unexpected type: ${type}`);
   }
   return typeName;
+}
+
+function isEntityInputExceptRelationInput(dtoType: EntityDtoTypeEnum): boolean {
+  if (
+    dtoType === EntityDtoTypeEnum.CreateInput ||
+    dtoType === EntityDtoTypeEnum.UpdateInput ||
+    dtoType === EntityDtoTypeEnum.WhereInput ||
+    dtoType === EntityDtoTypeEnum.WhereUniqueInput
+  ) {
+    return true;
+  }
+  return false;
 }

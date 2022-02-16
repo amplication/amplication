@@ -18,3 +18,7 @@ export function isInputType(classDeclaration: ClassDeclaration): boolean {
     )
   );
 }
+
+export const INPUT_TYPE_DECORATOR = builders.decorator(
+  builders.callExpression(INPUT_TYPE_ID, [])
+);

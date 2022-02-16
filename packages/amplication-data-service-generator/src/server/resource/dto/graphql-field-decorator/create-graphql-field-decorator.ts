@@ -18,10 +18,10 @@ import {
   TRUE_LITERAL,
 } from "../create-field-class-property";
 import { createWhereUniqueInputID } from "../create-where-unique-input";
-import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import { GRAPHQL_JSON_OBJECT_ID } from "../graphql-type-json.util";
-// import { createCreateNestedManyWithoutInputID } from "../to-many/create-create-nested-many-without-input";
-// import { createUpdateManyWithoutInputID } from "../to-many/create-update-many-without-input";
+import { createCreateNestedManyWithoutInputID } from "../nested-input-dto/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputID } from "../nested-input-dto/create-update-many-without-input";
+import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import { FIELD_ID } from "../nestjs-graphql.util";
 
 export function createGraphQLFieldDecorator(
@@ -116,20 +116,21 @@ function createGraphQLFieldType(
       return createWhereUniqueInputID(prismaField.type);
     }
     if (isToManyRelationField(field)) {
-      //   switch (inputType) {
-      //     case InputTypeEnum.Create:
-      //       return createCreateNestedManyWithoutInputID(
-      //         entityPluralName,
-      //         field.properties.relatedEntity.name
-      //       );
-      //     case InputTypeEnum.Update:
-      //       return createUpdateManyWithoutInputID(
-      //         entityPluralName,
-      //         field.properties.relatedEntity.name
-      //       );
-      //     default:
-      //       throw new Error("Didn't got an input type");
-      //   }
+      switch (dtoType) {
+        case EntityDtoTypeEnum.CreateInput:
+          return createCreateNestedManyWithoutInputID(
+            entityPluralName,
+            field.properties.relatedEntity.name
+          );
+
+        case EntityDtoTypeEnum.UpdateInput:
+          return createUpdateManyWithoutInputID(
+            entityPluralName,
+            field.properties.relatedEntity.name
+          );
+        default:
+          throw new Error("Didn't got an input type");
+      }
     }
     return createWhereUniqueInputID(prismaField.type);
   }
