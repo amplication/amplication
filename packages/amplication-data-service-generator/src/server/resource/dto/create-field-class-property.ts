@@ -40,8 +40,8 @@ import {
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
 import { isCRUEntityDtoInput } from "./isCRUEntityDtoInput";
-import { createCreateNestedManyWithoutInputID } from "./create-nested/create-create-nested-many-without-input";
-import { createUpdateManyWithoutInputID } from "./create-nested/create-update-many-without-input";
+import { createCreateNestedManyWithoutInputID } from "./nested-input-dto/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputID } from "./nested-input-dto/create-update-many-without-input";
 import { JSON_VALUE_ID } from "./type-fest.util";
 
 export const DATE_ID = builders.identifier("Date");
