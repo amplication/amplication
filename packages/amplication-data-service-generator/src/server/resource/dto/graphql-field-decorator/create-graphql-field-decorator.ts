@@ -5,7 +5,7 @@ import {
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { createEnumName } from "../../../../server/prisma/create-prisma-schema";
+import { createEnumName } from "../../../prisma/create-prisma-schema";
 import { Entity, EntityField } from "../../../../types";
 import { isRelationField, isToManyRelationField } from "../../../../util/field";
 import {
@@ -19,10 +19,10 @@ import {
 } from "../create-field-class-property";
 import { createWhereUniqueInputID } from "../create-where-unique-input";
 import { GRAPHQL_JSON_OBJECT_ID } from "../graphql-type-json.util";
-import { InputTypeEnum } from "../input-type-enum";
-import { FIELD_ID } from "../nestjs-graphql.util";
 import { createCreateNestedManyWithoutInputID } from "../to-many/create-create-nested-many-without-input";
 import { createUpdateManyWithoutInputID } from "../to-many/create-update-many-without-input";
+import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
+import { FIELD_ID } from "../nestjs-graphql.util";
 
 export function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
@@ -31,7 +31,7 @@ export function createGraphQLFieldDecorator(
   optional: boolean,
   entity: Entity,
   isQuery: boolean,
-  inputType: InputTypeEnum | null,
+  dtoType: EntityDtoTypeEnum,
   isNestedInput: boolean
 ): namedTypes.Decorator {
   const type = builders.arrowFunctionExpression(
@@ -42,7 +42,7 @@ export function createGraphQLFieldDecorator(
       isEnum,
       entity,
       isQuery,
-      inputType,
+      dtoType,
       entity.pluralDisplayName,
       isNestedInput
     )
@@ -68,7 +68,7 @@ function createGraphQLFieldType(
   isEnum: boolean,
   entity: Entity,
   isQuery: boolean,
-  inputType: InputTypeEnum | null,
+  dtoType: EntityDtoTypeEnum,
   entityPluralName: string,
   isNestedInput: boolean
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
@@ -79,7 +79,7 @@ function createGraphQLFieldType(
       isEnum,
       entity,
       isQuery,
-      inputType,
+      dtoType,
       entityPluralName,
       isNestedInput
     );
@@ -116,14 +116,14 @@ function createGraphQLFieldType(
       return createWhereUniqueInputID(prismaField.type);
     }
     if (isToManyRelationField(field)) {
-      switch (inputType) {
-        case InputTypeEnum.Create:
+      switch (dtoType) {
+        case EntityDtoTypeEnum.CreateInput:
           return createCreateNestedManyWithoutInputID(
             entityPluralName,
             field.properties.relatedEntity.name
           );
 
-        case InputTypeEnum.Update:
+        case EntityDtoTypeEnum.UpdateInput:
           return createUpdateManyWithoutInputID(
             entityPluralName,
             field.properties.relatedEntity.name
