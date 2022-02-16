@@ -17,7 +17,7 @@ import {
   createEnumName,
   createPrismaFields,
 } from "../../prisma/create-prisma-schema";
-import { ApiPropertyDecoratorBuilder } from "./api-property-decorator-builder";
+import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
 import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
@@ -32,18 +32,17 @@ import {
 } from "./class-validator.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
+import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
-import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
 import { isCRUEntityDtoInput } from "./isCRUEntityDtoInput";
-import { FIELD_ID } from "./nestjs-graphql.util";
 import { JSON_VALUE_ID } from "./type-fest.util";
 
-const DATE_ID = builders.identifier("Date");
+export const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
   [scalar in ScalarType]: TSTypeKind;
 } = {
@@ -225,35 +224,8 @@ export function createFieldClassProperty(
       builders.decorator(builders.callExpression(IS_ENUM_ID, isEnumArgs))
     );
   } else if (prismaField.kind === FieldKind.Object) {
-    let typeName;
-    if (namedTypes.TSUnionType.check(type)) {
-      const objectType = type.types.find(
-        (type) =>
-          namedTypes.TSTypeReference.check(type) &&
-          namedTypes.Identifier.check(type.typeName)
-      ) as namedTypes.TSTypeReference & { typeName: namedTypes.Identifier };
-      typeName = objectType.typeName;
-    } else if (
-      namedTypes.TSTypeReference.check(type) &&
-      namedTypes.Identifier.check(type.typeName)
-    ) {
-      if (prismaField.isList) {
-        if (
-          namedTypes.TSTypeReference.check(arrayElementType) &&
-          namedTypes.Identifier.check(arrayElementType.typeName)
-        ) {
-          typeName = arrayElementType.typeName;
-        } else {
-          typeName = type.typeName;
-        }
-      } else {
-        typeName = type.typeName;
-      }
-    }
+    const typeName = getTypeName(type, arrayElementType, prismaField.isList);
 
-    if (!typeName) {
-      throw new Error(`Unexpected type: ${type}`);
-    }
     apiPropertyDecoratorBuilder.objectType(typeName);
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
@@ -278,7 +250,8 @@ export function createFieldClassProperty(
         optionalProperty,
         entity,
         isQuery,
-        inputType
+        inputType,
+        false
       )
     );
   }
@@ -291,83 +264,6 @@ export function createFieldClassProperty(
     null,
     decorators
   );
-}
-
-function createGraphQLFieldDecorator(
-  prismaField: ScalarField | ObjectField,
-  isEnum: boolean,
-  field: EntityField,
-  optional: boolean,
-  entity: Entity,
-  isQuery: boolean,
-  inputType: EntityDtoTypeEnum | null
-): namedTypes.Decorator {
-  const type = builders.arrowFunctionExpression(
-    [],
-    createGraphQLFieldType(prismaField, field, isEnum, entity, isQuery)
-  );
-  return builders.decorator(
-    builders.callExpression(
-      FIELD_ID,
-      optional || isQuery || !field.required
-        ? [
-            type,
-            builders.objectExpression([
-              builders.objectProperty(NULLABLE_ID, TRUE_LITERAL),
-            ]),
-          ]
-        : [type]
-    )
-  );
-}
-
-function createGraphQLFieldType(
-  prismaField: ScalarField | ObjectField,
-  field: EntityField,
-  isEnum: boolean,
-  entity: Entity,
-  isQuery: boolean
-): namedTypes.Identifier | namedTypes.ArrayExpression {
-  if (prismaField.isList) {
-    const itemType = createGraphQLFieldType(
-      { ...prismaField, isList: false },
-      field,
-      isEnum,
-      entity,
-      isQuery
-    );
-    return builders.arrayExpression([itemType]);
-  }
-  if (isQuery && prismaField.kind === FieldKind.Scalar) {
-    return getFilterASTIdentifier(field.required, prismaField.type);
-  }
-
-  if (prismaField.type === ScalarType.Boolean) {
-    return BOOLEAN_ID;
-  }
-  if (prismaField.type === ScalarType.DateTime) {
-    return DATE_ID;
-  }
-  if (
-    prismaField.type === ScalarType.Float ||
-    prismaField.type === ScalarType.Int
-  ) {
-    return NUMBER_ID;
-  }
-  if (prismaField.type === ScalarType.String) {
-    return STRING_ID;
-  }
-  if (prismaField.type === ScalarType.Json) {
-    return GRAPHQL_JSON_OBJECT_ID;
-  }
-  if (isEnum) {
-    const enumId = builders.identifier(createEnumName(field, entity));
-    return enumId;
-  }
-  if (isOneToOneRelationField(field)) {
-    return createWhereUniqueInputID(prismaField.type);
-  }
-  throw new Error("Could not create GraphQL Field type");
 }
 
 export function createTypeDecorator(
@@ -460,7 +356,7 @@ export function createFieldValueTypeFromPrismaField(
   }
 }
 
-function getFilterASTIdentifier(
+export function getFilterASTIdentifier(
   isRequired: boolean,
   type: ScalarType
 ): namedTypes.Identifier {
@@ -469,4 +365,41 @@ function getFilterASTIdentifier(
   } else {
     return PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[type];
   }
+}
+
+export function getTypeName(
+  type: TSTypeKind,
+  arrayElementType: TSTypeKind,
+  isList: boolean
+): namedTypes.Identifier {
+  let typeName;
+  if (namedTypes.TSUnionType.check(type)) {
+    const objectType = type.types.find(
+      (type) =>
+        namedTypes.TSTypeReference.check(type) &&
+        namedTypes.Identifier.check(type.typeName)
+    ) as namedTypes.TSTypeReference & { typeName: namedTypes.Identifier };
+    typeName = objectType.typeName;
+  } else if (
+    namedTypes.TSTypeReference.check(type) &&
+    namedTypes.Identifier.check(type.typeName)
+  ) {
+    if (isList) {
+      if (
+        namedTypes.TSTypeReference.check(arrayElementType) &&
+        namedTypes.Identifier.check(arrayElementType.typeName)
+      ) {
+        typeName = arrayElementType.typeName;
+      } else {
+        typeName = type.typeName;
+      }
+    } else {
+      typeName = type.typeName;
+    }
+  }
+
+  if (!typeName) {
+    throw new Error(`Unexpected type: ${type}`);
+  }
+  return typeName;
 }
