@@ -4,12 +4,13 @@ import { ObjectField, ScalarField } from "prisma-schema-dsl";
 import { Entity, EntityField } from "../../../../types";
 import { classProperty } from "../../../../util/ast";
 import { createPrismaFields } from "../../../prisma/create-prisma-schema";
-import { CreateApiPropertyDecorator } from "../api-property-decorator/create-api-property-decorator";
+import { ApiPropertyDecoratorBuilder } from "../api-property-decorator";
 import {
   createFieldValueTypeFromPrismaField,
   getTypeName,
 } from "../create-field-class-property";
-import { createGraphQLFieldDecorator } from "../create-graphql-field-decorator";
+import { createGraphQLFieldDecorator } from "../graphql-field-decorator";
+import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 
 export enum NestedMutationOptions {
   "Create" = "create",
@@ -19,7 +20,8 @@ export enum NestedMutationOptions {
 
 export function createNestedManyProperties(
   field: EntityField,
-  entity: Entity
+  entity: Entity,
+  dtoType: EntityDtoTypeEnum
 ): namedTypes.ClassProperty[] {
   const [prismaField] = createPrismaFields(field, entity);
   const [type, arrayType] = createFieldValueTypeFromPrismaField(
@@ -31,7 +33,7 @@ export function createNestedManyProperties(
     false,
     false,
     true,
-    null
+    dtoType
   );
   return [
     createNestedManyProperty(
@@ -40,7 +42,8 @@ export function createNestedManyProperties(
       prismaField,
       field,
       entity,
-      arrayType
+      arrayType,
+      dtoType
     ),
     //TODO disconnect
     // createNestedManyProperty(NestedMutationOptions.Create, type),
@@ -54,7 +57,8 @@ function createNestedManyProperty(
   prismaField: ScalarField | ObjectField,
   field: EntityField,
   entity: Entity,
-  arrayType: TSTypeKind
+  arrayType: TSTypeKind,
+  dtoType: EntityDtoTypeEnum
 ): namedTypes.ClassProperty {
   const propertyKey = builders.identifier(propertyName);
   const propertyType = builders.tsTypeAnnotation(propertyValueType);
@@ -68,7 +72,7 @@ function createNestedManyProperty(
       true,
       entity,
       false,
-      null,
+      dtoType,
       true
     )
   );
@@ -79,7 +83,7 @@ function createNestedManyProperty(
   );
 
   decorators.push(
-    new CreateApiPropertyDecorator(true, false)
+    new ApiPropertyDecoratorBuilder(true, false)
       .optional(true)
       .objectType(typeName)
       .build()
