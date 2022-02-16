@@ -1,13 +1,14 @@
 import { builders, namedTypes } from "ast-types";
 import {
   ENUM_ID,
-  isArrayTrueObjectProperty,
+  IS_ARRAY_ID,
   REQUIRED_ID,
+  TRUE_LITERAL,
   TYPE_ID,
 } from "../create-field-class-property";
 import { API_PROPERTY_ID } from "../nestjs-swagger.util";
 
-class CreateApiPropertyDecorator {
+export class ApiPropertyDecoratorBuilder {
   private apiPropertyOptionsObjectExpression = builders.objectExpression([]);
   constructor(
     protected readonly isList: boolean,
@@ -48,7 +49,7 @@ class CreateApiPropertyDecorator {
     this.apiPropertyOptionsObjectExpression.properties.push(enumAPIProperty);
     this.isList &&
       this.apiPropertyOptionsObjectExpression.properties.push(
-        isArrayTrueObjectProperty
+        builders.objectProperty(IS_ARRAY_ID, TRUE_LITERAL)
       );
     return this;
   }
@@ -60,4 +61,3 @@ class CreateApiPropertyDecorator {
     );
   }
 }
-export { CreateApiPropertyDecorator };

@@ -17,7 +17,7 @@ import {
   createEnumName,
   createPrismaFields,
 } from "../../prisma/create-prisma-schema";
-import { CreateApiPropertyDecorator } from "./api-property-decorator";
+import { ApiPropertyDecoratorBuilder } from "./api-property-decorator-builder";
 import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
@@ -34,11 +34,12 @@ import { INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
 import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
-import { InputTypeEnum } from "./input-type-enum";
+import { isCRUEntityDtoInput } from "./isCRUEntityDtoInput";
 import { createCreateNestedManyWithoutInputID } from "./to-many/create-create-nested-many-without-input";
 import { createUpdateManyWithoutInputID } from "./to-many/create-update-many-without-input";
 import { JSON_VALUE_ID } from "./type-fest.util";
@@ -131,10 +132,6 @@ export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
 export const NULLABLE_ID = builders.identifier("nullable");
 
-export const isArrayTrueObjectProperty = builders.objectProperty(
-  IS_ARRAY_ID,
-  TRUE_LITERAL
-);
 /**
  *
  * create all the body of the classes of the dto like input, object, args, etc...
@@ -152,12 +149,12 @@ export function createFieldClassProperty(
   optional: boolean,
   isQuery: boolean,
   isObjectType: boolean,
-  inputType: InputTypeEnum | null
+  inputType: EntityDtoTypeEnum
 ): namedTypes.ClassProperty {
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
-  const isInput = inputType ? true : false;
+  const isInput = isCRUEntityDtoInput(inputType);
   const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
     entity.pluralDisplayName,
     field,
@@ -170,11 +167,11 @@ export function createFieldClassProperty(
     inputType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
-  const createApiPropertyDecorator = new CreateApiPropertyDecorator(
+  const apiPropertyDecoratorBuilder = new ApiPropertyDecoratorBuilder(
     prismaField.isList,
     isToManyRelationField(field) && !isObjectType
   );
-  createApiPropertyDecorator.optional(optional);
+  apiPropertyDecoratorBuilder.optional(optional);
   const decorators: namedTypes.Decorator[] = [];
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;
@@ -209,7 +206,7 @@ export function createFieldClassProperty(
       if (isQuery) {
         decorators.push(createTypeDecorator(swaggerType));
       }
-      createApiPropertyDecorator.scalarType(swaggerType);
+      apiPropertyDecoratorBuilder.scalarType(swaggerType);
     }
   }
   if (prismaField.type === ScalarType.DateTime && !isQuery) {
@@ -217,7 +214,7 @@ export function createFieldClassProperty(
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));
-    createApiPropertyDecorator.enum(enumId);
+    apiPropertyDecoratorBuilder.enum(enumId);
 
     const isEnumArgs = prismaField.isList
       ? [
@@ -233,7 +230,7 @@ export function createFieldClassProperty(
   } else if (prismaField.kind === FieldKind.Object) {
     const typeName = getTypeName(type, arrayElementType, prismaField.isList);
 
-    createApiPropertyDecorator.objectType(typeName);
+    apiPropertyDecoratorBuilder.objectType(typeName);
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       createTypeDecorator(typeName)
@@ -263,7 +260,7 @@ export function createFieldClassProperty(
       )
     );
   }
-  decorators.push(createApiPropertyDecorator.build());
+  decorators.push(apiPropertyDecoratorBuilder.build());
   return classProperty(
     id,
     typeAnnotation,
@@ -296,7 +293,7 @@ export function createFieldValueTypeFromPrismaField(
   isQuery: boolean,
   isObjectType: boolean,
   isNestedInput: boolean,
-  inputType: InputTypeEnum | null
+  dtoType: EntityDtoTypeEnum
 ): TSTypeKind[] {
   // add  "| null" to the end of the type
   if (
@@ -318,13 +315,13 @@ export function createFieldValueTypeFromPrismaField(
       isQuery,
       isObjectType,
       isNestedInput,
-      inputType
+      dtoType
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
   if (isToManyRelationField(field) && !isObjectType && !isNestedInput) {
-    switch (inputType) {
-      case InputTypeEnum.Create:
+    switch (dtoType) {
+      case EntityDtoTypeEnum.CreateInput:
         return [
           builders.tsTypeReference(
             createCreateNestedManyWithoutInputID(
@@ -333,7 +330,7 @@ export function createFieldValueTypeFromPrismaField(
             )
           ),
         ];
-      case InputTypeEnum.Update:
+      case EntityDtoTypeEnum.UpdateInput:
         return [
           builders.tsTypeReference(
             createUpdateManyWithoutInputID(
@@ -360,7 +357,7 @@ export function createFieldValueTypeFromPrismaField(
       isQuery,
       isObjectType,
       isNestedInput,
-      inputType
+      dtoType
     );
     return [createGenericArray(itemType), itemType];
   }
@@ -386,7 +383,7 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-  if (isQuery || inputType || isNestedInput) {
+  if (isQuery || isCRUEntityDtoInput(dtoType) || isNestedInput) {
     return [
       builders.tsTypeReference(createWhereUniqueInputID(prismaField.type)),
     ];

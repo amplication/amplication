@@ -31,7 +31,7 @@ import {
   TYPE_ID,
 } from "./create-field-class-property";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
-import { InputTypeEnum } from "./input-type-enum";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { FIELD_ID } from "./nestjs-graphql.util";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 
@@ -77,6 +77,7 @@ describe("createFieldClassProperty", () => {
     boolean,
     boolean,
     boolean,
+    EntityDtoTypeEnum,
     namedTypes.ClassProperty
   ]> = [
     [
@@ -85,6 +86,7 @@ describe("createFieldClassProperty", () => {
       !EXAMPLE_ID_FIELD.required,
       false,
       false,
+      EntityDtoTypeEnum.Entity,
       classProperty(
         builders.identifier(EXAMPLE_ID_FIELD.name),
         builders.tsTypeAnnotation(builders.tsStringKeyword()),
@@ -115,6 +117,7 @@ describe("createFieldClassProperty", () => {
       !EXAMPLE_OPTIONAL_ENTITY_FIELD.required,
       false,
       false,
+      EntityDtoTypeEnum.Entity,
       classProperty(
         builders.identifier(EXAMPLE_OPTIONAL_ENTITY_FIELD.name),
         builders.tsTypeAnnotation(
@@ -157,6 +160,7 @@ describe("createFieldClassProperty", () => {
       !EXAMPLE_LOOKUP_FIELD.required,
       false,
       false,
+      EntityDtoTypeEnum.Entity,
       classProperty(
         builders.identifier(EXAMPLE_LOOKUP_FIELD.name),
         builders.tsTypeAnnotation(
@@ -197,7 +201,15 @@ describe("createFieldClassProperty", () => {
   ];
   test.each(cases)(
     "%s",
-    (name, field, optional, isQuery, isObjectType, expected) => {
+    (
+      name,
+      field,
+      optional,
+      isQuery,
+      isObjectType,
+      entityDtoTypeEnum,
+      expected
+    ) => {
       expect(
         print(
           createFieldClassProperty(
@@ -206,7 +218,7 @@ describe("createFieldClassProperty", () => {
             optional,
             isQuery,
             isObjectType,
-            null
+            entityDtoTypeEnum
           )
         ).code
       ).toEqual(print(expected).code);
@@ -219,7 +231,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     string,
     EntityField,
     ScalarField | ObjectField,
-    InputTypeEnum | null,
+    EntityDtoTypeEnum,
     boolean,
     boolean,
     TSTypeKind[]
@@ -228,7 +240,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       "scalar type",
       EXAMPLE_ID_FIELD,
       createScalarField(EXAMPLE_ID_FIELD.name, ScalarType.String, false, true),
-      null,
+      EntityDtoTypeEnum.Entity,
       false,
       false,
       [builders.tsStringKeyword()],
@@ -242,7 +254,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         true
       ),
-      null,
+      EntityDtoTypeEnum.Entity,
       false,
       false,
       [
@@ -260,7 +272,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         true
       ),
-      InputTypeEnum.Create,
+      EntityDtoTypeEnum.CreateInput,
       false,
       false,
       [
@@ -278,7 +290,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         false
       ),
-      InputTypeEnum.Create,
+      EntityDtoTypeEnum.CreateInput,
       false,
       false,
       [
@@ -299,7 +311,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         false
       ),
-      null,
+      EntityDtoTypeEnum.Entity,
       false,
       false,
       [
@@ -318,7 +330,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         true,
         true
       ),
-      null,
+      EntityDtoTypeEnum.Entity,
       false,
       false,
       [

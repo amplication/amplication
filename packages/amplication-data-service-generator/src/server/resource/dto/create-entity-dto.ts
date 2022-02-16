@@ -3,6 +3,7 @@ import { Entity } from "../../../types";
 import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
 import { isPasswordField } from "../../../util/field";
 import { createFieldClassProperty } from "./create-field-class-property";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { OBJECT_TYPE_ID } from "./nestjs-graphql.util";
 
 export const OBJECT_TYPE_DECORATOR = builders.decorator(
@@ -20,7 +21,7 @@ export function createEntityDTO(entity: Entity): NamedClassDeclaration {
         !field.required,
         false,
         true,
-        null
+        EntityDtoTypeEnum.Entity
       )
     );
   return classDeclaration(
