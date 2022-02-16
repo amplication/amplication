@@ -16,7 +16,12 @@ import {
 import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import { createGraphQLFieldDecorator } from "../graphql-field-decorator";
 import { INPUT_TYPE_DECORATOR } from "../nestjs-graphql.util";
-import { NestedMutationOptions } from "./nested-mutation-options";
+
+export enum NestedMutationOptions {
+  "Create" = "create",
+  "Connect" = "connect",
+  "ConnectOrCreate" = "connectOrCreate",
+}
 
 export function createNestedInputDTO(
   classId: namedTypes.Identifier,

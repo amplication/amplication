@@ -32,16 +32,15 @@ import {
 } from "./class-validator.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
-import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
-import { isCRUEntityDtoInput } from "./isCRUEntityDtoInput";
-import { createCreateNestedManyWithoutInputID } from "./create-nested/create-create-nested-many-without-input";
-import { createUpdateManyWithoutInputID } from "./create-nested/create-update-many-without-input";
+import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
+import { createCreateNestedManyWithoutInputID } from "./nested-input-dto/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputID } from "./nested-input-dto/create-update-many-without-input";
 import { JSON_VALUE_ID } from "./type-fest.util";
 
 export const DATE_ID = builders.identifier("Date");
@@ -154,7 +153,7 @@ export function createFieldClassProperty(
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
-  const isInput = isCRUEntityDtoInput(inputType);
+  const isInput = isEntityInputExceptRelationInput(inputType);
   const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
     entity.pluralDisplayName,
     field,
@@ -383,7 +382,7 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-  if (isQuery || isCRUEntityDtoInput(dtoType) || isNestedInput) {
+  if (isQuery || isEntityInputExceptRelationInput(dtoType) || isNestedInput) {
     return [
       builders.tsTypeReference(createWhereUniqueInputID(prismaField.type)),
     ];
@@ -438,4 +437,16 @@ export function getTypeName(
     throw new Error(`Unexpected type: ${type}`);
   }
   return typeName;
+}
+
+function isEntityInputExceptRelationInput(dtoType: EntityDtoTypeEnum): boolean {
+  if (
+    dtoType === EntityDtoTypeEnum.CreateInput ||
+    dtoType === EntityDtoTypeEnum.UpdateInput ||
+    dtoType === EntityDtoTypeEnum.WhereInput ||
+    dtoType === EntityDtoTypeEnum.WhereUniqueInput
+  ) {
+    return true;
+  }
+  return false;
 }

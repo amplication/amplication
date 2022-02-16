@@ -4,31 +4,31 @@ import { Entity } from "../../../../../types";
 import { NamedClassDeclaration } from "../../../../../util/ast";
 import { isToManyRelationField } from "../../../../../util/field";
 import { EntityDtoTypeEnum } from "../../entity-dto-type-enum";
-import { createNestedInputDTO } from "../create-nested";
+import { createNestedInputDTO } from "../create-nested-input-dto";
 
-export function createUpdateManyWithoutInputDTOs(
+export function createCreateNestedManyDTOs(
   entity: Entity
 ): NamedClassDeclaration[] {
   const toManyFields = entity.fields.filter(isToManyRelationField);
   return toManyFields.map((field) =>
     createNestedInputDTO(
-      createUpdateManyWithoutInputID(
+      createCreateNestedManyWithoutInputID(
         entity.pluralDisplayName,
         field.properties.relatedEntity.name
       ),
       entity,
       field,
-      EntityDtoTypeEnum.RelationUpdateManyWithoutSourceInput
+      EntityDtoTypeEnum.RelationCreateNestedManyWithoutSourceInput
     )
   );
 }
 
-export function createUpdateManyWithoutInputID(
+export function createCreateNestedManyWithoutInputID(
   pluralEntityName: string,
   nestedEntityName: string
 ): namedTypes.Identifier {
   return builders.identifier(
-    `${pascalCase(nestedEntityName)}UpdateManyWithout${pascalCase(
+    `${pascalCase(nestedEntityName)}CreateNestedManyWithout${pascalCase(
       pluralEntityName
     )}Input`
   );

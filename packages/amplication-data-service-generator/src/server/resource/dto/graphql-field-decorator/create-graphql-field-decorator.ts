@@ -19,8 +19,8 @@ import {
 } from "../create-field-class-property";
 import { createWhereUniqueInputID } from "../create-where-unique-input";
 import { GRAPHQL_JSON_OBJECT_ID } from "../graphql-type-json.util";
-import { createCreateNestedManyWithoutInputID } from "../create-nested/create-create-nested-many-without-input";
-import { createUpdateManyWithoutInputID } from "../create-nested/create-update-many-without-input";
+import { createCreateNestedManyWithoutInputID } from "../nested-input-dto/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputID } from "../nested-input-dto/create-update-many-without-input";
 import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import { FIELD_ID } from "../nestjs-graphql.util";
 
