@@ -1084,7 +1084,6 @@ import {
 } from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
-import { OrderTitle } from \\"../order/OrderTitle\\";
 
 export const CustomerCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -1149,9 +1148,6 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
         >
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
-        <ReferenceInput source=\\"order.id\\" reference=\\"Order\\" label=\\"Orders\\">
-          <SelectInput optionText={OrderTitle} />
-        </ReferenceInput>
       </SimpleForm>
     </Create>
   );
@@ -1173,7 +1169,6 @@ import {
 } from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
-import { OrderTitle } from \\"../order/OrderTitle\\";
 
 export const CustomerEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -1237,9 +1232,6 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
           label=\\"VIP Organization\\"
         >
           <SelectInput optionText={OrganizationTitle} />
-        </ReferenceInput>
-        <ReferenceInput source=\\"order.id\\" reference=\\"Order\\" label=\\"Orders\\">
-          <SelectInput optionText={OrderTitle} />
         </ReferenceInput>
       </SimpleForm>
     </Edit>
@@ -1692,78 +1684,26 @@ export const OrderTitle = (record: TOrder): string => {
 };
 ",
   "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
-import {
-  Create,
-  SimpleForm,
-  CreateProps,
-  TextInput,
-  ReferenceInput,
-  SelectInput,
-} from \\"react-admin\\";
-import { UserTitle } from \\"../user/UserTitle\\";
-import { CustomerTitle } from \\"../customer/CustomerTitle\\";
+import { Create, SimpleForm, CreateProps, TextInput } from \\"react-admin\\";
 
 export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Users\\">
-          <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source=\\"customer.id\\"
-          reference=\\"Customer\\"
-          label=\\"Customers\\"
-        >
-          <SelectInput optionText={CustomerTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source=\\"customer.id\\"
-          reference=\\"Customer\\"
-          label=\\"VIP Customers\\"
-        >
-          <SelectInput optionText={CustomerTitle} />
-        </ReferenceInput>
       </SimpleForm>
     </Create>
   );
 };
 ",
   "admin-ui/src/organization/OrganizationEdit.tsx": "import * as React from \\"react\\";
-import {
-  Edit,
-  SimpleForm,
-  EditProps,
-  TextInput,
-  ReferenceInput,
-  SelectInput,
-} from \\"react-admin\\";
-import { UserTitle } from \\"../user/UserTitle\\";
-import { CustomerTitle } from \\"../customer/CustomerTitle\\";
+import { Edit, SimpleForm, EditProps, TextInput } from \\"react-admin\\";
 
 export const OrganizationEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Users\\">
-          <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source=\\"customer.id\\"
-          reference=\\"Customer\\"
-          label=\\"Customers\\"
-        >
-          <SelectInput optionText={CustomerTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source=\\"customer.id\\"
-          reference=\\"Customer\\"
-          label=\\"VIP Customers\\"
-        >
-          <SelectInput optionText={CustomerTitle} />
-        </ReferenceInput>
       </SimpleForm>
     </Edit>
   );
@@ -2044,7 +1984,6 @@ import {
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
-import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
@@ -2067,16 +2006,6 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <NumberInput label=\\"Score\\" source=\\"score\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Employees\\">
-          <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source=\\"organization.id\\"
-          reference=\\"Organization\\"
-          label=\\"Organizations\\"
-        >
-          <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <SelectArrayInput
           label=\\"Interests\\"
@@ -2124,7 +2053,6 @@ import {
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
-import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
@@ -2147,16 +2075,6 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <NumberInput label=\\"Score\\" source=\\"score\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Employees\\">
-          <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source=\\"organization.id\\"
-          reference=\\"Organization\\"
-          label=\\"Organizations\\"
-        >
-          <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <SelectArrayInput
           label=\\"Interests\\"

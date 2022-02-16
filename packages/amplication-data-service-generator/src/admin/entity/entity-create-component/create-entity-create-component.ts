@@ -22,6 +22,7 @@ import {
   REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
 } from "../react-admin.util";
+import { isRelationField, isToManyRelationField } from "../../../util/field";
 const template = path.resolve(
   __dirname,
   "entity-create-component.template.tsx"
@@ -52,9 +53,9 @@ export async function createEntityCreateComponent(
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
-  const fields = dtoProperties.map(
-    (property) => fieldsByName[property.key.name]
-  );
+  const fields = dtoProperties
+    .map((property) => fieldsByName[property.key.name])
+    .filter((field) => !isToManyRelationField(field));
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
