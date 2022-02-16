@@ -439,9 +439,7 @@ export function getTypeName(
   return typeName;
 }
 
-export function isEntityInputExceptRelationInput(
-  dtoType: EntityDtoTypeEnum
-): boolean {
+function isEntityInputExceptRelationInput(dtoType: EntityDtoTypeEnum): boolean {
   if (
     dtoType === EntityDtoTypeEnum.CreateInput ||
     dtoType === EntityDtoTypeEnum.UpdateInput ||
