@@ -1,9 +1,10 @@
+import { builders, namedTypes } from "ast-types";
+import { pascalCase } from "pascal-case";
 import { Entity } from "../../../../../types";
 import { NamedClassDeclaration } from "../../../../../util/ast";
 import { isToManyRelationField } from "../../../../../util/field";
 import { EntityDtoTypeEnum } from "../../entity-dto-type-enum";
 import { createNestedInputDTO } from "../create-nested";
-import { createCreateNestedManyWithoutInputID } from "./create-ast-id";
 
 export function createCreateNestedManyDTOs(
   entity: Entity
@@ -19,5 +20,16 @@ export function createCreateNestedManyDTOs(
       field,
       EntityDtoTypeEnum.RelationCreateNestedManyWithoutSourceInput
     )
+  );
+}
+
+export function createCreateNestedManyWithoutInputID(
+  pluralEntityName: string,
+  nestedEntityName: string
+): namedTypes.Identifier {
+  return builders.identifier(
+    `${pascalCase(nestedEntityName)}CreateNestedManyWithout${pascalCase(
+      pluralEntityName
+    )}Input`
   );
 }
