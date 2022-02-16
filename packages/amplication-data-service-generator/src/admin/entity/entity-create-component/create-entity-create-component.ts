@@ -1,10 +1,11 @@
-import * as path from "path";
 import { builders, namedTypes } from "ast-types";
 import { isEmpty } from "lodash";
+import * as path from "path";
+import { DTOs } from "../../../server/resource/create-dtos";
 import {
   Entity,
-  EnumDataType,
   EntityField,
+  EnumDataType,
   LookupResolvedProperties,
 } from "../../../types";
 import {
@@ -13,16 +14,15 @@ import {
   importNames,
   interpolate,
 } from "../../../util/ast";
+import { isToManyRelationField } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";
+import { createFieldInput } from "../create-field-input";
 import {
-  REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
+  REACT_ADMIN_MODULE,
 } from "../react-admin.util";
-import { isRelationField, isToManyRelationField } from "../../../util/field";
 const template = path.resolve(
   __dirname,
   "entity-create-component.template.tsx"
