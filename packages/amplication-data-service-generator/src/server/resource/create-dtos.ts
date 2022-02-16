@@ -1,22 +1,26 @@
-import { camelCase } from "camel-case";
 import { namedTypes } from "ast-types";
+import { camelCase } from "camel-case";
 import { Entity, Module } from "../../types";
 import { NamedClassDeclaration } from "../../util/ast";
 import { getEnumFields } from "../../util/entity";
 import { createEnumName } from "../prisma/create-prisma-schema";
 import { createCreateInput } from "./dto/create-create-input";
+import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
 import { createEntityDTO } from "./dto/create-entity-dto";
 import { createEnumDTO } from "./dto/create-enum-dto";
+import { createEnumDTOModule } from "./dto/create-enum-dto-module";
+import {
+  createCreateNestedManyDTOs,
+  createUpdateManyWithoutInputDTOs,
+} from "./dto/create-nested";
 import { createUpdateInput } from "./dto/create-update-input";
 import { createWhereInput } from "./dto/create-where-input";
 import { createWhereUniqueInput } from "./dto/create-where-unique-input";
-import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
-import { createEnumDTOModule } from "./dto/create-enum-dto-module";
 import { createCreateArgs } from "./dto/graphql/create/create-create-args";
-import { createOrderByInput } from "./dto/graphql/order-by-input/order-by-input";
 import { createDeleteArgs } from "./dto/graphql/delete/create-delete-args";
 import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-args";
 import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
+import { createOrderByInput } from "./dto/graphql/order-by-input/order-by-input";
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
 
 type EntityDTOs = {
@@ -73,9 +77,11 @@ export async function createDTOs(entities: Entity[]): Promise<DTOs> {
       entities.map(async (entity) => {
         const entityDTOs = await createEntityDTOs(entity);
         const entityEnumDTOs = createEntityEnumDTOs(entity);
+        const toManyDTOs = createToManyDTOs(entity);
         const dtos = {
           ...entityDTOs,
           ...entityEnumDTOs,
+          ...toManyDTOs,
         };
         return [entity.name, dtos];
       })
@@ -131,4 +137,10 @@ function createEntityEnumDTOs(entity: Entity): EntityEnumDTOs {
       return [createEnumName(field, entity), enumDTO];
     })
   );
+}
+
+function createToManyDTOs(entity: Entity): NamedClassDeclaration[] {
+  const allCreateNestedManyWithoutInput = createCreateNestedManyDTOs(entity);
+  const allUpdateManyWithoutInput = createUpdateManyWithoutInputDTOs(entity);
+  return [...allCreateNestedManyWithoutInput, ...allUpdateManyWithoutInput];
 }

@@ -264,6 +264,7 @@ export type Customer = {
 };
 ",
   "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
 
 export type CustomerCreateInput = {
   email: string;
@@ -279,6 +280,7 @@ export type CustomerCreateInput = {
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
+  orders?: OrderCreateNestedManyWithoutCustomersInput;
 };
 ",
   "admin-ui/src/api/customer/CustomerFindManyArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
@@ -319,6 +321,7 @@ export type CustomerOrderByInput = {
 };
 ",
   "admin-ui/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrderUpdateManyWithoutCustomersInput } from \\"./OrderUpdateManyWithoutCustomersInput\\";
 
 export type CustomerUpdateInput = {
   email?: string;
@@ -334,6 +337,7 @@ export type CustomerUpdateInput = {
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
   vipOrganization?: OrganizationWhereUniqueInput | null;
+  orders?: OrderUpdateManyWithoutCustomersInput;
 };
 ",
   "admin-ui/src/api/customer/CustomerWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
@@ -386,6 +390,18 @@ export type DeleteCustomerArgs = {
   Purple = \\"purple\\",
   Yellow = \\"yellow\\",
 }
+",
+  "admin-ui/src/api/customer/OrderCreateNestedManyWithoutCustomersInput.ts": "import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
+
+export type OrderCreateNestedManyWithoutCustomersInput = {
+  connect?: Array<OrderWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/customer/OrderUpdateManyWithoutCustomersInput.ts": "import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
+
+export type OrderUpdateManyWithoutCustomersInput = {
+  connect?: Array<OrderWhereUniqueInput>;
+};
 ",
   "admin-ui/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
@@ -555,6 +571,18 @@ export type CreateOrganizationArgs = {
   data: OrganizationCreateInput;
 };
 ",
+  "admin-ui/src/api/organization/CustomerCreateNestedManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export type CustomerCreateNestedManyWithoutOrganizationsInput = {
+  connect?: Array<CustomerWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/organization/CustomerUpdateManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export type CustomerUpdateManyWithoutOrganizationsInput = {
+  connect?: Array<CustomerWhereUniqueInput>;
+};
+",
   "admin-ui/src/api/organization/DeleteOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
 export type DeleteOrganizationArgs = {
@@ -574,8 +602,14 @@ export type Organization = {
   vipCustomers?: Array<Customer>;
 };
 ",
-  "admin-ui/src/api/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
+  "admin-ui/src/api/organization/OrganizationCreateInput.ts": "import { UserCreateNestedManyWithoutOrganizationsInput } from \\"./UserCreateNestedManyWithoutOrganizationsInput\\";
+import { CustomerCreateNestedManyWithoutOrganizationsInput } from \\"./CustomerCreateNestedManyWithoutOrganizationsInput\\";
+
+export type OrganizationCreateInput = {
   name: string;
+  users?: UserCreateNestedManyWithoutOrganizationsInput;
+  customers?: CustomerCreateNestedManyWithoutOrganizationsInput;
+  vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 };
 ",
   "admin-ui/src/api/organization/OrganizationFindManyArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
@@ -603,8 +637,14 @@ export type OrganizationOrderByInput = {
   name?: SortOrder;
 };
 ",
-  "admin-ui/src/api/organization/OrganizationUpdateInput.ts": "export type OrganizationUpdateInput = {
+  "admin-ui/src/api/organization/OrganizationUpdateInput.ts": "import { UserUpdateManyWithoutOrganizationsInput } from \\"./UserUpdateManyWithoutOrganizationsInput\\";
+import { CustomerUpdateManyWithoutOrganizationsInput } from \\"./CustomerUpdateManyWithoutOrganizationsInput\\";
+
+export type OrganizationUpdateInput = {
   name?: string;
+  users?: UserUpdateManyWithoutOrganizationsInput;
+  customers?: CustomerUpdateManyWithoutOrganizationsInput;
+  vipCustomers?: CustomerUpdateManyWithoutOrganizationsInput;
 };
 ",
   "admin-ui/src/api/organization/OrganizationWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
@@ -629,6 +669,18 @@ export type UpdateOrganizationArgs = {
   data: OrganizationUpdateInput;
 };
 ",
+  "admin-ui/src/api/organization/UserCreateNestedManyWithoutOrganizationsInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
+
+export type UserCreateNestedManyWithoutOrganizationsInput = {
+  connect?: Array<UserWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/organization/UserUpdateManyWithoutOrganizationsInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
+
+export type UserUpdateManyWithoutOrganizationsInput = {
+  connect?: Array<UserWhereUniqueInput>;
+};
+",
   "admin-ui/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from \\"./UserCreateInput\\";
 
 export type CreateUserArgs = {
@@ -651,6 +703,18 @@ export type DeleteUserArgs = {
   Medium = \\"medium\\",
   Low = \\"low\\",
 }
+",
+  "admin-ui/src/api/user/OrganizationCreateNestedManyWithoutUsersInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type OrganizationCreateNestedManyWithoutUsersInput = {
+  connect?: Array<OrganizationWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/user/OrganizationUpdateManyWithoutUsersInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type OrganizationUpdateManyWithoutUsersInput = {
+  connect?: Array<OrganizationWhereUniqueInput>;
+};
 ",
   "admin-ui/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
@@ -684,6 +748,8 @@ export type User = {
 };
 ",
   "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
+import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { InputJsonValue } from \\"../../types\\";
 
 export type UserCreateInput = {
@@ -697,11 +763,19 @@ export type UserCreateInput = {
   birthDate: Date;
   score: number;
   manager?: UserWhereUniqueInput | null;
+  employees?: UserCreateNestedManyWithoutUsersInput;
+  organizations?: OrganizationCreateNestedManyWithoutUsersInput;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
   location: string;
   extendedProperties: InputJsonValue;
+};
+",
+  "admin-ui/src/api/user/UserCreateNestedManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+
+export type UserCreateNestedManyWithoutUsersInput = {
+  connect?: Array<UserWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -742,6 +816,8 @@ export type UserOrderByInput = {
 };
 ",
   "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
+import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
 import { InputJsonValue } from \\"../../types\\";
 
 export type UserUpdateInput = {
@@ -755,11 +831,19 @@ export type UserUpdateInput = {
   birthDate?: Date;
   score?: number;
   manager?: UserWhereUniqueInput | null;
+  employees?: UserUpdateManyWithoutUsersInput;
+  organizations?: OrganizationUpdateManyWithoutUsersInput;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
   extendedProperties?: InputJsonValue;
+};
+",
+  "admin-ui/src/api/user/UserUpdateManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+
+export type UserUpdateManyWithoutUsersInput = {
+  connect?: Array<UserWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/UserWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
@@ -1000,6 +1084,7 @@ import {
 } from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { OrderTitle } from \\"../order/OrderTitle\\";
 
 export const CustomerCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -1064,6 +1149,9 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
         >
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
+        <ReferenceInput source=\\"order.id\\" reference=\\"Order\\" label=\\"Orders\\">
+          <SelectInput optionText={OrderTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Create>
   );
@@ -1085,6 +1173,7 @@ import {
 } from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { OrderTitle } from \\"../order/OrderTitle\\";
 
 export const CustomerEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -1148,6 +1237,9 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
           label=\\"VIP Organization\\"
         >
           <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceInput source=\\"order.id\\" reference=\\"Order\\" label=\\"Orders\\">
+          <SelectInput optionText={OrderTitle} />
         </ReferenceInput>
       </SimpleForm>
     </Edit>
@@ -1600,26 +1692,78 @@ export const OrderTitle = (record: TOrder): string => {
 };
 ",
   "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
-import { Create, SimpleForm, CreateProps, TextInput } from \\"react-admin\\";
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  TextInput,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { UserTitle } from \\"../user/UserTitle\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 
 export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Users\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"Customers\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"VIP Customers\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Create>
   );
 };
 ",
   "admin-ui/src/organization/OrganizationEdit.tsx": "import * as React from \\"react\\";
-import { Edit, SimpleForm, EditProps, TextInput } from \\"react-admin\\";
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  TextInput,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { UserTitle } from \\"../user/UserTitle\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 
 export const OrganizationEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Users\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"Customers\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"customer.id\\"
+          reference=\\"Customer\\"
+          label=\\"VIP Customers\\"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Edit>
   );
@@ -1900,6 +2044,7 @@ import {
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
@@ -1922,6 +2067,16 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <NumberInput label=\\"Score\\" source=\\"score\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Employees\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organizations\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <SelectArrayInput
           label=\\"Interests\\"
@@ -1969,6 +2124,7 @@ import {
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
@@ -1991,6 +2147,16 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <NumberInput label=\\"Score\\" source=\\"score\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Employees\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source=\\"organization.id\\"
+          reference=\\"Organization\\"
+          label=\\"Organizations\\"
+        >
+          <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <SelectArrayInput
           label=\\"Interests\\"
@@ -3530,6 +3696,7 @@ import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
 @InputType()
 class CustomerCreateInput {
   @IsString()
@@ -3676,6 +3843,18 @@ class CustomerCreateInput {
     type: () => OrganizationWhereUniqueInput,
   })
   vipOrganization?: OrganizationWhereUniqueInput | null;
+
+  @ValidateNested()
+  @Type(() => OrderCreateNestedManyWithoutCustomersInput)
+  @IsOptional()
+  @Field(() => OrderCreateNestedManyWithoutCustomersInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => OrderCreateNestedManyWithoutCustomersInput,
+  })
+  orders?: OrderCreateNestedManyWithoutCustomersInput;
 }
 export { CustomerCreateInput };
 ",
@@ -3951,6 +4130,7 @@ import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { OrderUpdateManyWithoutCustomersInput } from \\"./OrderUpdateManyWithoutCustomersInput\\";
 @InputType()
 class CustomerUpdateInput {
   @IsString()
@@ -4100,6 +4280,18 @@ class CustomerUpdateInput {
     type: () => OrganizationWhereUniqueInput,
   })
   vipOrganization?: OrganizationWhereUniqueInput | null;
+
+  @ValidateNested()
+  @Type(() => OrderUpdateManyWithoutCustomersInput)
+  @IsOptional()
+  @Field(() => OrderUpdateManyWithoutCustomersInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => OrderUpdateManyWithoutCustomersInput,
+  })
+  orders?: OrderUpdateManyWithoutCustomersInput;
 }
 export { CustomerUpdateInput };
 ",
@@ -4393,6 +4585,60 @@ export enum EnumCustomerFavoriteColors {
 registerEnumType(EnumCustomerFavoriteColors, {
   name: \\"EnumCustomerFavoriteColors\\",
 });
+",
+  "server/src/customer/base/OrderCreateNestedManyWithoutCustomersInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class OrderCreateNestedManyWithoutCustomersInput {
+  @Field(() => [OrderWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrderWhereUniqueInput],
+  })
+  connect?: Array<OrderWhereUniqueInput>;
+}
+export { OrderCreateNestedManyWithoutCustomersInput };
+",
+  "server/src/customer/base/OrderUpdateManyWithoutCustomersInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class OrderUpdateManyWithoutCustomersInput {
+  @Field(() => [OrderWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrderWhereUniqueInput],
+  })
+  connect?: Array<OrderWhereUniqueInput>;
+}
+export { OrderUpdateManyWithoutCustomersInput };
 ",
   "server/src/customer/base/UpdateCustomerArgs.ts": "/*
 //------------------------------------------------------------------------------ 
@@ -8270,6 +8516,60 @@ class CreateOrganizationArgs {
 
 export { CreateOrganizationArgs };
 ",
+  "server/src/organization/base/CustomerCreateNestedManyWithoutOrganizationsInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class CustomerCreateNestedManyWithoutOrganizationsInput {
+  @Field(() => [CustomerWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [CustomerWhereUniqueInput],
+  })
+  connect?: Array<CustomerWhereUniqueInput>;
+}
+export { CustomerCreateNestedManyWithoutOrganizationsInput };
+",
+  "server/src/organization/base/CustomerUpdateManyWithoutOrganizationsInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class CustomerUpdateManyWithoutOrganizationsInput {
+  @Field(() => [CustomerWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [CustomerWhereUniqueInput],
+  })
+  connect?: Array<CustomerWhereUniqueInput>;
+}
+export { CustomerUpdateManyWithoutOrganizationsInput };
+",
   "server/src/organization/base/DeleteOrganizationArgs.ts": "/*
 //------------------------------------------------------------------------------ 
 // This code was generated by Amplication. 
@@ -8384,8 +8684,11 @@ export { Organization };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
+import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { Type } from \\"class-transformer\\";
+import { UserCreateNestedManyWithoutOrganizationsInput } from \\"./UserCreateNestedManyWithoutOrganizationsInput\\";
+import { CustomerCreateNestedManyWithoutOrganizationsInput } from \\"./CustomerCreateNestedManyWithoutOrganizationsInput\\";
 @InputType()
 class OrganizationCreateInput {
   @IsString()
@@ -8395,6 +8698,42 @@ class OrganizationCreateInput {
     type: String,
   })
   name!: string;
+
+  @ValidateNested()
+  @Type(() => UserCreateNestedManyWithoutOrganizationsInput)
+  @IsOptional()
+  @Field(() => UserCreateNestedManyWithoutOrganizationsInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: true,
+    type: () => UserCreateNestedManyWithoutOrganizationsInput,
+  })
+  users?: UserCreateNestedManyWithoutOrganizationsInput;
+
+  @ValidateNested()
+  @Type(() => CustomerCreateNestedManyWithoutOrganizationsInput)
+  @IsOptional()
+  @Field(() => CustomerCreateNestedManyWithoutOrganizationsInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: true,
+    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
+  })
+  customers?: CustomerCreateNestedManyWithoutOrganizationsInput;
+
+  @ValidateNested()
+  @Type(() => CustomerCreateNestedManyWithoutOrganizationsInput)
+  @IsOptional()
+  @Field(() => CustomerCreateNestedManyWithoutOrganizationsInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: true,
+    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
+  })
+  vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 }
 export { OrganizationCreateInput };
 ",
@@ -8545,8 +8884,11 @@ export { OrganizationOrderByInput };
 //------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString, IsOptional } from \\"class-validator\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { Type } from \\"class-transformer\\";
+import { UserUpdateManyWithoutOrganizationsInput } from \\"./UserUpdateManyWithoutOrganizationsInput\\";
+import { CustomerUpdateManyWithoutOrganizationsInput } from \\"./CustomerUpdateManyWithoutOrganizationsInput\\";
 @InputType()
 class OrganizationUpdateInput {
   @IsString()
@@ -8559,6 +8901,42 @@ class OrganizationUpdateInput {
     type: String,
   })
   name?: string;
+
+  @ValidateNested()
+  @Type(() => UserUpdateManyWithoutOrganizationsInput)
+  @IsOptional()
+  @Field(() => UserUpdateManyWithoutOrganizationsInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => UserUpdateManyWithoutOrganizationsInput,
+  })
+  users?: UserUpdateManyWithoutOrganizationsInput;
+
+  @ValidateNested()
+  @Type(() => CustomerUpdateManyWithoutOrganizationsInput)
+  @IsOptional()
+  @Field(() => CustomerUpdateManyWithoutOrganizationsInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => CustomerUpdateManyWithoutOrganizationsInput,
+  })
+  customers?: CustomerUpdateManyWithoutOrganizationsInput;
+
+  @ValidateNested()
+  @Type(() => CustomerUpdateManyWithoutOrganizationsInput)
+  @IsOptional()
+  @Field(() => CustomerUpdateManyWithoutOrganizationsInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => CustomerUpdateManyWithoutOrganizationsInput,
+  })
+  vipCustomers?: CustomerUpdateManyWithoutOrganizationsInput;
 }
 export { OrganizationUpdateInput };
 ",
@@ -8677,6 +9055,60 @@ class UpdateOrganizationArgs {
 }
 
 export { UpdateOrganizationArgs };
+",
+  "server/src/organization/base/UserCreateNestedManyWithoutOrganizationsInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class UserCreateNestedManyWithoutOrganizationsInput {
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  connect?: Array<UserWhereUniqueInput>;
+}
+export { UserCreateNestedManyWithoutOrganizationsInput };
+",
+  "server/src/organization/base/UserUpdateManyWithoutOrganizationsInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class UserUpdateManyWithoutOrganizationsInput {
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  connect?: Array<UserWhereUniqueInput>;
+}
+export { UserUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -10583,6 +11015,60 @@ registerEnumType(EnumUserPriority, {
   name: \\"EnumUserPriority\\",
 });
 ",
+  "server/src/user/base/OrganizationCreateNestedManyWithoutUsersInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class OrganizationCreateNestedManyWithoutUsersInput {
+  @Field(() => [OrganizationWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrganizationWhereUniqueInput],
+  })
+  connect?: Array<OrganizationWhereUniqueInput>;
+}
+export { OrganizationCreateNestedManyWithoutUsersInput };
+",
+  "server/src/user/base/OrganizationUpdateManyWithoutUsersInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class OrganizationUpdateManyWithoutUsersInput {
+  @Field(() => [OrganizationWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrganizationWhereUniqueInput],
+  })
+  connect?: Array<OrganizationWhereUniqueInput>;
+}
+export { OrganizationUpdateManyWithoutUsersInput };
+",
   "server/src/user/base/UpdateUserArgs.ts": "/*
 //------------------------------------------------------------------------------ 
 // This code was generated by Amplication. 
@@ -10820,6 +11306,8 @@ import {
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
+import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -10912,6 +11400,30 @@ class UserCreateInput {
   })
   manager?: UserWhereUniqueInput | null;
 
+  @ValidateNested()
+  @Type(() => UserCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => UserCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => UserCreateNestedManyWithoutUsersInput,
+  })
+  employees?: UserCreateNestedManyWithoutUsersInput;
+
+  @ValidateNested()
+  @Type(() => OrganizationCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => OrganizationCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationCreateNestedManyWithoutUsersInput,
+  })
+  organizations?: OrganizationCreateNestedManyWithoutUsersInput;
+
   @IsEnum(EnumUserInterests, {
     each: true,
   })
@@ -10958,6 +11470,33 @@ class UserCreateInput {
   extendedProperties!: InputJsonValue;
 }
 export { UserCreateInput };
+",
+  "server/src/user/base/UserCreateNestedManyWithoutUsersInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class UserCreateNestedManyWithoutUsersInput {
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  connect?: Array<UserWhereUniqueInput>;
+}
+export { UserCreateNestedManyWithoutUsersInput };
 ",
   "server/src/user/base/UserFindManyArgs.ts": "/*
 //------------------------------------------------------------------------------ 
@@ -11230,6 +11769,8 @@ import {
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
+import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
@@ -11349,6 +11890,30 @@ class UserUpdateInput {
   })
   manager?: UserWhereUniqueInput | null;
 
+  @ValidateNested()
+  @Type(() => UserUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => UserUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => UserUpdateManyWithoutUsersInput,
+  })
+  employees?: UserUpdateManyWithoutUsersInput;
+
+  @ValidateNested()
+  @Type(() => OrganizationUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => OrganizationUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationUpdateManyWithoutUsersInput,
+  })
+  organizations?: OrganizationUpdateManyWithoutUsersInput;
+
   @IsEnum(EnumUserInterests, {
     each: true,
   })
@@ -11407,6 +11972,33 @@ class UserUpdateInput {
   extendedProperties?: InputJsonValue;
 }
 export { UserUpdateInput };
+",
+  "server/src/user/base/UserUpdateManyWithoutUsersInput.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+@InputType()
+class UserUpdateManyWithoutUsersInput {
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  connect?: Array<UserWhereUniqueInput>;
+}
+export { UserUpdateManyWithoutUsersInput };
 ",
   "server/src/user/base/UserWhereInput.ts": "/*
 //------------------------------------------------------------------------------ 

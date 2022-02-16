@@ -3,12 +3,7 @@ import { Entity, EntityField } from "../../../types";
 import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
-// import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
-import { INPUT_TYPE_ID } from "./nestjs-graphql.util";
-
-const INPUT_TYPE_DECORATOR = builders.decorator(
-  builders.callExpression(INPUT_TYPE_ID, [])
-);
+import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
 
 export function createInput(
   id: namedTypes.Identifier,

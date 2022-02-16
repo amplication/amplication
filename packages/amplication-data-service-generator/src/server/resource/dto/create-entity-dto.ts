@@ -25,9 +25,9 @@ export function createEntityDTO(entity: Entity): NamedClassDeclaration {
       )
     );
   return classDeclaration(
-    builders.identifier(entity.name), //name of the class
-    builders.classBody(properties), // body of the class
-    null, // super class
-    [OBJECT_TYPE_DECORATOR] // class decorator
+    builders.identifier(entity.name),
+    builders.classBody(properties),
+    null,
+    [OBJECT_TYPE_DECORATOR]
   ) as NamedClassDeclaration;
 }
