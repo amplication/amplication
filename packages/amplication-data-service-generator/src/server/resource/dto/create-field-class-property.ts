@@ -32,7 +32,7 @@ import {
 } from "./class-validator.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
-import { createGraphQLFieldDecorator } from "./create-graphql-field-decorator";
+import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import {

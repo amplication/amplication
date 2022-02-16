@@ -5,7 +5,7 @@ import {
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { createEnumName } from "../../../../server/prisma/create-prisma-schema";
+import { createEnumName } from "../../../prisma/create-prisma-schema";
 import { Entity, EntityField } from "../../../../types";
 import { isRelationField, isToManyRelationField } from "../../../../util/field";
 import {
