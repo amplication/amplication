@@ -2618,7 +2618,7 @@ export class UserInfo implements Partial<User> {
   username!: string;
   @Field(() => [String])
   roles!: string[];
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   accessToken?: string;
 }
 ",
@@ -2727,7 +2727,7 @@ import { Args, Mutation, Query, Resolver } from \\"@nestjs/graphql\\";
 import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
 import { AuthService } from \\"./auth.service\\";
 import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth.guard\\";
-import { UserData } from \\"./gqlUserData.decorator\\";
+import { UserData } from \\"./userData.decorator\\";
 import { LoginArgs } from \\"./LoginArgs\\";
 import { UserInfo } from \\"./UserInfo\\";
 
@@ -3009,22 +3009,6 @@ export class GqlDefaultAuthGuard extends DefaultAuthGuard {
   }
 }
 ",
-  "server/src/auth/gqlUserData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-/**
- * Access the user data from the request object i.e \`req.user\`.
- */
-export function getUser(executionContext: ExecutionContext): UserInfo {
-  const gqlExecutionContext = GqlExecutionContext.create(executionContext);
-  return gqlExecutionContext.getContext().req.user;
-}
-
-export const UserData = createParamDecorator((data, ctx: ExecutionContext) =>
-  getUser(ctx)
-);
-",
   "server/src/auth/gqlUserRoles.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
 
@@ -3253,6 +3237,38 @@ export function parseSalt(value: string | undefined): Salt {
 import { TokenServiceBase } from \\"./base/token.service.base\\";
 //@ts-ignore
 export class TokenService extends TokenServiceBase implements ITokenService {}
+",
+  "server/src/auth/userData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
+import { GqlContextType, GqlExecutionContext } from \\"@nestjs/graphql\\";
+//@ts-ignore
+import { User } from \\"@prisma/client\\";
+
+/**
+ * Access the user data from the request object i.e \`req.user\`.
+ */
+function userFactory(ctx: ExecutionContext): User {
+  const contextType = ctx.getType();
+  if (contextType === \\"http\\") {
+    // do something that is only important in the context of regular HTTP requests (REST)
+    const { user } = ctx.switchToHttp().getRequest();
+    return user;
+  } else if (contextType === \\"rpc\\") {
+    // do something that is only important in the context of Microservice requests
+    throw new Error(\\"Rpc context is not implemented yet\\");
+  } else if (contextType === \\"ws\\") {
+    // do something that is only important in the context of Websockets requests
+    throw new Error(\\"Websockets context is not implemented yet\\");
+  } else if (ctx.getType<GqlContextType>() === \\"graphql\\") {
+    // do something that is only important in the context of GraphQL requests
+    const gqlExecutionContext = GqlExecutionContext.create(ctx);
+    return gqlExecutionContext.getContext().req.user;
+  }
+  throw new Error(\\"Invalid context\\");
+}
+
+export const UserData = createParamDecorator<undefined, ExecutionContext, User>(
+  (data, ctx: ExecutionContext) => userFactory(ctx)
+);
 ",
   "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
@@ -4616,6 +4632,7 @@ import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
 import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
+import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
 export class CustomerControllerBase {
   constructor(
@@ -5089,7 +5106,7 @@ export class CustomerControllerBase {
   })
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
+    @common.Body() body: OrderWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -8839,8 +8856,10 @@ import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
 import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
 import { User } from \\"../../user/base/User\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
 import { Customer } from \\"../../customer/base/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
 export class OrganizationControllerBase {
   constructor(
@@ -9185,7 +9204,7 @@ export class OrganizationControllerBase {
   })
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -9383,7 +9402,7 @@ export class OrganizationControllerBase {
   })
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -9581,7 +9600,7 @@ export class OrganizationControllerBase {
   })
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -11759,6 +11778,7 @@ import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
 import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
 import { Organization } from \\"../../organization/base/Organization\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
 export class UserControllerBase {
   constructor(
@@ -12380,7 +12400,7 @@ export class UserControllerBase {
   })
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
+    @common.Body() body: OrganizationWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
