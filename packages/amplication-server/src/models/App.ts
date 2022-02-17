@@ -28,6 +28,10 @@ export class App {
   })
   updatedAt!: Date;
 
+  @Field(() => Workspace, {
+    nullable: false,
+    description: undefined
+  })
   workspace?: Workspace;
 
   gitRepository?: GitRepository;

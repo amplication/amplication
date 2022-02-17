@@ -14,6 +14,7 @@ github_app_private_key = "value" //todo
 github_app_client_secret = "value" //todo         
 github_app_client_id = "value" //todo        
 github_app_app_id = "value" //todo 
+github_app_installation_url = "value" //todo 
 # Segment
 amplitude_api_key = "aVqxCAcXOdCx5DPI41s6EmwsSCB8Kjz6"
 

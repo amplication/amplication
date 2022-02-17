@@ -28,6 +28,7 @@ module "env" {
   github_app_client_secret         = var.github_app_client_secret
   github_app_client_id             = var.github_app_client_id
   github_app_app_id                = var.github_app_app_id
+  github_app_installation_url      = var.github_app_installation_url
   feature_flags                    = var.feature_flags
   default_disk                     = var.default_disk
   host                             = var.host

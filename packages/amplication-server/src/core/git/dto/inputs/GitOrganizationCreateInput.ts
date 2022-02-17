@@ -18,4 +18,9 @@ export class GitOrganizationCreateInput {
     nullable: false
   })
   code: string;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  workspaceId: string;
 }

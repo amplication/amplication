@@ -48,6 +48,9 @@ variable "github_app_client_id" {
 
 variable "github_app_app_id" {
   type = string
+} 
+variable "github_app_installation_url" {
+  type = string
 }
 # Amplitude
 

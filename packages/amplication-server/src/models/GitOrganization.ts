@@ -56,10 +56,10 @@ export class GitOrganization {
   })
   updatedAt!: Date;
   
-  @Field(() => [Workspace], {
+  @Field(() => Workspace, {
     nullable: false,
     description: undefined
   })
-  workspace: Workspace;
+  workspace!: Workspace;
 
 } 

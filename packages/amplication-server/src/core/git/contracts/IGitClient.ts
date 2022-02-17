@@ -1,3 +1,5 @@
+import { GitOrganization } from 'src/models/GitOrganization';
+import { CreateGitOrganizationArgs } from '../dto/args/CreateGitOrganizationArgs';
 import { GitRepo } from '../dto/objects/GitRepo';
 import { GitUser } from '../dto/objects/GitUser';
 import { ITokenExtractor } from './ITokenExtractor';
@@ -8,5 +10,11 @@ export interface IGitClient {
   getUserRepos(token: string): Promise<GitRepo[]>;
   isRepoExist(token: string, name: string): Promise<boolean>;
   getUser(token: string): Promise<GitUser>;
+  getGitOrganization(workspaceId:string):Promise<GitOrganization>;
+  createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganization>;
+  getGithubAppInstallationUrl():Promise<string>; 
+  deleteGitOrganization(workspaceId: string):Promise<boolean>; 
+
   tokenExtractor: ITokenExtractor;
+
 }

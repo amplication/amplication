@@ -225,6 +225,10 @@ resource "google_cloud_run_service" "default" {
           name  = "GITHUB_APP_APP_ID"
           value = var.github_app_app_id
         }
+          env {
+          name  = "GITHUB_APP_INSTALLATION_URL"
+          value = var.github_app_installation_url
+        }
         env {
           name  = "GITHUB_SCOPE"
           value = var.github_scope
