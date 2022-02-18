@@ -110,11 +110,7 @@ Remember, it's okay if your pull request is not perfect (no pull request ever is
 
 3.  Make changes to the pull request if the reviewing maintainer recommends them.
 
-:::important
-
 Celebrate your success after your pull request is merged :-)
-
-:::
 
 ## Git Commit Messages
 
