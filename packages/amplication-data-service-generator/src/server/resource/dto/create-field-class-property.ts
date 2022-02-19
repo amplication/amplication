@@ -1,4 +1,4 @@
-import { namedTypes, builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import {
   FieldKind,
@@ -7,44 +7,43 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { Entity, EntityField } from "../../../types";
-import {
-  createEnumName,
-  createPrismaFields,
-} from "../../prisma/create-prisma-schema";
 import { classProperty, createGenericArray } from "../../../util/ast";
 import {
   isEnumField,
   isOneToOneRelationField,
-  isRelationField,
   isToManyRelationField,
 } from "../../../util/field";
+import {
+  createEnumName,
+  createPrismaFields,
+} from "../../prisma/create-prisma-schema";
+import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
+import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
   IS_DATE_ID,
   IS_ENUM_ID,
   IS_INT_ID,
+  IS_JSON_ID,
   IS_NUMBER_ID,
   IS_OPTIONAL_ID,
   IS_STRING_ID,
-  IS_JSON_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
-import { GRAPHQL_JSON_OBJECT_ID } from "./graphql-type-json.util";
-import { JSON_VALUE_ID } from "./type-fest.util";
+import { INPUT_JSON_VALUE_KEY } from "./constants";
+import { createEnumMembers } from "./create-enum-dto";
+import { createWhereUniqueInputID } from "./create-where-unique-input";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
+import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
+import { createCreateNestedManyWithoutInputID } from "./nested-input-dto/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputID } from "./nested-input-dto/create-update-many-without-input";
+import { JSON_VALUE_ID } from "./type-fest.util";
 
-import * as classTransformerUtil from "./class-transformer.util";
-import { API_PROPERTY_ID } from "./nestjs-swagger.util";
-import { createEnumMembers } from "./create-enum-dto";
-import { createWhereUniqueInputID } from "./create-where-unique-input";
-import { FIELD_ID } from "./nestjs-graphql.util";
-import { INPUT_JSON_VALUE_KEY } from "./constants";
-import { createEntityListRelationFilterID } from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
-
-const DATE_ID = builders.identifier("Date");
+export const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
   [scalar in ScalarType]: TSTypeKind;
 } = {
@@ -121,9 +120,12 @@ const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
 };
 export const EACH_ID = builders.identifier("each");
 export const TRUE_LITERAL = builders.booleanLiteral(true);
-export const ENUM_ID = builders.identifier("enum");
-export const REQUIRED_ID = builders.identifier("required");
-export const TYPE_ID = builders.identifier("type");
+export const ENUM = "enum";
+export const ENUM_ID = builders.identifier(ENUM);
+export const REQUIRED = "required";
+export const REQUIRED_ID = builders.identifier(REQUIRED);
+export const TYPE = "type";
+export const TYPE_ID = builders.identifier(TYPE);
 export const JSON_ID = builders.identifier("JSON");
 export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
@@ -135,7 +137,6 @@ export const NULLABLE_ID = builders.identifier("nullable");
  * @param field
  * @param entity
  * @param optional
- * @param isInput represent is the class is input object
  * @param isQuery
  * @param isObjectType true only for the entity object type.
  * is User entity so only for the User.ts
@@ -145,33 +146,32 @@ export function createFieldClassProperty(
   field: EntityField,
   entity: Entity,
   optional: boolean,
-  isInput: boolean,
   isQuery: boolean,
-  isObjectType = false
+  isObjectType: boolean,
+  inputType: EntityDtoTypeEnum
 ): namedTypes.ClassProperty {
   const [prismaField] = createPrismaFields(field, entity);
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
+  const isInput = isEntityInputExceptRelationInput(inputType);
   const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
+    entity.pluralDisplayName,
     field,
     prismaField,
     optional,
-    isInput,
     isEnum,
     isQuery,
-    isObjectType
+    isObjectType,
+    false,
+    inputType
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
-  const apiPropertyOptionsObjectExpression = builders.objectExpression([
-    builders.objectProperty(REQUIRED_ID, builders.booleanLiteral(!optional)),
-  ]);
-  const decorators: namedTypes.Decorator[] = [
-    builders.decorator(
-      builders.callExpression(API_PROPERTY_ID, [
-        apiPropertyOptionsObjectExpression,
-      ])
-    ),
-  ];
+  const apiPropertyDecoratorBuilder = new ApiPropertyDecoratorBuilder(
+    prismaField.isList,
+    isToManyRelationField(field) && !isObjectType
+  );
+  apiPropertyDecoratorBuilder.optional(optional);
+  const decorators: namedTypes.Decorator[] = [];
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;
   }
@@ -205,13 +205,7 @@ export function createFieldClassProperty(
       if (isQuery) {
         decorators.push(createTypeDecorator(swaggerType));
       }
-
-      const type = prismaField.isList
-        ? builders.arrayExpression([swaggerType])
-        : swaggerType;
-      apiPropertyOptionsObjectExpression.properties.push(
-        builders.objectProperty(TYPE_ID, type)
-      );
+      apiPropertyDecoratorBuilder.scalarType(swaggerType);
     }
   }
   if (prismaField.type === ScalarType.DateTime && !isQuery) {
@@ -219,13 +213,8 @@ export function createFieldClassProperty(
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));
-    const enumAPIProperty = builders.objectProperty(ENUM_ID, enumId);
-    const apiPropertyOptionsProperties = prismaField.isList
-      ? [enumAPIProperty, builders.objectProperty(IS_ARRAY_ID, TRUE_LITERAL)]
-      : [enumAPIProperty];
-    apiPropertyOptionsObjectExpression.properties.push(
-      ...apiPropertyOptionsProperties
-    );
+    apiPropertyDecoratorBuilder.enum(enumId);
+
     const isEnumArgs = prismaField.isList
       ? [
           enumId,
@@ -238,46 +227,9 @@ export function createFieldClassProperty(
       builders.decorator(builders.callExpression(IS_ENUM_ID, isEnumArgs))
     );
   } else if (prismaField.kind === FieldKind.Object) {
-    let typeName;
-    if (namedTypes.TSUnionType.check(type)) {
-      const objectType = type.types.find(
-        (type) =>
-          namedTypes.TSTypeReference.check(type) &&
-          namedTypes.Identifier.check(type.typeName)
-      ) as namedTypes.TSTypeReference & { typeName: namedTypes.Identifier };
-      typeName = objectType.typeName;
-    } else if (
-      namedTypes.TSTypeReference.check(type) &&
-      namedTypes.Identifier.check(type.typeName)
-    ) {
-      if (prismaField.isList) {
-        if (
-          namedTypes.TSTypeReference.check(arrayElementType) &&
-          namedTypes.Identifier.check(arrayElementType.typeName)
-        ) {
-          typeName = arrayElementType.typeName;
-        } else {
-          typeName = type.typeName;
-        }
-      } else {
-        typeName = type.typeName;
-      }
-    }
+    const typeName = getTypeName(type, arrayElementType, prismaField.isList);
 
-    if (!typeName) {
-      throw new Error(`Unexpected type: ${type}`);
-    }
-    apiPropertyOptionsObjectExpression.properties.push(
-      builders.objectProperty(
-        TYPE_ID,
-        builders.arrowFunctionExpression(
-          [],
-          prismaField.isList && !isQuery
-            ? builders.arrayExpression([typeName])
-            : typeName
-        )
-      )
-    );
+    apiPropertyDecoratorBuilder.objectType(typeName);
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       createTypeDecorator(typeName)
@@ -291,7 +243,8 @@ export function createFieldClassProperty(
   if (
     prismaField.kind !== FieldKind.Object ||
     isEnum ||
-    (isInput && isRelationField(field))
+    (isInput &&
+      (isToManyRelationField(field) || isOneToOneRelationField(field)))
   ) {
     decorators.push(
       createGraphQLFieldDecorator(
@@ -300,10 +253,13 @@ export function createFieldClassProperty(
         field,
         optionalProperty,
         entity,
-        isQuery
+        isQuery,
+        inputType,
+        false
       )
     );
   }
+  decorators.push(apiPropertyDecoratorBuilder.build());
   return classProperty(
     id,
     typeAnnotation,
@@ -312,85 +268,6 @@ export function createFieldClassProperty(
     null,
     decorators
   );
-}
-
-function createGraphQLFieldDecorator(
-  prismaField: ScalarField | ObjectField,
-  isEnum: boolean,
-  field: EntityField,
-  optional: boolean,
-  entity: Entity,
-  isQuery: boolean
-): namedTypes.Decorator {
-  const type = builders.arrowFunctionExpression(
-    [],
-    createGraphQLFieldType(prismaField, field, isEnum, entity, isQuery)
-  );
-  return builders.decorator(
-    builders.callExpression(
-      FIELD_ID,
-      optional || isQuery || !field.required
-        ? [
-            type,
-            builders.objectExpression([
-              builders.objectProperty(NULLABLE_ID, TRUE_LITERAL),
-            ]),
-          ]
-        : [type]
-    )
-  );
-}
-
-function createGraphQLFieldType(
-  prismaField: ScalarField | ObjectField,
-  field: EntityField,
-  isEnum: boolean,
-  entity: Entity,
-  isQuery: boolean
-): namedTypes.Identifier | namedTypes.ArrayExpression {
-  if (prismaField.isList && !isQuery) {
-    const itemType = createGraphQLFieldType(
-      { ...prismaField, isList: false },
-      field,
-      isEnum,
-      entity,
-      isQuery
-    );
-    return builders.arrayExpression([itemType]);
-  }
-  if (isQuery && prismaField.kind === FieldKind.Scalar) {
-    return getFilterASTIdentifier(field.required, prismaField.type);
-  }
-
-  if (prismaField.type === ScalarType.Boolean) {
-    return BOOLEAN_ID;
-  }
-  if (prismaField.type === ScalarType.DateTime) {
-    return DATE_ID;
-  }
-  if (
-    prismaField.type === ScalarType.Float ||
-    prismaField.type === ScalarType.Int
-  ) {
-    return NUMBER_ID;
-  }
-  if (prismaField.type === ScalarType.String) {
-    return STRING_ID;
-  }
-  if (prismaField.type === ScalarType.Json) {
-    return GRAPHQL_JSON_OBJECT_ID;
-  }
-  if (isEnum) {
-    const enumId = builders.identifier(createEnumName(field, entity));
-    return enumId;
-  }
-  if (isOneToOneRelationField(field)) {
-    return createWhereUniqueInputID(prismaField.type);
-  }
-  if (isToManyRelationField(field)) {
-    return createEntityListRelationFilterID(prismaField.type);
-  }
-  throw new Error("Could not create GraphQL Field type");
 }
 
 export function createTypeDecorator(
@@ -407,13 +284,15 @@ export function createTypeDecorator(
 //element [0] is always the type of the property,
 //element [1] is only returned when the type is an array, with the array element type
 export function createFieldValueTypeFromPrismaField(
+  entityPluralName: string,
   field: EntityField,
   prismaField: ScalarField | ObjectField,
   optional: boolean,
-  isInput: boolean,
   isEnum: boolean,
   isQuery: boolean,
-  isObjectType: boolean
+  isObjectType: boolean,
+  isNestedInput: boolean,
+  dtoType: EntityDtoTypeEnum
 ): TSTypeKind[] {
   // add  "| null" to the end of the type
   if (
@@ -423,32 +302,61 @@ export function createFieldValueTypeFromPrismaField(
     //TODO add a ui update that make json required and remove this
   ) {
     const [type] = createFieldValueTypeFromPrismaField(
+      entityPluralName,
       field,
       {
         ...prismaField,
         isRequired: true,
       },
       optional,
-      isInput,
+
       isEnum,
       isQuery,
-      isObjectType
+      isObjectType,
+      isNestedInput,
+      dtoType
     );
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
-  if (prismaField.isList && !isQuery) {
+  if (isToManyRelationField(field) && !isObjectType && !isNestedInput) {
+    switch (dtoType) {
+      case EntityDtoTypeEnum.CreateInput:
+        return [
+          builders.tsTypeReference(
+            createCreateNestedManyWithoutInputID(
+              entityPluralName,
+              field.properties.relatedEntity.name
+            )
+          ),
+        ];
+      case EntityDtoTypeEnum.UpdateInput:
+        return [
+          builders.tsTypeReference(
+            createUpdateManyWithoutInputID(
+              entityPluralName,
+              field.properties.relatedEntity.name
+            )
+          ),
+        ];
+      default:
+        throw new Error("Didnt got an input type");
+    }
+  }
+  if (prismaField.isList) {
     const itemPrismaField = {
       ...prismaField,
       isList: false,
     };
     const [itemType] = createFieldValueTypeFromPrismaField(
+      entityPluralName,
       field,
       itemPrismaField,
       optional,
-      isInput,
       isEnum,
       isQuery,
-      isObjectType
+      isObjectType,
+      isNestedInput,
+      dtoType
     );
     return [createGenericArray(itemType), itemType];
   }
@@ -474,13 +382,7 @@ export function createFieldValueTypeFromPrismaField(
       ),
     ];
   }
-  if (isToManyRelationField(field) && isQuery) {
-    return [
-      builders.tsTypeReference(
-        createEntityListRelationFilterID(prismaField.type)
-      ),
-    ];
-  } else if (isQuery || isInput) {
+  if (isQuery || isEntityInputExceptRelationInput(dtoType) || isNestedInput) {
     return [
       builders.tsTypeReference(createWhereUniqueInputID(prismaField.type)),
     ];
@@ -489,7 +391,7 @@ export function createFieldValueTypeFromPrismaField(
   }
 }
 
-function getFilterASTIdentifier(
+export function getFilterASTIdentifier(
   isRequired: boolean,
   type: ScalarType
 ): namedTypes.Identifier {
@@ -498,4 +400,53 @@ function getFilterASTIdentifier(
   } else {
     return PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE[type];
   }
+}
+
+export function getTypeName(
+  type: TSTypeKind,
+  arrayElementType: TSTypeKind,
+  isList: boolean
+): namedTypes.Identifier {
+  let typeName;
+  if (namedTypes.TSUnionType.check(type)) {
+    const objectType = type.types.find(
+      (type) =>
+        namedTypes.TSTypeReference.check(type) &&
+        namedTypes.Identifier.check(type.typeName)
+    ) as namedTypes.TSTypeReference & { typeName: namedTypes.Identifier };
+    typeName = objectType.typeName;
+  } else if (
+    namedTypes.TSTypeReference.check(type) &&
+    namedTypes.Identifier.check(type.typeName)
+  ) {
+    if (isList) {
+      if (
+        namedTypes.TSTypeReference.check(arrayElementType) &&
+        namedTypes.Identifier.check(arrayElementType.typeName)
+      ) {
+        typeName = arrayElementType.typeName;
+      } else {
+        typeName = type.typeName;
+      }
+    } else {
+      typeName = type.typeName;
+    }
+  }
+
+  if (!typeName) {
+    throw new Error(`Unexpected type: ${type}`);
+  }
+  return typeName;
+}
+
+function isEntityInputExceptRelationInput(dtoType: EntityDtoTypeEnum): boolean {
+  if (
+    dtoType === EntityDtoTypeEnum.CreateInput ||
+    dtoType === EntityDtoTypeEnum.UpdateInput ||
+    dtoType === EntityDtoTypeEnum.WhereInput ||
+    dtoType === EntityDtoTypeEnum.WhereUniqueInput
+  ) {
+    return true;
+  }
+  return false;
 }
