@@ -54,13 +54,24 @@ Fork the Amplication repository to your GitHub organization. This means that you
 ## Step 2: Clone the repository to your local machine
 
 ```
-git clone https://github.com/amplication/amplication
+git clone https://github.com/{your-GitHub-username}/amplication.git
 
 ```
 
 ## Step 3: Prepare the development environment
 
-Set up and run the development environment on your local machine (for details, see the [ Development Environment (Local)](https://github.com/amplication/amplication/blob/master/README.md#development) section in the README.
+Set up and run the development environment on your local machine:
+
+**BEFORE** you run the following steps make sure:
+1. You have typescript installed locally on you machine ```npm install -g typescript```
+2. You are using node version: ^16.3.0 || ^14.0.0"
+3. You are using npm version: ^8.1.0 || ^7.3.0"
+
+```shell
+cd amplication
+npm install
+npm run setup:dev
+```
 
 ## Step 4: Create a branch
 
