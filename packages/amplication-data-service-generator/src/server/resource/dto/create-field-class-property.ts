@@ -1,11 +1,23 @@
-import {builders, namedTypes} from "ast-types";
-import {TSTypeKind} from "ast-types/gen/kinds";
-import {FieldKind, ObjectField, ScalarField, ScalarType,} from "prisma-schema-dsl";
-import {Entity, EntityField} from "../../../types";
-import {classProperty, createGenericArray} from "../../../util/ast";
-import {isEnumField, isOneToOneRelationField, isToManyRelationField,} from "../../../util/field";
-import {createEnumName, createPrismaFields,} from "../../prisma/create-prisma-schema";
-import {ApiPropertyDecoratorBuilder} from "./api-property-decorator";
+import { builders, namedTypes } from "ast-types";
+import { TSTypeKind } from "ast-types/gen/kinds";
+import {
+  FieldKind,
+  ObjectField,
+  ScalarField,
+  ScalarType,
+} from "prisma-schema-dsl";
+import { Entity, EntityField } from "../../../types";
+import { classProperty, createGenericArray } from "../../../util/ast";
+import {
+  isEnumField,
+  isOneToOneRelationField,
+  isToManyRelationField,
+} from "../../../util/field";
+import {
+  createEnumName,
+  createPrismaFields,
+} from "../../prisma/create-prisma-schema";
+import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
 import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
@@ -18,16 +30,19 @@ import {
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
-import {INPUT_JSON_VALUE_KEY} from "./constants";
-import {createEnumMembers} from "./create-enum-dto";
-import {createWhereUniqueInputID} from "./create-where-unique-input";
-import {EntityDtoTypeEnum} from "./entity-dto-type-enum";
-import {EnumScalarFiltersTypes, SCALAR_FILTER_TO_MODULE_AND_TYPE,} from "./filters.util";
-import {createGraphQLFieldDecorator} from "./graphql-field-decorator";
-import {createCreateNestedManyWithoutInputID} from "./nested-input-dto/create-create-nested-many-without-input";
-import {createUpdateManyWithoutInputID} from "./nested-input-dto/create-update-many-without-input";
-import {JSON_VALUE_ID} from "./type-fest.util";
-import {createEntityListRelationFilterID} from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
+import { INPUT_JSON_VALUE_KEY } from "./constants";
+import { createEnumMembers } from "./create-enum-dto";
+import { createWhereUniqueInputID } from "./create-where-unique-input";
+import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import {
+  EnumScalarFiltersTypes,
+  SCALAR_FILTER_TO_MODULE_AND_TYPE,
+} from "./filters.util";
+import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
+import { createCreateNestedManyWithoutInputID } from "./nested-input-dto/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputID } from "./nested-input-dto/create-update-many-without-input";
+import { JSON_VALUE_ID } from "./type-fest.util";
+import { createEntityListRelationFilterID } from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 
 export const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
@@ -305,7 +320,6 @@ export function createFieldValueTypeFromPrismaField(
     return [builders.tsUnionType([type, builders.tsNullKeyword()])];
   }
   if (isToManyRelationField(field) && !isObjectType && !isNestedInput) {
-    console.log(dtoType, 'dtoType')
     switch (dtoType) {
       case EntityDtoTypeEnum.CreateInput:
         return [
@@ -325,11 +339,11 @@ export function createFieldValueTypeFromPrismaField(
             )
           ),
         ];
-      case EntityDtoTypeEnum.ListRelationFilter:
+      case EntityDtoTypeEnum.WhereInput:
         return [
           builders.tsTypeReference(
-              createEntityListRelationFilterID(prismaField.type)
-          )
+            createEntityListRelationFilterID(prismaField.type)
+          ),
         ];
       default:
         throw new Error("Invalid EntityDtoType");

@@ -1,8 +1,13 @@
-import {builders, namedTypes} from "ast-types";
-import {FieldKind, ObjectField, ScalarField, ScalarType,} from "prisma-schema-dsl";
-import {createEnumName} from "../../../prisma/create-prisma-schema";
-import {Entity, EntityField} from "../../../../types";
-import {isRelationField, isToManyRelationField} from "../../../../util/field";
+import { builders, namedTypes } from "ast-types";
+import {
+  FieldKind,
+  ObjectField,
+  ScalarField,
+  ScalarType,
+} from "prisma-schema-dsl";
+import { createEnumName } from "../../../prisma/create-prisma-schema";
+import { Entity, EntityField } from "../../../../types";
+import { isRelationField, isToManyRelationField } from "../../../../util/field";
 import {
   BOOLEAN_ID,
   DATE_ID,
@@ -12,13 +17,13 @@ import {
   STRING_ID,
   TRUE_LITERAL,
 } from "../create-field-class-property";
-import {createWhereUniqueInputID} from "../create-where-unique-input";
-import {GRAPHQL_JSON_OBJECT_ID} from "../graphql-type-json.util";
-import {createCreateNestedManyWithoutInputID} from "../nested-input-dto/create-create-nested-many-without-input";
-import {createUpdateManyWithoutInputID} from "../nested-input-dto/create-update-many-without-input";
-import {EntityDtoTypeEnum} from "../entity-dto-type-enum";
-import {FIELD_ID} from "../nestjs-graphql.util";
-import {createEntityListRelationFilterID} from "../graphql/entity-list-relation-filter/create-entity-list-relation-filter";
+import { createWhereUniqueInputID } from "../create-where-unique-input";
+import { GRAPHQL_JSON_OBJECT_ID } from "../graphql-type-json.util";
+import { createCreateNestedManyWithoutInputID } from "../nested-input-dto/create-create-nested-many-without-input";
+import { createUpdateManyWithoutInputID } from "../nested-input-dto/create-update-many-without-input";
+import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
+import { FIELD_ID } from "../nestjs-graphql.util";
+import { createEntityListRelationFilterID } from "../graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 
 export function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
@@ -69,7 +74,6 @@ function createGraphQLFieldType(
   isNestedInput: boolean
 ): namedTypes.Identifier | namedTypes.ArrayExpression {
   if (prismaField.isList && (!isToManyRelationField(field) || isNestedInput)) {
-    console.log('isList no relation or nested', field)
     const itemType = createGraphQLFieldType(
       { ...prismaField, isList: false },
       field,
@@ -113,7 +117,6 @@ function createGraphQLFieldType(
       return createWhereUniqueInputID(prismaField.type);
     }
     if (isToManyRelationField(field)) {
-      console.log('toManyRelation', field)
       switch (dtoType) {
         case EntityDtoTypeEnum.CreateInput:
           return createCreateNestedManyWithoutInputID(
@@ -127,12 +130,10 @@ function createGraphQLFieldType(
             field.properties.relatedEntity.name
           );
 
-        case EntityDtoTypeEnum.ListRelationFilter:
-          return createEntityListRelationFilterID(
-              prismaField.type
-          )
+        case EntityDtoTypeEnum.WhereInput:
+          return createEntityListRelationFilterID(prismaField.type);
         default:
-          throw new Error("Didn't got an input type");
+          throw new Error("Invalid EntityDtoType");
       }
     }
     return createWhereUniqueInputID(prismaField.type);
