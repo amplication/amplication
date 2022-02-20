@@ -433,6 +433,16 @@
         "ideas",
         "bug"
       ]
+    },
+    {
+      "login": "abrl91",
+      "name": "Amit Barletz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39680385?v=4",
+      "profile": "https://www.linkedin.com/in/amitbarletz/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
