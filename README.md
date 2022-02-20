@@ -80,7 +80,7 @@ This will install all the required dependencies, run the necessary scripts and i
 
 ### Setting Up Amplication Manually
 
-You can use a manual step-by-step approach to set up Amplication in a local development environment. To do that, you should follow the following instructions for **Setting Up Amplication Server**, **Setting Up Amplication Client**, and **Setting Up Amplication CLI**.
+You can use a manual step-by-step approach to set up Amplication in a local development environment. To do that, you should follow the following instructions for **Setting Up Amplication Server**, and **Setting Up Amplication Client**.
 
 ### Setting up [Amplication Server](https://github.com/amplication/amplication/blob/master/packages/amplication-server/README.md)
 
