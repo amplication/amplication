@@ -1,7 +1,6 @@
 import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import * as nestMorgan from "nest-morgan";
-import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as defaultAuthGuard from "../auth/defaultAuth.guard";
 // @ts-ignore
@@ -12,6 +11,12 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
 import * as errors from "../../errors";
+import {
+  ACGuard,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from "nest-access-control";
 
 declare interface WHERE_UNIQUE_INPUT {
   id: string;
@@ -54,16 +59,13 @@ declare const SELECT: Select;
 export class Mixin {
   constructor(
     private readonly service: SERVICE,
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    private readonly rolesBuilder: RolesBuilder
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Get(FIND_MANY_PATH)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
@@ -72,7 +74,7 @@ export class Mixin {
   async FIND_MANY(
     @common.Req() request: Request,
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<RELATED_ENTITY[]> {
     const query = plainToClass(RELATED_ENTITY_FIND_MANY_ARGS, request.query);
     const permission = this.rolesBuilder.permission({
@@ -94,12 +96,9 @@ export class Mixin {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Post(CREATE_PATH)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
@@ -107,7 +106,7 @@ export class Mixin {
   async CREATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: WHERE_UNIQUE_INPUT[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
@@ -137,12 +136,9 @@ export class Mixin {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Patch(UPDATE_PATH)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
@@ -150,7 +146,7 @@ export class Mixin {
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
@@ -180,12 +176,9 @@ export class Mixin {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Delete(DELETE_PATH)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
@@ -193,7 +186,7 @@ export class Mixin {
   async DELETE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: WHERE_UNIQUE_INPUT[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       PROPERTY: {

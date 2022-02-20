@@ -5137,12 +5137,9 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Get(\\"/:id/orders\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -5151,7 +5148,7 @@ export class CustomerControllerBase {
   async findManyOrders(
     @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Order[]> {
     const query = plainToClass(OrderFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
@@ -5186,12 +5183,9 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Post(\\"/:id/orders\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -5199,7 +5193,7 @@ export class CustomerControllerBase {
   async createOrders(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       orders: {
@@ -5231,12 +5225,9 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Patch(\\"/:id/orders\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -5244,7 +5235,7 @@ export class CustomerControllerBase {
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() body: OrderWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       orders: {
@@ -5276,12 +5267,9 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Delete(\\"/:id/orders\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -5289,7 +5277,7 @@ export class CustomerControllerBase {
   async deleteOrders(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       orders: {
@@ -5587,7 +5575,7 @@ export class CustomerResolverBase {
   }
 
   @graphql.ResolveField(() => [Order])
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -5595,7 +5583,7 @@ export class CustomerResolverBase {
   async orders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Order[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -5613,14 +5601,14 @@ export class CustomerResolverBase {
   }
 
   @graphql.ResolveField(() => Organization, { nullable: true })
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
   async organization(
     @graphql.Parent() parent: Customer,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -5637,14 +5625,14 @@ export class CustomerResolverBase {
   }
 
   @graphql.ResolveField(() => Organization, { nullable: true })
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
   async vipOrganization(
     @graphql.Parent() parent: Customer,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -8216,14 +8204,14 @@ export class OrderResolverBase {
   }
 
   @graphql.ResolveField(() => Customer, { nullable: true })
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
   async customer(
     @graphql.Parent() parent: Order,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -9379,12 +9367,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Get(\\"/:id/users\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -9393,7 +9378,7 @@ export class OrganizationControllerBase {
   async findManyUsers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<User[]> {
     const query = plainToClass(UserFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
@@ -9437,12 +9422,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Post(\\"/:id/users\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -9450,7 +9432,7 @@ export class OrganizationControllerBase {
   async createUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       users: {
@@ -9482,12 +9464,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Patch(\\"/:id/users\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -9495,7 +9474,7 @@ export class OrganizationControllerBase {
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       users: {
@@ -9527,12 +9506,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Delete(\\"/:id/users\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -9540,7 +9516,7 @@ export class OrganizationControllerBase {
   async deleteUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       users: {
@@ -9572,12 +9548,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Get(\\"/:id/customers\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -9586,7 +9559,7 @@ export class OrganizationControllerBase {
   async findManyCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
     const query = plainToClass(CustomerFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
@@ -9635,12 +9608,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Post(\\"/:id/customers\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -9648,7 +9618,7 @@ export class OrganizationControllerBase {
   async createCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       customers: {
@@ -9680,12 +9650,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Patch(\\"/:id/customers\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -9693,7 +9660,7 @@ export class OrganizationControllerBase {
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       customers: {
@@ -9725,12 +9692,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Delete(\\"/:id/customers\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -9738,7 +9702,7 @@ export class OrganizationControllerBase {
   async deleteCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       customers: {
@@ -9770,12 +9734,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Get(\\"/:id/vipCustomers\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -9784,7 +9745,7 @@ export class OrganizationControllerBase {
   async findManyVipCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
     const query = plainToClass(CustomerFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
@@ -9833,12 +9794,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Post(\\"/:id/vipCustomers\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -9846,7 +9804,7 @@ export class OrganizationControllerBase {
   async createVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       vipCustomers: {
@@ -9878,12 +9836,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Patch(\\"/:id/vipCustomers\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -9891,7 +9846,7 @@ export class OrganizationControllerBase {
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       vipCustomers: {
@@ -9923,12 +9878,9 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Delete(\\"/:id/vipCustomers\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -9936,7 +9888,7 @@ export class OrganizationControllerBase {
   async deleteVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       vipCustomers: {
@@ -10207,7 +10159,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [User])
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -10215,7 +10167,7 @@ export class OrganizationResolverBase {
   async users(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: UserFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<User[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -10233,7 +10185,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer])
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -10241,7 +10193,7 @@ export class OrganizationResolverBase {
   async customers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -10259,7 +10211,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer])
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -10267,7 +10219,7 @@ export class OrganizationResolverBase {
   async vipCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -12548,12 +12500,9 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Get(\\"/:id/employees\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -12562,7 +12511,7 @@ export class UserControllerBase {
   async findManyEmployees(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<User[]> {
     const query = plainToClass(UserFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
@@ -12606,12 +12555,9 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Post(\\"/:id/employees\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -12619,7 +12565,7 @@ export class UserControllerBase {
   async createEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       employees: {
@@ -12651,12 +12597,9 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Patch(\\"/:id/employees\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -12664,7 +12607,7 @@ export class UserControllerBase {
   async updateEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       employees: {
@@ -12696,12 +12639,9 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Delete(\\"/:id/employees\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -12709,7 +12649,7 @@ export class UserControllerBase {
   async deleteEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       employees: {
@@ -12741,12 +12681,9 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Get(\\"/:id/organizations\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -12755,7 +12692,7 @@ export class UserControllerBase {
   async findManyOrganizations(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Organization[]> {
     const query = plainToClass(OrganizationFindManyArgs, request.query);
     const permission = this.rolesBuilder.permission({
@@ -12782,12 +12719,9 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Post(\\"/:id/organizations\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -12795,7 +12729,7 @@ export class UserControllerBase {
   async createOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       organizations: {
@@ -12827,12 +12761,9 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Patch(\\"/:id/organizations\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -12840,7 +12771,7 @@ export class UserControllerBase {
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       organizations: {
@@ -12872,12 +12803,9 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Delete(\\"/:id/organizations\\")
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
@@ -12885,7 +12813,7 @@ export class UserControllerBase {
   async deleteOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       organizations: {
@@ -13168,7 +13096,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [User])
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -13176,7 +13104,7 @@ export class UserResolverBase {
   async employees(
     @graphql.Parent() parent: User,
     @graphql.Args() args: UserFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<User[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -13194,7 +13122,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [Organization])
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
@@ -13202,7 +13130,7 @@ export class UserResolverBase {
   async organizations(
     @graphql.Parent() parent: User,
     @graphql.Args() args: OrganizationFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<Organization[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -13220,14 +13148,14 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => User, { nullable: true })
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
   async manager(
     @graphql.Parent() parent: User,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<User | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,

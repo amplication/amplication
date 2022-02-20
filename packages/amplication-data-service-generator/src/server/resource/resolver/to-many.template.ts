@@ -1,7 +1,5 @@
 import * as graphql from "@nestjs/graphql";
-import * as nestAccessControl from "nest-access-control";
-// @ts-ignore
-import * as gqlUserRoles from "../auth/gqlUserRoles.decorator";
+import { RolesBuilder, UseRoles, UserRoles } from "nest-access-control";
 
 declare interface RELATED_ENTITY_WHERE_INPUT {}
 
@@ -26,11 +24,11 @@ declare const RELATED_ENTITY_NAME: string;
 export class Mixin {
   constructor(
     private readonly service: SERVICE,
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+    private readonly rolesBuilder: RolesBuilder
   ) {}
 
   @graphql.ResolveField(() => [RELATED_ENTITY])
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
@@ -38,7 +36,7 @@ export class Mixin {
   async FIND_MANY(
     @graphql.Parent() parent: ENTITY,
     @graphql.Args() args: ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<RELATED_ENTITY[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
