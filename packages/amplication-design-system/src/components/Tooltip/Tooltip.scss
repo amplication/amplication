@@ -5,7 +5,7 @@ $width-short: 100px;
 .amp-tooltip {
   &:after {
     background-color: var(--tooltip-background);
-    color: var(--tooltip-text-color);
+    color: var(--static-white);
   }
 
   &:before,
