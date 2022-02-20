@@ -7,6 +7,7 @@ import {
   LookupResolvedProperties,
 } from "../../types";
 import { jsxElement } from "../util";
+import pluralize from "pluralize";
 
 /**
  * Creates an input element to be placed inside a Formik form for editing the given entity field
@@ -70,6 +71,17 @@ const DATA_TYPE_TO_FIELD_INPUT: {
       optionText="label"
       ${!field.required ? "allowEmpty" : ""}
       optionValue="value"/>`;
+  },
+  [EnumDataType.LookupMultiSelect]: (field) => {
+    const { relatedEntity } = field.properties as LookupResolvedProperties;
+    return jsxElement`<ReferenceArrayInput
+      source="${pluralize(relatedEntity.name)}" 
+      reference="${relatedEntity.name.toUpperCase()}"
+      parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+      format={(value: any) => value && value.map((v: any) => v.id)}
+      >
+        <SelectArrayInput optionText={${relatedEntity.name}Title} />
+      </ReferenceArrayInput>`;
   },
   [EnumDataType.Boolean]: (field) =>
     jsxElement`<BooleanInput label="${field.displayName}" source="${field.name}" />`,

@@ -1043,6 +1043,7 @@ export enum EnumDataType {
   Id = "Id",
   Json = "Json",
   Lookup = "Lookup",
+  LookupMultiSelect = "LookupMultiSelect",
   MultiLineText = "MultiLineText",
   MultiSelectOptionSet = "MultiSelectOptionSet",
   OptionSet = "OptionSet",

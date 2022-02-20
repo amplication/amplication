@@ -5,6 +5,8 @@ import {
   LookupResolvedProperties,
 } from "../../types";
 import { jsxElement } from "../util";
+import pluralize from "pluralize";
+
 /**
  * Creates a node for displaying given entity field value
  * @param field the entity field to create value view for
@@ -18,14 +20,29 @@ export function createFieldValue(
     case EnumDataType.UpdatedAt:
       return jsxElement`<DateField source="${field.name}" label="${field.displayName}" />`;
     case EnumDataType.Lookup:
-      const { relatedEntity } = field.properties as LookupResolvedProperties;
+      const {
+        relatedEntity: relatedEntityLookup,
+      } = field.properties as LookupResolvedProperties;
       return jsxElement`<ReferenceField label="${
         field.displayName
-      }" source="${relatedEntity.name.toLowerCase()}.id" reference="${
-        relatedEntity.name
+      }" source="${relatedEntityLookup.name.toLowerCase()}.id" reference="${
+        relatedEntityLookup.name
       }">
-            <TextField source={${relatedEntity.name.toUpperCase()}_TITLE_FIELD} /> 
+            <TextField source={${relatedEntityLookup.name.toUpperCase()}_TITLE_FIELD} /> 
         </ReferenceField>`;
+    case EnumDataType.LookupMultiSelect:
+      const {
+        relatedEntity: relatedEntityLookupMultiSelect,
+      } = field.properties as LookupResolvedProperties;
+      return jsxElement`<ReferenceArrayInput
+      source="${pluralize(relatedEntityLookupMultiSelect.name)}" 
+      reference="${relatedEntityLookupMultiSelect.name.toUpperCase()}"
+      parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+      format={(value: any) => value && value.map((v: any) => v.id)}
+      >
+        <SelectArrayInput optionText={${relatedEntityLookupMultiSelect.name.toUpperCase()}_TITLE_FIELD} />
+      </ReferenceArrayInput>
+      `;
     case EnumDataType.Boolean:
       return jsxElement`<BooleanField label="${field.displayName}" source="${field.name}" />`;
     case EnumDataType.DateTime:
