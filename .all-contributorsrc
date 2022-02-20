@@ -443,6 +443,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "MoFoGo",
+      "name": "Moshe Forman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/96979533?v=4",
+      "profile": "http://www.amplication.com ",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
