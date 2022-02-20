@@ -1,7 +1,6 @@
 import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import * as nestMorgan from "nest-morgan";
-import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 // @ts-ignore
@@ -14,6 +13,12 @@ import { Request } from "express";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import {
+  ACGuard,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from "nest-access-control";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -56,16 +61,13 @@ declare const SELECT: Select;
 export class CONTROLLER_BASE {
   constructor(
     protected readonly service: SERVICE,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly rolesBuilder: RolesBuilder
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Post()
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "create",
     possession: "any",
@@ -74,7 +76,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
     @common.Body() data: CREATE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -101,12 +103,9 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Get()
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
@@ -116,7 +115,7 @@ export class CONTROLLER_BASE {
   @ApiNestedQuery(FIND_MANY_ARGS)
   async findMany(
     @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
     const args = plainToClass(FIND_MANY_ARGS, request.query);
 
@@ -134,12 +133,9 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Get(FINE_ONE_PATH)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "own",
@@ -149,7 +145,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -170,12 +166,9 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Patch(UPDATE_PATH)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
@@ -187,7 +180,7 @@ export class CONTROLLER_BASE {
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body()
     data: UPDATE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -224,12 +217,9 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, ACGuard)
   @common.Delete(DELETE_PATH)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "delete",
     possession: "any",

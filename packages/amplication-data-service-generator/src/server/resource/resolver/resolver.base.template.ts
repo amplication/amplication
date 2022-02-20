@@ -1,19 +1,17 @@
 import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
-import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 // @ts-ignore
 import * as gqlACGuard from "../../auth/gqlAC.guard";
-// @ts-ignore
-import * as gqlUserRoles from "../../auth/gqlUserRoles.decorator";
 // @ts-ignore
 import * as abacUtil from "../../auth/abac.util";
 // @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import { RolesBuilder, UseRoles, UserRoles } from "nest-access-control";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -63,11 +61,11 @@ declare const ENTITY_NAME: string;
 export class RESOLVER_BASE {
   constructor(
     protected readonly service: SERVICE,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly rolesBuilder: RolesBuilder
   ) {}
 
   @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
@@ -86,14 +84,14 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Query(() => [ENTITY])
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
   async ENTITIES_QUERY(
     @graphql.Args() args: FIND_MANY_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -106,14 +104,14 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Query(() => ENTITY, { nullable: true })
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "own",
   })
   async ENTITY_QUERY(
     @graphql.Args() args: FIND_ONE_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -129,14 +127,14 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Mutation(() => ENTITY)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "create",
     possession: "any",
   })
   async CREATE_MUTATION(
     @graphql.Args() args: CREATE_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -167,14 +165,14 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Mutation(() => ENTITY)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
   async UPDATE_MUTATION(
     @graphql.Args() args: UPDATE_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -214,7 +212,7 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Mutation(() => ENTITY)
-  @nestAccessControl.UseRoles({
+  @UseRoles({
     resource: ENTITY_NAME,
     action: "delete",
     possession: "any",
