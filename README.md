@@ -24,7 +24,7 @@
 <div align="center">
  
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-47-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-48-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
@@ -196,6 +196,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://linkedin.com/in/mike-nußbaumer"><img src="https://avatars.githubusercontent.com/u/43721860?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mike Nußbaumer</b></sub></a><br /><a href="#ideas-mikenussbaumer" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Amikenussbaumer" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/amitbarletz/"><img src="https://avatars.githubusercontent.com/u/39680385?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Amit Barletz</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=abrl91" title="Code">💻</a> <a href="https://github.com/amplication/amplication/commits?author=abrl91" title="Documentation">📖</a></td>
     <td align="center"><a href="http://www.amplication.com "><img src="https://avatars.githubusercontent.com/u/96979533?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Moshe Forman</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=MoFoGo" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://m-agboola.web.app"><img src="https://avatars.githubusercontent.com/u/20028628?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mohammed Agboola®️</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=molaycule" title="Code">💻</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Amolaycule" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 

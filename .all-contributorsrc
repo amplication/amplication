@@ -452,6 +452,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "molaycule",
+      "name": "Mohammed Agboola®️",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20028628?v=4",
+      "profile": "https://m-agboola.web.app",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
