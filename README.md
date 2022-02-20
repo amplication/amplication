@@ -91,18 +91,6 @@ The server exposes a GraphQL API for all actions. The server is built with the f
 Amplication Client is the front end of the platform that provides you with an easy-to-drive UI for building your next low-code application.
 The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
 
-### Setting up Amplication CLI [Amplication CLI](https://github.com/amplication/amplication/blob/master/packages/amplication-cli/README.md)
-
-Define your data model and generate apps faster using Amplication Command Line Interface (CLI). Execute pre-defined scripts to create your app instantly.
-
-## Other packages
-
-### [Amplication Data Service Generator](https://github.com/amplication/amplication/tree/master/packages/amplication-data-service-generator)
-
-Amplication Data Service Generator is the component that generates the code of apps built with Amplication. It generates the models, Prisma client, REST API, GraphQL, authentication and authorization filters, and more. This package is used internally by Amplication Server.
-
-To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
-
 # Beta version
 
 Amplication is currently in Beta version. This means that we are still working on essential features like production-ready hosting, migrations, and stability to our console.
