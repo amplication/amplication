@@ -6,6 +6,7 @@ import {
   classDeclaration,
   classProperty,
   NamedClassDeclaration,
+  sortPropertiesArray,
 } from "../../../../util/ast";
 import { createPrismaFields } from "../../../prisma/create-prisma-schema";
 import { ApiPropertyDecoratorBuilder } from "../api-property-decorator";
@@ -21,6 +22,8 @@ export enum NestedMutationOptions {
   "Create" = "create",
   "Connect" = "connect",
   "ConnectOrCreate" = "connectOrCreate",
+  "Disconnect" = "disconnect",
+  "Set" = "set",
 }
 
 export function createNestedInputDTO(
@@ -56,20 +59,42 @@ function createNestedManyProperties(
     true,
     dtoType
   );
-  return [
-    createNestedManyProperty(
-      NestedMutationOptions.Connect,
+  const createProperty = createNestedManyProperty(
+    NestedMutationOptions.Connect,
+    type,
+    prismaField,
+    field,
+    entity,
+    arrayType,
+    dtoType
+  );
+  const mutationOptionsObjectProperties: namedTypes.ClassProperty[] = [
+    createProperty,
+  ];
+  if (EntityDtoTypeEnum.RelationUpdateManyWithoutSourceInput) {
+    const setProperty = createNestedManyProperty(
+      NestedMutationOptions.Set,
       type,
       prismaField,
       field,
       entity,
       arrayType,
       dtoType
-    ),
-    //TODO disconnect
-    // createNestedManyProperty(NestedMutationOptions.Create, type),
-    // createNestedManyProperty(NestedMutationOptions.ConnectOrCreate, type),
-  ];
+    );
+    mutationOptionsObjectProperties.push(setProperty);
+    const disconnectProperty = createNestedManyProperty(
+      NestedMutationOptions.Disconnect,
+      type,
+      prismaField,
+      field,
+      entity,
+      arrayType,
+      dtoType
+    );
+    mutationOptionsObjectProperties.push(disconnectProperty);
+  }
+
+  return sortPropertiesArray(mutationOptionsObjectProperties);
 }
 
 function createNestedManyProperty(

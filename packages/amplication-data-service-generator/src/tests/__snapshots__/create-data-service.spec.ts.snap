@@ -395,12 +395,16 @@ export type DeleteCustomerArgs = {
 
 export type OrderCreateNestedManyWithoutCustomersInput = {
   connect?: Array<OrderWhereUniqueInput>;
+  disconnect?: Array<OrderWhereUniqueInput>;
+  set?: Array<OrderWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/customer/OrderUpdateManyWithoutCustomersInput.ts": "import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
 
 export type OrderUpdateManyWithoutCustomersInput = {
   connect?: Array<OrderWhereUniqueInput>;
+  disconnect?: Array<OrderWhereUniqueInput>;
+  set?: Array<OrderWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -575,12 +579,16 @@ export type CreateOrganizationArgs = {
 
 export type CustomerCreateNestedManyWithoutOrganizationsInput = {
   connect?: Array<CustomerWhereUniqueInput>;
+  disconnect?: Array<CustomerWhereUniqueInput>;
+  set?: Array<CustomerWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/organization/CustomerUpdateManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export type CustomerUpdateManyWithoutOrganizationsInput = {
   connect?: Array<CustomerWhereUniqueInput>;
+  disconnect?: Array<CustomerWhereUniqueInput>;
+  set?: Array<CustomerWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/organization/DeleteOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
@@ -673,12 +681,16 @@ export type UpdateOrganizationArgs = {
 
 export type UserCreateNestedManyWithoutOrganizationsInput = {
   connect?: Array<UserWhereUniqueInput>;
+  disconnect?: Array<UserWhereUniqueInput>;
+  set?: Array<UserWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/organization/UserUpdateManyWithoutOrganizationsInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
 
 export type UserUpdateManyWithoutOrganizationsInput = {
   connect?: Array<UserWhereUniqueInput>;
+  disconnect?: Array<UserWhereUniqueInput>;
+  set?: Array<UserWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from \\"./UserCreateInput\\";
@@ -708,12 +720,16 @@ export type DeleteUserArgs = {
 
 export type OrganizationCreateNestedManyWithoutUsersInput = {
   connect?: Array<OrganizationWhereUniqueInput>;
+  disconnect?: Array<OrganizationWhereUniqueInput>;
+  set?: Array<OrganizationWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/OrganizationUpdateManyWithoutUsersInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type OrganizationUpdateManyWithoutUsersInput = {
   connect?: Array<OrganizationWhereUniqueInput>;
+  disconnect?: Array<OrganizationWhereUniqueInput>;
+  set?: Array<OrganizationWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -776,6 +792,8 @@ export type UserCreateInput = {
 
 export type UserCreateNestedManyWithoutUsersInput = {
   connect?: Array<UserWhereUniqueInput>;
+  disconnect?: Array<UserWhereUniqueInput>;
+  set?: Array<UserWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -844,6 +862,8 @@ export type UserUpdateInput = {
 
 export type UserUpdateManyWithoutUsersInput = {
   connect?: Array<UserWhereUniqueInput>;
+  disconnect?: Array<UserWhereUniqueInput>;
+  set?: Array<UserWhereUniqueInput>;
 };
 ",
   "admin-ui/src/api/user/UserWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
@@ -4528,6 +4548,24 @@ class OrderCreateNestedManyWithoutCustomersInput {
     type: () => [OrderWhereUniqueInput],
   })
   connect?: Array<OrderWhereUniqueInput>;
+
+  @Field(() => [OrderWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrderWhereUniqueInput],
+  })
+  disconnect?: Array<OrderWhereUniqueInput>;
+
+  @Field(() => [OrderWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrderWhereUniqueInput],
+  })
+  set?: Array<OrderWhereUniqueInput>;
 }
 export { OrderCreateNestedManyWithoutCustomersInput };
 ",
@@ -4555,6 +4593,24 @@ class OrderUpdateManyWithoutCustomersInput {
     type: () => [OrderWhereUniqueInput],
   })
   connect?: Array<OrderWhereUniqueInput>;
+
+  @Field(() => [OrderWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrderWhereUniqueInput],
+  })
+  disconnect?: Array<OrderWhereUniqueInput>;
+
+  @Field(() => [OrderWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrderWhereUniqueInput],
+  })
+  set?: Array<OrderWhereUniqueInput>;
 }
 export { OrderUpdateManyWithoutCustomersInput };
 ",
@@ -8458,6 +8514,24 @@ class CustomerCreateNestedManyWithoutOrganizationsInput {
     type: () => [CustomerWhereUniqueInput],
   })
   connect?: Array<CustomerWhereUniqueInput>;
+
+  @Field(() => [CustomerWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [CustomerWhereUniqueInput],
+  })
+  disconnect?: Array<CustomerWhereUniqueInput>;
+
+  @Field(() => [CustomerWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [CustomerWhereUniqueInput],
+  })
+  set?: Array<CustomerWhereUniqueInput>;
 }
 export { CustomerCreateNestedManyWithoutOrganizationsInput };
 ",
@@ -8485,6 +8559,24 @@ class CustomerUpdateManyWithoutOrganizationsInput {
     type: () => [CustomerWhereUniqueInput],
   })
   connect?: Array<CustomerWhereUniqueInput>;
+
+  @Field(() => [CustomerWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [CustomerWhereUniqueInput],
+  })
+  disconnect?: Array<CustomerWhereUniqueInput>;
+
+  @Field(() => [CustomerWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [CustomerWhereUniqueInput],
+  })
+  set?: Array<CustomerWhereUniqueInput>;
 }
 export { CustomerUpdateManyWithoutOrganizationsInput };
 ",
@@ -8998,6 +9090,24 @@ class UserCreateNestedManyWithoutOrganizationsInput {
     type: () => [UserWhereUniqueInput],
   })
   connect?: Array<UserWhereUniqueInput>;
+
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  disconnect?: Array<UserWhereUniqueInput>;
+
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  set?: Array<UserWhereUniqueInput>;
 }
 export { UserCreateNestedManyWithoutOrganizationsInput };
 ",
@@ -9025,6 +9135,24 @@ class UserUpdateManyWithoutOrganizationsInput {
     type: () => [UserWhereUniqueInput],
   })
   connect?: Array<UserWhereUniqueInput>;
+
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  disconnect?: Array<UserWhereUniqueInput>;
+
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  set?: Array<UserWhereUniqueInput>;
 }
 export { UserUpdateManyWithoutOrganizationsInput };
 ",
@@ -10957,6 +11085,24 @@ class OrganizationCreateNestedManyWithoutUsersInput {
     type: () => [OrganizationWhereUniqueInput],
   })
   connect?: Array<OrganizationWhereUniqueInput>;
+
+  @Field(() => [OrganizationWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrganizationWhereUniqueInput],
+  })
+  disconnect?: Array<OrganizationWhereUniqueInput>;
+
+  @Field(() => [OrganizationWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrganizationWhereUniqueInput],
+  })
+  set?: Array<OrganizationWhereUniqueInput>;
 }
 export { OrganizationCreateNestedManyWithoutUsersInput };
 ",
@@ -10984,6 +11130,24 @@ class OrganizationUpdateManyWithoutUsersInput {
     type: () => [OrganizationWhereUniqueInput],
   })
   connect?: Array<OrganizationWhereUniqueInput>;
+
+  @Field(() => [OrganizationWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrganizationWhereUniqueInput],
+  })
+  disconnect?: Array<OrganizationWhereUniqueInput>;
+
+  @Field(() => [OrganizationWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [OrganizationWhereUniqueInput],
+  })
+  set?: Array<OrganizationWhereUniqueInput>;
 }
 export { OrganizationUpdateManyWithoutUsersInput };
 ",
@@ -11413,6 +11577,24 @@ class UserCreateNestedManyWithoutUsersInput {
     type: () => [UserWhereUniqueInput],
   })
   connect?: Array<UserWhereUniqueInput>;
+
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  disconnect?: Array<UserWhereUniqueInput>;
+
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  set?: Array<UserWhereUniqueInput>;
 }
 export { UserCreateNestedManyWithoutUsersInput };
 ",
@@ -11915,6 +12097,24 @@ class UserUpdateManyWithoutUsersInput {
     type: () => [UserWhereUniqueInput],
   })
   connect?: Array<UserWhereUniqueInput>;
+
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  disconnect?: Array<UserWhereUniqueInput>;
+
+  @Field(() => [UserWhereUniqueInput], {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => [UserWhereUniqueInput],
+  })
+  set?: Array<UserWhereUniqueInput>;
 }
 export { UserUpdateManyWithoutUsersInput };
 ",

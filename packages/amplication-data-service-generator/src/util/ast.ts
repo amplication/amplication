@@ -769,3 +769,20 @@ export function createGenericArray(
     builders.tsTypeParameterInstantiation([itemType])
   );
 }
+
+export function sortPropertiesArray(
+  properties: namedTypes.ClassProperty[]
+): namedTypes.ClassProperty[] {
+  const sortedPropertiesArray = properties.sort((propertyA, propertyB) => {
+    const nameA = (propertyA.key as namedTypes.Identifier).name.toLowerCase(),
+      nameB = (propertyB.key as namedTypes.Identifier).name.toLowerCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
+  return sortedPropertiesArray;
+}

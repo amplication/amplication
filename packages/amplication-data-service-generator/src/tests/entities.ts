@@ -377,7 +377,7 @@ const ORDER: Entity = {
   ],
 };
 
-const ORGANIZATION: Entity = {
+export const ORGANIZATION: Entity = {
   id: ORGANIZATION_ID,
   name: "Organization",
   displayName: "Organization",
