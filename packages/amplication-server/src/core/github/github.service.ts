@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { OAuthApp } from '@octokit/oauth-app';
 //@octokit/openapi-types constantly fails with linting error "Unable to resolve path to module '@octokit/openapi-types'."
 // We currently ignore it and should look deeper into the root cause
 // eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
-import { Octokit } from '@octokit/rest';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
@@ -17,11 +15,23 @@ import { GitUser } from '../git/dto/objects/GitUser';
 import { GithubFile } from './dto/githubFile';
 import { GithubRepo } from './dto/githubRepo';
 import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtractor';
+import { CreateGitOrganizationArgs } from '../git/dto/args/CreateGitOrganizationArgs';
+import { PrismaService } from 'nestjs-prisma';
+import { GitOrganization } from 'src/models/GitOrganization';
+import { isEmpty } from 'lodash';
+import { Octokit ,App} from 'octokit';
 
 const GITHUB_FILE_TYPE = 'file';
 
 export const GITHUB_CLIENT_ID_VAR = 'GITHUB_CLIENT_ID';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
+export const GITHUB_APP_CLIENT_SECRET_VAR = 'GITHUB_APP_CLIENT_SECRET';
+export const GITHUB_APP_CLIENT_ID_VAR = 'GITHUB_APP_CLIENT_ID';
+export const GITHUB_APP_APP_ID_VAR = 'GITHUB_APP_APP_ID';
+export const GITHUB_APP_PRIVATE_KEY_VAR = 'GITHUB_APP_PRIVATE_KEY';
+export const GITHUB_APP_INSTALLATION_URL_VAR = 'GITHUB_APP_INSTALLATION_URL';
+
+
 export const GITHUB_SECRET_SECRET_NAME_VAR = 'GITHUB_SECRET_SECRET_NAME';
 export const GITHUB_APP_AUTH_REDIRECT_URI_VAR = 'GITHUB_APP_AUTH_REDIRECT_URI';
 export const GITHUB_APP_AUTH_SCOPE_VAR = 'GITHUB_APP_AUTH_SCOPE';
@@ -35,8 +45,97 @@ export class GithubService implements IGitClient {
   constructor(
     private readonly configService: ConfigService,
     private readonly googleSecretManagerService: GoogleSecretsManagerService,
-    public readonly tokenExtractor: GithubTokenExtractor
+    public readonly tokenExtractor: GithubTokenExtractor,
+    private readonly prisma: PrismaService,
   ) {}
+  async getGitOrganizations(workspaceId: string): Promise<GitOrganization[]> {
+
+    return await this.prisma.gitOrganization.findMany({
+      where: {
+        workspaceId:workspaceId
+            }
+    });
+  }
+  async deleteGitOrganization(gitOrganizationId: string): Promise<boolean> {
+    const installationId = await this.getInstallationIdByGitOrganizationId(gitOrganizationId);
+
+    if(installationId == null) {
+      throw new Error("INVALID_GITHUB_APP");
+    }
+    const octokit = await this.getInstallationOctokit(installationId); 
+    const deleteInstallationRes = await octokit.rest.apps.deleteInstallation({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      installation_id: installationId,
+    });
+
+    if(deleteInstallationRes.status != 204) {
+
+      throw new AmplicationError("delete installationId {} failed"); //todo: remove to const param
+    }
+
+    const gitOrganization = await this.getGitOrganization(gitOrganizationId); 
+    if (isEmpty(gitOrganization)) {
+      throw new Error("INVALID_GITHUB_APP");
+    }
+
+     await this.prisma.gitOrganization.delete({
+       where:{
+       id:gitOrganization.id
+       }
+     });
+
+   return true;
+  }
+
+   async getGithubAppInstallationUrl(workspaceId: string): Promise<string> {
+   
+    let gitInstallationUrl = this.configService
+   .get(GITHUB_APP_INSTALLATION_URL_VAR);
+
+   gitInstallationUrl = gitInstallationUrl.replace('{state}',`state=${workspaceId}`);
+   return gitInstallationUrl;
+  }
+
+  async getGitOrganization(gitOrganizationId: string): Promise<GitOrganization> {
+  
+    const gitOrganization = new GitOrganization(); 
+    const res = await this.prisma.gitOrganization.findFirst({
+      where: {
+        id: gitOrganizationId
+      }   
+    }).then(org => {
+      return {     
+       installationId: org.installationId,
+       name:org.name,
+       provider:org.provider,
+       updatedAt:org.updatedAt,
+       createdAt:org.createdAt,
+       workspaceId:org.workspaceId,
+       id: org.id
+      }
+    });
+
+    gitOrganization.installationId = res.installationId,
+    gitOrganization.name = res.name,
+    gitOrganization.id = res.id;
+
+    return gitOrganization; 
+  }
+
+async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganization>{
+
+  const installationId = parseInt(args.data.installationId);
+  const octokit = await this.getInstallationOctokit(installationId); 
+  const gitOrganizationName = await this.getOrganizationName(octokit,installationId); 
+ return await this.prisma.gitOrganization.create({
+    data:{
+      ...args.data,
+      installationId:installationId,
+      name:gitOrganizationName    
+    }
+  });
+}
+
   async isRepoExistWithOctokit(
     octokit: Octokit,
     name: string
@@ -47,35 +146,46 @@ export class GithubService implements IGitClient {
     }
     return false;
   }
-  async isRepoExist(token: string, name: string): Promise<boolean> {
-    const octokit = new Octokit({
-      auth: token
-    });
+  async isRepoExist(gitOrganizationId: string, name: string): Promise<boolean> {
+    
+    const installationId = await this.getInstallationIdByGitOrganizationId(gitOrganizationId); 
+    const octokit = await this.getInstallationOctokit(installationId); 
     return await this.isRepoExistWithOctokit(octokit, name);
   }
+
+  private async getOrganizationName(octokit: Octokit, installationId:number):Promise<string>{  
+   return await octokit.rest.apps.getInstallation({
+     // eslint-disable-next-line @typescript-eslint/naming-convention
+     installation_id:installationId
+   }).then(inst => inst.data.account.login);
+  }
+
+  private async getInstallationIdByGitOrganizationId(gitOrganizationId:string):Promise<number | null>{
+     
+    return await this.prisma.gitOrganization.findFirst({
+      where: {
+        id:gitOrganizationId
+      }
+    }).then(o => o.installationId);
+  }
+
   async createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
-    const { input, token } = args;
-    const octokit = new Octokit({
-      auth: token
-    });
+    const { input, gitOrganizationId } = args;
+    
+    const installationId = await this.getInstallationIdByGitOrganizationId(gitOrganizationId); 
+    const octokit = await this.getInstallationOctokit(installationId); 
+    const gitOrganizationName = await this.getOrganizationName(octokit,installationId); 
+
     if (await this.isRepoExistWithOctokit(octokit, input.name)) {
       throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
-
-    return octokit
-      .request('POST /user/repos', {
-        name: input.name,
-        private: !args.input.public,
-        // eslint-disable-next-line
-        auto_init: true,
-        // eslint-disable-next-line
-        gitignore_template: 'Node'
-      })
-      .then(response => {
+    return octokit.rest.repos.createInOrg({
+          org: gitOrganizationName,
+          name: input.name
+        }).then(response => {
         const { data: repo } = response;
         //TODO add logger
         // console.log('Repository %s created', repo.full_name);
-
         return {
           name: repo.name,
           url: repo.html_url,
@@ -83,16 +193,13 @@ export class GithubService implements IGitClient {
           fullName: repo.full_name,
           admin: repo.permissions.admin
         };
-      });
+      }); 
   }
   async getUserReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {
-    const results = await octokit.repos.listForAuthenticatedUser({
-      type: 'all',
-      sort: 'updated',
-      direction: 'desc'
-    });
+  
+    const results = await octokit.request('GET /installation/repositories'); 
 
-    return results.data.map(repo => ({
+    return results.data.repositories.map(repo => ({
       name: repo.name,
       url: repo.html_url,
       private: repo.private,
@@ -100,19 +207,30 @@ export class GithubService implements IGitClient {
       admin: repo.permissions.admin
     }));
   }
-  async getUserRepos(token: string): Promise<GitRepo[]> {
-    const octokit = new Octokit({
-      auth: token
-    });
-    return this.getUserReposWithOctokit(octokit);
+  async getUserRepos(organizationId: string): Promise<GitRepo[]> {
+    const installationId = await this.getInstallationIdByGitOrganizationId(organizationId); 
+    const octokit = await this.getInstallationOctokit(installationId); 
+    return await this.getUserReposWithOctokit(octokit); 
   }
 
-  async listRepoForAuthenticatedUser(token: string): Promise<GithubRepo[]> {
-    const octokit = new Octokit({
-      auth: token
+  private async getInstallationOctokit(installationId: number):Promise<Octokit>{
+    const app = new App({
+      appId: this.configService
+      .get(GITHUB_APP_APP_ID_VAR),
+      privateKey: this.configService
+        .get(GITHUB_APP_PRIVATE_KEY_VAR)
+        .replace(/\\n/g, '\n')
     });
+       
+    
+   return await app.getInstallationOctokit(installationId);
+}
 
-    const results = await octokit.repos.listForAuthenticatedUser({
+  async listRepoForAuthenticatedUser(workspaceId: string): Promise<GithubRepo[]> {
+
+    const installationId = await this.getInstallationIdByGitOrganizationId(workspaceId); 
+    const octokit = await this.getInstallationOctokit(installationId);
+    const results = await octokit.rest.repos.listForAuthenticatedUser({
       type: 'all',
       sort: 'updated',
       direction: 'desc'
@@ -142,11 +260,9 @@ export class GithubService implements IGitClient {
     baseBranchName: string,
     token: string
   ): Promise<GithubFile> {
-    const octokit = new Octokit({
-      auth: token
-    });
-
-    const content = await octokit.repos.getContent({
+  
+    const octokit = await this.getInstallationOctokit(parseInt(token)); 
+    const content = await octokit.rest.repos.getContent({
       owner: userName,
       repo: repoName,
       path,
@@ -264,47 +380,6 @@ export class GithubService implements IGitClient {
     return pr.data.html_url;
   }
 
-  async getOAuthAppAuthorizationUrl(appId: string): Promise<string> {
-    const [clientID, clientSecret] = await this.getGithubIdAndSecret();
-
-    const app = new OAuthApp({
-      clientId: clientID,
-      clientSecret: clientSecret
-    });
-
-    const redirectURL: string = this.configService
-      .get(GITHUB_APP_AUTH_REDIRECT_URI_VAR)
-      .replace('{appId}', appId);
-    const scope = this.configService.get(GITHUB_APP_AUTH_SCOPE_VAR);
-
-    const url = app.getAuthorizationUrl({
-      redirectUrl: redirectURL,
-      state:
-        'state123' /**@todo: generate unique URL and save it for later check */,
-      scopes: scope
-    });
-
-    return url;
-  }
-
-  async createOAuthAppAuthorizationToken(
-    state: string,
-    code: string
-  ): Promise<string> {
-    const [clientID, clientSecret] = await this.getGithubIdAndSecret();
-
-    const app = new OAuthApp({
-      clientId: clientID,
-      clientSecret: clientSecret
-    });
-
-    const { token } = await app.createToken({
-      state: state,
-      code: code
-    });
-
-    return token;
-  }
   async getGithubIdAndSecret(): Promise<[string, string]> {
     const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
     const clientSecret = await this.getSecret();
@@ -333,7 +408,8 @@ export class GithubService implements IGitClient {
     const octokit = new Octokit({
       auth: token
     });
-    const user = await octokit.users.getAuthenticated();
+    const user = await octokit.request('GET /user'); 
+    //const user = await octokit.users.getAuthenticated();
     return { username: user.data.login };
   }
 }

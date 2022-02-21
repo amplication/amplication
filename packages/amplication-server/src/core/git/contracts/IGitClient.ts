@@ -11,8 +11,9 @@ export interface IGitClient {
   isRepoExist(token: string, name: string): Promise<boolean>;
   getUser(token: string): Promise<GitUser>;
   getGitOrganization(workspaceId:string):Promise<GitOrganization>;
+  getGitOrganizations(workspaceId:string):Promise<GitOrganization[]>;
   createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganization>;
-  getGithubAppInstallationUrl():Promise<string>; 
+  getGithubAppInstallationUrl(workspaceId: string):Promise<string>; 
   deleteGitOrganization(workspaceId: string):Promise<boolean>; 
 
   tokenExtractor: ITokenExtractor;

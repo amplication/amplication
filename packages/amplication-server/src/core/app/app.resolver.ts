@@ -182,29 +182,9 @@ export class AppResolver {
     return this.appService.getPendingChanges(args, user);
   }
 
-  @Mutation(() => AuthorizeAppWithGithubResult, {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
-  async startAuthorizeAppWithGithub(
-    @Args() args: FindOneArgs,
-    @UserEntity() user: User
-  ): Promise<AuthorizeAppWithGithubResult> {
-    return {
-      url: await this.appService.startAuthorizeAppWithGithub(args.where.id)
-    };
-  }
-
   @Mutation(() => App, {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
-  async completeAuthorizeAppWithGithub(
-    @Args() args: CompleteAuthorizeAppWithGithubArgs,
-    @UserEntity() user: User
-  ): Promise<App> {
-    return this.appService.completeAuthorizeAppWithGithub(args);
-  }
 
   @Mutation(() => App, {
     nullable: false

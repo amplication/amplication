@@ -4,16 +4,14 @@ import { EnumSourceControlService } from '../enums/EnumSourceControlService';
 @InputType({
   isAbstract: true
 })
-export class GitOrganizationCreateInput {
-
+export class GitGetInstallationUrlInput {
   @Field(() => String, {
     nullable: false
   })
-  installationId!: string;
-
-  @Field(() => String, { nullable: false })
   workspaceId!: string;
 
   @Field(() => EnumSourceControlService, { nullable: false })
-  provider!: EnumSourceControlService;
+sourceControlService;
+
 }
+

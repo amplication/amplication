@@ -4,5 +4,5 @@ export type CreateRepoArgsType = Omit<
   CreateRepoArgs,
   'appId' | 'sourceControlService'
 > & {
-  token: string;
+  gitOrganizationId: string;
 };

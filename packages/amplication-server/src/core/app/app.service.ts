@@ -76,6 +76,7 @@ export class AppService {
       throw new InvalidColorError(color);
     }
 
+
     const app = await this.prisma.app.create({
       data: {
         ...DEFAULT_APP_DATA,
@@ -87,7 +88,7 @@ export class AppService {
         },
         roles: {
           create: USER_APP_ROLE
-        }
+        }   
       }
     });
 
@@ -342,7 +343,6 @@ export class AppService {
         id: args.where.id
       }
     });
-
     if (isEmpty(app)) {
       throw new Error(INVALID_APP_ID);
     }
@@ -577,39 +577,7 @@ export class AppService {
     return true;
   }
 
-  async startAuthorizeAppWithGithub(appId: string): Promise<string> {
-    return this.githubService.getOAuthAppAuthorizationUrl(appId);
-  }
-
-  async completeAuthorizeAppWithGithub(
-    args: CompleteAuthorizeAppWithGithubArgs
-  ): Promise<App> {
-    const app = await this.app({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    const token = await this.githubService.createOAuthAppAuthorizationToken(
-      args.data.state,
-      args.data.code
-    );
-
-    //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
-      where: args.where,
-      data: {
-        githubToken: token,
-        githubTokenCreatedDate: new Date()
-      }
-    });
-  }
-
-  async removeAuthorizeAppWithGithub(args: FindOneArgs): Promise<App> {
+  async removeAuthorizeAppWithGithub(args: FindOneArgs): Promise<App> { //todo:: need to remove 
     const app = await this.app({
       where: {
         id: args.where.id
@@ -628,7 +596,7 @@ export class AppService {
     return this.prisma.app.update({
       where: args.where,
       data: {
-        githubToken: null,
+        //githubToken: null,
         githubTokenCreatedDate: null,
         githubSyncEnabled: false,
         githubRepo: null,
@@ -713,6 +681,7 @@ export class AppService {
         id: args.where.id
       }
     });
+
 
     if (isEmpty(app)) {
       throw new Error(INVALID_APP_ID);

@@ -33,13 +33,13 @@ model Workspace {
 
 model GitOrganization {
   id             String          @id @default(cuid())
-  provider       EnumProvider
+  provider       EnumSourceControlService
   name           String
   installationId Int
-  code           String
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  gitRepository  GitRepository[]
+  gitRepositories  GitRepository[]
+  apps            App[]
   workspaceId    String
   workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
@@ -123,8 +123,10 @@ model App {
   commits                Commit[]
   entities               Entity[]
   environments           Environment[]
-  gitRepository   GitRepository? @relation(fields: [gitRepositoryId], references: [id])
-  gitRepositoryId String?
+  gitOrganizationId      String?
+  gitOrganization        GitOrganization? @relation(fields: [gitOrganizationId], references: [id])
+  gitRepository          GitRepository? @relation(fields: [gitRepositoryId], references: [id])
+  gitRepositoryId        String?
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
 }
@@ -471,4 +473,8 @@ enum EnumDeploymentStatus {
   Waiting
   Failed
   Removed
+}
+
+enum EnumSourceControlService {
+  Github
 }
