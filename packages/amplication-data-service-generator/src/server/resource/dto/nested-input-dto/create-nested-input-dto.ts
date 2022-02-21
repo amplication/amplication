@@ -21,6 +21,8 @@ export enum NestedMutationOptions {
   "Create" = "create",
   "Connect" = "connect",
   "ConnectOrCreate" = "connectOrCreate",
+  "Disconnect" = "disconnect",
+  "Set" = "set",
 }
 
 export function createNestedInputDTO(
@@ -56,20 +58,42 @@ function createNestedManyProperties(
     true,
     dtoType
   );
-  return [
-    createNestedManyProperty(
-      NestedMutationOptions.Connect,
+  const createProperty = createNestedManyProperty(
+    NestedMutationOptions.Connect,
+    type,
+    prismaField,
+    field,
+    entity,
+    arrayType,
+    dtoType
+  );
+  const mutationOptionsObjectProperties: namedTypes.ClassProperty[] = [
+    createProperty,
+  ];
+  if (dtoType === EntityDtoTypeEnum.RelationUpdateManyWithoutSourceInput) {
+    const disconnectProperty = createNestedManyProperty(
+      NestedMutationOptions.Disconnect,
       type,
       prismaField,
       field,
       entity,
       arrayType,
       dtoType
-    ),
-    //TODO disconnect
-    // createNestedManyProperty(NestedMutationOptions.Create, type),
-    // createNestedManyProperty(NestedMutationOptions.ConnectOrCreate, type),
-  ];
+    );
+    mutationOptionsObjectProperties.push(disconnectProperty);
+    const setProperty = createNestedManyProperty(
+      NestedMutationOptions.Set,
+      type,
+      prismaField,
+      field,
+      entity,
+      arrayType,
+      dtoType
+    );
+    mutationOptionsObjectProperties.push(setProperty);
+  }
+
+  return mutationOptionsObjectProperties;
 }
 
 function createNestedManyProperty(
