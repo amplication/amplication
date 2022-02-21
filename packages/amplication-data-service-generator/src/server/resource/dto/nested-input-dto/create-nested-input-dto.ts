@@ -6,7 +6,6 @@ import {
   classDeclaration,
   classProperty,
   NamedClassDeclaration,
-  sortPropertiesArray,
 } from "../../../../util/ast";
 import { createPrismaFields } from "../../../prisma/create-prisma-schema";
 import { ApiPropertyDecoratorBuilder } from "../api-property-decorator";
@@ -72,16 +71,6 @@ function createNestedManyProperties(
     createProperty,
   ];
   if (dtoType === EntityDtoTypeEnum.RelationUpdateManyWithoutSourceInput) {
-    const setProperty = createNestedManyProperty(
-      NestedMutationOptions.Set,
-      type,
-      prismaField,
-      field,
-      entity,
-      arrayType,
-      dtoType
-    );
-    mutationOptionsObjectProperties.push(setProperty);
     const disconnectProperty = createNestedManyProperty(
       NestedMutationOptions.Disconnect,
       type,
@@ -92,9 +81,19 @@ function createNestedManyProperties(
       dtoType
     );
     mutationOptionsObjectProperties.push(disconnectProperty);
+    const setProperty = createNestedManyProperty(
+      NestedMutationOptions.Set,
+      type,
+      prismaField,
+      field,
+      entity,
+      arrayType,
+      dtoType
+    );
+    mutationOptionsObjectProperties.push(setProperty);
   }
 
-  return sortPropertiesArray(mutationOptionsObjectProperties);
+  return mutationOptionsObjectProperties;
 }
 
 function createNestedManyProperty(
