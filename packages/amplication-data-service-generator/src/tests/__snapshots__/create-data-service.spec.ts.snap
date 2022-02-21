@@ -3116,6 +3116,7 @@ export const UserRoles = createParamDecorator(
   (data: string, context: ExecutionContext) => {
     const ctx = GqlExecutionContext.create(context);
     const request = ctx.getContext<{ req: { user: any } }>().req;
+    if (!request.user) return null;
     return data ? request.user[data] : request.user.roles;
   }
 );
