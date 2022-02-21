@@ -71,7 +71,7 @@ function createNestedManyProperties(
   const mutationOptionsObjectProperties: namedTypes.ClassProperty[] = [
     createProperty,
   ];
-  if (EntityDtoTypeEnum.RelationUpdateManyWithoutSourceInput) {
+  if (dtoType === EntityDtoTypeEnum.RelationUpdateManyWithoutSourceInput) {
     const setProperty = createNestedManyProperty(
       NestedMutationOptions.Set,
       type,

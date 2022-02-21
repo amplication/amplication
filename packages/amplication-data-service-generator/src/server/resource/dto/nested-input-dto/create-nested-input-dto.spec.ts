@@ -17,10 +17,38 @@ const EXAMPLE_ENTITY: Entity = {
   permissions: [],
 };
 
+const checkProperty = (
+  dtoClass: NamedClassDeclaration,
+  propertyPosition: number,
+  expectedNestedMutationOptions: NestedMutationOptions
+) => {
+  expect(
+    ((dtoClass.body.body[propertyPosition] as namedTypes.ClassProperty)
+      .key as namedTypes.Identifier).name
+  ).toBe(expectedNestedMutationOptions);
+};
+
 describe("Testing the generation of the nested input dtos", () => {
   const classId = builders.identifier("ClassId");
+  let dtoClass: NamedClassDeclaration;
+
+  describe("Testing the RelationCreateNestedManyWithoutSourceInput dto", () => {
+    beforeEach(() => {
+      dtoClass = createNestedInputDTO(
+        classId,
+        EXAMPLE_ENTITY,
+        EXAMPLE_LOOKUP_FIELD,
+        EntityDtoTypeEnum.RelationCreateNestedManyWithoutSourceInput
+      );
+    });
+    it("should have connect property as the first one", () => {
+      checkProperty(dtoClass, 0, NestedMutationOptions.Connect);
+    });
+    it("should have no second property", () => {
+      expect(dtoClass.body.body[1]).toBeUndefined();
+    });
+  });
   describe("Testing the RelationUpdateManyWithoutSourceInput dto", () => {
-    let dtoClass: NamedClassDeclaration;
     beforeEach(() => {
       dtoClass = createNestedInputDTO(
         classId,
@@ -30,22 +58,13 @@ describe("Testing the generation of the nested input dtos", () => {
       );
     });
     it("should have connect property as the first one", () => {
-      expect(
-        ((dtoClass.body.body[0] as namedTypes.ClassProperty)
-          .key as namedTypes.Identifier).name
-      ).toBe(NestedMutationOptions.Connect);
+      checkProperty(dtoClass, 0, NestedMutationOptions.Connect);
     });
     it("should have disconnect property as the second one", () => {
-      expect(
-        ((dtoClass.body.body[1] as namedTypes.ClassProperty)
-          .key as namedTypes.Identifier).name
-      ).toBe(NestedMutationOptions.Disconnect);
+      checkProperty(dtoClass, 1, NestedMutationOptions.Disconnect);
     });
     it("should have set property as the third one", () => {
-      expect(
-        ((dtoClass.body.body[2] as namedTypes.ClassProperty)
-          .key as namedTypes.Identifier).name
-      ).toBe(NestedMutationOptions.Set);
+      checkProperty(dtoClass, 2, NestedMutationOptions.Set);
     });
   });
 });
