@@ -24,25 +24,20 @@
 <div align="center">
  
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-43-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-50-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
   
 Amplication is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
 
-Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React
+Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React.
 
-## [Getting Started](https://docs.amplication.com/docs/getting-started)
-
-Try amplication immediately on [app.amplication.com](http://app.amplication.com/)
-or [follow the instructions](#development) to run a local instance.
-
-## Features
+# Features
 
 Build database applications with:
 
-- Manage data models visually or through CLI
+- Data models managed visually or through CLI
 - Auto-generated human-editable source code
 - Node.js server built with Nest.js and Passport
 - REST API and GraphQL for CRUD with relations, sorting, filtering, pagination
@@ -52,83 +47,85 @@ Build database applications with:
 - Docker and docker-compose integration
 - Automatic push of the generated code to your GitHub repo
 
+# Getting Started
+
+You can get started with Amplication immediately on the Amplication Cloud. 
+
+Alternatively you can set up a local development environment.
+
+
+
 See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
 
 [Watch this video](https://youtu.be/tKGeLXoPr94) for a quick recap of everything you get with Amplication.
 
-## Development
+## Amplication Cloud (SaaS)
 
-Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, follow these steps:
+Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
-Execute the following commands in the project root folder:
-```
+## Development Environment (Local)
+
+### Initializing all the packages
+
+Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, including running a docker image for the DB and seeding the DB, execute the following commands in the project root folder:
+
+
+```jsx
 npm install
-```
-```
 npm run setup:dev
 ```
 
 This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
 
-You can also use a more manual step-by-step approach to set up Amplication in a local development environment. To do that, you should follow the instructions listed for "Amplication Server" and "Amplication Client" below.
 
-### [Amplication Server](./packages/amplication-server/README.md)
+### Setting Up Amplication Manually
+
+You can use a manual step-by-step approach to set up Amplication in a local development environment. To do that, you should follow the following instructions for **Setting Up Amplication Server**, and **Setting Up Amplication Client**.
+
+#### Setting up [Amplication Server](https://github.com/amplication/amplication/blob/master/packages/amplication-server/README.md)
 
 Amplication Server is the main component of the platform that provides all the core functionality to design and create low-code applications.
 The server exposes a GraphQL API for all actions. The server is built with the following awesome open-source technologies: Node.js, NestJS, Prisma over PostgreSQL, GraphQL API, and many more...
 
-### [Amplication Client](./packages/amplication-client/README.md)
+#### Setting Up [Amplication Client](https://github.com/amplication/amplication/blob/master/packages/amplication-client/README.md)
 
-Amplication Client is the front end of the platform that provides you with an easy to drive UI for building your next low-code application.
+Amplication Client is the front end of the platform that provides you with an easy-to-drive UI for building your next low-code application.
 The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
 
-### [Amplication CLI](./packages/amplication-cli/README.md)
+# Beta version
 
-Define your data model and generate apps faster using Amplication Command Line Interface (CLI). Execute pre-defined scripts to create your app instantly.
+Amplication is currently in Beta version. This means that we are still working on essential features like production-ready hosting, migrations, and stability to our console.
 
-## Other packages
-
-### [Amplication Data Service Generator](./packages/amplication-data-service-generator/README.md)
-
-Amplication Data Service Generator is the component that generates the code of apps built with Amplication. It generates the models, Prisma client, REST API, GraphQL, authentication and authorization filters, and more. This package is used internally by Amplication server.
-
-To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
-
-## Beta version
-
-Amplication is currently in Beta version. It means that we are still working on essential features like production-ready hosting, migrations, and stability to our console.
-
-How does it affect you? Well...., it mostly doesn't.<br />
-Every app generated using Amplication platform contains popular, documented, secured, and supported production-ready open source components & packages. Your app is stable, scalable, and production-ready you can deploy and rely on. You can read more about the generated app and its stack here https://docs.amplication.com/docs/getting-started
+How does it affect you? Well... mostly it doesn't. Every app generated using Amplication platform contains popular, documented, secured, and supported production-ready open-source components & packages. Your app is stable, scalable, and production-ready you can deploy and rely on. You can read more about the generated app and its stack here https://docs.amplication.com/docs/getting-started
 
 # Support
 
-### Ask a question about Amplication
+## Ask a question about Amplication
 
-You can ask questions, and participate in discussions about Amplication-related topics in the `Amplication` Discord channel.
+You can ask questions, and participate in discussions about Amplication-related topics in the Amplication Discord channel.
 
 <a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/assets/images/discord_banner_purple.svg" /></a>
 
-### Create a bug report
+## Create a bug report
 
-If you see an error message or run into an issue, please create a bug report, this effort is valued and it will help all.
+If you see an error message or run into an issue, please [create bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=). This effort is valued and it will help all Amplication users.
 
-[**Create bug report**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=)
 
-### Submit a feature request
+## Submit a feature request
 
-If you have an idea, or you're missing a capability that would make development easier and more robust, please submit a feature request.<br/>
-In case a similar feature request already exists, don't forget to leave a "+1". Adding some more information such as thoughts and your vision about the feature will be embraced warmly :)
+If you have an idea, or you're missing a capability that would make development easier and more robust, please [Submit feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=).
 
-[**Submit feature request**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=)
+If a similar feature request already exists, don't forget to leave a "+1".
+If you add some more information such as your thoughts and vision about the feature, your comments will be embraced warmly :)
+
 
 # Contributing
 
-Amplication is an open source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
+Amplication is an open-source project. We are committed to a fully transparent development process and appreciate highly any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
 
-Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
+Please refer to our [Contribution Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
 
-## Contributors ✨
+# Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
@@ -192,6 +189,15 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/Rutam21"><img src="https://avatars.githubusercontent.com/u/47860497?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Rutam Prita Mishra</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=Rutam21" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/alexbass86"><img src="https://avatars.githubusercontent.com/u/96179897?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alex Bass</b></sub></a><br /><a href="#design-alexbass86" title="Design">🎨</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Aalexbass86" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://linkedin.com/in/mike-nußbaumer"><img src="https://avatars.githubusercontent.com/u/43721860?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mike Nußbaumer</b></sub></a><br /><a href="#ideas-mikenussbaumer" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Amikenussbaumer" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/amitbarletz/"><img src="https://avatars.githubusercontent.com/u/39680385?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Amit Barletz</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=abrl91" title="Code">💻</a> <a href="https://github.com/amplication/amplication/commits?author=abrl91" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://www.amplication.com "><img src="https://avatars.githubusercontent.com/u/96979533?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Moshe Forman</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=MoFoGo" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://m-agboola.web.app"><img src="https://avatars.githubusercontent.com/u/20028628?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mohammed Agboola®️</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=molaycule" title="Code">💻</a> <a href="https://github.com/amplication/amplication/issues?q=author%3Amolaycule" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/morhag90"><img src="https://avatars.githubusercontent.com/u/97830649?v=4?s=100" width="100px;" alt=""/><br /><sub><b>morhag90</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=morhag90" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/kwinyyyc"><img src="https://avatars.githubusercontent.com/u/8462684?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kwinten Li</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=kwinyyyc" title="Code">💻</a></td>
   </tr>
 </table>
 

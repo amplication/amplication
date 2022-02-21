@@ -8,8 +8,8 @@ export type Props = CircularProgressProps & HTMLProps<HTMLElement>;
 
 export function CircularProgress({ size = 20, ...rest }: Props) {
   return (
-    <div className={CLASS_NAME}>
+    <span className={CLASS_NAME}>
       <CP {...rest} size={size} />
-    </div>
+    </span>
   );
 }

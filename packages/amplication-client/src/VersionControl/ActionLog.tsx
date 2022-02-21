@@ -132,7 +132,7 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
                 className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${stepData.status.toLowerCase()}`}
               >
                 {stepData.status === models.EnumActionStepStatus.Running ? (
-                  <CircularProgress size={"xsmall"} />
+                  <CircularProgress size={16} />
                 ) : (
                   <Icon icon={STEP_STATUS_TO_ICON[stepData.status]} />
                 )}

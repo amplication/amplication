@@ -82,8 +82,8 @@ describe("createDTOFile", () => {
         builders.file(
           builders.program([
             importNames([INPUT_TYPE_ID, FIELD_ID], NESTJS_GRAPHQL_MODULE),
-            importNames([API_PROPERTY_ID], NESTJS_SWAGGER_MODULE),
             importNames([IS_STRING_ID], CLASS_VALIDATOR_MODULE),
+            importNames([API_PROPERTY_ID], NESTJS_SWAGGER_MODULE),
             dto,
             exportNames([dto.id]),
           ])

@@ -48,7 +48,7 @@ function UserBadge() {
 
 export default UserBadge;
 
-const GET_USER = gql`
+export const GET_USER = gql`
   query getUser {
     me {
       account {
