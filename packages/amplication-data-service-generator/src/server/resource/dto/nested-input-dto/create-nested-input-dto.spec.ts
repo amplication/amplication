@@ -66,5 +66,8 @@ describe("Testing the generation of the nested input dtos", () => {
     it("should have set property as the third one", () => {
       checkProperty(dtoClass, 2, NestedMutationOptions.Set);
     });
+    it("should have only 3 properties", () => {
+      expect(dtoClass.body.body[3]).toBeUndefined();
+    });
   });
 });
