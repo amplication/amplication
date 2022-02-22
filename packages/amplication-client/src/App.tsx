@@ -61,6 +61,7 @@ function App() {
           />
           <PrivateRoute exact path="/" component={WorkspaceLayout} />
           <PrivateRoute path="/workspace" component={WorkspaceLayout} />
+          <PrivateRoute path="/user/profile" component={WorkspaceLayout} />
           <PrivateRoute
             exact
             path="/create-app"
