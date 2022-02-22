@@ -220,6 +220,7 @@ async function createToManyRelationMethods(
   interpolate(toManyFile, {
     RELATED_ENTITY_WHERE_UNIQUE_INPUT: relatedEntityDTOs.whereUniqueInput.id,
     RELATED_ENTITY_WHERE_INPUT: relatedEntityDTOs.whereInput.id,
+    RELATED_ENTITY_FIND_MANY_ARGS: relatedEntityDTOs.findManyArgs.id,
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     WHERE_UNIQUE_INPUT: whereUniqueInput.id,
