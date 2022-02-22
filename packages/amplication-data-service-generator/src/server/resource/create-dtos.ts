@@ -20,6 +20,7 @@ import { createOrderByInput } from "./dto/graphql/order-by-input/order-by-input"
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
 import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-create-nested-many-without-input";
 import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/create-update-many-without-input";
+import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 
 type EntityDTOs = {
   entity: NamedClassDeclaration;
@@ -33,6 +34,7 @@ type EntityDTOs = {
   createArgs?: NamedClassDeclaration;
   updateArgs?: NamedClassDeclaration;
   orderByInput: NamedClassDeclaration;
+  listRelationFilter: NamedClassDeclaration;
 };
 
 type EntityEnumDTOs = {
@@ -107,6 +109,10 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
     whereUniqueInput,
     updateInput
   );
+  const listRelationFilter = await createEntityListRelationFilter(
+    entity,
+    whereInput
+  );
   const dtos: EntityDTOs = {
     entity: entityDTO,
     createInput,
@@ -117,6 +123,7 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
     findManyArgs,
     findOneArgs,
     orderByInput,
+    listRelationFilter,
   };
   if (createArgs) {
     dtos.createArgs = createArgs;

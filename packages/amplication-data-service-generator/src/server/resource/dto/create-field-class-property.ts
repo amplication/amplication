@@ -42,6 +42,7 @@ import { createGraphQLFieldDecorator } from "./graphql-field-decorator";
 import { createCreateNestedManyWithoutInputID } from "./nested-input-dto/create-create-nested-many-without-input";
 import { createUpdateManyWithoutInputID } from "./nested-input-dto/create-update-many-without-input";
 import { JSON_VALUE_ID } from "./type-fest.util";
+import { createEntityListRelationFilterID } from "./graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 
 export const DATE_ID = builders.identifier("Date");
 const PRISMA_SCALAR_TO_TYPE: {
@@ -338,8 +339,14 @@ export function createFieldValueTypeFromPrismaField(
             )
           ),
         ];
+      case EntityDtoTypeEnum.WhereInput:
+        return [
+          builders.tsTypeReference(
+            createEntityListRelationFilterID(prismaField.type)
+          ),
+        ];
       default:
-        throw new Error("Didnt got an input type");
+        throw new Error("Invalid EntityDtoType");
     }
   }
   if (prismaField.isList) {
@@ -444,7 +451,8 @@ function isEntityInputExceptRelationInput(dtoType: EntityDtoTypeEnum): boolean {
     dtoType === EntityDtoTypeEnum.CreateInput ||
     dtoType === EntityDtoTypeEnum.UpdateInput ||
     dtoType === EntityDtoTypeEnum.WhereInput ||
-    dtoType === EntityDtoTypeEnum.WhereUniqueInput
+    dtoType === EntityDtoTypeEnum.WhereUniqueInput ||
+    dtoType === EntityDtoTypeEnum.ListRelationFilter
   ) {
     return true;
   }
