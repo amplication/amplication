@@ -23,6 +23,7 @@ import { createCreateNestedManyWithoutInputID } from "../nested-input-dto/create
 import { createUpdateManyWithoutInputID } from "../nested-input-dto/create-update-many-without-input";
 import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import { FIELD_ID } from "../nestjs-graphql.util";
+import { createEntityListRelationFilterID } from "../graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 
 export function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
@@ -128,8 +129,11 @@ function createGraphQLFieldType(
             entityPluralName,
             field.properties.relatedEntity.name
           );
+
+        case EntityDtoTypeEnum.WhereInput:
+          return createEntityListRelationFilterID(prismaField.type);
         default:
-          throw new Error("Didn't got an input type");
+          throw new Error("Invalid EntityDtoType");
       }
     }
     return createWhereUniqueInputID(prismaField.type);

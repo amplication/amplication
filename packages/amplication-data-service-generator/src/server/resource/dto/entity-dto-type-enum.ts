@@ -15,4 +15,5 @@ export enum EntityDtoTypeEnum {
 
   RelationCreateNestedManyWithoutSourceInput = "relationCreateNestedManyWithoutSourceInput",
   RelationUpdateManyWithoutSourceInput = "relationUpdateManyWithoutSourceInput",
+  ListRelationFilter = "listRelationFilter",
 }

@@ -299,6 +299,14 @@ export type CustomerFindUniqueArgs = {
   where: CustomerWhereUniqueInput;
 };
 ",
+  "admin-ui/src/api/customer/CustomerListRelationFilter.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+
+export type CustomerListRelationFilter = {
+  every?: CustomerWhereInput;
+  some?: CustomerWhereInput;
+  none?: CustomerWhereInput;
+};
+",
   "admin-ui/src/api/customer/CustomerOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type CustomerOrderByInput = {
@@ -348,6 +356,7 @@ import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
 import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { OrderListRelationFilter } from \\"../order/OrderListRelationFilter\\";
 
 export type CustomerWhereInput = {
   id?: StringFilter;
@@ -365,6 +374,7 @@ export type CustomerWhereInput = {
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
   organization?: OrganizationWhereUniqueInput;
   vipOrganization?: OrganizationWhereUniqueInput;
+  orders?: OrderListRelationFilter;
 };
 ",
   "admin-ui/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
@@ -441,6 +451,14 @@ export type EmptyFindManyArgs = {
 
 export type EmptyFindUniqueArgs = {
   where: EmptyWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/empty/EmptyListRelationFilter.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+
+export type EmptyListRelationFilter = {
+  every?: EmptyWhereInput;
+  some?: EmptyWhereInput;
+  none?: EmptyWhereInput;
 };
 ",
   "admin-ui/src/api/empty/EmptyOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
@@ -521,6 +539,14 @@ export type OrderFindManyArgs = {
 
 export type OrderFindUniqueArgs = {
   where: OrderWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/order/OrderListRelationFilter.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
+
+export type OrderListRelationFilter = {
+  every?: OrderWhereInput;
+  some?: OrderWhereInput;
+  none?: OrderWhereInput;
 };
 ",
   "admin-ui/src/api/order/OrderOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
@@ -632,6 +658,14 @@ export type OrganizationFindUniqueArgs = {
   where: OrganizationWhereUniqueInput;
 };
 ",
+  "admin-ui/src/api/organization/OrganizationListRelationFilter.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+
+export type OrganizationListRelationFilter = {
+  every?: OrganizationWhereInput;
+  some?: OrganizationWhereInput;
+  none?: OrganizationWhereInput;
+};
+",
   "admin-ui/src/api/organization/OrganizationOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type OrganizationOrderByInput = {
@@ -653,12 +687,17 @@ export type OrganizationUpdateInput = {
 ",
   "admin-ui/src/api/organization/OrganizationWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { UserListRelationFilter } from \\"../user/UserListRelationFilter\\";
+import { CustomerListRelationFilter } from \\"../customer/CustomerListRelationFilter\\";
 
 export type OrganizationWhereInput = {
   id?: StringFilter;
   createdAt?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
   name?: StringFilter;
+  users?: UserListRelationFilter;
+  customers?: CustomerListRelationFilter;
+  vipCustomers?: CustomerListRelationFilter;
 };
 ",
   "admin-ui/src/api/organization/OrganizationWhereUniqueInput.ts": "export type OrganizationWhereUniqueInput = {
@@ -802,6 +841,14 @@ export type UserFindUniqueArgs = {
   where: UserWhereUniqueInput;
 };
 ",
+  "admin-ui/src/api/user/UserListRelationFilter.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
+
+export type UserListRelationFilter = {
+  every?: UserWhereInput;
+  some?: UserWhereInput;
+  none?: UserWhereInput;
+};
+",
   "admin-ui/src/api/user/UserOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type UserOrderByInput = {
@@ -860,6 +907,7 @@ export type UserUpdateManyWithoutUsersInput = {
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { OrganizationListRelationFilter } from \\"../organization/OrganizationListRelationFilter\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonFilter } from \\"../../util/JsonFilter\\";
 
@@ -870,6 +918,7 @@ export type UserWhereInput = {
   age?: IntFilter;
   birthDate?: DateTimeFilter;
   manager?: UserWhereUniqueInput;
+  organizations?: OrganizationListRelationFilter;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: BooleanFilter;
   location?: StringFilter;
@@ -2600,7 +2649,7 @@ async function seed(bcryptSalt: Salt) {
     update: {},
     create: data,
   });
-  client.$disconnect();
+  void client.$disconnect();
 
   console.info(\\"Seeding database with custom seed...\\");
   customSeed();
@@ -3865,6 +3914,63 @@ class CustomerFindUniqueArgs {
 
 export { CustomerFindUniqueArgs };
 ",
+  "server/src/customer/base/CustomerListRelationFilter.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+
+@InputType()
+class CustomerListRelationFilter {
+  @ApiProperty({
+    required: false,
+    type: () => CustomerWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerWhereInput)
+  @IsOptional()
+  @Field(() => CustomerWhereInput, {
+    nullable: true,
+  })
+  every?: CustomerWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => CustomerWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerWhereInput)
+  @IsOptional()
+  @Field(() => CustomerWhereInput, {
+    nullable: true,
+  })
+  some?: CustomerWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => CustomerWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerWhereInput)
+  @IsOptional()
+  @Field(() => CustomerWhereInput, {
+    nullable: true,
+  })
+  none?: CustomerWhereInput;
+}
+export { CustomerListRelationFilter };
+",
   "server/src/customer/base/CustomerOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -4250,6 +4356,7 @@ import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
+import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFilter\\";
 @InputType()
 class CustomerWhereInput {
   @Type(() => StringFilter)
@@ -4418,6 +4525,18 @@ class CustomerWhereInput {
     type: () => OrganizationWhereUniqueInput,
   })
   vipOrganization?: OrganizationWhereUniqueInput;
+
+  @ValidateNested()
+  @Type(() => OrderListRelationFilter)
+  @IsOptional()
+  @Field(() => OrderListRelationFilter, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => OrderListRelationFilter,
+  })
+  orders?: OrderListRelationFilter;
 }
 export { CustomerWhereInput };
 ",
@@ -6097,6 +6216,63 @@ class EmptyFindUniqueArgs {
 
 export { EmptyFindUniqueArgs };
 ",
+  "server/src/empty/base/EmptyListRelationFilter.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+
+@InputType()
+class EmptyListRelationFilter {
+  @ApiProperty({
+    required: false,
+    type: () => EmptyWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => EmptyWhereInput)
+  @IsOptional()
+  @Field(() => EmptyWhereInput, {
+    nullable: true,
+  })
+  every?: EmptyWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => EmptyWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => EmptyWhereInput)
+  @IsOptional()
+  @Field(() => EmptyWhereInput, {
+    nullable: true,
+  })
+  some?: EmptyWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => EmptyWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => EmptyWhereInput)
+  @IsOptional()
+  @Field(() => EmptyWhereInput, {
+    nullable: true,
+  })
+  none?: EmptyWhereInput;
+}
+export { EmptyListRelationFilter };
+",
   "server/src/empty/base/EmptyOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -7319,6 +7495,63 @@ class OrderFindUniqueArgs {
 }
 
 export { OrderFindUniqueArgs };
+",
+  "server/src/order/base/OrderListRelationFilter.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { OrderWhereInput } from \\"./OrderWhereInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+
+@InputType()
+class OrderListRelationFilter {
+  @ApiProperty({
+    required: false,
+    type: () => OrderWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => OrderWhereInput)
+  @IsOptional()
+  @Field(() => OrderWhereInput, {
+    nullable: true,
+  })
+  every?: OrderWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => OrderWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => OrderWhereInput)
+  @IsOptional()
+  @Field(() => OrderWhereInput, {
+    nullable: true,
+  })
+  some?: OrderWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => OrderWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => OrderWhereInput)
+  @IsOptional()
+  @Field(() => OrderWhereInput, {
+    nullable: true,
+  })
+  none?: OrderWhereInput;
+}
+export { OrderListRelationFilter };
 ",
   "server/src/order/base/OrderOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8780,6 +9013,63 @@ class OrganizationFindUniqueArgs {
 
 export { OrganizationFindUniqueArgs };
 ",
+  "server/src/organization/base/OrganizationListRelationFilter.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+
+@InputType()
+class OrganizationListRelationFilter {
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereInput, {
+    nullable: true,
+  })
+  every?: OrganizationWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereInput, {
+    nullable: true,
+  })
+  some?: OrganizationWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereInput)
+  @IsOptional()
+  @Field(() => OrganizationWhereInput, {
+    nullable: true,
+  })
+  none?: OrganizationWhereInput;
+}
+export { OrganizationListRelationFilter };
+",
   "server/src/organization/base/OrganizationOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -8921,9 +9211,11 @@ https://docs.amplication.com/docs/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
-import { IsOptional } from \\"class-validator\\";
+import { IsOptional, ValidateNested } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { UserListRelationFilter } from \\"../../user/base/UserListRelationFilter\\";
+import { CustomerListRelationFilter } from \\"../../customer/base/CustomerListRelationFilter\\";
 @InputType()
 class OrganizationWhereInput {
   @Type(() => StringFilter)
@@ -8969,6 +9261,42 @@ class OrganizationWhereInput {
     type: StringFilter,
   })
   name?: StringFilter;
+
+  @ValidateNested()
+  @Type(() => UserListRelationFilter)
+  @IsOptional()
+  @Field(() => UserListRelationFilter, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => UserListRelationFilter,
+  })
+  users?: UserListRelationFilter;
+
+  @ValidateNested()
+  @Type(() => CustomerListRelationFilter)
+  @IsOptional()
+  @Field(() => CustomerListRelationFilter, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => CustomerListRelationFilter,
+  })
+  customers?: CustomerListRelationFilter;
+
+  @ValidateNested()
+  @Type(() => CustomerListRelationFilter)
+  @IsOptional()
+  @Field(() => CustomerListRelationFilter, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => CustomerListRelationFilter,
+  })
+  vipCustomers?: CustomerListRelationFilter;
 }
 export { OrganizationWhereInput };
 ",
@@ -11577,6 +11905,63 @@ class UserFindUniqueArgs {
 
 export { UserFindUniqueArgs };
 ",
+  "server/src/user/base/UserListRelationFilter.ts": "/*
+//------------------------------------------------------------------------------ 
+// This code was generated by Amplication. 
+// 
+// Changes to this file will be lost if the code is regenerated. 
+//
+// There are other ways to to customize your code, see this doc to learn more
+// https://docs.amplication.com/docs/how-to/custom-code
+//
+//------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { UserWhereInput } from \\"./UserWhereInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+
+@InputType()
+class UserListRelationFilter {
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereInput)
+  @IsOptional()
+  @Field(() => UserWhereInput, {
+    nullable: true,
+  })
+  every?: UserWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereInput)
+  @IsOptional()
+  @Field(() => UserWhereInput, {
+    nullable: true,
+  })
+  some?: UserWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereInput)
+  @IsOptional()
+  @Field(() => UserWhereInput, {
+    nullable: true,
+  })
+  none?: UserWhereInput;
+}
+export { UserListRelationFilter };
+",
   "server/src/user/base/UserOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -12040,6 +12425,7 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { OrganizationListRelationFilter } from \\"../../organization/base/OrganizationListRelationFilter\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonFilter } from \\"../../util/JsonFilter\\";
@@ -12111,6 +12497,18 @@ class UserWhereInput {
     type: () => UserWhereUniqueInput,
   })
   manager?: UserWhereUniqueInput;
+
+  @ValidateNested()
+  @Type(() => OrganizationListRelationFilter)
+  @IsOptional()
+  @Field(() => OrganizationListRelationFilter, {
+    nullable: true,
+  })
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationListRelationFilter,
+  })
+  organizations?: OrganizationListRelationFilter;
 
   @IsEnum(EnumUserPriority)
   @IsOptional()
