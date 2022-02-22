@@ -18,8 +18,8 @@ import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-arg
 import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
 import { createOrderByInput } from "./dto/graphql/order-by-input/order-by-input";
 import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
-import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-create-nested-many-without-input";
-import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/create-update-many-without-input";
+import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-nested";
+import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/update-nested";
 import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 
 type EntityDTOs = {
