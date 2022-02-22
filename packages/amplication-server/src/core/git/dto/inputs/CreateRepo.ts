@@ -12,4 +12,9 @@ export class RepoCreateInput {
     nullable: false
   })
   public!: boolean;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  appId!: string;
 }

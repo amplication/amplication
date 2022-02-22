@@ -36,8 +36,6 @@ import {
   PendingChange,
   UpdateOneAppArgs
 } from './dto';
-import { AuthorizeAppWithGithubResult } from './dto/AuthorizeAppWithGithubResult';
-import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 
 @Resolver(() => App)
 @UseFilters(GqlResolverExceptionsFilter)

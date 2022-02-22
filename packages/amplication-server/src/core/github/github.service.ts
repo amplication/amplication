@@ -20,6 +20,8 @@ import { PrismaService } from 'nestjs-prisma';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { isEmpty } from 'lodash';
 import { Octokit ,App} from 'octokit';
+import { GitRepository } from 'src/models/GitRepository';
+import { CreateGitRepositoryInput } from '../git/dto/inputs/CreateGitRepositoryInput';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -170,8 +172,7 @@ async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganizat
   }
 
   async createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
-    const { input, gitOrganizationId } = args;
-    
+    const { input, gitOrganizationId} = args;
     const installationId = await this.getInstallationIdByGitOrganizationId(gitOrganizationId); 
     const octokit = await this.getInstallationOctokit(installationId); 
     const gitOrganizationName = await this.getOrganizationName(octokit,installationId); 
@@ -179,7 +180,7 @@ async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganizat
     if (await this.isRepoExistWithOctokit(octokit, input.name)) {
       throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
-    return octokit.rest.repos.createInOrg({
+    const newRepo = await octokit.rest.repos.createInOrg({
           org: gitOrganizationName,
           name: input.name
         }).then(response => {
@@ -194,7 +195,27 @@ async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganizat
           admin: repo.permissions.admin
         };
       }); 
+
+      const gitRepository = new CreateGitRepositoryInput(); 
+      gitRepository.name = newRepo.name,
+      gitRepository.appId = input.appId, 
+      gitRepository.createdAt = new Date(),
+      gitRepository.updatedAt = new Date(),
+      gitRepository.gitOrganizationId = gitOrganizationId; 
+
+       await this.createGitRepository(gitRepository);
+       return newRepo;
   }
+
+  async createGitRepository(args: CreateGitRepositoryInput):Promise<GitRepository>{
+
+    return await this.prisma.gitRepository.create({
+      data: {
+        ...args
+      }
+    }); 
+  }
+
   async getUserReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {
   
     const results = await octokit.request('GET /installation/repositories'); 

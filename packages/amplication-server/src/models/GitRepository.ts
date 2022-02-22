@@ -1,7 +1,4 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { App } from './App';
-import { GitOrganization } from './GitOrganization';
-
 @ObjectType({
   isAbstract: true,
   description: undefined
@@ -14,11 +11,11 @@ export class GitRepository {
   })
   id!: string;
 
-  @Field(() => GitOrganization, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
-  gitOrganization!: GitOrganization;
+  gitOrganizationId!: string;
 
   @Field(() => String, {
     nullable: false,
@@ -37,7 +34,4 @@ export class GitRepository {
     description: undefined
   })
   updatedAt?: Date; 
-
-  @Field(() => [App])
-  app?: App;
 } 

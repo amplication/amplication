@@ -1,9 +1,8 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { BaseGitArgs } from './BaseGitArgs';
+import { GetGitOrganizationsInput } from '../inputs/GetGitOrganizationsInput';
 
 @ArgsType()
-export class GetGitOrganizationsArgs extends BaseGitArgs {
-   
-    @Field(() => String, { nullable: false })
-    workspaceId;
+export class GetGitOrganizationsArgs {
+    @Field(() => GetGitOrganizationsInput, { nullable: false })
+    data!: GetGitOrganizationsInput;
 }

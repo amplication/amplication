@@ -51,7 +51,7 @@ export class GitService {
   }
 
   async getGitOrganizations(args: GetGitOrganizationsArgs):Promise<GitOrganization[]>{
-    const { sourceControlService , workspaceId} = args;
+    const { sourceControlService , workspaceId} = args.data;
     const service = this.gitServiceFactory.getService(sourceControlService);
     return await service.getGitOrganizations(workspaceId);
   }

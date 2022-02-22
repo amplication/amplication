@@ -4,6 +4,7 @@ import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../core/environment/dto/Environment'; // eslint-disable-line import/no-cycle
 import { GitRepository } from './GitRepository';
+import { GitOrganization } from './GitOrganization';
 
 @ObjectType({
   isAbstract: true,
@@ -28,11 +29,13 @@ export class App {
   })
   updatedAt!: Date;
 
-  @Field(() => Workspace, {
-    nullable: false,
+  workspace?: Workspace;
+
+  @Field(() => String, {
+    nullable: true,
     description: undefined
   })
-  workspace?: Workspace;
+  workspaceId?: string;
 
   gitRepository?: GitRepository;
 
