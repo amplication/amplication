@@ -93,10 +93,7 @@ export class GithubService implements IGitClient {
       GITHUB_APP_INSTALLATION_URL_VAR
     );
 
-    gitInstallationUrl = gitInstallationUrl.replace(
-      '{state}',
-      `state=${workspaceId}`
-    );
+    gitInstallationUrl = gitInstallationUrl.replace('{state}', workspaceId);
     return gitInstallationUrl;
   }
 
