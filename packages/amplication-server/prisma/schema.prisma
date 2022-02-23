@@ -39,7 +39,6 @@ model GitOrganization {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   gitRepositories  GitRepository[]
-  apps            App[]
   workspaceId    String
   workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
@@ -123,8 +122,6 @@ model App {
   commits                Commit[]
   entities               Entity[]
   environments           Environment[]
-  gitOrganizationId      String?
-  gitOrganization        GitOrganization? @relation(fields: [gitOrganizationId], references: [id])
   gitRepository          GitRepository? @relation(fields: [gitRepositoryId], references: [id])
   gitRepositoryId        String?
 
