@@ -260,7 +260,7 @@ export function createFieldClassProperty(
       )
     );
   }
-  decorators.push(apiPropertyDecoratorBuilder.build());
+  decorators.unshift(apiPropertyDecoratorBuilder.build());
   return classProperty(
     id,
     typeAnnotation,
