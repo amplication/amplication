@@ -30,7 +30,6 @@ import {
   PendingChange,
   UpdateOneAppArgs
 } from './dto';
-import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import {
