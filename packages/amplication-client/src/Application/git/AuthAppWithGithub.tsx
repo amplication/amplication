@@ -17,6 +17,7 @@ import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import GitOrganizations from "./GitOrganizations/GitOrganizations";
+import GitSyncNotes from "./GitSyncNotes";
 
 type DType = {
   getGithubAppInstallationUrl: models.AuthorizeAppWithGithubResult;
@@ -38,7 +39,9 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
-  const [selectedGitOrganization, setSelectedGitOrganization] = useState<string | null>(null); 
+  const [selectedGitOrganization, setSelectedGitOrganization] = useState<
+    string | null
+  >(null);
   const { trackEvent } = useTracking();
   const [authWithGithub, { loading, error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
@@ -80,7 +83,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
         authWithGithub({
           variables: {
             workspaceId: app.workspaceId,
-            sourceControlService: "Github"
+            sourceControlService: "Github",
           },
         }).catch(console.error);
       } else {
@@ -123,39 +126,38 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   const errorMessage = formatError(error || removeError);
 
   const isAuthenticatedWithGithub = !isEmpty(app.githubTokenCreatedDate);
-  
+
   return (
     <>
-    <GitOrganizations 
-      workspaceId={app.workspaceId}
-      setSelectedGitOrganization={setSelectedGitOrganization}
-    />
-     {selectedGitOrganization && 
-
-      <GitDialogsContainer 
-      app={app}
-      gitOrganizationId= {selectedGitOrganization}
-      handleSelectRepoDialogDismiss={handleSelectRepoDialogDismiss}
-      selectRepoOpen={selectRepoOpen}
-      handlePopupFailedClose={handlePopupFailedClose}
-      popupFailed={popupFailed}
-      gitCreateRepoOpen={createNewRepoOpen}
-      setGitCreateRepo={setCreateNewRepoOpen}
-      sourceControlService={models.EnumSourceControlService.Github}
-      confirmRemove={confirmRemove}
-      handleConfirmRemoveAuth={handleConfirmRemoveAuth}
-      handleDismissRemove={handleDismissRemove}
+      <GitOrganizations
+        workspaceId={app.workspaceId}
+        setSelectedGitOrganization={setSelectedGitOrganization}
       />
-      }
-<Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
-      <div className={`${CLASS_NAME}__action`}>
-                      <Button
-                        buttonStyle={EnumButtonStyle.Primary}
-                        onClick={handleAuthWithGithubClick}
-                      >
-                        Sync with GitHub
-                      </Button>
-        </div> 
+      {selectedGitOrganization && (
+        <GitDialogsContainer
+          app={app}
+          gitOrganizationId={selectedGitOrganization}
+          handleSelectRepoDialogDismiss={handleSelectRepoDialogDismiss}
+          selectRepoOpen={selectRepoOpen}
+          handlePopupFailedClose={handlePopupFailedClose}
+          popupFailed={popupFailed}
+          gitCreateRepoOpen={createNewRepoOpen}
+          setGitCreateRepo={setCreateNewRepoOpen}
+          sourceControlService={models.EnumSourceControlService.Github}
+          confirmRemove={confirmRemove}
+          handleConfirmRemoveAuth={handleConfirmRemoveAuth}
+          handleDismissRemove={handleDismissRemove}
+        />
+      )}
+      <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
+        <div className={`${CLASS_NAME}__action`}>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleAuthWithGithubClick}
+          >
+            Sync with GitHub
+          </Button>
+        </div>
         <Toggle
           label="Sync with GitHub"
           title="Sync with Github"
@@ -170,7 +172,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
               className={`${CLASS_NAME}__auth`}
               panelStyle={EnumPanelStyle.Bordered}
             >
-              {!app.githubSyncEnabled ? ( 
+              {!app.githubSyncEnabled ? (
                 <div className={`${CLASS_NAME}__select-repo`}>
                   <div className={`${CLASS_NAME}__select-repo__details`}>
                     <Icon icon="info_circle" />
@@ -202,20 +204,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
               )}
             </Panel>
           )}
-          <div className={`${CLASS_NAME}__notice`}>
-            Please note:
-            <ul>
-              <li>
-                <Icon icon="check_circle" />
-                The changes will be pushed to the root of the selected
-                repository, using Pull Requests.
-              </li>
-              <li>
-                <Icon icon="check_circle" />
-                The selected repository must not be empty.
-              </li>
-            </ul>
-          </div>
+          <GitSyncNotes />
         </div>
       </Panel>
 
@@ -224,14 +213,21 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   );
 }
 
-export default AuthAppWithGithub; 
+export default AuthAppWithGithub;
 
 const START_AUTH_APP_WITH_GITHUB = gql`
-  mutation getGithubAppInstallationUrl($workspaceId: String!, $sourceControlService: EnumSourceControlService!) {
-    getGithubAppInstallationUrl(data: { workspaceId: $workspaceId, sourceControlService: $sourceControlService }) 
-        {
-          url
-        }
+  mutation getGithubAppInstallationUrl(
+    $workspaceId: String!
+    $sourceControlService: EnumSourceControlService!
+  ) {
+    getGithubAppInstallationUrl(
+      data: {
+        workspaceId: $workspaceId
+        sourceControlService: $sourceControlService
+      }
+    ) {
+      url
+    }
   }
 `;
 
