@@ -15,7 +15,6 @@ import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
-import GitOrganizations from "./GitOrganizations/GitOrganizations";
 import GitSyncNotes from "./GitSyncNotes";
 
 type DType = {
@@ -38,9 +37,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
-  const [selectedGitOrganization, setSelectedGitOrganization] = useState<
-    string | null
-  >(null);
+  const [selectedGitOrganization] = useState<string | null>(null);
   const { trackEvent } = useTracking();
   const [authWithGithub, { error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
@@ -125,10 +122,10 @@ function AuthAppWithGithub({ app, onDone }: Props) {
 
   return (
     <>
-      <GitOrganizations
+      {/* <GitOrganizations
         workspaceId={app.workspaceId}
         setSelectedGitOrganization={setSelectedGitOrganization}
-      />
+      /> */}
       {selectedGitOrganization && (
         <GitDialogsContainer
           app={app}
@@ -146,22 +143,15 @@ function AuthAppWithGithub({ app, onDone }: Props) {
         />
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
-        <div className={`${CLASS_NAME}__action`}>
+        <div className={`${CLASS_NAME}__actions`}>
           <Button
             buttonStyle={EnumButtonStyle.Primary}
             onClick={handleAuthWithGithubClick}
+            icon="github"
           >
             Sync with GitHub
           </Button>
         </div>
-        {/* <Toggle
-          label="Sync with GitHub"
-          title="Sync with Github"
-          foundationRef={MDCSwitchRef}
-          onValueChange={handleAuthWithGithubClick}
-          checked={isAuthenticatedWithGithub}
-          disabled={loading || removeLoading || isEmpty(app)}
-        /> */}
         <div className={`${CLASS_NAME}__body`}>
           {selectedGitOrganization && (
             <Panel
