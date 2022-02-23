@@ -49,9 +49,8 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.Lookup]: (field) => {
     const { relatedEntity } = field.properties as LookupResolvedProperties;
     if (isToManyRelationField(field)) {
-      return jsxElement`<ReferenceArrayInput source="${pluralize(
-        relatedEntity.name.toLocaleLowerCase()
-      )}" reference="${capitalize(relatedEntity.name)}"
+      return jsxElement`<ReferenceArrayInput source="${relatedEntity.name.toLocaleLowerCase()}" 
+      reference="${relatedEntity.name}"
       parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
       format={(value: any) => value && value.map((v: any) => v.id)}
       >
