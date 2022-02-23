@@ -4,7 +4,6 @@ import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../core/environment/dto/Environment'; // eslint-disable-line import/no-cycle
 import { GitRepository } from './GitRepository';
-import { GitOrganization } from './GitOrganization';
 
 @ObjectType({
   isAbstract: true,

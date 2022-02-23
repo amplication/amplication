@@ -43,8 +43,10 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
-  getReposOfUser(appId: String!, sourceControlService: EnumSourceControlService!): [GitRepo!]!
-  getUsername(appId: String!, sourceControlService: EnumSourceControlService!): String!
+  getReposOfUser(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): [GitRepo!]!
+  gitOrganizations(data: GetGitOrganizationsInput!): [GitOrganization!]!
+  getUsername(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): String!
+  getGitOrganizationName(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): String!
 }
 
 type Account {
@@ -76,6 +78,7 @@ type App {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  workspaceId: String
   name: String!
   description: String!
   color: String!
@@ -949,6 +952,20 @@ enum EnumSourceControlService {
   Github
 }
 
+type GitOrganization {
+  id: String!
+  provider: EnumSourceControlService!
+  name: String!
+  installationId: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input GetGitOrganizationsInput {
+  workspaceId: String!
+  sourceControlService: EnumSourceControlService!
+}
+
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -961,8 +978,6 @@ type Mutation {
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  startAuthorizeAppWithGithub(where: WhereUniqueInput!): AuthorizeAppWithGithubResult!
-  completeAuthorizeAppWithGithub(data: CompleteAuthorizeAppWithGithubInput!, where: WhereUniqueInput!): App!
   removeAuthorizeAppWithGithub(where: WhereUniqueInput!): App!
   appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
   appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
@@ -998,7 +1013,11 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createRepoInOrg(appId: String!, sourceControlService: EnumSourceControlService!, input: RepoCreateInput!): GitRepo!
+  createRepoInOrg(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!, input: RepoCreateInput!): GitRepo!
+  getOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): GitOrganization!
+  createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
+  deleteOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): Boolean!
+  getGithubAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGithubResult!
 }
 
 input UpdateAccountInput {
@@ -1058,11 +1077,6 @@ input WhereParentIdInput {
 
 input PendingChangesDiscardInput {
   app: WhereParentIdInput!
-}
-
-input CompleteAuthorizeAppWithGithubInput {
-  code: String!
-  state: String!
 }
 
 input AppEnableSyncWithGithubRepoInput {
@@ -1302,4 +1316,16 @@ input EntityPageUpdateInput {
 input RepoCreateInput {
   name: String!
   public: Boolean!
+  appId: String!
+}
+
+input GitOrganizationCreateInput {
+  installationId: String!
+  workspaceId: String!
+  provider: EnumSourceControlService!
+}
+
+input GitGetInstallationUrlInput {
+  workspaceId: String!
+  sourceControlService: EnumSourceControlService!
 }

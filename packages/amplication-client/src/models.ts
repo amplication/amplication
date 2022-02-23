@@ -92,6 +92,21 @@ export type App = {
   id: Scalars["String"];
   name: Scalars["String"];
   updatedAt: Scalars["DateTime"];
+  workspaceId: Scalars["String"];
+  gitRepository: GitRepository;
+};
+
+export type GitOrganization = {
+  __typename?: "GitOrganization";
+  id: Scalars["String"];
+  name: Scalars["String"];
+};
+
+export type GitRepository = {
+  __typename?: "GitRepository";
+  id: Scalars["String"];
+  name: Scalars["String"];
+  gitOrganizationId:Scalars["String"];
 };
 
 export type AppBuildsArgs = {

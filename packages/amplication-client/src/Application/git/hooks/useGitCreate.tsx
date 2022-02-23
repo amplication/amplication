@@ -8,14 +8,16 @@ import {
 import { useTracking } from "../../../util/analytics";
 
 type Props = {
+  gitOrganizationId: string;
   appId: string;
   sourceControlService: EnumSourceControlService;
   cb: (repo: GitRepo) => any;
 };
 
 export default function useGitCreate({
-  appId,
+  gitOrganizationId,
   sourceControlService,
+  appId,
   cb,
 }: Props) {
   const { trackEvent } = useTracking();
@@ -37,13 +39,14 @@ export default function useGitCreate({
       triggerCreation({
         variables: {
           name: data.name,
+          gitOrganizationId,
           appId,
           sourceControlService,
           public: data.public,
         },
       }).catch((error) => {});
     },
-    [appId, sourceControlService, triggerCreation]
+    [gitOrganizationId, appId, sourceControlService, triggerCreation]
   );
 
   return { called, loading, error, handleCreation };
@@ -52,11 +55,13 @@ export default function useGitCreate({
 const CREATE_REPO = gql`
   mutation createRepoInOrg(
     $sourceControlService: EnumSourceControlService!
+    $gitOrganizationId: String!
     $appId: String!
     $name: String!
     $public: Boolean!
   ) {
     createRepoInOrg(
+      gitOrganizationId: $gitOrganizationId
       appId: $appId
       sourceControlService: $sourceControlService
       input: { name: $name, public: $public }

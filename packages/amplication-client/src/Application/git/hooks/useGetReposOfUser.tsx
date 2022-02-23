@@ -2,19 +2,19 @@ import { gql, useQuery } from "@apollo/client";
 import { EnumSourceControlService, GitRepo } from "../../../models";
 
 type Props = {
-  appId: string;
+  gitOrganizationId: string;
   sourceControlService: EnumSourceControlService;
 };
 
 export default function useGetReposOfUser({
-  appId,
+  gitOrganizationId,
   sourceControlService,
 }: Props) {
   const { data, error, loading, refetch, networkStatus } = useQuery<{
     getReposOfUser: GitRepo[];
   }>(FIND_GIT_REPOS, {
     variables: {
-      id: appId,
+      gitOrganizationId: gitOrganizationId,
       sourceControlService,
     },
     notifyOnNetworkStatusChange: true,
@@ -30,10 +30,10 @@ export default function useGetReposOfUser({
 
 const FIND_GIT_REPOS = gql`
   query getReposOfUser(
-    $id: String!
+    $gitOrganizationId: String!
     $sourceControlService: EnumSourceControlService!
   ) {
-    getReposOfUser(appId: $id, sourceControlService: $sourceControlService) {
+    getReposOfUser(gitOrganizationId: $gitOrganizationId, sourceControlService: $sourceControlService) {
       name
       url
       private

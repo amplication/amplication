@@ -21,6 +21,7 @@ import { formatError } from "../../../../util/error";
 type Props = {
   sourceControlService: EnumSourceControlService;
   app: App;
+  gitOrganizationId:string;
   onCompleted: Function;
 };
 
@@ -28,14 +29,19 @@ const CLASS_NAME = "git-create";
 
 export default function GitCreateRepo({
   app,
+  gitOrganizationId,
   sourceControlService,
   onCompleted,
 }: Props) {
   const initialValues: RepoCreateInput = { name: "", public: true };
 
-  const { username } = useGitUserName({ appId: app.id, sourceControlService });
+  const { username } = useGitUserName({
+    gitOrganizationId: gitOrganizationId,
+    sourceControlService,
+  });
   const { handleRepoSelected } = useGitSelected({ appId: app.id });
   const { loading, handleCreation, error } = useGitCreate({
+    gitOrganizationId: gitOrganizationId,
     appId: app.id,
     sourceControlService,
     cb: (repo) => {

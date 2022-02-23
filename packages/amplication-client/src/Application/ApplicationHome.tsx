@@ -162,6 +162,8 @@ export const GET_APPLICATION = gql`
       githubRepo
       githubLastSync
       githubLastMessage
+      workspaceId
     }
   }
 `;
+

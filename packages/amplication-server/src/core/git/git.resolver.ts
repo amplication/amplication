@@ -1,6 +1,5 @@
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
-import { url } from 'inspector';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { GitOrganization } from 'src/models/GitOrganization';
@@ -34,7 +33,7 @@ export class GitResolver {
   }
 
   @Mutation(() => GitOrganization)
-  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'workspaceId') 
+  //@AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'workspaceId') 
   async createOrganization(@Args() args: CreateGitOrganizationArgs): Promise<GitOrganization> {
     return await this.gitService.createGitOrganization(args);
   }
@@ -46,7 +45,7 @@ export class GitResolver {
   }
 
   @Mutation(() => AuthorizeAppWithGithubResult)
-  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'workspaceId')
+  //@AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'workspaceId')
   async getGithubAppInstallationUrl(@Args() args: GetGitInstallationUrlArgs): Promise<AuthorizeAppWithGithubResult> {
     return {
       url: await this.gitService.getGithubAppInstallationUrl(args)
@@ -63,9 +62,9 @@ export class GitResolver {
   }
 
   @Query(() => [GitOrganization])
-  @AuthorizeContext(AuthorizableResourceParameter.GitOrganizationId, 'gitOrganizationId')
-  async getGitOrganizations(@Args() args: GetGitOrganizationsArgs): Promise<GitOrganization[]> {
-    return this.gitService.getGitOrganizations(args.workspaceId);
+  //@AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'workspaceId')
+  async gitOrganizations(@Args() args: GetGitOrganizationsArgs): Promise<GitOrganization[]> {
+    return this.gitService.getGitOrganizations(args);
   }
 
   @Query(() => String)

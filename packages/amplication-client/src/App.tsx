@@ -54,7 +54,7 @@ function App() {
           </RouteWithAnalytics>
           <PrivateRoute
             exact
-            path="/github-auth-app/callback/:application"
+            path="/github-auth-app/callback"
             component={AuthAppWithGithubCallback}
           />
           <PrivateRoute exact path="/" component={WorkspaceLayout} />

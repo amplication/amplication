@@ -16,20 +16,21 @@ import "./GitRepos.scss";
 const CLASS_NAME = "git-repos";
 
 type Props = {
+  gitOrganizationId: string;
   applicationId: string;
   onCompleted: () => void;
   sourceControlService: EnumSourceControlService;
 };
 
-function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
-  const {
+function GitRepos({ applicationId, gitOrganizationId, onCompleted, sourceControlService }: Props) {
+     const {
     refetch,
     error,
     repos,
     loading: loadingRepos,
     networkStatus,
   } = useGetReposOfUser({
-    appId: applicationId,
+    gitOrganizationId: gitOrganizationId,
     sourceControlService,
   });
 

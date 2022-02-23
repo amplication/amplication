@@ -6,6 +6,7 @@ import GitRepos from "./GitRepos/GithubRepos";
 
 type Props = {
   app: App;
+  gitOrganizationId: string;
   selectRepoOpen: boolean;
   handleSelectRepoDialogDismiss: any;
   popupFailed: boolean;
@@ -22,6 +23,7 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 
 export default function GitDialogsContainer({
   app,
+  gitOrganizationId,
   selectRepoOpen,
   handleSelectRepoDialogDismiss,
   popupFailed,
@@ -51,7 +53,8 @@ export default function GitDialogsContainer({
         onDismiss={handleSelectRepoDialogDismiss}
       >
         <GitRepos
-          applicationId={app.id}
+          applicationId = {app.id}
+          gitOrganizationId={gitOrganizationId}
           onCompleted={handleSelectRepoDialogDismiss}
           sourceControlService={sourceControlService}
         />
@@ -75,6 +78,7 @@ export default function GitDialogsContainer({
         <GitCreateRepo
           sourceControlService={sourceControlService}
           app={app}
+          gitOrganizationId={gitOrganizationId}
           onCompleted={() => {
             setGitCreateRepo(false);
           }}

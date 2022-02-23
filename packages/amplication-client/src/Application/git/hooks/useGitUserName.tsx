@@ -2,22 +2,22 @@ import { gql, useQuery } from "@apollo/client";
 import { EnumSourceControlService } from "../../../models";
 
 type Props = {
-  appId: string;
+  gitOrganizationId: string;
   sourceControlService: EnumSourceControlService;
 };
 
-export default function useGitUserName({ appId, sourceControlService }: Props) {
-  const { data, loading } = useQuery(GET_USERNAME, {
-    variables: { appId, sourceControlService },
+export default function useGitUserName({ gitOrganizationId, sourceControlService }: Props) {
+  const { data, loading } = useQuery(GET_GIT_ORGANIZATION_NAME, {
+    variables: { gitOrganizationId, sourceControlService },
   });
-  return { username: data?.getUsername, loadingUsername: loading };
+  return { username: data?.getGitOrganizationName, loadingUsername: loading };
 }
 
-const GET_USERNAME = gql`
-  query getUsername(
-    $appId: String!
+const GET_GIT_ORGANIZATION_NAME = gql`
+  query getGitOrganizationName(
+    $gitOrganizationId: String!
     $sourceControlService: EnumSourceControlService!
   ) {
-    getUsername(appId: $appId, sourceControlService: $sourceControlService)
+    getGitOrganizationName(gitOrganizationId: $gitOrganizationId, sourceControlService: $sourceControlService)
   }
 `;
