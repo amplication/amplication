@@ -8,8 +8,6 @@ import {
 } from "../../types";
 import { jsxElement } from "../util";
 import { isToManyRelationField } from "../../util/field";
-import pluralize from "pluralize";
-import { capitalize } from "lodash";
 
 /**
  * Creates an input element to be placed inside a Formik form for editing the given entity field
