@@ -32,7 +32,7 @@ type Props = {
   onDone: () => void;
 };
 
-const CLASS_NAME = "auth-app-with-github";
+export const CLASS_NAME = "auth-app-with-github";
 
 function AuthAppWithGithub({ app, onDone }: Props) {
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
