@@ -50,7 +50,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     const { relatedEntity } = field.properties as LookupResolvedProperties;
     if (isToManyRelationField(field)) {
       return jsxElement`<ReferenceArrayInput source="${pluralize(
-          relatedEntity.name.toLocaleLowerCase()
+        relatedEntity.name.toLocaleLowerCase()
       )}" reference="${capitalize(relatedEntity.name)}"
       parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
       format={(value: any) => value && value.map((v: any) => v.id)}

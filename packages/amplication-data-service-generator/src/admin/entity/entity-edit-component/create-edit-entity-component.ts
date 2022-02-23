@@ -43,8 +43,9 @@ export async function createEditEntityComponent(
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
-  const fields = dtoProperties
-    .map((property) => fieldsByName[property.key.name])
+  const fields = dtoProperties.map(
+    (property) => fieldsByName[property.key.name]
+  );
 
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
