@@ -31,7 +31,6 @@ export class PermissionsService {
     }
 
     if (resourceType === AuthorizableResourceParameter.GitOrganizationId) {
-    
       const matching = await this.prisma.gitOrganization.count({
         where: {
           id: resourceId,

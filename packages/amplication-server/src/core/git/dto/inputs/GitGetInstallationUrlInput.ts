@@ -11,7 +11,5 @@ export class GitGetInstallationUrlInput {
   workspaceId!: string;
 
   @Field(() => EnumSourceControlService, { nullable: false })
-sourceControlService!: EnumSourceControlService;
-
+  sourceControlService!: EnumSourceControlService;
 }
-

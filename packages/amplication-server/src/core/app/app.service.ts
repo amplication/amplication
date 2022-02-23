@@ -76,7 +76,6 @@ export class AppService {
       throw new InvalidColorError(color);
     }
 
-
     const app = await this.prisma.app.create({
       data: {
         ...DEFAULT_APP_DATA,
@@ -88,7 +87,7 @@ export class AppService {
         },
         roles: {
           create: USER_APP_ROLE
-        }   
+        }
       }
     });
 
@@ -577,7 +576,8 @@ export class AppService {
     return true;
   }
 
-  async removeAuthorizeAppWithGithub(args: FindOneArgs): Promise<App> { //todo:: need to remove 
+  async removeAuthorizeAppWithGithub(args: FindOneArgs): Promise<App> {
+    //todo:: need to remove
     const app = await this.app({
       where: {
         id: args.where.id
@@ -681,7 +681,6 @@ export class AppService {
         id: args.where.id
       }
     });
-
 
     if (isEmpty(app)) {
       throw new Error(INVALID_APP_ID);

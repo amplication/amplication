@@ -5,7 +5,6 @@ import { EnumSourceControlService } from '../enums/EnumSourceControlService';
   isAbstract: true
 })
 export class GitOrganizationCreateInput {
-
   @Field(() => String, {
     nullable: false
   })

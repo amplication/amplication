@@ -4,7 +4,6 @@ import { Field, ObjectType } from '@nestjs/graphql';
   description: undefined
 })
 export class GitRepository {
-
   @Field(() => String, {
     nullable: false,
     description: undefined
@@ -27,11 +26,11 @@ export class GitRepository {
     nullable: false,
     description: undefined
   })
-  createdAt!: Date; 
+  createdAt!: Date;
 
   @Field(() => Date, {
     nullable: false,
     description: undefined
   })
-  updatedAt?: Date; 
-} 
+  updatedAt?: Date;
+}

@@ -19,7 +19,7 @@ import { CreateGitOrganizationArgs } from '../git/dto/args/CreateGitOrganization
 import { PrismaService } from 'nestjs-prisma';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { isEmpty } from 'lodash';
-import { Octokit ,App} from 'octokit';
+import { Octokit, App } from 'octokit';
 import { GitRepository } from 'src/models/GitRepository';
 import { CreateGitRepositoryInput } from '../git/dto/inputs/CreateGitRepositoryInput';
 
@@ -32,7 +32,6 @@ export const GITHUB_APP_CLIENT_ID_VAR = 'GITHUB_APP_CLIENT_ID';
 export const GITHUB_APP_APP_ID_VAR = 'GITHUB_APP_APP_ID';
 export const GITHUB_APP_PRIVATE_KEY_VAR = 'GITHUB_APP_PRIVATE_KEY';
 export const GITHUB_APP_INSTALLATION_URL_VAR = 'GITHUB_APP_INSTALLATION_URL';
-
 
 export const GITHUB_SECRET_SECRET_NAME_VAR = 'GITHUB_SECRET_SECRET_NAME';
 export const GITHUB_APP_AUTH_REDIRECT_URI_VAR = 'GITHUB_APP_AUTH_REDIRECT_URI';
@@ -48,95 +47,105 @@ export class GithubService implements IGitClient {
     private readonly configService: ConfigService,
     private readonly googleSecretManagerService: GoogleSecretsManagerService,
     public readonly tokenExtractor: GithubTokenExtractor,
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaService
   ) {}
   async getGitOrganizations(workspaceId: string): Promise<GitOrganization[]> {
-
     return await this.prisma.gitOrganization.findMany({
       where: {
-        workspaceId:workspaceId
-            }
+        workspaceId: workspaceId
+      }
     });
   }
   async deleteGitOrganization(gitOrganizationId: string): Promise<boolean> {
-    const installationId = await this.getInstallationIdByGitOrganizationId(gitOrganizationId);
+    const installationId = await this.getInstallationIdByGitOrganizationId(
+      gitOrganizationId
+    );
 
-    if(installationId == null) {
-      throw new Error("INVALID_GITHUB_APP");
+    if (installationId == null) {
+      throw new Error('INVALID_GITHUB_APP');
     }
-    const octokit = await this.getInstallationOctokit(installationId); 
+    const octokit = await this.getInstallationOctokit(installationId);
     const deleteInstallationRes = await octokit.rest.apps.deleteInstallation({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: installationId,
+      installation_id: installationId
     });
 
-    if(deleteInstallationRes.status != 204) {
-
-      throw new AmplicationError("delete installationId {} failed"); //todo: remove to const param
+    if (deleteInstallationRes.status != 204) {
+      throw new AmplicationError('delete installationId {} failed'); //todo: remove to const param
     }
 
-    const gitOrganization = await this.getGitOrganization(gitOrganizationId); 
+    const gitOrganization = await this.getGitOrganization(gitOrganizationId);
     if (isEmpty(gitOrganization)) {
-      throw new Error("INVALID_GITHUB_APP");
+      throw new Error('INVALID_GITHUB_APP');
     }
 
-     await this.prisma.gitOrganization.delete({
-       where:{
-       id:gitOrganization.id
-       }
-     });
-
-   return true;
-  }
-
-   async getGithubAppInstallationUrl(workspaceId: string): Promise<string> {
-   
-    let gitInstallationUrl = this.configService
-   .get(GITHUB_APP_INSTALLATION_URL_VAR);
-
-   gitInstallationUrl = gitInstallationUrl.replace('{state}',`state=${workspaceId}`);
-   return gitInstallationUrl;
-  }
-
-  async getGitOrganization(gitOrganizationId: string): Promise<GitOrganization> {
-  
-    const gitOrganization = new GitOrganization(); 
-    const res = await this.prisma.gitOrganization.findFirst({
+    await this.prisma.gitOrganization.delete({
       where: {
-        id: gitOrganizationId
-      }   
-    }).then(org => {
-      return {     
-       installationId: org.installationId,
-       name:org.name,
-       provider:org.provider,
-       updatedAt:org.updatedAt,
-       createdAt:org.createdAt,
-       workspaceId:org.workspaceId,
-       id: org.id
+        id: gitOrganization.id
       }
     });
 
-    gitOrganization.installationId = res.installationId,
-    gitOrganization.name = res.name,
-    gitOrganization.id = res.id;
-
-    return gitOrganization; 
+    return true;
   }
 
-async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganization>{
+  async getGithubAppInstallationUrl(workspaceId: string): Promise<string> {
+    let gitInstallationUrl = this.configService.get(
+      GITHUB_APP_INSTALLATION_URL_VAR
+    );
 
-  const installationId = parseInt(args.data.installationId);
-  const octokit = await this.getInstallationOctokit(installationId); 
-  const gitOrganizationName = await this.getOrganizationName(octokit,installationId); 
- return await this.prisma.gitOrganization.create({
-    data:{
-      ...args.data,
-      installationId:installationId,
-      name:gitOrganizationName    
-    }
-  });
-}
+    gitInstallationUrl = gitInstallationUrl.replace(
+      '{state}',
+      `state=${workspaceId}`
+    );
+    return gitInstallationUrl;
+  }
+
+  async getGitOrganization(
+    gitOrganizationId: string
+  ): Promise<GitOrganization> {
+    const gitOrganization = new GitOrganization();
+    const res = await this.prisma.gitOrganization
+      .findFirst({
+        where: {
+          id: gitOrganizationId
+        }
+      })
+      .then(org => {
+        return {
+          installationId: org.installationId,
+          name: org.name,
+          provider: org.provider,
+          updatedAt: org.updatedAt,
+          createdAt: org.createdAt,
+          workspaceId: org.workspaceId,
+          id: org.id
+        };
+      });
+
+    (gitOrganization.installationId = res.installationId),
+      (gitOrganization.name = res.name),
+      (gitOrganization.id = res.id);
+
+    return gitOrganization;
+  }
+
+  async createGitOrganization(
+    args: CreateGitOrganizationArgs
+  ): Promise<GitOrganization> {
+    const installationId = parseInt(args.data.installationId);
+    const octokit = await this.getInstallationOctokit(installationId);
+    const gitOrganizationName = await this.getOrganizationName(
+      octokit,
+      installationId
+    );
+    return await this.prisma.gitOrganization.create({
+      data: {
+        ...args.data,
+        installationId: installationId,
+        name: gitOrganizationName
+      }
+    });
+  }
 
   async isRepoExistWithOctokit(
     octokit: Octokit,
@@ -149,41 +158,57 @@ async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganizat
     return false;
   }
   async isRepoExist(gitOrganizationId: string, name: string): Promise<boolean> {
-    
-    const installationId = await this.getInstallationIdByGitOrganizationId(gitOrganizationId); 
-    const octokit = await this.getInstallationOctokit(installationId); 
+    const installationId = await this.getInstallationIdByGitOrganizationId(
+      gitOrganizationId
+    );
+    const octokit = await this.getInstallationOctokit(installationId);
     return await this.isRepoExistWithOctokit(octokit, name);
   }
 
-  private async getOrganizationName(octokit: Octokit, installationId:number):Promise<string>{  
-   return await octokit.rest.apps.getInstallation({
-     // eslint-disable-next-line @typescript-eslint/naming-convention
-     installation_id:installationId
-   }).then(inst => inst.data.account.login);
+  private async getOrganizationName(
+    octokit: Octokit,
+    installationId: number
+  ): Promise<string> {
+    return await octokit.rest.apps
+      .getInstallation({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        installation_id: installationId
+      })
+      .then(inst => inst.data.account.login);
   }
 
-  private async getInstallationIdByGitOrganizationId(gitOrganizationId:string):Promise<number | null>{
-     
-    return await this.prisma.gitOrganization.findFirst({
-      where: {
-        id:gitOrganizationId
-      }
-    }).then(o => o.installationId);
+  private async getInstallationIdByGitOrganizationId(
+    gitOrganizationId: string
+  ): Promise<number | null> {
+    return await this.prisma.gitOrganization
+      .findFirst({
+        where: {
+          id: gitOrganizationId
+        }
+      })
+      .then(o => o.installationId);
   }
 
   async createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
-    const { input, gitOrganizationId} = args;
-    const installationId = await this.getInstallationIdByGitOrganizationId(gitOrganizationId); 
-    const octokit = await this.getInstallationOctokit(installationId); 
-    const gitOrganizationName = await this.getOrganizationName(octokit,installationId); 
+    const { input, gitOrganizationId } = args;
+    const installationId = await this.getInstallationIdByGitOrganizationId(
+      gitOrganizationId
+    );
+    const octokit = await this.getInstallationOctokit(installationId);
+    const gitOrganizationName = await this.getOrganizationName(
+      octokit,
+      installationId
+    );
 
     if (await this.isRepoExistWithOctokit(octokit, input.name)) {
       throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
-    const newRepo = await octokit.rest.repos.createInOrg({
-          org: gitOrganizationName,
-          name: input.name
-        }).then(response => {
+    const newRepo = await octokit.rest.repos
+      .createInOrg({
+        org: gitOrganizationName,
+        name: input.name
+      })
+      .then(response => {
         const { data: repo } = response;
         //TODO add logger
         // console.log('Repository %s created', repo.full_name);
@@ -194,31 +219,31 @@ async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganizat
           fullName: repo.full_name,
           admin: repo.permissions.admin
         };
-      }); 
+      });
 
-      const gitRepository = new CreateGitRepositoryInput(); 
-      gitRepository.name = newRepo.name,
-      gitRepository.appId = input.appId, 
-      gitRepository.createdAt = new Date(),
-      gitRepository.updatedAt = new Date(),
-      gitRepository.gitOrganizationId = gitOrganizationId; 
+    const gitRepository = new CreateGitRepositoryInput();
+    (gitRepository.name = newRepo.name),
+      (gitRepository.appId = input.appId),
+      (gitRepository.createdAt = new Date()),
+      (gitRepository.updatedAt = new Date()),
+      (gitRepository.gitOrganizationId = gitOrganizationId);
 
-       await this.createGitRepository(gitRepository);
-       return newRepo;
+    await this.createGitRepository(gitRepository);
+    return newRepo;
   }
 
-  async createGitRepository(args: CreateGitRepositoryInput):Promise<GitRepository>{
-
+  async createGitRepository(
+    args: CreateGitRepositoryInput
+  ): Promise<GitRepository> {
     return await this.prisma.gitRepository.create({
       data: {
         ...args
       }
-    }); 
+    });
   }
 
   async getUserReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {
-  
-    const results = await octokit.request('GET /installation/repositories'); 
+    const results = await octokit.request('GET /installation/repositories');
 
     return results.data.repositories.map(repo => ({
       name: repo.name,
@@ -229,27 +254,32 @@ async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganizat
     }));
   }
   async getUserRepos(organizationId: string): Promise<GitRepo[]> {
-    const installationId = await this.getInstallationIdByGitOrganizationId(organizationId); 
-    const octokit = await this.getInstallationOctokit(installationId); 
-    return await this.getUserReposWithOctokit(octokit); 
+    const installationId = await this.getInstallationIdByGitOrganizationId(
+      organizationId
+    );
+    const octokit = await this.getInstallationOctokit(installationId);
+    return await this.getUserReposWithOctokit(octokit);
   }
 
-  private async getInstallationOctokit(installationId: number):Promise<Octokit>{
+  private async getInstallationOctokit(
+    installationId: number
+  ): Promise<Octokit> {
     const app = new App({
-      appId: this.configService
-      .get(GITHUB_APP_APP_ID_VAR),
+      appId: this.configService.get(GITHUB_APP_APP_ID_VAR),
       privateKey: this.configService
         .get(GITHUB_APP_PRIVATE_KEY_VAR)
         .replace(/\\n/g, '\n')
     });
-       
-    
-   return await app.getInstallationOctokit(installationId);
-}
 
-  async listRepoForAuthenticatedUser(workspaceId: string): Promise<GithubRepo[]> {
+    return await app.getInstallationOctokit(installationId);
+  }
 
-    const installationId = await this.getInstallationIdByGitOrganizationId(workspaceId); 
+  async listRepoForAuthenticatedUser(
+    workspaceId: string
+  ): Promise<GithubRepo[]> {
+    const installationId = await this.getInstallationIdByGitOrganizationId(
+      workspaceId
+    );
     const octokit = await this.getInstallationOctokit(installationId);
     const results = await octokit.rest.repos.listForAuthenticatedUser({
       type: 'all',
@@ -281,8 +311,7 @@ async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganizat
     baseBranchName: string,
     token: string
   ): Promise<GithubFile> {
-  
-    const octokit = await this.getInstallationOctokit(parseInt(token)); 
+    const octokit = await this.getInstallationOctokit(parseInt(token));
     const content = await octokit.rest.repos.getContent({
       owner: userName,
       repo: repoName,
@@ -429,7 +458,7 @@ async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganizat
     const octokit = new Octokit({
       auth: token
     });
-    const user = await octokit.request('GET /user'); 
+    const user = await octokit.request('GET /user');
     //const user = await octokit.users.getAuthenticated();
     return { username: user.data.login };
   }

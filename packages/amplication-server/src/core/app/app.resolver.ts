@@ -183,7 +183,6 @@ export class AppResolver {
   @Mutation(() => App, {
     nullable: false
   })
-
   @Mutation(() => App, {
     nullable: false
   })

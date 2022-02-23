@@ -3,6 +3,6 @@ import { CreateGitRepositoryInput } from '../inputs/CreateGitRepositoryInput';
 
 @ArgsType()
 export class CreateGitRepositoryArgs {
-    @Field(() => CreateGitRepositoryInput, { nullable: false })
-    data!: CreateGitRepositoryInput;
+  @Field(() => CreateGitRepositoryInput, { nullable: false })
+  data!: CreateGitRepositoryInput;
 }

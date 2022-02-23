@@ -106,7 +106,7 @@ export type GitRepository = {
   __typename?: "GitRepository";
   id: Scalars["String"];
   name: Scalars["String"];
-  gitOrganizationId:Scalars["String"];
+  gitOrganizationId: Scalars["String"];
 };
 
 export type AppBuildsArgs = {

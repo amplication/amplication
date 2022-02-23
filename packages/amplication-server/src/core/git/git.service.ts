@@ -34,41 +34,49 @@ export class GitService {
   async getUser(args: BaseGitArgs): Promise<GitUser> {
     const { gitOrganizationId, sourceControlService } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
-    const token = await service.tokenExtractor.getTokenFromDb(gitOrganizationId);
+    const token = await service.tokenExtractor.getTokenFromDb(
+      gitOrganizationId
+    );
     return await service.getUser(token);
   }
 
-  async getGitOrganizationName(args: BaseGitArgs):Promise<string> {
+  async getGitOrganizationName(args: BaseGitArgs): Promise<string> {
     const { gitOrganizationId, sourceControlService } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
-    return await (await service.getGitOrganization(gitOrganizationId)).name; 
+    return await (await service.getGitOrganization(gitOrganizationId)).name;
   }
 
-  async createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganization>{
+  async createGitOrganization(
+    args: CreateGitOrganizationArgs
+  ): Promise<GitOrganization> {
     const { provider } = args.data;
     const service = this.gitServiceFactory.getService(provider);
     return await service.createGitOrganization(args);
   }
 
-  async getGitOrganizations(args: GetGitOrganizationsArgs):Promise<GitOrganization[]>{
-    const { sourceControlService , workspaceId} = args.data;
+  async getGitOrganizations(
+    args: GetGitOrganizationsArgs
+  ): Promise<GitOrganization[]> {
+    const { sourceControlService, workspaceId } = args.data;
     const service = this.gitServiceFactory.getService(sourceControlService);
     return await service.getGitOrganizations(workspaceId);
   }
 
-  async getGitOrganization(args:BaseGitArgs):Promise<GitOrganization> {
-    const { gitOrganizationId,sourceControlService } = args;
+  async getGitOrganization(args: BaseGitArgs): Promise<GitOrganization> {
+    const { gitOrganizationId, sourceControlService } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
-    return await service.getGitOrganization(gitOrganizationId); 
+    return await service.getGitOrganization(gitOrganizationId);
   }
 
-  async getGithubAppInstallationUrl(args:GetGitInstallationUrlArgs):Promise<string>{
-    const { sourceControlService ,workspaceId} = args.data;
+  async getGithubAppInstallationUrl(
+    args: GetGitInstallationUrlArgs
+  ): Promise<string> {
+    const { sourceControlService, workspaceId } = args.data;
     const service = this.gitServiceFactory.getService(sourceControlService);
     return await service.getGithubAppInstallationUrl(workspaceId);
-  } 
+  }
 
-  async deleteGitOrganization(args:BaseGitArgs):Promise<boolean>{
+  async deleteGitOrganization(args: BaseGitArgs): Promise<boolean> {
     const { sourceControlService } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
     return await service.deleteGitOrganization(args.gitOrganizationId);
