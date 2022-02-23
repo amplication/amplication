@@ -1,9 +1,8 @@
 import {
   EnumPanelStyle,
+  Icon,
   Panel,
   Snackbar,
-  Toggle,
-  Icon,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
@@ -43,7 +42,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
     string | null
   >(null);
   const { trackEvent } = useTracking();
-  const [authWithGithub, { loading, error }] = useMutation<DType>(
+  const [authWithGithub, { error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
     {
       onCompleted: (data) => {
@@ -55,10 +54,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
     }
   );
 
-  const [
-    removeAuthWithGithub,
-    { loading: removeLoading, error: removeError },
-  ] = useMutation<{
+  const [removeAuthWithGithub, { error: removeError }] = useMutation<{
     removeAuthorizeAppWithGithub: models.App;
   }>(REMOVE_AUTH_APP_WITH_GITHUB, {
     onCompleted: () => {
@@ -125,7 +121,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   };
   const errorMessage = formatError(error || removeError);
 
-  const isAuthenticatedWithGithub = !isEmpty(app.githubTokenCreatedDate);
+  // const isAuthenticatedWithGithub = !isEmpty(app.githubTokenCreatedDate);
 
   return (
     <>
@@ -158,14 +154,14 @@ function AuthAppWithGithub({ app, onDone }: Props) {
             Sync with GitHub
           </Button>
         </div>
-        <Toggle
+        {/* <Toggle
           label="Sync with GitHub"
           title="Sync with Github"
           foundationRef={MDCSwitchRef}
           onValueChange={handleAuthWithGithubClick}
           checked={isAuthenticatedWithGithub}
           disabled={loading || removeLoading || isEmpty(app)}
-        />
+        /> */}
         <div className={`${CLASS_NAME}__body`}>
           {selectedGitOrganization && (
             <Panel
