@@ -15,7 +15,7 @@ import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
-import ExistingConnections from "./GitActions/ExistingConnections";
+import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import GitSyncNotes from "./GitSyncNotes";
 import useGetGitOrganizations from "./hooks/useGetGitOrganizations";
@@ -73,7 +73,6 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   const handleSelectRepoDialogOpen = useCallback(() => {
     setSelectRepoOpen(true);
   }, []);
-
   const handleAuthWithGithubClick = useCallback(
     (data) => {
       if (isEmpty(app.githubTokenCreatedDate)) {
@@ -126,7 +125,6 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   const errorMessage = formatError(error || removeError);
 
   // const isAuthenticatedWithGithub = !isEmpty(app.githubTokenCreatedDate);
-
   return (
     <>
       {/* <GitOrganizations
@@ -151,13 +149,17 @@ function AuthAppWithGithub({ app, onDone }: Props) {
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         <div className={`${CLASS_NAME}__actions`}>
-          {!gitOrganizations ? (
+          {isEmpty(gitOrganizations) ? (
             <NewConnection
               handleAuthWithGithubClick={handleAuthWithGithubClick}
             />
           ) : (
-            <ExistingConnections gitOrganizations={gitOrganizations} />
+            <ExistingConnectionsMenu
+              gitOrganizations={gitOrganizations}
+              handleAuthWithGithubClick={handleAuthWithGithubClick}
+            />
           )}
+          {JSON.stringify(selectedGitOrganization)}
         </div>
         <div className={`${CLASS_NAME}__body`}>
           {selectedGitOrganization && (
@@ -165,6 +167,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
               className={`${CLASS_NAME}__auth`}
               panelStyle={EnumPanelStyle.Bordered}
             >
+              dsfadfgaldskjfalksdhflkajshl;
               {!app.githubSyncEnabled ? (
                 <div className={`${CLASS_NAME}__select-repo`}>
                   <div className={`${CLASS_NAME}__select-repo__details`}>
