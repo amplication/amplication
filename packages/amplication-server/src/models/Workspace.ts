@@ -35,6 +35,7 @@ export class Workspace {
   @Field(() => [App])
   apps?: App[];
 
+  @Field(() => [GitOrganization], { nullable: true })
   gitOrganizations?: GitOrganization[];
 
   @Field(() => [User])
