@@ -11,6 +11,7 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import WorkspaceSelector from "./WorkspaceSelector";
 import WorkspaceForm from "./WorkspaceForm";
 import PageContent from "../Layout/PageContent";
+import ProfilePage from "../Profile/ProfilePage";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import { isMobileOnly } from "react-device-detect";
 import MobileMessage from "../Layout/MobileMessage";
@@ -64,6 +65,11 @@ function WorkspaceLayout({ match }: Props) {
             <Switch>
               <RouteWithAnalytics exact path="/workspace/settings">
                 <WorkspaceForm />
+              </RouteWithAnalytics>
+            </Switch>
+            <Switch>
+              <RouteWithAnalytics exact path="/user/profile">
+                <ProfilePage />
               </RouteWithAnalytics>
             </Switch>
             <Switch>
