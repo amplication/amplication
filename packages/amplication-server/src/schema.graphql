@@ -71,6 +71,7 @@ type Workspace {
   updatedAt: DateTime!
   name: String!
   apps: [App!]!
+  gitOrganizations: [GitOrganization!]
   users: [User!]!
 }
 
@@ -79,6 +80,7 @@ type App {
   createdAt: DateTime!
   updatedAt: DateTime!
   workspaceId: String
+  gitRepository: GitRepository
   name: String!
   description: String!
   color: String!
@@ -91,6 +93,28 @@ type App {
   githubBranch: String
   githubLastSync: DateTime
   githubLastMessage: String
+}
+
+type GitRepository {
+  id: String!
+  gitOrganizationId: String!
+  gitOrganization: GitOrganization
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type GitOrganization {
+  id: String!
+  provider: EnumSourceControlService!
+  name: String!
+  installationId: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum EnumSourceControlService {
+  Github
 }
 
 type Entity {
@@ -946,19 +970,6 @@ type GitRepo {
   private: Boolean!
   fullName: String!
   admin: Boolean!
-}
-
-enum EnumSourceControlService {
-  Github
-}
-
-type GitOrganization {
-  id: String!
-  provider: EnumSourceControlService!
-  name: String!
-  installationId: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 input GetGitOrganizationsInput {
