@@ -39,7 +39,9 @@ function SyncWithGithubPage({ match }: Props) {
         </div>
       </div>
 
-      {data?.app && <AuthAppWithGithub app={data.app} onDone={refetch} />}
+      {data?.app && data.app.workspaceId && (
+        <AuthAppWithGithub app={data.app} onDone={refetch} />
+      )}
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>

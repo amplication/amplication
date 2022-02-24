@@ -15,7 +15,10 @@ import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
+import ExistingConnections from "./GitActions/ExistingConnections";
+import NewConnection from "./GitActions/NewConnection";
 import GitSyncNotes from "./GitSyncNotes";
+import useGetGitOrganizations from "./hooks/useGetGitOrganizations";
 
 type DType = {
   getGithubAppInstallationUrl: models.AuthorizeAppWithGithubResult;
@@ -33,6 +36,10 @@ type Props = {
 export const CLASS_NAME = "auth-app-with-github";
 
 function AuthAppWithGithub({ app, onDone }: Props) {
+  const { gitOrganizations } = useGetGitOrganizations({
+    workspaceId: app.workspaceId as string,
+  });
+
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
@@ -144,13 +151,13 @@ function AuthAppWithGithub({ app, onDone }: Props) {
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         <div className={`${CLASS_NAME}__actions`}>
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleAuthWithGithubClick}
-            icon="github"
-          >
-            Sync with GitHub
-          </Button>
+          {!gitOrganizations ? (
+            <NewConnection
+              handleAuthWithGithubClick={handleAuthWithGithubClick}
+            />
+          ) : (
+            <ExistingConnections gitOrganizations={gitOrganizations} />
+          )}
         </div>
         <div className={`${CLASS_NAME}__body`}>
           {selectedGitOrganization && (
