@@ -92,7 +92,6 @@ export class GithubService implements IGitClient {
     let gitInstallationUrl = this.configService.get(
       GITHUB_APP_INSTALLATION_URL_VAR
     );
-
     gitInstallationUrl = gitInstallationUrl.replace('{state}', workspaceId);
     return gitInstallationUrl;
   }
