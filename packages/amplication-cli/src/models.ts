@@ -92,6 +92,7 @@ export type App = {
   id: Scalars['String'];
   name: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+  workspaceId?: Maybe<Scalars['String']>;
 };
 
 export type AppBuildsArgs = {
@@ -459,11 +460,6 @@ export type CommitWhereInput = {
 
 export type CommitWhereUniqueInput = {
   id?: InputMaybe<Scalars['String']>;
-};
-
-export type CompleteAuthorizeAppWithGithubInput = {
-  code: Scalars['String'];
-  state: Scalars['String'];
 };
 
 export type ConnectorRestApi = IBlock & {
@@ -1122,6 +1118,32 @@ export type Environment = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type GetGitOrganizationsInput = {
+  sourceControlService: EnumSourceControlService;
+  workspaceId: Scalars['String'];
+};
+
+export type GitGetInstallationUrlInput = {
+  sourceControlService: EnumSourceControlService;
+  workspaceId: Scalars['String'];
+};
+
+export type GitOrganization = {
+  __typename?: 'GitOrganization';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  installationId: Scalars['Float'];
+  name: Scalars['String'];
+  provider: EnumSourceControlService;
+  updatedAt: Scalars['DateTime'];
+};
+
+export type GitOrganizationCreateInput = {
+  installationId: Scalars['String'];
+  provider: EnumSourceControlService;
+  workspaceId: Scalars['String'];
+};
+
 export type GitRepo = {
   __typename?: 'GitRepo';
   admin: Scalars['Boolean'];
@@ -1189,7 +1211,6 @@ export type Mutation = {
   appEnableSyncWithGithubRepo: App;
   changePassword: Account;
   commit?: Maybe<Commit>;
-  completeAuthorizeAppWithGithub: App;
   createApiToken: ApiToken;
   createApp: App;
   createAppRole: AppRole;
@@ -1203,6 +1224,7 @@ export type Mutation = {
   createEntityFieldByDisplayName: EntityField;
   createEntityPage: EntityPage;
   createOneEntity: Entity;
+  createOrganization: GitOrganization;
   createRepoInOrg: GitRepo;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
@@ -1211,15 +1233,17 @@ export type Mutation = {
   deleteEntity?: Maybe<Entity>;
   deleteEntityField: EntityField;
   deleteEntityPermissionField: EntityPermissionField;
+  deleteOrganization: Scalars['Boolean'];
   deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars['Boolean']>;
+  getGithubAppInstallationUrl: AuthorizeAppWithGithubResult;
+  getOrganization: GitOrganization;
   inviteUser?: Maybe<User>;
   lockEntity?: Maybe<Entity>;
   login: Auth;
   removeAuthorizeAppWithGithub: App;
   setCurrentWorkspace: Auth;
   signup: Auth;
-  startAuthorizeAppWithGithub: AuthorizeAppWithGithubResult;
   updateAccount: Account;
   updateApp?: Maybe<App>;
   updateAppRole?: Maybe<AppRole>;
@@ -1254,11 +1278,6 @@ export type MutationChangePasswordArgs = {
 
 export type MutationCommitArgs = {
   data: CommitCreateInput;
-};
-
-export type MutationCompleteAuthorizeAppWithGithubArgs = {
-  data: CompleteAuthorizeAppWithGithubInput;
-  where: WhereUniqueInput;
 };
 
 export type MutationCreateApiTokenArgs = {
@@ -1317,10 +1336,15 @@ export type MutationCreateOneEntityArgs = {
   data: EntityCreateInput;
 };
 
+export type MutationCreateOrganizationArgs = {
+  data: GitOrganizationCreateInput;
+};
+
 export type MutationCreateRepoInOrgArgs = {
-  appId: Scalars['String'];
+  gitOrganizationId: Scalars['String'];
   input: RepoCreateInput;
   sourceControlService: EnumSourceControlService;
+  workspaceId?: InputMaybe<Scalars['String']>;
 };
 
 export type MutationCreateWorkspaceArgs = {
@@ -1351,12 +1375,28 @@ export type MutationDeleteEntityPermissionFieldArgs = {
   where: EntityPermissionFieldWhereUniqueInput;
 };
 
+export type MutationDeleteOrganizationArgs = {
+  gitOrganizationId: Scalars['String'];
+  sourceControlService: EnumSourceControlService;
+  workspaceId?: InputMaybe<Scalars['String']>;
+};
+
 export type MutationDeleteWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
 export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
+};
+
+export type MutationGetGithubAppInstallationUrlArgs = {
+  data: GitGetInstallationUrlInput;
+};
+
+export type MutationGetOrganizationArgs = {
+  gitOrganizationId: Scalars['String'];
+  sourceControlService: EnumSourceControlService;
+  workspaceId?: InputMaybe<Scalars['String']>;
 };
 
 export type MutationInviteUserArgs = {
@@ -1381,10 +1421,6 @@ export type MutationSetCurrentWorkspaceArgs = {
 
 export type MutationSignupArgs = {
   data: SignupInput;
-};
-
-export type MutationStartAuthorizeAppWithGithubArgs = {
-  where: WhereUniqueInput;
 };
 
 export type MutationUpdateAccountArgs = {
@@ -1521,8 +1557,10 @@ export type Query = {
   entity?: Maybe<Entity>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
+  getGitOrganizationName: Scalars['String'];
   getReposOfUser: Array<GitRepo>;
   getUsername: Scalars['String'];
+  gitOrganizations: Array<GitOrganization>;
   me: User;
   pendingChanges: Array<PendingChange>;
   userApiTokens: Array<ApiToken>;
@@ -1654,14 +1692,26 @@ export type QueryEntityPagesArgs = {
   where?: InputMaybe<EntityPageWhereInput>;
 };
 
-export type QueryGetReposOfUserArgs = {
-  appId: Scalars['String'];
+export type QueryGetGitOrganizationNameArgs = {
+  gitOrganizationId: Scalars['String'];
   sourceControlService: EnumSourceControlService;
+  workspaceId?: InputMaybe<Scalars['String']>;
+};
+
+export type QueryGetReposOfUserArgs = {
+  gitOrganizationId: Scalars['String'];
+  sourceControlService: EnumSourceControlService;
+  workspaceId?: InputMaybe<Scalars['String']>;
 };
 
 export type QueryGetUsernameArgs = {
-  appId: Scalars['String'];
+  gitOrganizationId: Scalars['String'];
   sourceControlService: EnumSourceControlService;
+  workspaceId?: InputMaybe<Scalars['String']>;
+};
+
+export type QueryGitOrganizationsArgs = {
+  data: GetGitOrganizationsInput;
 };
 
 export type QueryPendingChangesArgs = {
@@ -1678,6 +1728,7 @@ export enum QueryMode {
 }
 
 export type RepoCreateInput = {
+  appId: Scalars['String'];
   name: Scalars['String'];
   public: Scalars['Boolean'];
 };
