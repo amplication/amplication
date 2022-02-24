@@ -1,2 +1,2 @@
 export * from "./NewConnection";
-export * from "./ExistingConnections";
+export * from "./ExistingConnectionsMenu";
