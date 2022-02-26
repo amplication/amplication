@@ -46,11 +46,12 @@ model GitOrganization {
 model GitRepository {
   id                String           @id @default(cuid())
   name              String
-  app               App[]
+  appId             String
+  app               App          @relation(fields: [appId], references: [id])
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
-  gitOrganization   GitOrganization? @relation(fields: [gitOrganizationId], references: [id])
-  gitOrganizationId String?
+  gitOrganization   GitOrganization @relation(fields: [gitOrganizationId], references: [id])
+  gitOrganizationId String
 }
 
 model User {
@@ -122,7 +123,7 @@ model App {
   commits                Commit[]
   entities               Entity[]
   environments           Environment[]
-  gitRepository          GitRepository? @relation(fields: [gitRepositoryId], references: [id])
+  gitRepository          GitRepository?
   gitRepositoryId        String?
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
@@ -408,10 +409,6 @@ enum EnumEntityPermissionType {
   AllRoles
   Granular
   Disabled
-}
-
-enum EnumProvider {
-  gitHub
 }
 
 enum EnumDataType {
