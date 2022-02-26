@@ -11,7 +11,7 @@ export default function useGetReposOfUser({
   sourceControlService,
 }: Props) {
   const { data, error, loading, refetch, networkStatus } = useQuery<{
-    getReposOfUser: GitRepo[];
+    getReposOfOrganization: GitRepo[];
   }>(FIND_GIT_REPOS, {
     variables: {
       gitOrganizationId: gitOrganizationId,
@@ -24,16 +24,16 @@ export default function useGetReposOfUser({
     error,
     loading,
     networkStatus,
-    repos: data?.getReposOfUser,
+    repos: data?.getReposOfOrganization,
   };
 }
 
 const FIND_GIT_REPOS = gql`
-  query getReposOfUser(
+  query getReposOfOrganization(
     $gitOrganizationId: String!
     $sourceControlService: EnumSourceControlService!
   ) {
-    getReposOfUser(gitOrganizationId: $gitOrganizationId, sourceControlService: $sourceControlService) {
+    getReposOfOrganization(gitOrganizationId: $gitOrganizationId, sourceControlService: $sourceControlService) {
       name
       url
       private
