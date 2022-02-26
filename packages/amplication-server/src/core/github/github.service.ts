@@ -21,6 +21,7 @@ import { GitUser } from '../git/dto/objects/GitUser';
 import { GithubFile } from './dto/githubFile';
 import { GithubRepo } from './dto/githubRepo';
 import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtractor';
+import { createAppAuth } from '@octokit/auth-app';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -48,6 +49,13 @@ export class GithubService implements IGitClient {
     public readonly tokenExtractor: GithubTokenExtractor,
     private readonly prisma: PrismaService
   ) {}
+  async getGitOrganizations(workspaceId: string): Promise<GitOrganization[]> {    
+    return await this.prisma.gitOrganization.findMany({
+      where: {
+        workspaceId: workspaceId
+      }
+    });
+  }
   async deleteGitOrganization(gitOrganizationId: string): Promise<boolean> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
@@ -190,7 +198,8 @@ export class GithubService implements IGitClient {
     });
   }
 
-  async getUserReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {
+  async getOrganizationReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {
+   
     const results = await octokit.request('GET /installation/repositories');
 
     return results.data.repositories.map(repo => ({
@@ -295,13 +304,26 @@ export class GithubService implements IGitClient {
     commitMessage: string,
     commitDescription: string,
     baseBranchName: string,
-    token: string
-  ): Promise<string> {
+    installationId: string
+  ): Promise<string> {    
+
+    const auth = createAppAuth({
+      appId: this.configService.get(GITHUB_APP_APP_ID_VAR),
+    privateKey: this.configService
+      .get(GITHUB_APP_PRIVATE_KEY_VAR)
+      .replace(/\\n/g, '\n')
+    });
+    
+    // Retrieve installation access token
+    const installationAuthentication = await auth({
+      type: "installation",
+      installationId: installationId,
+    });
+
     const myOctokit = Octokit.plugin(createPullRequest);
 
-    const TOKEN = token;
     const octokit = new myOctokit({
-      auth: TOKEN
+      auth: installationAuthentication.token
     });
 
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
@@ -341,6 +363,7 @@ export class GithubService implements IGitClient {
 
     // Returns a normal Octokit PR response
     // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
+
     const pr = await octokit.createPullRequest({
       owner: userName,
       repo: repoName,
