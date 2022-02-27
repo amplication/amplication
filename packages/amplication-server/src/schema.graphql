@@ -43,10 +43,10 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  gitOrganization(where: WhereUniqueInput!): GitOrganization!
   getReposOfUser(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): [GitRepo!]!
   gitOrganizations(data: GetGitOrganizationsInput!): [GitOrganization!]!
   getUsername(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): String!
-  getGitOrganizationName(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): String!
 }
 
 type Account {
@@ -940,18 +940,6 @@ input EntityPageOrderByInput {
   description: SortOrder
 }
 
-type GitRepo {
-  name: String!
-  url: String!
-  private: Boolean!
-  fullName: String!
-  admin: Boolean!
-}
-
-enum EnumSourceControlService {
-  Github
-}
-
 type GitOrganization {
   id: String!
   provider: EnumSourceControlService!
@@ -959,6 +947,18 @@ type GitOrganization {
   installationId: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+enum EnumSourceControlService {
+  Github
+}
+
+type GitRepo {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
 }
 
 input GetGitOrganizationsInput {
@@ -1014,7 +1014,6 @@ type Mutation {
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
   createRepoInOrg(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!, input: RepoCreateInput!): GitRepo!
-  getOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): GitOrganization!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): Boolean!
   getGithubAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGithubResult!
