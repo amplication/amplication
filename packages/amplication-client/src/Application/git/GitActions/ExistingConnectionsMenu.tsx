@@ -25,7 +25,7 @@ export default function ExistingConnectionsMenu({
   onSelectGitOrganization,
 }: Props) {
   return (
-    <div style={{}}>
+    <div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <span>Select organization:</span>
         <SelectMenu

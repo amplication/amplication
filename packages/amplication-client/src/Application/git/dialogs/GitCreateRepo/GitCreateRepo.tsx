@@ -31,9 +31,12 @@ export default function GitCreateRepo({
 }: Props) {
   const initialValues: RepoCreateInput = { name: "", public: true };
 
-  const { data } = useQuery<{ name: string }>(GET_GIT_ORGANIZATION_NAME, {
-    variables: { id: gitOrganizationId },
-  });
+  const { data } = useQuery<{ gitOrganization: { name: string } }>(
+    GET_GIT_ORGANIZATION_NAME,
+    {
+      variables: { id: gitOrganizationId },
+    }
+  );
 
   const { handleRepoSelected } = useGitSelected({ appId: app.id });
   const { loading, handleCreation, error } = useGitCreate({
@@ -69,7 +72,7 @@ export default function GitCreateRepo({
             </tr>
             <tr>
               <td style={{ position: "relative", top: "-5px" }}>
-                {data?.name || ""}/
+                {data?.gitOrganization.name || ""}/
               </td>
               <td>
                 <TextField name="name" autoComplete="off" showError={false} />

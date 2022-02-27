@@ -124,13 +124,8 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   };
   const errorMessage = formatError(error || removeError);
 
-  // const isAuthenticatedWithGithub = !isEmpty(app.githubTokenCreatedDate);
   return (
     <>
-      {/* <GitOrganizations
-        workspaceId={app.workspaceId}
-        setSelectedGitOrganization={setSelectedGitOrganization}
-      /> */}
       {gitOrganization && (
         <GitDialogsContainer
           app={app}
