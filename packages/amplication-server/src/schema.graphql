@@ -45,7 +45,7 @@ type Query {
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   getReposOfUser(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): [GitRepo!]!
-  gitOrganizations(data: GetGitOrganizationsInput!): [GitOrganization!]!
+  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
   getUsername(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): String!
 }
 
@@ -961,9 +961,8 @@ type GitRepo {
   admin: Boolean!
 }
 
-input GetGitOrganizationsInput {
-  workspaceId: String!
-  sourceControlService: EnumSourceControlService!
+input GitOrganizationWhereInput {
+  id: String
 }
 
 type Mutation {

@@ -5,8 +5,8 @@ import { GitOrganization } from 'src/models/GitOrganization';
 import { BaseGitArgs } from './dto/args/BaseGitArgs';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
+import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
-import { GetGitOrganizationsArgs } from './dto/args/GetGitOrganizationsArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitUser } from './dto/objects/GitUser';
@@ -54,11 +54,9 @@ export class GitService {
   }
 
   async getGitOrganizations(
-    args: GetGitOrganizationsArgs
+    args: GitOrganizationFindManyArgs
   ): Promise<GitOrganization[]> {
-    const { sourceControlService, workspaceId } = args.data;
-    const service = this.gitServiceFactory.getService(sourceControlService);
-    return await service.getGitOrganizations(workspaceId);
+    return await this.prisma.gitOrganization.findMany(args);
   }
 
   async getGitOrganization(args: FindOneArgs): Promise<GitOrganization> {

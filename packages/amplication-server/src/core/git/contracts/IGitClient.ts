@@ -10,7 +10,6 @@ export interface IGitClient {
   getUserRepos(token: string): Promise<GitRepo[]>;
   isRepoExist(token: string, name: string): Promise<boolean>;
   getUser(token: string): Promise<GitUser>;
-  getGitOrganizations(workspaceId: string): Promise<GitOrganization[]>;
   createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization>;

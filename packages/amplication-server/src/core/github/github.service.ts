@@ -4,24 +4,23 @@ import { ConfigService } from '@nestjs/config';
 // We currently ignore it and should look deeper into the root cause
 // eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
+import { PrismaService } from 'nestjs-prisma';
+import { App, Octokit } from 'octokit';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { AmplicationError } from 'src/errors/AmplicationError';
+import { GitOrganization } from 'src/models/GitOrganization';
+import { GitRepository } from 'src/models/GitRepository';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
 import { IGitClient } from '../git/contracts/IGitClient';
 import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
+import { CreateGitOrganizationArgs } from '../git/dto/args/CreateGitOrganizationArgs';
+import { CreateGitRepositoryInput } from '../git/dto/inputs/CreateGitRepositoryInput';
 import { GitRepo } from '../git/dto/objects/GitRepo';
 import { GitUser } from '../git/dto/objects/GitUser';
 import { GithubFile } from './dto/githubFile';
 import { GithubRepo } from './dto/githubRepo';
 import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtractor';
-import { CreateGitOrganizationArgs } from '../git/dto/args/CreateGitOrganizationArgs';
-import { PrismaService } from 'nestjs-prisma';
-import { GitOrganization } from 'src/models/GitOrganization';
-import { isEmpty } from 'lodash';
-import { Octokit, App } from 'octokit';
-import { GitRepository } from 'src/models/GitRepository';
-import { CreateGitRepositoryInput } from '../git/dto/inputs/CreateGitRepositoryInput';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -49,13 +48,6 @@ export class GithubService implements IGitClient {
     public readonly tokenExtractor: GithubTokenExtractor,
     private readonly prisma: PrismaService
   ) {}
-  async getGitOrganizations(workspaceId: string): Promise<GitOrganization[]> {
-    return await this.prisma.gitOrganization.findMany({
-      where: {
-        workspaceId: workspaceId
-      }
-    });
-  }
   async deleteGitOrganization(gitOrganizationId: string): Promise<boolean> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
