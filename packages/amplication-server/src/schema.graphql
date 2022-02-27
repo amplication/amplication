@@ -986,7 +986,6 @@ type Mutation {
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  removeAuthorizeAppWithGithub(where: WhereUniqueInput!): App!
   appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
   appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
   createOneEntity(data: EntityCreateInput!): Entity!

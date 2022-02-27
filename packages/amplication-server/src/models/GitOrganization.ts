@@ -46,10 +46,4 @@ export class GitOrganization {
     description: undefined
   })
   updatedAt!: Date;
-
-  // @Field(() => Workspace, {
-  //   nullable: false,
-  //   description: undefined
-  // })
-  // workspace!: Workspace;
 }

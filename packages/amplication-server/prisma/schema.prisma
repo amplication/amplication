@@ -411,10 +411,6 @@ enum EnumEntityPermissionType {
   Disabled
 }
 
-enum EnumProvider {
-  gitHub
-}
-
 enum EnumDataType {
   SingleLineText
   MultiLineText

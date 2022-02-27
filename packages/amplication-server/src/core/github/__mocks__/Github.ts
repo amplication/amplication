@@ -14,7 +14,7 @@ mockGithubTokenExtractor.getTokenFromDb
 export const MOCK_GITHUB_SERVICE = mock<GithubService>({
   tokenExtractor: mockGithubTokenExtractor
 });
-MOCK_GITHUB_SERVICE.getUserRepos.mockReturnValue(
+MOCK_GITHUB_SERVICE.getOrganizationRepos.mockReturnValue(
   Promise.resolve(TEST_GIT_REPOS)
 );
 MOCK_GITHUB_SERVICE.createRepo
