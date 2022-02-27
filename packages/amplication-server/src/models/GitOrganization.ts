@@ -29,12 +29,6 @@ export class GitOrganization {
   })
   installationId!: string;
 
-  // @Field(() => [GitRepository], {
-  //   nullable: false,
-  //   description: undefined
-  // })
-  // gitRepository: GitRepository[];
-
   @Field(() => Date, {
     nullable: false,
     description: undefined
