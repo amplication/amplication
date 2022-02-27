@@ -575,35 +575,6 @@ export class AppService {
     return true;
   }
 
-  async removeAuthorizeAppWithGithub(args: FindOneArgs): Promise<App> {
-    //todo:: need to remove
-    const app = await this.app({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    if (isEmpty(app.githubToken)) {
-      throw new Error(`This app is not authorized with any GitHub repo.`);
-    }
-
-    //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
-      where: args.where,
-      data: {
-        //githubToken: null,
-        githubTokenCreatedDate: null,
-        githubSyncEnabled: false,
-        githubRepo: null,
-        githubBranch: null
-      }
-    });
-  }
-
   /**
    * Runs validations on the app and returns a list of warnings.
    * When the validation fails, a commit can still be executed and it is up to the user/client to decide how to handle the warnings.
@@ -729,26 +700,28 @@ export class AppService {
       throw new Error(INVALID_APP_ID);
     }
 
-    if (app.githubSyncEnabled) {
+    if (app.gitRepository) {
       throw new Error(
         `Sync is already enabled for this app. To change the sync settings, first disable the sync and re-enable it with the new settings`
       );
     }
 
-    if (isEmpty(app.githubToken)) {
-      throw new Error(
-        `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
-      );
-    }
+    return app;
+
+    // if (isEmpty(app.githubToken)) {
+    //   throw new Error(
+    //     `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
+    //   );
+    // }
 
     //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
-      where: args.where,
-      data: {
-        ...args.data,
-        githubSyncEnabled: true
-      }
-    });
+    // return this.prisma.app.update({
+    //   where: args.where,
+    //   data: {
+    //     ...args.data,
+    //     githubSyncEnabled: true
+    //   }
+    // });
   }
 
   async disableSyncWithGithubRepo(args: FindOneArgs): Promise<App> {

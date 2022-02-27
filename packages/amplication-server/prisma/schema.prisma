@@ -8,49 +8,50 @@ datasource db {
 }
 
 model Account {
-  id               String            @id @default(cuid())
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  email            String            @unique(map: "Account.email_unique")
-  firstName        String
-  lastName         String
-  password         String
-  currentUserId    String?           @unique(map: "Account.currentUserId_unique")
-  githubId         String?
-  currentUser      User?             @relation(fields: [currentUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  users            User[]            @relation("AccountOnUser")
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  email         String   @unique(map: "Account.email_unique")
+  firstName     String
+  lastName      String
+  password      String
+  currentUserId String?  @unique(map: "Account.currentUserId_unique")
+  githubId      String?
+  currentUser   User?    @relation(fields: [currentUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  users         User[]   @relation("AccountOnUser")
 }
 
 model Workspace {
-  id        String   @id(map: "Organization_pkey") @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @unique(map: "Workspace.name_unique")
-  apps      App[]
-  users     User[]
+  id               String            @id(map: "Organization_pkey") @default(cuid())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  name             String            @unique(map: "Workspace.name_unique")
+  apps             App[]
+  users            User[]
   gitOrganizations GitOrganization[]
 }
 
 model GitOrganization {
-  id             String          @id @default(cuid())
-  provider       EnumSourceControlService
-  name           String
-  installationId Int
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  gitRepositories  GitRepository[]
-  workspaceId    String
-  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  id              String          @id @default(cuid())
+  provider        EnumGitProvider
+  name            String
+  installationId  String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  gitRepositories GitRepository[]
+  workspaceId     String
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
 }
 
 model GitRepository {
-  id                String           @id @default(cuid())
+  id                String          @id @default(cuid())
   name              String
-  app               App[]
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  gitOrganization   GitOrganization? @relation(fields: [gitOrganizationId], references: [id])
-  gitOrganizationId String?
+  appId             String          @unique
+  app               App             @relation(fields: [appId], references: [id], onDelete: NoAction)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  gitOrganization   GitOrganization @relation(fields: [gitOrganizationId], references: [id], onDelete: NoAction)
+  gitOrganizationId String
 }
 
 model User {
@@ -100,29 +101,29 @@ model ApiToken {
 }
 
 model App {
-  id                     String        @id @default(cuid())
-  createdAt              DateTime      @default(now())
-  updatedAt              DateTime      @updatedAt
+  id                     String         @id @default(cuid())
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
   workspaceId            String
   name                   String
   description            String
-  color                  String        @default("#20A4F3")
+  color                  String         @default("#20A4F3")
   githubToken            String?
   githubTokenCreatedDate DateTime?
-  githubSyncEnabled      Boolean       @default(false)
+  githubSyncEnabled      Boolean        @default(false)
   githubRepo             String?
   githubBranch           String?
   githubLastSync         DateTime?
   githubLastMessage      String?
   deletedAt              DateTime?
-  workspace              Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace              Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   roles                  AppRole[]
   blocks                 Block[]
   builds                 Build[]
   commits                Commit[]
   entities               Entity[]
   environments           Environment[]
-  gitRepository          GitRepository? @relation(fields: [gitRepositoryId], references: [id])
+  gitRepository          GitRepository?
   gitRepositoryId        String?
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
@@ -410,10 +411,6 @@ enum EnumEntityPermissionType {
   Disabled
 }
 
-enum EnumProvider {
-  gitHub
-}
-
 enum EnumDataType {
   SingleLineText
   MultiLineText
@@ -472,6 +469,6 @@ enum EnumDeploymentStatus {
   Removed
 }
 
-enum EnumSourceControlService {
+enum EnumGitProvider {
   Github
 }

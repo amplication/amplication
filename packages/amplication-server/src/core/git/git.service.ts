@@ -9,7 +9,6 @@ import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyA
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
-import { GitUser } from './dto/objects/GitUser';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
 
 @Injectable()
@@ -19,30 +18,19 @@ export class GitService {
     private readonly prisma: PrismaService
   ) {}
 
-  async getReposOfUser(args: GetReposListArgs): Promise<GitRepo[]> {
+  async getReposOfOrganization(args: GetReposListArgs): Promise<GitRepo[]> {
     const { sourceControlService, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
-    return await service.getUserRepos(gitOrganizationId);
+    return await service.getOrganizationRepos(gitOrganizationId);
   }
   async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
+    //todo: appId
     const { input, gitOrganizationId, sourceControlService } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
     return await service.createRepo({
       gitOrganizationId,
       input: input
     });
-  }
-
-  async getUsername(args: BaseGitArgs): Promise<string> {
-    return (await this.getUser(args)).username;
-  }
-  async getUser(args: BaseGitArgs): Promise<GitUser> {
-    const { gitOrganizationId, sourceControlService } = args;
-    const service = this.gitServiceFactory.getService(sourceControlService);
-    const token = await service.tokenExtractor.getTokenFromDb(
-      gitOrganizationId
-    );
-    return await service.getUser(token);
   }
 
   async createGitOrganization(
@@ -63,12 +51,12 @@ export class GitService {
     return await this.prisma.gitOrganization.findFirst(args);
   }
 
-  async getGithubAppInstallationUrl(
+  async getGitInstallationUrl(
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
     const { sourceControlService, workspaceId } = args.data;
     const service = this.gitServiceFactory.getService(sourceControlService);
-    return await service.getGithubAppInstallationUrl(workspaceId);
+    return await service.getGitInstallationUrl(workspaceId);
   }
 
   async deleteGitOrganization(args: BaseGitArgs): Promise<boolean> {

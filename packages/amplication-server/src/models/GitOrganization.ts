@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { EnumSourceControlService } from 'src/core/git/dto/enums/EnumSourceControlService';
+import { EnumGitProvider } from 'src/core/git/dto/enums/EnumGitProvider';
 
 @ObjectType({
   isAbstract: true,
@@ -12,10 +12,10 @@ export class GitOrganization {
   })
   id!: string;
 
-  @Field(() => EnumSourceControlService, {
+  @Field(() => EnumGitProvider, {
     nullable: false
   })
-  provider!: keyof typeof EnumSourceControlService;
+  provider!: keyof typeof EnumGitProvider;
 
   @Field(() => String, {
     nullable: false,
@@ -23,17 +23,11 @@ export class GitOrganization {
   })
   name!: string;
 
-  @Field(() => Number, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
-  installationId!: number;
-
-  // @Field(() => [GitRepository], {
-  //   nullable: false,
-  //   description: undefined
-  // })
-  // gitRepository: GitRepository[];
+  installationId!: string;
 
   @Field(() => Date, {
     nullable: false,
@@ -46,10 +40,4 @@ export class GitOrganization {
     description: undefined
   })
   updatedAt!: Date;
-
-  // @Field(() => Workspace, {
-  //   nullable: false,
-  //   description: undefined
-  // })
-  // workspace!: Workspace;
 }

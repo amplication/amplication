@@ -1,5 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { EnumSourceControlService } from '../enums/EnumSourceControlService';
+import { EnumGitProvider } from '../enums/EnumGitProvider';
 
 @ArgsType()
 export class BaseGitArgs {
@@ -7,6 +7,6 @@ export class BaseGitArgs {
   gitOrganizationId;
   @Field(() => String, { nullable: true })
   workspaceId?;
-  @Field(() => EnumSourceControlService, { nullable: false })
+  @Field(() => EnumGitProvider, { nullable: false })
   sourceControlService;
 }

@@ -1,6 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
 import { CompleteAuthorizeAppWithGithubInput } from './CompleteAuthorizeAppWithGithubInput';
-//import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()
 export class CompleteAuthorizeAppWithGithubArgs {

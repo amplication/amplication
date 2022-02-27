@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { EnumSourceControlService } from '../enums/EnumSourceControlService';
+import { EnumGitProvider } from '../enums/EnumGitProvider';
 
 @InputType({
   isAbstract: true
@@ -10,6 +10,6 @@ export class GitGetInstallationUrlInput {
   })
   workspaceId!: string;
 
-  @Field(() => EnumSourceControlService, { nullable: false })
-  sourceControlService!: EnumSourceControlService;
+  @Field(() => EnumGitProvider, { nullable: false })
+  sourceControlService!: EnumGitProvider;
 }

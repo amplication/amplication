@@ -183,20 +183,6 @@ export class AppResolver {
   @Mutation(() => App, {
     nullable: false
   })
-  @Mutation(() => App, {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
-  async removeAuthorizeAppWithGithub(
-    @Args() args: FindOneArgs,
-    @UserEntity() user: User
-  ): Promise<App> {
-    return this.appService.removeAuthorizeAppWithGithub(args);
-  }
-
-  @Mutation(() => App, {
-    nullable: false
-  })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async appEnableSyncWithGithubRepo(
     @Args() args: AppEnableSyncWithGithubRepoArgs

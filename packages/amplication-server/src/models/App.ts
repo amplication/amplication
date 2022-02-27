@@ -31,6 +31,7 @@ export class App {
   workspace?: Workspace;
 
   @Field(() => String, {
+    //todo: check change to required field
     nullable: true,
     description: undefined
   })
@@ -40,6 +41,9 @@ export class App {
     nullable: true
   })
   gitRepository?: GitRepository;
+
+  @Field(() => String)
+  gitRepositoryId?: string;
 
   @Field(() => String, {
     nullable: false,

@@ -175,7 +175,6 @@ export class BuildService {
    */
   async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
     const appId = args.data.app.connect.id;
-
     const user = await this.userService.findUser({
       where: {
         id: args.data.createdBy.connect.id
@@ -600,9 +599,8 @@ export class BuildService {
 
     const url = `${host}/${build.appId}/builds/${build.id}`;
 
-    if (app.githubSyncEnabled) {
-      const [userName, repoName] = app.githubRepo.split('/');
-
+    if (app.gitRepository) {
+      const [userName, repoName] = app.gitRepository.name;
       return this.actionService.run(
         build.actionId,
         PUSH_TO_GITHUB_STEP_NAME,
@@ -622,7 +620,7 @@ Commit message: ${commit.message}
 ${url}
 `,
               app.githubBranch,
-              app.githubToken
+              app.githubToken //todo: get the installationId from gitOrganization
             );
 
             await this.appService.reportSyncMessage(

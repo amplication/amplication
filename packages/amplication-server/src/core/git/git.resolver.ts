@@ -61,7 +61,7 @@ export class GitResolver {
     @Args() args: GetGitInstallationUrlArgs
   ): Promise<AuthorizeAppWithGithubResult> {
     return {
-      url: await this.gitService.getGithubAppInstallationUrl(args)
+      url: await this.gitService.getGitInstallationUrl(args)
     };
   }
 
@@ -72,8 +72,10 @@ export class GitResolver {
     AuthorizableResourceParameter.GitOrganizationId,
     'gitOrganizationId'
   )
-  async getReposOfUser(@Args() args: GetReposListArgs): Promise<GitRepo[]> {
-    return this.gitService.getReposOfUser(args);
+  async getReposOfOrganization(
+    @Args() args: GetReposListArgs
+  ): Promise<GitRepo[]> {
+    return this.gitService.getReposOfOrganization(args);
   }
 
   @Query(() => [GitOrganization])
@@ -85,12 +87,6 @@ export class GitResolver {
     @Args() args: GitOrganizationFindManyArgs
   ): Promise<GitOrganization[]> {
     return this.gitService.getGitOrganizations(args);
-  }
-
-  @Query(() => String)
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'appId')
-  async getUsername(@Args() args: BaseGitArgs): Promise<string> {
-    return this.gitService.getUsername(args);
   }
   //#endregion
 }
