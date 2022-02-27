@@ -7,7 +7,7 @@ $icon-font-size: 40px;
   &__header {
     display: flex;
     align-items: center;
-    align-items: flex-start;
+    // justify-content: center;
 
     .amp-icon {
       margin-right: var(--default-spacing-small);
