@@ -1124,7 +1124,6 @@ export type Environment = {
 
 export type GitGetInstallationUrlInput = {
   sourceControlService: EnumGitProvider;
-  workspaceId: Scalars['String'];
 };
 
 export type GitOrganization = {
@@ -1159,6 +1158,7 @@ export type GitRepo = {
 export type GitRepository = {
   __typename?: 'GitRepository';
   createdAt?: Maybe<Scalars['DateTime']>;
+  gitOrganization?: Maybe<GitOrganization>;
   gitOrganizationId: Scalars['String'];
   id: Scalars['String'];
   name: Scalars['String'];
@@ -1248,7 +1248,7 @@ export type Mutation = {
   deleteOrganization: Scalars['Boolean'];
   deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars['Boolean']>;
-  getGithubAppInstallationUrl: AuthorizeAppWithGithubResult;
+  getGitAppInstallationUrl: AuthorizeAppWithGithubResult;
   inviteUser?: Maybe<User>;
   lockEntity?: Maybe<Entity>;
   login: Auth;
@@ -1399,7 +1399,7 @@ export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
 };
 
-export type MutationGetGithubAppInstallationUrlArgs = {
+export type MutationGetGitAppInstallationUrlArgs = {
   data: GitGetInstallationUrlInput;
 };
 
@@ -1797,6 +1797,7 @@ export type Workspace = {
   __typename?: 'Workspace';
   apps: Array<App>;
   createdAt: Scalars['DateTime'];
+  gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars['String'];
   name: Scalars['String'];
   updatedAt: Scalars['DateTime'];
