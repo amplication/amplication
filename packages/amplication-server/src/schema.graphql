@@ -43,10 +43,10 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  gitOrganization(where: WhereUniqueInput!): GitOrganization!
   getReposOfUser(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): [GitRepo!]!
-  gitOrganizations(data: GetGitOrganizationsInput!): [GitOrganization!]!
+  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
   getUsername(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): String!
-  getGitOrganizationName(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): String!
 }
 
 type Account {
@@ -972,9 +972,8 @@ type GitRepo {
   admin: Boolean!
 }
 
-input GetGitOrganizationsInput {
-  workspaceId: String!
-  sourceControlService: EnumSourceControlService!
+input GitOrganizationWhereInput {
+  id: String
 }
 
 type Mutation {
@@ -1025,7 +1024,6 @@ type Mutation {
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
   createRepoInOrg(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!, input: RepoCreateInput!): GitRepo!
-  getOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): GitOrganization!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): Boolean!
   getGithubAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGithubResult!

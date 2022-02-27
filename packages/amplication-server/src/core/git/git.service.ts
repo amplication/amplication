@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
+import { FindOneArgs } from 'src/dto';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { BaseGitArgs } from './dto/args/BaseGitArgs';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
+import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
-import { GetGitOrganizationsArgs } from './dto/args/GetGitOrganizationsArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitUser } from './dto/objects/GitUser';
@@ -12,7 +14,10 @@ import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
 
 @Injectable()
 export class GitService {
-  constructor(private readonly gitServiceFactory: GitServiceFactory) {}
+  constructor(
+    private readonly gitServiceFactory: GitServiceFactory,
+    private readonly prisma: PrismaService
+  ) {}
 
   async getReposOfUser(args: GetReposListArgs): Promise<GitRepo[]> {
     const { sourceControlService, gitOrganizationId } = args;
@@ -40,12 +45,6 @@ export class GitService {
     return await service.getUser(token);
   }
 
-  async getGitOrganizationName(args: BaseGitArgs): Promise<string> {
-    const { gitOrganizationId, sourceControlService } = args;
-    const service = this.gitServiceFactory.getService(sourceControlService);
-    return await (await service.getGitOrganization(gitOrganizationId)).name;
-  }
-
   async createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
@@ -55,17 +54,13 @@ export class GitService {
   }
 
   async getGitOrganizations(
-    args: GetGitOrganizationsArgs
+    args: GitOrganizationFindManyArgs
   ): Promise<GitOrganization[]> {
-    const { sourceControlService, workspaceId } = args.data;
-    const service = this.gitServiceFactory.getService(sourceControlService);
-    return await service.getGitOrganizations(workspaceId);
+    return await this.prisma.gitOrganization.findMany(args);
   }
 
-  async getGitOrganization(args: BaseGitArgs): Promise<GitOrganization> {
-    const { gitOrganizationId, sourceControlService } = args;
-    const service = this.gitServiceFactory.getService(sourceControlService);
-    return await service.getGitOrganization(gitOrganizationId);
+  async getGitOrganization(args: FindOneArgs): Promise<GitOrganization> {
+    return await this.prisma.gitOrganization.findFirst(args);
   }
 
   async getGithubAppInstallationUrl(
@@ -77,8 +72,15 @@ export class GitService {
   }
 
   async deleteGitOrganization(args: BaseGitArgs): Promise<boolean> {
-    const { sourceControlService } = args;
+    const { sourceControlService, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
-    return await service.deleteGitOrganization(args.gitOrganizationId);
+    await this.prisma.gitOrganization.delete({
+      where: {
+        id: gitOrganizationId
+      }
+    });
+
+    await service.deleteGitOrganization(args.gitOrganizationId);
+    return true;
   }
 }
