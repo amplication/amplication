@@ -1,12 +1,12 @@
-import { NetworkStatus } from "@apollo/client";
 import {
   CircularProgress,
   Snackbar,
   Tooltip,
 } from "@amplication/design-system";
+import { NetworkStatus } from "@apollo/client";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
-import { EnumSourceControlService } from "../../../../models";
+import { EnumGitProvider } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import useGetReposOfUser from "../../hooks/useGetReposOfUser";
 import useGitSelected from "../../hooks/useGitSelected";
@@ -19,11 +19,16 @@ type Props = {
   gitOrganizationId: string;
   applicationId: string;
   onCompleted: () => void;
-  sourceControlService: EnumSourceControlService;
+  sourceControlService: EnumGitProvider;
 };
 
-function GitRepos({ applicationId, gitOrganizationId, onCompleted, sourceControlService }: Props) {
-     const {
+function GitRepos({
+  applicationId,
+  gitOrganizationId,
+  onCompleted,
+  sourceControlService,
+}: Props) {
+  const {
     refetch,
     error,
     repos,

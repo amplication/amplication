@@ -11,6 +11,7 @@ export const GitOrganizationMenuItemContent = ({ org }: Props) => {
       <img
         src={githubOrgImageUrl(org.name)}
         style={{ width: 24, height: 24, marginRight: 8 }}
+        alt="Git organization"
       />
       {org.name}
     </>

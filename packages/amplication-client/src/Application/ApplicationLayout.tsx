@@ -27,6 +27,7 @@ import { track } from "../util/analytics";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import Commits from "../VersionControl/Commits";
 import NavigationTabs from "../Layout/NavigationTabs";
+import SyncWithGithubPage from "./git/SyncWithGithubPage";
 
 export type ApplicationData = {
   app: models.App;
@@ -190,6 +191,11 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}/commits`}
             icon="history_commit_outline"
           />
+          <MenuItem
+            title="Connect to GitHub"
+            to={`/${application}/github`}
+            icon="github"
+          />
         </MainLayout.Menu>
         <MainLayout.Content>
           <div className={`${CLASS_NAME}__app-container`}>
@@ -216,6 +222,10 @@ function ApplicationLayout({ match }: Props) {
               <RouteWithAnalytics
                 path="/:application/fix-related-entities"
                 component={RelatedFieldsMigrationFix}
+              />
+              <RouteWithAnalytics
+                path="/:application/github"
+                component={SyncWithGithubPage}
               />
               <Route path="/:application/" component={ApplicationHome} />
             </Switch>

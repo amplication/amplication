@@ -7,17 +7,13 @@ $icon-font-size: 40px;
   &__header {
     display: flex;
     align-items: center;
-    align-items: flex-start;
-
+    margin-bottom: 24px;
     .amp-icon {
       margin-right: var(--default-spacing-small);
       font-size: $icon-font-size;
     }
   }
 
-  h1 {
-    margin-bottom: var(--default-spacing);
-  }
   &__message {
     @include body1;
     line-height: 1.5;

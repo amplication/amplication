@@ -1,27 +1,20 @@
-import {
-  EnumPanelStyle,
-  Icon,
-  Panel,
-  Snackbar,
-} from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
+import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
 import { isEmpty } from "lodash";
 import React, { useCallback, useRef, useState } from "react";
-import { Button, EnumButtonStyle } from "../../Components/Button";
 import * as models from "../../models";
-import GithubSyncDetails from "../../Settings/GithubSyncDetails";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
+import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
-import useGetGitOrganizations from "./hooks/useGetGitOrganizations";
 
 type DType = {
-  getGithubAppInstallationUrl: models.AuthorizeAppWithGithubResult;
+  getGitAppInstallationUrl: models.AuthorizeAppWithGithubResult;
 };
 
 // eslint-disable-next-line
@@ -36,24 +29,33 @@ type Props = {
 export const CLASS_NAME = "auth-app-with-github";
 
 function AuthAppWithGithub({ app, onDone }: Props) {
-  const { gitOrganizations } = useGetGitOrganizations({
-    workspaceId: app.workspaceId as string,
-  });
-
+  const { data } = useQuery<{
+    gitOrganizations: [
+      {
+        id: string;
+        name: string;
+      }
+    ];
+  }>(GET_GIT_ORGANIZATIONS);
+  // const { gitOrganizations } = useGetGitOrganizations({
+  //   workspaceId: app.workspaceId as string,
+  // });
+  const [
+    gitOrganization,
+    setGitOrganization,
+  ] = useState<models.GitOrganization | null>(
+    data?.gitOrganizations[0] || null
+  );
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
-  const [selectedGitOrganization] = useState<string | null>(null);
   const { trackEvent } = useTracking();
   const [authWithGithub, { error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
     {
       onCompleted: (data) => {
-        openSignInWindow(
-          data.getGithubAppInstallationUrl.url,
-          "auth with github"
-        );
+        openSignInWindow(data.getGitAppInstallationUrl.url, "auth with github");
       },
     }
   );
@@ -73,24 +75,22 @@ function AuthAppWithGithub({ app, onDone }: Props) {
   const handleSelectRepoDialogOpen = useCallback(() => {
     setSelectRepoOpen(true);
   }, []);
-  const handleAuthWithGithubClick = useCallback(
-    (data) => {
-      if (isEmpty(app.githubTokenCreatedDate)) {
-        trackEvent({
-          eventName: "startAuthAppWithGitHub",
-        });
-        authWithGithub({
-          variables: {
-            workspaceId: app.workspaceId,
-            sourceControlService: "Github",
-          },
-        }).catch(console.error);
-      } else {
-        setConfirmRemove(true);
-      }
-    },
-    [authWithGithub, app, trackEvent]
-  );
+  const handleAuthWithGithubClick = useCallback(() => {
+    if (isEmpty(app.githubTokenCreatedDate)) {
+      trackEvent({
+        eventName: "startAuthAppWithGitHub",
+      });
+      console.log({ app });
+
+      authWithGithub({
+        variables: {
+          sourceControlService: "Github",
+        },
+      }).catch(console.error);
+    } else {
+      setConfirmRemove(true);
+    }
+  }, [authWithGithub, app, trackEvent]);
 
   const MDCSwitchRef = useRef<MDCSwitchFoundation>(null);
   const handleDismissRemove = useCallback(() => {
@@ -131,17 +131,17 @@ function AuthAppWithGithub({ app, onDone }: Props) {
         workspaceId={app.workspaceId}
         setSelectedGitOrganization={setSelectedGitOrganization}
       /> */}
-      {selectedGitOrganization && (
+      {gitOrganization && (
         <GitDialogsContainer
           app={app}
-          gitOrganizationId={selectedGitOrganization}
+          gitOrganizationId={gitOrganization.id}
           handleSelectRepoDialogDismiss={handleSelectRepoDialogDismiss}
           selectRepoOpen={selectRepoOpen}
           handlePopupFailedClose={handlePopupFailedClose}
           popupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
           setGitCreateRepo={setCreateNewRepoOpen}
-          sourceControlService={models.EnumSourceControlService.Github}
+          sourceControlService={models.EnumGitProvider.Github}
           confirmRemove={confirmRemove}
           handleConfirmRemoveAuth={handleConfirmRemoveAuth}
           handleDismissRemove={handleDismissRemove}
@@ -149,59 +149,30 @@ function AuthAppWithGithub({ app, onDone }: Props) {
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         <div className={`${CLASS_NAME}__actions`}>
-          {isEmpty(gitOrganizations) ? (
+          {isEmpty(data?.gitOrganizations) ? (
             <NewConnection
-              handleAuthWithGithubClick={handleAuthWithGithubClick}
+              onSyncNewGitHubOrganizationClick={handleAuthWithGithubClick}
             />
           ) : (
             <ExistingConnectionsMenu
-              gitOrganizations={gitOrganizations}
-              handleAuthWithGithubClick={handleAuthWithGithubClick}
+              gitOrganizations={data?.gitOrganizations}
+              onSelectGitOrganization={(organization) => {
+                setGitOrganization(organization);
+              }}
+              selectedGitOrganization={gitOrganization}
+              onAddGitOrganization={handleAuthWithGithubClick}
             />
           )}
-          {JSON.stringify(selectedGitOrganization)}
         </div>
-        <div className={`${CLASS_NAME}__body`}>
-          {selectedGitOrganization && (
-            <Panel
-              className={`${CLASS_NAME}__auth`}
-              panelStyle={EnumPanelStyle.Bordered}
-            >
-              dsfadfgaldskjfalksdhflkajshl;
-              {!app.githubSyncEnabled ? (
-                <div className={`${CLASS_NAME}__select-repo`}>
-                  <div className={`${CLASS_NAME}__select-repo__details`}>
-                    <Icon icon="info_circle" />
-                    No repository was selected
-                  </div>
-                  <div className={`${CLASS_NAME}__actions`}>
-                    <div className={`${CLASS_NAME}__action`}>
-                      <Button
-                        buttonStyle={EnumButtonStyle.Primary}
-                        onClick={() => {
-                          setCreateNewRepoOpen(true);
-                        }}
-                      >
-                        Create repository
-                      </Button>
-                    </div>
-                    <div className={`${CLASS_NAME}__action`}>
-                      <Button
-                        buttonStyle={EnumButtonStyle.Primary}
-                        onClick={handleSelectRepoDialogOpen}
-                      >
-                        Select repository
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <GithubSyncDetails app={app} />
-              )}
-            </Panel>
-          )}
-          <GitSyncNotes />
-        </div>
+        {gitOrganization && (
+          <RepositoryActions
+            onClickCreateRepository={() => {
+              setCreateNewRepoOpen(true);
+            }}
+            onClickSelectRepository={handleSelectRepoDialogOpen}
+          />
+        )}
+        <GitSyncNotes />
       </Panel>
 
       <Snackbar open={Boolean(error || removeError)} message={errorMessage} />
@@ -212,15 +183,9 @@ function AuthAppWithGithub({ app, onDone }: Props) {
 export default AuthAppWithGithub;
 
 const START_AUTH_APP_WITH_GITHUB = gql`
-  mutation getGithubAppInstallationUrl(
-    $workspaceId: String!
-    $sourceControlService: EnumSourceControlService!
-  ) {
-    getGithubAppInstallationUrl(
-      data: {
-        workspaceId: $workspaceId
-        sourceControlService: $sourceControlService
-      }
+  mutation getGitAppInstallationUrl($sourceControlService: EnumGitProvider!) {
+    getGitAppInstallationUrl(
+      data: { sourceControlService: $sourceControlService }
     ) {
       url
     }
@@ -277,3 +242,12 @@ const openSignInWindow = (url: string, name: string) => {
   // add the listener for receiving a message from the popup
   window.addEventListener("message", (event) => receiveMessage(event), false);
 };
+
+const GET_GIT_ORGANIZATIONS = gql`
+  {
+    gitOrganizations(where: {}) {
+      id
+      name
+    }
+  }
+`;

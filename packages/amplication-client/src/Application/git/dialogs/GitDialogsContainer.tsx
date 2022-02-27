@@ -1,6 +1,6 @@
 import { ConfirmationDialog, Dialog } from "@amplication/design-system";
 import React from "react";
-import { App, EnumSourceControlService } from "../../../models";
+import { App, EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
 import GitRepos from "./GitRepos/GithubRepos";
 
@@ -13,7 +13,7 @@ type Props = {
   handlePopupFailedClose: any;
   gitCreateRepoOpen: boolean;
   setGitCreateRepo: any;
-  sourceControlService: EnumSourceControlService;
+  sourceControlService: EnumGitProvider;
   confirmRemove: boolean;
   handleConfirmRemoveAuth: any;
   handleDismissRemove: any;
@@ -53,7 +53,7 @@ export default function GitDialogsContainer({
         onDismiss={handleSelectRepoDialogDismiss}
       >
         <GitRepos
-          applicationId = {app.id}
+          applicationId={app.id}
           gitOrganizationId={gitOrganizationId}
           onCompleted={handleSelectRepoDialogDismiss}
           sourceControlService={sourceControlService}

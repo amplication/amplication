@@ -1,9 +1,9 @@
 import { gql, useQuery } from "@apollo/client";
-import { EnumSourceControlService, GitRepo } from "../../../models";
+import { EnumGitProvider, GitRepo } from "../../../models";
 
 type Props = {
   gitOrganizationId: string;
-  sourceControlService: EnumSourceControlService;
+  sourceControlService: EnumGitProvider;
 };
 
 export default function useGetReposOfUser({
@@ -31,9 +31,12 @@ export default function useGetReposOfUser({
 const FIND_GIT_REPOS = gql`
   query getReposOfOrganization(
     $gitOrganizationId: String!
-    $sourceControlService: EnumSourceControlService!
+    $sourceControlService: EnumGitProvider!
   ) {
-    getReposOfOrganization(gitOrganizationId: $gitOrganizationId, sourceControlService: $sourceControlService) {
+    getReposOfOrganization(
+      gitOrganizationId: $gitOrganizationId
+      sourceControlService: $sourceControlService
+    ) {
       name
       url
       private

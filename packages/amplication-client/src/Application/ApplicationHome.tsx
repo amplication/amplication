@@ -16,7 +16,6 @@ import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import { COLOR_TO_NAME } from "./constants";
 import EntitiesTile from "./EntitiesTile";
-import SyncWithGithubPage from "./git/SyncWithGithubPage";
 import NewVersionTile from "./NewVersionTile";
 import RolesTile from "./RolesTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
@@ -74,11 +73,6 @@ function ApplicationHome({ match }: Props) {
             </InnerTabLink>
           </div>
           <div>
-            <InnerTabLink to={`/${applicationId}/github`} icon="github_outline">
-              Sync with GitHub
-            </InnerTabLink>
-          </div>
-          <div>
             <InnerTabLink to={`/${applicationId}/api-tokens`} icon="id">
               API Tokens
             </InnerTabLink>
@@ -91,10 +85,7 @@ function ApplicationHome({ match }: Props) {
           path="/:application/api-tokens"
           component={ApiTokenList}
         />
-        <RouteWithAnalytics
-          path="/:application/github"
-          component={SyncWithGithubPage}
-        />
+
         <Route
           path="/:application/"
           render={() => (
@@ -166,4 +157,3 @@ export const GET_APPLICATION = gql`
     }
   }
 `;
-

@@ -5,9 +5,6 @@ import { EnumGitProvider } from '../enums/EnumGitProvider';
   isAbstract: true
 })
 export class GitGetInstallationUrlInput {
-  @Field(() => String, {
-    nullable: false
-  })
   workspaceId!: string;
 
   @Field(() => EnumGitProvider, { nullable: false })

@@ -61,7 +61,7 @@ export class GitResolver {
   @Query(() => AuthorizeAppWithGithubResult)
   @InjectContextValue(
     InjectableResourceParameter.WorkspaceId,
-    'where.workspaceId'
+    'data.workspaceId'
   )
   async getGitAppInstallationUrl(
     @Args() args: GetGitInstallationUrlArgs
