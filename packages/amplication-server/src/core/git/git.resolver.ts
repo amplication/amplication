@@ -60,7 +60,7 @@ export class GitResolver {
     InjectableResourceParameter.WorkspaceId,
     'data.workspaceId'
   )
-  async getGithubAppInstallationUrl(
+  async getGitAppInstallationUrl(
     @Args() args: GetGitInstallationUrlArgs
   ): Promise<AuthorizeAppWithGithubResult> {
     return {
