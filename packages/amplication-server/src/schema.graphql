@@ -1337,6 +1337,5 @@ input GitOrganizationCreateInput {
 }
 
 input GitGetInstallationUrlInput {
-  workspaceId: String!
   sourceControlService: EnumGitProvider!
 }

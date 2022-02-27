@@ -87,7 +87,6 @@ function AuthAppWithGithub({ app, onDone }: Props) {
 
       authWithGithub({
         variables: {
-          workspaceId: app.workspaceId,
           sourceControlService: "Github",
         },
       }).catch(console.error);
@@ -187,15 +186,9 @@ function AuthAppWithGithub({ app, onDone }: Props) {
 export default AuthAppWithGithub;
 
 const START_AUTH_APP_WITH_GITHUB = gql`
-  mutation getGithubAppInstallationUrl(
-    $workspaceId: String!
-    $sourceControlService: EnumGitProvider!
-  ) {
-    getGithubAppInstallationUrl(
-      data: {
-        workspaceId: $workspaceId
-        sourceControlService: $sourceControlService
-      }
+  mutation getGitAppInstallationUrl($sourceControlService: EnumGitProvider!) {
+    getGitAppInstallationUrl(
+      data: { sourceControlService: $sourceControlService }
     ) {
       url
     }

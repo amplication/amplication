@@ -56,7 +56,10 @@ export class GitResolver {
   }
 
   @Mutation(() => AuthorizeAppWithGithubResult)
-  //@AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'workspaceId')
+  @InjectContextValue(
+    InjectableResourceParameter.WorkspaceId,
+    'data.workspaceId'
+  )
   async getGithubAppInstallationUrl(
     @Args() args: GetGitInstallationUrlArgs
   ): Promise<AuthorizeAppWithGithubResult> {
