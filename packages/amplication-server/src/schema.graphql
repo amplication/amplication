@@ -1022,7 +1022,7 @@ type Mutation {
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
   createRepoInOrg(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!, input: RepoCreateInput!): GitRepo!
-  createGitRepository: GitRepository!
+  createGitRepository(data: CreateGitRepositoryInput!): GitRepository!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!): Boolean!
   getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGithubResult!
@@ -1317,6 +1317,12 @@ input RepoCreateInput {
   name: String!
   public: Boolean!
   appId: String!
+}
+
+input CreateGitRepositoryInput {
+  name: String!
+  appId: String!
+  gitOrganizationId: String!
 }
 
 input GitOrganizationCreateInput {

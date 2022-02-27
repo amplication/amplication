@@ -44,10 +44,14 @@ export class GitResolver {
     AuthorizableResourceParameter.GitOrganizationId,
     'data.gitOrganizationId'
   )
-  async createGitRepository(args: CreateGitRepositoryArgs): Promise<GitRepository> {
-    return await this.gitService.createGitRepository(args.data.name,
-                                                     args.data.appId,
-                                                     args.data.gitOrganizationId);
+  async createGitRepository(
+    @Args() args: CreateGitRepositoryArgs
+  ): Promise<GitRepository> {
+    return await this.gitService.createGitRepository(
+      args.data.name,
+      args.data.appId,
+      args.data.gitOrganizationId
+    );
   }
 
   @Mutation(() => GitOrganization)
