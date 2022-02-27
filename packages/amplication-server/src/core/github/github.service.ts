@@ -159,7 +159,7 @@ export class GithubService implements IGitClient {
     if (await this.isRepoExistWithOctokit(octokit, input.name)) {
       throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
-    const newRepo = await octokit.rest.repos
+    return await octokit.rest.repos
       .createInOrg({
         org: gitOrganizationName,
         name: input.name
@@ -176,24 +176,6 @@ export class GithubService implements IGitClient {
           admin: repo.permissions.admin
         };
       });
-
-    const gitRepository = new CreateGitRepositoryInput();
-    (gitRepository.name = newRepo.name),
-      (gitRepository.appId = input.appId),
-      (gitRepository.gitOrganizationId = gitOrganizationId);
-
-    await this.createGitRepository(gitRepository);
-    return newRepo;
-  }
-
-  async createGitRepository(
-    args: CreateGitRepositoryInput
-  ): Promise<GitRepository> {
-    return await this.prisma.gitRepository.create({
-      data: {
-        ...args
-      }
-    });
   }
 
   async getOrganizationReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {

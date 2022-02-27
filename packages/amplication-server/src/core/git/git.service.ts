@@ -10,6 +10,9 @@ import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs'
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
+import { GitRepository } from 'src/models/GitRepository';
+import { AmplicationError } from 'src/errors/AmplicationError';
+import { GIT_REPOSITORY_EXIST } from './constants';
 
 @Injectable()
 export class GitService {
@@ -24,15 +27,42 @@ export class GitService {
     return await service.getOrganizationRepos(gitOrganizationId);
   }
   async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
-    //todo: appId
     const { input, gitOrganizationId, sourceControlService } = args;
     const service = this.gitServiceFactory.getService(sourceControlService);
-    return await service.createRepo({
+    const newRepo = await service.createRepo({
       gitOrganizationId,
       input: input
     });
+
+    await this.createGitRepository(newRepo.name,
+                                   input.appId,
+                                   gitOrganizationId);
+
+    return newRepo;
+
   }
 
+  async createGitRepository(
+    name: string, appId:string, gitOrganizationId:string
+  ): Promise<GitRepository> {
+    const gitRepo = await this.prisma.gitRepository.findFirst({
+      where:{
+        name:name
+      }
+    }); 
+
+    if(gitRepo) {
+      throw new AmplicationError(GIT_REPOSITORY_EXIST);
+    }
+    
+    return await this.prisma.gitRepository.create({
+      data: {
+        name: name,
+        appId:appId,
+        gitOrganizationId:gitOrganizationId
+      }
+    });
+  }
   async createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {

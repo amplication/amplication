@@ -25,7 +25,6 @@ import { FindManyEntityArgs } from '../entity/dto';
 import { Environment } from '../environment/dto/Environment';
 import { EnvironmentService } from '../environment/environment.service';
 import {
-  AppEnableSyncWithGithubRepoArgs,
   AppValidationResult,
   CreateAppWithEntitiesArgs,
   CreateCommitArgs,
@@ -178,16 +177,6 @@ export class AppResolver {
     @UserEntity() user: User
   ): Promise<PendingChange[]> {
     return this.appService.getPendingChanges(args, user);
-  }
-
-  @Mutation(() => App, {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
-  async appEnableSyncWithGithubRepo(
-    @Args() args: AppEnableSyncWithGithubRepoArgs
-  ): Promise<App> {
-    return this.appService.enableSyncWithGithubRepo(args);
   }
 
   @Mutation(() => App, {
