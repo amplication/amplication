@@ -33,7 +33,7 @@ model Workspace {
 
 model GitOrganization {
   id             String          @id @default(cuid())
-  provider       EnumSourceControlService
+  provider       EnumGitProvider
   name           String
   installationId String
   createdAt      DateTime        @default(now())
@@ -473,6 +473,6 @@ enum EnumDeploymentStatus {
   Removed
 }
 
-enum EnumSourceControlService {
+enum EnumGitProvider {
   Github
 }
