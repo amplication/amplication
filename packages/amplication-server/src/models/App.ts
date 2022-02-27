@@ -30,7 +30,8 @@ export class App {
 
   workspace?: Workspace;
 
-  @Field(() => String, { //todo: check change to required field
+  @Field(() => String, {
+    //todo: check change to required field
     nullable: true,
     description: undefined
   })

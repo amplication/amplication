@@ -316,7 +316,7 @@ export class AppService {
     return app;
   }
 
-  async app(args: FindOneArgs): Promise<App | null> {  
+  async app(args: FindOneArgs): Promise<App | null> {
     return this.prisma.app.findFirst({
       where: {
         id: args.where.id,
@@ -575,8 +575,6 @@ export class AppService {
     return true;
   }
 
-  
-
   /**
    * Runs validations on the app and returns a list of warnings.
    * When the validation fails, a commit can still be executed and it is up to the user/client to decide how to handle the warnings.
@@ -715,8 +713,6 @@ export class AppService {
     //     `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
     //   );
     // }
-
-
 
     //directly update with prisma since we don't want to expose these fields for regular updates
     // return this.prisma.app.update({

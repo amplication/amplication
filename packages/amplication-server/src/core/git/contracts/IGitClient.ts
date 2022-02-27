@@ -8,9 +8,11 @@ export interface IGitClient {
   createRepo(args: CreateRepoArgsType): Promise<GitRepo>;
   getOrganizationRepos(token: string): Promise<GitRepo[]>;
   isRepoExist(token: string, name: string): Promise<boolean>;
-  createGitOrganization(args:CreateGitOrganizationArgs):Promise<GitOrganization>;
-  getGitInstallationUrl(workspaceId: string):Promise<string>; 
-  deleteGitOrganization(workspaceId: string):Promise<boolean>; 
+  createGitOrganization(
+    args: CreateGitOrganizationArgs
+  ): Promise<GitOrganization>;
+  getGitInstallationUrl(workspaceId: string): Promise<string>;
+  deleteGitOrganization(workspaceId: string): Promise<boolean>;
 
   tokenExtractor: ITokenExtractor;
 }

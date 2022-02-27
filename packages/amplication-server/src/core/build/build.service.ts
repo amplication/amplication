@@ -377,7 +377,6 @@ export class BuildService {
    * @param build the build object to generate code for
    */
   private async generate(build: Build, user: User): Promise<string> {
-
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
@@ -587,7 +586,6 @@ export class BuildService {
     build: Build,
     modules: DataServiceGenerator.Module[]
   ) {
-
     const app = build.app;
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
@@ -657,7 +655,7 @@ ${url}
         },
         true
       );
-   }
+    }
   }
 
   /** @todo move */

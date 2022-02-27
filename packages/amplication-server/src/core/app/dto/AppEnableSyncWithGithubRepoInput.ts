@@ -21,5 +21,4 @@ export class AppEnableSyncWithGithubRepoInput {
     description: 'optional: defaults to default branch'
   })
   githubBranch?: string | null;
-
 }

@@ -5,7 +5,7 @@ import { EnumGitProvider } from '../enums/EnumGitProvider';
   isAbstract: true
 })
 export class GitOrganizationCreateInput {
-  @Field(() => String, {                                                                                        
+  @Field(() => String, {
     nullable: false
   })
   installationId!: string;

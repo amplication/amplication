@@ -9,9 +9,7 @@ describe('GitServiceFactory', () => {
   const gitServiceFactory = new GitServiceFactory(github);
   describe('GitServiceFactory.getService()', () => {
     it('should return an github service', () => {
-      expect(
-        gitServiceFactory.getService(EnumGitProvider.Github)
-      ).toBe(github);
+      expect(gitServiceFactory.getService(EnumGitProvider.Github)).toBe(github);
     });
     it('should throw error if source control dont exist', () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

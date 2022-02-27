@@ -47,7 +47,7 @@ export class GithubService implements IGitClient {
     public readonly tokenExtractor: GithubTokenExtractor,
     private readonly prisma: PrismaService
   ) {}
-  async getGitOrganizations(workspaceId: string): Promise<GitOrganization[]> {    
+  async getGitOrganizations(workspaceId: string): Promise<GitOrganization[]> {
     return await this.prisma.gitOrganization.findMany({
       where: {
         workspaceId: workspaceId
@@ -95,7 +95,7 @@ export class GithubService implements IGitClient {
     return await this.prisma.gitOrganization.create({
       data: {
         ...args.data,
-        installationId:args.data.installationId,
+        installationId: args.data.installationId,
         name: gitOrganizationName
       }
     });
@@ -134,13 +134,15 @@ export class GithubService implements IGitClient {
   private async getInstallationIdByGitOrganizationId(
     gitOrganizationId: string
   ): Promise<number | null> {
-
-    return parseInt((await this.prisma.gitOrganization
-      .findFirst({
-        where: {
-          id: gitOrganizationId
-        }
-      })).name);
+    return parseInt(
+      (
+        await this.prisma.gitOrganization.findFirst({
+          where: {
+            id: gitOrganizationId
+          }
+        })
+      ).name
+    );
   }
 
   async createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
@@ -176,9 +178,9 @@ export class GithubService implements IGitClient {
       });
 
     const gitRepository = new CreateGitRepositoryInput();
-     gitRepository.name = newRepo.name,
-     gitRepository.appId = input.appId,
-     gitRepository.gitOrganizationId = gitOrganizationId;
+    (gitRepository.name = newRepo.name),
+      (gitRepository.appId = input.appId),
+      (gitRepository.gitOrganizationId = gitOrganizationId);
 
     await this.createGitRepository(gitRepository);
     return newRepo;
@@ -194,7 +196,7 @@ export class GithubService implements IGitClient {
     });
   }
 
-  async getOrganizationReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {   
+  async getOrganizationReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {
     const results = await octokit.request('GET /installation/repositories');
     return results.data.repositories.map(repo => ({
       name: repo.name,
@@ -212,7 +214,8 @@ export class GithubService implements IGitClient {
     return await this.getOrganizationReposWithOctokit(octokit);
   }
 
-  private async getInstallationOctokit( //todo: remove to ctor
+  private async getInstallationOctokit(
+    //todo: remove to ctor
     installationId: number
   ): Promise<Octokit> {
     const app = new App({
@@ -276,19 +279,18 @@ export class GithubService implements IGitClient {
     commitDescription: string,
     baseBranchName: string,
     installationId: string
-  ): Promise<string> {    
-
+  ): Promise<string> {
     const auth = createAppAuth({
       appId: this.configService.get(GITHUB_APP_APP_ID_VAR),
-    privateKey: this.configService
-      .get(GITHUB_APP_PRIVATE_KEY_VAR)
-      .replace(/\\n/g, '\n')
+      privateKey: this.configService
+        .get(GITHUB_APP_PRIVATE_KEY_VAR)
+        .replace(/\\n/g, '\n')
     });
-    
+
     // Retrieve installation access token
     const installationAuthentication = await auth({
-      type: "installation",
-      installationId: installationId,
+      type: 'installation',
+      installationId: installationId
     });
 
     const myOctokit = Octokit.plugin(createPullRequest);
@@ -371,7 +373,8 @@ export class GithubService implements IGitClient {
     return pr.data.html_url;
   }
 
-  async getGithubIdAndSecret(): Promise<[string, string]> { //todo: check if in use
+  async getGithubIdAndSecret(): Promise<[string, string]> {
+    //todo: check if in use
     const clientID = this.configService.get(GITHUB_CLIENT_ID_VAR);
     const clientSecret = await this.getSecret();
     if (!clientID || !clientSecret)

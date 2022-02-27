@@ -72,7 +72,9 @@ export class GitResolver {
     AuthorizableResourceParameter.GitOrganizationId,
     'gitOrganizationId'
   )
-  async getReposOfOrganization(@Args() args: GetReposListArgs): Promise<GitRepo[]> {
+  async getReposOfOrganization(
+    @Args() args: GetReposListArgs
+  ): Promise<GitRepo[]> {
     return this.gitService.getReposOfOrganization(args);
   }
 
