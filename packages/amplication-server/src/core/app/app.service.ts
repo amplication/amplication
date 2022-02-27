@@ -19,7 +19,6 @@ import { EnvironmentService } from '../environment/environment.service';
 import { GithubService } from '../github/github.service';
 import {
   AppCreateWithEntitiesInput,
-  AppEnableSyncWithGithubRepoArgs,
   AppValidationErrorTypes,
   AppValidationResult,
   CreateCommitArgs,
@@ -685,35 +684,6 @@ export class AppService {
     }
 
     return config;
-  }
-
-
-
-  async disableSyncWithGithubRepo(args: FindOneArgs): Promise<App> {
-    const app = await this.app({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    if (!app.githubSyncEnabled) {
-      throw new Error(`Sync is not enabled for this app`);
-    }
-
-    //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
-      where: args.where,
-      data: {
-        githubRepo: null, //reset the repo and branch to allow the user to set another branch when needed
-        githubBranch: null,
-        githubSyncEnabled: false,
-        githubLastSync: null
-      }
-    });
   }
 
   async reportSyncMessage(appId: string, message: string): Promise<App> {

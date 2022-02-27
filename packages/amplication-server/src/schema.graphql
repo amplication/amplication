@@ -988,7 +988,6 @@ type Mutation {
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1024,6 +1023,7 @@ type Mutation {
   createRepoInOrg(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!, input: RepoCreateInput!): GitRepo!
   createGitRepository: GitRepository!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
+  deleteGitRepository(gitRepositoryId: String!): Boolean!
   deleteOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!): Boolean!
   getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGithubResult!
 }

@@ -19,6 +19,7 @@ import { GitRepo } from './dto/objects/GitRepo';
 import { GitService } from './git.service';
 import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
 import { GitRepository } from 'src/models/GitRepository';
+import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -59,6 +60,15 @@ export class GitResolver {
     @Args() args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
     return await this.gitService.createGitOrganization(args);
+  }
+
+  @Mutation(() => Boolean)
+  @AuthorizeContext(
+    AuthorizableResourceParameter.GitRepositoryId,
+    'gitRepositoryId'
+  )
+  async deleteGitRepository(@Args() args: DeleteGitRepositoryArgs): Promise<boolean> {
+    return this.gitService.deleteGitRepository(args);
   }
 
   @Mutation(() => Boolean)

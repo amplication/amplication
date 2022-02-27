@@ -12,8 +12,9 @@ import { GitRepo } from './dto/objects/GitRepo';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
 import { GitRepository } from 'src/models/GitRepository';
 import { AmplicationError } from 'src/errors/AmplicationError';
-import { GIT_REPOSITORY_EXIST } from './constants';
-
+import { GIT_REPOSITORY_EXIST, INVALID_GIT_REPOSITORY_ID } from './constants';
+import { isEmpty } from 'lodash';
+import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 @Injectable()
 export class GitService {
   constructor(
@@ -41,6 +42,25 @@ export class GitService {
     return newRepo;
 
   }
+
+ async deleteGitRepository(args: DeleteGitRepositoryArgs):Promise<boolean>{
+  
+  const gitRepository = await this.prisma.gitRepository.findFirst({
+    where: {
+      id: args.gitRepositoryId
+    }
+  });
+  if (isEmpty(gitRepository)) {
+    throw new Error(INVALID_GIT_REPOSITORY_ID);
+  }
+   await this.prisma.gitRepository.delete({
+    where:{
+      id:args.gitRepositoryId
+    }
+  }); 
+
+  return true;
+ }
 
   async createGitRepository(
     name: string, appId:string, gitOrganizationId:string

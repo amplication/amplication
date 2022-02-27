@@ -178,15 +178,7 @@ export class AppResolver {
   ): Promise<PendingChange[]> {
     return this.appService.getPendingChanges(args, user);
   }
-
-  @Mutation(() => App, {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
-  async appDisableSyncWithGithubRepo(@Args() args: FindOneArgs): Promise<App> {
-    return this.appService.disableSyncWithGithubRepo(args);
-  }
-
+  
   @Query(() => AppValidationResult, {
     nullable: false
   })

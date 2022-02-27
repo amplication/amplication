@@ -42,6 +42,15 @@ export class PermissionsService {
       return matching === 1;
     }
 
+    if (resourceType === AuthorizableResourceParameter.GitRepositoryId) {
+      const matching = await this.prisma.gitRepository.count({
+        where: {
+          id: resourceId,
+        }
+      });
+      return matching === 1;
+    }
+
     if (resourceType === AuthorizableResourceParameter.AppId) {
       const matching = await this.prisma.app.count({
         where: {
