@@ -32,12 +32,6 @@ export class GitService {
     });
   }
 
-  async getGitOrganizationName(args: BaseGitArgs): Promise<string> {
-    const { gitOrganizationId, sourceControlService } = args;
-    const service = await this.gitServiceFactory.getService(sourceControlService);
-    const organization = await service.getGitOrganization(gitOrganizationId); 
-    return organization.name;
-  }
 
   async createGitOrganization(
     args: CreateGitOrganizationArgs

@@ -46,6 +46,7 @@ type Query {
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   getReposOfOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): [GitRepo!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
+  getUsername(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumSourceControlService!): String!
 }
 
 type Account {

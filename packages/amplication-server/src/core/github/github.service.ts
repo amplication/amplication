@@ -83,24 +83,6 @@ export class GithubService implements IGitClient {
     return gitInstallationUrl;
   }
 
-  async getGitOrganization(
-    gitOrganizationId: string
-  ): Promise<GitOrganization> {
-    const gitOrganization = new GitOrganization();
-    const res = await this.prisma.gitOrganization
-      .findFirst({ //todo: select field from query
-        where: {
-          id: gitOrganizationId
-        },
-      });
-
-      gitOrganization.installationId = res.installationId,
-      gitOrganization.name = res.name,
-      gitOrganization.id = res.id;
-
-    return gitOrganization;
-  }
-
   async createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
