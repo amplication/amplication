@@ -7,11 +7,7 @@ import {
 import { gql, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React from "react";
-import {
-  App,
-  EnumSourceControlService,
-  RepoCreateInput,
-} from "../../../../models";
+import { App, EnumGitProvider, RepoCreateInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import useGitCreate from "../../hooks/useGitCreate";
 import useGitSelected from "../../hooks/useGitSelected";
@@ -19,7 +15,7 @@ import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 
 type Props = {
-  sourceControlService: EnumSourceControlService;
+  sourceControlService: EnumGitProvider;
   app: App;
   gitOrganizationId: string;
   onCompleted: Function;

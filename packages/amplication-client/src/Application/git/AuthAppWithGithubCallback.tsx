@@ -3,8 +3,7 @@ import React, { useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useTracking } from "../../util/analytics";
 
-
-const AuthAppWithGithubCallback = () => { 
+const AuthAppWithGithubCallback = () => {
   const { trackEvent } = useTracking();
   const [completeAuthWithGithub] = useMutation<Boolean>(
     CREATE_GIT_ORGANIZATION,
@@ -31,7 +30,7 @@ const AuthAppWithGithubCallback = () => {
         variables: {
           workspaceId,
           installationId,
-          provider: "Github"
+          provider: "Github",
         },
       }).catch(console.error);
     }
@@ -43,15 +42,18 @@ const AuthAppWithGithubCallback = () => {
 
 export default AuthAppWithGithubCallback;
 
-
 const CREATE_GIT_ORGANIZATION = gql`
   mutation createOrganization(
     $workspaceId: String!
     $installationId: String!
-    $provider: EnumSourceControlService!
+    $provider: EnumGitProvider!
   ) {
     createOrganization(
-      data: { workspaceId: $workspaceId , installationId: $installationId,provider:$provider},
+      data: {
+        workspaceId: $workspaceId
+        installationId: $installationId
+        provider: $provider
+      }
     ) {
       id
       name

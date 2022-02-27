@@ -34,10 +34,8 @@ function SyncWithGithubPage({ match }: Props) {
     <PageContent>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__header`}>
-          <h1>
-            <Icon icon="github" size="xlarge" />
-            Sync with GitHub
-          </h1>
+          <Icon icon="github" size="xlarge" />
+          <h1>Sync with GitHub</h1>
         </div>
         <div className={`${CLASS_NAME}__message`}>
           Enable sync with GitHub to automatically push the generated code of

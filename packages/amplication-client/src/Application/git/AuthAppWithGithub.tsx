@@ -145,7 +145,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
           popupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
           setGitCreateRepo={setCreateNewRepoOpen}
-          sourceControlService={models.EnumSourceControlService.Github}
+          sourceControlService={models.EnumGitProvider.Github}
           confirmRemove={confirmRemove}
           handleConfirmRemoveAuth={handleConfirmRemoveAuth}
           handleDismissRemove={handleDismissRemove}
@@ -189,7 +189,7 @@ export default AuthAppWithGithub;
 const START_AUTH_APP_WITH_GITHUB = gql`
   mutation getGithubAppInstallationUrl(
     $workspaceId: String!
-    $sourceControlService: EnumSourceControlService!
+    $sourceControlService: EnumGitProvider!
   ) {
     getGithubAppInstallationUrl(
       data: {

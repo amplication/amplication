@@ -1,16 +1,12 @@
 import { gql, useMutation } from "@apollo/client";
 import { useCallback } from "react";
-import {
-  EnumSourceControlService,
-  GitRepo,
-  RepoCreateInput,
-} from "../../../models";
+import { EnumGitProvider, GitRepo, RepoCreateInput } from "../../../models";
 import { useTracking } from "../../../util/analytics";
 
 type Props = {
   gitOrganizationId: string;
   appId: string;
-  sourceControlService: EnumSourceControlService;
+  sourceControlService: EnumGitProvider;
   cb: (repo: GitRepo) => any;
 };
 
@@ -54,7 +50,7 @@ export default function useGitCreate({
 
 const CREATE_REPO = gql`
   mutation createRepoInOrg(
-    $sourceControlService: EnumSourceControlService!
+    $sourceControlService: EnumGitProvider!
     $gitOrganizationId: String!
     $appId: String!
     $name: String!
