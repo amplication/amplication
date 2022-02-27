@@ -4,22 +4,21 @@ import { ConfigService } from '@nestjs/config';
 // We currently ignore it and should look deeper into the root cause
 // eslint-disable-next-line import/no-unresolved
 import { components } from '@octokit/openapi-types';
+import { PrismaService } from 'nestjs-prisma';
+import { App, Octokit } from 'octokit';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { AmplicationError } from 'src/errors/AmplicationError';
+import { GitOrganization } from 'src/models/GitOrganization';
+import { GitRepository } from 'src/models/GitRepository';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
 import { IGitClient } from '../git/contracts/IGitClient';
 import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
+import { CreateGitOrganizationArgs } from '../git/dto/args/CreateGitOrganizationArgs';
+import { CreateGitRepositoryInput } from '../git/dto/inputs/CreateGitRepositoryInput';
 import { GitRepo } from '../git/dto/objects/GitRepo';
 import { GithubFile } from './dto/githubFile';
 import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtractor';
-import { CreateGitOrganizationArgs } from '../git/dto/args/CreateGitOrganizationArgs';
-import { PrismaService } from 'nestjs-prisma';
-import { GitOrganization } from 'src/models/GitOrganization';
-import { isEmpty } from 'lodash';
-import { Octokit, App } from 'octokit';
-import { GitRepository } from 'src/models/GitRepository';
-import { CreateGitRepositoryInput } from '../git/dto/inputs/CreateGitRepositoryInput';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -47,13 +46,6 @@ export class GithubService implements IGitClient {
     public readonly tokenExtractor: GithubTokenExtractor,
     private readonly prisma: PrismaService
   ) {}
-  async getGitOrganizations(workspaceId: string): Promise<GitOrganization[]> {
-    return await this.prisma.gitOrganization.findMany({
-      where: {
-        workspaceId: workspaceId
-      }
-    });
-  }
   async deleteGitOrganization(gitOrganizationId: string): Promise<boolean> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
@@ -72,17 +64,6 @@ export class GithubService implements IGitClient {
       throw new AmplicationError('delete installationId {} failed'); //todo: remove to const param
     }
 
-    const gitOrganization = await this.getGitOrganization(gitOrganizationId);
-    if (isEmpty(gitOrganization)) {
-      throw new Error('INVALID_GITHUB_APP');
-    }
-
-    await this.prisma.gitOrganization.delete({
-      where: {
-        id: gitOrganization.id
-      }
-    });
-
     return true;
   }
 
@@ -92,24 +73,6 @@ export class GithubService implements IGitClient {
     );
     gitInstallationUrl = gitInstallationUrl.replace('{state}', workspaceId);
     return gitInstallationUrl;
-  }
-
-  async getGitOrganization(
-    gitOrganizationId: string
-  ): Promise<GitOrganization> {
-    const gitOrganization = new GitOrganization();
-    const res = await this.prisma.gitOrganization
-      .findFirst({ //todo: select field from query
-        where: {
-          id: gitOrganizationId
-        }
-      });
-
-      gitOrganization.installationId = res.installationId,
-      gitOrganization.name = res.name,
-      gitOrganization.id = res.id;
-
-    return gitOrganization;
   }
 
   async createGitOrganization(
@@ -152,12 +115,12 @@ export class GithubService implements IGitClient {
     octokit: Octokit,
     installationId: number
   ): Promise<string> {
-    return await octokit.rest.apps
-      .getInstallation({
+    return (
+      await octokit.rest.apps.getInstallation({
         // eslint-disable-next-line @typescript-eslint/naming-convention
         installation_id: installationId
       })
-      .then(inst => inst.data.account.login);
+    ).data.account.login;
   }
 
   private async getInstallationIdByGitOrganizationId(

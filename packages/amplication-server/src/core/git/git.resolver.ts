@@ -1,7 +1,10 @@
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
+import { FindOneArgs } from 'src/dto';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
@@ -9,8 +12,8 @@ import { AuthorizeAppWithGithubResult } from '../app/dto/AuthorizeAppWithGithubR
 import { BaseGitArgs } from './dto/args/BaseGitArgs';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
+import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
-import { GetGitOrganizationsArgs } from './dto/args/GetGitOrganizationsArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitService } from './git.service';
@@ -29,12 +32,9 @@ export class GitResolver {
     return this.gitService.createRepo(args);
   }
 
-  @Mutation(() => GitOrganization)
-  @AuthorizeContext(
-    AuthorizableResourceParameter.GitOrganizationId,
-    'gitOrganizationId'
-  )
-  async getOrganization(@Args() args: BaseGitArgs): Promise<GitOrganization> {
+  @Query(() => GitOrganization)
+  @AuthorizeContext(AuthorizableResourceParameter.GitOrganizationId, 'where.id')
+  async gitOrganization(@Args() args: FindOneArgs): Promise<GitOrganization> {
     return this.gitService.getGitOrganization(args);
   }
 
@@ -77,20 +77,15 @@ export class GitResolver {
   }
 
   @Query(() => [GitOrganization])
-  //@AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'workspaceId')
+  @InjectContextValue(
+    InjectableResourceParameter.WorkspaceId,
+    'where.workspaceId'
+  )
   async gitOrganizations(
-    @Args() args: GetGitOrganizationsArgs
+    @Args() args: GitOrganizationFindManyArgs
   ): Promise<GitOrganization[]> {
     return this.gitService.getGitOrganizations(args);
   }
 
-  @Query(() => String)
-  @AuthorizeContext(
-    AuthorizableResourceParameter.GitOrganizationId,
-    'gitOrganizationId'
-  )
-  async getGitOrganizationName(@Args() args: BaseGitArgs): Promise<string> {
-    return this.gitService.getGitOrganizationName(args);
-  }
   //#endregion
 }

@@ -1,40 +1,38 @@
-import { NetworkStatus } from "@apollo/client";
 import {
-    Button,
+  Button,
   CircularProgress,
   EnumButtonStyle,
   Tooltip,
 } from "@amplication/design-system";
+import { gql, NetworkStatus, useQuery } from "@apollo/client";
 import React, { useCallback } from "react";
-import useGetGitOrganizations from "../hooks/useGetGitOrganizations";
 
 const CLASS_NAME = "git-repos";
 
 type Props = {
   workspaceId: string;
-  setSelectedGitOrganization:(gitOrganizationId:string)=>void
+  setSelectedGitOrganization: (gitOrganizationId: string) => void;
 };
 
-function GitOrganizations({ workspaceId ,setSelectedGitOrganization}: Props) {
-     const {
-    refetch,
-    gitOrganizations,
-    loading: loadingRepos,
-    networkStatus,
-  } = useGetGitOrganizations({
-    workspaceId: workspaceId,
-  });
-
-//   const { handleRepoSelected, error: errorUpdate } = useGitSelected({
-//     appId: gitOrganizationId,
-//     onCompleted,
-//   });
+function GitOrganizations({ workspaceId, setSelectedGitOrganization }: Props) {
+  const { refetch, loading: loadingRepos, networkStatus, data } = useQuery<{
+    gitOrganizations: [
+      {
+        id: string;
+        name: string;
+      }
+    ];
+  }>(GET_GIT_ORGANIZATIONS);
+  //   const { handleRepoSelected, error: errorUpdate } = useGitSelected({
+  //     appId: gitOrganizationId,
+  //     onCompleted,
+  //   });
 
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
 
-//   const errorMessage = formatError(error || errorUpdate);
+  //   const errorMessage = formatError(error || errorUpdate);
 
   return (
     <div className={CLASS_NAME}>
@@ -55,12 +53,21 @@ function GitOrganizations({ workspaceId ,setSelectedGitOrganization}: Props) {
         )}
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
-        gitOrganizations?.map((gitOrganization) => (
-          <li key={gitOrganization.id}  value={gitOrganization.name}/>
+        data?.gitOrganizations.map((gitOrganization) => (
+          <li key={gitOrganization.id} value={gitOrganization.name} />
         ))}
-      <h1/>
+      <h1 />
     </div>
   );
 }
 
 export default GitOrganizations;
+
+const GET_GIT_ORGANIZATIONS = gql`
+  {
+    gitOrganizations(where: {}) {
+      id
+      name
+    }
+  }
+`;
