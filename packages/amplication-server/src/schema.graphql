@@ -78,8 +78,8 @@ type App {
   createdAt: DateTime!
   updatedAt: DateTime!
   workspaceId: String
-  gitRepository: GitRepository!
-  gitRepositoryId: String!
+  gitRepository: GitRepository
+  gitRepositoryId: String
   name: String!
   description: String!
   color: String!
