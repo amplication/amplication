@@ -36,7 +36,11 @@ export class App {
   })
   workspaceId?: string;
 
+  @Field(() => GitRepository)
   gitRepository?: GitRepository;
+
+  @Field(() => String)
+  gitRepositoryId?: string;
 
   @Field(() => String, {
     nullable: false,

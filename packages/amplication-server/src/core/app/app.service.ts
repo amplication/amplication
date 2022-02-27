@@ -316,7 +316,7 @@ export class AppService {
     return app;
   }
 
-  async app(args: FindOneArgs): Promise<App | null> {
+  async app(args: FindOneArgs): Promise<App | null> {  
     return this.prisma.app.findFirst({
       where: {
         id: args.where.id,
@@ -729,26 +729,30 @@ export class AppService {
       throw new Error(INVALID_APP_ID);
     }
 
-    if (app.githubSyncEnabled) {
+    if (app.gitRepository) {
       throw new Error(
         `Sync is already enabled for this app. To change the sync settings, first disable the sync and re-enable it with the new settings`
       );
     }
 
-    if (isEmpty(app.githubToken)) {
-      throw new Error(
-        `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
-      );
-    }
+    return app;
+
+    // if (isEmpty(app.githubToken)) {
+    //   throw new Error(
+    //     `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
+    //   );
+    // }
+
+
 
     //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
-      where: args.where,
-      data: {
-        ...args.data,
-        githubSyncEnabled: true
-      }
-    });
+    // return this.prisma.app.update({
+    //   where: args.where,
+    //   data: {
+    //     ...args.data,
+    //     githubSyncEnabled: true
+    //   }
+    // });
   }
 
   async disableSyncWithGithubRepo(args: FindOneArgs): Promise<App> {

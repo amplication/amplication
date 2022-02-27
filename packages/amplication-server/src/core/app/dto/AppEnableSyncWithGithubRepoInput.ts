@@ -11,8 +11,15 @@ export class AppEnableSyncWithGithubRepoInput {
   githubRepo: string;
 
   @Field(() => String, {
+    nullable: false,
+    description: 'The id of the git organization repository'
+  })
+  gitOrganizationId!: string;
+
+  @Field(() => String, {
     nullable: true,
     description: 'optional: defaults to default branch'
   })
   githubBranch?: string | null;
+
 }

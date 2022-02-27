@@ -35,22 +35,23 @@ model GitOrganization {
   id             String          @id @default(cuid())
   provider       EnumSourceControlService
   name           String
-  installationId Int
+  installationId String
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   gitRepositories  GitRepository[]
   workspaceId    String
-  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
 }
 
 model GitRepository {
   id                String           @id @default(cuid())
   name              String
-  app               App[]
+  appId             String
+  app               App              @relation(fields: [appId], references: [id], onDelete: NoAction)
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
-  gitOrganization   GitOrganization? @relation(fields: [gitOrganizationId], references: [id])
-  gitOrganizationId String?
+  gitOrganization   GitOrganization  @relation(fields: [gitOrganizationId], references: [id], onDelete: NoAction)
+  gitOrganizationId String
 }
 
 model User {
@@ -122,7 +123,7 @@ model App {
   commits                Commit[]
   entities               Entity[]
   environments           Environment[]
-  gitRepository          GitRepository? @relation(fields: [gitRepositoryId], references: [id])
+  gitRepository          GitRepository?
   gitRepositoryId        String?
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")

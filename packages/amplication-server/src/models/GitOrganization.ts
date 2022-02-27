@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { EnumSourceControlService } from 'src/core/git/dto/enums/EnumSourceControlService';
+import { EnumGitProvider } from 'src/core/git/dto/enums/EnumGitProvider';
 
 @ObjectType({
   isAbstract: true,
@@ -12,10 +12,10 @@ export class GitOrganization {
   })
   id!: string;
 
-  @Field(() => EnumSourceControlService, {
+  @Field(() => EnumGitProvider, {
     nullable: false
   })
-  provider!: keyof typeof EnumSourceControlService;
+  provider!: keyof typeof EnumGitProvider;
 
   @Field(() => String, {
     nullable: false,

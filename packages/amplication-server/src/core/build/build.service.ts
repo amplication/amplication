@@ -175,7 +175,6 @@ export class BuildService {
    */
   async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
     const appId = args.data.app.connect.id;
-
     const user = await this.userService.findUser({
       where: {
         id: args.data.createdBy.connect.id
@@ -378,6 +377,7 @@ export class BuildService {
    * @param build the build object to generate code for
    */
   private async generate(build: Build, user: User): Promise<string> {
+
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
@@ -587,6 +587,7 @@ export class BuildService {
     build: Build,
     modules: DataServiceGenerator.Module[]
   ) {
+
     const app = build.app;
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
@@ -600,9 +601,8 @@ export class BuildService {
 
     const url = `${host}/${build.appId}/builds/${build.id}`;
 
-    if (app.githubSyncEnabled) {
-      const [userName, repoName] = app.githubRepo.split('/');
-
+    if (app.gitRepository) {
+      const [userName, repoName] = app.gitRepository.name;
       return this.actionService.run(
         build.actionId,
         PUSH_TO_GITHUB_STEP_NAME,
@@ -622,7 +622,7 @@ Commit message: ${commit.message}
 ${url}
 `,
               app.githubBranch,
-              app.githubToken
+              app.githubToken //todo: get the installationId from gitOrganization
             );
 
             await this.appService.reportSyncMessage(
@@ -657,7 +657,7 @@ ${url}
         },
         true
       );
-    }
+   }
   }
 
   /** @todo move */

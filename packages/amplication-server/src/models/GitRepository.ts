@@ -23,13 +23,13 @@ export class GitRepository {
   name!: string;
 
   @Field(() => Date, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  createdAt!: Date;
+  createdAt?: Date;
 
   @Field(() => Date, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
   updatedAt?: Date;
