@@ -35,12 +35,13 @@ export class GitService {
       input: input
     });
 
-    await this.createGitRepository(newRepo.name,
-                                   input.appId,
-                                   gitOrganizationId);
+    await this.createGitRepository(
+      newRepo.name,
+      input.appId,
+      gitOrganizationId
+    );
 
     return newRepo;
-
   }
 
  async deleteGitRepository(args: DeleteGitRepositoryArgs):Promise<boolean>{
@@ -63,23 +64,25 @@ export class GitService {
  }
 
   async createGitRepository(
-    name: string, appId:string, gitOrganizationId:string
+    name: string,
+    appId: string,
+    gitOrganizationId: string
   ): Promise<GitRepository> {
     const gitRepo = await this.prisma.gitRepository.findFirst({
-      where:{
-        name:name
+      where: {
+        name: name
       }
-    }); 
+    });
 
-    if(gitRepo) {
+    if (gitRepo) {
       throw new AmplicationError(GIT_REPOSITORY_EXIST);
     }
-    
+
     return await this.prisma.gitRepository.create({
       data: {
         name: name,
-        appId:appId,
-        gitOrganizationId:gitOrganizationId
+        appId: appId,
+        gitOrganizationId: gitOrganizationId
       }
     });
   }
