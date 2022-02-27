@@ -125,12 +125,12 @@ export class GithubService implements IGitClient {
     octokit: Octokit,
     installationId: number
   ): Promise<string> {
-    return await octokit.rest.apps
-      .getInstallation({
+    return (
+      await octokit.rest.apps.getInstallation({
         // eslint-disable-next-line @typescript-eslint/naming-convention
         installation_id: installationId
       })
-      .then(inst => inst.data.account.login);
+    ).data.account.login;
   }
 
   private async getInstallationIdByGitOrganizationId(
