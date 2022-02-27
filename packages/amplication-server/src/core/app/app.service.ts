@@ -687,42 +687,7 @@ export class AppService {
     return config;
   }
 
-  async enableSyncWithGithubRepo(
-    args: AppEnableSyncWithGithubRepoArgs
-  ): Promise<App> {
-    const app = await this.app({
-      where: {
-        id: args.where.id
-      }
-    });
 
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    if (app.gitRepository) {
-      throw new Error(
-        `Sync is already enabled for this app. To change the sync settings, first disable the sync and re-enable it with the new settings`
-      );
-    }
-
-    return app;
-
-    // if (isEmpty(app.githubToken)) {
-    //   throw new Error(
-    //     `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
-    //   );
-    // }
-
-    //directly update with prisma since we don't want to expose these fields for regular updates
-    // return this.prisma.app.update({
-    //   where: args.where,
-    //   data: {
-    //     ...args.data,
-    //     githubSyncEnabled: true
-    //   }
-    // });
-  }
 
   async disableSyncWithGithubRepo(args: FindOneArgs): Promise<App> {
     const app = await this.app({

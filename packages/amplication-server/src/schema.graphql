@@ -99,7 +99,7 @@ type App {
 type GitRepository {
   id: String!
   gitOrganizationId: String!
-  gitOrganization: GitOrganization
+  gitOrganization: GitOrganization!
   name: String!
   createdAt: DateTime
   updatedAt: DateTime
@@ -993,7 +993,6 @@ type Mutation {
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
   appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
@@ -1028,6 +1027,7 @@ type Mutation {
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
   createRepoInOrg(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!, input: RepoCreateInput!): GitRepo!
+  createGitRepository: GitRepository!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!): Boolean!
 }
@@ -1089,17 +1089,6 @@ input WhereParentIdInput {
 
 input PendingChangesDiscardInput {
   app: WhereParentIdInput!
-}
-
-input AppEnableSyncWithGithubRepoInput {
-  """The full name of the repo in the format org-name/repo-name"""
-  githubRepo: String!
-
-  """The id of the git organization repository"""
-  gitOrganizationId: String!
-
-  """optional: defaults to default branch"""
-  githubBranch: String
 }
 
 input EntityCreateInput {

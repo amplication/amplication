@@ -17,6 +17,8 @@ import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs'
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitService } from './git.service';
+import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
+import { GitRepository } from 'src/models/GitRepository';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -36,6 +38,16 @@ export class GitResolver {
   @AuthorizeContext(AuthorizableResourceParameter.GitOrganizationId, 'where.id')
   async gitOrganization(@Args() args: FindOneArgs): Promise<GitOrganization> {
     return this.gitService.getGitOrganization(args);
+  }
+  @Mutation(() => GitRepository)
+  @AuthorizeContext(
+    AuthorizableResourceParameter.GitOrganizationId,
+    'data.gitOrganizationId'
+  )
+  async createGitRepository(args: CreateGitRepositoryArgs): Promise<GitRepository> {
+    return await this.gitService.createGitRepository(args.data.name,
+                                                     args.data.appId,
+                                                     args.data.gitOrganizationId);
   }
 
   @Mutation(() => GitOrganization)

@@ -17,7 +17,7 @@ export class GitRepository {
   })
   gitOrganizationId!: string;
 
-  @Field(() => GitOrganization, { nullable: true })
+  @Field(() => GitOrganization, { nullable: false })
   gitOrganization?: GitOrganization;
 
   @Field(() => String, {
