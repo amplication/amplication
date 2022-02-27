@@ -42,7 +42,7 @@ export class App {
   })
   gitRepository?: GitRepository;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   gitRepositoryId?: string;
 
   @Field(() => String, {
