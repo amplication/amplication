@@ -14,7 +14,7 @@ import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions"
 import GitSyncNotes from "./GitSyncNotes";
 
 type DType = {
-  getGithubAppInstallationUrl: models.AuthorizeAppWithGithubResult;
+  getGitAppInstallationUrl: models.AuthorizeAppWithGithubResult;
 };
 
 // eslint-disable-next-line
@@ -55,10 +55,7 @@ function AuthAppWithGithub({ app, onDone }: Props) {
     START_AUTH_APP_WITH_GITHUB,
     {
       onCompleted: (data) => {
-        openSignInWindow(
-          data.getGithubAppInstallationUrl.url,
-          "auth with github"
-        );
+        openSignInWindow(data.getGitAppInstallationUrl.url, "auth with github");
       },
     }
   );
