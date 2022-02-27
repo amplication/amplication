@@ -97,7 +97,7 @@ export class GithubService implements IGitClient {
     return await this.prisma.gitOrganization.create({
       data: {
         ...args.data,
-        installationId: installationId,
+        installationId:args.data.installationId,
         name: gitOrganizationName
       }
     });
@@ -107,7 +107,7 @@ export class GithubService implements IGitClient {
     octokit: Octokit,
     name: string
   ): Promise<boolean> {
-    const repos = await this.getUserReposWithOctokit(octokit);
+    const repos = await this.getUserRepos(octokit);
     if (repos.map(repo => repo.name).includes(name)) {
       return true;
     }
@@ -136,13 +136,15 @@ export class GithubService implements IGitClient {
   private async getInstallationIdByGitOrganizationId(
     gitOrganizationId: string
   ): Promise<number | null> {
-    return await this.prisma.gitOrganization
-      .findFirst({
-        where: {
-          id: gitOrganizationId
-        }
-      })
-      .then(o => o.installationId);
+
+    return null;
+    // return await this.prisma.gitOrganization
+    //   .findFirst({
+    //     where: {
+    //       id: gitOrganizationId
+    //     }
+    //   })
+    //   .then(o => o.installationId);
   }
 
   async createRepo(args: CreateRepoArgsType): Promise<GitRepo> {

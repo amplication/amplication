@@ -23,11 +23,11 @@ export class GitOrganization {
   })
   name!: string;
 
-  @Field(() => Number, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
-  installationId!: number;
+  installationId!: string;
 
   // @Field(() => [GitRepository], {
   //   nullable: false,
