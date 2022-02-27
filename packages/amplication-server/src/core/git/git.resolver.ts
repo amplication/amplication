@@ -39,7 +39,10 @@ export class GitResolver {
   }
 
   @Mutation(() => GitOrganization)
-  //@AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'workspaceId')
+  @InjectContextValue(
+    InjectableResourceParameter.WorkspaceId,
+    'where.workspaceId'
+  )
   async createOrganization(
     @Args() args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
@@ -55,9 +58,12 @@ export class GitResolver {
     return this.gitService.deleteGitOrganization(args);
   }
 
-  @Mutation(() => AuthorizeAppWithGithubResult)
-  //@AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'workspaceId')
-  async getGithubAppInstallationUrl(
+  @Query(() => AuthorizeAppWithGithubResult)
+  @InjectContextValue(
+    InjectableResourceParameter.WorkspaceId,
+    'where.workspaceId'
+  )
+  async getGitAppInstallationUrl(
     @Args() args: GetGitInstallationUrlArgs
   ): Promise<AuthorizeAppWithGithubResult> {
     return {
