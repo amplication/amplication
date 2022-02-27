@@ -141,7 +141,7 @@ export class GithubService implements IGitClient {
             id: gitOrganizationId
           }
         })
-      ).name
+      ).installationId
     );
   }
 
