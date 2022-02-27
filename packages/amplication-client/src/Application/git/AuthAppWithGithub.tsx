@@ -12,6 +12,7 @@ import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
+import { APP_WITH_GIT_REPOSITORY_TData } from "./SyncWithGithubPage";
 
 type DType = {
   getGitAppInstallationUrl: models.AuthorizeAppWithGithubResult;
@@ -22,13 +23,13 @@ let triggerOnDone = () => {};
 let triggerAuthFailed = () => {};
 
 type Props = {
-  app: models.App;
+  app: APP_WITH_GIT_REPOSITORY_TData;
   onDone: () => void;
 };
 
 export const CLASS_NAME = "auth-app-with-github";
 
-function AuthAppWithGithub({ app, onDone }: Props) {
+function AuthAppWithGithub({ app: { app }, onDone }: Props) {
   const { data } = useQuery<{
     gitOrganizations: [
       {
