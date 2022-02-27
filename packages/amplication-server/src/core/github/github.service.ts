@@ -74,17 +74,6 @@ export class GithubService implements IGitClient {
       throw new AmplicationError('delete installationId {} failed'); //todo: remove to const param
     }
 
-    const gitOrganization = await this.getGitOrganization(gitOrganizationId);
-    if (isEmpty(gitOrganization)) {
-      throw new Error('INVALID_GITHUB_APP');
-    }
-
-    await this.prisma.gitOrganization.delete({
-      where: {
-        id: gitOrganization.id
-      }
-    });
-
     return true;
   }
 
@@ -94,35 +83,6 @@ export class GithubService implements IGitClient {
     );
     gitInstallationUrl = gitInstallationUrl.replace('{state}', workspaceId);
     return gitInstallationUrl;
-  }
-
-  async getGitOrganization(
-    gitOrganizationId: string
-  ): Promise<GitOrganization> {
-    const gitOrganization = new GitOrganization();
-    const res = await this.prisma.gitOrganization
-      .findFirst({
-        where: {
-          id: gitOrganizationId
-        }
-      })
-      .then(org => {
-        return {
-          installationId: org.installationId,
-          name: org.name,
-          provider: org.provider,
-          updatedAt: org.updatedAt,
-          createdAt: org.createdAt,
-          workspaceId: org.workspaceId,
-          id: org.id
-        };
-      });
-
-    (gitOrganization.installationId = res.installationId),
-      (gitOrganization.name = res.name),
-      (gitOrganization.id = res.id);
-
-    return gitOrganization;
   }
 
   async createGitOrganization(

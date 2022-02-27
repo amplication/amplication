@@ -1,27 +1,27 @@
 import {
   Button,
-  TextField,
-  Label,
   CircularProgress,
+  Label,
+  TextField,
 } from "@amplication/design-system";
+import { gql, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React from "react";
-import useGitCreate from "../../hooks/useGitCreate";
-import useGitSelected from "../../hooks/useGitSelected";
-import useGitUserName from "../../hooks/useGitUserName";
 import {
   App,
   EnumSourceControlService,
   RepoCreateInput,
 } from "../../../../models";
+import { formatError } from "../../../../util/error";
+import useGitCreate from "../../hooks/useGitCreate";
+import useGitSelected from "../../hooks/useGitSelected";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
-import { formatError } from "../../../../util/error";
 
 type Props = {
   sourceControlService: EnumSourceControlService;
   app: App;
-  gitOrganizationId:string;
+  gitOrganizationId: string;
   onCompleted: Function;
 };
 
@@ -35,10 +35,10 @@ export default function GitCreateRepo({
 }: Props) {
   const initialValues: RepoCreateInput = { name: "", public: true };
 
-  const { username } = useGitUserName({
-    gitOrganizationId: gitOrganizationId,
-    sourceControlService,
+  const { data } = useQuery<{ name: string }>(GET_GIT_ORGANIZATION_NAME, {
+    variables: { id: gitOrganizationId },
   });
+
   const { handleRepoSelected } = useGitSelected({ appId: app.id });
   const { loading, handleCreation, error } = useGitCreate({
     gitOrganizationId: gitOrganizationId,
@@ -72,7 +72,9 @@ export default function GitCreateRepo({
               <th>Repository name</th>
             </tr>
             <tr>
-              <td style={{ position: "relative", top: "-5px" }}>{username}/</td>
+              <td style={{ position: "relative", top: "-5px" }}>
+                {data?.name || ""}/
+              </td>
               <td>
                 <TextField name="name" autoComplete="off" showError={false} />
               </td>
@@ -99,3 +101,11 @@ export default function GitCreateRepo({
     </Formik>
   );
 }
+
+const GET_GIT_ORGANIZATION_NAME = gql`
+  query gitOrganization($id: String!) {
+    gitOrganization(where: { id: $id }) {
+      name
+    }
+  }
+`;

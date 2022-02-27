@@ -1,6 +1,7 @@
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { FindOneArgs } from 'src/dto';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
@@ -29,12 +30,9 @@ export class GitResolver {
     return this.gitService.createRepo(args);
   }
 
-  @Mutation(() => GitOrganization)
-  @AuthorizeContext(
-    AuthorizableResourceParameter.GitOrganizationId,
-    'gitOrganizationId'
-  )
-  async getOrganization(@Args() args: BaseGitArgs): Promise<GitOrganization> {
+  @Query(() => GitOrganization)
+  @AuthorizeContext(AuthorizableResourceParameter.GitOrganizationId, 'where.id')
+  async gitOrganization(@Args() args: FindOneArgs): Promise<GitOrganization> {
     return this.gitService.getGitOrganization(args);
   }
 
@@ -88,15 +86,6 @@ export class GitResolver {
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'appId')
   async getUsername(@Args() args: BaseGitArgs): Promise<string> {
     return this.gitService.getUsername(args);
-  }
-
-  @Query(() => String)
-  @AuthorizeContext(
-    AuthorizableResourceParameter.GitOrganizationId,
-    'gitOrganizationId'
-  )
-  async getGitOrganizationName(@Args() args: BaseGitArgs): Promise<string> {
-    return this.gitService.getGitOrganizationName(args);
   }
   //#endregion
 }
