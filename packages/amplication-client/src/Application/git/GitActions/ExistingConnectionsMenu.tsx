@@ -30,7 +30,6 @@ export default function ExistingConnectionsMenu({
         <span>Select organization:</span>
         <SelectMenu
           title={selectedGitOrganization?.name || ""}
-          // icon="chevron_down"
           buttonStyle={EnumButtonStyle.Primary}
         >
           <SelectMenuModal>

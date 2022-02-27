@@ -1,5 +1,5 @@
 import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
 import { isEmpty } from "lodash";
 import React, { useCallback, useRef, useState } from "react";
@@ -12,7 +12,6 @@ import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
-import useGetGitOrganizations from "./hooks/useGetGitOrganizations";
 
 type DType = {
   getGithubAppInstallationUrl: models.AuthorizeAppWithGithubResult;
@@ -30,13 +29,23 @@ type Props = {
 export const CLASS_NAME = "auth-app-with-github";
 
 function AuthAppWithGithub({ app, onDone }: Props) {
-  const { gitOrganizations } = useGetGitOrganizations({
-    workspaceId: app.workspaceId as string,
-  });
+  const { data } = useQuery<{
+    gitOrganizations: [
+      {
+        id: string;
+        name: string;
+      }
+    ];
+  }>(GET_GIT_ORGANIZATIONS);
+  // const { gitOrganizations } = useGetGitOrganizations({
+  //   workspaceId: app.workspaceId as string,
+  // });
   const [
     gitOrganization,
     setGitOrganization,
-  ] = useState<models.GitOrganization | null>(gitOrganizations?.[0] || null);
+  ] = useState<models.GitOrganization | null>(
+    data?.gitOrganizations[0] || null
+  );
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
@@ -144,13 +153,13 @@ function AuthAppWithGithub({ app, onDone }: Props) {
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         <div className={`${CLASS_NAME}__actions`}>
-          {isEmpty(gitOrganizations) ? (
+          {isEmpty(data?.gitOrganizations) ? (
             <NewConnection
               onSyncNewGitHubOrganizationClick={handleAuthWithGithubClick}
             />
           ) : (
             <ExistingConnectionsMenu
-              gitOrganizations={gitOrganizations as models.GitOrganization[]}
+              gitOrganizations={data?.gitOrganizations}
               onSelectGitOrganization={(organization) => {
                 setGitOrganization(organization);
               }}
@@ -243,3 +252,12 @@ const openSignInWindow = (url: string, name: string) => {
   // add the listener for receiving a message from the popup
   window.addEventListener("message", (event) => receiveMessage(event), false);
 };
+
+const GET_GIT_ORGANIZATIONS = gql`
+  {
+    gitOrganizations(where: {}) {
+      id
+      name
+    }
+  }
+`;
