@@ -58,7 +58,7 @@ export class GitResolver {
     return this.gitService.deleteGitOrganization(args);
   }
 
-  @Query(() => AuthorizeAppWithGithubResult)
+  @Mutation(() => AuthorizeAppWithGithubResult)
   @InjectContextValue(
     InjectableResourceParameter.WorkspaceId,
     'data.workspaceId'

@@ -44,7 +44,6 @@ type Query {
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGithubResult!
   getReposOfOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!): [GitRepo!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
@@ -965,10 +964,6 @@ input EntityPageOrderByInput {
   description: SortOrder
 }
 
-input GitGetInstallationUrlInput {
-  sourceControlService: EnumGitProvider!
-}
-
 type GitRepo {
   name: String!
   url: String!
@@ -1030,6 +1025,7 @@ type Mutation {
   createRepoInOrg(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!, input: RepoCreateInput!): GitRepo!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!): Boolean!
+  getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGithubResult!
 }
 
 input UpdateAccountInput {
@@ -1338,4 +1334,8 @@ input GitOrganizationCreateInput {
   installationId: String!
   workspaceId: String!
   provider: EnumGitProvider!
+}
+
+input GitGetInstallationUrlInput {
+  sourceControlService: EnumGitProvider!
 }
