@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useTracking } from "../../util/analytics";
 
-const AuthAppWithGithubCallback = () => {
+const AuthAppWithGitCallback = () => {
   const { trackEvent } = useTracking();
   const [completeAuthWithGit] = useMutation<Boolean>(CREATE_GIT_ORGANIZATION, {
     onCompleted: (data) => {
@@ -36,7 +36,7 @@ const AuthAppWithGithubCallback = () => {
   return <p>Please wait...</p>;
 };
 
-export default AuthAppWithGithubCallback;
+export default AuthAppWithGitCallback;
 
 const CREATE_GIT_ORGANIZATION = gql`
   mutation createOrganization(
