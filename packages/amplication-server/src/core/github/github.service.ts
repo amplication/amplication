@@ -15,7 +15,6 @@ import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
 import { CreateGitOrganizationArgs } from '../git/dto/args/CreateGitOrganizationArgs';
 import { GitRepo } from '../git/dto/objects/GitRepo';
 import { GithubFile } from './dto/githubFile';
-import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtractor';
 import { createAppAuth } from '@octokit/auth-app';
 import { GitOrganization } from 'src/models/GitOrganization';
 
@@ -42,7 +41,6 @@ export class GithubService implements IGitClient {
   constructor(
     private readonly configService: ConfigService,
     private readonly googleSecretManagerService: GoogleSecretsManagerService,
-    public readonly tokenExtractor: GithubTokenExtractor,
     private readonly prisma: PrismaService
   ) {}
   async getGitOrganizations(workspaceId: string): Promise<GitOrganization[]> {

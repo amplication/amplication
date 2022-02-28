@@ -1,7 +1,6 @@
 import { GitOrganization } from 'src/models/GitOrganization';
 import { CreateGitOrganizationArgs } from '../dto/args/CreateGitOrganizationArgs';
 import { GitRepo } from '../dto/objects/GitRepo';
-import { ITokenExtractor } from './ITokenExtractor';
 import { CreateRepoArgsType } from './types/CreateRepoArgsType';
 
 export interface IGitClient {
@@ -13,6 +12,4 @@ export interface IGitClient {
   ): Promise<GitOrganization>;
   getGitInstallationUrl(workspaceId: string): Promise<string>;
   deleteGitOrganization(workspaceId: string): Promise<boolean>;
-
-  tokenExtractor: ITokenExtractor;
 }
