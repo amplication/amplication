@@ -1,5 +1,5 @@
+import { CreateGitRepositoryInput } from '@amplication/data-service-generator/dist/models';
 import { Matcher, mock } from 'jest-mock-extended';
-import { CreateRepoArgsType } from 'src/core/git/contracts/types/CreateRepoArgsType';
 import { TEST_GIT_REPO } from 'src/core/git/__mocks__/GitRepo';
 import { TEST_GIT_REPOS } from 'src/core/git/__mocks__/GitRepos';
 import { GithubService } from '../github.service';
@@ -10,8 +10,8 @@ MOCK_GITHUB_SERVICE.getOrganizationRepos.mockReturnValue(
 );
 MOCK_GITHUB_SERVICE.createRepo
   .calledWith(
-    new Matcher<CreateRepoArgsType>(actualValue => {
-      return actualValue.input.name === 'repo';
+    new Matcher<CreateGitRepositoryInput>(actualValue => {
+      return actualValue.name === 'repo';
     }, `Make sure that the name of the repo is "repo"`)
   )
   .mockReturnValue(Promise.resolve(TEST_GIT_REPO));

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { createAppAuth } from '@octokit/auth-app';
 //@octokit/openapi-types constantly fails with linting error "Unable to resolve path to module '@octokit/openapi-types'."
 // We currently ignore it and should look deeper into the root cause
 // eslint-disable-next-line import/no-unresolved
@@ -8,15 +9,14 @@ import { PrismaService } from 'nestjs-prisma';
 import { App, Octokit } from 'octokit';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { AmplicationError } from 'src/errors/AmplicationError';
+import { GitOrganization } from 'src/models/GitOrganization';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
 import { IGitClient } from '../git/contracts/IGitClient';
-import { CreateRepoArgsType } from '../git/contracts/types/CreateRepoArgsType';
 import { CreateGitOrganizationArgs } from '../git/dto/args/CreateGitOrganizationArgs';
+import { CreateGitRepositoryInput } from '../git/dto/inputs/CreateGitRepositoryInput';
 import { GitRepo } from '../git/dto/objects/GitRepo';
 import { GithubFile } from './dto/githubFile';
-import { createAppAuth } from '@octokit/auth-app';
-import { GitOrganization } from 'src/models/GitOrganization';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -141,8 +141,10 @@ export class GithubService implements IGitClient {
     );
   }
 
-  async createRepo(args: CreateRepoArgsType): Promise<GitRepo> {
-    const { input, gitOrganizationId } = args;
+  async createRepo({
+    name,
+    gitOrganizationId
+  }: CreateGitRepositoryInput): Promise<GitRepo> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
     );
@@ -152,26 +154,24 @@ export class GithubService implements IGitClient {
       installationId
     );
 
-    if (await this.isRepoExistWithOctokit(octokit, input.name)) {
+    if (await this.isRepoExistWithOctokit(octokit, name)) {
       throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
-    return await octokit.rest.repos
-      .createInOrg({
-        org: gitOrganizationName,
-        name: input.name
-      })
-      .then(response => {
-        const { data: repo } = response;
-        //TODO add logger
-        // console.log('Repository %s created', repo.full_name);
-        return {
-          name: repo.name,
-          url: repo.html_url,
-          private: repo.private,
-          fullName: repo.full_name,
-          admin: repo.permissions.admin
-        };
-      });
+
+    const repository = await octokit.rest.repos.createInOrg({
+      org: gitOrganizationName,
+      name
+    });
+    const { data: repo } = repository;
+    //TODO add logger
+    // console.log('Repository %s created', repo.full_name);
+    return {
+      name: repo.name,
+      url: repo.html_url,
+      private: repo.private,
+      fullName: repo.full_name,
+      admin: repo.permissions.admin
+    };
   }
 
   async getOrganizationReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {

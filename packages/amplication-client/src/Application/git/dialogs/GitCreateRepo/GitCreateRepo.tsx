@@ -40,17 +40,20 @@ export default function GitCreateRepo({
   //   }
   // );
 
-  const [triggerCreation, { loading, error }] = useMutation(CREATE_REPO, {
-    onCompleted: (data) => {
-      // const gitRepo: GitRepo = data.createRepoInOrg;
-      // handleRepoSelected(gitRepo);
-      onCompleted();
+  const [triggerCreation, { loading, error }] = useMutation(
+    CREATE_GIT_REPOSITORY_IN_ORGANIZATION,
+    {
+      onCompleted: (data) => {
+        // const gitRepo: GitRepo = data.createRepoInOrg;
+        // handleRepoSelected(gitRepo);
+        onCompleted();
 
-      trackEvent({
-        eventName: "createGitRepo",
-      });
-    },
-  });
+        trackEvent({
+          eventName: "createGitRepo",
+        });
+      },
+    }
+  );
 
   const handleCreation = useCallback(
     (data: RepoCreateInput) => {
@@ -60,10 +63,11 @@ export default function GitCreateRepo({
           gitOrganizationId,
           gitProvider,
           public: data.public,
+          appId: app.id,
         },
       }).catch((error) => {});
     },
-    [gitOrganizationId, gitProvider, triggerCreation]
+    [app.id, gitOrganizationId, gitProvider, triggerCreation]
   );
 
   // const { handleRepoSelected } = useGitSelected({ appId: app.id });
@@ -119,28 +123,22 @@ export default function GitCreateRepo({
   );
 }
 
-// const GET_GIT_ORGANIZATION_NAME = gql`
-//   query gitOrganization($id: String!) {
-//     gitOrganization(where: { id: $id }) {
-//       id
-//       name
-//     }
-//   }
-// `;
-
-const CREATE_REPO = gql`
-  mutation createRepoInOrg(
-    $sourceControlService: EnumGitProvider!
+const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
+  mutation createGitRepository(
+    $gitProvider: EnumGitProvider!
     $gitOrganizationId: String!
     $appId: String!
     $name: String!
     $public: Boolean!
   ) {
-    createRepoInOrg(
-      gitOrganizationId: $gitOrganizationId
-      appId: $appId
-      sourceControlService: $sourceControlService
-      input: { name: $name, public: $public }
+    createGitRepository(
+      data: {
+        name: $name
+        public: $public
+        gitOrganizationId: $gitOrganizationId
+        appId: $appId
+        gitProvider: $gitProvider
+      }
     ) {
       name
       url

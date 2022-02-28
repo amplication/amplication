@@ -1015,8 +1015,8 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createRepoInOrg(input: RepoCreateInput!): GitRepo!
-  createGitRepository(data: CreateGitRepositoryInput!): GitRepository!
+  createGitRepository(data: CreateGitRepositoryInput!): GitRepo!
+  connectGitRepository(data: ConnectGitRepositoryInput!): GitRepository!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteGitRepository(gitRepositoryId: String!): Boolean!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
@@ -1308,7 +1308,7 @@ input EntityPageUpdateInput {
   showFieldList: [String!]
 }
 
-input RepoCreateInput {
+input CreateGitRepositoryInput {
   name: String!
   public: Boolean!
   appId: String!
@@ -1316,7 +1316,7 @@ input RepoCreateInput {
   gitProvider: EnumGitProvider!
 }
 
-input CreateGitRepositoryInput {
+input ConnectGitRepositoryInput {
   name: String!
   appId: String!
   gitOrganizationId: String!

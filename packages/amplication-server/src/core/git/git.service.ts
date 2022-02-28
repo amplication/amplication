@@ -3,7 +3,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { FindOneArgs } from 'src/dto';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
-import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
+import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
@@ -15,6 +15,8 @@ import { GIT_REPOSITORY_EXIST, INVALID_GIT_REPOSITORY_ID } from './constants';
 import { isEmpty } from 'lodash';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
+import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
+import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 @Injectable()
 export class GitService {
   constructor(
@@ -27,47 +29,38 @@ export class GitService {
     const service = this.gitServiceFactory.getService(gitProvider);
     return await service.getOrganizationRepos(gitOrganizationId);
   }
-  async createRepo(args: CreateRepoArgs): Promise<GitRepo> {
-    const { input } = args;
-    const service = this.gitServiceFactory.getService(input.gitProvider);
-    const newRepo = await service.createRepo({
-      gitOrganizationId:input.gitOrganizationId,
-      input: input
-    });
+  async createGitRepository(args: CreateGitRepositoryInput): Promise<GitRepo> {
+    const provider = this.gitServiceFactory.getService(args.gitProvider);
+    const newRepo = await provider.createRepo(args);
 
-    await this.createGitRepository(
-      newRepo.name,
-      input.appId,
-      input.gitOrganizationId
-    );
+    await this.connectGitRepository({ ...args });
 
     return newRepo;
   }
 
- async deleteGitRepository(args: DeleteGitRepositoryArgs):Promise<boolean>{
-  
-  const gitRepository = await this.prisma.gitRepository.findFirst({
-    where: {
-      id: args.gitRepositoryId
+  async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {
+    const gitRepository = await this.prisma.gitRepository.findFirst({
+      where: {
+        id: args.gitRepositoryId
+      }
+    });
+    if (isEmpty(gitRepository)) {
+      throw new AmplicationError(INVALID_GIT_REPOSITORY_ID);
     }
-  });
-  if (isEmpty(gitRepository)) {
-    throw new AmplicationError(INVALID_GIT_REPOSITORY_ID);
+    await this.prisma.gitRepository.delete({
+      where: {
+        id: args.gitRepositoryId
+      }
+    });
+
+    return true;
   }
-   await this.prisma.gitRepository.delete({
-    where:{
-      id:args.gitRepositoryId
-    }
-  }); 
 
-  return true;
- }
-
-  async createGitRepository(
-    name: string,
-    appId: string,
-    gitOrganizationId: string
-  ): Promise<GitRepository> {
+  async connectGitRepository({
+    appId,
+    name,
+    gitOrganizationId
+  }: ConnectGitRepositoryInput): Promise<GitRepository> {
     const gitRepo = await this.prisma.gitRepository.findFirst({
       where: {
         name: name
@@ -112,7 +105,9 @@ export class GitService {
     return await service.getGitInstallationUrl(workspaceId);
   }
 
-  async deleteGitOrganization(args: DeleteGitOrganizationArgs): Promise<boolean> {
+  async deleteGitOrganization(
+    args: DeleteGitOrganizationArgs
+  ): Promise<boolean> {
     const { gitProvider, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(gitProvider);
     await this.prisma.gitOrganization.delete({

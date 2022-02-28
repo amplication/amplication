@@ -10,16 +10,16 @@ import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { AuthorizeAppWithGitResult } from '../app/dto/AuthorizeAppWithGitResult';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
-import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
+import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitService } from './git.service';
-import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
 import { GitRepository } from 'src/models/GitRepository';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
+import { ConnectGitRepositoryArgs } from './dto/args/ConnectGitRepositoryArgs';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -29,10 +29,12 @@ export class GitResolver {
   @Mutation(() => GitRepo)
   @AuthorizeContext(
     AuthorizableResourceParameter.GitOrganizationId,
-    'gitOrganizationId'
+    'data.gitOrganizationId'
   )
-  async createRepoInOrg(@Args() args: CreateRepoArgs): Promise<GitRepo> {
-    return this.gitService.createRepo(args);
+  async createGitRepository(
+    @Args() args: CreateGitRepositoryArgs
+  ): Promise<GitRepo> {
+    return this.gitService.createGitRepository(args.data);
   }
 
   @Query(() => GitOrganization)
@@ -45,14 +47,10 @@ export class GitResolver {
     AuthorizableResourceParameter.GitOrganizationId,
     'data.gitOrganizationId'
   )
-  async createGitRepository(
-    @Args() args: CreateGitRepositoryArgs
+  async connectGitRepository(
+    @Args() args: ConnectGitRepositoryArgs
   ): Promise<GitRepository> {
-    return await this.gitService.createGitRepository(
-      args.data.name,
-      args.data.appId,
-      args.data.gitOrganizationId
-    );
+    return await this.gitService.connectGitRepository(args.data);
   }
 
   @Mutation(() => GitOrganization)
@@ -82,7 +80,9 @@ export class GitResolver {
     AuthorizableResourceParameter.GitOrganizationId,
     'gitOrganizationId'
   )
-  async deleteGitOrganization(@Args() args: DeleteGitOrganizationArgs): Promise<boolean> {
+  async deleteGitOrganization(
+    @Args() args: DeleteGitOrganizationArgs
+  ): Promise<boolean> {
     return this.gitService.deleteGitOrganization(args);
   }
 

@@ -452,6 +452,12 @@ export type CommitWhereUniqueInput = {
   id?: InputMaybe<Scalars["String"]>;
 };
 
+export type ConnectGitRepositoryInput = {
+  appId: Scalars["String"];
+  gitOrganizationId: Scalars["String"];
+  name: Scalars["String"];
+};
+
 export type ConnectorRestApi = IBlock & {
   __typename?: "ConnectorRestApi";
   authenticationType: EnumConnectorRestApiAuthenticationType;
@@ -555,7 +561,9 @@ export type ConnectorRestApiWhereInput = {
 export type CreateGitRepositoryInput = {
   appId: Scalars["String"];
   gitOrganizationId: Scalars["String"];
+  gitProvider: EnumGitProvider;
   name: Scalars["String"];
+  public: Scalars["Boolean"];
 };
 
 export type DateTimeFilter = {
@@ -1213,6 +1221,7 @@ export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
   changePassword: Account;
   commit?: Maybe<Commit>;
+  connectGitRepository: GitRepository;
   createApiToken: ApiToken;
   createApp: App;
   createAppRole: AppRole;
@@ -1225,10 +1234,9 @@ export type Mutation = {
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createEntityPage: EntityPage;
-  createGitRepository: GitRepository;
+  createGitRepository: GitRepo;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
-  createRepoInOrg: GitRepo;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
   deleteApp?: Maybe<App>;
@@ -1271,6 +1279,10 @@ export type MutationChangePasswordArgs = {
 
 export type MutationCommitArgs = {
   data: CommitCreateInput;
+};
+
+export type MutationConnectGitRepositoryArgs = {
+  data: ConnectGitRepositoryInput;
 };
 
 export type MutationCreateApiTokenArgs = {
@@ -1335,10 +1347,6 @@ export type MutationCreateOneEntityArgs = {
 
 export type MutationCreateOrganizationArgs = {
   data: GitOrganizationCreateInput;
-};
-
-export type MutationCreateRepoInOrgArgs = {
-  input: RepoCreateInput;
 };
 
 export type MutationCreateWorkspaceArgs = {
@@ -1705,14 +1713,6 @@ export enum QueryMode {
   Default = "Default",
   Insensitive = "Insensitive",
 }
-
-export type RepoCreateInput = {
-  appId: Scalars["String"];
-  gitOrganizationId: Scalars["String"];
-  gitProvider: EnumGitProvider;
-  name: Scalars["String"];
-  public: Scalars["Boolean"];
-};
 
 export enum Role {
   Admin = "Admin",

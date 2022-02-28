@@ -27,9 +27,9 @@ describe('GitService', () => {
     });
     describe('GitService.createRepo()', () => {
       it('should return GitRepo', async () => {
-        const repo = await gitService.createRepo({
+        const repo = await gitService.createGitRepository({
           gitProvider,
-          input: { name: 'repo', public: true,appId: TEST_APP_MOCK.id}
+          input: { name: 'repo', public: true, appId: TEST_APP_MOCK.id }
         });
         expect(repo).toBe(TEST_GIT_REPO);
       });
