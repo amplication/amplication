@@ -147,7 +147,7 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
         <div className={`${CLASS_NAME}__actions`}>
           {isEmpty(data?.gitOrganizations) ? (
             <NewConnection
-              onSyncNewGitHubOrganizationClick={handleAuthWithGitClick}
+              onSyncNewGitOrganizationClick={handleAuthWithGitClick}
             />
           ) : (
             <ExistingConnectionsMenu
