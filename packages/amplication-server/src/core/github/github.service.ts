@@ -260,23 +260,11 @@ export class GithubService implements IGitClient {
     baseBranchName: string,
     installationId: string
   ): Promise<string> {
-    const auth = createAppAuth({
-      appId: this.configService.get(GITHUB_APP_APP_ID_VAR),
-      privateKey: this.configService
-        .get(GITHUB_APP_PRIVATE_KEY_VAR)
-        .replace(/\\n/g, '\n')
-    });
-
-    // Retrieve installation access token
-    const installationAuthentication = await auth({
-      type: 'installation',
-      installationId: installationId
-    });
-
     const myOctokit = Octokit.plugin(createPullRequest);
 
+    const token = await this.getInstallationAuthToken(installationId);
     const octokit = new myOctokit({
-      auth: installationAuthentication.token
+      auth: token
     });
 
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
@@ -376,5 +364,23 @@ export class GithubService implements IGitClient {
     const secretManager = this.googleSecretManagerService;
     const [version] = await secretManager.accessSecretVersion({ name });
     return version.payload.data.toString();
+  }
+
+  private async getInstallationAuthToken(
+    installationId: string
+  ): Promise<string> {
+    const auth = createAppAuth({
+      appId: this.configService.get(GITHUB_APP_APP_ID_VAR),
+      privateKey: this.configService
+        .get(GITHUB_APP_PRIVATE_KEY_VAR)
+        .replace(/\\n/g, '\n')
+    });
+    // Retrieve installation access token
+    return (
+      await auth({
+        type: 'installation',
+        installationId: installationId
+      })
+    ).token;
   }
 }
