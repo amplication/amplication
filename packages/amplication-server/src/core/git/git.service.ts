@@ -74,8 +74,8 @@ export class GitService {
     return await this.prisma.gitRepository.create({
       data: {
         name: name,
-        appId: appId,
-        gitOrganizationId: gitOrganizationId
+        app: { connect: { id: appId } },
+        gitOrganization: { connect: { id: gitOrganizationId } }
       }
     });
   }
