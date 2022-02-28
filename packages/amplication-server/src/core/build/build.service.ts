@@ -180,7 +180,7 @@ export class BuildService {
         id: args.data.createdBy.connect.id
       }
     });
-    
+
     //TODO
     /**@todo: set version based on release when applicable */
     const commitId = args.data.commit.connect.id;
@@ -194,11 +194,6 @@ export class BuildService {
       ...args,
       data: {
         ...args.data,
-        app:{
-          connect:{
-            id: appId
-          }
-        },
         version,
         createdAt: new Date(),
         blockVersions: {
@@ -594,7 +589,16 @@ export class BuildService {
     modules: DataServiceGenerator.Module[]
   ) {
     const app = build.app;
-    //get reposiroty from appId
+
+    const appRepository = await this.prisma.gitRepository.findFirst({
+      where: {
+        appId: app.id
+      },
+      include: {
+        gitOrganization: true
+      }
+    });
+
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
@@ -607,8 +611,7 @@ export class BuildService {
 
     const url = `${host}/${build.appId}/builds/${build.id}`;
 
-    if (app.gitRepository) {
-      const [userName, repoName] = app.gitRepository.name;
+    if (appRepository) {
       return this.actionService.run(
         build.actionId,
         PUSH_TO_GITHUB_STEP_NAME,
@@ -617,8 +620,8 @@ export class BuildService {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
             const prUrl = await this.githubService.createPullRequest(
-              userName,
-              repoName,
+              appRepository.gitOrganization.name,
+              appRepository.name,
               modules,
               `amplication-build-${build.id}`,
               commitMessage,
@@ -628,7 +631,7 @@ Commit message: ${commit.message}
 ${url}
 `,
               app.githubBranch,
-              app.gitRepository.gitOrganization.installationId
+              appRepository.gitOrganization.installationId
             );
 
             await this.appService.reportSyncMessage(
