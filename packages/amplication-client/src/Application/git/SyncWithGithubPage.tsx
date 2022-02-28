@@ -10,7 +10,7 @@ import "./SyncWithGithubPage.scss";
 
 const CLASS_NAME = "sync-with-github-page";
 
-export type APP_WITH_GIT_REPOSITORY_TData = {
+export type AppWithGitRepository = {
   app: { id: string; gitRepository: null | { id: string } };
 };
 
@@ -21,7 +21,7 @@ const NAVIGATION_KEY = "GITHUB";
 function SyncWithGithubPage({ match }: Props) {
   const { application } = match.params;
 
-  const { data, error, refetch } = useQuery<APP_WITH_GIT_REPOSITORY_TData>(
+  const { data, error, refetch } = useQuery<AppWithGitRepository>(
     GET_APP_GIT_REPOSITORY,
     {
       variables: {

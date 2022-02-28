@@ -3,7 +3,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
 import { isEmpty } from "lodash";
 import React, { useCallback, useRef, useState } from "react";
-import * as models from "../../models";
+import { App, AuthorizeAppWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
@@ -12,10 +12,10 @@ import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
-import { APP_WITH_GIT_REPOSITORY_TData } from "./SyncWithGithubPage";
+import { AppWithGitRepository } from "./SyncWithGithubPage";
 
 type DType = {
-  getGitAppInstallationUrl: models.AuthorizeAppWithGithubResult;
+  getGitAppInstallationUrl: AuthorizeAppWithGitResult;
 };
 
 // eslint-disable-next-line
@@ -23,7 +23,7 @@ let triggerOnDone = () => {};
 let triggerAuthFailed = () => {};
 
 type Props = {
-  app: APP_WITH_GIT_REPOSITORY_TData;
+  app: AppWithGitRepository;
   onDone: () => void;
 };
 
@@ -62,7 +62,7 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
   );
 
   const [removeAuthWithGithub, { error: removeError }] = useMutation<{
-    removeAuthorizeAppWithGithub: models.App;
+    removeAuthorizeAppWithGithub: App;
   }>(REMOVE_AUTH_APP_WITH_GITHUB, {
     onCompleted: () => {
       onDone();
@@ -137,7 +137,7 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
           popupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
           setGitCreateRepo={setCreateNewRepoOpen}
-          sourceControlService={models.EnumGitProvider.Github}
+          sourceControlService={EnumGitProvider.Github}
           confirmRemove={confirmRemove}
           handleConfirmRemoveAuth={handleConfirmRemoveAuth}
           handleDismissRemove={handleDismissRemove}
