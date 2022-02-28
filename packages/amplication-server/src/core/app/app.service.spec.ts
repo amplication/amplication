@@ -58,7 +58,6 @@ const EXAMPLE_APP: App = {
   updatedAt: new Date(),
   name: EXAMPLE_APP_NAME,
   description: EXAMPLE_APP_DESCRIPTION,
-  githubSyncEnabled: false,
   deletedAt: null
 };
 

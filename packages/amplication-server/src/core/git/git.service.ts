@@ -3,7 +3,6 @@ import { PrismaService } from 'nestjs-prisma';
 import { FindOneArgs } from 'src/dto';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
-import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';

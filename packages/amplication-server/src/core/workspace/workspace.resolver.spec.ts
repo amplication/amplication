@@ -43,8 +43,7 @@ const EXAMPLE_APP: App = {
   name: EXAMPLE_APP_NAME,
   description: EXAMPLE_APP_DESCRIPTION,
   createdAt: new Date(),
-  updatedAt: new Date(),
-  githubSyncEnabled: false
+  updatedAt: new Date()
 };
 
 const GET_WORKSPACE_QUERY = gql`
@@ -65,7 +64,6 @@ const GET_APPS_QUERY = gql`
         id
         name
         description
-        githubSyncEnabled
         createdAt
         updatedAt
       }
