@@ -17,6 +17,7 @@ type Props = {
   confirmRemove: boolean;
   handleConfirmRemoveAuth: any;
   handleDismissRemove: any;
+  gitOrganizationName: string;
 };
 const CONFIRM_BUTTON = { label: "Disable Sync" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -34,6 +35,7 @@ export default function GitDialogsContainer({
   confirmRemove,
   handleConfirmRemoveAuth,
   handleDismissRemove,
+  gitOrganizationName,
 }: Props) {
   return (
     <div>
@@ -82,6 +84,7 @@ export default function GitDialogsContainer({
           onCompleted={() => {
             setGitCreateRepo(false);
           }}
+          gitOrganizationName={gitOrganizationName}
         />
       </Dialog>
     </div>

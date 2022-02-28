@@ -4,13 +4,12 @@ import {
   Label,
   TextField,
 } from "@amplication/design-system";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React from "react";
+import React, { useCallback } from "react";
 import { App, EnumGitProvider, RepoCreateInput } from "../../../../models";
+import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
-import useGitCreate from "../../hooks/useGitCreate";
-import useGitSelected from "../../hooks/useGitSelected";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 
@@ -19,6 +18,7 @@ type Props = {
   app: App;
   gitOrganizationId: string;
   onCompleted: Function;
+  gitOrganizationName: string;
 };
 
 const CLASS_NAME = "git-create";
@@ -28,32 +28,50 @@ export default function GitCreateRepo({
   gitOrganizationId,
   gitProvider,
   onCompleted,
+  gitOrganizationName,
 }: Props) {
   const initialValues: RepoCreateInput = { name: "", public: true };
+  const { trackEvent } = useTracking();
 
-  const { data } = useQuery<{ gitOrganization: { name: string } }>(
-    GET_GIT_ORGANIZATION_NAME,
-    {
-      variables: { id: gitOrganizationId },
-    }
-  );
+  // const { data } = useQuery<{ gitOrganization: { name: string } }>(
+  //   GET_GIT_ORGANIZATION_NAME,
+  //   {
+  //     variables: { id: gitOrganizationId },
+  //   }
+  // );
 
-  const { handleRepoSelected } = useGitSelected({ appId: app.id });
-  const { loading, handleCreation, error } = useGitCreate({
-    gitOrganizationId: gitOrganizationId,
-    appId: app.id,
-    sourceControlService: gitProvider,
-    cb: (repo) => {
-      handleRepoSelected(repo);
+  const [triggerCreation, { loading, error }] = useMutation(CREATE_REPO, {
+    onCompleted: (data) => {
+      // const gitRepo: GitRepo = data.createRepoInOrg;
+      // handleRepoSelected(gitRepo);
       onCompleted();
+
+      trackEvent({
+        eventName: "createGitRepo",
+      });
     },
   });
+
+  const handleCreation = useCallback(
+    (data: RepoCreateInput) => {
+      triggerCreation({
+        variables: {
+          name: data.name,
+          gitOrganizationId,
+          gitProvider,
+          public: data.public,
+        },
+      }).catch((error) => {});
+    },
+    [gitOrganizationId, gitProvider, triggerCreation]
+  );
+
+  // const { handleRepoSelected } = useGitSelected({ appId: app.id });
+
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={(values) => {
-        handleCreation(values);
-      }}
+      onSubmit={handleCreation}
       validationSchema={CreateGitFormSchema}
     >
       {({ errors: formError }) => (
@@ -72,7 +90,7 @@ export default function GitCreateRepo({
             </tr>
             <tr>
               <td style={{ position: "relative", top: "-5px" }}>
-                {data?.gitOrganization.name || ""}/
+                {gitOrganizationName}/
               </td>
               <td>
                 <TextField name="name" autoComplete="off" showError={false} />
@@ -101,11 +119,34 @@ export default function GitCreateRepo({
   );
 }
 
-const GET_GIT_ORGANIZATION_NAME = gql`
-  query gitOrganization($id: String!) {
-    gitOrganization(where: { id: $id }) {
-      id
+// const GET_GIT_ORGANIZATION_NAME = gql`
+//   query gitOrganization($id: String!) {
+//     gitOrganization(where: { id: $id }) {
+//       id
+//       name
+//     }
+//   }
+// `;
+
+const CREATE_REPO = gql`
+  mutation createRepoInOrg(
+    $sourceControlService: EnumGitProvider!
+    $gitOrganizationId: String!
+    $appId: String!
+    $name: String!
+    $public: Boolean!
+  ) {
+    createRepoInOrg(
+      gitOrganizationId: $gitOrganizationId
+      appId: $appId
+      sourceControlService: $sourceControlService
+      input: { name: $name, public: $public }
+    ) {
       name
+      url
+      private
+      fullName
+      admin
     }
   }
 `;

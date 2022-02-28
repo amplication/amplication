@@ -141,6 +141,7 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
           confirmRemove={confirmRemove}
           handleConfirmRemoveAuth={handleConfirmRemoveAuth}
           handleDismissRemove={handleDismissRemove}
+          gitOrganizationName={gitOrganization.name}
         />
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
