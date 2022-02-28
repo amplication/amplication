@@ -1,3 +1,4 @@
+import { PrismaService } from 'nestjs-prisma';
 import { TEST_APP_MOCK } from 'src/core/app/__mocks__/App.mock';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 import { GitService } from '../git.service';
@@ -7,8 +8,9 @@ import { TEST_GIT_REPOS } from '../__mocks__/GitRepos';
 
 describe('GitService', () => {
   let gitService: GitService;
+  let prismaService: PrismaService;
   beforeEach(() => {
-    gitService = new GitService(MOCK_GIT_SERVICE_FACTORY);
+    gitService = new GitService(MOCK_GIT_SERVICE_FACTORY, prismaService);
   });
   it('should be defined', () => {
     expect(gitService).toBeDefined();
@@ -16,10 +18,11 @@ describe('GitService', () => {
   //#region github
   {
     const gitProvider = EnumGitProvider.Github;
+    const gitOrganizationId = 'dfggfgg47448';
     describe('GitService.getReposOfOrganization()', () => {
       it('should return GitRepo[]', async () => {
         const repos = await gitService.getReposOfOrganization({
-          appId: TEST_APP_MOCK.id,
+          gitOrganizationId,
           gitProvider
         });
         expect(repos).toBe(TEST_GIT_REPOS);
@@ -28,8 +31,11 @@ describe('GitService', () => {
     describe('GitService.createRepo()', () => {
       it('should return GitRepo', async () => {
         const repo = await gitService.createGitRepository({
-          gitProvider,
-          input: { name: 'repo', public: true, appId: TEST_APP_MOCK.id }
+          name: 'repo',
+          appId: TEST_APP_MOCK.id,
+          gitOrganizationId: gitOrganizationId,
+          public: true,
+          gitProvider: gitProvider
         });
         expect(repo).toBe(TEST_GIT_REPO);
       });

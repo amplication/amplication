@@ -245,8 +245,7 @@ const EXAMPLE_APP: App = {
   updatedAt: new Date(),
   name: 'exampleAppName',
   description: 'example App Description',
-  color: '#20A4F3',
-  githubSyncEnabled: false
+  color: '#20A4F3'
 };
 
 const EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT: Build = {
