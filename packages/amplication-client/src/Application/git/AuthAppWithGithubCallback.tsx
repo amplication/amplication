@@ -5,16 +5,13 @@ import { useTracking } from "../../util/analytics";
 
 const AuthAppWithGithubCallback = () => {
   const { trackEvent } = useTracking();
-  const [completeAuthWithGithub] = useMutation<Boolean>(
-    CREATE_GIT_ORGANIZATION,
-    {
-      onCompleted: (data) => {
-        window.opener.postMessage({ completed: true });
-        // close the popup
-        window.close();
-      },
-    }
-  );
+  const [completeAuthWithGit] = useMutation<Boolean>(CREATE_GIT_ORGANIZATION, {
+    onCompleted: (data) => {
+      window.opener.postMessage({ completed: true });
+      // close the popup
+      window.close();
+    },
+  });
 
   useEffect(() => {
     // get the URL parameters with the code and state values
@@ -26,7 +23,7 @@ const AuthAppWithGithubCallback = () => {
       trackEvent({
         eventName: "completeAuthAppWithGitHub",
       });
-      completeAuthWithGithub({
+      completeAuthWithGit({
         variables: {
           workspaceId,
           installationId,
@@ -34,7 +31,7 @@ const AuthAppWithGithubCallback = () => {
         },
       }).catch(console.error);
     }
-  }, [completeAuthWithGithub, trackEvent]);
+  }, [completeAuthWithGit, trackEvent]);
 
   /**@todo: show formatted layout and optional error message */
   return <p>Please wait...</p>;

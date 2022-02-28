@@ -3,7 +3,12 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
 import { isEmpty } from "lodash";
 import React, { useCallback, useRef, useState } from "react";
-import { App, AuthorizeAppWithGitResult, EnumGitProvider } from "../../models";
+import {
+  App,
+  AuthorizeAppWithGitResult,
+  EnumGitProvider,
+  GitOrganization,
+} from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGithub.scss";
@@ -38,30 +43,25 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
       }
     ];
   }>(GET_GIT_ORGANIZATIONS);
-  // const { gitOrganizations } = useGetGitOrganizations({
-  //   workspaceId: app.workspaceId as string,
-  // });
   const [
     gitOrganization,
     setGitOrganization,
-  ] = useState<models.GitOrganization | null>(
-    data?.gitOrganizations[0] || null
-  );
+  ] = useState<GitOrganization | null>(data?.gitOrganizations[0] || null);
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
   const { trackEvent } = useTracking();
-  const [authWithGithub, { error }] = useMutation<DType>(
+  const [authWithGit, { error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
     {
       onCompleted: (data) => {
-        openSignInWindow(data.getGitAppInstallationUrl.url, "auth with github");
+        openSignInWindow(data.getGitAppInstallationUrl.url, "auth with git");
       },
     }
   );
 
-  const [removeAuthWithGithub, { error: removeError }] = useMutation<{
+  const [removeAuthWithGit, { error: removeError }] = useMutation<{
     removeAuthorizeAppWithGithub: App;
   }>(REMOVE_AUTH_APP_WITH_GITHUB, {
     onCompleted: () => {
@@ -76,14 +76,14 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
   const handleSelectRepoDialogOpen = useCallback(() => {
     setSelectRepoOpen(true);
   }, []);
-  const handleAuthWithGithubClick = useCallback(() => {
+  const handleAuthWithGitClick = useCallback(() => {
     if (isEmpty(app.githubTokenCreatedDate)) {
       trackEvent({
         eventName: "startAuthAppWithGitHub",
       });
       console.log({ app });
 
-      authWithGithub({
+      authWithGit({
         variables: {
           sourceControlService: "Github",
         },
@@ -91,12 +91,12 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
     } else {
       setConfirmRemove(true);
     }
-  }, [authWithGithub, app, trackEvent]);
+  }, [authWithGit, app, trackEvent]);
 
   const MDCSwitchRef = useRef<MDCSwitchFoundation>(null);
   const handleDismissRemove = useCallback(() => {
     setConfirmRemove(false);
-    // `handleAuthWithGithubClick -> setConfirmRemove` is triggered by `Toggle.onValueChange`.
+    // `handleAuthWithGitClick -> setConfirmRemove` is triggered by `Toggle.onValueChange`.
     // Behind the scenes, a `MDCSwitchFoundation.setChecked(false)` was triggered.
     // now that the toggle is cancelled, should explicitly call `MDCSwitchFoundation.setChecked(true)`.
     MDCSwitchRef.current?.setChecked(true);
@@ -107,12 +107,12 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
       eventName: "removeAuthAppWithGitHub",
     });
     setConfirmRemove(false);
-    removeAuthWithGithub({
+    removeAuthWithGit({
       variables: {
         appId: app.id,
       },
     }).catch(console.error);
-  }, [removeAuthWithGithub, app, trackEvent]);
+  }, [removeAuthWithGit, app, trackEvent]);
   const handlePopupFailedClose = () => {
     MDCSwitchRef.current?.setChecked(false);
     setPopupFailed(false);
@@ -147,7 +147,7 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
         <div className={`${CLASS_NAME}__actions`}>
           {isEmpty(data?.gitOrganizations) ? (
             <NewConnection
-              onSyncNewGitHubOrganizationClick={handleAuthWithGithubClick}
+              onSyncNewGitHubOrganizationClick={handleAuthWithGitClick}
             />
           ) : (
             <ExistingConnectionsMenu
@@ -156,7 +156,7 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
                 setGitOrganization(organization);
               }}
               selectedGitOrganization={gitOrganization}
-              onAddGitOrganization={handleAuthWithGithubClick}
+              onAddGitOrganization={handleAuthWithGitClick}
             />
           )}
         </div>
