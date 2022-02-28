@@ -9,7 +9,6 @@ import { GitOrganization } from 'src/models/GitOrganization';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { AuthorizeAppWithGithubResult } from '../app/dto/AuthorizeAppWithGithubResult';
-import { BaseGitArgs } from './dto/args/BaseGitArgs';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { CreateRepoArgs } from './dto/args/CreateRepoArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
@@ -20,6 +19,7 @@ import { GitService } from './git.service';
 import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
 import { GitRepository } from 'src/models/GitRepository';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
+import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -80,7 +80,7 @@ export class GitResolver {
     AuthorizableResourceParameter.GitOrganizationId,
     'gitOrganizationId'
   )
-  async deleteOrganization(@Args() args: BaseGitArgs): Promise<boolean> {
+  async deleteGitOrganization(@Args() args: DeleteGitOrganizationArgs): Promise<boolean> {
     return this.gitService.deleteGitOrganization(args);
   }
 

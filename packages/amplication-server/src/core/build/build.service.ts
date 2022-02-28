@@ -180,6 +180,7 @@ export class BuildService {
         id: args.data.createdBy.connect.id
       }
     });
+    
     //TODO
     /**@todo: set version based on release when applicable */
     const commitId = args.data.commit.connect.id;
@@ -193,6 +194,11 @@ export class BuildService {
       ...args,
       data: {
         ...args.data,
+        app:{
+          connect:{
+            id: appId
+          }
+        },
         version,
         createdAt: new Date(),
         blockVersions: {
@@ -218,6 +224,7 @@ export class BuildService {
     const logger = this.logger.child({
       buildId: build.id
     });
+
     logger.info(JOB_STARTED_LOG);
     const tarballURL = await this.generate(build, user);
     if (!skipPublish) {
@@ -587,6 +594,7 @@ export class BuildService {
     modules: DataServiceGenerator.Module[]
   ) {
     const app = build.app;
+    //get reposiroty from appId
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
@@ -620,7 +628,7 @@ Commit message: ${commit.message}
 ${url}
 `,
               app.githubBranch,
-              app.githubToken //todo: get the installationId from gitOrganization
+              app.gitRepository.gitOrganization.installationId
             );
 
             await this.appService.reportSyncMessage(

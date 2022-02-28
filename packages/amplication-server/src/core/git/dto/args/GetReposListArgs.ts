@@ -1,5 +1,12 @@
-import { ArgsType } from '@nestjs/graphql';
-import { BaseGitArgs } from './BaseGitArgs';
-
+import { ArgsType, Field } from '@nestjs/graphql';
+import { EnumGitProvider } from '../enums/EnumGitProvider';
 @ArgsType()
-export class GetReposListArgs extends BaseGitArgs {}
+export class GetReposListArgs {
+   
+    @Field(() => String, { nullable: false })
+    gitOrganizationId!: string;
+
+    @Field(() => EnumGitProvider, { nullable: false })
+    gitProvider!: EnumGitProvider;
+
+}
