@@ -241,7 +241,7 @@ const openSignInWindow = (url: string, name: string) => {
 
 const GET_GIT_ORGANIZATIONS = gql`
   {
-    gitOrganizations(where: {}) {
+    gitOrganizations {
       id
       name
     }
