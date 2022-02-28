@@ -43,13 +43,6 @@ export class GithubService implements IGitClient {
     private readonly googleSecretManagerService: GoogleSecretsManagerService,
     private readonly prisma: PrismaService
   ) {}
-  async getGitOrganizations(workspaceId: string): Promise<GitOrganization[]> {
-    return await this.prisma.gitOrganization.findMany({
-      where: {
-        workspaceId: workspaceId
-      }
-    });
-  }
   async deleteGitOrganization(gitOrganizationId: string): Promise<boolean> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
