@@ -137,7 +137,7 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
           popupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
           setGitCreateRepo={setCreateNewRepoOpen}
-          sourceControlService={EnumGitProvider.Github}
+          gitProvider={EnumGitProvider.Github}
           confirmRemove={confirmRemove}
           handleConfirmRemoveAuth={handleConfirmRemoveAuth}
           handleDismissRemove={handleDismissRemove}

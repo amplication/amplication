@@ -14,8 +14,8 @@ export default function useGetReposOfUser({
     getReposOfOrganization: GitRepo[];
   }>(FIND_GIT_REPOS, {
     variables: {
-      gitOrganizationId: gitOrganizationId,
-      sourceControlService: gitProvider,
+      gitOrganizationId,
+      gitProvider,
     },
     notifyOnNetworkStatusChange: true,
   });
@@ -31,11 +31,11 @@ export default function useGetReposOfUser({
 const FIND_GIT_REPOS = gql`
   query getReposOfOrganization(
     $gitOrganizationId: String!
-    $sourceControlService: EnumGitProvider!
+    $gitProvider: EnumGitProvider!
   ) {
     getReposOfOrganization(
       gitOrganizationId: $gitOrganizationId
-      sourceControlService: $sourceControlService
+      gitProvider: $gitProvider
     ) {
       name
       url
