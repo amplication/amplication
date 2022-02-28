@@ -321,6 +321,9 @@ export class AppService {
       where: {
         id: args.where.id,
         deletedAt: null
+      },
+      include: {
+        gitRepository: true
       }
     });
   }
@@ -343,6 +346,14 @@ export class AppService {
     });
     if (isEmpty(app)) {
       throw new Error(INVALID_APP_ID);
+    }
+
+    if (app.gitRepository) {
+      await this.prisma.gitRepository.delete({
+        where: {
+          id: app.gitRepository.id
+        }
+      });
     }
 
     return this.prisma.app.update({

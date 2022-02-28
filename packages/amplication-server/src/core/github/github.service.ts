@@ -81,6 +81,26 @@ export class GithubService implements IGitClient {
       octokit,
       installationId
     );
+
+    const gitOrganization = await this.prisma.gitOrganization.findFirst({
+      where: {
+        name: gitOrganizationName
+      }
+    });
+
+    if (gitOrganization) {
+      return await this.prisma.gitOrganization.update({
+        where: {
+          id: gitOrganization.id
+        },
+        data: {
+          ...args.data,
+          installationId: args.data.installationId,
+          name: gitOrganizationName
+        }
+      });
+    }
+
     return await this.prisma.gitOrganization.create({
       data: {
         ...args.data,
