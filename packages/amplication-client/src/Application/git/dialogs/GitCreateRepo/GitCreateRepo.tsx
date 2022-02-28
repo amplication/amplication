@@ -15,7 +15,7 @@ import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 
 type Props = {
-  sourceControlService: EnumGitProvider;
+  gitProvider: EnumGitProvider;
   app: App;
   gitOrganizationId: string;
   onCompleted: Function;
@@ -26,7 +26,7 @@ const CLASS_NAME = "git-create";
 export default function GitCreateRepo({
   app,
   gitOrganizationId,
-  sourceControlService,
+  gitProvider,
   onCompleted,
 }: Props) {
   const initialValues: RepoCreateInput = { name: "", public: true };
@@ -42,7 +42,7 @@ export default function GitCreateRepo({
   const { loading, handleCreation, error } = useGitCreate({
     gitOrganizationId: gitOrganizationId,
     appId: app.id,
-    sourceControlService,
+    sourceControlService: gitProvider,
     cb: (repo) => {
       handleRepoSelected(repo);
       onCompleted();
@@ -60,8 +60,8 @@ export default function GitCreateRepo({
         <Form>
           <div className={`${CLASS_NAME}__header`}>
             <h4>
-              Create a new {sourceControlService} repository to sync your
-              application with
+              Create a new {gitProvider} repository to sync your application
+              with
             </h4>
             <br />
           </div>

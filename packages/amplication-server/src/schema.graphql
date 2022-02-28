@@ -7,7 +7,7 @@ type Auth {
   token: String!
 }
 
-type AuthorizeAppWithGithubResult {
+type AuthorizeAppWithGitResult {
   """"""
   url: String!
 }
@@ -1025,7 +1025,7 @@ type Mutation {
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteGitRepository(gitRepositoryId: String!): Boolean!
   deleteOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!): Boolean!
-  getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGithubResult!
+  getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGitResult!
 }
 
 input UpdateAccountInput {

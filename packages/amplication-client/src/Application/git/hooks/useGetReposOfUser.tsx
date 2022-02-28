@@ -3,19 +3,19 @@ import { EnumGitProvider, GitRepo } from "../../../models";
 
 type Props = {
   gitOrganizationId: string;
-  sourceControlService: EnumGitProvider;
+  gitProvider: EnumGitProvider;
 };
 
 export default function useGetReposOfUser({
   gitOrganizationId,
-  sourceControlService,
+  gitProvider,
 }: Props) {
   const { data, error, loading, refetch, networkStatus } = useQuery<{
     getReposOfOrganization: GitRepo[];
   }>(FIND_GIT_REPOS, {
     variables: {
       gitOrganizationId: gitOrganizationId,
-      sourceControlService,
+      sourceControlService: gitProvider,
     },
     notifyOnNetworkStatusChange: true,
   });

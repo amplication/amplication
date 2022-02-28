@@ -19,14 +19,14 @@ type Props = {
   gitOrganizationId: string;
   applicationId: string;
   onCompleted: () => void;
-  sourceControlService: EnumGitProvider;
+  gitProvider: EnumGitProvider;
 };
 
 function GitRepos({
   applicationId,
   gitOrganizationId,
   onCompleted,
-  sourceControlService,
+  gitProvider,
 }: Props) {
   const {
     refetch,
@@ -36,7 +36,7 @@ function GitRepos({
     networkStatus,
   } = useGetReposOfUser({
     gitOrganizationId: gitOrganizationId,
-    sourceControlService,
+    gitProvider,
   });
 
   const { handleRepoSelected, error: errorUpdate } = useGitSelected({
@@ -54,8 +54,7 @@ function GitRepos({
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
         <h4>
-          Select a {sourceControlService} repository to sync your application
-          with.
+          Select a {gitProvider} repository to sync your application with.
         </h4>
         {loadingRepos || networkStatus === NetworkStatus.refetch ? (
           <CircularProgress />

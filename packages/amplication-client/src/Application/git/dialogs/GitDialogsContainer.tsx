@@ -13,7 +13,7 @@ type Props = {
   handlePopupFailedClose: any;
   gitCreateRepoOpen: boolean;
   setGitCreateRepo: any;
-  sourceControlService: EnumGitProvider;
+  gitProvider: EnumGitProvider;
   confirmRemove: boolean;
   handleConfirmRemoveAuth: any;
   handleDismissRemove: any;
@@ -30,7 +30,7 @@ export default function GitDialogsContainer({
   handlePopupFailedClose,
   gitCreateRepoOpen,
   setGitCreateRepo,
-  sourceControlService,
+  gitProvider,
   confirmRemove,
   handleConfirmRemoveAuth,
   handleDismissRemove,
@@ -39,24 +39,24 @@ export default function GitDialogsContainer({
     <div>
       <ConfirmationDialog
         isOpen={confirmRemove}
-        title={`Disable Sync with ${sourceControlService}`}
+        title={`Disable Sync with ${gitProvider}`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message={`Are you sure you want to disable sync with ${sourceControlService}?`}
+        message={`Are you sure you want to disable sync with ${gitProvider}?`}
         onConfirm={handleConfirmRemoveAuth}
         onDismiss={handleDismissRemove}
       />
       <Dialog
         className="select-repo-dialog"
         isOpen={selectRepoOpen}
-        title={`Select ${sourceControlService} repository`}
+        title={`Select ${gitProvider} repository`}
         onDismiss={handleSelectRepoDialogDismiss}
       >
         <GitRepos
           applicationId={app.id}
           gitOrganizationId={gitOrganizationId}
           onCompleted={handleSelectRepoDialogDismiss}
-          sourceControlService={sourceControlService}
+          gitProvider={gitProvider}
         />
       </Dialog>
       <Dialog
@@ -76,7 +76,7 @@ export default function GitDialogsContainer({
         }}
       >
         <GitCreateRepo
-          sourceControlService={sourceControlService}
+          gitProvider={gitProvider}
           app={app}
           gitOrganizationId={gitOrganizationId}
           onCompleted={() => {
