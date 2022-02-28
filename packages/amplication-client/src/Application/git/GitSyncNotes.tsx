@@ -1,6 +1,6 @@
 import { Icon } from "@amplication/design-system";
 import React from "react";
-import { CLASS_NAME } from "./AuthAppWithGithub";
+import { CLASS_NAME } from "./AuthAppWithGit";
 
 export default function GitSyncNotes() {
   return (

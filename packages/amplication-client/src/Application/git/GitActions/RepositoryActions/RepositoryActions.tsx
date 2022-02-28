@@ -6,8 +6,8 @@ import {
   Panel,
 } from "@amplication/design-system";
 import React from "react";
-import { CLASS_NAME } from "../../AuthAppWithGithub";
-import "../../AuthAppWithGithub.scss";
+import { CLASS_NAME } from "../../AuthAppWithGit";
+import "../../AuthAppWithGit.scss";
 
 type Props = {
   onClickCreateRepository: () => void;

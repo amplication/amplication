@@ -11,7 +11,7 @@ import {
 } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
-import "./AuthAppWithGithub.scss";
+import "./AuthAppWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
@@ -34,7 +34,7 @@ type Props = {
 
 export const CLASS_NAME = "auth-app-with-github";
 
-function AuthAppWithGithub({ app: { app }, onDone }: Props) {
+function AuthAppWithGit({ app: { app }, onDone }: Props) {
   const { data } = useQuery<{
     gitOrganizations: [
       {
@@ -176,7 +176,7 @@ function AuthAppWithGithub({ app: { app }, onDone }: Props) {
   );
 }
 
-export default AuthAppWithGithub;
+export default AuthAppWithGit;
 
 const START_AUTH_APP_WITH_GITHUB = gql`
   mutation getGitAppInstallationUrl($sourceControlService: EnumGitProvider!) {

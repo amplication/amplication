@@ -5,7 +5,7 @@ import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
 import useNavigationTabs from "../../Layout/UseNavigationTabs";
 import { formatError } from "../../util/error";
-import AuthAppWithGithub from "./AuthAppWithGithub";
+import AuthAppWithGit from "./AuthAppWithGit";
 import "./SyncWithGithubPage.scss";
 
 const CLASS_NAME = "sync-with-github-page";
@@ -44,7 +44,7 @@ function SyncWithGithubPage({ match }: Props) {
           your application and create a Pull Request in your GitHub repository
           every time you commit your changes.
         </div>
-        {data?.app && <AuthAppWithGithub app={data} onDone={refetch} />}
+        {data?.app && <AuthAppWithGit app={data} onDone={refetch} />}
 
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>
