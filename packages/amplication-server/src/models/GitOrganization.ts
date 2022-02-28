@@ -6,38 +6,21 @@ import { EnumGitProvider } from 'src/core/git/dto/enums/EnumGitProvider';
   description: undefined
 })
 export class GitOrganization {
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
+  @Field(() => String, { nullable: false })
   id!: string;
 
-  @Field(() => EnumGitProvider, {
-    nullable: false
-  })
+  @Field(() => EnumGitProvider, { nullable: false })
   provider!: keyof typeof EnumGitProvider;
 
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
+  @Field(() => String, { nullable: false })
   name!: string;
 
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
+  @Field(() => String, { nullable: false })
   installationId!: string;
 
-  @Field(() => Date, {
-    nullable: false,
-    description: undefined
-  })
+  @Field(() => Date, { nullable: false })
   createdAt!: Date;
 
-  @Field(() => Date, {
-    nullable: false,
-    description: undefined
-  })
+  @Field(() => Date, { nullable: false })
   updatedAt!: Date;
 }
