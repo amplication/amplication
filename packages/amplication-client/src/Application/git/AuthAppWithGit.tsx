@@ -3,12 +3,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
 import { isEmpty } from "lodash";
 import React, { useCallback, useRef, useState } from "react";
-import {
-  App,
-  AuthorizeAppWithGitResult,
-  EnumGitProvider,
-  GitOrganization,
-} from "../../models";
+import { App, AuthorizeAppWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGit.scss";
@@ -17,7 +12,10 @@ import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
-import { AppWithGitRepository } from "./SyncWithGithubPage";
+import {
+  AppWithGitRepository,
+  GitOrganizationFromGitRepository,
+} from "./SyncWithGithubPage";
 
 type DType = {
   getGitAppInstallationUrl: AuthorizeAppWithGitResult;
@@ -35,20 +33,15 @@ type Props = {
 export const CLASS_NAME = "auth-app-with-github";
 
 function AuthAppWithGit({ app: { app }, onDone }: Props) {
-  console.log({ app });
-
   const { data } = useQuery<{
-    gitOrganizations: [
-      {
-        id: string;
-        name: string;
-      }
-    ];
+    gitOrganizations: GitOrganizationFromGitRepository[];
   }>(GET_GIT_ORGANIZATIONS);
   const [
     gitOrganization,
     setGitOrganization,
-  ] = useState<GitOrganization | null>(data?.gitOrganizations[0] || null);
+  ] = useState<GitOrganizationFromGitRepository | null>(
+    app.gitRepository?.gitOrganization || null
+  );
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
@@ -126,6 +119,7 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
     setPopupFailed(true);
   };
   const errorMessage = formatError(error || removeError);
+  console.log(app.gitRepository);
 
   return (
     <>
@@ -169,6 +163,7 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
               setCreateNewRepoOpen(true);
             }}
             onClickSelectRepository={handleSelectRepoDialogOpen}
+            currentConnectedGitRepository={app.gitRepository}
           />
         )}
         <GitSyncNotes />

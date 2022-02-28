@@ -10,8 +10,17 @@ import "./SyncWithGithubPage.scss";
 
 const CLASS_NAME = "sync-with-github-page";
 
+export type GitOrganizationFromGitRepository = { id: string; name: string };
+export type GitRepositoryWithGitOrganization = {
+  id: string;
+  name: string;
+  gitOrganization: GitOrganizationFromGitRepository;
+};
 export type AppWithGitRepository = {
-  app: { id: string; gitRepository: null | { id: string } };
+  app: {
+    id: string;
+    gitRepository: null | GitRepositoryWithGitOrganization;
+  };
 };
 
 type Props = {
@@ -63,6 +72,7 @@ const GET_APP_GIT_REPOSITORY = gql`
         name
         gitOrganization {
           id
+          name
         }
       }
     }

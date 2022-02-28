@@ -5,7 +5,7 @@ import { CLASS_NAME } from "./AuthAppWithGit";
 export default function GitSyncNotes() {
   return (
     <div className={`${CLASS_NAME}__notice`}>
-      Please note:
+      <span className={`${CLASS_NAME}__notice__title`}>Please note:</span>
       <ul>
         <li>
           <Icon icon="check_circle" />

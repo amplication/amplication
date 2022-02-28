@@ -16,9 +16,9 @@ $icon-font-size: 40px;
 
   &__message {
     @include body1;
+    color: white !important;
     line-height: 1.5;
-    color: var(--black80);
-    margin-bottom: var(--triple-spacing);
+    margin-bottom: var(--default-spacing);
     max-width: $max-width;
   }
 }

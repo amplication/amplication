@@ -49,7 +49,7 @@ function GitRepos({
         variables: {
           gitOrganizationId,
           appId: applicationId,
-          name: data.fullName,
+          name: data.name,
         },
       }).catch(console.error);
       trackEvent({
