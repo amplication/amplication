@@ -104,6 +104,7 @@ export default function GitCreateRepo({
 const GET_GIT_ORGANIZATION_NAME = gql`
   query gitOrganization($id: String!) {
     gitOrganization(where: { id: $id }) {
+      id
       name
     }
   }
