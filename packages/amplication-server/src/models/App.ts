@@ -30,11 +30,6 @@ export class App {
 
   workspace?: Workspace;
 
-  @Field(() => String, {
-    //todo: check change to required field
-    nullable: true,
-    description: undefined
-  })
   workspaceId?: string;
 
   @Field(() => GitRepository, {
@@ -80,36 +75,15 @@ export class App {
   })
   builds?: Build[];
 
-  //Sensitive data - do not expose to graphQL
-  githubToken?: string;
-
-  @Field(() => Date, {
-    nullable: true
-  })
-  githubTokenCreatedDate?: Date;
-
-  @Field(() => Boolean)
-  githubSyncEnabled: boolean;
-
   @Field(() => String, {
     nullable: true
   })
-  githubRepo?: string;
-
-  @Field(() => String, {
-    nullable: true
-  })
-  githubBranch?: string;
+  githubLastMessage?: string;
 
   @Field(() => Date, {
     nullable: true
   })
   githubLastSync?: Date;
-
-  @Field(() => String, {
-    nullable: true
-  })
-  githubLastMessage?: string;
 
   // no need to expose to GraphQL
   deletedAt?: Date;

@@ -630,7 +630,7 @@ Commit message: ${commit.message}
 
 ${url}
 `,
-              app.githubBranch,
+              null,
               appRepository.gitOrganization.installationId
             );
 

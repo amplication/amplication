@@ -78,7 +78,6 @@ type App {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  workspaceId: String
   gitRepository: GitRepository
   gitRepositoryId: String
   name: String!
@@ -87,12 +86,8 @@ type App {
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   environments: [Environment!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
-  githubTokenCreatedDate: DateTime
-  githubSyncEnabled: Boolean!
-  githubRepo: String
-  githubBranch: String
-  githubLastSync: DateTime
   githubLastMessage: String
+  githubLastSync: DateTime
 }
 
 type GitRepository {

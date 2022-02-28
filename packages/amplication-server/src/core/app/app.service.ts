@@ -320,6 +320,9 @@ export class AppService {
       where: {
         id: args.where.id,
         deletedAt: null
+      },
+      include: {
+        gitRepository: true
       }
     });
   }
@@ -594,7 +597,7 @@ export class AppService {
       throw new Error(INVALID_APP_ID);
     }
 
-    if (!app.githubSyncEnabled) return { isValid, messages };
+    if (!app.gitRepository) return { isValid, messages };
     if (!app.githubLastSync) return { isValid, messages }; //if the repo was never synced before, skip the below validation as they are all related to GitHub sync
 
     const config = await this.getAppGenerationConfigFromGitHub(args);
@@ -651,23 +654,31 @@ export class AppService {
       }
     });
 
+    const appRepository = await this.prisma.gitRepository.findFirst({
+      where: {
+        appId: app.id
+      },
+      include: {
+        gitOrganization: true
+      }
+    });
+
     if (isEmpty(app)) {
       throw new Error(INVALID_APP_ID);
     }
 
-    if (isEmpty(app.githubToken)) {
+    if (isEmpty(app.gitRepository)) {
       throw new Error(`This app is not authorized with any GitHub repo`);
     }
-    const [userName, repoName] = app.githubRepo.split('/');
     let configFile;
 
     try {
       configFile = await this.githubService.getFile(
-        userName,
-        repoName,
+        appRepository.gitOrganization.name,
+        appRepository.name,
         APP_CONFIG_FILE_PATH,
-        app.githubBranch,
-        app.githubToken
+        null,
+        appRepository.gitOrganization.installationId
       );
     } catch (error) {
       //in case the file was not found on GitHub, return null
