@@ -50,7 +50,7 @@ function GithubSyncDetails({ gitRepositoryWithOrganization }: Props) {
             }}
             onClick={handleDeleteGitRepository}
           >
-            Change Repo
+            Change Repository
           </Button>
         </div>
       </div>
