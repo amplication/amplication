@@ -25,7 +25,6 @@ import { ConnectGitRepositoryArgs } from './dto/args/ConnectGitRepositoryArgs';
 @UseGuards(GqlAuthGuard)
 export class GitResolver {
   constructor(private readonly gitService: GitService) {}
-  //#region Mutation
   @Mutation(() => GitRepo)
   @AuthorizeContext(
     AuthorizableResourceParameter.GitOrganizationId,
@@ -99,8 +98,6 @@ export class GitResolver {
     };
   }
 
-  //#endregion
-  //#region Query
   @Query(() => [GitRepo])
   @AuthorizeContext(
     AuthorizableResourceParameter.GitOrganizationId,
@@ -122,5 +119,4 @@ export class GitResolver {
   ): Promise<GitOrganization[]> {
     return this.gitService.getGitOrganizations(args);
   }
-  //#endregion
 }
