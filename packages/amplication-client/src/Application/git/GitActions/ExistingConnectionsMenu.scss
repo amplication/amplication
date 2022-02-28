@@ -11,3 +11,8 @@ hr {
   margin-block-end: 0%;
   margin-block-start: 0;
 }
+.git-organization-select-menu {
+  &__menu {
+    margin-left: 0 !important;
+  }
+}

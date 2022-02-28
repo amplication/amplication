@@ -2,7 +2,7 @@ import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { MDCSwitchFoundation } from "@material/switch";
 import { isEmpty } from "lodash";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { App, AuthorizeAppWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -39,9 +39,18 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
   const [
     gitOrganization,
     setGitOrganization,
-  ] = useState<GitOrganizationFromGitRepository | null>(
-    app.gitRepository?.gitOrganization || null
-  );
+  ] = useState<GitOrganizationFromGitRepository | null>(null);
+
+  useEffect(() => {
+    if (app.gitRepository?.gitOrganization) {
+      setGitOrganization(app.gitRepository?.gitOrganization);
+    } else if (data?.gitOrganizations.length === 1) {
+      setGitOrganization(data.gitOrganizations[0]);
+    } else {
+      setGitOrganization(null);
+    }
+  }, [app.gitRepository?.gitOrganization, data]);
+
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);

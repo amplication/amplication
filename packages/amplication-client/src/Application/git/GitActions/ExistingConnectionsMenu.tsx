@@ -18,6 +18,8 @@ type Props = {
   onSelectGitOrganization: (organization: GitOrganization) => void;
 };
 
+const CLASS_NAME = "git-organization-select-menu";
+
 export default function ExistingConnectionsMenu({
   gitOrganizations,
   selectedGitOrganization,
@@ -27,16 +29,17 @@ export default function ExistingConnectionsMenu({
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <span>Select organization:</span>
         <SelectMenu
-          title={selectedGitOrganization?.name || ""}
+          title={selectedGitOrganization?.name || "Select new organization"}
           buttonStyle={EnumButtonStyle.Primary}
+          className={`${CLASS_NAME}__menu`}
         >
           <SelectMenuModal>
             <SelectMenuList>
               <>
                 {gitOrganizations.map((organization) => (
                   <SelectMenuItem
+                    closeAfterSelectionChange
                     selected={selectedGitOrganization?.id === organization.id}
                     key={organization.id}
                     onSelectionChange={() => {

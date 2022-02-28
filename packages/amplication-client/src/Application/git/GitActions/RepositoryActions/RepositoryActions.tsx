@@ -43,19 +43,19 @@ export default function RepositoryActions({
               <div className={`${CLASS_NAME}__action`}>
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
-                  onClick={onClickCreateRepository}
-                  icon="plus"
+                  onClick={onClickSelectRepository}
+                  icon="chevron_down"
                 >
-                  Create repository
+                  Select repository
                 </Button>
               </div>
               <div className={`${CLASS_NAME}__action`}>
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
-                  onClick={onClickSelectRepository}
-                  icon="chevron_down"
+                  onClick={onClickCreateRepository}
+                  icon="plus"
                 >
-                  Select repository
+                  Create repository
                 </Button>
               </div>
             </div>
