@@ -1,5 +1,6 @@
 import { AppGenerationConfig } from '@amplication/data-service-generator';
 import { Injectable } from '@nestjs/common';
+import { GitRepository } from '@prisma/client';
 import { isEmpty } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { pascalCase } from 'pascal-case';
@@ -716,6 +717,17 @@ export class AppService {
       data: {
         githubLastMessage: message,
         githubLastSync: new Date()
+      }
+    });
+  }
+
+  async gitRepository(appId: string): Promise<GitRepository | null> {
+    return await this.prisma.gitRepository.findFirst({
+      where: {
+        appId: appId
+      },
+      include: {
+        gitOrganization: true
       }
     });
   }

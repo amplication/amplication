@@ -3,13 +3,13 @@ import {
   Snackbar,
   Tooltip,
 } from "@amplication/design-system";
-import { NetworkStatus } from "@apollo/client";
+import { gql, NetworkStatus, useMutation } from "@apollo/client";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
-import { EnumGitProvider } from "../../../../models";
+import { EnumGitProvider, GitRepo } from "../../../../models";
+import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
 import useGetReposOfUser from "../../hooks/useGetReposOfUser";
-import useGitSelected from "../../hooks/useGitSelected";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
 
@@ -18,16 +18,18 @@ const CLASS_NAME = "git-repos";
 type Props = {
   gitOrganizationId: string;
   applicationId: string;
-  onCompleted: () => void;
+  onGitRepositoryConnected: () => void;
   gitProvider: EnumGitProvider;
 };
 
 function GitRepos({
   applicationId,
   gitOrganizationId,
-  onCompleted,
+  onGitRepositoryConnected,
   gitProvider,
 }: Props) {
+  const { trackEvent } = useTracking();
+
   const {
     refetch,
     error,
@@ -38,12 +40,31 @@ function GitRepos({
     gitOrganizationId: gitOrganizationId,
     gitProvider,
   });
-
-  const { handleRepoSelected, error: errorUpdate } = useGitSelected({
-    appId: applicationId,
-    onCompleted,
-  });
-
+  const [connectGitRepository, { error: errorUpdate }] = useMutation(
+    CONNECT_GIT_REPOSITORY
+  );
+  const handleRepoSelected = useCallback(
+    (data: GitRepo) => {
+      connectGitRepository({
+        variables: {
+          gitOrganizationId,
+          appId: applicationId,
+          name: data.fullName,
+        },
+      }).catch(console.error);
+      trackEvent({
+        eventName: "selectGitRepo",
+      });
+      onGitRepositoryConnected();
+    },
+    [
+      applicationId,
+      connectGitRepository,
+      gitOrganizationId,
+      onGitRepositoryConnected,
+      trackEvent,
+    ]
+  );
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -85,3 +106,21 @@ function GitRepos({
 }
 
 export default GitRepos;
+
+const CONNECT_GIT_REPOSITORY = gql`
+  mutation connectGitRepository(
+    $name: String!
+    $gitOrganizationId: String!
+    $appId: String!
+  ) {
+    connectGitRepository(
+      data: {
+        name: $name
+        appId: $appId
+        gitOrganizationId: $gitOrganizationId
+      }
+    ) {
+      id
+    }
+  }
+`;

@@ -8,7 +8,7 @@ type Props = {
   app: App;
   gitOrganizationId: string;
   selectRepoOpen: boolean;
-  handleSelectRepoDialogDismiss: any;
+  onSelectGitRepositoryDialogClose: () => void;
   popupFailed: boolean;
   handlePopupFailedClose: any;
   gitCreateRepoOpen: boolean;
@@ -26,7 +26,7 @@ export default function GitDialogsContainer({
   app,
   gitOrganizationId,
   selectRepoOpen,
-  handleSelectRepoDialogDismiss,
+  onSelectGitRepositoryDialogClose,
   popupFailed,
   handlePopupFailedClose,
   gitCreateRepoOpen,
@@ -52,12 +52,12 @@ export default function GitDialogsContainer({
         className="select-repo-dialog"
         isOpen={selectRepoOpen}
         title={`Select ${gitProvider} repository`}
-        onDismiss={handleSelectRepoDialogDismiss}
+        onDismiss={onSelectGitRepositoryDialogClose}
       >
         <GitRepos
           applicationId={app.id}
           gitOrganizationId={gitOrganizationId}
-          onCompleted={handleSelectRepoDialogDismiss}
+          onGitRepositoryConnected={onSelectGitRepositoryDialogClose}
           gitProvider={gitProvider}
         />
       </Dialog>

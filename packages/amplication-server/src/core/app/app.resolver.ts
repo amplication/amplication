@@ -17,6 +17,7 @@ import { InjectableResourceParameter } from 'src/enums/InjectableResourceParamet
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { App, Commit, Entity, User } from 'src/models';
+import { GitRepository } from 'src/models/GitRepository';
 import { AppService, EntityService } from '../';
 import { BuildService } from '../build/build.service';
 import { Build } from '../build/dto/Build';
@@ -178,7 +179,7 @@ export class AppResolver {
   ): Promise<PendingChange[]> {
     return this.appService.getPendingChanges(args, user);
   }
-  
+
   @Query(() => AppValidationResult, {
     nullable: false
   })
@@ -187,5 +188,10 @@ export class AppResolver {
     @Args() args: FindOneArgs
   ): Promise<AppValidationResult> {
     return this.appService.validateBeforeCommit(args);
+  }
+
+  @ResolveField(() => GitRepository, { nullable: true })
+  async gitRepository(@Parent() app: App): Promise<GitRepository | null> {
+    return await this.appService.gitRepository(app.id);
   }
 }

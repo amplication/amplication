@@ -35,6 +35,8 @@ type Props = {
 export const CLASS_NAME = "auth-app-with-github";
 
 function AuthAppWithGit({ app: { app }, onDone }: Props) {
+  console.log({ app });
+
   const { data } = useQuery<{
     gitOrganizations: [
       {
@@ -131,7 +133,7 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
         <GitDialogsContainer
           app={app}
           gitOrganizationId={gitOrganization.id}
-          handleSelectRepoDialogDismiss={handleSelectRepoDialogDismiss}
+          onSelectGitRepositoryDialogClose={handleSelectRepoDialogDismiss}
           selectRepoOpen={selectRepoOpen}
           handlePopupFailedClose={handlePopupFailedClose}
           popupFailed={popupFailed}
