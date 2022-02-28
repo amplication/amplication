@@ -6,7 +6,7 @@ import { CreateRepoArgsType } from './types/CreateRepoArgsType';
 
 export interface IGitClient {
   createRepo(args: CreateRepoArgsType): Promise<GitRepo>;
-  getOrganizationRepos(token: string): Promise<GitRepo[]>;
+  getOrganizationRepos(gitOrganizationId: string): Promise<GitRepo[]>;
   isRepoExist(token: string, name: string): Promise<boolean>;
   createGitOrganization(
     args: CreateGitOrganizationArgs

@@ -44,7 +44,7 @@ type Query {
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  getReposOfOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!): [GitRepo!]!
+  getReposOfOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): [GitRepo!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
 
@@ -1020,11 +1020,11 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createRepoInOrg(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!, input: RepoCreateInput!): GitRepo!
+  createRepoInOrg(input: RepoCreateInput!): GitRepo!
   createGitRepository(data: CreateGitRepositoryInput!): GitRepository!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteGitRepository(gitRepositoryId: String!): Boolean!
-  deleteOrganization(gitOrganizationId: String!, workspaceId: String, sourceControlService: EnumGitProvider!): Boolean!
+  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGitResult!
 }
 
@@ -1317,6 +1317,8 @@ input RepoCreateInput {
   name: String!
   public: Boolean!
   appId: String!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
 }
 
 input CreateGitRepositoryInput {
