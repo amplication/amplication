@@ -141,6 +141,7 @@ export default ApplicationHome;
 
 export const GET_APPLICATION = gql`
   query getApplication($id: String!) {
+    githubLastMessage
     app(where: { id: $id }) {
       id
       createdAt
@@ -148,12 +149,7 @@ export const GET_APPLICATION = gql`
       name
       description
       color
-      githubTokenCreatedDate
-      githubSyncEnabled
-      githubRepo
       githubLastSync
-      githubLastMessage
-      workspaceId
     }
   }
 `;

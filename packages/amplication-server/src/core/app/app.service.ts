@@ -320,9 +320,6 @@ export class AppService {
       where: {
         id: args.where.id,
         deletedAt: null
-      },
-      include: {
-        gitRepository: true
       }
     });
   }
@@ -587,9 +584,12 @@ export class AppService {
     const messages = [];
     let isValid = true;
 
-    const app = await this.app({
+    const app = await this.prisma.app.findFirst({
       where: {
         id: args.where.id
+      },
+      include: {
+        gitRepository: true
       }
     });
 
