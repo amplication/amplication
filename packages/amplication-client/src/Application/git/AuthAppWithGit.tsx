@@ -88,20 +88,20 @@ function AuthAppWithGit({ app, onDone }: Props) {
         <GitDialogsContainer
           app={app}
           gitOrganizationId={gitOrganization.id}
+          isSelectRepositoryOpen={selectRepoOpen}
+          isPopupFailed={popupFailed}
+          gitCreateRepoOpen={createNewRepoOpen}
+          gitProvider={EnumGitProvider.Github}
+          gitOrganizationName={gitOrganization.name}
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
           }}
-          isSelectRepositoryOpen={selectRepoOpen}
           onPopupFailedClose={() => {
             setPopupFailed(false);
           }}
-          isPopupFailed={popupFailed}
-          gitCreateRepoOpen={createNewRepoOpen}
-          setGitCreateRepo={() => {
+          onGitCreateRepository={() => {
             setCreateNewRepoOpen(false);
           }}
-          gitProvider={EnumGitProvider.Github}
-          gitOrganizationName={gitOrganization.name}
         />
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>

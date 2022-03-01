@@ -13,7 +13,7 @@ type Props = {
   gitCreateRepoOpen: boolean;
   gitProvider: EnumGitProvider;
   gitOrganizationName: string;
-  setGitCreateRepo: () => void;
+  onGitCreateRepository: () => void;
   onPopupFailedClose: () => void;
   onSelectGitRepositoryDialogClose: () => void;
 };
@@ -26,7 +26,7 @@ export default function GitDialogsContainer({
   gitCreateRepoOpen,
   gitProvider,
   gitOrganizationName,
-  setGitCreateRepo,
+  onGitCreateRepository,
   onPopupFailedClose,
   onSelectGitRepositoryDialogClose,
 }: Props) {
@@ -57,13 +57,13 @@ export default function GitDialogsContainer({
         className="git-create-dialog"
         isOpen={gitCreateRepoOpen}
         title="Create new repository"
-        onDismiss={setGitCreateRepo}
+        onDismiss={onGitCreateRepository}
       >
         <GitCreateRepo
           gitProvider={gitProvider}
           app={app}
           gitOrganizationId={gitOrganizationId}
-          onCompleted={setGitCreateRepo}
+          onCompleted={onGitCreateRepository}
           gitOrganizationName={gitOrganizationName}
         />
       </Dialog>
