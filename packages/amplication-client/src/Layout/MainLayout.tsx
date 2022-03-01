@@ -46,6 +46,10 @@ const Menu = ({ children }: MenuProps) => {
 
   const apolloClient = useApolloClient();
 
+  const handleProfileClick = useCallback(() => {
+    history.push("/user/profile");
+  }, [history]);
+
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
     unsetToken();
@@ -99,7 +103,11 @@ const Menu = ({ children }: MenuProps) => {
                 onClick={handleSupportClick}
               />
             </Popover>
-            <MenuItem icon="plus" hideTooltip>
+            <MenuItem
+              title="Profile"
+              icon="plus"
+              hideTooltip
+              onClick={handleProfileClick}>
               <UserBadge />
             </MenuItem>
             <MenuItem

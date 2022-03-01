@@ -1,10 +1,11 @@
-import * as path from "path";
 import { builders, namedTypes } from "ast-types";
 import { isEmpty } from "lodash";
+import * as path from "path";
+import { DTOs } from "../../../server/resource/create-dtos";
 import {
   Entity,
-  EnumDataType,
   EntityField,
+  EnumDataType,
   LookupResolvedProperties,
 } from "../../../types";
 import {
@@ -13,14 +14,14 @@ import {
   importNames,
   interpolate,
 } from "../../../util/ast";
+import { isToManyRelationField } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";
+import { createFieldInput } from "../create-field-input";
 import {
-  REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
+  REACT_ADMIN_MODULE,
 } from "../react-admin.util";
 const template = path.resolve(
   __dirname,
@@ -52,9 +53,9 @@ export async function createEntityCreateComponent(
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
-  const fields = dtoProperties.map(
-    (property) => fieldsByName[property.key.name]
-  );
+  const fields = dtoProperties
+    .map((property) => fieldsByName[property.key.name])
+    .filter((field) => !isToManyRelationField(field));
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );

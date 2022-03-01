@@ -433,6 +433,53 @@
         "ideas",
         "bug"
       ]
+    },
+    {
+      "login": "abrl91",
+      "name": "Amit Barletz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39680385?v=4",
+      "profile": "https://www.linkedin.com/in/amitbarletz/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "MoFoGo",
+      "name": "Moshe Forman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/96979533?v=4",
+      "profile": "http://www.amplication.com ",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "molaycule",
+      "name": "Mohammed Agboola®️",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20028628?v=4",
+      "profile": "https://m-agboola.web.app",
+      "contributions": [
+        "code",
+        "bug"
+      ]
+    },
+    {
+      "login": "morhag90",
+      "name": "morhag90",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97830649?v=4",
+      "profile": "https://github.com/morhag90",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kwinyyyc",
+      "name": "Kwinten Li",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8462684?v=4",
+      "profile": "https://github.com/kwinyyyc",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
