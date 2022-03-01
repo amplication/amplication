@@ -5,22 +5,21 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { FindOneArgs } from 'src/dto';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { App } from 'src/models/App';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { AuthorizeAppWithGitResult } from '../app/dto/AuthorizeAppWithGitResult';
+import { ConnectGitRepositoryArgs } from './dto/args/ConnectGitRepositoryArgs';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
-import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
+import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
+import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
+import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitService } from './git.service';
-import { GitRepository } from 'src/models/GitRepository';
-import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
-import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
-import { ConnectGitRepositoryArgs } from './dto/args/ConnectGitRepositoryArgs';
-import { App } from 'src/models/App';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
