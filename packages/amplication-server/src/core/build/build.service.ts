@@ -590,7 +590,7 @@ export class BuildService {
   ) {
     const app = build.app;
 
-    const appRepository = await this.prisma.gitRepository.findFirst({
+    const appRepository = await this.prisma.gitRepository.findUnique({
       where: {
         appId: app.id
       },
