@@ -6,7 +6,7 @@ import {
 import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
-import { EnumGitProvider, GitRepo } from "../../../../models";
+import { EnumGitProvider, RemoteGitRepository } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
@@ -36,7 +36,7 @@ function GitRepos({
     refetch,
     networkStatus,
   } = useQuery<{
-    getReposOfOrganization: GitRepo[];
+    getReposOfOrganization: RemoteGitRepository[];
   }>(FIND_GIT_REPOS, {
     variables: {
       gitOrganizationId,
@@ -49,7 +49,7 @@ function GitRepos({
     CONNECT_GIT_REPOSITORY
   );
   const handleRepoSelected = useCallback(
-    (data: GitRepo) => {
+    (data: RemoteGitRepository) => {
       connectGitRepository({
         variables: {
           gitOrganizationId,
