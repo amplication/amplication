@@ -733,7 +733,7 @@ export class AppService {
   }
 
   async gitRepository(appId: string): Promise<GitRepository | null> {
-    return await this.prisma.gitRepository.findFirst({
+    return await this.prisma.gitRepository.findUnique({
       where: {
         appId: appId
       },
