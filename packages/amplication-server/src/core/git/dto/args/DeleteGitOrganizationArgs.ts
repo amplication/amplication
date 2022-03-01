@@ -5,7 +5,7 @@ import { EnumGitProvider } from '../enums/EnumGitProvider';
 export class DeleteGitOrganizationArgs {
   @Field(() => String, { nullable: false })
   gitOrganizationId!: string;
-  
+
   @Field(() => EnumGitProvider, { nullable: false })
   gitProvider!: EnumGitProvider;
 }
