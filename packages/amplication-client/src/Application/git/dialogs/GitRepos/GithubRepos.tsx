@@ -3,13 +3,12 @@ import {
   Snackbar,
   Tooltip,
 } from "@amplication/design-system";
-import { gql, NetworkStatus, useMutation } from "@apollo/client";
+import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import { EnumGitProvider, GitRepo } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
-import useGetReposOfUser from "../../hooks/useGetReposOfUser";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
 
@@ -31,15 +30,21 @@ function GitRepos({
   const { trackEvent } = useTracking();
 
   const {
-    refetch,
+    data,
     error,
-    repos,
     loading: loadingRepos,
+    refetch,
     networkStatus,
-  } = useGetReposOfUser({
-    gitOrganizationId: gitOrganizationId,
-    gitProvider,
+  } = useQuery<{
+    getReposOfOrganization: GitRepo[];
+  }>(FIND_GIT_REPOS, {
+    variables: {
+      gitOrganizationId,
+      gitProvider,
+    },
+    notifyOnNetworkStatusChange: true,
   });
+
   const [connectGitRepository, { error: errorUpdate }] = useMutation(
     CONNECT_GIT_REPOSITORY
   );
@@ -93,7 +98,7 @@ function GitRepos({
         )}
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
-        repos?.map((repo) => (
+        data?.getReposOfOrganization?.map((repo) => (
           <GitRepoItem
             key={repo.fullName}
             repo={repo}
@@ -121,6 +126,24 @@ const CONNECT_GIT_REPOSITORY = gql`
       }
     ) {
       id
+    }
+  }
+`;
+
+const FIND_GIT_REPOS = gql`
+  query getReposOfOrganization(
+    $gitOrganizationId: String!
+    $gitProvider: EnumGitProvider!
+  ) {
+    getReposOfOrganization(
+      gitOrganizationId: $gitOrganizationId
+      gitProvider: $gitProvider
+    ) {
+      name
+      url
+      private
+      fullName
+      admin
     }
   }
 `;
