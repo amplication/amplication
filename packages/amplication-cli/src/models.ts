@@ -1225,7 +1225,7 @@ export type Mutation = {
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createEntityPage: EntityPage;
-  createGitRepository: RemoteGitRepository;
+  createGitRepository: App;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createWorkspace?: Maybe<Workspace>;
