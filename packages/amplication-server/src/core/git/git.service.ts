@@ -109,13 +109,12 @@ export class GitService {
   ): Promise<boolean> {
     const { gitProvider, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(gitProvider);
+    await service.deleteGitOrganization(args.gitOrganizationId);
     await this.prisma.gitOrganization.delete({
       where: {
         id: gitOrganizationId
       }
     });
-
-    await service.deleteGitOrganization(args.gitOrganizationId);
     return true;
   }
 }
