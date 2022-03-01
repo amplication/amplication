@@ -130,11 +130,10 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
         gitProvider: $gitProvider
       }
     ) {
-      name
-      url
-      private
-      fullName
-      admin
+      id
+      gitRepository {
+        id
+      }
     }
   }
 `;

@@ -13,7 +13,6 @@ import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs'
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
-import { CreateGitRemoteRepoInput } from './dto/inputs/CreateGitRemoteRepoInput';
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
@@ -34,20 +33,18 @@ export class GitService {
     );
     return await service.getOrganizationRepos(installationId);
   }
-  async createGitRepository(
-    args: CreateGitRepositoryInput
-  ): Promise<RemoteGitRepository> {
+  async createGitRepository(args: CreateGitRepositoryInput): Promise<App> {
     const provider = this.gitServiceFactory.getService(args.gitProvider);
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
-    const newRepo = await provider.createRepo({
+    await provider.createRepo({
       installationId: installationId.toString(),
       name: args.name
     });
-    await this.connectAppGitRepository({ ...args });
+    const app = await this.connectAppGitRepository({ ...args });
 
-    return newRepo;
+    return app;
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<App> {

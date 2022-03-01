@@ -25,14 +25,14 @@ import { GitService } from './git.service';
 @UseGuards(GqlAuthGuard)
 export class GitResolver {
   constructor(private readonly gitService: GitService) {}
-  @Mutation(() => RemoteGitRepository)
+  @Mutation(() => App)
   @AuthorizeContext(
     AuthorizableResourceParameter.GitOrganizationId,
     'data.gitOrganizationId'
   )
   async createGitRepository(
     @Args() args: CreateGitRepositoryArgs
-  ): Promise<RemoteGitRepository> {
+  ): Promise<App> {
     return this.gitService.createGitRepository(args.data);
   }
 
