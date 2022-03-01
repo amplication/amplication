@@ -20,6 +20,7 @@ import { GitRepository } from 'src/models/GitRepository';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { ConnectGitRepositoryArgs } from './dto/args/ConnectGitRepositoryArgs';
+import { App } from 'src/models/App';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -46,10 +47,10 @@ export class GitResolver {
     AuthorizableResourceParameter.GitOrganizationId,
     'data.gitOrganizationId'
   )
-  async connectGitRepository(
+  async connectAppGitRepository(
     @Args() args: ConnectGitRepositoryArgs
-  ): Promise<GitRepository> {
-    return await this.gitService.connectGitRepository(args.data);
+  ): Promise<App> {
+    return await this.gitService.connectAppGitRepository(args.data);
   }
 
   @Mutation(() => GitOrganization)

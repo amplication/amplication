@@ -8,7 +8,6 @@ import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs'
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
 import { GitRepo } from './dto/objects/GitRepo';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
-import { GitRepository } from 'src/models/GitRepository';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { GIT_REPOSITORY_EXIST, INVALID_GIT_REPOSITORY_ID } from './constants';
 import { isEmpty } from 'lodash';
@@ -16,6 +15,7 @@ import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
+import { App } from 'src/models/App';
 @Injectable()
 export class GitService {
   constructor(
@@ -32,7 +32,7 @@ export class GitService {
     const provider = this.gitServiceFactory.getService(args.gitProvider);
     const newRepo = await provider.createRepo(args);
 
-    await this.connectGitRepository({ ...args });
+    await this.connectAppGitRepository({ ...args });
 
     return newRepo;
   }
@@ -55,11 +55,11 @@ export class GitService {
     return true;
   }
 
-  async connectGitRepository({
+  async connectAppGitRepository({
     appId,
     name,
     gitOrganizationId
-  }: ConnectGitRepositoryInput): Promise<GitRepository> {
+  }: ConnectGitRepositoryInput): Promise<App> {
     const gitRepo = await this.prisma.gitRepository.findFirst({
       where: {
         name: name
@@ -70,11 +70,17 @@ export class GitService {
       throw new AmplicationError(GIT_REPOSITORY_EXIST);
     }
 
-    return await this.prisma.gitRepository.create({
+    await this.prisma.gitRepository.create({
       data: {
         name: name,
         app: { connect: { id: appId } },
         gitOrganization: { connect: { id: gitOrganizationId } }
+      }
+    });
+
+    return await this.prisma.app.findFirst({
+      where: {
+        id: appId
       }
     });
   }
