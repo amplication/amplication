@@ -9,26 +9,26 @@ type Props = {
   app: AppWithGitRepository;
   gitOrganizationId: string;
   selectRepoOpen: boolean;
-  onSelectGitRepositoryDialogClose: () => void;
-  popupFailed: boolean;
-  onPopupFailedClose: any;
+  isPopupFailed: boolean;
   gitCreateRepoOpen: boolean;
-  setGitCreateRepo: any;
   gitProvider: EnumGitProvider;
   gitOrganizationName: string;
+  setGitCreateRepo: () => void;
+  onPopupFailedClose: () => void;
+  onSelectGitRepositoryDialogClose: () => void;
 };
 
 export default function GitDialogsContainer({
   app,
   gitOrganizationId,
   selectRepoOpen,
-  onSelectGitRepositoryDialogClose,
-  popupFailed,
-  onPopupFailedClose,
+  isPopupFailed,
   gitCreateRepoOpen,
-  setGitCreateRepo,
   gitProvider,
   gitOrganizationName,
+  setGitCreateRepo,
+  onPopupFailedClose,
+  onSelectGitRepositoryDialogClose,
 }: Props) {
   return (
     <div>
@@ -47,7 +47,7 @@ export default function GitDialogsContainer({
       </Dialog>
       <Dialog
         className="popup-failed-dialog"
-        isOpen={popupFailed}
+        isOpen={isPopupFailed}
         title="Popup failed to load"
         onDismiss={onPopupFailedClose}
       >
@@ -57,17 +57,13 @@ export default function GitDialogsContainer({
         className="git-create-dialog"
         isOpen={gitCreateRepoOpen}
         title="Create new repository"
-        onDismiss={() => {
-          setGitCreateRepo(false);
-        }}
+        onDismiss={setGitCreateRepo}
       >
         <GitCreateRepo
           gitProvider={gitProvider}
           app={app}
           gitOrganizationId={gitOrganizationId}
-          onCompleted={() => {
-            setGitCreateRepo(false);
-          }}
+          onCompleted={setGitCreateRepo}
           gitOrganizationName={gitOrganizationName}
         />
       </Dialog>

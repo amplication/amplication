@@ -95,9 +95,11 @@ function AuthAppWithGit({ app, onDone }: Props) {
           onPopupFailedClose={() => {
             setPopupFailed(false);
           }}
-          popupFailed={popupFailed}
+          isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
-          setGitCreateRepo={setCreateNewRepoOpen}
+          setGitCreateRepo={() => {
+            setCreateNewRepoOpen(false);
+          }}
           gitProvider={EnumGitProvider.Github}
           gitOrganizationName={gitOrganization.name}
         />
