@@ -1325,7 +1325,6 @@ input ConnectGitRepositoryInput {
 
 input GitOrganizationCreateInput {
   installationId: String!
-  workspaceId: String!
   provider: EnumGitProvider!
 }
 

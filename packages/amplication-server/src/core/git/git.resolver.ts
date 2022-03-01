@@ -55,7 +55,7 @@ export class GitResolver {
   @Mutation(() => GitOrganization)
   @InjectContextValue(
     InjectableResourceParameter.WorkspaceId,
-    'where.workspaceId'
+    'data.workspaceId'
   )
   async createOrganization(
     @Args() args: CreateGitOrganizationArgs

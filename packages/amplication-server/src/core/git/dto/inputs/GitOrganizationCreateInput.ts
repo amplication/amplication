@@ -10,7 +10,6 @@ export class GitOrganizationCreateInput {
   })
   installationId!: string;
 
-  @Field(() => String, { nullable: false })
   workspaceId!: string;
 
   @Field(() => EnumGitProvider, { nullable: false })

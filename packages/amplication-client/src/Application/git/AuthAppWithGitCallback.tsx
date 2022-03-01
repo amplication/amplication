@@ -16,7 +16,6 @@ const AuthAppWithGitCallback = () => {
     // get the URL parameters with the code and state values
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const workspaceId = urlParams.get("state");
     const installationId = urlParams.get("installation_id");
     if (window.opener) {
       trackEvent({
@@ -24,7 +23,6 @@ const AuthAppWithGitCallback = () => {
       });
       completeAuthWithGit({
         variables: {
-          workspaceId,
           installationId,
           provider: "Github",
         },
@@ -40,16 +38,11 @@ export default AuthAppWithGitCallback;
 
 const CREATE_GIT_ORGANIZATION = gql`
   mutation createOrganization(
-    $workspaceId: String!
     $installationId: String!
     $provider: EnumGitProvider!
   ) {
     createOrganization(
-      data: {
-        workspaceId: $workspaceId
-        installationId: $installationId
-        provider: $provider
-      }
+      data: { installationId: $installationId, provider: $provider }
     ) {
       id
       name
