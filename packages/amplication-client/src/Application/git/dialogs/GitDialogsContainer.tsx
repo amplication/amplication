@@ -1,4 +1,4 @@
-import { ConfirmationDialog, Dialog } from "@amplication/design-system";
+import { Dialog } from "@amplication/design-system";
 import React from "react";
 import { App, EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
@@ -15,12 +15,8 @@ type Props = {
   setGitCreateRepo: any;
   gitProvider: EnumGitProvider;
   confirmRemove: boolean;
-  handleConfirmRemoveAuth: any;
-  handleDismissRemove: any;
   gitOrganizationName: string;
 };
-const CONFIRM_BUTTON = { label: "Disable Sync" };
-const DISMISS_BUTTON = { label: "Dismiss" };
 
 export default function GitDialogsContainer({
   app,
@@ -32,22 +28,10 @@ export default function GitDialogsContainer({
   gitCreateRepoOpen,
   setGitCreateRepo,
   gitProvider,
-  confirmRemove,
-  handleConfirmRemoveAuth,
-  handleDismissRemove,
   gitOrganizationName,
 }: Props) {
   return (
     <div>
-      <ConfirmationDialog
-        isOpen={confirmRemove}
-        title={`Disable Sync with ${gitProvider}`}
-        confirmButton={CONFIRM_BUTTON}
-        dismissButton={DISMISS_BUTTON}
-        message={`Are you sure you want to disable sync with ${gitProvider}?`}
-        onConfirm={handleConfirmRemoveAuth}
-        onDismiss={handleDismissRemove}
-      />
       <Dialog
         className="select-repo-dialog"
         isOpen={selectRepoOpen}

@@ -1,9 +1,8 @@
 import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { MDCSwitchFoundation } from "@material/switch";
 import { isEmpty } from "lodash";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { App, AuthorizeAppWithGitResult, EnumGitProvider } from "../../models";
+import React, { useCallback, useEffect, useState } from "react";
+import { AuthorizeAppWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGit.scss";
@@ -52,7 +51,6 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
   }, [app.gitRepository?.gitOrganization, data]);
 
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
-  const [confirmRemove, setConfirmRemove] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
   const { trackEvent } = useTracking();
@@ -65,14 +63,6 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
     }
   );
 
-  const [removeAuthWithGit, { error: removeError }] = useMutation<{
-    removeAuthorizeAppWithGithub: App;
-  }>(REMOVE_AUTH_APP_WITH_GITHUB, {
-    onCompleted: () => {
-      onDone();
-    },
-  });
-
   const handleSelectRepoDialogDismiss = useCallback(() => {
     setSelectRepoOpen(false);
   }, []);
@@ -81,44 +71,19 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
     setSelectRepoOpen(true);
   }, []);
   const handleAuthWithGitClick = useCallback(() => {
-    if (isEmpty(app.githubTokenCreatedDate)) {
-      trackEvent({
-        eventName: "startAuthAppWithGitHub",
-      });
-      console.log({ app });
-
-      authWithGit({
-        variables: {
-          sourceControlService: "Github",
-        },
-      }).catch(console.error);
-    } else {
-      setConfirmRemove(true);
-    }
-  }, [authWithGit, app, trackEvent]);
-
-  const MDCSwitchRef = useRef<MDCSwitchFoundation>(null);
-  const handleDismissRemove = useCallback(() => {
-    setConfirmRemove(false);
-    // `handleAuthWithGitClick -> setConfirmRemove` is triggered by `Toggle.onValueChange`.
-    // Behind the scenes, a `MDCSwitchFoundation.setChecked(false)` was triggered.
-    // now that the toggle is cancelled, should explicitly call `MDCSwitchFoundation.setChecked(true)`.
-    MDCSwitchRef.current?.setChecked(true);
-  }, [setConfirmRemove, MDCSwitchRef]);
-
-  const handleConfirmRemoveAuth = useCallback(() => {
     trackEvent({
-      eventName: "removeAuthAppWithGitHub",
+      eventName: "startAuthAppWithGitHub",
     });
-    setConfirmRemove(false);
-    removeAuthWithGit({
+    console.log({ app });
+
+    authWithGit({
       variables: {
-        appId: app.id,
+        sourceControlService: "Github",
       },
     }).catch(console.error);
-  }, [removeAuthWithGit, app, trackEvent]);
+  }, [authWithGit, app, trackEvent]);
+
   const handlePopupFailedClose = () => {
-    MDCSwitchRef.current?.setChecked(false);
     setPopupFailed(false);
   };
   triggerOnDone = () => {
@@ -127,7 +92,7 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
   triggerAuthFailed = () => {
     setPopupFailed(true);
   };
-  const errorMessage = formatError(error || removeError);
+  const errorMessage = formatError(error);
   console.log(app.gitRepository);
 
   return (
@@ -143,9 +108,6 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
           gitCreateRepoOpen={createNewRepoOpen}
           setGitCreateRepo={setCreateNewRepoOpen}
           gitProvider={EnumGitProvider.Github}
-          confirmRemove={confirmRemove}
-          handleConfirmRemoveAuth={handleConfirmRemoveAuth}
-          handleDismissRemove={handleDismissRemove}
           gitOrganizationName={gitOrganization.name}
         />
       )}
@@ -178,7 +140,7 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
         <GitSyncNotes />
       </Panel>
 
-      <Snackbar open={Boolean(error || removeError)} message={errorMessage} />
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
 }
@@ -191,24 +153,6 @@ const START_AUTH_APP_WITH_GITHUB = gql`
       data: { sourceControlService: $sourceControlService }
     ) {
       url
-    }
-  }
-`;
-
-const REMOVE_AUTH_APP_WITH_GITHUB = gql`
-  mutation removeAuthorizeAppWithGithub($appId: String!) {
-    removeAuthorizeAppWithGithub(where: { id: $appId }) {
-      id
-      createdAt
-      updatedAt
-      name
-      description
-      color
-      githubTokenCreatedDate
-      githubSyncEnabled
-      githubRepo
-      githubLastSync
-      githubLastMessage
     }
   }
 `;
