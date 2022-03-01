@@ -8,5 +8,5 @@ export class GitGetInstallationUrlInput {
   workspaceId!: string;
 
   @Field(() => EnumGitProvider, { nullable: false })
-  sourceControlService!: EnumGitProvider;
+  gitProvider!: EnumGitProvider;
 }

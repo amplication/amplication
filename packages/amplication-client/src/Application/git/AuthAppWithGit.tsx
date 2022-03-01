@@ -70,7 +70,7 @@ function AuthAppWithGit({ app, onDone }: Props) {
     });
     authWithGit({
       variables: {
-        sourceControlService: "Github",
+        gitProvider: "Github",
       },
     }).catch(console.error);
   }, [authWithGit, trackEvent]);
@@ -141,10 +141,8 @@ function AuthAppWithGit({ app, onDone }: Props) {
 export default AuthAppWithGit;
 
 const START_AUTH_APP_WITH_GITHUB = gql`
-  mutation getGitAppInstallationUrl($sourceControlService: EnumGitProvider!) {
-    getGitAppInstallationUrl(
-      data: { sourceControlService: $sourceControlService }
-    ) {
+  mutation getGitAppInstallationUrl($gitProvider: EnumGitProvider!) {
+    getGitAppInstallationUrl(data: { gitProvider: $gitProvider }) {
       url
     }
   }

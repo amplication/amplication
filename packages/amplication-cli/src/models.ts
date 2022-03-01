@@ -1124,7 +1124,7 @@ export type Environment = {
 };
 
 export type GitGetInstallationUrlInput = {
-  sourceControlService: EnumGitProvider;
+  gitProvider: EnumGitProvider;
 };
 
 export type GitOrganization = {

@@ -1329,5 +1329,5 @@ input GitOrganizationCreateInput {
 }
 
 input GitGetInstallationUrlInput {
-  sourceControlService: EnumGitProvider!
+  gitProvider: EnumGitProvider!
 }

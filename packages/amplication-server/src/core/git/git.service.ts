@@ -146,8 +146,8 @@ export class GitService {
   async getGitInstallationUrl(
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
-    const { sourceControlService, workspaceId } = args.data;
-    const service = this.gitServiceFactory.getService(sourceControlService);
+    const { gitProvider, workspaceId } = args.data;
+    const service = this.gitServiceFactory.getService(gitProvider);
     return await service.getGitInstallationUrl(workspaceId);
   }
 
