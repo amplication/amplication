@@ -62,8 +62,6 @@ export default function GitCreateRepo({
     [app.id, gitOrganizationId, gitProvider, triggerCreation]
   );
 
-  // const { handleRepoSelected } = useGitSelected({ appId: app.id });
-
   return (
     <Formik
       initialValues={initialValues}
