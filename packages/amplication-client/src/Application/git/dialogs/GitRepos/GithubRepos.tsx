@@ -108,12 +108,12 @@ function GitRepos({
 export default GitRepos;
 
 const CONNECT_GIT_REPOSITORY = gql`
-  mutation connectGitRepository(
+  mutation connectAppGitRepository(
     $name: String!
     $gitOrganizationId: String!
     $appId: String!
   ) {
-    connectGitRepository(
+    connectAppGitRepository(
       data: {
         name: $name
         appId: $appId
@@ -121,6 +121,9 @@ const CONNECT_GIT_REPOSITORY = gql`
       }
     ) {
       id
+      gitRepository {
+        id
+      }
     }
   }
 `;

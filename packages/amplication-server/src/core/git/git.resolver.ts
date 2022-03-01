@@ -42,7 +42,8 @@ export class GitResolver {
   async gitOrganization(@Args() args: FindOneArgs): Promise<GitOrganization> {
     return this.gitService.getGitOrganization(args);
   }
-  @Mutation(() => GitRepository)
+
+  @Mutation(() => App)
   @AuthorizeContext(
     AuthorizableResourceParameter.GitOrganizationId,
     'data.gitOrganizationId'
