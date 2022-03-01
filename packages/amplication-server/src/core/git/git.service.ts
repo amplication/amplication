@@ -16,6 +16,7 @@ import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
+import { CreateGitRemoteRepoInput } from './dto/inputs/CreateGitRemoteRepoInput';
 @Injectable()
 export class GitService {
   constructor(
@@ -28,14 +29,22 @@ export class GitService {
   ): Promise<RemoteGitRepository[]> {
     const { gitProvider, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(gitProvider);
-    return await service.getOrganizationRepos(gitOrganizationId);
+    const installationId = await this.getInstallationIdByGitOrganizationId(
+      gitOrganizationId
+    );
+    return await service.getOrganizationRepos(installationId);
   }
   async createGitRepository(
     args: CreateGitRepositoryInput
   ): Promise<RemoteGitRepository> {
     const provider = this.gitServiceFactory.getService(args.gitProvider);
-    const newRepo = await provider.createRepo(args);
-
+    const installationId = await this.getInstallationIdByGitOrganizationId(
+      args.gitOrganizationId
+    );
+    const createGitRemoteRepoInput = new CreateGitRemoteRepoInput();
+    (createGitRemoteRepoInput.installationId = installationId.toString()),
+      (createGitRemoteRepoInput.name = args.name);
+    const newRepo = await provider.createRepo(createGitRemoteRepoInput);
     await this.connectGitRepository({ ...args });
 
     return newRepo;
@@ -87,7 +96,37 @@ export class GitService {
   ): Promise<GitOrganization> {
     const { provider } = args.data;
     const service = this.gitServiceFactory.getService(provider);
-    return await service.createGitOrganization(args);
+
+    const gitOrganizationName = await service.getGitOrganizationName(
+      args.data.installationId
+    );
+
+    const gitOrganization = await this.prisma.gitOrganization.findFirst({
+      where: {
+        name: gitOrganizationName
+      }
+    });
+
+    if (gitOrganization) {
+      return await this.prisma.gitOrganization.update({
+        where: {
+          id: gitOrganization.id
+        },
+        data: {
+          ...args.data,
+          installationId: args.data.installationId,
+          name: gitOrganizationName
+        }
+      });
+    }
+
+    return await this.prisma.gitOrganization.create({
+      data: {
+        ...args.data,
+        installationId: args.data.installationId,
+        name: gitOrganizationName
+      }
+    });
   }
 
   async getGitOrganizations(
@@ -113,13 +152,29 @@ export class GitService {
   ): Promise<boolean> {
     const { gitProvider, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(gitProvider);
+    const installationId = await this.getInstallationIdByGitOrganizationId(
+      gitOrganizationId
+    );
+    await service.deleteGitOrganization(installationId);
     await this.prisma.gitOrganization.delete({
       where: {
         id: gitOrganizationId
       }
     });
-
-    await service.deleteGitOrganization(args.gitOrganizationId);
     return true;
+  }
+
+  private async getInstallationIdByGitOrganizationId(
+    gitOrganizationId: string
+  ): Promise<number | null> {
+    return parseInt(
+      (
+        await this.prisma.gitOrganization.findFirst({
+          where: {
+            id: gitOrganizationId
+          }
+        })
+      ).installationId
+    );
   }
 }

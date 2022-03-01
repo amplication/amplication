@@ -1,17 +1,10 @@
-import { GitOrganization } from 'src/models/GitOrganization';
-import { CreateGitOrganizationArgs } from '../dto/args/CreateGitOrganizationArgs';
-import { CreateGitRepositoryInput } from '../dto/inputs/CreateGitRepositoryInput';
+import { CreateGitRemoteRepoInput } from '../dto/inputs/CreateGitRemoteRepoInput';
 import { RemoteGitRepository } from '../dto/objects/RemoteGitRepository';
-
 export interface IGitClient {
-  createRepo(args: CreateGitRepositoryInput): Promise<RemoteGitRepository>;
-  getOrganizationRepos(
-    gitOrganizationId: string
-  ): Promise<RemoteGitRepository[]>;
-  isRepoExist(token: string, name: string): Promise<boolean>;
-  createGitOrganization(
-    args: CreateGitOrganizationArgs
-  ): Promise<GitOrganization>;
+  createRepo(data: CreateGitRemoteRepoInput): Promise<RemoteGitRepository>;
+  getOrganizationRepos(installationId: number): Promise<RemoteGitRepository[]>;
+  isRepoExist(installationId: number, name: string): Promise<boolean>;
   getGitInstallationUrl(workspaceId: string): Promise<string>;
-  deleteGitOrganization(workspaceId: string): Promise<boolean>;
+  deleteGitOrganization(installationId: number): Promise<boolean>;
+  getGitOrganizationName(installationId: string): Promise<string>;
 }
