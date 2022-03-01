@@ -1147,15 +1147,6 @@ export type GitOrganizationWhereInput = {
   id?: InputMaybe<Scalars["String"]>;
 };
 
-export type GitRepo = {
-  __typename?: "GitRepo";
-  admin: Scalars["Boolean"];
-  fullName: Scalars["String"];
-  name: Scalars["String"];
-  private: Scalars["Boolean"];
-  url: Scalars["String"];
-};
-
 export type GitRepository = {
   __typename?: "GitRepository";
   createdAt?: Maybe<Scalars["DateTime"]>;
@@ -1235,7 +1226,7 @@ export type Mutation = {
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createEntityPage: EntityPage;
-  createGitRepository: GitRepo;
+  createGitRepository: RemoteGitRepository;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createWorkspace?: Maybe<Workspace>;
@@ -1553,7 +1544,7 @@ export type Query = {
   entity?: Maybe<Entity>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
-  getReposOfOrganization: Array<GitRepo>;
+  getReposOfOrganization: Array<RemoteGitRepository>;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
   me: User;
@@ -1714,6 +1705,15 @@ export enum QueryMode {
   Default = "Default",
   Insensitive = "Insensitive",
 }
+
+export type RemoteGitRepository = {
+  __typename?: "RemoteGitRepository";
+  admin: Scalars["Boolean"];
+  fullName: Scalars["String"];
+  name: Scalars["String"];
+  private: Scalars["Boolean"];
+  url: Scalars["String"];
+};
 
 export enum Role {
   Admin = "Admin",
