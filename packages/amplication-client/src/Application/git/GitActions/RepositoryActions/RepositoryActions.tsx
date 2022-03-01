@@ -14,7 +14,7 @@ import { GitRepositoryWithGitOrganization } from "../../SyncWithGithubPage";
 type Props = {
   onClickCreateRepository: () => void;
   onClickSelectRepository: () => void;
-  currentConnectedGitRepository: GitRepositoryWithGitOrganization;
+  currentConnectedGitRepository: GitRepositoryWithGitOrganization | null;
 };
 export default function RepositoryActions({
   onClickCreateRepository,

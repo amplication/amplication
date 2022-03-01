@@ -1,5 +1,5 @@
 import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import { AuthorizeAppWithGitResult, EnumGitProvider } from "../../models";
@@ -31,24 +31,20 @@ type Props = {
 
 export const CLASS_NAME = "auth-app-with-github";
 
-function AuthAppWithGit({ app: { app }, onDone }: Props) {
-  const { data } = useQuery<{
-    gitOrganizations: GitOrganizationFromGitRepository[];
-  }>(GET_GIT_ORGANIZATIONS);
+function AuthAppWithGit({ app, onDone }: Props) {
   const [
     gitOrganization,
     setGitOrganization,
   ] = useState<GitOrganizationFromGitRepository | null>(null);
-
   useEffect(() => {
     if (app.gitRepository?.gitOrganization) {
       setGitOrganization(app.gitRepository?.gitOrganization);
-    } else if (data?.gitOrganizations.length === 1) {
-      setGitOrganization(data.gitOrganizations[0]);
+    } else if (app.workspace.gitOrganizations.length === 1) {
+      setGitOrganization(app.workspace.gitOrganizations[0]);
     } else {
       setGitOrganization(null);
     }
-  }, [app.gitRepository?.gitOrganization, data]);
+  }, [app.gitRepository?.gitOrganization, app.workspace.gitOrganizations]);
 
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
@@ -74,14 +70,12 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
     trackEvent({
       eventName: "startAuthAppWithGitHub",
     });
-    console.log({ app });
-
     authWithGit({
       variables: {
         sourceControlService: "Github",
       },
     }).catch(console.error);
-  }, [authWithGit, app, trackEvent]);
+  }, [authWithGit, trackEvent]);
 
   const handlePopupFailedClose = () => {
     setPopupFailed(false);
@@ -93,8 +87,6 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
     setPopupFailed(true);
   };
   const errorMessage = formatError(error);
-  console.log(app.gitRepository);
-
   return (
     <>
       {gitOrganization && (
@@ -113,13 +105,13 @@ function AuthAppWithGit({ app: { app }, onDone }: Props) {
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         <div className={`${CLASS_NAME}__actions`}>
-          {isEmpty(data?.gitOrganizations) ? (
+          {isEmpty(app.workspace.gitOrganizations) ? (
             <NewConnection
               onSyncNewGitOrganizationClick={handleAuthWithGitClick}
             />
           ) : (
             <ExistingConnectionsMenu
-              gitOrganizations={data?.gitOrganizations}
+              gitOrganizations={app.workspace.gitOrganizations}
               onSelectGitOrganization={(organization) => {
                 setGitOrganization(organization);
               }}
@@ -189,12 +181,3 @@ const openSignInWindow = (url: string, name: string) => {
   // add the listener for receiving a message from the popup
   window.addEventListener("message", (event) => receiveMessage(event), false);
 };
-
-const GET_GIT_ORGANIZATIONS = gql`
-  {
-    gitOrganizations {
-      id
-      name
-    }
-  }
-`;

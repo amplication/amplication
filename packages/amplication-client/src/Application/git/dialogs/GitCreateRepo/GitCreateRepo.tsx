@@ -7,15 +7,16 @@ import {
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
-import { App, EnumGitProvider, RepoCreateInput } from "../../../../models";
+import { EnumGitProvider, RepoCreateInput } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
+import { AppWithGitRepository } from "../../SyncWithGithubPage";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 
 type Props = {
   gitProvider: EnumGitProvider;
-  app: App;
+  app: AppWithGitRepository;
   gitOrganizationId: string;
   onCompleted: Function;
   gitOrganizationName: string;
@@ -33,19 +34,10 @@ export default function GitCreateRepo({
   const initialValues: RepoCreateInput = { name: "", public: true };
   const { trackEvent } = useTracking();
 
-  // const { data } = useQuery<{ gitOrganization: { name: string } }>(
-  //   GET_GIT_ORGANIZATION_NAME,
-  //   {
-  //     variables: { id: gitOrganizationId },
-  //   }
-  // );
-
   const [triggerCreation, { loading, error }] = useMutation(
     CREATE_GIT_REPOSITORY_IN_ORGANIZATION,
     {
       onCompleted: (data) => {
-        // const gitRepo: GitRepo = data.createRepoInOrg;
-        // handleRepoSelected(gitRepo);
         onCompleted();
 
         trackEvent({

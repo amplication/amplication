@@ -1,11 +1,12 @@
 import { Dialog } from "@amplication/design-system";
 import React from "react";
-import { App, EnumGitProvider } from "../../../models";
+import { EnumGitProvider } from "../../../models";
+import { AppWithGitRepository } from "../SyncWithGithubPage";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
 import GitRepos from "./GitRepos/GithubRepos";
 
 type Props = {
-  app: App;
+  app: AppWithGitRepository;
   gitOrganizationId: string;
   selectRepoOpen: boolean;
   onSelectGitRepositoryDialogClose: () => void;
@@ -14,7 +15,6 @@ type Props = {
   gitCreateRepoOpen: boolean;
   setGitCreateRepo: any;
   gitProvider: EnumGitProvider;
-  confirmRemove: boolean;
   gitOrganizationName: string;
 };
 

@@ -9,11 +9,12 @@ import {
 } from "@amplication/design-system";
 import React from "react";
 import { GitOrganization } from "../../../models";
+import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
 type Props = {
-  gitOrganizations: GitOrganization[];
-  selectedGitOrganization: GitOrganization | null;
+  gitOrganizations: GitOrganizationFromGitRepository[];
+  selectedGitOrganization: GitOrganizationFromGitRepository | null;
   onAddGitOrganization: () => void;
   onSelectGitOrganization: (organization: GitOrganization) => void;
 };
