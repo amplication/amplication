@@ -88,6 +88,7 @@ type App {
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   githubLastMessage: String
   githubLastSync: DateTime
+  workspace: Workspace!
 }
 
 type GitRepository {

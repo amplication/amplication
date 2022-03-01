@@ -16,7 +16,7 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { App, Commit, Entity, User } from 'src/models';
+import { App, Commit, Entity, User, Workspace } from 'src/models';
 import { GitRepository } from 'src/models/GitRepository';
 import { AppService, EntityService } from '../';
 import { BuildService } from '../build/build.service';
@@ -193,5 +193,10 @@ export class AppResolver {
   @ResolveField(() => GitRepository, { nullable: true })
   async gitRepository(@Parent() app: App): Promise<GitRepository | null> {
     return await this.appService.gitRepository(app.id);
+  }
+
+  @ResolveField(() => Workspace)
+  async workspace(@Parent() app: App): Promise<Workspace> {
+    return this.appService.workspace(app.id);
   }
 }

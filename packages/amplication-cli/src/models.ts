@@ -90,6 +90,7 @@ export type App = {
   id: Scalars['String'];
   name: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+  workspace: Workspace;
 };
 
 export type AppBuildsArgs = {
