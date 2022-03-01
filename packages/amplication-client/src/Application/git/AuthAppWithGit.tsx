@@ -91,7 +91,7 @@ function AuthAppWithGit({ app, onDone }: Props) {
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
           }}
-          selectRepoOpen={selectRepoOpen}
+          isSelectRepositoryOpen={selectRepoOpen}
           onPopupFailedClose={() => {
             setPopupFailed(false);
           }}

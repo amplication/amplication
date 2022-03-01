@@ -8,7 +8,7 @@ import GitRepos from "./GitRepos/GithubRepos";
 type Props = {
   app: AppWithGitRepository;
   gitOrganizationId: string;
-  selectRepoOpen: boolean;
+  isSelectRepositoryOpen: boolean;
   isPopupFailed: boolean;
   gitCreateRepoOpen: boolean;
   gitProvider: EnumGitProvider;
@@ -21,7 +21,7 @@ type Props = {
 export default function GitDialogsContainer({
   app,
   gitOrganizationId,
-  selectRepoOpen,
+  isSelectRepositoryOpen,
   isPopupFailed,
   gitCreateRepoOpen,
   gitProvider,
@@ -34,7 +34,7 @@ export default function GitDialogsContainer({
     <div>
       <Dialog
         className="select-repo-dialog"
-        isOpen={selectRepoOpen}
+        isOpen={isSelectRepositoryOpen}
         title={`Select ${gitProvider} repository`}
         onDismiss={onSelectGitRepositoryDialogClose}
       >
