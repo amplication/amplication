@@ -15,7 +15,7 @@ import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
 import { IGitClient } from '../git/contracts/IGitClient';
 import { CreateGitOrganizationArgs } from '../git/dto/args/CreateGitOrganizationArgs';
 import { CreateGitRepositoryInput } from '../git/dto/inputs/CreateGitRepositoryInput';
-import { GitRepo } from '../git/dto/objects/GitRepo';
+import { RemoteGitRepository } from '../git/dto/objects/RemoteGitRepository';
 import { GithubFile } from './dto/githubFile';
 
 const GITHUB_FILE_TYPE = 'file';
@@ -157,7 +157,7 @@ export class GithubService implements IGitClient {
   async createRepo({
     name,
     gitOrganizationId
-  }: CreateGitRepositoryInput): Promise<GitRepo> {
+  }: CreateGitRepositoryInput): Promise<RemoteGitRepository> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
     );
@@ -187,7 +187,9 @@ export class GithubService implements IGitClient {
     };
   }
 
-  async getOrganizationReposWithOctokit(octokit: Octokit): Promise<GitRepo[]> {
+  async getOrganizationReposWithOctokit(
+    octokit: Octokit
+  ): Promise<RemoteGitRepository[]> {
     const results = await octokit.request('GET /installation/repositories');
     return results.data.repositories.map(repo => ({
       name: repo.name,
@@ -197,7 +199,9 @@ export class GithubService implements IGitClient {
       admin: repo.permissions.admin
     }));
   }
-  async getOrganizationRepos(organizationId: string): Promise<GitRepo[]> {
+  async getOrganizationRepos(
+    organizationId: string
+  ): Promise<RemoteGitRepository[]> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       organizationId
     );

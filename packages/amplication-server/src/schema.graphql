@@ -44,7 +44,7 @@ type Query {
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  getReposOfOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): [GitRepo!]!
+  getReposOfOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
 
@@ -960,7 +960,7 @@ input EntityPageOrderByInput {
   description: SortOrder
 }
 
-type GitRepo {
+type RemoteGitRepository {
   name: String!
   url: String!
   private: Boolean!
@@ -1016,7 +1016,7 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createGitRepository(data: CreateGitRepositoryInput!): GitRepo!
+  createGitRepository(data: CreateGitRepositoryInput!): RemoteGitRepository!
   connectGitRepository(data: ConnectGitRepositoryInput!): GitRepository!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteGitRepository(gitRepositoryId: String!): Boolean!

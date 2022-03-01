@@ -6,7 +6,7 @@ import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs'
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
-import { GitRepo } from './dto/objects/GitRepo';
+import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
 import { GitRepository } from 'src/models/GitRepository';
 import { AmplicationError } from 'src/errors/AmplicationError';
@@ -23,12 +23,16 @@ export class GitService {
     private readonly prisma: PrismaService
   ) {}
 
-  async getReposOfOrganization(args: GetReposListArgs): Promise<GitRepo[]> {
+  async getReposOfOrganization(
+    args: GetReposListArgs
+  ): Promise<RemoteGitRepository[]> {
     const { gitProvider, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(gitProvider);
     return await service.getOrganizationRepos(gitOrganizationId);
   }
-  async createGitRepository(args: CreateGitRepositoryInput): Promise<GitRepo> {
+  async createGitRepository(
+    args: CreateGitRepositoryInput
+  ): Promise<RemoteGitRepository> {
     const provider = this.gitServiceFactory.getService(args.gitProvider);
     const newRepo = await provider.createRepo(args);
 

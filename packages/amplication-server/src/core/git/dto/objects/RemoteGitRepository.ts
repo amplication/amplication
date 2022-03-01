@@ -4,7 +4,7 @@ import { ObjectType, Field } from '@nestjs/graphql';
   isAbstract: true,
   description: undefined
 })
-export class GitRepo {
+export class RemoteGitRepository {
   @Field(() => String)
   name: string | null;
 
