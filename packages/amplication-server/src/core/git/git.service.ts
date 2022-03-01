@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { isEmpty } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { FindOneArgs } from 'src/dto';
+import { AmplicationError } from 'src/errors/AmplicationError';
+import { App } from 'src/models/App';
 import { GitOrganization } from 'src/models/GitOrganization';
+import { GIT_REPOSITORY_EXIST, INVALID_GIT_REPOSITORY_ID } from './constants';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
-import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
+import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
+import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { GetReposListArgs } from './dto/args/GetReposListArgs';
+import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
+import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
+import { CreateGitRemoteRepoInput } from './dto/inputs/CreateGitRemoteRepoInput';
+import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
-import { GitRepository } from 'src/models/GitRepository';
-import { AmplicationError } from 'src/errors/AmplicationError';
-import { GIT_REPOSITORY_EXIST, INVALID_GIT_REPOSITORY_ID } from './constants';
-import { isEmpty } from 'lodash';
-import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
-import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
-import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
-import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
-import { CreateGitRemoteRepoInput } from './dto/inputs/CreateGitRemoteRepoInput';
 @Injectable()
 export class GitService {
   constructor(
@@ -41,17 +41,17 @@ export class GitService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
-    const createGitRemoteRepoInput = new CreateGitRemoteRepoInput();
-    (createGitRemoteRepoInput.installationId = installationId.toString()),
-      (createGitRemoteRepoInput.name = args.name);
-    const newRepo = await provider.createRepo(createGitRemoteRepoInput);
-    await this.connectGitRepository({ ...args });
+    const newRepo = await provider.createRepo({
+      installationId: installationId.toString(),
+      name: args.name
+    });
+    await this.connectAppGitRepository({ ...args });
 
     return newRepo;
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {
-    const gitRepository = await this.prisma.gitRepository.findFirst({
+    const gitRepository = await this.prisma.gitRepository.findUnique({
       where: {
         id: args.gitRepositoryId
       }
@@ -68,33 +68,37 @@ export class GitService {
     return true;
   }
 
-  async connectGitRepository({
+  async connectAppGitRepository({
     appId,
     name,
     gitOrganizationId
-  }: ConnectGitRepositoryInput): Promise<GitRepository> {
-    const gitRepo = await this.prisma.gitRepository.findFirst({
-      where: {
-        name: name
-      }
+  }: ConnectGitRepositoryInput): Promise<App> {
+    const gitRepo = await this.prisma.gitRepository.findUnique({
+      where: { appId }
     });
 
     if (gitRepo) {
       throw new AmplicationError(GIT_REPOSITORY_EXIST);
     }
 
-    return await this.prisma.gitRepository.create({
+    await this.prisma.gitRepository.create({
       data: {
         name: name,
         app: { connect: { id: appId } },
         gitOrganization: { connect: { id: gitOrganizationId } }
       }
     });
+
+    return await this.prisma.app.findUnique({
+      where: {
+        id: appId
+      }
+    });
   }
   async createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
-    const { provider } = args.data;
+    const { provider, installationId } = args.data;
     const service = this.gitServiceFactory.getService(provider);
 
     const gitOrganizationName = await service.getGitOrganizationName(
@@ -103,7 +107,9 @@ export class GitService {
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
       where: {
-        name: gitOrganizationName
+        name: gitOrganizationName,
+        installationId,
+        provider
       }
     });
 
@@ -136,7 +142,7 @@ export class GitService {
   }
 
   async getGitOrganization(args: FindOneArgs): Promise<GitOrganization> {
-    return await this.prisma.gitOrganization.findFirst(args);
+    return await this.prisma.gitOrganization.findUnique(args);
   }
 
   async getGitInstallationUrl(
@@ -169,7 +175,7 @@ export class GitService {
   ): Promise<number | null> {
     return parseInt(
       (
-        await this.prisma.gitOrganization.findFirst({
+        await this.prisma.gitOrganization.findUnique({
           where: {
             id: gitOrganizationId
           }
