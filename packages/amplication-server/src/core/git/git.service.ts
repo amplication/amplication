@@ -50,7 +50,7 @@ export class GitService {
     return newRepo;
   }
 
-  async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {
+  async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<App> {
     const gitRepository = await this.prisma.gitRepository.findUnique({
       where: {
         id: args.gitRepositoryId
@@ -64,8 +64,9 @@ export class GitService {
         id: args.gitRepositoryId
       }
     });
-
-    return true;
+    return await this.prisma.app.findUnique({
+      where: { id: gitRepository.appId }
+    });
   }
 
   async connectAppGitRepository({

@@ -1019,7 +1019,7 @@ type Mutation {
   createGitRepository(data: CreateGitRepositoryInput!): RemoteGitRepository!
   connectAppGitRepository(data: ConnectGitRepositoryInput!): App!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
-  deleteGitRepository(gitRepositoryId: String!): Boolean!
+  deleteGitRepository(gitRepositoryId: String!): App!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGitResult!
 }

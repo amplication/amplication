@@ -1212,7 +1212,7 @@ export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
   changePassword: Account;
   commit?: Maybe<Commit>;
-  connectGitRepository: GitRepository;
+  connectAppGitRepository: App;
   createApiToken: ApiToken;
   createApp: App;
   createAppRole: AppRole;
@@ -1236,7 +1236,7 @@ export type Mutation = {
   deleteEntityField: EntityField;
   deleteEntityPermissionField: EntityPermissionField;
   deleteGitOrganization: Scalars["Boolean"];
-  deleteGitRepository: Scalars["Boolean"];
+  deleteGitRepository: App;
   deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars["Boolean"]>;
   getGitAppInstallationUrl: AuthorizeAppWithGitResult;
@@ -1272,7 +1272,7 @@ export type MutationCommitArgs = {
   data: CommitCreateInput;
 };
 
-export type MutationConnectGitRepositoryArgs = {
+export type MutationConnectAppGitRepositoryArgs = {
   data: ConnectGitRepositoryInput;
 };
 

@@ -64,14 +64,14 @@ export class GitResolver {
     return await this.gitService.createGitOrganization(args);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => App)
   @AuthorizeContext(
     AuthorizableResourceParameter.GitRepositoryId,
     'gitRepositoryId'
   )
   async deleteGitRepository(
     @Args() args: DeleteGitRepositoryArgs
-  ): Promise<boolean> {
+  ): Promise<App> {
     return this.gitService.deleteGitRepository(args);
   }
 

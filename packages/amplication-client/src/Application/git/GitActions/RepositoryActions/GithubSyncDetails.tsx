@@ -64,6 +64,11 @@ export default GithubSyncDetails;
 
 const DELETE_GIT_REPOSITORY = gql`
   mutation deleteGitRepository($gitRepositoryId: String!) {
-    deleteGitRepository(gitRepositoryId: $gitRepositoryId)
+    deleteGitRepository(gitRepositoryId: $gitRepositoryId) {
+      id
+      gitRepository {
+        id
+      }
+    }
   }
 `;
