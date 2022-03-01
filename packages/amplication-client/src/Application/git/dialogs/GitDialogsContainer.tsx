@@ -11,7 +11,7 @@ type Props = {
   selectRepoOpen: boolean;
   onSelectGitRepositoryDialogClose: () => void;
   popupFailed: boolean;
-  handlePopupFailedClose: any;
+  onPopupFailedClose: any;
   gitCreateRepoOpen: boolean;
   setGitCreateRepo: any;
   gitProvider: EnumGitProvider;
@@ -24,7 +24,7 @@ export default function GitDialogsContainer({
   selectRepoOpen,
   onSelectGitRepositoryDialogClose,
   popupFailed,
-  handlePopupFailedClose,
+  onPopupFailedClose,
   gitCreateRepoOpen,
   setGitCreateRepo,
   gitProvider,
@@ -49,7 +49,7 @@ export default function GitDialogsContainer({
         className="popup-failed-dialog"
         isOpen={popupFailed}
         title="Popup failed to load"
-        onDismiss={handlePopupFailedClose}
+        onDismiss={onPopupFailedClose}
       >
         Please make sure that you allow popup windows in the browser
       </Dialog>

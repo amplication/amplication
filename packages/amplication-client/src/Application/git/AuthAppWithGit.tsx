@@ -32,19 +32,21 @@ type Props = {
 export const CLASS_NAME = "auth-app-with-github";
 
 function AuthAppWithGit({ app, onDone }: Props) {
+  const { workspace, gitRepository } = app;
+  const { gitOrganizations } = workspace;
   const [
     gitOrganization,
     setGitOrganization,
   ] = useState<GitOrganizationFromGitRepository | null>(null);
   useEffect(() => {
-    if (app.gitRepository?.gitOrganization) {
-      setGitOrganization(app.gitRepository?.gitOrganization);
-    } else if (app.workspace.gitOrganizations.length === 1) {
-      setGitOrganization(app.workspace.gitOrganizations[0]);
+    if (gitRepository?.gitOrganization) {
+      setGitOrganization(gitRepository?.gitOrganization);
+    } else if (gitOrganizations.length === 1) {
+      setGitOrganization(gitOrganizations[0]);
     } else {
       setGitOrganization(null);
     }
-  }, [app.gitRepository?.gitOrganization, app.workspace.gitOrganizations]);
+  }, [gitOrganizations, gitRepository?.gitOrganization]);
 
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
@@ -58,10 +60,6 @@ function AuthAppWithGit({ app, onDone }: Props) {
       },
     }
   );
-
-  const handleSelectRepoDialogDismiss = useCallback(() => {
-    setSelectRepoOpen(false);
-  }, []);
 
   const handleSelectRepoDialogOpen = useCallback(() => {
     setSelectRepoOpen(true);
@@ -77,9 +75,6 @@ function AuthAppWithGit({ app, onDone }: Props) {
     }).catch(console.error);
   }, [authWithGit, trackEvent]);
 
-  const handlePopupFailedClose = () => {
-    setPopupFailed(false);
-  };
   triggerOnDone = () => {
     onDone();
   };
@@ -93,9 +88,13 @@ function AuthAppWithGit({ app, onDone }: Props) {
         <GitDialogsContainer
           app={app}
           gitOrganizationId={gitOrganization.id}
-          onSelectGitRepositoryDialogClose={handleSelectRepoDialogDismiss}
+          onSelectGitRepositoryDialogClose={() => {
+            setSelectRepoOpen(false);
+          }}
           selectRepoOpen={selectRepoOpen}
-          handlePopupFailedClose={handlePopupFailedClose}
+          onPopupFailedClose={() => {
+            setPopupFailed(false);
+          }}
           popupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
           setGitCreateRepo={setCreateNewRepoOpen}
@@ -105,13 +104,13 @@ function AuthAppWithGit({ app, onDone }: Props) {
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         <div className={`${CLASS_NAME}__actions`}>
-          {isEmpty(app.workspace.gitOrganizations) ? (
+          {isEmpty(gitOrganizations) ? (
             <NewConnection
               onSyncNewGitOrganizationClick={handleAuthWithGitClick}
             />
           ) : (
             <ExistingConnectionsMenu
-              gitOrganizations={app.workspace.gitOrganizations}
+              gitOrganizations={gitOrganizations}
               onSelectGitOrganization={(organization) => {
                 setGitOrganization(organization);
               }}
@@ -126,7 +125,7 @@ function AuthAppWithGit({ app, onDone }: Props) {
               setCreateNewRepoOpen(true);
             }}
             onClickSelectRepository={handleSelectRepoDialogOpen}
-            currentConnectedGitRepository={app.gitRepository}
+            currentConnectedGitRepository={gitRepository}
           />
         )}
         <GitSyncNotes />
