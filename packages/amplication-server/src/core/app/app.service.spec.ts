@@ -823,6 +823,9 @@ describe('AppService', () => {
 
   it('should find an app', async () => {
     const args = {
+      include: {
+        gitRepository: true
+      },
       where: {
         deletedAt: null,
         id: EXAMPLE_APP_ID
