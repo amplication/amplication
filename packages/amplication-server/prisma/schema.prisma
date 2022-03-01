@@ -119,7 +119,6 @@ model App {
   entities          Entity[]
   environments      Environment[]
   gitRepository     GitRepository?
-  gitRepositoryId   String?
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
 }
