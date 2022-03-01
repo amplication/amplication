@@ -1140,7 +1140,6 @@ export type GitOrganization = {
 export type GitOrganizationCreateInput = {
   installationId: Scalars['String'];
   provider: EnumGitProvider;
-  workspaceId: Scalars['String'];
 };
 
 export type GitOrganizationWhereInput = {
