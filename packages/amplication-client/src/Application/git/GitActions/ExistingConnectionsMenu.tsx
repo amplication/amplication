@@ -1,5 +1,3 @@
-// import SelectMenu from "../SelectMenu/SelectMenu";
-// import SelectMenuButton from "../SelectMenu/SelectMenuButton";
 import {
   EnumButtonStyle,
   SelectMenu,
@@ -59,7 +57,7 @@ export default function ExistingConnectionsMenu({
                   }}
                   className="select-menu_item "
                 >
-                  <hr style={{ width: "100%" }} />
+                  <hr />
                 </div>
 
                 <SelectMenuItem
