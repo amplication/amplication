@@ -10,13 +10,12 @@ import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs'
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
-import { RemoteGitRepositoriesFindManyArgs } from './dto/args/RemoteGitRepositoriesFindManyArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
+import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
-import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 @Injectable()
 export class GitService {
   constructor(
@@ -97,8 +96,8 @@ export class GitService {
   async createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
-    const { provider, installationId } = args.data;
-    const service = this.gitServiceFactory.getService(provider);
+    const { gitProvider, installationId } = args.data;
+    const service = this.gitServiceFactory.getService(gitProvider);
 
     const gitOrganizationName = await service.getGitOrganizationName(
       args.data.installationId
@@ -108,7 +107,7 @@ export class GitService {
       where: {
         name: gitOrganizationName,
         installationId,
-        provider
+        provider: gitProvider
       }
     });
 
@@ -129,7 +128,8 @@ export class GitService {
       data: {
         ...args.data,
         installationId: args.data.installationId,
-        name: gitOrganizationName
+        name: gitOrganizationName,
+        provider: gitProvider
       }
     });
   }

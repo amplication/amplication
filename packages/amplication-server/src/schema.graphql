@@ -1330,7 +1330,7 @@ input ConnectGitRepositoryInput {
 
 input GitOrganizationCreateInput {
   installationId: String!
-  provider: EnumGitProvider!
+  gitProvider: EnumGitProvider!
 }
 
 input GitGetInstallationUrlInput {
