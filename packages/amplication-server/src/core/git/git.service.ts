@@ -16,6 +16,7 @@ import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInpu
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
+import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 @Injectable()
 export class GitService {
   constructor(
@@ -24,7 +25,7 @@ export class GitService {
   ) {}
 
   async getReposOfOrganization(
-    args: RemoteGitRepositoriesFindManyArgs
+    args: RemoteGitRepositoriesWhereUniqueInput
   ): Promise<RemoteGitRepository[]> {
     const { gitProvider, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(gitProvider);

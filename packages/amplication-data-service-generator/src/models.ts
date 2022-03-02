@@ -1692,8 +1692,7 @@ export type QueryPendingChangesArgs = {
 };
 
 export type QueryRemoteGitRepositoriesArgs = {
-  gitOrganizationId: Scalars["String"];
-  gitProvider: EnumGitProvider;
+  where: RemoteGitRepositoriesWhereUniqueInput;
 };
 
 export type QueryWorkspaceArgs = {
@@ -1704,6 +1703,11 @@ export enum QueryMode {
   Default = "Default",
   Insensitive = "Insensitive",
 }
+
+export type RemoteGitRepositoriesWhereUniqueInput = {
+  gitOrganizationId: Scalars["String"];
+  gitProvider: EnumGitProvider;
+};
 
 export type RemoteGitRepository = {
   __typename?: "RemoteGitRepository";

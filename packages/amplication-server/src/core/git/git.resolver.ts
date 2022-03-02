@@ -102,12 +102,12 @@ export class GitResolver {
   @Query(() => [RemoteGitRepository])
   @AuthorizeContext(
     AuthorizableResourceParameter.GitOrganizationId,
-    'gitOrganizationId'
+    'where.gitOrganizationId'
   )
   async remoteGitRepositories(
     @Args() args: RemoteGitRepositoriesFindManyArgs
   ): Promise<RemoteGitRepository[]> {
-    return this.gitService.getReposOfOrganization(args);
+    return this.gitService.getReposOfOrganization(args.where);
   }
 
   @Query(() => [GitOrganization])

@@ -139,8 +139,10 @@ const FIND_GIT_REPOS = gql`
     $gitProvider: EnumGitProvider!
   ) {
     remoteGitRepositories(
-      gitOrganizationId: $gitOrganizationId
-      gitProvider: $gitProvider
+      where: {
+        gitOrganizationId: $gitOrganizationId
+        gitProvider: $gitProvider
+      }
     ) {
       name
       url
