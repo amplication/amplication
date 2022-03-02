@@ -102,7 +102,7 @@ type GitRepository {
 
 type GitOrganization {
   id: String!
-  gitProvider: EnumGitProvider!
+  provider: EnumGitProvider!
   name: String!
   installationId: String!
   createdAt: DateTime!
