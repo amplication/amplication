@@ -11,14 +11,14 @@ import "../../AuthAppWithGit.scss";
 import { GitRepositoryWithGitOrganization } from "../../SyncWithGithubPage";
 import "./RepositoryActions.scss";
 type Props = {
-  onClickCreateRepository: () => void;
+  onCreateRepository: () => void;
   onSelectRepository: () => void;
   currentConnectedGitRepository: GitRepositoryWithGitOrganization | null;
 };
 
 const CLASS_NAME = "repository-actions";
 export default function RepositoryActions({
-  onClickCreateRepository,
+  onCreateRepository,
   onSelectRepository,
   currentConnectedGitRepository,
 }: Props) {
@@ -53,7 +53,7 @@ export default function RepositoryActions({
               <div className={`${CLASS_NAME}__action`}>
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
-                  onClick={onClickCreateRepository}
+                  onClick={onCreateRepository}
                   icon="plus"
                 >
                   Create repository

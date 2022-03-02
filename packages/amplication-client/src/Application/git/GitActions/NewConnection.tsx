@@ -14,7 +14,7 @@ export default function NewConnection({
       onClick={onSyncNewGitOrganizationClick}
       icon="github"
     >
-      Sync with GitHub
+      Connect to GitHub
     </Button>
   );
 }

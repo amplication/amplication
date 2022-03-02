@@ -62,11 +62,7 @@ export default function ExistingConnectionsMenu({
               <hr />
             </div>
 
-            <SelectMenuItem
-              onSelectionChange={() => {
-                onAddGitOrganization();
-              }}
-            >
+            <SelectMenuItem onSelectionChange={onAddGitOrganization}>
               <span>Add another organization</span>
             </SelectMenuItem>
           </>
