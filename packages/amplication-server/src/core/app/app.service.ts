@@ -321,9 +321,6 @@ export class AppService {
       where: {
         id: args.where.id,
         deletedAt: null
-      },
-      include: {
-        gitRepository: true
       }
     });
   }
@@ -339,19 +336,26 @@ export class AppService {
   }
 
   async deleteApp(args: FindOneArgs): Promise<App | null> {
-    const app = await this.app({
+    const app = await this.prisma.app.findUnique({
       where: {
         id: args.where.id
       }
     });
+
     if (isEmpty(app)) {
       throw new Error(INVALID_APP_ID);
     }
 
-    if (app.gitRepository) {
+    const gitRepo = await this.prisma.gitRepository.findUnique({
+      where: {
+        appId: app.id
+      }
+    });
+
+    if (gitRepo) {
       await this.prisma.gitRepository.delete({
         where: {
-          id: app.gitRepository.id
+          id: gitRepo.id
         }
       });
     }
