@@ -49,26 +49,3 @@ const CREATE_GIT_ORGANIZATION = gql`
     }
   }
 `;
-
-// const COMPLETE_AUTH_APP_WITH_GITHUB = gql`
-//   mutation completeAuthorizeAppWithGithub(
-//     $state: String!
-//     $installationId: String!
-//   ) {
-//     completeAuthorizeAppWithGithub(
-//       data: { state: $state , installationId: $installationId}
-//     ) {
-//       id
-//       createdAt
-//       updatedAt
-//       name
-//       description
-//       color
-//       githubTokenCreatedDate
-//       githubSyncEnabled
-//       githubRepo
-//       githubLastSync
-//       githubLastMessage
-//     }
-//   }
-// `;
