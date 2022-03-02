@@ -102,7 +102,7 @@ type GitRepository {
 
 type GitOrganization {
   id: String!
-  provider: EnumGitProvider!
+  gitProvider: EnumGitProvider!
   name: String!
   installationId: String!
   createdAt: DateTime!
@@ -1325,7 +1325,7 @@ input ConnectGitRepositoryInput {
 
 input GitOrganizationCreateInput {
   installationId: String!
-  provider: EnumGitProvider!
+  gitProvider: EnumGitProvider!
 }
 
 input GitGetInstallationUrlInput {

@@ -96,8 +96,8 @@ export class GitService {
   async createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
-    const { provider, installationId } = args.data;
-    const service = this.gitServiceFactory.getService(provider);
+    const { gitProvider, installationId } = args.data;
+    const service = this.gitServiceFactory.getService(gitProvider);
 
     const gitOrganizationName = await service.getGitOrganizationName(
       args.data.installationId
@@ -107,7 +107,7 @@ export class GitService {
       where: {
         name: gitOrganizationName,
         installationId,
-        provider
+        gitProvider
       }
     });
 
