@@ -2,20 +2,20 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ include "server.names.fullname" . }}
+  name: {{ .Values.name }}
   labels:
   {{- include "common.labels" . | nindent 4 }}
-  {{- include "server.labels" . | nindent 4 }}
+  {{- include "client.labels" . | nindent 4 }}
 spec:
   entryPoints:
     - {{ .Values.traefik.entrypoints.http.name }}
     - {{ .Values.traefik.entrypoints.https.name }}
   routes:
-  - match: PathPrefix(`{{ .Values.server.ingressRoute.path }}`)
+  - match: Path(`{{ .Values.traefik.path }}`)
     kind: Rule
     services:
-    - name: {{ include "server.names.fullname" . }}
-      port: {{ .Values.server.service.portHttp }}
+    - name: {{ .Values.name }}
+      port: {{ .Values.service.port }}
     middlewares:
       - name: {{ .Values.traefik.middleware.redirect }}
   tls:

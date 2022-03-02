@@ -1,0 +1,6 @@
+apiVersion: v1
+name: amplication-client
+description: Helm chart for @amplication/client
+type: application
+version: 0.1.0
+appVersion: 1.16.0

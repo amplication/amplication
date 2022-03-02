@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  labels:
+  {{- include "common.labels" . | nindent 4 }}
+  {{- include "client.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels: {{- include "client.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "common.labels" . | nindent 8 }}
+      {{- include "client.labels" . | nindent 8 }}
+      annotations:
+        checksum/client-config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      containers:
+      - name: {{ .Values.name }}
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        resources: {{- toYaml .Values.resources | nindent 12 }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}
+        ports:
+          - name: http
+            containerPort: {{ .Values.service.targetPort }}

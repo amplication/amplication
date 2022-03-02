@@ -1,0 +1,33 @@
+# @amplication/client
+name: amplication-client
+
+replicas: 1
+
+image:
+  registry: 562551246305.dkr.ecr.us-east-1.amazonaws.com
+  repository: amplication-dev-client
+  tag: v1.0.0-beta
+
+resources:
+  # Example:
+  # limits:
+  #    cpu: 100m
+  #    memory: 128Mi
+  limits: {}
+  # Example:
+  # requests:
+  #    cpu: 100m
+  #    memory: 128Mi
+  requests: {}
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+traefik:
+  enabled: false
+  # traefik.path -- The path to match for Traefik to route to service
+  path: "/"
+  middleware:
+    redirect: "http-to-https"
