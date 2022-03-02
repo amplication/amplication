@@ -13,5 +13,5 @@ export class GitOrganizationCreateInput {
   workspaceId!: string;
 
   @Field(() => EnumGitProvider, { nullable: false })
-  provider!: EnumGitProvider;
+  gitProvider!: EnumGitProvider;
 }

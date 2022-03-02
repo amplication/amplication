@@ -7,7 +7,7 @@ import {
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
-import { EnumGitProvider, RepoCreateInput } from "../../../../models";
+import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
 import { AppWithGitRepository } from "../../SyncWithGithubPage";
@@ -31,7 +31,7 @@ export default function GitCreateRepo({
   onCompleted,
   gitOrganizationName,
 }: Props) {
-  const initialValues: RepoCreateInput = { name: "", public: true };
+  const initialValues: CreateGitRepositoryInput = { name: "", public: true };
   const { trackEvent } = useTracking();
 
   const [triggerCreation, { loading, error }] = useMutation(
@@ -48,7 +48,7 @@ export default function GitCreateRepo({
   );
 
   const handleCreation = useCallback(
-    (data: RepoCreateInput) => {
+    (data: CreateGitRepositoryInput) => {
       triggerCreation({
         variables: {
           name: data.name,

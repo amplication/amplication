@@ -36,7 +36,7 @@ function GitRepos({
     refetch,
     networkStatus,
   } = useQuery<{
-    getReposOfOrganization: RemoteGitRepository[];
+    remoteGitRepositories: RemoteGitRepository[];
   }>(FIND_GIT_REPOS, {
     variables: {
       gitOrganizationId,
@@ -98,7 +98,7 @@ function GitRepos({
         )}
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
-        data?.getReposOfOrganization?.map((repo) => (
+        data?.remoteGitRepositories?.map((repo) => (
           <GitRepoItem
             key={repo.fullName}
             repo={repo}
@@ -134,13 +134,15 @@ const CONNECT_GIT_REPOSITORY = gql`
 `;
 
 const FIND_GIT_REPOS = gql`
-  query getReposOfOrganization(
+  query remoteGitRepositories(
     $gitOrganizationId: String!
     $gitProvider: EnumGitProvider!
   ) {
-    getReposOfOrganization(
-      gitOrganizationId: $gitOrganizationId
-      gitProvider: $gitProvider
+    remoteGitRepositories(
+      where: {
+        gitOrganizationId: $gitOrganizationId
+        gitProvider: $gitProvider
+      }
     ) {
       name
       url

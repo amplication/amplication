@@ -1138,8 +1138,8 @@ export type GitOrganization = {
 };
 
 export type GitOrganizationCreateInput = {
+  gitProvider: EnumGitProvider;
   installationId: Scalars["String"];
-  provider: EnumGitProvider;
 };
 
 export type GitOrganizationWhereInput = {
@@ -1543,11 +1543,11 @@ export type Query = {
   entity?: Maybe<Entity>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
-  getReposOfOrganization: Array<RemoteGitRepository>;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
   me: User;
   pendingChanges: Array<PendingChange>;
+  remoteGitRepositories: Array<RemoteGitRepository>;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
   workspaces: Array<Workspace>;
@@ -1677,11 +1677,6 @@ export type QueryEntityPagesArgs = {
   where?: InputMaybe<EntityPageWhereInput>;
 };
 
-export type QueryGetReposOfOrganizationArgs = {
-  gitOrganizationId: Scalars["String"];
-  gitProvider: EnumGitProvider;
-};
-
 export type QueryGitOrganizationArgs = {
   where: WhereUniqueInput;
 };
@@ -1696,6 +1691,10 @@ export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
 };
 
+export type QueryRemoteGitRepositoriesArgs = {
+  where: RemoteGitRepositoriesWhereUniqueInput;
+};
+
 export type QueryWorkspaceArgs = {
   where: WhereUniqueInput;
 };
@@ -1704,6 +1703,11 @@ export enum QueryMode {
   Default = "Default",
   Insensitive = "Insensitive",
 }
+
+export type RemoteGitRepositoriesWhereUniqueInput = {
+  gitOrganizationId: Scalars["String"];
+  gitProvider: EnumGitProvider;
+};
 
 export type RemoteGitRepository = {
   __typename?: "RemoteGitRepository";
