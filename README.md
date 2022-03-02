@@ -5,7 +5,7 @@
   </a>
 </p>
 <p align="center">
-    <a href="https://docs.amplication.com/docs/">Docs</a> <a href="https://twitter.com/amplication">Twitter</a>
+    <a href="https://docs.amplication.com/docs/">Docs</a> <a href="https://twitter.com/intent/follow?original_referer=https%3A%2F%2Fgithub.com%2FcodeSTACKr&screen_name=amplication">Twitter</a>
 </p>
 <p align="center">
   <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
