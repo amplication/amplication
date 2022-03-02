@@ -44,7 +44,7 @@ type Query {
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  getReposOfOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): [RemoteGitRepository!]!
+  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
 
@@ -966,6 +966,11 @@ type RemoteGitRepository {
   private: Boolean!
   fullName: String!
   admin: Boolean!
+}
+
+input RemoteGitRepositoriesWhereUniqueInput {
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
 }
 
 input GitOrganizationWhereInput {

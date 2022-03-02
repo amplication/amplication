@@ -1,7 +1,8 @@
-import { ArgsType, Field } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { EnumGitProvider } from '../enums/EnumGitProvider';
-@ArgsType()
-export class GetReposListArgs {
+
+@InputType()
+export class RemoteGitRepositoriesWhereUniqueInput {
   @Field(() => String, { nullable: false })
   gitOrganizationId!: string;
 

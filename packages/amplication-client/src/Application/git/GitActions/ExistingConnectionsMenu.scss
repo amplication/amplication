@@ -5,11 +5,9 @@ hr {
   border-top: $border-black10;
   margin-left: var(--default-spacing-small);
   margin-right: var(--default-spacing-small);
-  // margin-bottom: var(--default-spacing-small);
   background-color: var(--black2);
   display: flex;
-  margin-block-end: 0%;
-  margin-block-start: 0;
+  width: 100%;
 }
 .git-organization-select-menu {
   &__menu {

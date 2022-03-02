@@ -10,7 +10,7 @@ export class GitOrganization {
   id!: string;
 
   @Field(() => EnumGitProvider, { nullable: false })
-  gitProvider!: keyof typeof EnumGitProvider;
+  provider!: EnumGitProvider;
 
   @Field(() => String, { nullable: false })
   name!: string;

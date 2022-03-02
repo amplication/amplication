@@ -7,41 +7,16 @@
   .toggle-field {
     margin: 0;
   }
-  &__action {
-    margin-left: 4px;
-    margin-right: 4px;
-  }
-  &__actions {
-    display: flex;
-    justify-content: space-between;
-  }
-  &__auth {
-    margin: var(--double-spacing) 0;
-  }
+
   .amp-panel-collapsible__header:hover {
     box-shadow: none;
     cursor: default;
   }
-  &__select-repo {
-    @include flexFullRowWithSpacing;
 
-    &__details {
-      @include flexFullRowWithSpacing;
-      .amp-icon {
-        margin-right: var(--default-spacing-small);
-        color: var(--negative);
-      }
-    }
-
-    &__name {
-      @include title1;
-      padding-bottom: var(--default-spacing-small);
-    }
-  }
   &__notice {
     &__title {
-      font-weight: 600;
-      font-size: 14px;
+      @include title1;
+      @include bold;
     }
     text-align: left;
     margin-top: var(--double-spacing);
@@ -54,7 +29,7 @@
       padding-top: var(--default-spacing-small);
       color: var(--black60);
       li {
-        line-height: 24px;
+        line-height: var(--double-spacing);
         list-style: none;
         margin: 0;
         @include flexFullRow;

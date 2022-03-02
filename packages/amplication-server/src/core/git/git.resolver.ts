@@ -16,7 +16,7 @@ import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
-import { GetReposListArgs } from './dto/args/GetReposListArgs';
+import { RemoteGitRepositoriesFindManyArgs } from './dto/args/RemoteGitRepositoriesFindManyArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitService } from './git.service';
@@ -102,12 +102,12 @@ export class GitResolver {
   @Query(() => [RemoteGitRepository])
   @AuthorizeContext(
     AuthorizableResourceParameter.GitOrganizationId,
-    'gitOrganizationId'
+    'where.gitOrganizationId'
   )
-  async getReposOfOrganization(
-    @Args() args: GetReposListArgs
+  async remoteGitRepositories(
+    @Args() args: RemoteGitRepositoriesFindManyArgs
   ): Promise<RemoteGitRepository[]> {
-    return this.gitService.getReposOfOrganization(args);
+    return this.gitService.getReposOfOrganization(args.where);
   }
 
   @Query(() => [GitOrganization])

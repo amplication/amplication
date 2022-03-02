@@ -24,7 +24,7 @@ const AuthAppWithGitCallback = () => {
       completeAuthWithGit({
         variables: {
           installationId,
-          provider: "Github",
+          gitProvider: "Github",
         },
       }).catch(console.error);
     }
@@ -39,36 +39,13 @@ export default AuthAppWithGitCallback;
 const CREATE_GIT_ORGANIZATION = gql`
   mutation createOrganization(
     $installationId: String!
-    $provider: EnumGitProvider!
+    $gitProvider: EnumGitProvider!
   ) {
     createOrganization(
-      data: { installationId: $installationId, provider: $provider }
+      data: { installationId: $installationId, gitProvider: $gitProvider }
     ) {
       id
       name
     }
   }
 `;
-
-// const COMPLETE_AUTH_APP_WITH_GITHUB = gql`
-//   mutation completeAuthorizeAppWithGithub(
-//     $state: String!
-//     $installationId: String!
-//   ) {
-//     completeAuthorizeAppWithGithub(
-//       data: { state: $state , installationId: $installationId}
-//     ) {
-//       id
-//       createdAt
-//       updatedAt
-//       name
-//       description
-//       color
-//       githubTokenCreatedDate
-//       githubSyncEnabled
-//       githubRepo
-//       githubLastSync
-//       githubLastMessage
-//     }
-//   }
-// `;
