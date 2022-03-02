@@ -1,19 +1,21 @@
 import React from "react";
-import { GitOrganization } from "../../../models";
 import { githubOrganizationImageUrl } from "../../../util/github";
+import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 
 type Props = {
-  org: GitOrganization;
+  gitOrganization: GitOrganizationFromGitRepository;
 };
-export const GitOrganizationMenuItemContent = ({ org }: Props) => {
+export const GitOrganizationMenuItemContent = ({
+  gitOrganization: { name },
+}: Props) => {
   return (
     <>
       <img
-        src={githubOrganizationImageUrl(org.name)}
+        src={githubOrganizationImageUrl(name)}
         style={{ width: 24, height: 24, marginRight: 8 }}
         alt="Git organization"
       />
-      {org.name}
+      {name}
     </>
   );
 };
