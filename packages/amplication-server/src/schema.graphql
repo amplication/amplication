@@ -44,7 +44,7 @@ type Query {
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  getReposOfOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): [RemoteGitRepository!]!
+  remoteGitRepositories(gitOrganizationId: String!, gitProvider: EnumGitProvider!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
 

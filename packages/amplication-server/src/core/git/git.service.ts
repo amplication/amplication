@@ -10,7 +10,7 @@ import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs'
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
-import { GetReposListArgs } from './dto/args/GetReposListArgs';
+import { RemoteGitRepositoriesFindManyArgs } from './dto/args/RemoteGitRepositoriesFindManyArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
@@ -24,7 +24,7 @@ export class GitService {
   ) {}
 
   async getReposOfOrganization(
-    args: GetReposListArgs
+    args: RemoteGitRepositoriesFindManyArgs
   ): Promise<RemoteGitRepository[]> {
     const { gitProvider, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(gitProvider);
