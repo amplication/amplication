@@ -5,8 +5,8 @@
     margin: var(--double-spacing) 0;
   }
   &__action {
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-left: var(--default-spacing-small);
+    margin-right: var(--default-spacing-small);
   }
   &__actions {
     display: flex;

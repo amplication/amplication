@@ -124,7 +124,7 @@ function AuthAppWithGit({ app, onDone }: Props) {
             onClickCreateRepository={() => {
               setCreateNewRepoOpen(true);
             }}
-            onClickSelectRepository={handleSelectRepoDialogOpen}
+            onSelectRepository={handleSelectRepoDialogOpen}
             currentConnectedGitRepository={gitRepository}
           />
         )}
