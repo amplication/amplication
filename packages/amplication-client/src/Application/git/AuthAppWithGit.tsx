@@ -105,22 +105,20 @@ function AuthAppWithGit({ app, onDone }: Props) {
         />
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
-        <div className={`${CLASS_NAME}__actions`}>
-          {isEmpty(gitOrganizations) ? (
-            <NewConnection
-              onSyncNewGitOrganizationClick={handleAuthWithGitClick}
-            />
-          ) : (
-            <ExistingConnectionsMenu
-              gitOrganizations={gitOrganizations}
-              onSelectGitOrganization={(organization) => {
-                setGitOrganization(organization);
-              }}
-              selectedGitOrganization={gitOrganization}
-              onAddGitOrganization={handleAuthWithGitClick}
-            />
-          )}
-        </div>
+        {isEmpty(gitOrganizations) ? (
+          <NewConnection
+            onSyncNewGitOrganizationClick={handleAuthWithGitClick}
+          />
+        ) : (
+          <ExistingConnectionsMenu
+            gitOrganizations={gitOrganizations}
+            onSelectGitOrganization={(organization) => {
+              setGitOrganization(organization);
+            }}
+            selectedGitOrganization={gitOrganization}
+            onAddGitOrganization={handleAuthWithGitClick}
+          />
+        )}
         {gitOrganization && (
           <RepositoryActions
             onClickCreateRepository={() => {

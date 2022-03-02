@@ -7,22 +7,24 @@ import {
 } from "@amplication/design-system";
 import React from "react";
 import GithubSyncDetails from "./GithubSyncDetails";
-import { CLASS_NAME } from "../../AuthAppWithGit";
+// import { CLASS_NAME } from "../../AuthAppWithGit";
 import "../../AuthAppWithGit.scss";
 import { GitRepositoryWithGitOrganization } from "../../SyncWithGithubPage";
-
+import "./RepositoryActions.scss";
 type Props = {
   onClickCreateRepository: () => void;
   onClickSelectRepository: () => void;
   currentConnectedGitRepository: GitRepositoryWithGitOrganization | null;
 };
+
+const CLASS_NAME = "repository-actions";
 export default function RepositoryActions({
   onClickCreateRepository,
   onClickSelectRepository,
   currentConnectedGitRepository,
 }: Props) {
   return (
-    <div className={`${CLASS_NAME}__body`}>
+    <div className={`${CLASS_NAME}`}>
       <Panel
         className={`${CLASS_NAME}__auth`}
         panelStyle={EnumPanelStyle.Bordered}
