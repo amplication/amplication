@@ -26,52 +26,48 @@ export default function ExistingConnectionsMenu({
   onSelectGitOrganization,
 }: Props) {
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <SelectMenu
-          title={selectedGitOrganization?.name || "Select new organization"}
-          buttonStyle={EnumButtonStyle.Primary}
-          className={`${CLASS_NAME}__menu`}
-        >
-          <SelectMenuModal>
-            <SelectMenuList>
-              <>
-                {gitOrganizations.map((organization) => (
-                  <SelectMenuItem
-                    closeAfterSelectionChange
-                    selected={selectedGitOrganization?.id === organization.id}
-                    key={organization.id}
-                    onSelectionChange={() => {
-                      onSelectGitOrganization(organization);
-                    }}
-                  >
-                    <GitOrganizationMenuItemContent org={organization} />
-                  </SelectMenuItem>
-                ))}
-                <div
-                  style={{
-                    backgroundColor: "#22273c",
-                    borderBottom: "none",
-                    width: "100%",
-                    display: "flex",
-                  }}
-                  className="select-menu_item "
-                >
-                  <hr />
-                </div>
+    <SelectMenu
+      title={selectedGitOrganization?.name || "Select new organization"}
+      buttonStyle={EnumButtonStyle.Primary}
+      className={`${CLASS_NAME}__menu`}
+    >
+      <SelectMenuModal>
+        <SelectMenuList>
+          <>
+            {gitOrganizations.map((organization) => (
+              <SelectMenuItem
+                closeAfterSelectionChange
+                selected={selectedGitOrganization?.id === organization.id}
+                key={organization.id}
+                onSelectionChange={() => {
+                  onSelectGitOrganization(organization);
+                }}
+              >
+                <GitOrganizationMenuItemContent org={organization} />
+              </SelectMenuItem>
+            ))}
+            <div
+              style={{
+                backgroundColor: "#22273c",
+                borderBottom: "none",
+                width: "100%",
+                display: "flex",
+              }}
+              className="select-menu_item "
+            >
+              <hr />
+            </div>
 
-                <SelectMenuItem
-                  onSelectionChange={() => {
-                    onAddGitOrganization();
-                  }}
-                >
-                  <span>Add another organization</span>
-                </SelectMenuItem>
-              </>
-            </SelectMenuList>
-          </SelectMenuModal>
-        </SelectMenu>
-      </div>
-    </div>
+            <SelectMenuItem
+              onSelectionChange={() => {
+                onAddGitOrganization();
+              }}
+            >
+              <span>Add another organization</span>
+            </SelectMenuItem>
+          </>
+        </SelectMenuList>
+      </SelectMenuModal>
+    </SelectMenu>
   );
 }
