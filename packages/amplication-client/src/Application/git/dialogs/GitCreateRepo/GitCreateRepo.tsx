@@ -93,7 +93,6 @@ export default function GitCreateRepo({
             type="submit"
             className={`${CLASS_NAME}__button`}
             disabled={loading}
-            style={{ marginBottom: "0.8vh" }}
           >
             {loading ? (
               <CircularProgress className={`${CLASS_NAME}__progress`} />
