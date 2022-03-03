@@ -39,6 +39,7 @@ import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { QueryMode } from 'src/enums/QueryMode';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { GitRepository } from '@prisma/client';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -195,6 +196,15 @@ const EXAMPLE_BUILD: Build = {
   commitId: EXAMPLE_COMMIT_ID
 };
 
+const EXAMPLE_GIT_REPOSITORY: GitRepository = {
+  id: 'exampleGitRepositoryId',
+  name: 'repositoryTest',
+  appId: 'exampleAppId',
+  gitOrganizationId: 'exampleGitOrganizationId',
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
 const prismaAppCreateMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -216,6 +226,11 @@ const prismaEntityFindManyMock = jest.fn(() => {
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
+
+const prismaGitRepositoryCreateMock = jest.fn(() => {
+  return EXAMPLE_GIT_REPOSITORY;
+});
+
 const entityServiceCreateVersionMock = jest.fn(
   async () => EXAMPLE_ENTITY_VERSION
 );
@@ -288,6 +303,10 @@ describe('AppService', () => {
             },
             commit: {
               create: prismaCommitCreateMock
+            },
+            gitRepository: {
+              findUnique: prismaGitRepositoryCreateMock,
+              delete: prismaGitRepositoryCreateMock
             }
           }))
         },
@@ -823,9 +842,6 @@ describe('AppService', () => {
 
   it('should find an app', async () => {
     const args = {
-      include: {
-        gitRepository: true
-      },
       where: {
         deletedAt: null,
         id: EXAMPLE_APP_ID

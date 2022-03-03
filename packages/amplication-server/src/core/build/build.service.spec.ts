@@ -6,7 +6,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { orderBy } from 'lodash';
-import { Prisma } from '@prisma/client';
+import { GitRepository, Prisma } from '@prisma/client';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
@@ -227,6 +227,15 @@ const EXAMPLE_USER = {
   id: EXAMPLE_USER_ID
 };
 
+const EXAMPLE_GIT_REPOSITORY: GitRepository = {
+  id: 'exampleGitRepositoryId',
+  name: 'repositoryTest',
+  appId: 'exampleAppId',
+  gitOrganizationId: 'exampleGitOrganizationId',
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
 const EXAMPLE_COMPLETED_BUILD_RESULT: BuildResult = {
   status: ContainerBuildStatus.Completed
 };
@@ -299,6 +308,12 @@ const prismaBuildUpdateMock = jest.fn();
 const entityServiceGetLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
+
+const prismaGitRepositoryCreateMock = jest.fn(() => {
+  return EXAMPLE_GIT_REPOSITORY;
+});
+
+//EXAMPLE_GIT_REPOSITORY
 
 const EXAMPLE_FIRST_ENTITY_NAME = 'AA First Entity';
 const EXAMPLE_SECOND_ENTITY_NAME = 'BB second Entity';
@@ -435,6 +450,9 @@ describe('BuildService', () => {
               findMany: prismaBuildFindManyMock,
               findUnique: prismaBuildFindOneMock,
               update: prismaBuildUpdateMock
+            },
+            gitRepository: {
+              findUnique: prismaGitRepositoryCreateMock
             }
           }
         },
