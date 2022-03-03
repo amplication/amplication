@@ -1,6 +1,8 @@
 import React from "react";
 import { githubOrganizationImageUrl } from "../../../util/github";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
+import "./GitOrganizationMenuItemContent.scss";
+const CLASS_NAME = "menu-item-content";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
@@ -11,8 +13,8 @@ export const GitOrganizationMenuItemContent = ({
   return (
     <>
       <img
+        className={`${CLASS_NAME}`}
         src={githubOrganizationImageUrl(name)}
-        style={{ width: 24, height: 24, marginRight: 8 }}
         alt="Git organization"
       />
       {name}

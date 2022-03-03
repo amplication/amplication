@@ -22,7 +22,7 @@ type Props = {
   gitOrganizationName: string;
 };
 
-const CLASS_NAME = "git-create";
+const CLASS_NAME = "git-create-repo";
 
 export default function GitCreateRepo({
   app,
@@ -77,15 +77,13 @@ export default function GitCreateRepo({
             </h4>
             <br />
           </div>
-          <table style={{ width: "100%", marginBottom: "1vh" }}>
+          <table className={`${CLASS_NAME}__table`}>
             <tr>
               <th>Owner</th>
               <th>Repository name</th>
             </tr>
             <tr>
-              <td style={{ position: "relative", top: "-5px" }}>
-                {gitOrganizationName}/
-              </td>
+              <td>{gitOrganizationName}/</td>
               <td>
                 <TextField name="name" autoComplete="off" showError={false} />
               </td>
