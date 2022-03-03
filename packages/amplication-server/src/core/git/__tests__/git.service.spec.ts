@@ -106,7 +106,7 @@ describe('GitService', () => {
       });
     });
     describe('GitService.createRepo()', () => {
-      it('should return GitRepo', async () => {
+      it('should return App', async () => {
         const createGitRepositoryInput: CreateGitRepositoryInput = {
           name: 'EXAMPLE_APP_NAME',
           appId: 'EXAMPLE_APP_DESCRIPTION',
@@ -118,9 +118,6 @@ describe('GitService', () => {
           await gitService.createGitRepository(createGitRepositoryInput)
         ).toEqual(EXAMPLE_APP);
         expect(prismaAppCreateMock).toBeCalledTimes(1);
-        expect(prismaGitRepositoryReturnEmptyMock).toBeCalledWith(
-          createGitRepositoryInput
-        );
       });
     });
   }
