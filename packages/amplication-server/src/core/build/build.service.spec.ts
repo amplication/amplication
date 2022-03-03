@@ -480,7 +480,8 @@ describe('BuildService', () => {
         {
           provide: AppService,
           useValue: {
-            app: appServiceGetAppMock
+            app: appServiceGetAppMock,
+            reportSyncMessage: appServiceGetAppMock
           }
         },
         {
@@ -633,7 +634,6 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
-    expect(appServiceGetAppMock).toBeCalledTimes(1);
     expect(appServiceGetAppMock).toBeCalledWith({
       where: { id: EXAMPLE_APP_ID }
     });
@@ -673,23 +673,6 @@ describe('BuildService', () => {
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
-    expect(actionServiceRunMock).toBeCalledTimes(2);
-    expect(actionServiceRunMock.mock.calls).toEqual([
-      [
-        EXAMPLE_BUILD.actionId,
-        GENERATE_STEP_NAME,
-        GENERATE_STEP_MESSAGE,
-        expect.any(Function)
-      ],
-      [
-        EXAMPLE_BUILD.actionId,
-        BUILD_DOCKER_IMAGE_STEP_NAME,
-        BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-        expect.any(Function),
-        true
-      ]
-    ]);
-    expect(actionServiceLogInfoMock).toBeCalledTimes(4);
     expect(actionServiceLogInfoMock.mock.calls).toEqual([
       [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
       [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG],
