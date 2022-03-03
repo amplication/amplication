@@ -1,59 +1,59 @@
-import { Readable } from 'stream';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
-import * as winston from 'winston';
-import { PrismaService } from 'nestjs-prisma';
-import { StorageService } from '@codebrew/nestjs-storage';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { orderBy } from 'lodash';
-import { GitRepository, Prisma } from '@prisma/client';
-import {
-  ACTION_JOB_DONE_LOG,
-  GENERATE_STEP_MESSAGE,
-  GENERATE_STEP_NAME,
-  ACTION_ZIP_LOG,
-  BuildService,
-  ENTITIES_INCLUDE,
-  BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-  BUILD_DOCKER_IMAGE_STEP_NAME,
-  BUILD_DOCKER_IMAGE_STEP_START_LOG,
-  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
-  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-  BUILD_DOCKER_IMAGE_STEP_FAILED_LOG,
-  ACTION_INCLUDE
-} from './build.service';
-import * as DataServiceGenerator from '@amplication/data-service-generator';
-import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
-import { EntityService } from '..';
-import { AppRoleService } from '../appRole/appRole.service';
-import { AppService } from '../app/app.service';
-import { ActionService } from '../action/action.service';
-import { LocalDiskService } from '../storage/local.disk.service';
-import { Build } from './dto/Build';
-import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { DeploymentService } from '../deployment/deployment.service';
-import { UserService } from '../user/user.service';
 import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
+import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
+import * as DataServiceGenerator from '@amplication/data-service-generator';
+import { StorageService } from '@codebrew/nestjs-storage';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Prisma } from '@prisma/client';
+import { orderBy } from 'lodash';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { PrismaService } from 'nestjs-prisma';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App, Commit, Entity } from 'src/models';
+import { Readable } from 'stream';
+import * as winston from 'winston';
+import { EntityService } from '..';
+import { ActionService } from '../action/action.service';
 import {
   ActionStep,
   EnumActionLogLevel,
   EnumActionStepStatus
 } from '../action/dto';
+import { AppService } from '../app/app.service';
+import { AppRoleService } from '../appRole/appRole.service';
+import { AppSettingsService } from '../appSettings/appSettings.service';
+import { AppSettingsValues } from '../appSettings/constants';
+import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { DeploymentService } from '../deployment/deployment.service';
 import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
+import { EXAMPLE_GIT_REPOSITORY } from '../git/__mocks__/GitRepository.mock';
 import { GithubService } from '../github/github.service';
-import { AppSettingsService } from '../appSettings/appSettings.service';
-
-import { AppSettingsValues } from '../appSettings/constants';
-import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { LocalDiskService } from '../storage/local.disk.service';
+import { UserService } from '../user/user.service';
+import {
+  ACTION_INCLUDE,
+  ACTION_JOB_DONE_LOG,
+  ACTION_ZIP_LOG,
+  BuildService,
+  BUILD_DOCKER_IMAGE_STEP_FAILED_LOG,
+  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
+  BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+  BUILD_DOCKER_IMAGE_STEP_NAME,
+  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
+  BUILD_DOCKER_IMAGE_STEP_START_LOG,
+  ENTITIES_INCLUDE,
+  GENERATE_STEP_MESSAGE,
+  GENERATE_STEP_NAME
+} from './build.service';
+import { Build } from './dto/Build';
+import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { BuildNotFoundError } from './errors/BuildNotFoundError';
+import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -78,7 +78,7 @@ const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'exampleAppId';
-const EXAMPLE_DATE = new Date('2020-01-01');
+export const EXAMPLE_DATE = new Date('2020-01-01');
 
 const JOB_STARTED_LOG = 'Build job started';
 const JOB_DONE_LOG = 'Build job done';
@@ -227,15 +227,6 @@ const EXAMPLE_USER = {
   id: EXAMPLE_USER_ID
 };
 
-const EXAMPLE_GIT_REPOSITORY: GitRepository = {
-  id: 'exampleGitRepositoryId',
-  name: 'repositoryTest',
-  appId: 'exampleAppId',
-  gitOrganizationId: 'exampleGitOrganizationId',
-  createdAt: new Date(),
-  updatedAt: new Date()
-};
-
 const EXAMPLE_COMPLETED_BUILD_RESULT: BuildResult = {
   status: ContainerBuildStatus.Completed
 };
@@ -309,11 +300,7 @@ const entityServiceGetLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
 
-const prismaGitRepositoryCreateMock = jest.fn(() => {
-  return EXAMPLE_GIT_REPOSITORY;
-});
-
-//EXAMPLE_GIT_REPOSITORY
+const prismaGitRepositoryReturnOneMock = jest.fn(() => EXAMPLE_GIT_REPOSITORY);
 
 const EXAMPLE_FIRST_ENTITY_NAME = 'AA First Entity';
 const EXAMPLE_SECOND_ENTITY_NAME = 'BB second Entity';
@@ -427,6 +414,10 @@ const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
 const getAppSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
 
+const prUrlMock = jest.fn(
+  () => new Promise(resolve => resolve('examplePrUrl'))
+);
+
 describe('BuildService', () => {
   let service: BuildService;
 
@@ -452,7 +443,7 @@ describe('BuildService', () => {
               update: prismaBuildUpdateMock
             },
             gitRepository: {
-              findUnique: prismaGitRepositoryCreateMock
+              findUnique: prismaGitRepositoryReturnOneMock
             }
           }
         },
@@ -535,7 +526,9 @@ describe('BuildService', () => {
         },
         {
           provide: GithubService,
-          useValue: {}
+          useValue: {
+            createPullRequest: prUrlMock
+          }
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
