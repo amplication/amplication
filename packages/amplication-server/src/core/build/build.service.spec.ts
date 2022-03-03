@@ -54,7 +54,6 @@ import { AppSettingsService } from '../appSettings/appSettings.service';
 
 import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
-import { EXAMPLE_GIT_REPOSITORY } from '../git/__mocks__/GitRepository.mock';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -301,7 +300,7 @@ const entityServiceGetLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
 
-const prismaGitRepositoryReturnOneMock = jest.fn(() => EXAMPLE_GIT_REPOSITORY);
+const prismaGitRepositoryReturnNull = jest.fn(() => null);
 
 const EXAMPLE_FIRST_ENTITY_NAME = 'AA First Entity';
 const EXAMPLE_SECOND_ENTITY_NAME = 'BB second Entity';
@@ -415,10 +414,6 @@ const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
 const getAppSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
 
-const prUrlMock = jest.fn(
-  () => new Promise(resolve => resolve('examplePrUrl'))
-);
-
 describe('BuildService', () => {
   let service: BuildService;
 
@@ -444,7 +439,7 @@ describe('BuildService', () => {
               update: prismaBuildUpdateMock
             },
             gitRepository: {
-              findUnique: prismaGitRepositoryReturnOneMock
+              findUnique: prismaGitRepositoryReturnNull
             }
           }
         },
@@ -480,8 +475,7 @@ describe('BuildService', () => {
         {
           provide: AppService,
           useValue: {
-            app: appServiceGetAppMock,
-            reportSyncMessage: appServiceGetAppMock
+            app: appServiceGetAppMock
           }
         },
         {
@@ -528,9 +522,7 @@ describe('BuildService', () => {
         },
         {
           provide: GithubService,
-          useValue: {
-            createPullRequest: prUrlMock
-          }
+          useValue: {}
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
@@ -634,6 +626,7 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
+    expect(appServiceGetAppMock).toBeCalledTimes(1);
     expect(appServiceGetAppMock).toBeCalledWith({
       where: { id: EXAMPLE_APP_ID }
     });
@@ -673,6 +666,23 @@ describe('BuildService', () => {
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
+    expect(actionServiceRunMock).toBeCalledTimes(2);
+    expect(actionServiceRunMock.mock.calls).toEqual([
+      [
+        EXAMPLE_BUILD.actionId,
+        GENERATE_STEP_NAME,
+        GENERATE_STEP_MESSAGE,
+        expect.any(Function)
+      ],
+      [
+        EXAMPLE_BUILD.actionId,
+        BUILD_DOCKER_IMAGE_STEP_NAME,
+        BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+        expect.any(Function),
+        true
+      ]
+    ]);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(4);
     expect(actionServiceLogInfoMock.mock.calls).toEqual([
       [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
       [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG],
