@@ -600,12 +600,15 @@ export class AppService {
     const messages = [];
     let isValid = true;
 
-    const app = await this.prisma.app.findFirst({
+    const app = await this.prisma.app.findUnique({
       where: {
         id: args.where.id
-      },
-      include: {
-        gitRepository: true
+      }
+    });
+
+    const appRepo = await this.prisma.gitRepository.findUnique({
+      where: {
+        appId: app.id
       }
     });
 
@@ -613,7 +616,7 @@ export class AppService {
       throw new Error(INVALID_APP_ID);
     }
 
-    if (!app.gitRepository) return { isValid, messages };
+    if (!appRepo.gitOrganizationId) return { isValid, messages };
     if (!app.githubLastSync) return { isValid, messages }; //if the repo was never synced before, skip the below validation as they are all related to GitHub sync
 
     const config = await this.getAppGenerationConfigFromGitHub(args);
