@@ -100,7 +100,7 @@ export class GitService {
     const service = this.gitServiceFactory.getService(gitProvider);
 
     const gitOrganizationName = await service.getGitOrganizationName(
-      args.data.installationId
+      installationId
     );
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
@@ -117,8 +117,8 @@ export class GitService {
           id: gitOrganization.id
         },
         data: {
-          ...args.data,
-          installationId: args.data.installationId,
+          provider: gitProvider,
+          installationId: installationId,
           name: gitOrganizationName
         }
       });
@@ -126,8 +126,12 @@ export class GitService {
 
     return await this.prisma.gitOrganization.create({
       data: {
-        ...args.data,
-        installationId: args.data.installationId,
+        workspace: {
+          connect: {
+            id: args.data.workspaceId
+          }
+        },
+        installationId: installationId,
         name: gitOrganizationName,
         provider: gitProvider
       }
