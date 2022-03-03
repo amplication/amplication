@@ -96,7 +96,7 @@ export default function GitCreateRepo({
             style={{ marginBottom: "0.8vh" }}
           >
             {loading ? (
-              <CircularProgress style={{ color: "white", margin: "5px" }} />
+              <CircularProgress className={`${CLASS_NAME}__progress`} />
             ) : (
               "Create new repository"
             )}
