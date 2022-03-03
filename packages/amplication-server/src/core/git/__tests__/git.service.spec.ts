@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GitRepository } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { App } from 'src/models/App';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 import { CreateGitRepositoryInput } from '../dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from '../dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
@@ -18,9 +19,40 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   updatedAt: new Date()
 };
 
-const prismaGitRepositoryCreateMock = jest.fn((appName: string) => {
-  if (appName === 'EXAMPLE_GIT_REPOSITORY') return null;
+const DEFAULT_APP_DATA = {
+  color: 'DEFAULT_APP_COLOR'
+};
+
+const EXAMPLE_APP: App = {
+  ...DEFAULT_APP_DATA,
+  id: 'EXAMPLE_APP_ID',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: 'EXAMPLE_APP_NAME',
+  description: 'EXAMPLE_APP_DESCRIPTION',
+  deletedAt: null
+};
+
+const prismaGitRepositoryCreateMock = jest.fn(() => {
   return EXAMPLE_GIT_REPOSITORY;
+});
+
+const prismaAppCreateMock = jest.fn(() => {
+  return EXAMPLE_APP;
+});
+
+const prismaGitRepositoryReturnEmptyMock = jest.fn(() => {
+  // const EXAMPLE_GIT_REPOSITORY: GitRepository = {
+  //   id: null,
+  //   name: null,
+  //   appId: 'exampleAppId',
+  //   gitOrganizationId: 'exampleGitOrganizationId',
+  //   createdAt: new Date(),
+  //   updatedAt: new Date()
+  // };
+  // return EXAMPLE_GIT_REPOSITORY;
+
+  return null;
 });
 
 describe('GitService', () => {
@@ -35,10 +67,13 @@ describe('GitService', () => {
           useValue: {
             gitRepository: {
               create: prismaGitRepositoryCreateMock,
-              findUnique: prismaGitRepositoryCreateMock
+              findUnique: prismaGitRepositoryReturnEmptyMock
             },
             gitOrganization: {
               findUnique: prismaGitRepositoryCreateMock
+            },
+            app: {
+              findUnique: prismaAppCreateMock
             }
           }
         },
@@ -50,7 +85,6 @@ describe('GitService', () => {
     }).compile();
 
     gitService = module.get<GitService>(GitService);
-    //gitService = new GitService(MOCK_GIT_SERVICE_FACTORY, prismaService);
   });
 
   it('should be defined', () => {
@@ -82,9 +116,9 @@ describe('GitService', () => {
         };
         expect(
           await gitService.createGitRepository(createGitRepositoryInput)
-        ).toEqual(EXAMPLE_GIT_REPOSITORY);
-        expect(prismaGitRepositoryCreateMock).toBeCalledTimes(1);
-        expect(prismaGitRepositoryCreateMock).toBeCalledWith(
+        ).toEqual(EXAMPLE_APP);
+        expect(prismaAppCreateMock).toBeCalledTimes(1);
+        expect(prismaGitRepositoryReturnEmptyMock).toBeCalledWith(
           createGitRepositoryInput
         );
       });
