@@ -42,16 +42,6 @@ const prismaAppCreateMock = jest.fn(() => {
 });
 
 const prismaGitRepositoryReturnEmptyMock = jest.fn(() => {
-  // const EXAMPLE_GIT_REPOSITORY: GitRepository = {
-  //   id: null,
-  //   name: null,
-  //   appId: 'exampleAppId',
-  //   gitOrganizationId: 'exampleGitOrganizationId',
-  //   createdAt: new Date(),
-  //   updatedAt: new Date()
-  // };
-  // return EXAMPLE_GIT_REPOSITORY;
-
   return null;
 });
 
