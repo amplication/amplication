@@ -50,15 +50,7 @@ export default function ExistingConnectionsMenu({
                 />
               </SelectMenuItem>
             ))}
-            <div
-              style={{
-                backgroundColor: "#22273c",
-                borderBottom: "none",
-                width: "100%",
-                display: "flex",
-              }}
-              className="select-menu_item "
-            >
+            <div className={`select-menu_item ${CLASS_NAME}__hr`}>
               <hr />
             </div>
 

@@ -13,4 +13,10 @@ hr {
   &__menu {
     margin-left: 0 !important;
   }
+  &__hr {
+    background-color: #22273c;
+    border-bottom: none;
+    width: 100%;
+    display: flex;
+  }
 }
