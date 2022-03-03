@@ -1,59 +1,60 @@
+import { Readable } from 'stream';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
+import * as winston from 'winston';
+import { PrismaService } from 'nestjs-prisma';
+import { StorageService } from '@codebrew/nestjs-storage';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { orderBy } from 'lodash';
+import { Prisma } from '@prisma/client';
+import {
+  ACTION_JOB_DONE_LOG,
+  GENERATE_STEP_MESSAGE,
+  GENERATE_STEP_NAME,
+  ACTION_ZIP_LOG,
+  BuildService,
+  ENTITIES_INCLUDE,
+  BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+  BUILD_DOCKER_IMAGE_STEP_NAME,
+  BUILD_DOCKER_IMAGE_STEP_START_LOG,
+  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
+  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
+  BUILD_DOCKER_IMAGE_STEP_FAILED_LOG,
+  ACTION_INCLUDE
+} from './build.service';
+import * as DataServiceGenerator from '@amplication/data-service-generator';
+import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
+import { EntityService } from '..';
+import { AppRoleService } from '../appRole/appRole.service';
+import { AppService } from '../app/app.service';
+import { ActionService } from '../action/action.service';
+import { LocalDiskService } from '../storage/local.disk.service';
+import { Build } from './dto/Build';
+import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
+import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { BuildNotFoundError } from './errors/BuildNotFoundError';
+import { DeploymentService } from '../deployment/deployment.service';
+import { UserService } from '../user/user.service';
 import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
-import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
-import * as DataServiceGenerator from '@amplication/data-service-generator';
-import { StorageService } from '@codebrew/nestjs-storage';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Prisma } from '@prisma/client';
-import { orderBy } from 'lodash';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { PrismaService } from 'nestjs-prisma';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App, Commit, Entity } from 'src/models';
-import { Readable } from 'stream';
-import * as winston from 'winston';
-import { EntityService } from '..';
-import { ActionService } from '../action/action.service';
 import {
   ActionStep,
   EnumActionLogLevel,
   EnumActionStepStatus
 } from '../action/dto';
-import { AppService } from '../app/app.service';
-import { AppRoleService } from '../appRole/appRole.service';
-import { AppSettingsService } from '../appSettings/appSettings.service';
-import { AppSettingsValues } from '../appSettings/constants';
-import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
-import { DeploymentService } from '../deployment/deployment.service';
 import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
-import { EXAMPLE_GIT_REPOSITORY } from '../git/__mocks__/GitRepository.mock';
 import { GithubService } from '../github/github.service';
-import { LocalDiskService } from '../storage/local.disk.service';
-import { UserService } from '../user/user.service';
-import {
-  ACTION_INCLUDE,
-  ACTION_JOB_DONE_LOG,
-  ACTION_ZIP_LOG,
-  BuildService,
-  BUILD_DOCKER_IMAGE_STEP_FAILED_LOG,
-  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-  BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-  BUILD_DOCKER_IMAGE_STEP_NAME,
-  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
-  BUILD_DOCKER_IMAGE_STEP_START_LOG,
-  ENTITIES_INCLUDE,
-  GENERATE_STEP_MESSAGE,
-  GENERATE_STEP_NAME
-} from './build.service';
-import { Build } from './dto/Build';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
+import { AppSettingsService } from '../appSettings/appSettings.service';
+
+import { AppSettingsValues } from '../appSettings/constants';
+import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { EXAMPLE_GIT_REPOSITORY } from '../git/__mocks__/GitRepository.mock';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
