@@ -26,8 +26,11 @@ service:
   targetPort: 8080
 
 traefik:
-  enabled: false
+  enabled: true
   # traefik.path -- The path to match for Traefik to route to service
-  path: "/"
-  middleware:
-    redirect: "http-to-https"
+  rule: PathPrefix(`/`)
+  entrypoints:
+    http:
+      name: web
+    https:
+      name: websecure

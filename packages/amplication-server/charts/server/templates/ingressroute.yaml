@@ -11,13 +11,9 @@ spec:
     - {{ .Values.traefik.entrypoints.http.name }}
     - {{ .Values.traefik.entrypoints.https.name }}
   routes:
-  - match: Path(`{{ .Values.traefik.path }}`)
+  - match: {{ .Values.traefik.rule }}
     kind: Rule
     services:
     - name: {{ .Values.name }}
       port: {{ .Values.service.port }}
-    middlewares:
-      - name: {{ .Values.traefik.middleware.redirect }}
-  tls:
-    # secretName: cert-manager provided certificate
 {{- end }}

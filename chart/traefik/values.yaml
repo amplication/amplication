@@ -1,0 +1,13 @@
+traefik:
+  fullnameOverride: amplication-traefik
+  service:
+    type: NodePort
+  ports:
+    traefik:
+      healthchecksPort: 9000
+  rbac:
+    namespaced: true
+  ingress:
+    alb:
+      enabled: true
+      acmArn:
