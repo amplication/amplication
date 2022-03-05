@@ -106,7 +106,6 @@ export class GitService {
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
       where: {
         name: gitOrganizationName,
-        installationId,
         provider: gitProvider
       }
     });
