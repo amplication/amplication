@@ -1,8 +1,8 @@
-import { namedTypes, builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { ExpressionKind } from "ast-types/gen/kinds";
-import { isRelationField } from "../../../util/field";
 import { Entity } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
+import { isOneToOneRelationField } from "../../../util/field";
 
 export const CONNECT_ID = builders.identifier("connect");
 export const UNDEFINED_ID = builders.identifier("undefined");
@@ -12,8 +12,8 @@ export function createDataMapping(
   dto: NamedClassDeclaration,
   data: ExpressionKind
 ): ExpressionKind {
-  const relationFields = entity.fields.filter((field) =>
-    isRelationField(field)
+  const relationFields = entity.fields.filter(
+    (field) => isOneToOneRelationField(field) // only one to one relation because the implementation of the to many is happening as a nested input dto
   );
   const relationFieldNames = new Set(relationFields.map((field) => field.name));
   const optionalRelationFieldNames = new Set(
