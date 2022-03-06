@@ -3993,7 +3993,7 @@ import { SortOrder } from \\"../../util/SortOrder\\";
 class CustomerOrderByInput {
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4002,7 +4002,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4011,7 +4011,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4020,7 +4020,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4029,7 +4029,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4038,7 +4038,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4047,7 +4047,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4056,7 +4056,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4065,7 +4065,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4074,7 +4074,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4083,7 +4083,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4092,7 +4092,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4101,7 +4101,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4110,7 +4110,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4119,7 +4119,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -4128,7 +4128,7 @@ class CustomerOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -6295,7 +6295,7 @@ import { SortOrder } from \\"../../util/SortOrder\\";
 class EmptyOrderByInput {
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -6304,7 +6304,7 @@ class EmptyOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -6313,7 +6313,7 @@ class EmptyOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -7575,7 +7575,7 @@ import { SortOrder } from \\"../../util/SortOrder\\";
 class OrderOrderByInput {
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -7584,7 +7584,7 @@ class OrderOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -7593,7 +7593,7 @@ class OrderOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -7602,7 +7602,7 @@ class OrderOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -7611,7 +7611,7 @@ class OrderOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -7620,7 +7620,7 @@ class OrderOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -9092,7 +9092,7 @@ import { SortOrder } from \\"../../util/SortOrder\\";
 class OrganizationOrderByInput {
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -9101,7 +9101,7 @@ class OrganizationOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -9110,7 +9110,7 @@ class OrganizationOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -9119,7 +9119,7 @@ class OrganizationOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -11984,7 +11984,7 @@ import { SortOrder } from \\"../../util/SortOrder\\";
 class UserOrderByInput {
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -11993,7 +11993,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12002,7 +12002,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12011,7 +12011,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12020,7 +12020,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12029,7 +12029,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12038,7 +12038,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12047,7 +12047,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12056,7 +12056,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12065,7 +12065,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12074,7 +12074,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12083,7 +12083,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12092,7 +12092,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12101,7 +12101,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12110,7 +12110,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
@@ -12119,7 +12119,7 @@ class UserOrderByInput {
 
   @ApiProperty({
     required: false,
-    enum: [\\"Asc\\", \\"Desc\\"],
+    enum: [\\"asc\\", \\"desc\\"],
   })
   @Field(() => SortOrder, {
     nullable: true,
