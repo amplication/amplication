@@ -125,6 +125,8 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           TF_VAR_image_id: gcr.io/amplication/amplication:${{ github.sha }}
+          TF_VAR_GITHUB_APP_PRIVATE_KEY: ${{ secrets.STAGING_GITHUB_APP_PRIVATE_KEY }}
+          TF_VAR_GITHUB_APP_CLIENT_SECRET: ${{ secrets.STAGING_GITHUB_APP_CLIENT_SECRET }}
         working-directory: terraform/envs/dev
       - uses: mattes/gce-cloudsql-proxy-action@v1
         with:
