@@ -3,7 +3,7 @@ name: Staging - Terraform Plam
 on:
   workflow_dispatch:
     inputs:
-      lock-id:
+      image-id:
         description: "Amplication Image"
         required: true
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - run: terraform plan
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          TF_VAR_image_id: ${{ github.event.inputs.lock-id }}
+          TF_VAR_image_id: ${{ github.event.inputs.image-id }}
           TF_VAR_GITHUB_APP_PRIVATE_KEY: ${{ secrets.STAGING_GITHUB_APP_PRIVATE_KEY }}
           TF_VAR_GITHUB_APP_CLIENT_SECRET: ${{ secrets.STAGING_GITHUB_APP_CLIENT_SECRET }}
         working-directory: terraform/envs/dev
