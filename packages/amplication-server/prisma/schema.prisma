@@ -34,7 +34,7 @@ model Workspace {
 model GitOrganization {
   id              String                  @id @default(cuid())
   provider        EnumGitProvider
-  type            EnumGitOrganizationType
+  type            EnumGitOrganizationType @default(value: User)
   name            String
   installationId  String
   createdAt       DateTime                @default(now())
