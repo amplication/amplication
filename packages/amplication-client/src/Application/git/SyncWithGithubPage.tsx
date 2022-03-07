@@ -4,17 +4,26 @@ import React from "react";
 import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
 import useNavigationTabs from "../../Layout/UseNavigationTabs";
+import { EnumGitOrganizationType } from "../../models";
 import { formatError } from "../../util/error";
 import AuthAppWithGit from "./AuthAppWithGit";
 import "./SyncWithGithubPage.scss";
 
 const CLASS_NAME = "sync-with-github-page";
 
-export type GitOrganizationFromGitRepository = { id: string; name: string };
+export type GitOrganizationFromGitRepository = {
+  id: string;
+  name: string;
+  type: EnumGitOrganizationType;
+};
 export type WorkspaceFromAppWithGitOrganizations = {
   id: string;
   name: string;
-  gitOrganizations: { id: string; name: string }[];
+  gitOrganizations: {
+    id: string;
+    name: string;
+    type: EnumGitOrganizationType;
+  }[];
 };
 export type GitRepositoryWithGitOrganization = {
   id: string;
@@ -76,6 +85,7 @@ const GET_APP_GIT_REPOSITORY = gql`
         gitOrganizations {
           id
           name
+          type
         }
       }
       gitRepository {
@@ -84,6 +94,7 @@ const GET_APP_GIT_REPOSITORY = gql`
         gitOrganization {
           id
           name
+          type
         }
       }
     }

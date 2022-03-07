@@ -14,6 +14,7 @@ type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
   currentConnectedGitRepository: GitRepositoryWithGitOrganization | null;
+  isCreateShow: boolean;
 };
 
 const CLASS_NAME = "repository-actions";
@@ -21,6 +22,7 @@ export default function RepositoryActions({
   onCreateRepository,
   onSelectRepository,
   currentConnectedGitRepository,
+  isCreateShow,
 }: Props) {
   return (
     <div className={`${CLASS_NAME}`}>
@@ -50,15 +52,17 @@ export default function RepositoryActions({
                   Select repository
                 </Button>
               </div>
-              <div className={`${CLASS_NAME}__action`}>
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  onClick={onCreateRepository}
-                  icon="plus"
-                >
-                  Create repository
-                </Button>
-              </div>
+              {isCreateShow && (
+                <div className={`${CLASS_NAME}__action`}>
+                  <Button
+                    buttonStyle={EnumButtonStyle.Primary}
+                    onClick={onCreateRepository}
+                    icon="plus"
+                  >
+                    Create repository
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
