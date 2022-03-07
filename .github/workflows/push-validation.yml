@@ -5,7 +5,7 @@ on:
   push:
     paths:
       - "packages/**"
-      - ".github/workflows/push-valiation.yml"
+      - ".github/workflows/push-validation.yml"
 
 jobs:
   changed-packages:
@@ -75,7 +75,7 @@ jobs:
 
       - name: Build Prisma client
         id: prisma
-        run: lerna run --scope @amplication/server prisma:generate
+        run: lerna run --scope=${{matrix.package.package}} prisma:generate
 
       - name: Build code
         id: build
