@@ -73,6 +73,10 @@ jobs:
         id: install
         run: lerna bootstrap --scope=${{matrix.package.package}} --include-dependencies
 
+      - name: Build Prisma client
+        id: prisma
+        run: lerna run prisma:generate --loglevel=silent 
+
       - name: Build code
         id: build
         run: lerna run --scope=${{matrix.package.package}} --loglevel=silent build --include-dependencies
