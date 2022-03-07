@@ -81,8 +81,8 @@ export class GithubService implements IGitClient {
 
   public async getGitOrganizationName(installationId: string): Promise<string> {
     const installationIdInt = parseInt(installationId);
-
     const octokit = await this.getInstallationOctokit(installationIdInt);
+
     return (
       await octokit.rest.apps.getInstallation({
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -102,13 +102,22 @@ export class GithubService implements IGitClient {
       parseInt(data.installationId)
     );
 
+    const installation = await octokit.rest.apps.getInstallation({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      installation_id: parseInt(data.installationId)
+    });
+
+    if (installation.data.account.type.toLowerCase() === 'user') {
+      return null;
+    }
+
     if (await this.isRepoExistWithOctokit(octokit, data.name)) {
       throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
 
     const repository = await octokit.rest.repos.createInOrg({
-      org: gitOrganizationName,
-      name: data.name
+      name: data.name,
+      org: gitOrganizationName
     });
     const { data: repo } = repository;
     //TODO add logger
@@ -152,6 +161,7 @@ export class GithubService implements IGitClient {
         .get(GITHUB_APP_PRIVATE_KEY_VAR)
         .replace(/\\n/g, '\n')
     });
+
     return await app.getInstallationOctokit(installationId);
   }
 

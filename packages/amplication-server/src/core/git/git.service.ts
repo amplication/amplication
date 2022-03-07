@@ -38,13 +38,18 @@ export class GitService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
-    await provider.createRepo({
+    const remoteRepository = await provider.createRepo({
       installationId: installationId.toString(),
       name: args.name
     });
-    const app = await this.connectAppGitRepository({ ...args });
-
-    return app;
+    if (remoteRepository) {
+      return await this.connectAppGitRepository({ ...args });
+    }
+    return await this.prisma.app.findUnique({
+      where: {
+        id: args.appId
+      }
+    });
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<App> {
