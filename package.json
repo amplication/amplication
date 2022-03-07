@@ -12,6 +12,7 @@
     "prisma:generate": "lerna run --scope @amplication/server prisma:generate",
     "migrate:save": "lerna run --scope @amplication/server migrate:save",
     "migrate:up": "lerna run --scope @amplication/server migrate:up",
+    "migrate:rollback": "lerna run --scope @amplication/server migrate:rollback",
     "generate-graphql-schema": "lerna run --scope @amplication/server generate-graphql-schema",
     "check-graphql-schema": "lerna run --scope @amplication/server check-graphql-schema",
     "generate-graphql-code": "graphql-codegen",
