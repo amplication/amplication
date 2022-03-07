@@ -5,3 +5,5 @@ export const MISSING_TOKEN_ERROR = `App Missing a Github token. You should first
 export const GIT_REPOSITORY_EXIST =
   'Git Repository already connected to an other App';
 export const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
+export const UNSUPPORTED_GIT_ORGANIZATION_TYPE =
+  'Creation of repositories in a personal account is not supported';

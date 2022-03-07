@@ -7,4 +7,5 @@ export interface IGitClient {
   getGitInstallationUrl(workspaceId: string): Promise<string>;
   deleteGitOrganization(installationId: number): Promise<boolean>;
   getGitOrganizationName(installationId: string): Promise<string>;
+  getGitInstallationOrganizationType(installationId: string): Promise<string>;
 }

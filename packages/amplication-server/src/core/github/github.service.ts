@@ -9,11 +9,15 @@ import { App, Octokit } from 'octokit';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
-import { REPO_NAME_TAKEN_ERROR_MESSAGE } from '../git/constants';
+import {
+  REPO_NAME_TAKEN_ERROR_MESSAGE,
+  UNSUPPORTED_GIT_ORGANIZATION_TYPE
+} from '../git/constants';
 import { IGitClient } from '../git/contracts/IGitClient';
 import { RemoteGitRepository } from '../git/dto/objects/RemoteGitRepository';
 import { CreateGitRemoteRepoInput } from '../git/dto/inputs/CreateGitRemoteRepoInput';
 import { GithubFile } from './dto/githubFile';
+import { EnumGitOrganizationType } from '../git/dto/enums/EnumGitOrganizationType';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -39,6 +43,18 @@ export class GithubService implements IGitClient {
     private readonly configService: ConfigService,
     private readonly googleSecretManagerService: GoogleSecretsManagerService
   ) {}
+  async getGitInstallationOrganizationType(
+    installationId: string
+  ): Promise<string> {
+    const octokit = await this.getInstallationOctokit(parseInt(installationId));
+    return (
+      await octokit.rest.apps.getInstallation({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        installation_id: parseInt(installationId)
+      })
+    ).data.account.type;
+  }
+
   async deleteGitOrganization(installationId: number): Promise<boolean> {
     if (installationId) {
       throw new AmplicationError('INVALID_GITHUB_APP'); //todo: const parameter
@@ -98,18 +114,13 @@ export class GithubService implements IGitClient {
       data.installationId
     );
 
+    if (data.gitOrganizationType === EnumGitOrganizationType.User) {
+      throw new AmplicationError(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
+    }
+
     const octokit = await this.getInstallationOctokit(
       parseInt(data.installationId)
     );
-
-    const installation = await octokit.rest.apps.getInstallation({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: parseInt(data.installationId)
-    });
-
-    if (installation.data.account.type.toLowerCase() === 'user') {
-      return null;
-    }
 
     if (await this.isRepoExistWithOctokit(octokit, data.name)) {
       throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);

@@ -11,6 +11,7 @@ import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs'
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
+import { EnumGitOrganizationType } from './dto/enums/EnumGitOrganizationType';
 import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
@@ -40,7 +41,8 @@ export class GitService {
     );
     const remoteRepository = await provider.createRepo({
       installationId: installationId.toString(),
-      name: args.name
+      name: args.name,
+      gitOrganizationType: args.gitOrganizationType
     });
     if (remoteRepository) {
       return await this.connectAppGitRepository({ ...args });
@@ -128,6 +130,10 @@ export class GitService {
       });
     }
 
+    const gitOrganizationType = await service.getGitInstallationOrganizationType(
+      args.data.installationId
+    );
+
     return await this.prisma.gitOrganization.create({
       data: {
         workspace: {
@@ -137,7 +143,8 @@ export class GitService {
         },
         installationId: installationId,
         name: gitOrganizationName,
-        provider: gitProvider
+        provider: gitProvider,
+        type: EnumGitOrganizationType[gitOrganizationType]
       }
     });
   }

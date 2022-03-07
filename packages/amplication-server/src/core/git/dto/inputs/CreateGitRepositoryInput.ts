@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { EnumGitOrganizationType } from '../enums/EnumGitOrganizationType';
 import { EnumGitProvider } from '../enums/EnumGitProvider';
 
 @InputType({
@@ -28,4 +29,9 @@ export class CreateGitRepositoryInput {
     nullable: false
   })
   gitProvider!: EnumGitProvider;
+
+  @Field(() => EnumGitOrganizationType, {
+    nullable: false
+  })
+  gitOrganizationType!: EnumGitOrganizationType;
 }

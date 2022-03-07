@@ -1,5 +1,6 @@
 import { EXAMPLE_DATE } from 'src/core/build/build.service.spec';
 import { GitOrganization } from 'src/models/GitOrganization';
+import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 
 export const EXAMPLE_GIT_ORGANIZATION: GitOrganization = {
@@ -8,5 +9,6 @@ export const EXAMPLE_GIT_ORGANIZATION: GitOrganization = {
   updatedAt: EXAMPLE_DATE,
   id: 'exampleGitOrganizationId',
   installationId: '123456',
-  provider: EnumGitProvider.Github
+  provider: EnumGitProvider.Github,
+  type: EnumGitOrganizationType.Organization
 };

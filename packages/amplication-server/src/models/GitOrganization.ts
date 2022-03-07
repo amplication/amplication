@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { EnumGitOrganizationType } from 'src/core/git/dto/enums/EnumGitOrganizationType';
 import { EnumGitProvider } from 'src/core/git/dto/enums/EnumGitProvider';
 
 @ObjectType({
@@ -23,4 +24,7 @@ export class GitOrganization {
 
   @Field(() => Date, { nullable: false })
   updatedAt!: Date;
+
+  @Field(() => EnumGitOrganizationType, { nullable: false })
+  type!: keyof typeof EnumGitOrganizationType;
 }

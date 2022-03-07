@@ -1096,6 +1096,11 @@ export enum EnumEntityPermissionType {
   Granular = 'Granular',
 }
 
+export enum EnumGitOrganizationType {
+  Organization = 'Organization',
+  User = 'User',
+}
+
 export enum EnumGitProvider {
   Github = 'Github',
 }
@@ -1134,6 +1139,7 @@ export type GitOrganization = {
   installationId: Scalars['String'];
   name: Scalars['String'];
   provider: EnumGitProvider;
+  type: EnumGitOrganizationType;
   updatedAt: Scalars['DateTime'];
 };
 

@@ -107,10 +107,16 @@ type GitOrganization {
   installationId: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  type: EnumGitOrganizationType!
 }
 
 enum EnumGitProvider {
   Github
+}
+
+enum EnumGitOrganizationType {
+  User
+  Organization
 }
 
 type Entity {
@@ -1320,6 +1326,7 @@ input CreateGitRepositoryInput {
   appId: String!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
 }
 
 input ConnectGitRepositoryInput {
