@@ -12,6 +12,7 @@
     "start:debug": "nest start --debug --watch",
     "migrate:save": "prisma migrate dev",
     "migrate:up": "prisma migrate deploy",
+    "migrate:rollback": "prisma migrate resolve --rolled-back",
     "prisma:studio": "prisma studio ",
     "prisma:generate": "prisma generate",
     "prisma:generate:watch": "prisma generate --watch",
