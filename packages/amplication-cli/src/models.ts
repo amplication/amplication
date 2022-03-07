@@ -562,6 +562,7 @@ export type ConnectorRestApiWhereInput = {
 export type CreateGitRepositoryInput = {
   appId: Scalars['String'];
   gitOrganizationId: Scalars['String'];
+  gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
   name: Scalars['String'];
   public: Scalars['Boolean'];
