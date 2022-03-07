@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GitRepository } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { App } from 'src/models/App';
+import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 import { CreateGitRepositoryInput } from '../dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from '../dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
@@ -102,7 +103,8 @@ describe('GitService', () => {
           appId: 'EXAMPLE_APP_DESCRIPTION',
           gitOrganizationId: 'DEFAULT_APP_COLOR',
           gitProvider: EnumGitProvider.Github,
-          public: true
+          public: true,
+          gitOrganizationType: EnumGitOrganizationType.Organization
         };
         expect(
           await gitService.createGitRepository(createGitRepositoryInput)
