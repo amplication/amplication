@@ -7,10 +7,10 @@ export class CompleteAuthorizeAppWithGithubInput {
   @Field(() => String, {
     nullable: false
   })
-  code!: string;
+  state!: string;
 
   @Field(() => String, {
     nullable: false
   })
-  state!: string;
+  installationId!: string;
 }

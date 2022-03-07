@@ -12,6 +12,7 @@ import { Role } from 'src/enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 import { AppService } from '../app/app.service';
+import { GitOrganization } from 'src/models/GitOrganization';
 
 @Injectable()
 export class WorkspaceService {
@@ -132,5 +133,13 @@ export class WorkspaceService {
     });
 
     return user;
+  }
+
+  async findManyGitOrganizations(
+    workspaceId: string
+  ): Promise<GitOrganization[]> {
+    return this.prisma.workspace
+      .findUnique({ where: { id: workspaceId } })
+      .gitOrganizations();
   }
 }

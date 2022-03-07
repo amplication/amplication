@@ -1,13 +1,25 @@
 @import "../../../../style/index.scss";
 @import "../GitDialogsIndex.scss";
 
-.git-create {
+.git-create-repo {
   overflow: auto;
 
   &__button {
     @include flexFullRowWithSpacing;
     width: 100%;
     justify-content: center;
+  }
+
+  &__table {
+    width: 100%;
+    margin-bottom: var(--default-spacing);
+
+    .input-label {
+      margin-bottom: 0;
+    }
+  }
+  &__progress {
+    color: #ffffff !important;
   }
 }
 th {

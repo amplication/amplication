@@ -1,8 +1,8 @@
 import { ObjectType } from '@nestjs/graphql';
-import { GitRepo } from '../../git/dto/objects/GitRepo';
+import { RemoteGitRepository } from '../../git/dto/objects/RemoteGitRepository';
 
 @ObjectType({
   isAbstract: true,
   description: undefined
 })
-export class GithubRepo extends GitRepo {}
+export class GithubRepo extends RemoteGitRepository {}
