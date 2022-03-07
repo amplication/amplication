@@ -39,19 +39,13 @@ export class GitService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
-    const remoteRepository = await provider.createRepo({
+    await provider.createRepo({
       installationId: installationId.toString(),
       name: args.name,
       gitOrganizationType: args.gitOrganizationType
     });
-    if (remoteRepository) {
-      return await this.connectAppGitRepository({ ...args });
-    }
-    return await this.prisma.app.findUnique({
-      where: {
-        id: args.appId
-      }
-    });
+
+    return await this.connectAppGitRepository({ ...args });
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<App> {
@@ -106,13 +100,13 @@ export class GitService {
     const { gitProvider, installationId } = args.data;
     const service = this.gitServiceFactory.getService(gitProvider);
 
-    const gitOrganizationName = await service.getGitOrganizationName(
+    const gitRemoteOrganization = await service.getGitRemoteOrganization(
       installationId
     );
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
       where: {
-        name: gitOrganizationName,
+        name: gitRemoteOrganization.name,
         provider: gitProvider
       }
     });
@@ -125,14 +119,10 @@ export class GitService {
         data: {
           provider: gitProvider,
           installationId: installationId,
-          name: gitOrganizationName
+          name: gitRemoteOrganization.name
         }
       });
     }
-
-    const gitOrganizationType = await service.getGitInstallationOrganizationType(
-      args.data.installationId
-    );
 
     return await this.prisma.gitOrganization.create({
       data: {
@@ -142,9 +132,9 @@ export class GitService {
           }
         },
         installationId: installationId,
-        name: gitOrganizationName,
+        name: gitRemoteOrganization.name,
         provider: gitProvider,
-        type: EnumGitOrganizationType[gitOrganizationType]
+        type: EnumGitOrganizationType[gitRemoteOrganization.type]
       }
     });
   }

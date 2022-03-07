@@ -18,6 +18,7 @@ import { RemoteGitRepository } from '../git/dto/objects/RemoteGitRepository';
 import { CreateGitRemoteRepoInput } from '../git/dto/inputs/CreateGitRemoteRepoInput';
 import { GithubFile } from './dto/githubFile';
 import { EnumGitOrganizationType } from '../git/dto/enums/EnumGitOrganizationType';
+import { RemoteGitOrganization } from '../git/dto/objects/RemoteGitOrganization';
 
 const GITHUB_FILE_TYPE = 'file';
 
@@ -43,16 +44,20 @@ export class GithubService implements IGitClient {
     private readonly configService: ConfigService,
     private readonly googleSecretManagerService: GoogleSecretsManagerService
   ) {}
-  async getGitInstallationOrganizationType(
+  async getGitRemoteOrganization(
     installationId: string
-  ): Promise<string> {
+  ): Promise<RemoteGitOrganization> {
     const octokit = await this.getInstallationOctokit(parseInt(installationId));
-    return (
-      await octokit.rest.apps.getInstallation({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        installation_id: parseInt(installationId)
-      })
-    ).data.account.type;
+    const gitRemoteOrganization = await octokit.rest.apps.getInstallation({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      installation_id: parseInt(installationId)
+    });
+    const { data: gitRemoteOrgs } = gitRemoteOrganization;
+
+    return {
+      name: gitRemoteOrgs.account.login,
+      type: EnumGitOrganizationType[gitRemoteOrganization.data.account.type]
+    };
   }
 
   async deleteGitOrganization(installationId: number): Promise<boolean> {
@@ -95,22 +100,10 @@ export class GithubService implements IGitClient {
     return await this.isRepoExistWithOctokit(octokit, name);
   }
 
-  public async getGitOrganizationName(installationId: string): Promise<string> {
-    const installationIdInt = parseInt(installationId);
-    const octokit = await this.getInstallationOctokit(installationIdInt);
-
-    return (
-      await octokit.rest.apps.getInstallation({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        installation_id: installationIdInt
-      })
-    ).data.account.login;
-  }
-
   async createRepo(
     data: CreateGitRemoteRepoInput
   ): Promise<RemoteGitRepository> {
-    const gitOrganizationName = await this.getGitOrganizationName(
+    const gitOrganization = await this.getGitRemoteOrganization(
       data.installationId
     );
 
@@ -128,7 +121,7 @@ export class GithubService implements IGitClient {
 
     const repository = await octokit.rest.repos.createInOrg({
       name: data.name,
-      org: gitOrganizationName
+      org: gitOrganization.name
     });
     const { data: repo } = repository;
     //TODO add logger

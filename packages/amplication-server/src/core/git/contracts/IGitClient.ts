@@ -1,4 +1,5 @@
 import { CreateGitRemoteRepoInput } from '../dto/inputs/CreateGitRemoteRepoInput';
+import { RemoteGitOrganization } from '../dto/objects/RemoteGitOrganization';
 import { RemoteGitRepository } from '../dto/objects/RemoteGitRepository';
 export interface IGitClient {
   createRepo(data: CreateGitRemoteRepoInput): Promise<RemoteGitRepository>;
@@ -6,6 +7,7 @@ export interface IGitClient {
   isRepoExist(installationId: number, name: string): Promise<boolean>;
   getGitInstallationUrl(workspaceId: string): Promise<string>;
   deleteGitOrganization(installationId: number): Promise<boolean>;
-  getGitOrganizationName(installationId: string): Promise<string>;
-  getGitInstallationOrganizationType(installationId: string): Promise<string>;
+  getGitRemoteOrganization(
+    installationId: string
+  ): Promise<RemoteGitOrganization>;
 }
