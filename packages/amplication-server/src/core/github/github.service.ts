@@ -29,16 +29,18 @@ type DirectoryItem = components['schemas']['content-directory'][number];
 
 @Injectable()
 export class GithubService implements IGitClient {
-  private app:App;
+  private app: App;
   private gitInstallationUrl: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.gitInstallationUrl = this.configService.get(GITHUB_APP_INSTALLATION_URL_VAR);
+    this.gitInstallationUrl = this.configService.get(
+      GITHUB_APP_INSTALLATION_URL_VAR
+    );
 
-    const appId = this.configService.get(GITHUB_APP_APP_ID_VAR)
+    const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
     const privateKey = this.configService
-        .get(GITHUB_APP_PRIVATE_KEY_VAR)
-        .replace(/\\n/g, '\n')
+      .get(GITHUB_APP_PRIVATE_KEY_VAR)
+      .replace(/\\n/g, '\n');
 
     this.app = new App({
       appId: appId,
@@ -93,14 +95,25 @@ export class GithubService implements IGitClient {
     return await GithubService.isRepoExistWithOctokit(octokit, name);
   }
 
-  async createUserRepository(installationId: string, owner:string, name:string): Promise<RemoteGitRepository> {
+  async createUserRepository(
+    installationId: string,
+    owner: string,
+    name: string
+  ): Promise<RemoteGitRepository> {
     throw new AmplicationError(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
   }
 
-  async createOrganizationRepository(installationId: string, owner:string, name:string): Promise<RemoteGitRepository>{
+  async createOrganizationRepository(
+    installationId: string,
+    owner: string,
+    name: string
+  ): Promise<RemoteGitRepository> {
     const octokit = await this.getInstallationOctokit(installationId);
 
-    const exists: boolean = await GithubService.isRepoExistWithOctokit(octokit, name)
+    const exists: boolean = await GithubService.isRepoExistWithOctokit(
+      octokit,
+      name
+    );
     if (exists) {
       throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
     }
@@ -141,8 +154,10 @@ export class GithubService implements IGitClient {
     return await GithubService.getOrganizationReposWithOctokit(octokit);
   }
 
-  private async getInstallationOctokit(installationId: string): Promise<Octokit> {
-    const installationIdNumber = GithubService.convertToNumber(installationId)
+  private async getInstallationOctokit(
+    installationId: string
+  ): Promise<Octokit> {
+    const installationIdNumber = GithubService.convertToNumber(installationId);
     return await this.app.getInstallationOctokit(installationIdNumber);
   }
 
@@ -298,11 +313,13 @@ export class GithubService implements IGitClient {
     ).token;
   }
 
-  private static convertToNumber(value:string):number {
-    const result = parseInt(value)
+  private static convertToNumber(value: string): number {
+    const result = parseInt(value);
     if (isNaN(result)) {
-      throw new AmplicationError("GitHub App installation identifier is invalid")
+      throw new AmplicationError(
+        'GitHub App installation identifier is invalid'
+      );
     }
-    return result
+    return result;
   }
 }

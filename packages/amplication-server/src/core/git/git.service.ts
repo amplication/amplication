@@ -16,23 +16,22 @@ import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput'
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
-import {EnumGitOrganizationType} from "./dto/enums/EnumGitOrganizationType";
+import { EnumGitOrganizationType } from './dto/enums/EnumGitOrganizationType';
 
 @Injectable()
 export class GitService {
   constructor(
-      private readonly gitServiceFactory: GitServiceFactory,
-      private readonly prisma: PrismaService
-  ) {
-  }
+    private readonly gitServiceFactory: GitServiceFactory,
+    private readonly prisma: PrismaService
+  ) {}
 
   async getReposOfOrganization(
-      args: RemoteGitRepositoriesWhereUniqueInput
+    args: RemoteGitRepositoriesWhereUniqueInput
   ): Promise<RemoteGitRepository[]> {
-    const {gitProvider, gitOrganizationId} = args;
+    const { gitProvider, gitOrganizationId } = args;
     const gitService = this.gitServiceFactory.getService(gitProvider);
     const installationId = await this.getInstallationIdByGitOrganizationId(
-        gitOrganizationId
+      gitOrganizationId
     );
     return await gitService.getOrganizationRepos(installationId);
   }
@@ -42,18 +41,29 @@ export class GitService {
       where: {
         id: args.gitOrganizationId
       }
-    })
+    });
 
     const provider = this.gitServiceFactory.getService(args.gitProvider); //TODO: organization.provider
-    const repository = await (organization.type === EnumGitOrganizationType.Organization ?
-        provider.createOrganizationRepository(organization.installationId, organization.name, args.name) :
-        provider.createUserRepository(organization.installationId, organization.name, args.name))
+    const repository = await (organization.type ===
+    EnumGitOrganizationType.Organization
+      ? provider.createOrganizationRepository(
+          organization.installationId,
+          organization.name,
+          args.name
+        )
+      : provider.createUserRepository(
+          organization.installationId,
+          organization.name,
+          args.name
+        ));
 
     if (!repository) {
-      throw new AmplicationError(`Failed to create repository ${organization.name}\\${args.name}`)
+      throw new AmplicationError(
+        `Failed to create repository ${organization.name}\\${args.name}`
+      );
     }
 
-    return await this.connectAppGitRepository({...args});
+    return await this.connectAppGitRepository({ ...args });
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<App> {
@@ -71,17 +81,17 @@ export class GitService {
       }
     });
     return await this.prisma.app.findUnique({
-      where: {id: gitRepository.appId}
+      where: { id: gitRepository.appId }
     });
   }
 
   async connectAppGitRepository({
-                                  appId,
-                                  name,
-                                  gitOrganizationId
-                                }: ConnectGitRepositoryInput): Promise<App> {
+    appId,
+    name,
+    gitOrganizationId
+  }: ConnectGitRepositoryInput): Promise<App> {
     const gitRepo = await this.prisma.gitRepository.findUnique({
-      where: {appId}
+      where: { appId }
     });
 
     if (gitRepo) {
@@ -91,8 +101,8 @@ export class GitService {
     await this.prisma.gitRepository.create({
       data: {
         name: name,
-        app: {connect: {id: appId}},
-        gitOrganization: {connect: {id: gitOrganizationId}}
+        app: { connect: { id: appId } },
+        gitOrganization: { connect: { id: gitOrganizationId } }
       }
     });
 
@@ -104,13 +114,13 @@ export class GitService {
   }
 
   async createGitOrganization(
-      args: CreateGitOrganizationArgs
+    args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
-    const {gitProvider, installationId} = args.data;
+    const { gitProvider, installationId } = args.data;
     const service = this.gitServiceFactory.getService(gitProvider);
 
     const gitRemoteOrganization = await service.getGitRemoteOrganization(
-        installationId
+      installationId
     );
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
@@ -150,7 +160,7 @@ export class GitService {
   }
 
   async getGitOrganizations(
-      args: GitOrganizationFindManyArgs
+    args: GitOrganizationFindManyArgs
   ): Promise<GitOrganization[]> {
     return await this.prisma.gitOrganization.findMany(args);
   }
@@ -160,20 +170,20 @@ export class GitService {
   }
 
   async getGitInstallationUrl(
-      args: GetGitInstallationUrlArgs
+    args: GetGitInstallationUrlArgs
   ): Promise<string> {
-    const {gitProvider, workspaceId} = args.data;
+    const { gitProvider, workspaceId } = args.data;
     const service = this.gitServiceFactory.getService(gitProvider);
     return await service.getGitInstallationUrl(workspaceId);
   }
 
   async deleteGitOrganization(
-      args: DeleteGitOrganizationArgs
+    args: DeleteGitOrganizationArgs
   ): Promise<boolean> {
-    const {gitProvider, gitOrganizationId} = args;
+    const { gitProvider, gitOrganizationId } = args;
     const service = this.gitServiceFactory.getService(gitProvider);
     const installationId = await this.getInstallationIdByGitOrganizationId(
-        gitOrganizationId
+      gitOrganizationId
     );
     await service.deleteGitOrganization(installationId);
     await this.prisma.gitOrganization.delete({
@@ -185,14 +195,14 @@ export class GitService {
   }
 
   private async getInstallationIdByGitOrganizationId(
-      gitOrganizationId: string
+    gitOrganizationId: string
   ): Promise<string | null> {
     return (
-        await this.prisma.gitOrganization.findUnique({
-          where: {
-            id: gitOrganizationId
-          }
-        })
+      await this.prisma.gitOrganization.findUnique({
+        where: {
+          id: gitOrganizationId
+        }
+      })
     ).installationId;
   }
 }
