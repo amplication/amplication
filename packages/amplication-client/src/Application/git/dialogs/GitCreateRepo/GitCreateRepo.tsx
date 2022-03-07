@@ -125,6 +125,7 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
         gitOrganizationId: $gitOrganizationId
         appId: $appId
         gitProvider: $gitProvider
+        gitOrganizationType: Organization
       }
     ) {
       id
