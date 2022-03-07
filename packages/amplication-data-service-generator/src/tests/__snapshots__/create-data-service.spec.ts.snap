@@ -288,7 +288,7 @@ import { CustomerOrderByInput } from \\"./CustomerOrderByInput\\";
 
 export type CustomerFindManyArgs = {
   where?: CustomerWhereInput;
-  orderBy?: CustomerOrderByInput;
+  orderBy?: Array<CustomerOrderByInput>;
   skip?: number;
   take?: number;
 };
@@ -442,7 +442,7 @@ import { EmptyOrderByInput } from \\"./EmptyOrderByInput\\";
 
 export type EmptyFindManyArgs = {
   where?: EmptyWhereInput;
-  orderBy?: EmptyOrderByInput;
+  orderBy?: Array<EmptyOrderByInput>;
   skip?: number;
   take?: number;
 };
@@ -530,7 +530,7 @@ import { OrderOrderByInput } from \\"./OrderOrderByInput\\";
 
 export type OrderFindManyArgs = {
   where?: OrderWhereInput;
-  orderBy?: OrderOrderByInput;
+  orderBy?: Array<OrderOrderByInput>;
   skip?: number;
   take?: number;
 };
@@ -647,7 +647,7 @@ import { OrganizationOrderByInput } from \\"./OrganizationOrderByInput\\";
 
 export type OrganizationFindManyArgs = {
   where?: OrganizationWhereInput;
-  orderBy?: OrganizationOrderByInput;
+  orderBy?: Array<OrganizationOrderByInput>;
   skip?: number;
   take?: number;
 };
@@ -830,7 +830,7 @@ import { UserOrderByInput } from \\"./UserOrderByInput\\";
 
 export type UserFindManyArgs = {
   where?: UserWhereInput;
-  orderBy?: UserOrderByInput;
+  orderBy?: Array<UserOrderByInput>;
   skip?: number;
   take?: number;
 };
@@ -3867,11 +3867,11 @@ class CustomerFindManyArgs {
 
   @ApiProperty({
     required: false,
-    type: CustomerOrderByInput,
+    type: [CustomerOrderByInput],
   })
-  @Field(() => CustomerOrderByInput, { nullable: true })
+  @Field(() => [CustomerOrderByInput], { nullable: true })
   @Type(() => CustomerOrderByInput)
-  orderBy?: CustomerOrderByInput;
+  orderBy?: Array<CustomerOrderByInput>;
 
   @ApiProperty({
     required: false,
@@ -6169,11 +6169,11 @@ class EmptyFindManyArgs {
 
   @ApiProperty({
     required: false,
-    type: EmptyOrderByInput,
+    type: [EmptyOrderByInput],
   })
-  @Field(() => EmptyOrderByInput, { nullable: true })
+  @Field(() => [EmptyOrderByInput], { nullable: true })
   @Type(() => EmptyOrderByInput)
-  orderBy?: EmptyOrderByInput;
+  orderBy?: Array<EmptyOrderByInput>;
 
   @ApiProperty({
     required: false,
@@ -7449,11 +7449,11 @@ class OrderFindManyArgs {
 
   @ApiProperty({
     required: false,
-    type: OrderOrderByInput,
+    type: [OrderOrderByInput],
   })
-  @Field(() => OrderOrderByInput, { nullable: true })
+  @Field(() => [OrderOrderByInput], { nullable: true })
   @Type(() => OrderOrderByInput)
-  orderBy?: OrderOrderByInput;
+  orderBy?: Array<OrderOrderByInput>;
 
   @ApiProperty({
     required: false,
@@ -8966,11 +8966,11 @@ class OrganizationFindManyArgs {
 
   @ApiProperty({
     required: false,
-    type: OrganizationOrderByInput,
+    type: [OrganizationOrderByInput],
   })
-  @Field(() => OrganizationOrderByInput, { nullable: true })
+  @Field(() => [OrganizationOrderByInput], { nullable: true })
   @Type(() => OrganizationOrderByInput)
-  orderBy?: OrganizationOrderByInput;
+  orderBy?: Array<OrganizationOrderByInput>;
 
   @ApiProperty({
     required: false,
@@ -11858,11 +11858,11 @@ class UserFindManyArgs {
 
   @ApiProperty({
     required: false,
-    type: UserOrderByInput,
+    type: [UserOrderByInput],
   })
-  @Field(() => UserOrderByInput, { nullable: true })
+  @Field(() => [UserOrderByInput], { nullable: true })
   @Type(() => UserOrderByInput)
-  orderBy?: UserOrderByInput;
+  orderBy?: Array<UserOrderByInput>;
 
   @ApiProperty({
     required: false,
