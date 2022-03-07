@@ -32,16 +32,16 @@ model Workspace {
 }
 
 model GitOrganization {
-  id              String                  @id @default(cuid())
+  id              String                   @id @default(cuid())
   provider        EnumGitProvider
-  type            EnumGitOrganizationType @default(value: User)
+  type            EnumGitOrganizationType? @default(value: User)
   name            String
   installationId  String
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
   gitRepositories GitRepository[]
   workspaceId     String
-  workspace       Workspace               @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  workspace       Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
 }
 
 model GitRepository {
