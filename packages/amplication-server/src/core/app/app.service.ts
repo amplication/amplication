@@ -616,7 +616,7 @@ export class AppService {
       throw new Error(INVALID_APP_ID);
     }
 
-    if (!appRepo.gitOrganizationId) return { isValid, messages };
+    if (!appRepo) return { isValid, messages };
     if (!app.githubLastSync) return { isValid, messages }; //if the repo was never synced before, skip the below validation as they are all related to GitHub sync
 
     const config = await this.getAppGenerationConfigFromGitHub(args);
