@@ -11,7 +11,6 @@ import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs'
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
-import { EnumGitOrganizationType } from './dto/enums/EnumGitOrganizationType';
 import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
