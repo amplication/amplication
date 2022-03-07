@@ -119,7 +119,8 @@ export class GitService {
         data: {
           provider: gitProvider,
           installationId: installationId,
-          name: gitRemoteOrganization.name
+          name: gitRemoteOrganization.name,
+          type: gitRemoteOrganization.type
         }
       });
     }
@@ -134,7 +135,7 @@ export class GitService {
         installationId: installationId,
         name: gitRemoteOrganization.name,
         provider: gitProvider,
-        type: EnumGitOrganizationType[gitRemoteOrganization.type]
+        type: gitRemoteOrganization.type
       }
     });
   }
