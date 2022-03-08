@@ -40,6 +40,8 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.PROD_GOOGLE_CREDENTIALS }}
           TF_VAR_image_id: gcr.io/${{ github.event.inputs.image-id }}
+          TF_VAR_github_app_private_key: ${{ secrets.PRODUCTION_GITHUB_APP_PRIVATE_KEY }}
+          TF_VAR_github_app_client_secret: ${{ secrets.PRODUCTION_GITHUB_APP_CLIENT_SECRET }}
         working-directory: terraform/envs/production
       - uses: mattes/gce-cloudsql-proxy-action@v1
         with:
