@@ -16,6 +16,8 @@ import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput'
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
+import { EnumGitOrganizationType } from './dto/enums/EnumGitOrganizationType';
+
 @Injectable()
 export class GitService {
   constructor(
@@ -27,22 +29,39 @@ export class GitService {
     args: RemoteGitRepositoriesWhereUniqueInput
   ): Promise<RemoteGitRepository[]> {
     const { gitProvider, gitOrganizationId } = args;
-    const service = this.gitServiceFactory.getService(gitProvider);
+    const gitService = this.gitServiceFactory.getService(gitProvider);
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
     );
-    return await service.getOrganizationRepos(installationId);
+    return await gitService.getOrganizationRepos(installationId);
   }
+
   async createGitRepository(args: CreateGitRepositoryInput): Promise<App> {
-    const provider = this.gitServiceFactory.getService(args.gitProvider);
-    const installationId = await this.getInstallationIdByGitOrganizationId(
-      args.gitOrganizationId
-    );
-    await provider.createRepo({
-      installationId: installationId.toString(),
-      name: args.name,
-      gitOrganizationType: args.gitOrganizationType
+    const organization = await this.getGitOrganization({
+      where: {
+        id: args.gitOrganizationId
+      }
     });
+
+    const provider = this.gitServiceFactory.getService(args.gitProvider); //TODO: organization.provider
+    const repository = await (organization.type ===
+    EnumGitOrganizationType.Organization
+      ? provider.createOrganizationRepository(
+          organization.installationId,
+          organization.name,
+          args.name
+        )
+      : provider.createUserRepository(
+          organization.installationId,
+          organization.name,
+          args.name
+        ));
+
+    if (!repository) {
+      throw new AmplicationError(
+        `Failed to create repository ${organization.name}\\${args.name}`
+      );
+    }
 
     return await this.connectAppGitRepository({ ...args });
   }
@@ -93,6 +112,7 @@ export class GitService {
       }
     });
   }
+
   async createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
@@ -176,15 +196,13 @@ export class GitService {
 
   private async getInstallationIdByGitOrganizationId(
     gitOrganizationId: string
-  ): Promise<number | null> {
-    return parseInt(
-      (
-        await this.prisma.gitOrganization.findUnique({
-          where: {
-            id: gitOrganizationId
-          }
-        })
-      ).installationId
-    );
+  ): Promise<string | null> {
+    return (
+      await this.prisma.gitOrganization.findUnique({
+        where: {
+          id: gitOrganizationId
+        }
+      })
+    ).installationId;
   }
 }
