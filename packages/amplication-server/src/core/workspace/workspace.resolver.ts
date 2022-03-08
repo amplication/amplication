@@ -22,6 +22,7 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { WorkspaceService } from './workspace.service';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { GitOrganization } from 'src/models/GitOrganization';
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -98,5 +99,12 @@ export class WorkspaceResolver {
     @Args() args: InviteUserArgs
   ): Promise<User | null> {
     return this.workspaceService.inviteUser(currentUser, args);
+  }
+
+  @ResolveField(() => [GitOrganization])
+  async gitOrganizations(
+    @Parent() workspace: Workspace
+  ): Promise<GitOrganization[]> {
+    return this.workspaceService.findManyGitOrganizations(workspace.id);
   }
 }
