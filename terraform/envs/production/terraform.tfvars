@@ -26,10 +26,6 @@ github_app_client_id = "Iv1.3f1573355389c9e5"
 github_app_app_id = "176701"
 github_app_installation_url = "https://github.com/apps/amplication/installations/new?state={state}"
 
-
-# Amplitude
-amplitude_api_key = "d6c2950cd60b91196e678f9a3a7ac705"
-
 # Cloud SQL
 database_tier = "db-custom-4-8192"
 
