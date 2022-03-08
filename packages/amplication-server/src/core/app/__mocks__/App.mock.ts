@@ -5,17 +5,13 @@ export const TEST_APP_MOCK: App = {
   createdAt: new Date(),
   description: 'Description',
   id: TEST_APP_ID,
-  githubSyncEnabled: true,
   name: 'test app',
-  updatedAt: new Date(),
-  githubToken: 'GITHUB_TOKEN'
+  updatedAt: new Date()
 };
 export const MOCK_APP_WITHOUT_GITHUB_TOKEN: App = {
   createdAt: new Date(),
   description: 'Description',
   id: 'MOCK_APP_WITHOUT_GITHUB_TOKEN',
-  githubSyncEnabled: false,
   name: 'test app',
-  updatedAt: new Date(),
-  githubToken: null
+  updatedAt: new Date()
 };

@@ -1,0 +1,29 @@
+name: Staging Prisma Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      image-id:
+        description: "Failed Image"
+        required: true
+      migration-id:
+        description: "Migration Id"
+        required: true
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Login to GCR
+        uses: docker/login-action@v1
+        with:
+          registry: gcr.io
+          username: _json_key
+          password: ${{ secrets.GOOGLE_CREDENTIALS }}
+      - run: |
+          set -e;
+          docker run \
+            --network host \
+            --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@127.0.0.1:5432/${{ secrets.STAGING_DB_NAME }}" \
+            ${{ github.event.inputs.image-id }} \
+            npm run migrate:rollback -- -- ${{ github.event.inputs.migration-id }}

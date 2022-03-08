@@ -14,6 +14,11 @@ github_app_auth_redirect_uri = "https://staging.amplication.com/github-auth-app/
 # paddle - sandbox
 paddle_vendor_id = "2673"
 
+# GitHub - App
+github_app_client_id = "Iv1.e0d76b0ce191a528"
+github_app_app_id = "174833"
+github_app_installation_url = "https://github.com/apps/amplication-staging/installations/new?state={state}"
+
 # Segment
 amplitude_api_key = "aVqxCAcXOdCx5DPI41s6EmwsSCB8Kjz6"
 

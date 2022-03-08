@@ -93,7 +93,6 @@ const EXAMPLE_APP: App = {
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
   description: EXAMPLE_DESCRIPTION,
-  githubSyncEnabled: false,
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT]
@@ -122,7 +121,6 @@ const FIND_ONE_APP_QUERY = gql`
       updatedAt
       name
       description
-      githubSyncEnabled
       entities {
         id
         createdAt
@@ -208,7 +206,6 @@ const CREATE_APP_MUTATION = gql`
       updatedAt
       name
       description
-      githubSyncEnabled
       entities {
         id
         createdAt
@@ -246,7 +243,6 @@ const DELETE_APP_MUTATION = gql`
       updatedAt
       name
       description
-      githubSyncEnabled
       entities {
         id
         createdAt
@@ -284,7 +280,6 @@ const UPDATE_APP_MUTATION = gql`
       updatedAt
       name
       description
-      githubSyncEnabled
       entities {
         id
         createdAt

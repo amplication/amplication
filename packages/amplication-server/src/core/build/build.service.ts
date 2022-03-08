@@ -175,12 +175,12 @@ export class BuildService {
    */
   async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
     const appId = args.data.app.connect.id;
-
     const user = await this.userService.findUser({
       where: {
         id: args.data.createdBy.connect.id
       }
     });
+
     //TODO
     /**@todo: set version based on release when applicable */
     const commitId = args.data.commit.connect.id;
@@ -219,6 +219,7 @@ export class BuildService {
     const logger = this.logger.child({
       buildId: build.id
     });
+
     logger.info(JOB_STARTED_LOG);
     const tarballURL = await this.generate(build, user);
     if (!skipPublish) {
@@ -588,6 +589,16 @@ export class BuildService {
     modules: DataServiceGenerator.Module[]
   ) {
     const app = build.app;
+
+    const appRepository = await this.prisma.gitRepository.findUnique({
+      where: {
+        appId: app.id
+      },
+      include: {
+        gitOrganization: true
+      }
+    });
+
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
@@ -600,9 +611,7 @@ export class BuildService {
 
     const url = `${host}/${build.appId}/builds/${build.id}`;
 
-    if (app.githubSyncEnabled) {
-      const [userName, repoName] = app.githubRepo.split('/');
-
+    if (appRepository) {
       return this.actionService.run(
         build.actionId,
         PUSH_TO_GITHUB_STEP_NAME,
@@ -611,8 +620,8 @@ export class BuildService {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
             const prUrl = await this.githubService.createPullRequest(
-              userName,
-              repoName,
+              appRepository.gitOrganization.name,
+              appRepository.name,
               modules,
               `amplication-build-${build.id}`,
               commitMessage,
@@ -621,8 +630,8 @@ Commit message: ${commit.message}
 
 ${url}
 `,
-              app.githubBranch,
-              app.githubToken
+              null,
+              appRepository.gitOrganization.installationId
             );
 
             await this.appService.reportSyncMessage(

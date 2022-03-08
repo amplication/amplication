@@ -30,6 +30,11 @@ module "env" {
   github_client_secret_id          = var.github_client_secret_id
   segment_write_key_secret_id      = var.segment_write_key_secret_id
   sendgrid_api_key_secret_id       = var.sendgrid_api_key_secret_id
+  github_app_private_key           = var.github_app_private_key
+  github_app_client_secret         = var.github_app_client_secret
+  github_app_client_id             = var.github_app_client_id
+  github_app_app_id                = var.github_app_app_id
+  github_app_installation_url      = var.github_app_installation_url
   feature_flags                    = var.feature_flags
   default_disk                     = var.default_disk
   host                             = var.host
@@ -57,6 +62,7 @@ module "deploy" {
   github_client_secret_id            = var.github_client_secret_id
   segment_write_key_secret_id        = var.segment_write_key_secret_id
   sendgrid_api_key_secret_id         = var.sendgrid_api_key_secret_id
+  github_app_private_key             = var.github_app_private_key
   image                              = var.image
   google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
   google_cloudbuild_trigger_name     = var.google_cloudbuild_trigger_name

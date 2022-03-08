@@ -24,6 +24,7 @@ import { addDays } from 'date-fns';
 import { isEmpty } from 'lodash';
 import { EnumWorkspaceMemberType } from './dto/EnumWorkspaceMemberType';
 import { Subscription } from '../subscription/dto/Subscription';
+import { GitOrganization } from 'src/models/GitOrganization';
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -368,5 +369,13 @@ export class WorkspaceService {
 
   async getSubscription(workspaceId: string): Promise<Subscription | null> {
     return await this.subscriptionService.getCurrentSubscription(workspaceId);
+  }
+
+  async findManyGitOrganizations(
+    workspaceId: string
+  ): Promise<GitOrganization[]> {
+    return this.prisma.workspace
+      .findUnique({ where: { id: workspaceId } })
+      .gitOrganizations();
   }
 }

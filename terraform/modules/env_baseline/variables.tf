@@ -37,6 +37,26 @@ variable "paddle_vendor_id" {
 variable "github_app_auth_redirect_uri" {
   type = string
 }
+
+variable "github_app_private_key"{
+  type = string
+}
+
+variable "github_app_client_secret"{
+  type = string
+}
+
+variable "github_app_client_id"{
+  type = string
+}
+
+variable "github_app_app_id"{
+  type = string
+}
+
+variable "github_app_installation_url"{
+  type = string
+}
 # Amplitude
 
 variable "amplitude_api_key" {
