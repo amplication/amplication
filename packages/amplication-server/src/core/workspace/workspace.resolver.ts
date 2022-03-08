@@ -28,7 +28,7 @@ import { WorkspaceService } from './workspace.service';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { GitOrganization } from 'src/models/GitOrganization';
-
+import { Subscription } from '../subscription/dto/Subscription';
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
