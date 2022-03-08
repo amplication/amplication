@@ -7,7 +7,7 @@ type Auth {
   token: String!
 }
 
-type AuthorizeAppWithGithubResult {
+type AuthorizeAppWithGitResult {
   """"""
   url: String!
 }
@@ -43,8 +43,9 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
-  getReposOfUser(appId: String!, sourceControlService: EnumSourceControlService!): [GitRepo!]!
-  getUsername(appId: String!, sourceControlService: EnumSourceControlService!): String!
+  gitOrganization(where: WhereUniqueInput!): GitOrganization!
+  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
+  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
 
 type Account {
@@ -69,6 +70,7 @@ type Workspace {
   updatedAt: DateTime!
   name: String!
   apps: [App!]!
+  gitOrganizations: [GitOrganization!]
   users: [User!]!
 }
 
@@ -76,18 +78,45 @@ type App {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  gitRepository: GitRepository
+  gitRepositoryId: String
   name: String!
   description: String!
   color: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   environments: [Environment!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
-  githubTokenCreatedDate: DateTime
-  githubSyncEnabled: Boolean!
-  githubRepo: String
-  githubBranch: String
-  githubLastSync: DateTime
   githubLastMessage: String
+  githubLastSync: DateTime
+  workspace: Workspace!
+}
+
+type GitRepository {
+  id: String!
+  gitOrganizationId: String!
+  gitOrganization: GitOrganization!
+  name: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type GitOrganization {
+  id: String!
+  provider: EnumGitProvider!
+  name: String!
+  installationId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  type: EnumGitOrganizationType!
+}
+
+enum EnumGitProvider {
+  Github
+}
+
+enum EnumGitOrganizationType {
+  User
+  Organization
 }
 
 type Entity {
@@ -937,7 +966,7 @@ input EntityPageOrderByInput {
   description: SortOrder
 }
 
-type GitRepo {
+type RemoteGitRepository {
   name: String!
   url: String!
   private: Boolean!
@@ -945,8 +974,13 @@ type GitRepo {
   admin: Boolean!
 }
 
-enum EnumSourceControlService {
-  Github
+input RemoteGitRepositoriesWhereUniqueInput {
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+}
+
+input GitOrganizationWhereInput {
+  id: String
 }
 
 type Mutation {
@@ -961,11 +995,6 @@ type Mutation {
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  startAuthorizeAppWithGithub(where: WhereUniqueInput!): AuthorizeAppWithGithubResult!
-  completeAuthorizeAppWithGithub(data: CompleteAuthorizeAppWithGithubInput!, where: WhereUniqueInput!): App!
-  removeAuthorizeAppWithGithub(where: WhereUniqueInput!): App!
-  appEnableSyncWithGithubRepo(data: AppEnableSyncWithGithubRepoInput!, where: WhereUniqueInput!): App!
-  appDisableSyncWithGithubRepo(where: WhereUniqueInput!): App!
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -998,7 +1027,12 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createRepoInOrg(appId: String!, sourceControlService: EnumSourceControlService!, input: RepoCreateInput!): GitRepo!
+  createGitRepository(data: CreateGitRepositoryInput!): App!
+  connectAppGitRepository(data: ConnectGitRepositoryInput!): App!
+  createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
+  deleteGitRepository(gitRepositoryId: String!): App!
+  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
+  getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGitResult!
 }
 
 input UpdateAccountInput {
@@ -1058,19 +1092,6 @@ input WhereParentIdInput {
 
 input PendingChangesDiscardInput {
   app: WhereParentIdInput!
-}
-
-input CompleteAuthorizeAppWithGithubInput {
-  code: String!
-  state: String!
-}
-
-input AppEnableSyncWithGithubRepoInput {
-  """The full name of the repo in the format org-name/repo-name"""
-  githubRepo: String!
-
-  """optional: defaults to default branch"""
-  githubBranch: String
 }
 
 input EntityCreateInput {
@@ -1299,7 +1320,26 @@ input EntityPageUpdateInput {
   showFieldList: [String!]
 }
 
-input RepoCreateInput {
+input CreateGitRepositoryInput {
   name: String!
   public: Boolean!
+  appId: String!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+}
+
+input ConnectGitRepositoryInput {
+  name: String!
+  appId: String!
+  gitOrganizationId: String!
+}
+
+input GitOrganizationCreateInput {
+  installationId: String!
+  gitProvider: EnumGitProvider!
+}
+
+input GitGetInstallationUrlInput {
+  gitProvider: EnumGitProvider!
 }

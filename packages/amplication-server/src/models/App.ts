@@ -3,6 +3,7 @@ import { Entity } from './Entity'; // eslint-disable-line import/no-cycle
 import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../core/environment/dto/Environment'; // eslint-disable-line import/no-cycle
+import { GitRepository } from './GitRepository';
 
 @ObjectType({
   isAbstract: true,
@@ -28,6 +29,16 @@ export class App {
   updatedAt!: Date;
 
   workspace?: Workspace;
+
+  workspaceId?: string;
+
+  @Field(() => GitRepository, {
+    nullable: true
+  })
+  gitRepository?: GitRepository;
+
+  @Field(() => String, { nullable: true })
+  gitRepositoryId?: string;
 
   @Field(() => String, {
     nullable: false,
@@ -64,36 +75,15 @@ export class App {
   })
   builds?: Build[];
 
-  //Sensitive data - do not expose to graphQL
-  githubToken?: string;
-
-  @Field(() => Date, {
-    nullable: true
-  })
-  githubTokenCreatedDate?: Date;
-
-  @Field(() => Boolean)
-  githubSyncEnabled: boolean;
-
   @Field(() => String, {
     nullable: true
   })
-  githubRepo?: string;
-
-  @Field(() => String, {
-    nullable: true
-  })
-  githubBranch?: string;
+  githubLastMessage?: string;
 
   @Field(() => Date, {
     nullable: true
   })
   githubLastSync?: Date;
-
-  @Field(() => String, {
-    nullable: true
-  })
-  githubLastMessage?: string;
 
   // no need to expose to GraphQL
   deletedAt?: Date;

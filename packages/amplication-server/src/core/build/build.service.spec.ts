@@ -78,7 +78,7 @@ const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'exampleAppId';
-const EXAMPLE_DATE = new Date('2020-01-01');
+export const EXAMPLE_DATE = new Date('2020-01-01');
 
 const JOB_STARTED_LOG = 'Build job started';
 const JOB_DONE_LOG = 'Build job done';
@@ -245,8 +245,7 @@ const EXAMPLE_APP: App = {
   updatedAt: new Date(),
   name: 'exampleAppName',
   description: 'example App Description',
-  color: '#20A4F3',
-  githubSyncEnabled: false
+  color: '#20A4F3'
 };
 
 const EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT: Build = {
@@ -300,6 +299,8 @@ const prismaBuildUpdateMock = jest.fn();
 const entityServiceGetLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
+
+const prismaGitRepositoryReturnNull = jest.fn(() => null);
 
 const EXAMPLE_FIRST_ENTITY_NAME = 'AA First Entity';
 const EXAMPLE_SECOND_ENTITY_NAME = 'BB second Entity';
@@ -436,6 +437,9 @@ describe('BuildService', () => {
               findMany: prismaBuildFindManyMock,
               findUnique: prismaBuildFindOneMock,
               update: prismaBuildUpdateMock
+            },
+            gitRepository: {
+              findUnique: prismaGitRepositoryReturnNull
             }
           }
         },

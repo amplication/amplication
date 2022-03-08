@@ -1,72 +1,89 @@
 import {
   Button,
-  TextField,
-  Label,
   CircularProgress,
+  Label,
+  TextField,
 } from "@amplication/design-system";
+import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React from "react";
-import useGitCreate from "../../hooks/useGitCreate";
-import useGitSelected from "../../hooks/useGitSelected";
-import useGitUserName from "../../hooks/useGitUserName";
-import {
-  App,
-  EnumSourceControlService,
-  RepoCreateInput,
-} from "../../../../models";
+import React, { useCallback } from "react";
+import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
+import { useTracking } from "../../../../util/analytics";
+import { formatError } from "../../../../util/error";
+import { AppWithGitRepository } from "../../SyncWithGithubPage";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
-import { formatError } from "../../../../util/error";
 
 type Props = {
-  sourceControlService: EnumSourceControlService;
-  app: App;
+  gitProvider: EnumGitProvider;
+  app: AppWithGitRepository;
+  gitOrganizationId: string;
   onCompleted: Function;
+  gitOrganizationName: string;
 };
 
-const CLASS_NAME = "git-create";
+const CLASS_NAME = "git-create-repo";
 
 export default function GitCreateRepo({
   app,
-  sourceControlService,
+  gitOrganizationId,
+  gitProvider,
   onCompleted,
+  gitOrganizationName,
 }: Props) {
-  const initialValues: RepoCreateInput = { name: "", public: true };
+  const initialValues: CreateGitRepositoryInput = { name: "", public: true };
+  const { trackEvent } = useTracking();
 
-  const { username } = useGitUserName({ appId: app.id, sourceControlService });
-  const { handleRepoSelected } = useGitSelected({ appId: app.id });
-  const { loading, handleCreation, error } = useGitCreate({
-    appId: app.id,
-    sourceControlService,
-    cb: (repo) => {
-      handleRepoSelected(repo);
-      onCompleted();
+  const [triggerCreation, { loading, error }] = useMutation(
+    CREATE_GIT_REPOSITORY_IN_ORGANIZATION,
+    {
+      onCompleted: (data) => {
+        onCompleted();
+
+        trackEvent({
+          eventName: "createGitRepo",
+        });
+      },
+    }
+  );
+
+  const handleCreation = useCallback(
+    (data: CreateGitRepositoryInput) => {
+      triggerCreation({
+        variables: {
+          name: data.name,
+          gitOrganizationId,
+          gitProvider,
+          public: data.public,
+          appId: app.id,
+        },
+      }).catch((error) => {});
     },
-  });
+    [app.id, gitOrganizationId, gitProvider, triggerCreation]
+  );
+
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={(values) => {
-        handleCreation(values);
-      }}
+      onSubmit={handleCreation}
       validationSchema={CreateGitFormSchema}
     >
       {({ errors: formError }) => (
         <Form>
           <div className={`${CLASS_NAME}__header`}>
             <h4>
-              Create a new {sourceControlService} repository to sync your
-              application with
+              Create a new {gitProvider} repository to sync your application
+              with
             </h4>
             <br />
           </div>
-          <table style={{ width: "100%", marginBottom: "1vh" }}>
+          <table className={`${CLASS_NAME}__table`}>
             <tr>
               <th>Owner</th>
               <th>Repository name</th>
             </tr>
             <tr>
-              <td style={{ position: "relative", top: "-5px" }}>{username}/</td>
+              <td>{gitOrganizationName}/</td>
               <td>
                 <TextField name="name" autoComplete="off" showError={false} />
               </td>
@@ -76,10 +93,9 @@ export default function GitCreateRepo({
             type="submit"
             className={`${CLASS_NAME}__button`}
             disabled={loading}
-            style={{ marginBottom: "0.8vh" }}
           >
             {loading ? (
-              <CircularProgress style={{ color: "white", margin: "5px" }} />
+              <CircularProgress className={`${CLASS_NAME}__progress`} />
             ) : (
               "Create new repository"
             )}
@@ -93,3 +109,29 @@ export default function GitCreateRepo({
     </Formik>
   );
 }
+
+const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
+  mutation createGitRepository(
+    $gitProvider: EnumGitProvider!
+    $gitOrganizationId: String!
+    $appId: String!
+    $name: String!
+    $public: Boolean!
+  ) {
+    createGitRepository(
+      data: {
+        name: $name
+        public: $public
+        gitOrganizationId: $gitOrganizationId
+        appId: $appId
+        gitProvider: $gitProvider
+        gitOrganizationType: Organization
+      }
+    ) {
+      id
+      gitRepository {
+        id
+      }
+    }
+  }
+`;
