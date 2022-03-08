@@ -20,6 +20,10 @@ jobs:
           registry: gcr.io
           username: _json_key
           password: ${{ secrets.GOOGLE_CREDENTIALS }}
+      - uses: mattes/gce-cloudsql-proxy-action@v1
+        with:
+          creds: ${{ secrets.GOOGLE_CREDENTIALS }}
+          instance: ${{ secrets.STAGING_DB_INSTANCE_NAME }}
       - run: |
           set -e;
           docker run \
