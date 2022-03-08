@@ -11,6 +11,13 @@ github_redirect_uri = "https://staging-oc.amplication.com/github/callback"
 github_app_auth_scope       = "user:email,repo,read:org"
 github_app_auth_redirect_uri = "https://staging-oc.amplication.com/github-auth-app/callback/{appId}"
 
+# Github-App
+github_app_client_id = "Iv1.456e1de6aa909177"
+github_app_app_id = "176700"
+github_app_installation_url = "https://github.com/apps/amplication-staging-oc/installations/new?state={state}"
+
+
+
 # paddle - sandbox
 paddle_vendor_id = "2673"
 

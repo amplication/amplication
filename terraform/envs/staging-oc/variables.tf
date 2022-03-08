@@ -34,6 +34,25 @@ variable "github_app_auth_redirect_uri" {
   type = string
 }
 
+# GitHub App
+variable "github_app_private_key" {
+  type = string
+}
+
+variable "github_app_client_secret" {
+  type = string
+}
+variable "github_app_client_id" {
+  type = string
+}
+variable "github_app_app_id" {
+  type = string
+}
+variable "github_app_installation_url" {
+  type = string
+}
+
+
 # paddle
 variable "paddle_vendor_id" {
   type = string
