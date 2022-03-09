@@ -1,7 +1,7 @@
-import { GitRepo } from '../dto/objects/GitRepo';
+import { RemoteGitRepository } from '../dto/objects/RemoteGitRepository';
 import { TEST_GIT_REPO } from './GitRepo';
 
-export const TEST_GIT_REPOS: GitRepo[] = [
+export const TEST_GIT_REPOS: RemoteGitRepository[] = [
   TEST_GIT_REPO,
   {
     admin: true,

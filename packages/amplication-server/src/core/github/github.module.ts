@@ -4,7 +4,6 @@ import { PrismaModule } from 'nestjs-prisma';
 import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { GithubService } from './github.service';
-import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtractor';
 
 @Module({
   imports: [
@@ -13,7 +12,7 @@ import { GithubTokenExtractor } from './utils/tokenExtractor/githubTokenExtracto
     PermissionsModule,
     GoogleSecretsManagerModule
   ],
-  providers: [GithubService, GithubTokenExtractor],
+  providers: [GithubService],
   exports: [GithubService]
 })
 export class GithubModule {}

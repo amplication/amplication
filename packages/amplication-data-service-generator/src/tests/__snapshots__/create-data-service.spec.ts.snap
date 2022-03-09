@@ -3579,6 +3579,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -3591,7 +3592,6 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
@@ -3599,126 +3599,131 @@ import { Organization } from \\"../../organization/base/Organization\\";
 import { Order } from \\"../../order/base/Order\\";
 @ObjectType()
 class Customer {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
   @ApiProperty({
     required: true,
   })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   createdAt!: Date;
 
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
   @ApiProperty({
     required: true,
   })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   updatedAt!: Date;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   email!: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   firstName!: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   lastName!: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
   @IsBoolean()
   @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
   isVip!: boolean | null;
 
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @Type(() => Date)
   @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-  })
   birthData!: Date | null;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
   @IsNumber()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
+  averageSale!: number | null;
+
   @ApiProperty({
     required: false,
     type: Number,
   })
-  averageSale!: number | null;
-
   @IsInt()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
   favoriteNumber!: number | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   geoLocation!: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   comments!: string | null;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerFavoriteColors,
+    isArray: true,
+  })
   @IsEnum(EnumCustomerFavoriteColors, {
     each: true,
   })
@@ -3726,49 +3731,44 @@ class Customer {
   @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerFavoriteColors,
-    isArray: true,
-  })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerCustomerType,
+  })
   @IsEnum(EnumCustomerCustomerType)
   @IsOptional()
   @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerCustomerType,
-  })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
 
-  @ValidateNested()
-  @Type(() => Organization)
-  @IsOptional()
   @ApiProperty({
     required: false,
     type: () => Organization,
   })
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
   organization?: Organization | null;
 
-  @ValidateNested()
-  @Type(() => Organization)
-  @IsOptional()
   @ApiProperty({
     required: false,
     type: () => Organization,
   })
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
   vipOrganization?: Organization | null;
 
-  @ValidateNested()
-  @Type(() => Order)
-  @IsOptional()
   @ApiProperty({
     required: false,
     type: () => [Order],
   })
+  @ValidateNested()
+  @Type(() => Order)
+  @IsOptional()
   orders?: Array<Order>;
 }
 export { Customer };
@@ -3785,6 +3785,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -3797,7 +3798,6 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
@@ -3805,102 +3805,107 @@ import { OrganizationWhereUniqueInput } from \\"../../organization/base/Organiza
 import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
 @InputType()
 class CustomerCreateInput {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   email!: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   firstName?: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   lastName?: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
   @IsBoolean()
   @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
   isVip?: boolean | null;
 
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @Type(() => Date)
   @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-  })
   birthData?: Date | null;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
   @IsNumber()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
+  averageSale?: number | null;
+
   @ApiProperty({
     required: false,
     type: Number,
   })
-  averageSale?: number | null;
-
   @IsInt()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
   favoriteNumber?: number | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   geoLocation?: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   comments?: string | null;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerFavoriteColors,
+    isArray: true,
+  })
   @IsEnum(EnumCustomerFavoriteColors, {
     each: true,
   })
@@ -3908,57 +3913,52 @@ class CustomerCreateInput {
   @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerFavoriteColors,
-    isArray: true,
-  })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerCustomerType,
+  })
   @IsEnum(EnumCustomerCustomerType)
   @IsOptional()
   @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerCustomerType,
-  })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
   })
   organization?: OrganizationWhereUniqueInput | null;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
-  })
   vipOrganization?: OrganizationWhereUniqueInput | null;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrderCreateNestedManyWithoutCustomersInput,
+  })
   @ValidateNested()
   @Type(() => OrderCreateNestedManyWithoutCustomersInput)
   @IsOptional()
   @Field(() => OrderCreateNestedManyWithoutCustomersInput, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => OrderCreateNestedManyWithoutCustomersInput,
   })
   orders?: OrderCreateNestedManyWithoutCustomersInput;
 }
@@ -4276,6 +4276,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -4288,7 +4289,6 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
@@ -4296,105 +4296,110 @@ import { OrganizationWhereUniqueInput } from \\"../../organization/base/Organiza
 import { OrderUpdateManyWithoutCustomersInput } from \\"./OrderUpdateManyWithoutCustomersInput\\";
 @InputType()
 class CustomerUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   email?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   firstName?: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   lastName?: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
   @IsBoolean()
   @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
   isVip?: boolean | null;
 
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @Type(() => Date)
   @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-  })
   birthData?: Date | null;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
   @IsNumber()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
+  averageSale?: number | null;
+
   @ApiProperty({
     required: false,
     type: Number,
   })
-  averageSale?: number | null;
-
   @IsInt()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
   favoriteNumber?: number | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   geoLocation?: string | null;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   comments?: string | null;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerFavoriteColors,
+    isArray: true,
+  })
   @IsEnum(EnumCustomerFavoriteColors, {
     each: true,
   })
@@ -4402,57 +4407,52 @@ class CustomerUpdateInput {
   @Field(() => [EnumCustomerFavoriteColors], {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerFavoriteColors,
-    isArray: true,
-  })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerCustomerType,
+  })
   @IsEnum(EnumCustomerCustomerType)
   @IsOptional()
   @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerCustomerType,
-  })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
   })
   organization?: OrganizationWhereUniqueInput | null;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
-  })
   vipOrganization?: OrganizationWhereUniqueInput | null;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrderUpdateManyWithoutCustomersInput,
+  })
   @ValidateNested()
   @Type(() => OrderUpdateManyWithoutCustomersInput)
   @IsOptional()
   @Field(() => OrderUpdateManyWithoutCustomersInput, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => OrderUpdateManyWithoutCustomersInput,
   })
   orders?: OrderUpdateManyWithoutCustomersInput;
 }
@@ -4470,10 +4470,10 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { Type } from \\"class-transformer\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
-import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
+import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
 import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
@@ -4485,182 +4485,182 @@ import { OrganizationWhereUniqueInput } from \\"../../organization/base/Organiza
 import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFilter\\";
 @InputType()
 class CustomerWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
   })
   id?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
   @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
   })
   createdAt?: DateTimeFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
   @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
-  })
   updatedAt?: DateTimeFilter;
 
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
   email?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
   @Type(() => StringNullableFilter)
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
   })
   firstName?: StringNullableFilter;
 
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
   @Type(() => StringNullableFilter)
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
-  })
   lastName?: StringNullableFilter;
 
+  @ApiProperty({
+    required: false,
+    type: BooleanNullableFilter,
+  })
   @Type(() => BooleanNullableFilter)
   @IsOptional()
   @Field(() => BooleanNullableFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: BooleanNullableFilter,
-  })
   isVip?: BooleanNullableFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeNullableFilter,
+  })
   @Type(() => DateTimeNullableFilter)
   @IsOptional()
   @Field(() => DateTimeNullableFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: DateTimeNullableFilter,
-  })
   birthData?: DateTimeNullableFilter;
 
+  @ApiProperty({
+    required: false,
+    type: FloatNullableFilter,
+  })
   @Type(() => FloatNullableFilter)
   @IsOptional()
   @Field(() => FloatNullableFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: FloatNullableFilter,
-  })
   averageSale?: FloatNullableFilter;
 
+  @ApiProperty({
+    required: false,
+    type: IntNullableFilter,
+  })
   @Type(() => IntNullableFilter)
   @IsOptional()
   @Field(() => IntNullableFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: IntNullableFilter,
-  })
   favoriteNumber?: IntNullableFilter;
 
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
   @Type(() => StringNullableFilter)
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
   })
   geoLocation?: StringNullableFilter;
 
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
   @Type(() => StringNullableFilter)
   @IsOptional()
   @Field(() => StringNullableFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: StringNullableFilter,
-  })
   comments?: StringNullableFilter;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerCustomerType,
+  })
   @IsEnum(EnumCustomerCustomerType)
   @IsOptional()
   @Field(() => EnumCustomerCustomerType, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumCustomerCustomerType,
-  })
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
 
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
   })
   organization?: OrganizationWhereUniqueInput;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   @Field(() => OrganizationWhereUniqueInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationWhereUniqueInput,
-  })
   vipOrganization?: OrganizationWhereUniqueInput;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrderListRelationFilter,
+  })
   @ValidateNested()
   @Type(() => OrderListRelationFilter)
   @IsOptional()
   @Field(() => OrderListRelationFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => OrderListRelationFilter,
   })
   orders?: OrderListRelationFilter;
 }
@@ -4678,16 +4678,16 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 @InputType()
 class CustomerWhereUniqueInput {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 }
 export { CustomerWhereUniqueInput };
@@ -6221,33 +6221,33 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ObjectType, Field } from \\"@nestjs/graphql\\";
-import { IsString, IsDate } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 @ObjectType()
 class Empty {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
   @ApiProperty({
     required: true,
   })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   createdAt!: Date;
 
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
   @ApiProperty({
     required: true,
   })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   updatedAt!: Date;
 }
 export { Empty };
@@ -6475,43 +6475,43 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { Type } from \\"class-transformer\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
-import { IsOptional } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
+import { IsOptional } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 @InputType()
 class EmptyWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
   id?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
   @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
   })
   createdAt?: DateTimeFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
   @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
   })
   updatedAt?: DateTimeFilter;
 }
@@ -6529,16 +6529,16 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 @InputType()
 class EmptyWhereUniqueInput {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 }
 export { EmptyWhereUniqueInput };
@@ -7427,6 +7427,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
   IsDate,
@@ -7434,63 +7435,62 @@ import {
   IsEnum,
   IsOptional,
 } from \\"class-validator\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @ObjectType()
 class Order {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
   @ApiProperty({
     required: true,
   })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   createdAt!: Date;
 
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
   @ApiProperty({
     required: true,
   })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   updatedAt!: Date;
 
-  @ValidateNested()
-  @Type(() => Customer)
   @ApiProperty({
     required: true,
     type: () => Customer,
   })
+  @ValidateNested()
+  @Type(() => Customer)
   customer?: Customer;
 
-  @IsEnum(EnumOrderStatus)
-  @Field(() => EnumOrderStatus, {
-    nullable: true,
-  })
   @ApiProperty({
     required: true,
     enum: EnumOrderStatus,
   })
+  @IsEnum(EnumOrderStatus)
+  @Field(() => EnumOrderStatus, {
+    nullable: true,
+  })
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 
+  @ApiProperty({
+    required: false,
+    enum: EnumOrderLabel,
+  })
   @IsEnum(EnumOrderLabel)
   @IsOptional()
   @Field(() => EnumOrderLabel, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    enum: EnumOrderLabel,
   })
   label?: \\"fragile\\" | null;
 }
@@ -7508,39 +7508,39 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
 class OrderCreateInput {
-  @ValidateNested()
-  @Type(() => CustomerWhereUniqueInput)
-  @Field(() => CustomerWhereUniqueInput)
   @ApiProperty({
     required: true,
     type: () => CustomerWhereUniqueInput,
   })
+  @ValidateNested()
+  @Type(() => CustomerWhereUniqueInput)
+  @Field(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
 
-  @IsEnum(EnumOrderStatus)
-  @Field(() => EnumOrderStatus)
   @ApiProperty({
     required: true,
     enum: EnumOrderStatus,
   })
+  @IsEnum(EnumOrderStatus)
+  @Field(() => EnumOrderStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 
+  @ApiProperty({
+    required: false,
+    enum: EnumOrderLabel,
+  })
   @IsEnum(EnumOrderLabel)
   @IsOptional()
   @Field(() => EnumOrderLabel, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    enum: EnumOrderLabel,
   })
   label?: \\"fragile\\" | null;
 }
@@ -7768,45 +7768,45 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
 class OrderUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: () => CustomerWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   @Field(() => CustomerWhereUniqueInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => CustomerWhereUniqueInput,
-  })
   customer?: CustomerWhereUniqueInput;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumOrderStatus,
+  })
   @IsEnum(EnumOrderStatus)
   @IsOptional()
   @Field(() => EnumOrderStatus, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumOrderStatus,
-  })
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 
+  @ApiProperty({
+    required: false,
+    enum: EnumOrderLabel,
+  })
   @IsEnum(EnumOrderLabel)
   @IsOptional()
   @Field(() => EnumOrderLabel, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    enum: EnumOrderLabel,
   })
   label?: \\"fragile\\" | null;
 }
@@ -7824,80 +7824,80 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { Type } from \\"class-transformer\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
-import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
+import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
 @InputType()
 class OrderWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
   id?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
   @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
   })
   createdAt?: DateTimeFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
   @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
-  })
   updatedAt?: DateTimeFilter;
 
+  @ApiProperty({
+    required: false,
+    type: () => CustomerWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   @Field(() => CustomerWhereUniqueInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => CustomerWhereUniqueInput,
-  })
   customer?: CustomerWhereUniqueInput;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumOrderStatus,
+  })
   @IsEnum(EnumOrderStatus)
   @IsOptional()
   @Field(() => EnumOrderStatus, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumOrderStatus,
-  })
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 
+  @ApiProperty({
+    required: false,
+    enum: EnumOrderLabel,
+  })
   @IsEnum(EnumOrderLabel)
   @IsOptional()
   @Field(() => EnumOrderLabel, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    enum: EnumOrderLabel,
   })
   label?: \\"fragile\\";
 }
@@ -7915,16 +7915,16 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 @InputType()
 class OrderWhereUniqueInput {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 }
 export { OrderWhereUniqueInput };
@@ -8930,70 +8930,70 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ObjectType, Field } from \\"@nestjs/graphql\\";
-import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { User } from \\"../../user/base/User\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 @ObjectType()
 class Organization {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
   @ApiProperty({
     required: true,
   })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   createdAt!: Date;
 
-  @IsDate()
-  @Type(() => Date)
-  @Field(() => Date)
   @ApiProperty({
     required: true,
   })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   updatedAt!: Date;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   name!: string;
 
-  @ValidateNested()
-  @Type(() => User)
-  @IsOptional()
   @ApiProperty({
     required: true,
     type: () => [User],
   })
+  @ValidateNested()
+  @Type(() => User)
+  @IsOptional()
   users?: Array<User>;
 
-  @ValidateNested()
-  @Type(() => Customer)
-  @IsOptional()
   @ApiProperty({
     required: true,
     type: () => [Customer],
   })
+  @ValidateNested()
+  @Type(() => Customer)
+  @IsOptional()
   customers?: Array<Customer>;
 
-  @ValidateNested()
-  @Type(() => Customer)
-  @IsOptional()
   @ApiProperty({
     required: true,
     type: () => [Customer],
   })
+  @ValidateNested()
+  @Type(() => Customer)
+  @IsOptional()
   vipCustomers?: Array<Customer>;
 }
 export { Organization };
@@ -9010,54 +9010,54 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { Type } from \\"class-transformer\\";
+import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
 import { UserCreateNestedManyWithoutOrganizationsInput } from \\"./UserCreateNestedManyWithoutOrganizationsInput\\";
+import { Type } from \\"class-transformer\\";
 import { CustomerCreateNestedManyWithoutOrganizationsInput } from \\"./CustomerCreateNestedManyWithoutOrganizationsInput\\";
 @InputType()
 class OrganizationCreateInput {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   name!: string;
 
+  @ApiProperty({
+    required: true,
+    type: () => UserCreateNestedManyWithoutOrganizationsInput,
+  })
   @ValidateNested()
   @Type(() => UserCreateNestedManyWithoutOrganizationsInput)
   @IsOptional()
   @Field(() => UserCreateNestedManyWithoutOrganizationsInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: true,
-    type: () => UserCreateNestedManyWithoutOrganizationsInput,
-  })
   users?: UserCreateNestedManyWithoutOrganizationsInput;
 
+  @ApiProperty({
+    required: true,
+    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
+  })
   @ValidateNested()
   @Type(() => CustomerCreateNestedManyWithoutOrganizationsInput)
   @IsOptional()
   @Field(() => CustomerCreateNestedManyWithoutOrganizationsInput, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: true,
-    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
   })
   customers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 
+  @ApiProperty({
+    required: true,
+    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
+  })
   @ValidateNested()
   @Type(() => CustomerCreateNestedManyWithoutOrganizationsInput)
   @IsOptional()
   @Field(() => CustomerCreateNestedManyWithoutOrganizationsInput, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: true,
-    type: () => CustomerCreateNestedManyWithoutOrganizationsInput,
   })
   vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 }
@@ -9267,57 +9267,57 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { Type } from \\"class-transformer\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { UserUpdateManyWithoutOrganizationsInput } from \\"./UserUpdateManyWithoutOrganizationsInput\\";
+import { Type } from \\"class-transformer\\";
 import { CustomerUpdateManyWithoutOrganizationsInput } from \\"./CustomerUpdateManyWithoutOrganizationsInput\\";
 @InputType()
 class OrganizationUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   name?: string;
 
+  @ApiProperty({
+    required: false,
+    type: () => UserUpdateManyWithoutOrganizationsInput,
+  })
   @ValidateNested()
   @Type(() => UserUpdateManyWithoutOrganizationsInput)
   @IsOptional()
   @Field(() => UserUpdateManyWithoutOrganizationsInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => UserUpdateManyWithoutOrganizationsInput,
-  })
   users?: UserUpdateManyWithoutOrganizationsInput;
 
+  @ApiProperty({
+    required: false,
+    type: () => CustomerUpdateManyWithoutOrganizationsInput,
+  })
   @ValidateNested()
   @Type(() => CustomerUpdateManyWithoutOrganizationsInput)
   @IsOptional()
   @Field(() => CustomerUpdateManyWithoutOrganizationsInput, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => CustomerUpdateManyWithoutOrganizationsInput,
   })
   customers?: CustomerUpdateManyWithoutOrganizationsInput;
 
+  @ApiProperty({
+    required: false,
+    type: () => CustomerUpdateManyWithoutOrganizationsInput,
+  })
   @ValidateNested()
   @Type(() => CustomerUpdateManyWithoutOrganizationsInput)
   @IsOptional()
   @Field(() => CustomerUpdateManyWithoutOrganizationsInput, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => CustomerUpdateManyWithoutOrganizationsInput,
   })
   vipCustomers?: CustomerUpdateManyWithoutOrganizationsInput;
 }
@@ -9335,92 +9335,92 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { Type } from \\"class-transformer\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
-import { IsOptional, ValidateNested } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
+import { IsOptional, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserListRelationFilter } from \\"../../user/base/UserListRelationFilter\\";
 import { CustomerListRelationFilter } from \\"../../customer/base/CustomerListRelationFilter\\";
 @InputType()
 class OrganizationWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
   })
   id?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
   @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
   })
   createdAt?: DateTimeFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
   @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
-  })
   updatedAt?: DateTimeFilter;
 
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
   name?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: () => UserListRelationFilter,
+  })
   @ValidateNested()
   @Type(() => UserListRelationFilter)
   @IsOptional()
   @Field(() => UserListRelationFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => UserListRelationFilter,
-  })
   users?: UserListRelationFilter;
 
+  @ApiProperty({
+    required: false,
+    type: () => CustomerListRelationFilter,
+  })
   @ValidateNested()
   @Type(() => CustomerListRelationFilter)
   @IsOptional()
   @Field(() => CustomerListRelationFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => CustomerListRelationFilter,
   })
   customers?: CustomerListRelationFilter;
 
+  @ApiProperty({
+    required: false,
+    type: () => CustomerListRelationFilter,
+  })
   @ValidateNested()
   @Type(() => CustomerListRelationFilter)
   @IsOptional()
   @Field(() => CustomerListRelationFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: () => CustomerListRelationFilter,
   })
   vipCustomers?: CustomerListRelationFilter;
 }
@@ -9438,16 +9438,16 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 @InputType()
 class OrganizationWhereUniqueInput {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 }
 export { OrganizationWhereUniqueInput };
@@ -11563,6 +11563,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -11576,7 +11577,6 @@ import {
   IsJSON,
 } from \\"class-validator\\";
 
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
@@ -11585,107 +11585,112 @@ import { GraphQLJSONObject } from \\"graphql-type-json\\";
 import { JsonValue } from \\"type-fest\\";
 @ObjectType()
 class User {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   username!: string;
 
-  @IsString({
-    each: true,
-  })
-  @Field(() => [String])
   @ApiProperty({
     required: true,
     type: [String],
   })
+  @IsString({
+    each: true,
+  })
+  @Field(() => [String])
   roles!: Array<string>;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   name!: string;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   bio!: string;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   email!: string;
 
-  @IsInt()
-  @Field(() => Number)
   @ApiProperty({
     required: true,
     type: Number,
   })
+  @IsInt()
+  @Field(() => Number)
   age!: number;
 
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   @Type(() => Date)
   @Field(() => Date)
-  @ApiProperty({
-    required: true,
-  })
   birthDate!: Date;
 
-  @IsNumber()
-  @Field(() => Number)
   @ApiProperty({
     required: true,
     type: Number,
   })
+  @IsNumber()
+  @Field(() => Number)
   score!: number;
 
-  @ValidateNested()
-  @Type(() => User)
-  @IsOptional()
   @ApiProperty({
     required: false,
     type: () => User,
   })
-  manager?: User | null;
-
   @ValidateNested()
   @Type(() => User)
   @IsOptional()
+  manager?: User | null;
+
   @ApiProperty({
     required: false,
     type: () => [User],
   })
+  @ValidateNested()
+  @Type(() => User)
+  @IsOptional()
   employees?: Array<User>;
 
-  @ValidateNested()
-  @Type(() => Organization)
-  @IsOptional()
   @ApiProperty({
     required: false,
     type: () => [Organization],
   })
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
   organizations?: Array<Organization>;
 
+  @ApiProperty({
+    required: true,
+    enum: EnumUserInterests,
+    isArray: true,
+  })
   @IsEnum(EnumUserInterests, {
     each: true,
   })
@@ -11693,44 +11698,39 @@ class User {
   @Field(() => [EnumUserInterests], {
     nullable: true,
   })
-  @ApiProperty({
-    required: true,
-    enum: EnumUserInterests,
-    isArray: true,
-  })
   interests?: Array<\\"programming\\" | \\"design\\">;
 
-  @IsEnum(EnumUserPriority)
-  @Field(() => EnumUserPriority, {
-    nullable: true,
-  })
   @ApiProperty({
     required: true,
     enum: EnumUserPriority,
   })
+  @IsEnum(EnumUserPriority)
+  @Field(() => EnumUserPriority, {
+    nullable: true,
+  })
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
 
-  @IsBoolean()
-  @Field(() => Boolean)
   @ApiProperty({
     required: true,
     type: Boolean,
   })
+  @IsBoolean()
+  @Field(() => Boolean)
   isCurious!: boolean;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   location!: string;
 
-  @IsJSON()
-  @Field(() => GraphQLJSONObject)
   @ApiProperty({
     required: true,
   })
+  @IsJSON()
+  @Field(() => GraphQLJSONObject)
   extendedProperties!: JsonValue;
 }
 export { User };
@@ -11747,6 +11747,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -11760,7 +11761,6 @@ import {
   IsJSON,
 } from \\"class-validator\\";
 
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
@@ -11771,116 +11771,121 @@ import { GraphQLJSONObject } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 @InputType()
 class UserCreateInput {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   username!: string;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   password!: string;
 
-  @IsString({
-    each: true,
-  })
-  @Field(() => [String])
   @ApiProperty({
     required: true,
     type: [String],
   })
+  @IsString({
+    each: true,
+  })
+  @Field(() => [String])
   roles!: Array<string>;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   name!: string;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   bio!: string;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   email!: string;
 
-  @IsInt()
-  @Field(() => Number)
   @ApiProperty({
     required: true,
     type: Number,
   })
+  @IsInt()
+  @Field(() => Number)
   age!: number;
 
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   @Type(() => Date)
   @Field(() => Date)
-  @ApiProperty({
-    required: true,
-  })
   birthDate!: Date;
 
-  @IsNumber()
-  @Field(() => Number)
   @ApiProperty({
     required: true,
     type: Number,
   })
+  @IsNumber()
+  @Field(() => Number)
   score!: number;
 
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
   @Field(() => UserWhereUniqueInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => UserWhereUniqueInput,
-  })
   manager?: UserWhereUniqueInput | null;
 
+  @ApiProperty({
+    required: false,
+    type: () => UserCreateNestedManyWithoutUsersInput,
+  })
   @ValidateNested()
   @Type(() => UserCreateNestedManyWithoutUsersInput)
   @IsOptional()
   @Field(() => UserCreateNestedManyWithoutUsersInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => UserCreateNestedManyWithoutUsersInput,
-  })
   employees?: UserCreateNestedManyWithoutUsersInput;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationCreateNestedManyWithoutUsersInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationCreateNestedManyWithoutUsersInput)
   @IsOptional()
   @Field(() => OrganizationCreateNestedManyWithoutUsersInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationCreateNestedManyWithoutUsersInput,
-  })
   organizations?: OrganizationCreateNestedManyWithoutUsersInput;
 
+  @ApiProperty({
+    required: true,
+    enum: EnumUserInterests,
+    isArray: true,
+  })
   @IsEnum(EnumUserInterests, {
     each: true,
   })
@@ -11888,42 +11893,37 @@ class UserCreateInput {
   @Field(() => [EnumUserInterests], {
     nullable: true,
   })
-  @ApiProperty({
-    required: true,
-    enum: EnumUserInterests,
-    isArray: true,
-  })
   interests?: Array<\\"programming\\" | \\"design\\">;
 
-  @IsEnum(EnumUserPriority)
-  @Field(() => EnumUserPriority)
   @ApiProperty({
     required: true,
     enum: EnumUserPriority,
   })
+  @IsEnum(EnumUserPriority)
+  @Field(() => EnumUserPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
 
-  @IsBoolean()
-  @Field(() => Boolean)
   @ApiProperty({
     required: true,
     type: Boolean,
   })
+  @IsBoolean()
+  @Field(() => Boolean)
   isCurious!: boolean;
 
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   location!: string;
 
-  @IsJSON()
-  @Field(() => GraphQLJSONObject)
   @ApiProperty({
     required: true,
   })
+  @IsJSON()
+  @Field(() => GraphQLJSONObject)
   extendedProperties!: InputJsonValue;
 }
 export { UserCreateInput };
@@ -12267,6 +12267,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -12280,7 +12281,6 @@ import {
   IsJSON,
 } from \\"class-validator\\";
 
-import { ApiProperty } from \\"@nestjs/swagger\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
@@ -12291,28 +12291,32 @@ import { GraphQLJSONObject } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 @InputType()
 class UserUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   username?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   password?: string;
 
+  @ApiProperty({
+    required: false,
+    type: [String],
+  })
   @IsString({
     each: true,
   })
@@ -12320,114 +12324,115 @@ class UserUpdateInput {
   @Field(() => [String], {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: [String],
-  })
   roles?: Array<string>;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   name?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: String,
   })
   bio?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   email?: string;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
   @IsInt()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
   age?: number;
 
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @Type(() => Date)
   @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-  })
   birthDate?: Date;
 
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
   @IsNumber()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: Number,
-  })
   score?: number;
 
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
   @Field(() => UserWhereUniqueInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => UserWhereUniqueInput,
-  })
   manager?: UserWhereUniqueInput | null;
 
+  @ApiProperty({
+    required: false,
+    type: () => UserUpdateManyWithoutUsersInput,
+  })
   @ValidateNested()
   @Type(() => UserUpdateManyWithoutUsersInput)
   @IsOptional()
   @Field(() => UserUpdateManyWithoutUsersInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => UserUpdateManyWithoutUsersInput,
-  })
   employees?: UserUpdateManyWithoutUsersInput;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationUpdateManyWithoutUsersInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationUpdateManyWithoutUsersInput)
   @IsOptional()
   @Field(() => OrganizationUpdateManyWithoutUsersInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationUpdateManyWithoutUsersInput,
-  })
   organizations?: OrganizationUpdateManyWithoutUsersInput;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumUserInterests,
+    isArray: true,
+  })
   @IsEnum(EnumUserInterests, {
     each: true,
   })
@@ -12435,53 +12440,48 @@ class UserUpdateInput {
   @Field(() => [EnumUserInterests], {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumUserInterests,
-    isArray: true,
-  })
   interests?: Array<\\"programming\\" | \\"design\\">;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumUserPriority,
+  })
   @IsEnum(EnumUserPriority)
   @IsOptional()
   @Field(() => EnumUserPriority, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumUserPriority,
-  })
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
 
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
   @IsBoolean()
   @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
   isCurious?: boolean;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsString()
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
   location?: string;
 
+  @ApiProperty({
+    required: false,
+  })
   @IsJSON()
   @IsOptional()
   @Field(() => GraphQLJSONObject, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
   })
   extendedProperties?: InputJsonValue;
 }
@@ -12544,10 +12544,10 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { Type } from \\"class-transformer\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
-import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
+import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
 import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -12557,126 +12557,126 @@ import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonFilter } from \\"../../util/JsonFilter\\";
 @InputType()
 class UserWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
   })
   id?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
   })
   name?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
   bio?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: IntFilter,
+  })
   @Type(() => IntFilter)
   @IsOptional()
   @Field(() => IntFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: IntFilter,
-  })
   age?: IntFilter;
 
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
   @Type(() => DateTimeFilter)
   @IsOptional()
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: DateTimeFilter,
-  })
   birthDate?: DateTimeFilter;
 
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => UserWhereUniqueInput)
   @IsOptional()
   @Field(() => UserWhereUniqueInput, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => UserWhereUniqueInput,
-  })
   manager?: UserWhereUniqueInput;
 
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationListRelationFilter,
+  })
   @ValidateNested()
   @Type(() => OrganizationListRelationFilter)
   @IsOptional()
   @Field(() => OrganizationListRelationFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: () => OrganizationListRelationFilter,
-  })
   organizations?: OrganizationListRelationFilter;
 
+  @ApiProperty({
+    required: false,
+    enum: EnumUserPriority,
+  })
   @IsEnum(EnumUserPriority)
   @IsOptional()
   @Field(() => EnumUserPriority, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    enum: EnumUserPriority,
-  })
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
 
+  @ApiProperty({
+    required: false,
+    type: BooleanFilter,
+  })
   @Type(() => BooleanFilter)
   @IsOptional()
   @Field(() => BooleanFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: BooleanFilter,
-  })
   isCurious?: BooleanFilter;
 
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
   @Type(() => StringFilter)
   @IsOptional()
   @Field(() => StringFilter, {
     nullable: true,
   })
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
   location?: StringFilter;
 
+  @ApiProperty({
+    required: false,
+    type: JsonFilter,
+  })
   @Type(() => JsonFilter)
   @IsOptional()
   @Field(() => JsonFilter, {
     nullable: true,
-  })
-  @ApiProperty({
-    required: false,
-    type: JsonFilter,
   })
   extendedProperties?: JsonFilter;
 }
@@ -12694,16 +12694,16 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 @InputType()
 class UserWhereUniqueInput {
-  @IsString()
-  @Field(() => String)
   @ApiProperty({
     required: true,
     type: String,
   })
+  @IsString()
+  @Field(() => String)
   id!: string;
 }
 export { UserWhereUniqueInput };

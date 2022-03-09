@@ -1,66 +1,55 @@
-import { ConfirmationDialog, Dialog } from "@amplication/design-system";
+import { Dialog } from "@amplication/design-system";
 import React from "react";
-import { App, EnumSourceControlService } from "../../../models";
+import { EnumGitProvider } from "../../../models";
+import { AppWithGitRepository } from "../SyncWithGithubPage";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
 import GitRepos from "./GitRepos/GithubRepos";
 
 type Props = {
-  app: App;
-  selectRepoOpen: boolean;
-  handleSelectRepoDialogDismiss: any;
-  popupFailed: boolean;
-  handlePopupFailedClose: any;
+  app: AppWithGitRepository;
+  gitOrganizationId: string;
+  isSelectRepositoryOpen: boolean;
+  isPopupFailed: boolean;
   gitCreateRepoOpen: boolean;
-  setGitCreateRepo: any;
-  sourceControlService: EnumSourceControlService;
-  confirmRemove: boolean;
-  handleConfirmRemoveAuth: any;
-  handleDismissRemove: any;
+  gitProvider: EnumGitProvider;
+  gitOrganizationName: string;
+  onGitCreateRepository: () => void;
+  onPopupFailedClose: () => void;
+  onSelectGitRepositoryDialogClose: () => void;
 };
-const CONFIRM_BUTTON = { label: "Disable Sync" };
-const DISMISS_BUTTON = { label: "Dismiss" };
 
 export default function GitDialogsContainer({
   app,
-  selectRepoOpen,
-  handleSelectRepoDialogDismiss,
-  popupFailed,
-  handlePopupFailedClose,
+  gitOrganizationId,
+  isSelectRepositoryOpen,
+  isPopupFailed,
   gitCreateRepoOpen,
-  setGitCreateRepo,
-  sourceControlService,
-  confirmRemove,
-  handleConfirmRemoveAuth,
-  handleDismissRemove,
+  gitProvider,
+  gitOrganizationName,
+  onGitCreateRepository,
+  onPopupFailedClose,
+  onSelectGitRepositoryDialogClose,
 }: Props) {
   return (
     <div>
-      <ConfirmationDialog
-        isOpen={confirmRemove}
-        title={`Disable Sync with ${sourceControlService}`}
-        confirmButton={CONFIRM_BUTTON}
-        dismissButton={DISMISS_BUTTON}
-        message={`Are you sure you want to disable sync with ${sourceControlService}?`}
-        onConfirm={handleConfirmRemoveAuth}
-        onDismiss={handleDismissRemove}
-      />
       <Dialog
         className="select-repo-dialog"
-        isOpen={selectRepoOpen}
-        title={`Select ${sourceControlService} repository`}
-        onDismiss={handleSelectRepoDialogDismiss}
+        isOpen={isSelectRepositoryOpen}
+        title={`Select ${gitProvider} repository`}
+        onDismiss={onSelectGitRepositoryDialogClose}
       >
         <GitRepos
           applicationId={app.id}
-          onCompleted={handleSelectRepoDialogDismiss}
-          sourceControlService={sourceControlService}
+          gitOrganizationId={gitOrganizationId}
+          onGitRepositoryConnected={onSelectGitRepositoryDialogClose}
+          gitProvider={gitProvider}
         />
       </Dialog>
       <Dialog
         className="popup-failed-dialog"
-        isOpen={popupFailed}
+        isOpen={isPopupFailed}
         title="Popup failed to load"
-        onDismiss={handlePopupFailedClose}
+        onDismiss={onPopupFailedClose}
       >
         Please make sure that you allow popup windows in the browser
       </Dialog>
@@ -68,16 +57,14 @@ export default function GitDialogsContainer({
         className="git-create-dialog"
         isOpen={gitCreateRepoOpen}
         title="Create new repository"
-        onDismiss={() => {
-          setGitCreateRepo(false);
-        }}
+        onDismiss={onGitCreateRepository}
       >
         <GitCreateRepo
-          sourceControlService={sourceControlService}
+          gitProvider={gitProvider}
           app={app}
-          onCompleted={() => {
-            setGitCreateRepo(false);
-          }}
+          gitOrganizationId={gitOrganizationId}
+          onCompleted={onGitCreateRepository}
+          gitOrganizationName={gitOrganizationName}
         />
       </Dialog>
     </div>

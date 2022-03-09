@@ -26,8 +26,7 @@ const EXAMPLE_APP: App = {
   createdAt: NOW,
   updatedAt: NOW,
   name: 'Example App',
-  description: 'Example App Description',
-  githubSyncEnabled: false
+  description: 'Example App Description'
 };
 
 const EXAMPLE_USER: User = {

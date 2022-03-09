@@ -17,5 +17,7 @@ export enum AuthorizableResourceParameter {
   EnvironmentId,
   DeploymentId,
   CommitId,
-  ApiTokenId
+  ApiTokenId,
+  GitOrganizationId,
+  GitRepositoryId
 }
