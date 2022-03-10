@@ -1,0 +1,8 @@
+@import "../style/index.scss";
+
+.role {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+  }
+}

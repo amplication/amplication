@@ -1,25 +1,33 @@
-import React, { useCallback } from "react";
-import { useRouteMatch } from "react-router-dom";
+import React, { useCallback, useState } from "react";
+import { useRouteMatch, useHistory } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Snackbar } from "@amplication/design-system";
 
 import { formatError } from "../util/error";
+import DeleteRoleField from "./DeleteRoleField";
 import RoleForm from "./RoleForm";
 import * as models from "../models";
+
+import "./Role.scss";
 
 type TData = {
   appRole: models.AppRole;
 };
 
+const CLASS_NAME = "role";
+
 const Role = () => {
+  const history = useHistory();
   const match = useRouteMatch<{
     application: string;
     roleId: string;
   }>("/:application/roles/:roleId");
 
-  const { roleId } = match?.params ?? {};
+  const { roleId, application } = match?.params ?? {};
 
-  const { data, error, loading } = useQuery<TData>(GET_ROLE, {
+  const [error, setError] = useState<Error>();
+
+  const { data, error: loadingError, loading } = useQuery<TData>(GET_ROLE, {
     variables: {
       roleId,
     },
@@ -41,13 +49,28 @@ const Role = () => {
     [updateRole, roleId]
   );
 
-  const hasError = Boolean(error) || Boolean(updateError);
-  const errorMessage = formatError(error) || formatError(updateError);
+  const hasError = Boolean(error) || Boolean(updateError) || Boolean(loadingError);
+  const errorMessage = formatError(error) || formatError(updateError) || formatError(loadingError);
+
+  const handleDeleteRole = useCallback(() => {
+    history.push(`/${application}/roles`);
+  }, [history, application]);
 
   return (
     <>
       {!loading && (
-        <RoleForm onSubmit={handleSubmit} defaultValues={data?.appRole} />
+        <>
+          <div className={`${CLASS_NAME}__header`}>
+            <h3>Role Settings</h3>
+            <DeleteRoleField
+              appRole={data?.appRole}
+              onError={setError}
+              onDelete={handleDeleteRole}
+              showLabel
+            />
+          </div>
+          <RoleForm onSubmit={handleSubmit} defaultValues={data?.appRole} />
+        </>
       )}
       <Snackbar open={hasError} message={errorMessage} />
     </>
