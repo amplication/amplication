@@ -42,15 +42,14 @@ function AuthAppWithGit({ app, onDone }: Props) {
     gitOrganization,
     setGitOrganization,
   ] = useState<GitOrganizationFromGitRepository | null>(null);
+
   useEffect(() => {
     if (gitRepository?.gitOrganization) {
       setGitOrganization(gitRepository?.gitOrganization);
     } else if (gitOrganizations.length === 1) {
       setGitOrganization(gitOrganizations[0]);
-    } else {
-      setGitOrganization(null);
     }
-  }, [gitOrganizations, gitRepository?.gitOrganization]);
+  }, [gitOrganizations, gitRepository]);
 
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
@@ -123,18 +122,19 @@ function AuthAppWithGit({ app, onDone }: Props) {
             onAddGitOrganization={handleAuthWithGitClick}
           />
         )}
-        {gitOrganization && (
-          <RepositoryActions
-            onCreateRepository={() => {
-              setCreateNewRepoOpen(true);
-            }}
-            onSelectRepository={handleSelectRepoDialogOpen}
-            currentConnectedGitRepository={gitRepository}
-            isCreateShow={
-              gitOrganization.type === EnumGitOrganizationType.Organization
-            }
-          />
-        )}
+
+        <RepositoryActions
+          onCreateRepository={() => {
+            setCreateNewRepoOpen(true);
+          }}
+          onSelectRepository={handleSelectRepoDialogOpen}
+          currentConnectedGitRepository={gitRepository}
+          isCreateShow={
+            gitOrganization?.type === EnumGitOrganizationType.Organization
+          }
+          isGitOrganizationSelected={Boolean(gitOrganization)}
+        />
+
         <GitSyncNotes />
       </Panel>
 
