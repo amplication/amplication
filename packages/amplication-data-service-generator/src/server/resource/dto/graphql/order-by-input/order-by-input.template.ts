@@ -10,7 +10,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class ID {
   @ApiProperty({
     required: false,
-    enum: ["Asc", "Desc"],
+    enum: ["asc", "desc"],
   })
   @Field(() => SortOrder, {
     nullable: true,

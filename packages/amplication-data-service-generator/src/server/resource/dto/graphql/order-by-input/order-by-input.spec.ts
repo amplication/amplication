@@ -25,7 +25,7 @@ describe("createOrderByInput", () => {
 class ExampleEntityOrderByInput {
     @ApiProperty({
     required: false,
-    enum: ["Asc", "Desc"]
+    enum: ["asc", "desc"]
 })
 @Field(() => SortOrder, {
     nullable: true
@@ -34,7 +34,7 @@ class ExampleEntityOrderByInput {
 
     @ApiProperty({
     required: false,
-    enum: ["Asc", "Desc"]
+    enum: ["asc", "desc"]
 })
 @Field(() => SortOrder, {
     nullable: true
