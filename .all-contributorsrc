@@ -480,6 +480,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "EdroViegas",
+      "name": "EdroViegas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/21107004?v=4",
+      "profile": "https://github.com/EdroViegas",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
