@@ -45,7 +45,7 @@ export default function RepositoryActions({
               No repository was selected
             </div>
             <div className={`${CLASS_NAME}__actions`}>
-              {Boolean(selectedGitOrganization) && (
+              {selectedGitOrganization && (
                 <>
                   <div className={`${CLASS_NAME}__action`}>
                     <Button
@@ -56,7 +56,7 @@ export default function RepositoryActions({
                       Select repository
                     </Button>
                   </div>
-                  {selectedGitOrganization?.type ===
+                  {selectedGitOrganization.type ===
                     EnumGitOrganizationType.Organization && (
                     <div className={`${CLASS_NAME}__action`}>
                       <Button
