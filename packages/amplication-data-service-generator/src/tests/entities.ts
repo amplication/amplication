@@ -514,8 +514,8 @@ const ORGANIZATION: Entity = {
 const CUSTOMER: Entity = {
   id: CUSTOMER_ENTITY_ID,
   name: "Customer",
-  displayName: "The Customer",
-  pluralDisplayName: "The Customers",
+  displayName: "The Customer", //Test the behavior with spaces
+  pluralDisplayName: "The Customers", //Test the behavior with spaces
   pluralName: "TheCustomer",
   fields: [
     {
