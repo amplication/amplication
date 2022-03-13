@@ -78,7 +78,6 @@ export async function createDataServiceImpl(
 function prepareEntityPluralName(entities: Entity[]): Entity[] {
   const currentEntities = entities.map((entity) => {
     entity.pluralName = pluralize(camelCase(entity.name));
-    console.log({ plural: entity.pluralName });
     return entity;
   });
   return currentEntities;
