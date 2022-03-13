@@ -35,12 +35,9 @@ export function validateEntityName(entity: Entity): void {
 
   if (
     camelCase(entity.name).toLowerCase() ===
-    camelCase(entity.pluralDisplayName).toLowerCase()
+    camelCase(entity.pluralName).toLowerCase()
   ) {
-    throw new InvalidEntityPluralNameError(
-      entity.pluralDisplayName,
-      entity.name
-    );
+    throw new InvalidEntityPluralNameError(entity.pluralName, entity.name);
   }
 }
 

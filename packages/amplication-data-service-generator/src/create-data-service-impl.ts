@@ -13,15 +13,14 @@ import {
   EnumDataType,
   LookupResolvedProperties,
 } from "./types";
-import {
-  createUserEntityIfNotExist,
-  prepareUserEntityPluralName,
-} from "./server/user-entity";
+import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
 import { createServerModules } from "./server/create-server";
 import { createRootModules } from "./create-root-modules";
 import { readStaticModules } from "./read-static-modules";
 import { types } from "@amplication/data";
+import pluralize from "pluralize";
+import { camelCase } from "camel-case";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 const BASE_DIRECTORY = "";
@@ -35,14 +34,16 @@ export async function createDataServiceImpl(
   logger.info("Creating application...");
   const timer = logger.startTimer();
 
-  const entitiesWithPluralName = prepareUserEntityPluralName(entities);
-
-  //pluralize(camelCase(entity.name))
   // make sure that the user table is existed if not it will crate one
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
-    entitiesWithPluralName
+    entities
   );
-  const normalizedEntities = resolveLookupFields(entitiesWithUserEntity);
+
+  const entitiesWithPluralName = prepareEntityPluralName(
+    entitiesWithUserEntity
+  );
+
+  const normalizedEntities = resolveLookupFields(entitiesWithPluralName);
 
   logger.info("Creating DTOs...");
   const dtos = await createDTOs(normalizedEntities);
@@ -72,6 +73,15 @@ export async function createDataServiceImpl(
     ...module,
     path: normalize(module.path),
   }));
+}
+
+function prepareEntityPluralName(entities: Entity[]): Entity[] {
+  const currentEntities = entities.map((entity) => {
+    entity.pluralName = pluralize(camelCase(entity.name));
+    console.log({ plural: entity.pluralName });
+    return entity;
+  });
+  return currentEntities;
 }
 
 function resolveLookupFields(entities: Entity[]): Entity[] {
