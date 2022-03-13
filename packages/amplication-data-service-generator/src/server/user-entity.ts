@@ -1,5 +1,3 @@
-import { camelCase } from "camel-case";
-import pluralize from "pluralize";
 import {
   Entity,
   EnumDataType,
@@ -110,14 +108,6 @@ export class InvalidDataTypeError extends Error {
         .join(", ")}`
     );
   }
-}
-
-export function prepareUserEntityPluralName(entities: Entity[]): Entity[] {
-  const currentEntities = entities.map((entity) => {
-    entity.pluralName = pluralize(camelCase(entity.name));
-    return entity;
-  });
-  return currentEntities;
 }
 
 export function createUserEntityIfNotExist(
