@@ -148,6 +148,8 @@ export const GET_APPLICATION = gql`
       name
       description
       color
+      githubLastSync
+      githubLastMessage
     }
   }
 `;
