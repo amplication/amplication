@@ -634,7 +634,6 @@ export type Entity = {
   name: Scalars["String"];
   permissions?: Maybe<Array<EntityPermission>>;
   pluralDisplayName: Scalars["String"];
-  pluralName: Scalars["String"];
   updatedAt: Scalars["DateTime"];
   versions?: Maybe<Array<EntityVersion>>;
 };
