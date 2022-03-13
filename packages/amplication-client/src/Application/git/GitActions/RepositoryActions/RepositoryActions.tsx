@@ -6,16 +6,19 @@ import {
   Panel,
 } from "@amplication/design-system";
 import React from "react";
-import GithubSyncDetails from "./GithubSyncDetails";
+import { EnumGitOrganizationType } from "../../../../models";
 import "../../AuthAppWithGit.scss";
-import { GitRepositoryWithGitOrganization } from "../../SyncWithGithubPage";
+import {
+  GitOrganizationFromGitRepository,
+  GitRepositoryWithGitOrganization,
+} from "../../SyncWithGithubPage";
+import GithubSyncDetails from "./GithubSyncDetails";
 import "./RepositoryActions.scss";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
   currentConnectedGitRepository: GitRepositoryWithGitOrganization | null;
-  isCreateShow: boolean;
-  isGitOrganizationSelected: boolean;
+  selectedGitOrganization: GitOrganizationFromGitRepository | null;
 };
 
 const CLASS_NAME = "repository-actions";
@@ -23,8 +26,7 @@ export default function RepositoryActions({
   onCreateRepository,
   onSelectRepository,
   currentConnectedGitRepository,
-  isCreateShow,
-  isGitOrganizationSelected,
+  selectedGitOrganization,
 }: Props) {
   return (
     <div className={`${CLASS_NAME}`}>
@@ -43,7 +45,7 @@ export default function RepositoryActions({
               No repository was selected
             </div>
             <div className={`${CLASS_NAME}__actions`}>
-              {isGitOrganizationSelected && (
+              {Boolean(selectedGitOrganization) && (
                 <>
                   <div className={`${CLASS_NAME}__action`}>
                     <Button
@@ -54,7 +56,8 @@ export default function RepositoryActions({
                       Select repository
                     </Button>
                   </div>
-                  {isCreateShow && (
+                  {selectedGitOrganization?.type ===
+                    EnumGitOrganizationType.Organization && (
                     <div className={`${CLASS_NAME}__action`}>
                       <Button
                         buttonStyle={EnumButtonStyle.Primary}

@@ -49,7 +49,7 @@ function AuthAppWithGit({ app, onDone }: Props) {
     } else if (gitOrganizations.length === 1) {
       setGitOrganization(gitOrganizations[0]);
     }
-  }, [gitOrganizations, gitRepository]);
+  }, [gitOrganizations, gitRepository?.gitOrganization]);
 
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
@@ -129,10 +129,7 @@ function AuthAppWithGit({ app, onDone }: Props) {
           }}
           onSelectRepository={handleSelectRepoDialogOpen}
           currentConnectedGitRepository={gitRepository}
-          isCreateShow={
-            gitOrganization?.type === EnumGitOrganizationType.Organization
-          }
-          isGitOrganizationSelected={Boolean(gitOrganization)}
+          selectedGitOrganization={gitOrganization}
         />
 
         <GitSyncNotes />
