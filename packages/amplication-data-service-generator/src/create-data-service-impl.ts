@@ -35,8 +35,6 @@ export async function createDataServiceImpl(
   logger.info("Creating application...");
   const timer = logger.startTimer();
 
-  //todo: method to prepare entity name mh
-
   const entitiesWithPluralName = prepareUserEntityPluralName(entities);
 
   //pluralize(camelCase(entity.name))
