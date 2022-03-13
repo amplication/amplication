@@ -28,6 +28,7 @@ const USER: Entity = {
   name: "User",
   displayName: "User",
   pluralDisplayName: "Users",
+  pluralName: "users",
   fields: [
     {
       id: "053e75d0-9f02-4182-8f61-46fbdbaa71bd",
@@ -250,6 +251,7 @@ const ORDER: Entity = {
   name: "Order",
   displayName: "Order",
   pluralDisplayName: "Orders",
+  pluralName: "Orders",
   fields: [
     {
       id: "77f9b90c-d304-4d2f-a4de-82d9d08ab291",
@@ -382,6 +384,7 @@ const ORGANIZATION: Entity = {
   name: "Organization",
   displayName: "Organization",
   pluralDisplayName: "Organizations",
+  pluralName: "Organizations",
   fields: [
     {
       id: "afcc24cf-e302-46f7-9457-843a0ec7a9d5",
@@ -511,8 +514,9 @@ const ORGANIZATION: Entity = {
 const CUSTOMER: Entity = {
   id: CUSTOMER_ENTITY_ID,
   name: "Customer",
-  displayName: "Customer",
-  pluralDisplayName: "Customers",
+  displayName: "The Customer",
+  pluralDisplayName: "The Customers",
+  pluralName: "TheCustomer",
   fields: [
     {
       id: "492ba140-5dde-419a-a087-199ddb8b2dc0",
@@ -803,6 +807,7 @@ const EMPTY: Entity = {
   name: "Empty",
   displayName: "Empty",
   pluralDisplayName: "Empties",
+  pluralName: "Empties",
   fields: [
     {
       id: "d5e8346e-5382-41cb-bcf7-563678709bea",

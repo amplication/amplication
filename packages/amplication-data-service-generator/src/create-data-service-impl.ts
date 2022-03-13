@@ -13,7 +13,10 @@ import {
   EnumDataType,
   LookupResolvedProperties,
 } from "./types";
-import { createUserEntityIfNotExist } from "./server/user-entity";
+import {
+  createUserEntityIfNotExist,
+  prepareUserEntityPluralName,
+} from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
 import { createServerModules } from "./server/create-server";
 import { createRootModules } from "./create-root-modules";
@@ -32,9 +35,14 @@ export async function createDataServiceImpl(
   logger.info("Creating application...");
   const timer = logger.startTimer();
 
+  //todo: method to prepare entity name mh
+
+  const entitiesWithPluralName = prepareUserEntityPluralName(entities);
+
+  //pluralize(camelCase(entity.name))
   // make sure that the user table is existed if not it will crate one
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
-    entities
+    entitiesWithPluralName
   );
   const normalizedEntities = resolveLookupFields(entitiesWithUserEntity);
 
