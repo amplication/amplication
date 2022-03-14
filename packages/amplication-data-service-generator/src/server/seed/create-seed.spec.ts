@@ -58,6 +58,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
+  pluralName: "ExampleEntities",
   fields: [EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };

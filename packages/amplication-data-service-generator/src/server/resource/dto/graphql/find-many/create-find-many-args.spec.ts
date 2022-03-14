@@ -15,6 +15,7 @@ const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
   name: "ExampleEntity",
   displayName: "Example Entity",
+  pluralName: "ExampleEntities",
   pluralDisplayName: "Example Entities",
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
