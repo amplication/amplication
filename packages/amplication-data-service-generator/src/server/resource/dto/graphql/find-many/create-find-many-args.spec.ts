@@ -45,11 +45,11 @@ class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
 
   @ApiProperty({
     required: false,
-    type: ${EXAMPLE_ORDER_BY_INPUT.id.name},
+    type: [${EXAMPLE_ORDER_BY_INPUT.id.name}],
   })
-  @Field(() => ${EXAMPLE_ORDER_BY_INPUT.id.name}, { nullable: true })
+  @Field(() => [${EXAMPLE_ORDER_BY_INPUT.id.name}], { nullable: true })
   @Type(() => ${EXAMPLE_ORDER_BY_INPUT.id.name})
-  orderBy?: ${EXAMPLE_ORDER_BY_INPUT.id.name};
+  orderBy?: Array<${EXAMPLE_ORDER_BY_INPUT.id.name}>;
 
   @ApiProperty({
     required: false,
