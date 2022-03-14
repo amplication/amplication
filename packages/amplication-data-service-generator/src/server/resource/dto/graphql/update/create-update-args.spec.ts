@@ -13,6 +13,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: "ExampleEntity",
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
+  pluralName: "ExampleEntities",
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
@@ -22,6 +23,7 @@ const EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS: Entity = {
   id: "EXAMPLE_ENTITY_WITHOUT_CREATABLE_FIELDS_ID",
   name: "ExampleEntityWithoutCreatableFields",
   displayName: "Example Entity Without Creatable Fields",
+  pluralName: "ExampleEntities",
   pluralDisplayName: "Example Entities Without Creatable Fields",
   fields: [EXAMPLE_ID_FIELD],
   permissions: [],

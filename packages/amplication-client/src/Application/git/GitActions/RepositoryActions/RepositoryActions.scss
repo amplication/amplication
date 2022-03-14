@@ -1,8 +1,14 @@
 @import "../../../../style/index.scss";
 
+:root {
+  --min-height-of-banner: 70px;
+}
+
 .repository-actions {
   &__auth {
     margin: var(--double-spacing) 0;
+    min-height: var(--min-height-of-banner);
+    display: flex;
   }
   &__action {
     margin-left: var(--default-spacing-small);
@@ -14,7 +20,7 @@
   }
   &__select-repo {
     @include flexFullRowWithSpacing;
-
+    flex: 1;
     &__details {
       @include flexFullRowWithSpacing;
       .amp-icon {

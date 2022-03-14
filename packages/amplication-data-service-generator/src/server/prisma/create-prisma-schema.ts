@@ -367,9 +367,9 @@ export function createRelationName(
 ): string {
   const relatedEntityNames = [
     relatedEntity.name,
-    relatedEntity.pluralDisplayName,
+    pascalCase(relatedEntity.pluralName),
   ];
-  const entityNames = [entity.name, entity.pluralDisplayName];
+  const entityNames = [entity.name, pascalCase(entity.pluralName)];
   const matchingRelatedEntityName = relatedEntityNames.find(
     (name) => field.name === camelCase(name)
   );

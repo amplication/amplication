@@ -1,19 +1,14 @@
-import React, { useCallback } from "react";
-import { useHistory } from "react-router-dom";
-import { useQuery } from "@apollo/client";
 import {
-  Panel,
+  CircularProgress,
   EnumPanelStyle,
   Icon,
-  CircularProgress,
+  Panel,
 } from "@amplication/design-system";
-
-import { GET_APPLICATION } from "../Application/ApplicationHome";
-
-import * as models from "../models";
-import { useTracking, Event as TrackEvent } from "../util/analytics";
-import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
-
+import { gql, useQuery } from "@apollo/client";
+import React, { useCallback } from "react";
+import { useHistory } from "react-router-dom";
+import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import { Event as TrackEvent, useTracking } from "../util/analytics";
 import "./SyncWithGithubTile.scss";
 
 type Props = {
@@ -26,11 +21,23 @@ const EVENT_DATA: TrackEvent = {
   eventName: "syncWithGitHubTileClick",
 };
 
+type TData = {
+  app: {
+    id: string;
+    gitRepository: {
+      id: string;
+      name: string;
+      gitOrganization: {
+        id: string;
+        name: string;
+      };
+    };
+  };
+};
+
 function SyncWithGithubTile({ applicationId }: Props) {
   const history = useHistory();
-  const { data, loading } = useQuery<{
-    app: models.App;
-  }>(GET_APPLICATION, {
+  const { data, loading } = useQuery<TData>(GET_GIT_REPOSITORY_FROM_APP_ID, {
     variables: {
       id: applicationId,
     },
@@ -65,13 +72,14 @@ function SyncWithGithubTile({ applicationId }: Props) {
             <span className={`${CLASS_NAME}__content__details__summary`}>
               <Icon icon="github" size="medium" />
 
-              {!data?.app.githubSyncEnabled ? (
+              {!data?.app.gitRepository ? (
                 <>You are not connected to a GitHub repository</>
               ) : (
                 <>
                   You are connected to
                   <div className={`${CLASS_NAME}__repo-name`}>
-                    {data?.app.githubRepo}
+                    {data?.app.gitRepository.gitOrganization.name}/
+                    {data.app.gitRepository.name}
                   </div>
                 </>
               )}
@@ -85,3 +93,19 @@ function SyncWithGithubTile({ applicationId }: Props) {
 }
 
 export default SyncWithGithubTile;
+
+const GET_GIT_REPOSITORY_FROM_APP_ID = gql`
+  query getApplication($id: String!) {
+    app(where: { id: $id }) {
+      id
+      gitRepository {
+        id
+        name
+        gitOrganization {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
