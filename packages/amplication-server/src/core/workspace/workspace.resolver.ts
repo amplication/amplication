@@ -27,8 +27,8 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { WorkspaceService } from './workspace.service';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { GitOrganization } from 'src/models/GitOrganization';
 import { Subscription } from '../subscription/dto/Subscription';
-
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -154,5 +154,12 @@ export class WorkspaceResolver {
   @ResolveField(() => Subscription, { nullable: true })
   async subscription(@Parent() workspace: Workspace): Promise<Subscription> {
     return this.workspaceService.getSubscription(workspace.id);
+  }
+
+  @ResolveField(() => [GitOrganization])
+  async gitOrganizations(
+    @Parent() workspace: Workspace
+  ): Promise<GitOrganization[]> {
+    return this.workspaceService.findManyGitOrganizations(workspace.id);
   }
 }

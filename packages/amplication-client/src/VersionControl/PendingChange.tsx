@@ -1,4 +1,5 @@
 import React from "react";
+import { Tooltip } from "@amplication/design-system";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 
@@ -6,6 +7,7 @@ import * as models from "../models";
 import "./PendingChange.scss";
 
 const CLASS_NAME = "pending-change";
+const TOOLTIP_DIRECTION = "ne";
 
 type Props = {
   change: models.PendingChange;
@@ -32,6 +34,30 @@ const PendingChange = ({
       ? `/${applicationId}/entities/${change.resourceId}`
       : `/${applicationId}/update`;
 
+  const isDeletedEntity =
+    change.action === models.EnumPendingChangeAction.Delete;
+
+  const getEntityHeading = () => {
+    if (isDeletedEntity) {
+      return (
+        <Tooltip
+          wrap
+          direction={TOOLTIP_DIRECTION}
+          aria-label="The entity has been deleted"
+          className={`${CLASS_NAME}__tooltip_deleted`}
+        >
+          <div className={classNames(`${CLASS_NAME}__deleted`)}>
+            {change.resource.displayName}
+          </div>
+        </Tooltip>
+      );
+    }
+    if (linkToResource) {
+      return <Link to={url}>{change.resource.displayName}</Link>;
+    }
+    return change.resource.displayName;
+  };
+
   return (
     <div className={CLASS_NAME}>
       <div
@@ -42,13 +68,7 @@ const PendingChange = ({
       >
         {ACTION_TO_LABEL[change.action]}
       </div>
-      <div>
-        {linkToResource ? (
-          <Link to={url}>{change.resource.displayName}</Link>
-        ) : (
-          change.resource.displayName
-        )}
-      </div>
+      {getEntityHeading()}
       <div className={`${CLASS_NAME}__spacer`} />
     </div>
   );

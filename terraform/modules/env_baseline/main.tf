@@ -322,6 +322,36 @@ resource "google_cloud_run_service" "default" {
           value = var.paddle_base_64_public_key
         }
 
+
+        # GitHub App
+
+        env {
+          name = "GITHUB_APP_PRIVATE_KEY"
+          value = var.github_app_private_key
+        }
+
+        env {
+          name = "GITHUB_APP_CLIENT_SECRET"
+          value = var.github_app_client_secret
+        }
+
+        env {
+          name = "GITHUB_APP_CLIENT_ID"
+          value = var.github_app_client_id
+        }
+
+        env {
+          name = "GITHUB_APP_APP_ID"
+          value = var.github_app_app_id
+        }
+
+        env {
+          name = "GITHUB_APP_INSTALLATION_URL"
+          value = var.github_app_installation_url
+        }
+
+
+
         resources {
           limits = {
             cpu    = "4"

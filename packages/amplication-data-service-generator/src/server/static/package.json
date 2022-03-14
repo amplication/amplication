@@ -1,6 +1,6 @@
 {
   "name": "server-template",
-  "version": "0.11.4",
+  "version": "0.12.0",
   "private": true,
   "scripts": {
     "start": "nest start",

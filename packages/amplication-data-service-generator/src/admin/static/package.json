@@ -1,6 +1,6 @@
 {
   "name": "admin-template",
-  "version": "0.11.3",
+  "version": "0.12.0",
   "private": true,
   "dependencies": {
     "@apollo/client": "3.3.18",

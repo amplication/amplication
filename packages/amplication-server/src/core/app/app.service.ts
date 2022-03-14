@@ -1,5 +1,6 @@
 import { AppGenerationConfig } from '@amplication/data-service-generator';
 import { Injectable } from '@nestjs/common';
+import { GitRepository } from '@prisma/client';
 import { isEmpty } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { pascalCase } from 'pascal-case';
@@ -8,7 +9,7 @@ import * as semver from 'semver';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
-import { App, Commit, User } from 'src/models';
+import { App, Commit, User, Workspace } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { BlockService } from '../block/block.service';
@@ -19,7 +20,6 @@ import { EnvironmentService } from '../environment/environment.service';
 import { GithubService } from '../github/github.service';
 import {
   AppCreateWithEntitiesInput,
-  AppEnableSyncWithGithubRepoArgs,
   AppValidationErrorTypes,
   AppValidationResult,
   CreateCommitArgs,
@@ -30,7 +30,6 @@ import {
   PendingChange,
   UpdateOneAppArgs
 } from './dto';
-import { CompleteAuthorizeAppWithGithubArgs } from './dto/CompleteAuthorizeAppWithGithubArgs';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import {
@@ -337,7 +336,7 @@ export class AppService {
   }
 
   async deleteApp(args: FindOneArgs): Promise<App | null> {
-    const app = await this.app({
+    const app = await this.prisma.app.findUnique({
       where: {
         id: args.where.id
       }
@@ -345,6 +344,20 @@ export class AppService {
 
     if (isEmpty(app)) {
       throw new Error(INVALID_APP_ID);
+    }
+
+    const gitRepo = await this.prisma.gitRepository.findUnique({
+      where: {
+        appId: app.id
+      }
+    });
+
+    if (gitRepo) {
+      await this.prisma.gitRepository.delete({
+        where: {
+          id: gitRepo.id
+        }
+      });
     }
 
     return this.prisma.app.update({
@@ -577,66 +590,6 @@ export class AppService {
     return true;
   }
 
-  async startAuthorizeAppWithGithub(appId: string): Promise<string> {
-    return this.githubService.getOAuthAppAuthorizationUrl(appId);
-  }
-
-  async completeAuthorizeAppWithGithub(
-    args: CompleteAuthorizeAppWithGithubArgs
-  ): Promise<App> {
-    const app = await this.app({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    const token = await this.githubService.createOAuthAppAuthorizationToken(
-      args.data.state,
-      args.data.code
-    );
-
-    //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
-      where: args.where,
-      data: {
-        githubToken: token,
-        githubTokenCreatedDate: new Date()
-      }
-    });
-  }
-
-  async removeAuthorizeAppWithGithub(args: FindOneArgs): Promise<App> {
-    const app = await this.app({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    if (isEmpty(app.githubToken)) {
-      throw new Error(`This app is not authorized with any GitHub repo.`);
-    }
-
-    //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
-      where: args.where,
-      data: {
-        githubToken: null,
-        githubTokenCreatedDate: null,
-        githubSyncEnabled: false,
-        githubRepo: null,
-        githubBranch: null
-      }
-    });
-  }
-
   /**
    * Runs validations on the app and returns a list of warnings.
    * When the validation fails, a commit can still be executed and it is up to the user/client to decide how to handle the warnings.
@@ -647,9 +600,15 @@ export class AppService {
     const messages = [];
     let isValid = true;
 
-    const app = await this.app({
+    const app = await this.prisma.app.findUnique({
       where: {
         id: args.where.id
+      }
+    });
+
+    const appRepo = await this.prisma.gitRepository.findUnique({
+      where: {
+        appId: app.id
       }
     });
 
@@ -657,7 +616,7 @@ export class AppService {
       throw new Error(INVALID_APP_ID);
     }
 
-    if (!app.githubSyncEnabled) return { isValid, messages };
+    if (!appRepo) return { isValid, messages };
     if (!app.githubLastSync) return { isValid, messages }; //if the repo was never synced before, skip the below validation as they are all related to GitHub sync
 
     const config = await this.getAppGenerationConfigFromGitHub(args);
@@ -714,23 +673,31 @@ export class AppService {
       }
     });
 
+    const appRepository = await this.prisma.gitRepository.findFirst({
+      where: {
+        appId: app.id
+      },
+      include: {
+        gitOrganization: true
+      }
+    });
+
     if (isEmpty(app)) {
       throw new Error(INVALID_APP_ID);
     }
 
-    if (isEmpty(app.githubToken)) {
+    if (isEmpty(app.gitRepository)) {
       throw new Error(`This app is not authorized with any GitHub repo`);
     }
-    const [userName, repoName] = app.githubRepo.split('/');
     let configFile;
 
     try {
       configFile = await this.githubService.getFile(
-        userName,
-        repoName,
+        appRepository.gitOrganization.name,
+        appRepository.name,
         APP_CONFIG_FILE_PATH,
-        app.githubBranch,
-        app.githubToken
+        null,
+        appRepository.gitOrganization.installationId
       );
     } catch (error) {
       //in case the file was not found on GitHub, return null
@@ -747,68 +714,6 @@ export class AppService {
     }
 
     return config;
-  }
-
-  async enableSyncWithGithubRepo(
-    args: AppEnableSyncWithGithubRepoArgs
-  ): Promise<App> {
-    const app = await this.app({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    if (app.githubSyncEnabled) {
-      throw new Error(
-        `Sync is already enabled for this app. To change the sync settings, first disable the sync and re-enable it with the new settings`
-      );
-    }
-
-    if (isEmpty(app.githubToken)) {
-      throw new Error(
-        `Sync cannot be enabled since this app is not authorized with any GitHub repo. You should first complete the authorization process`
-      );
-    }
-
-    //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
-      where: args.where,
-      data: {
-        ...args.data,
-        githubSyncEnabled: true
-      }
-    });
-  }
-
-  async disableSyncWithGithubRepo(args: FindOneArgs): Promise<App> {
-    const app = await this.app({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    if (!app.githubSyncEnabled) {
-      throw new Error(`Sync is not enabled for this app`);
-    }
-
-    //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
-      where: args.where,
-      data: {
-        githubRepo: null, //reset the repo and branch to allow the user to set another branch when needed
-        githubBranch: null,
-        githubSyncEnabled: false,
-        githubLastSync: null
-      }
-    });
   }
 
   async reportSyncMessage(appId: string, message: string): Promise<App> {
@@ -832,5 +737,22 @@ export class AppService {
         githubLastSync: new Date()
       }
     });
+  }
+
+  async gitRepository(appId: string): Promise<GitRepository | null> {
+    return await this.prisma.gitRepository.findUnique({
+      where: {
+        appId: appId
+      },
+      include: {
+        gitOrganization: true
+      }
+    });
+  }
+
+  async workspace(appId: string): Promise<Workspace> {
+    return await this.prisma.app
+      .findUnique({ where: { id: appId } })
+      .workspace();
   }
 }

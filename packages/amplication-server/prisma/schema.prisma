@@ -22,14 +22,39 @@ model Account {
 }
 
 model Workspace {
-  id            String         @id(map: "Organization_pkey") @default(cuid())
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  name          String         @unique(map: "Workspace.name_unique")
-  apps          App[]
-  users         User[]
-  invitations   Invitation[]
-  subscriptions Subscription[]
+  id               String            @id(map: "Organization_pkey") @default(cuid())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  name             String            @unique(map: "Workspace.name_unique")
+  apps             App[]
+  users            User[]
+  invitations      Invitation[]
+  subscriptions    Subscription[]
+  gitOrganizations GitOrganization[]
+}
+
+model GitOrganization {
+  id              String                   @id @default(cuid())
+  provider        EnumGitProvider
+  type            EnumGitOrganizationType? @default(value: User)
+  name            String
+  installationId  String
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  gitRepositories GitRepository[]
+  workspaceId     String
+  workspace       Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+}
+
+model GitRepository {
+  id                String          @id @default(cuid())
+  name              String
+  appId             String          @unique
+  app               App             @relation(fields: [appId], references: [id], onDelete: NoAction)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  gitOrganization   GitOrganization @relation(fields: [gitOrganizationId], references: [id], onDelete: NoAction)
+  gitOrganizationId String
 }
 
 model User {
@@ -38,12 +63,12 @@ model User {
   updatedAt             DateTime     @updatedAt
   accountId             String
   workspaceId           String
-  isOwner           Boolean      @default(false)
-  account           Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  workspace         Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  isOwner               Boolean      @default(false)
+  account               Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace             Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   assignedCurrentTo     Account?
   apiTokens             ApiToken[]
-  lockedBlocks      Block[]
+  lockedBlocks          Block[]
   builds                Build[]
   commits               Commit[]
   deployments           Deployment[]
@@ -82,28 +107,24 @@ model ApiToken {
 }
 
 model App {
-  id                     String        @id @default(cuid())
-  createdAt              DateTime      @default(now())
-  updatedAt              DateTime      @updatedAt
-  workspaceId            String
-  name                   String
-  description            String
-  color                  String        @default("#20A4F3")
-  githubToken            String?
-  githubTokenCreatedDate DateTime?
-  githubSyncEnabled      Boolean       @default(false)
-  githubRepo             String?
-  githubBranch           String?
-  githubLastSync         DateTime?
-  githubLastMessage      String?
-  deletedAt              DateTime?
-  workspace              Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  roles                  AppRole[]
-  blocks                 Block[]
-  builds                 Build[]
-  commits                Commit[]
-  entities               Entity[]
-  environments           Environment[]
+  id                String         @id @default(cuid())
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  workspaceId       String
+  name              String
+  description       String
+  color             String         @default("#20A4F3")
+  githubLastSync    DateTime?
+  githubLastMessage String?
+  deletedAt         DateTime?
+  workspace         Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  roles             AppRole[]
+  blocks            Block[]
+  builds            Build[]
+  commits           Commit[]
+  entities          Entity[]
+  environments      Environment[]
+  gitRepository     GitRepository?
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
 }
@@ -491,4 +512,13 @@ model Subscription {
   subscriptionData          Json
   cancellationEffectiveDate DateTime?
 
+}
+
+enum EnumGitProvider {
+  Github
+}
+
+enum EnumGitOrganizationType {
+  User
+  Organization
 }

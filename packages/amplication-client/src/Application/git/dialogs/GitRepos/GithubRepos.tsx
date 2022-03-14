@@ -1,43 +1,75 @@
-import { NetworkStatus } from "@apollo/client";
 import {
   CircularProgress,
   Snackbar,
   Tooltip,
 } from "@amplication/design-system";
+import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
-import { EnumSourceControlService } from "../../../../models";
+import { EnumGitProvider, RemoteGitRepository } from "../../../../models";
+import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
-import useGetReposOfUser from "../../hooks/useGetReposOfUser";
-import useGitSelected from "../../hooks/useGitSelected";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
 
 const CLASS_NAME = "git-repos";
 
 type Props = {
+  gitOrganizationId: string;
   applicationId: string;
-  onCompleted: () => void;
-  sourceControlService: EnumSourceControlService;
+  onGitRepositoryConnected: () => void;
+  gitProvider: EnumGitProvider;
 };
 
-function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
+function GitRepos({
+  applicationId,
+  gitOrganizationId,
+  onGitRepositoryConnected,
+  gitProvider,
+}: Props) {
+  const { trackEvent } = useTracking();
+
   const {
-    refetch,
+    data,
     error,
-    repos,
     loading: loadingRepos,
+    refetch,
     networkStatus,
-  } = useGetReposOfUser({
-    appId: applicationId,
-    sourceControlService,
+  } = useQuery<{
+    remoteGitRepositories: RemoteGitRepository[];
+  }>(FIND_GIT_REPOS, {
+    variables: {
+      gitOrganizationId,
+      gitProvider,
+    },
+    notifyOnNetworkStatusChange: true,
   });
 
-  const { handleRepoSelected, error: errorUpdate } = useGitSelected({
-    appId: applicationId,
-    onCompleted,
-  });
-
+  const [connectGitRepository, { error: errorUpdate }] = useMutation(
+    CONNECT_GIT_REPOSITORY
+  );
+  const handleRepoSelected = useCallback(
+    (data: RemoteGitRepository) => {
+      connectGitRepository({
+        variables: {
+          gitOrganizationId,
+          appId: applicationId,
+          name: data.name,
+        },
+      }).catch(console.error);
+      trackEvent({
+        eventName: "selectGitRepo",
+      });
+      onGitRepositoryConnected();
+    },
+    [
+      applicationId,
+      connectGitRepository,
+      gitOrganizationId,
+      onGitRepositoryConnected,
+      trackEvent,
+    ]
+  );
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -48,8 +80,7 @@ function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
         <h4>
-          Select a {sourceControlService} repository to sync your application
-          with.
+          Select a {gitProvider} repository to sync your application with.
         </h4>
         {loadingRepos || networkStatus === NetworkStatus.refetch ? (
           <CircularProgress />
@@ -67,7 +98,7 @@ function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
         )}
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
-        repos?.map((repo) => (
+        data?.remoteGitRepositories?.map((repo) => (
           <GitRepoItem
             key={repo.fullName}
             repo={repo}
@@ -80,3 +111,44 @@ function GitRepos({ applicationId, onCompleted, sourceControlService }: Props) {
 }
 
 export default GitRepos;
+
+const CONNECT_GIT_REPOSITORY = gql`
+  mutation connectAppGitRepository(
+    $name: String!
+    $gitOrganizationId: String!
+    $appId: String!
+  ) {
+    connectAppGitRepository(
+      data: {
+        name: $name
+        appId: $appId
+        gitOrganizationId: $gitOrganizationId
+      }
+    ) {
+      id
+      gitRepository {
+        id
+      }
+    }
+  }
+`;
+
+const FIND_GIT_REPOS = gql`
+  query remoteGitRepositories(
+    $gitOrganizationId: String!
+    $gitProvider: EnumGitProvider!
+  ) {
+    remoteGitRepositories(
+      where: {
+        gitOrganizationId: $gitOrganizationId
+        gitProvider: $gitProvider
+      }
+    ) {
+      name
+      url
+      private
+      fullName
+      admin
+    }
+  }
+`;
