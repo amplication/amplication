@@ -17,6 +17,7 @@ const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
   name: "ExampleEntityName",
   displayName: "Example Entity",
+  pluralName: "ExampleEntities",
   pluralDisplayName: "Example Entities",
   fields: [EXAMPLE_ID_FIELD],
   permissions: [],
@@ -38,6 +39,7 @@ const EXAMPLE_LOOKUP_FIELD: EntityField = {
 const EXAMPLE_LOOKUP_ENTITY: Entity = {
   id: "EXAMPLE_LOOKUP_ENTITY_ID",
   displayName: "Example Lookup Entity",
+  pluralName: "ExampleEntities",
   pluralDisplayName: "Example Lookup Entities",
   name: "ExampleLookupEntityName",
   fields: [EXAMPLE_LOOKUP_FIELD],

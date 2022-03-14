@@ -1317,7 +1317,7 @@ export const CustomerList = (props: ListProps): React.ReactElement => {
     <List
       {...props}
       bulkActionButtons={false}
-      title={\\"Customers\\"}
+      title={\\"The Customers\\"}
       perPage={50}
       pagination={<Pagination />}
     >
@@ -1818,7 +1818,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         <ReferenceManyField
           reference=\\"Customer\\"
           target=\\"OrganizationId\\"
-          label=\\"Customers\\"
+          label=\\"The Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
             <TextField label=\\"Id\\" source=\\"id\\" />
@@ -1866,7 +1866,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         <ReferenceManyField
           reference=\\"Customer\\"
           target=\\"OrganizationId\\"
-          label=\\"Customers\\"
+          label=\\"The Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
             <TextField label=\\"Id\\" source=\\"id\\" />

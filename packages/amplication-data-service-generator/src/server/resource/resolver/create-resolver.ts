@@ -64,12 +64,8 @@ export async function createResolverModules(
   const updateMutationId = builders.identifier(`update${entityType}`);
   const deleteMutationId = builders.identifier(`delete${entityType}`);
   const entityQueryId = builders.identifier(camelCase(entityType));
-  const entitiesQueryId = builders.identifier(
-    camelCase(entity.pluralDisplayName)
-  );
-  const metaQueryId = builders.identifier(
-    `_${camelCase(entity.pluralDisplayName)}Meta`
-  );
+  const entitiesQueryId = builders.identifier(entity.pluralName);
+  const metaQueryId = builders.identifier(`_${entity.pluralName}Meta`);
 
   const mapping = {
     RESOLVER: resolverId,

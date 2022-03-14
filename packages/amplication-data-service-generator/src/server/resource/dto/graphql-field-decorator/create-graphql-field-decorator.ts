@@ -44,7 +44,7 @@ export function createGraphQLFieldDecorator(
       entity,
       isQuery,
       dtoType,
-      entity.pluralDisplayName,
+      entity.pluralName,
       isNestedInput
     )
   );
