@@ -67,6 +67,8 @@ export default function GitCreateRepo({
       initialValues={initialValues}
       onSubmit={handleCreation}
       validationSchema={CreateGitFormSchema}
+      validateOnChange={false}
+      validateOnBlur
     >
       {({ errors: formError }) => (
         <Form>
