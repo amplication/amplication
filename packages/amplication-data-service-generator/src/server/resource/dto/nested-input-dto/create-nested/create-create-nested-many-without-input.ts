@@ -13,7 +13,7 @@ export function createCreateNestedManyDTOs(
   return toManyFields.map((field) =>
     createNestedInputDTO(
       createCreateNestedManyWithoutInputID(
-        entity.pluralDisplayName,
+        entity.pluralName,
         field.properties.relatedEntity.name
       ),
       entity,

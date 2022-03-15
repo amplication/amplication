@@ -13,6 +13,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: "EXAMPLE_ENTITY_NAME",
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
+  pluralName: "ExampleEntities",
   fields: [EXAMPLE_LOOKUP_FIELD],
   permissions: [],
 };

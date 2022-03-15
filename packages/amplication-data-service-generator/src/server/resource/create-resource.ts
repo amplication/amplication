@@ -1,6 +1,5 @@
 import { plural } from "pluralize";
 import { camelCase } from "camel-case";
-import { paramCase } from "param-case";
 import flatten from "lodash.flatten";
 import * as winston from "winston";
 import { Entity, Module, AppInfo } from "../../types";
@@ -39,7 +38,7 @@ async function createResourceModules(
 
   logger.info(`Creating ${entityType}...`);
   const entityName = camelCase(entityType);
-  const resource = paramCase(plural(entityName));
+  const resource = camelCase(plural(entityName));
 
   const serviceModules = await createServiceModules(
     entityName,
