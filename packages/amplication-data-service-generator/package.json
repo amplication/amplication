@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "update-test-data-service-snapshot": "jest -u src/tests/create-data-service.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
-    "@amplication/data": "^0.12.0",
+    "@amplication/data": "^0.12.1",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
     "camel-case": "4.1.2",
