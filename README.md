@@ -200,6 +200,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/kwinyyyc"><img src="https://avatars.githubusercontent.com/u/8462684?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kwinten Li</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=kwinyyyc" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/EdroViegas"><img src="https://avatars.githubusercontent.com/u/21107004?v=4?s=100" width="100px;" alt=""/><br /><sub><b>EdroViegas</b></sub></a><br /><a href="https://github.com/amplication/amplication/issues?q=author%3AEdroViegas" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/hmiiro"><img src="https://avatars.githubusercontent.com/u/35217089?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hassan Miiro</b></sub></a><br /><a href="#ideas-hmiiro" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/muhsinkamil"><img src="https://avatars.githubusercontent.com/u/62111075?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mohamed Muhsin</b></sub></a><br /><a href="https://github.com/amplication/amplication/issues?q=muhsinkamil" title="PR, Feedback, and Bug Reports">💻🐛</a></td>
+    <td align="center"><a href="https://github.com/0xsapphir3"><img src="https://avatars.githubusercontent.com/u/82395440?v=4?v=4?s=100" width="100px;" alt=""/><br /><sub><b>0xsapphir3</b></sub></a><br /><a href="https://github.com/amplication/amplication/issues?q=0xsapphir3" title="PR, Feedback, and Bug Reports">💻🐛</a></td>
   </tr>
 </table>
 
