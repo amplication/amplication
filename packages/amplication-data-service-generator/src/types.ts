@@ -136,6 +136,7 @@ export type Entity = Omit<
 > & {
   fields: EntityField[];
   permissions: EntityPermission[];
+  pluralName: string;
 };
 
 export type Module = {

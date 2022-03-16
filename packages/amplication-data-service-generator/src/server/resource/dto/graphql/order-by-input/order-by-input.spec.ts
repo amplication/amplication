@@ -11,6 +11,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: "ExampleEntity",
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
+  pluralName: "ExampleEntities",
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
@@ -25,7 +26,7 @@ describe("createOrderByInput", () => {
 class ExampleEntityOrderByInput {
     @ApiProperty({
     required: false,
-    enum: ["Asc", "Desc"]
+    enum: ["asc", "desc"]
 })
 @Field(() => SortOrder, {
     nullable: true
@@ -34,7 +35,7 @@ class ExampleEntityOrderByInput {
 
     @ApiProperty({
     required: false,
-    enum: ["Asc", "Desc"]
+    enum: ["asc", "desc"]
 })
 @Field(() => SortOrder, {
     nullable: true

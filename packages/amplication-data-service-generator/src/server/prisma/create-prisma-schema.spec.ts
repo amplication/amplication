@@ -45,6 +45,7 @@ const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
   displayName: "Example Entity",
   pluralDisplayName: "Example",
+  pluralName: "ExampleEntity",
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
   permissions: [],
@@ -61,6 +62,7 @@ const EXAMPLE_ENTITY_WITH_UNREQUIRED_FIELD: Entity = {
 const EXAMPLE_OTHER_ENTITY: Entity = {
   id: "EXAMPLE_OTHER_ENTITY_ID",
   displayName: "Example Other Entity",
+  pluralName: "ExampleOtherEntity",
   pluralDisplayName: "Example Other Entities",
   name: EXAMPLE_OTHER_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
@@ -70,6 +72,7 @@ const EXAMPLE_OTHER_ENTITY: Entity = {
 const EXAMPLE_LOOKUP_ENTITY: Entity = {
   id: "EXAMPLE_LOOKUP_ENTITY_ID",
   displayName: "Example Lookup Entity",
+  pluralName: "ExampleLookupEntities",
   pluralDisplayName: "Example Lookup Entities",
   name: EXAMPLE_LOOKUP_ENTITY_NAME,
   fields: [
@@ -461,7 +464,7 @@ describe("createRelationName", () => {
       "Plural - Singular",
       { ...EXAMPLE_ENTITY, name: "Foo" },
       { ...EXAMPLE_FIELD, name: "bars" },
-      { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars" },
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars", pluralName: "Bars" },
       { ...EXAMPLE_FIELD, name: "foo" },
       false,
       false,
@@ -469,7 +472,7 @@ describe("createRelationName", () => {
     ],
     [
       "Singular - Plural",
-      { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars" },
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars", pluralName: "Bars" },
       { ...EXAMPLE_FIELD, name: "foo" },
       { ...EXAMPLE_ENTITY, name: "Foo" },
       { ...EXAMPLE_FIELD, name: "bars" },
@@ -479,9 +482,9 @@ describe("createRelationName", () => {
     ],
     [
       "Plural - Plural",
-      { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars" },
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Bars", pluralName: "Bars" },
       { ...EXAMPLE_FIELD, name: "foos" },
-      { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos" },
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos", pluralName: "Foos" },
       { ...EXAMPLE_FIELD, name: "bars" },
       false,
       false,
@@ -499,9 +502,9 @@ describe("createRelationName", () => {
     ],
     [
       "Self Plural",
-      { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos" },
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos", pluralName: "Foos" },
       { ...EXAMPLE_FIELD, name: "foos" },
-      { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos" },
+      { ...EXAMPLE_ENTITY, pluralDisplayName: "Foos", pluralName: "Foos" },
       { ...EXAMPLE_FIELD, name: "foos" },
       false,
       false,

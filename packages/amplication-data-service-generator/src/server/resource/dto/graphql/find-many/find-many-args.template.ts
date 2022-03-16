@@ -17,11 +17,11 @@ export class ID {
 
   @ApiProperty({
     required: false,
-    type: ORDER_BY_INPUT,
+    type: [ORDER_BY_INPUT],
   })
-  @Field(() => ORDER_BY_INPUT, { nullable: true })
+  @Field(() => [ORDER_BY_INPUT], { nullable: true })
   @Type(() => ORDER_BY_INPUT)
-  orderBy?: ORDER_BY_INPUT;
+  orderBy?: Array<ORDER_BY_INPUT>;
 
   @ApiProperty({
     required: false,

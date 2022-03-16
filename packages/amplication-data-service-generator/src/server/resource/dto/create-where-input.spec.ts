@@ -14,6 +14,7 @@ const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
   name: EXAMPLE_ENTITY_NAME,
+  pluralName: "ExampleEntities",
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
   fields: [EXAMPLE_ID_FIELD],
@@ -24,6 +25,7 @@ const EXAMPLE_ENTITY_WITH_NON_SEARCHABLE_FIELD: Entity = {
   id: EXAMPLE_ENTITY_ID,
   name: EXAMPLE_ENTITY_NAME,
   displayName: "Example Entity",
+  pluralName: "ExampleEntities",
   pluralDisplayName: "Example Entities",
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_NON_SEARCHABLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],

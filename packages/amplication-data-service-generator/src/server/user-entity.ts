@@ -64,6 +64,7 @@ export const DEFAULT_USER_ENTITY: Entity = {
   name: USER_ENTITY_NAME,
   displayName: "User",
   pluralDisplayName: "Users",
+  pluralName: "Users",
   fields: [USER_ID_FIELD, ...USER_AUTH_FIELDS],
   permissions: [
     {
