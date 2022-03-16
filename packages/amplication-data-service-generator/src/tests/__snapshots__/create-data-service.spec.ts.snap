@@ -4890,9 +4890,9 @@ describe(\\"Customer\\", () => {
   test(\\"GET /customers/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/customers\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
@@ -6536,9 +6536,9 @@ describe(\\"Empty\\", () => {
   test(\\"GET /empties/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/empties\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
@@ -7947,9 +7947,9 @@ describe(\\"Order\\", () => {
   test(\\"GET /orders/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/orders\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
@@ -9546,9 +9546,9 @@ describe(\\"Organization\\", () => {
   test(\\"GET /organizations/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/organizations\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
@@ -12735,9 +12735,9 @@ describe(\\"User\\", () => {
   test(\\"GET /users/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/users\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
