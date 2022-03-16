@@ -7,7 +7,7 @@ $menu-width: 180px;
   overflow: hidden;
   border-radius: var(--default-border-radius);
   min-width: $menu-width;
-  background-color: var(--menu-background-color);
+  background-color: #373D57;
   a {
     @include body2;
     display: block;
@@ -15,7 +15,7 @@ $menu-width: 180px;
     color: var(--menu-item-color);
 
     &:hover {
-      background-color: var(--menu-item-active-background);
+      background-color: #444B66;
     }
   }
   &__divider {
