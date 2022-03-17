@@ -516,6 +516,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "0xsapphir3",
+      "name": "0xsapphir3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/82395440?v=4",
+      "profile": "https://asiancat54.ml",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
