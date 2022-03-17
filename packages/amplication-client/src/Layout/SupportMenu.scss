@@ -15,7 +15,7 @@ $menu-width: 180px;
     color: var(--menu-item-color);
 
     &:hover {
-      background-color: #444B66;
+      background-color: var(--black20);
     }
   }
   &__divider {
