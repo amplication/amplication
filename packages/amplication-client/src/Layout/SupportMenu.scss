@@ -7,7 +7,7 @@ $menu-width: 180px;
   overflow: hidden;
   border-radius: var(--default-border-radius);
   min-width: $menu-width;
-  background-color: #373D57;
+  background-color: var(--black10);
   a {
     @include body2;
     display: block;
