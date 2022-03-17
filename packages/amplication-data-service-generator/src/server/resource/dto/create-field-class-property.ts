@@ -156,7 +156,7 @@ export function createFieldClassProperty(
   const isEnum = isEnumField(field);
   const isInput = isEntityInputExceptRelationInput(inputType);
   const [type, arrayElementType] = createFieldValueTypeFromPrismaField(
-    entity.pluralDisplayName,
+    entity.pluralName,
     field,
     prismaField,
     optional,

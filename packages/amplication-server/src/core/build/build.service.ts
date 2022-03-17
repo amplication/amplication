@@ -711,9 +711,9 @@ ${url}
       },
       include: ENTITIES_INCLUDE
     });
-    return orderBy(
+    return (orderBy(
       entities,
       entity => entity.createdAt
-    ) as DataServiceGenerator.Entity[];
+    ) as unknown) as DataServiceGenerator.Entity[];
   }
 }

@@ -48,7 +48,7 @@ function createNestedManyProperties(
 ): namedTypes.ClassProperty[] {
   const [prismaField] = createPrismaFields(field, entity);
   const [type, arrayType] = createFieldValueTypeFromPrismaField(
-    entity.pluralDisplayName,
+    entity.pluralName,
     field,
     prismaField,
     false,

@@ -2,11 +2,7 @@ import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  AuthorizeAppWithGitResult,
-  EnumGitOrganizationType,
-  EnumGitProvider,
-} from "../../models";
+import { AuthorizeAppWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGit.scss";
@@ -42,13 +38,12 @@ function AuthAppWithGit({ app, onDone }: Props) {
     gitOrganization,
     setGitOrganization,
   ] = useState<GitOrganizationFromGitRepository | null>(null);
+
   useEffect(() => {
     if (gitRepository?.gitOrganization) {
       setGitOrganization(gitRepository?.gitOrganization);
     } else if (gitOrganizations.length === 1) {
       setGitOrganization(gitOrganizations[0]);
-    } else {
-      setGitOrganization(null);
     }
   }, [gitOrganizations, gitRepository?.gitOrganization]);
 
@@ -123,18 +118,16 @@ function AuthAppWithGit({ app, onDone }: Props) {
             onAddGitOrganization={handleAuthWithGitClick}
           />
         )}
-        {gitOrganization && (
-          <RepositoryActions
-            onCreateRepository={() => {
-              setCreateNewRepoOpen(true);
-            }}
-            onSelectRepository={handleSelectRepoDialogOpen}
-            currentConnectedGitRepository={gitRepository}
-            isCreateShow={
-              gitOrganization.type === EnumGitOrganizationType.Organization
-            }
-          />
-        )}
+
+        <RepositoryActions
+          onCreateRepository={() => {
+            setCreateNewRepoOpen(true);
+          }}
+          onSelectRepository={handleSelectRepoDialogOpen}
+          currentConnectedGitRepository={gitRepository}
+          selectedGitOrganization={gitOrganization}
+        />
+
         <GitSyncNotes />
       </Panel>
 

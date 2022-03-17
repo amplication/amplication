@@ -5,6 +5,7 @@ const id = "id";
 const name = "ClassName";
 const description = "description";
 const pluralDisplayName = "pluralDisplayName";
+const pluralName = "pluralName";
 const permissions: EntityPermission[] = [];
 const fields: EntityField[] = [];
 /**
@@ -12,6 +13,7 @@ const fields: EntityField[] = [];
  */
 const defaultEntity: Entity = {
   displayName,
+  pluralName,
   id,
   name,
   description,
