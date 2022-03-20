@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
-
 import { AccountModule } from './account/account.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { AppModule } from './app/app.module';
@@ -19,7 +17,6 @@ import { DeploymentModule } from './deployment/deployment.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
 import { SystemModule } from './system/system.module';
-import { GithubModule } from './github/github.module';
 import { AppSettingsModule } from './appSettings/appSettings.module';
 import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
@@ -43,7 +40,6 @@ import { GitProviderModule } from './git/git.provider.module';
     EnvironmentModule,
     CommitModule,
     SystemModule,
-    GithubModule,
     AppSettingsModule,
     GitModule,
     GitProviderModule
@@ -65,7 +61,6 @@ import { GitProviderModule } from './git/git.provider.module';
     DeploymentModule,
     EnvironmentModule,
     CommitModule,
-    GithubModule,
     AppSettingsModule,
     GitProviderModule,
     GitModule

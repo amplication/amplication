@@ -1,6 +1,6 @@
+import { GithubService } from '@amplication/git-service/src/providers/github.service';
 import { mock } from 'jest-mock-extended';
 import { TEST_GIT_REPOS } from 'src/core/git/__mocks__/GitRepos';
-import { GithubService } from '../github.service';
 
 export const MOCK_GITHUB_SERVICE = mock<GithubService>({});
 MOCK_GITHUB_SERVICE.getOrganizationRepos.mockReturnValue(

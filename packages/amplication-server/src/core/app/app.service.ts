@@ -1,4 +1,6 @@
 import { AppGenerationConfig } from '@amplication/data-service-generator';
+import { EnumGitProvider } from '@amplication/git-service/src/Dto/enums/EnumGitProvider';
+import { GitService } from '@amplication/git-service/src/services/git.service';
 import { Injectable } from '@nestjs/common';
 import { GitRepository } from '@prisma/client';
 import { isEmpty } from 'lodash';
@@ -17,7 +19,6 @@ import { BuildService } from '../build/build.service'; // eslint-disable-line im
 import { USER_ENTITY_NAME } from '../entity/constants';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
-import { GithubService } from '../github/github.service';
 import {
   AppCreateWithEntitiesInput,
   AppValidationErrorTypes,
@@ -63,7 +64,7 @@ export class AppService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
-    private readonly githubService: GithubService
+    private readonly gitService: GitService
   ) {}
 
   /**
@@ -692,7 +693,8 @@ export class AppService {
     let configFile;
 
     try {
-      configFile = await this.githubService.getFile(
+      configFile = await this.gitService.getFile(
+        EnumGitProvider[appRepository.gitOrganization.provider],
         appRepository.gitOrganization.name,
         appRepository.name,
         APP_CONFIG_FILE_PATH,

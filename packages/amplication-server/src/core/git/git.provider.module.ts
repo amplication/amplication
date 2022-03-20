@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from 'nestjs-prisma';
 import { AppModule } from '../app/app.module';
-import { GithubModule } from '../github/github.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { GitResolver } from './git.resolver';
 import { GitModule } from '@amplication/git-service';
@@ -11,13 +10,7 @@ import { GithubService } from '@amplication/git-service/src/providers/github.ser
 import { GitProviderService } from './git.provider.service';
 
 @Module({
-  imports: [
-    PermissionsModule,
-    GithubModule,
-    AppModule,
-    PrismaModule,
-    GitModule
-  ],
+  imports: [PermissionsModule, AppModule, PrismaModule, GitModule],
   providers: [
     GitProviderService,
     GithubService,

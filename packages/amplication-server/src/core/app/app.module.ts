@@ -9,7 +9,6 @@ import { EnvironmentModule } from '../environment/environment.module';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
 import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
-import { GithubModule } from '../github/github.module'; // eslint-disable-line import/no-cycle
 
 @Module({
   imports: [
@@ -20,7 +19,6 @@ import { GithubModule } from '../github/github.module'; // eslint-disable-line i
     forwardRef(() => BuildModule),
     EnvironmentModule,
     CommitModule,
-    GithubModule,
     BlockModule
   ],
   providers: [AppService, AppResolver],
