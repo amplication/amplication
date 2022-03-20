@@ -1,0 +1,37 @@
+datasource postgres {
+  provider = "postgresql"
+  url      = env("POSTGRESQL_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firstName String?
+  lastName  String?
+  username  String   @unique
+  password  String
+  roles     String[]
+}
+
+model GitRepositoryPull {
+  id        Int                         @id @default(autoincrement())
+  createdAt DateTime                    @default(now())
+  updatedAt DateTime                    @updatedAt
+  pushedAt  DateTime?                   @updatedAt
+  provider  String?
+  owner     String?
+  branch    String?
+  status    EnumGitHubRepositoryStatus?
+  name      String?
+}
+
+enum EnumGitRepositoryPullStatus {
+  Created
+  Ready
+  Deleted
+}
