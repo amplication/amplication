@@ -21,7 +21,8 @@ import { CommitModule } from './commit/commit.module';
 import { SystemModule } from './system/system.module';
 import { GithubModule } from './github/github.module';
 import { AppSettingsModule } from './appSettings/appSettings.module';
-import { GitModule } from './git/git.module';
+import { GitWrapperModule } from './git/git.wrapper.module';
+import { GitModule } from '@amplication/git-service';
 @Module({
   imports: [
     AccountModule,
@@ -44,7 +45,8 @@ import { GitModule } from './git/git.module';
     SystemModule,
     GithubModule,
     AppSettingsModule,
-    GitModule
+    GitModule,
+    GitWrapperModule
   ],
   exports: [
     AccountModule,
@@ -65,6 +67,7 @@ import { GitModule } from './git/git.module';
     CommitModule,
     GithubModule,
     AppSettingsModule,
+    GitWrapperModule,
     GitModule
   ]
 })

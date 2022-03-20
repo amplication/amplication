@@ -1,13 +1,12 @@
+import { GitService } from '@amplication/git-service/src/services/git.service';
+import { GitServiceFactory } from '@amplication/git-service/src/utils/GitServiceFactory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GitRepository } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { App } from 'src/models/App';
-// import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
-// import { CreateGitRepositoryInput } from '../dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from '../dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
-import { GitService } from '../git.service';
-import { GitServiceFactory } from '../utils/GitServiceFactory/GitServiceFactory';
+import { GitWrapperService } from '../git.wrapper.service';
 import { MOCK_GIT_SERVICE_FACTORY } from '../utils/GitServiceFactory/GitServiceFactory.mock';
 import { TEST_GIT_REPOS } from '../__mocks__/GitRepos';
 
@@ -47,12 +46,12 @@ const prismaGitRepositoryReturnEmptyMock = jest.fn(() => {
 });
 
 describe('GitService', () => {
-  let gitService: GitService;
+  let gitService: GitWrapperService;
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        GitService,
+        GitWrapperService,
         {
           provide: PrismaService,
           useValue: {
@@ -72,10 +71,11 @@ describe('GitService', () => {
           provide: GitServiceFactory,
           useValue: MOCK_GIT_SERVICE_FACTORY
         }
-      ]
+      ],
+      imports: [GitService]
     }).compile();
 
-    gitService = module.get<GitService>(GitService);
+    gitService = module.get<GitWrapperService>(GitWrapperService);
   });
 
   it('should be defined', () => {
