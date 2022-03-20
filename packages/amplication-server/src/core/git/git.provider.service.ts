@@ -5,7 +5,6 @@ import { FindOneArgs } from 'src/dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { App } from 'src/models/App';
 import { GitOrganization } from 'src/models/GitOrganization';
-import { GIT_REPOSITORY_EXIST, INVALID_GIT_REPOSITORY_ID } from './constants';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
@@ -17,9 +16,13 @@ import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRep
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitService } from '@amplication/git-service/src/services/git.service';
 import { EnumGitOrganizationType } from '@amplication/git-service/src/Dto/enums/EnumGitOrganizationType';
+import {
+  GIT_REPOSITORY_EXIST,
+  INVALID_GIT_REPOSITORY_ID
+} from '@amplication/git-service/src/utils/constants';
 
 @Injectable()
-export class GitWrapperService {
+export class GitProviderService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly gitService: GitService

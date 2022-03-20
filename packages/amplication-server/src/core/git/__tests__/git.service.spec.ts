@@ -6,7 +6,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { App } from 'src/models/App';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 import { RemoteGitRepositoriesWhereUniqueInput } from '../dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
-import { GitWrapperService } from '../git.wrapper.service';
+import { GitProviderService } from '../git.provider.service';
 import { MOCK_GIT_SERVICE_FACTORY } from '../utils/GitServiceFactory/GitServiceFactory.mock';
 import { TEST_GIT_REPOS } from '../__mocks__/GitRepos';
 
@@ -46,12 +46,12 @@ const prismaGitRepositoryReturnEmptyMock = jest.fn(() => {
 });
 
 describe('GitService', () => {
-  let gitService: GitWrapperService;
+  let gitService: GitProviderService;
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        GitWrapperService,
+        GitProviderService,
         {
           provide: PrismaService,
           useValue: {
@@ -75,7 +75,7 @@ describe('GitService', () => {
       imports: [GitService]
     }).compile();
 
-    gitService = module.get<GitWrapperService>(GitWrapperService);
+    gitService = module.get<GitProviderService>(GitProviderService);
   });
 
   it('should be defined', () => {

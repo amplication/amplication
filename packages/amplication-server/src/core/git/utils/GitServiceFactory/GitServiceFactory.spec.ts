@@ -1,8 +1,8 @@
+import { GithubService } from '@amplication/git-service/src/providers/github.service';
+import { GitServiceFactory } from '@amplication/git-service/src/utils/GitServiceFactory';
 import { mock } from 'jest-mock-extended';
-import { GithubService } from 'src/core/github/github.service';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { EnumGitProvider } from '../../dto/enums/EnumGitProvider';
-import { GitServiceFactory } from './GitServiceFactory';
 
 describe('GitServiceFactory', () => {
   const github = mock<GithubService>();
