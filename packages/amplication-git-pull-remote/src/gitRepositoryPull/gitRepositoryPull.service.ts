@@ -3,6 +3,5 @@ import { PrismaService } from "nestjs-prisma";
 
 @Injectable()
 export class GitRepositoryPullService {
-  constructor(protected readonly prisma: PrismaService) {
-  }
+  constructor(protected readonly prisma: PrismaService) {}
 }
