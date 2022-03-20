@@ -1,0 +1,12 @@
+.dockerignore
+docker-compose.yml
+Dockerfile
+admin-ui/build/
+admin-ui/node_modules/
+admin-ui/.env
+admin-ui/.gitignore
+server/dist/
+server/node_modules/
+server/.env
+server/.gitignore
+server/.prettierignore

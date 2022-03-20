@@ -1,0 +1,204 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input Credentials {
+  password: String!
+  username: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DateTimeNullableFilter {
+  equals: DateTime
+  gt: DateTime
+  gte: DateTime
+  in: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  not: DateTime
+  notIn: [DateTime!]
+}
+
+enum EnumGitHubRepositoryStatus {
+  Created
+  Deleted
+  Ready
+}
+
+type GitHubRepository {
+  branch: String
+  createdAt: DateTime!
+  id: String!
+  name: String
+  owner: String
+  provider: String
+  pushedAt: DateTime
+  status: EnumGitHubRepositoryStatus
+  updatedAt: DateTime!
+}
+
+input GitHubRepositoryCreateInput {
+  branch: String
+  name: String
+  owner: String
+  provider: String
+  pushedAt: DateTime
+  status: EnumGitHubRepositoryStatus
+}
+
+input GitHubRepositoryOrderByInput {
+  branch: SortOrder
+  createdAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+  owner: SortOrder
+  provider: SortOrder
+  pushedAt: SortOrder
+  status: SortOrder
+  updatedAt: SortOrder
+}
+
+input GitHubRepositoryUpdateInput {
+  branch: String
+  name: String
+  owner: String
+  provider: String
+  pushedAt: DateTime
+  status: EnumGitHubRepositoryStatus
+}
+
+input GitHubRepositoryWhereInput {
+  branch: StringNullableFilter
+  id: StringFilter
+  name: StringNullableFilter
+  owner: StringNullableFilter
+  provider: StringNullableFilter
+  pushedAt: DateTimeNullableFilter
+  status: EnumGitHubRepositoryStatus
+}
+
+input GitHubRepositoryWhereUniqueInput {
+  id: String!
+}
+
+type MetaQueryPayload {
+  count: String!
+}
+
+type Mutation {
+  createGitHubRepository(data: GitHubRepositoryCreateInput!): GitHubRepository!
+  createUser(data: UserCreateInput!): User!
+  deleteGitHubRepository(where: GitHubRepositoryWhereUniqueInput!): GitHubRepository!
+  deleteUser(where: UserWhereUniqueInput!): User!
+  login(credentials: Credentials!): UserInfo!
+  updateGitHubRepository(data: GitHubRepositoryUpdateInput!, where: GitHubRepositoryWhereUniqueInput!): GitHubRepository!
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User!
+}
+
+type Query {
+  _gitHubRepositoriesMeta(orderBy: [GitHubRepositoryOrderByInput!], skip: Float, take: Float, where: GitHubRepositoryWhereInput): MetaQueryPayload!
+  _usersMeta(orderBy: [UserOrderByInput!], skip: Float, take: Float, where: UserWhereInput): MetaQueryPayload!
+  gitHubRepositories(orderBy: [GitHubRepositoryOrderByInput!], skip: Float, take: Float, where: GitHubRepositoryWhereInput): [GitHubRepository!]!
+  gitHubRepository(where: GitHubRepositoryWhereUniqueInput!): GitHubRepository
+  user(where: UserWhereUniqueInput!): User
+  userInfo: UserInfo!
+  users(orderBy: [UserOrderByInput!], skip: Float, take: Float, where: UserWhereInput): [User!]!
+}
+
+enum QueryMode {
+  Default
+  Insensitive
+}
+
+enum SortOrder {
+  Asc
+  Desc
+}
+
+input StringFilter {
+  contains: String
+  endsWith: String
+  equals: String
+  gt: String
+  gte: String
+  in: [String!]
+  lt: String
+  lte: String
+  mode: QueryMode
+  not: String
+  notIn: [String!]
+  startsWith: String
+}
+
+input StringNullableFilter {
+  contains: String
+  endsWith: String
+  equals: String
+  gt: String
+  gte: String
+  in: [String!]
+  lt: String
+  lte: String
+  mode: QueryMode
+  not: String
+  notIn: [String!]
+  startsWith: String
+}
+
+type User {
+  createdAt: DateTime!
+  firstName: String
+  id: String!
+  lastName: String
+  roles: [String!]!
+  updatedAt: DateTime!
+  username: String!
+}
+
+input UserCreateInput {
+  firstName: String
+  lastName: String
+  password: String!
+  roles: [String!]!
+  username: String!
+}
+
+type UserInfo {
+  accessToken: String
+  roles: [String!]!
+  username: String!
+}
+
+input UserOrderByInput {
+  createdAt: SortOrder
+  firstName: SortOrder
+  id: SortOrder
+  lastName: SortOrder
+  password: SortOrder
+  roles: SortOrder
+  updatedAt: SortOrder
+  username: SortOrder
+}
+
+input UserUpdateInput {
+  firstName: String
+  lastName: String
+  password: String
+  roles: [String!]
+  username: String
+}
+
+input UserWhereInput {
+  firstName: StringNullableFilter
+  id: StringFilter
+  lastName: StringNullableFilter
+  username: StringFilter
+}
+
+input UserWhereUniqueInput {
+  id: String!
+}
