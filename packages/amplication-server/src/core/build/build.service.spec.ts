@@ -49,11 +49,11 @@ import {
 import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
-import { GithubService } from '../github/github.service';
 import { AppSettingsService } from '../appSettings/appSettings.service';
 
 import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { GithubService } from '@amplication/git-service/src/providers/github.service';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
