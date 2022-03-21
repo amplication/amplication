@@ -1,5 +1,5 @@
 {
-  "name": "@amplication/amplication-git-pull-remote",
+  "name": "@amplication/git-pull-remote",
   "version": "0.12.1",
   "private": true,
   "scripts": {
