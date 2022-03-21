@@ -1,6 +1,6 @@
-import { EnumGitOrganizationType } from '@amplication/git-service/src/Dto/enums/EnumGitOrganizationType';
-import { EnumGitProvider } from '@amplication/git-service/src/Dto/enums/EnumGitProvider';
 import { Field, ObjectType } from '@nestjs/graphql';
+import { EnumGitOrganizationType } from 'src/core/git/dto/enums/EnumGitOrganizationType';
+import { EnumGitProvider } from 'src/core/git/dto/enums/EnumGitProvider';
 
 @ObjectType({
   isAbstract: true,

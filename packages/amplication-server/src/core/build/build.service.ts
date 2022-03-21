@@ -43,8 +43,8 @@ import { Deployment } from '../deployment/dto/Deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
-import { GitService } from '@amplication/git-service/src/services/git.service';
-import { EnumGitProvider } from '@amplication/git-service/src/Dto/enums/EnumGitProvider';
+import { GitService } from '@amplication/git-service';
+import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';

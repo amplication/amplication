@@ -1,6 +1,5 @@
 import { AppGenerationConfig } from '@amplication/data-service-generator';
-import { EnumGitProvider } from '@amplication/git-service/src/Dto/enums/EnumGitProvider';
-import { GitService } from '@amplication/git-service/src/services/git.service';
+import { GitService } from '@amplication/git-service';
 import { Injectable } from '@nestjs/common';
 import { GitRepository } from '@prisma/client';
 import { isEmpty } from 'lodash';
@@ -19,6 +18,7 @@ import { BuildService } from '../build/build.service'; // eslint-disable-line im
 import { USER_ENTITY_NAME } from '../entity/constants';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
+import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import {
   AppCreateWithEntitiesInput,
   AppValidationErrorTypes,
