@@ -1,6 +1,5 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { SwaggerModule } from "@nestjs/swagger";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from "./app.module";
