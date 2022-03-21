@@ -14,12 +14,11 @@ import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInpu
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
-import { GitService } from '@amplication/git-service/src/services/git.service';
-import { EnumGitOrganizationType } from '@amplication/git-service/src/Dto/enums/EnumGitOrganizationType';
-import {
-  GIT_REPOSITORY_EXIST,
-  INVALID_GIT_REPOSITORY_ID
-} from '@amplication/git-service/src/utils/constants';
+import { GitService } from '@amplication/git-service';
+import { EnumGitOrganizationType } from '@amplication/git-service/dist/Dto/enums/EnumGitOrganizationType';
+
+const GIT_REPOSITORY_EXIST = 'Git Repository already connected to an other App';
+const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
 
 @Injectable()
 export class GitProviderService {
