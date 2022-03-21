@@ -22,16 +22,16 @@ COPY packages/amplication-container-builder packages/amplication-container-build
 COPY packages/amplication-deployer packages/amplication-deployer
 
 # Installs all copied package node_modules ; Preparation for build
-RUN npm run bootstrap -- --scope @amplication/amplication-git-pull-remote --include-dependencies
+RUN npm run bootstrap -- --scope @amplication/amplication-git-pull-service --include-dependencies
 RUN npm run prisma:generate
 # Build all distributions needed for amplicaiton/server
-RUN npm run build -- --scope @amplication/amplication-git-pull-remote --include-dependencies
+RUN npm run build -- --scope @amplication/amplication-git-pull-service --include-dependencies
 
 # Removes packages/*/node_modules
 # https://github.com/lerna/lerna/issues/2196#issuecomment-994882795
 RUN npm run clean -- --yes
 # Rebuild production node_modules
-RUN npm run bootstrap -- -- --production --scope @amplication/amplication-git-pull-remote --include-dependencies
+RUN npm run bootstrap -- -- --production --scope @amplication/amplication-git-pull-service --include-dependencies
 
 FROM base as server
 WORKDIR /app/packages/amplication-git-pull-remote
