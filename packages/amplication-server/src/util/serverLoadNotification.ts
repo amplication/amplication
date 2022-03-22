@@ -1,22 +1,6 @@
 import os from 'os';
 import fetch from 'node-fetch';
-import fs from 'fs';
-
-//TODO: Move to shared util
-const getVersionFromPackageJson = (): Promise<string> => {
-  return new Promise((resolve, _) => {
-    fs.readFile(
-      '../../package.json',
-      (err: NodeJS.ErrnoException | null, data: Buffer) => {
-        try {
-          resolve(JSON.parse(data.toString()).version);
-        } catch (_) {
-          resolve('0.0.0');
-        }
-      }
-    );
-  });
-};
+import {name as APP_NAME, version as APP_VERSION}  from '../../package.json';
 
 //TODO: Move to shared util
 const convertToBase64 = (data: string) => Buffer.from(data).toString('base64');
@@ -38,13 +22,12 @@ HEADERS['Content-Type'] = 'application/json';
 HEADERS['Authorization'] = `Basic ${convertToBase64(NOTIFIER_ID)}`;
 
 export const serverLoadNotification = async (): Promise<void> => {
-  const APP_VERSION = await getVersionFromPackageJson();
   const data = {
     anonymousId: NOTIFIER_SERVER_ID,
     event: 'server-load',
     context: {
       app: {
-        name: '@amplication/server',
+        name: APP_NAME,
         version: APP_VERSION
       },
       library: {
