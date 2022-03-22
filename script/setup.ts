@@ -17,7 +17,7 @@ function preValidate() {
   const currentNpmVersionArray = npm_config_user_agent?.match(
     /npm\/[\^*\~*]*[\d\.]+/
   );
-  const currentNpmVersion = currentNpmVersionArray[0]?.substr(4);
+  const currentNpmVersion = currentNpmVersionArray[0]?.slice(4);
   if (!currentNpmVersionArray || !currentNpmVersion) {
     logger.error(
       "Mmmmm... it seems like you don't have permission to run the script. Try to run it as an administrator."
