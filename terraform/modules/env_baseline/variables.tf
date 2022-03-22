@@ -149,3 +149,8 @@ variable "apps_domain" {
 variable "apps_dns_zone" {
   type = string
 }
+
+#Notifications
+variable "notifications_server_id" {
+  type = string
+}

@@ -127,6 +127,7 @@ jobs:
           TF_VAR_image_id: gcr.io/amplication/amplication:${{ github.sha }}
           TF_VAR_github_app_private_key: ${{ secrets.STAGING_GITHUB_APP_PRIVATE_KEY }}
           TF_VAR_github_app_client_secret: ${{ secrets.STAGING_GITHUB_APP_CLIENT_SECRET }}
+          TF_VAR_notifications_server_id: ${{ secrets.STAGING_NOTIFICATIONS_SERVER_ID }}
         working-directory: terraform/envs/dev
       - uses: mattes/gce-cloudsql-proxy-action@v1
         with:

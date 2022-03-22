@@ -1,8 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import {serverLoadNotification} from "./util/serverLoadNotification";
 
 async function bootstrap() {
+
+  /**
+   * send server load notification.
+   * this function will send server load event.
+   * the event will contain runtime environment details.
+   */
+  serverLoadNotification()
+
+
   /**
    * Cloud Tracing @see https://cloud.google.com/trace/docs
    */
