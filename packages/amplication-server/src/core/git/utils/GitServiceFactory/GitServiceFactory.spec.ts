@@ -1,7 +1,6 @@
 import { GithubService } from '@amplication/git-service/src/providers/github.service';
 import { GitServiceFactory } from '@amplication/git-service/src/utils/GitServiceFactory';
 import { mock } from 'jest-mock-extended';
-import { AmplicationError } from 'src/errors/AmplicationError';
 import { EnumGitProvider } from '../../dto/enums/EnumGitProvider';
 
 describe('GitServiceFactory', () => {
@@ -14,9 +13,7 @@ describe('GitServiceFactory', () => {
     it('should throw error if source control dont exist', () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      expect(() => gitServiceFactory.getService('GitNone')).toThrow(
-        AmplicationError
-      );
+      expect(() => gitServiceFactory.getService('GitNone')).toThrow(Error);
     });
   });
 });

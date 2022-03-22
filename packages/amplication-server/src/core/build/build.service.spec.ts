@@ -53,7 +53,7 @@ import { AppSettingsService } from '../appSettings/appSettings.service';
 
 import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
-import { GithubService } from '@amplication/git-service/src/providers/github.service';
+import { GitService } from '@amplication/git-service/';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -521,7 +521,7 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: GithubService,
+          provide: GitService,
           useValue: {}
         },
         {
