@@ -6,6 +6,14 @@ import { GitServiceFactory } from '../../utils/GitServiceFactory';
 import { MOCK_GIT_SERVICE_FACTORY } from '../../__mocks__/GitServiceFactory.mock';
 import { EnumGitOrganizationType } from '../../Dto/enums/EnumGitOrganizationType';
 
+const TEST_GIT_REPO: RemoteGitRepository = {
+  admin: true,
+  fullName: 'tupe12334/repo',
+  name: 'repo',
+  private: false,
+  url: 'localhost/repo',
+};
+
 const TEST_GIT_REPOS: RemoteGitRepository[] = [
   {
     admin: true,
@@ -45,16 +53,15 @@ describe('GitService', () => {
   });
   {
     describe('GitService.createRepo()', () => {
-      it('should return App', async () => {
-        expect(
-          await gitService.createGitRepository(
-            'repoName',
-            EnumGitProvider.Github,
-            EnumGitOrganizationType.Organization,
-            'gitOrganizationName',
-            '123456',
-          ),
-        ).toEqual(RemoteGitRepository);
+      it('should return repository', async () => {
+        const repository = await gitService.createGitRepository(
+          'repoName',
+          EnumGitProvider.Github,
+          EnumGitOrganizationType.Organization,
+          'gitOrganizationName',
+          '123456',
+        );
+        expect(repository).toEqual(TEST_GIT_REPO);
       });
     });
 
