@@ -7,6 +7,8 @@ import {
   LookupResolvedProperties,
 } from "../../types";
 import { jsxElement } from "../util";
+import { isToManyRelationField } from "../../util/field";
+import pluralize from "pluralize";
 
 /**
  * Creates an input element to be placed inside a Formik form for editing the given entity field
@@ -45,6 +47,17 @@ const DATA_TYPE_TO_FIELD_INPUT: {
 
   [EnumDataType.Lookup]: (field) => {
     const { relatedEntity } = field.properties as LookupResolvedProperties;
+    if (isToManyRelationField(field)) {
+      return jsxElement`<ReferenceArrayInput source="${pluralize(
+        relatedEntity.name.toLowerCase()
+      )}" 
+      reference="${relatedEntity.name}"
+      parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+      format={(value: any) => value && value.map((v: any) => v.id)}
+      >
+        <SelectArrayInput optionText={${relatedEntity.name}Title} />
+      </ReferenceArrayInput>`;
+    }
     return jsxElement`<ReferenceInput source="${relatedEntity.name.toLowerCase()}.id" reference="${
       relatedEntity.name
     }" label="${field.displayName}">
