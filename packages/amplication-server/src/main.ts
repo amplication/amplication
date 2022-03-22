@@ -9,7 +9,7 @@ async function bootstrap() {
    * this function will send server load event.
    * the event will contain runtime environment details.
    */
-  serverLoadNotification();
+  void serverLoadNotification();
 
   /**
    * Cloud Tracing @see https://cloud.google.com/trace/docs
