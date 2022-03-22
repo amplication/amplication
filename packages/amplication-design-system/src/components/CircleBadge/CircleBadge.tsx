@@ -10,7 +10,7 @@ export type Props = {
 export function CircleBadge({ name, color }: Props) {
   return (
     <div className="circle-badge" style={{ backgroundColor: color }}>
-      {name && name.substr(0, 1).toUpperCase()}
+      {name && name.slice(0, 1).toUpperCase()}
     </div>
   );
 }
