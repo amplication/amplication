@@ -1,6 +1,6 @@
 import os from 'os';
 import fetch from 'node-fetch';
-import {name as APP_NAME, version as APP_VERSION}  from '../../package.json';
+import { name as APP_NAME, version as APP_VERSION } from '../../package.json';
 
 //TODO: Move to shared util
 const convertToBase64 = (data: string) => Buffer.from(data).toString('base64');
