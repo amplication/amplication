@@ -116,7 +116,7 @@
     "@types/lodash.last": "3.0.6",
     "@types/lodash.omit": "4.5.6",
     "@types/lodash.set": "4.3.6",
-    "@types/node": "14.18.12",
+    "@types/node": "13.7.4",
     "@types/node-fetch": "2.6.1",
     "@types/passport": "1.0.7",
     "@types/passport-github": "1.1.7",

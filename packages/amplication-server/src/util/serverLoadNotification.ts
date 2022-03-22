@@ -16,14 +16,16 @@ const getVersionFromPackageJson = ():Promise<string> => {
 }
 
 //TODO: Move to shared util
-const base64data = (data:string) => Buffer.from(data).toString('base64');
+const convertToBase64 = (data:string) => Buffer.from(data).toString('base64');
+
+const getOSVersion = () => os['version'] instanceof Function ? os['version']() : "UNKNOWN";
 
 
 const NOTIFIER_ID =  (process.env.NOTIFICATIONS_ID || "");
 const NOTIFIER_SERVER_ID =  (process.env.NOTIFICATIONS_SERVER_ID || "DEFAULT-SERVER-ID");
 const NODE_VERSION = process.version;
 const OS_NAME = os.platform();
-const OS_VERSION = os.version();
+const OS_VERSION = getOSVersion()
 const HOST_NAME = os.hostname();
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
@@ -31,7 +33,7 @@ const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 const HEADERS = {}
 HEADERS['Content-Type'] = 'application/json';
-HEADERS['Authorization'] = `Basic ${base64data(NOTIFIER_ID)}`;
+HEADERS['Authorization'] = `Basic ${convertToBase64(NOTIFIER_ID)}`;
 
 
 export const serverLoadNotification = async ():Promise<void> => {
