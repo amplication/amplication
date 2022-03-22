@@ -6,7 +6,7 @@ import fs from 'fs';
 const getVersionFromPackageJson = (): Promise<string> => {
   return new Promise((resolve, _) => {
     fs.readFile(
-      '../package.json',
+      '../../package.json',
       (err: NodeJS.ErrnoException | null, data: Buffer) => {
         try {
           resolve(JSON.parse(data.toString()).version);
