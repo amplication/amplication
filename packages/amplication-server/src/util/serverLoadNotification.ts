@@ -21,7 +21,7 @@ const HEADERS = {};
 HEADERS['Content-Type'] = 'application/json';
 HEADERS['Authorization'] = `Basic ${convertToBase64(NOTIFIER_ID)}`;
 
-export const serverLoadNotification = async (): Promise<void> => {
+export const serverLoadNotification = (): void => {
   const data = {
     anonymousId: NOTIFIER_SERVER_ID,
     event: 'server-load',
