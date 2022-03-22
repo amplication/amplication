@@ -66,7 +66,7 @@ $thumb-position-offset: -6px;
         width: $track-width;
         height: $track-height;
         position: relative;
-        background: #e3ddf6;
+        background: var(--toggle-track-background);
         border-radius: ($thumb-height * 0.5) + 2;
       }
 
