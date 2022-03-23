@@ -2,6 +2,11 @@
 $empty-state-image-size: 120px;
 
 .application-list {
+  & {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    }
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
@@ -17,9 +22,10 @@ $empty-state-image-size: 120px;
 
   &__empty-state {
     display: flex;
+    height: 100%;
     flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
+    justify-content: center;
     img {
       height: $empty-state-image-size;
     }
