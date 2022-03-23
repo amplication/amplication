@@ -1,0 +1,58 @@
+# Default values for amplication.
+# This is a YAML-formatted file.
+
+name: docker
+
+deployment:
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  podAnnotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  image:
+    pullPolicy: Always
+    repository: docker
+    tag: dind
+    imagePullSecrets: []
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 2375
+
+config:
+  enabled: false
+
+pvc:
+  enabled: false
+
+
+job:
+  enabled: false
+
+# Postgresql Server
+postgres:
+  # Setting "install" to true will install third-party helm chart (bitnami/postgres)
+  # https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+  install: true
+  image: groundnuty/k8s-wait-for:v1.3
+  imagePullPolicy: Always
+  postgresqlDatabase: postgres
+  postgresqlUsername: postgres
+  postgresqlPassword: Fd7zZXWvCY3bdgLHz
+  servicePort: 5432
+  primary:
+    podLabels: { name: "localpostgres" }
+  fullnameOverride: "localpostgres"

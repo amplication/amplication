@@ -1,0 +1,15 @@
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ .Chart.Name }}-{{ .Values.name }}'
+  labels:
+    app: '{{ .Chart.Name }}-{{ .Values.name }}'
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: "{{ .Values.name }}-http"
+      port: {{ .Values.service.port }}
+  selector:
+    app: '{{ .Chart.Name }}-{{ .Values.name }}'
+{{- end }}

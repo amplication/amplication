@@ -1,0 +1,75 @@
+# Default values for amplication.
+# This is a YAML-formatted file.
+
+name: app
+
+deployment:
+  replicaCount: 1
+  volume:
+    name: app-artifacts-data
+    path: /artifacts
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  podAnnotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+
+  image:
+    pullPolicy: Always
+    repository: amplication/amplication
+    tag: latest
+    imagePullSecrets: []
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 3000
+
+config:
+  enabled: true
+  env:
+    POSTGRESQL_URL: # default managed by computed values
+    JWT_SECRET: jwt-secret
+    SERVICE_JWT_SECRET: service-jwt-secret
+    BCRYPT_SALT_OR_ROUNDS: "10"
+    NODE_ENV: production
+    CORS_ENABLE: "1"
+    PORT: # default managed by computed values
+    HOST: # default managed by computed values
+    DEFAULT_DISK: local
+    LOCAL_DISK_ROOT: /artifacts
+    CONTAINER_BUILDER_DEFAULT: docker
+
+pvc:
+  enabled: true
+  storageLimit: 5Gi
+  storageRequest: 1Gi
+
+job:
+  enabled: true
+
+# Postgresql Server
+postgres:
+  # Setting "install" to true will install third-party helm chart (bitnami/postgres)
+  # https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+  install: true
+  image: groundnuty/k8s-wait-for:v1.3
+  imagePullPolicy: Always
+  postgresqlDatabase: postgres
+  postgresqlUsername: postgres
+  postgresqlPassword: Fd7zZXWvCY3bdgLHz
+  servicePort: 5432
+  primary:
+    podLabels: { name: "localpostgres" }
+  fullnameOverride: "localpostgres"

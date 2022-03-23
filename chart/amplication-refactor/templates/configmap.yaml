@@ -1,0 +1,21 @@
+{{- if .Values.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: '{{ .Chart.Name }}-{{ .Values.name }}'
+data:
+  POSTGRESQL_URL: {{ .Values.config.env.POSTGRESQL_URL | default (printf "postgres://%s:%s@%s:%v" .Values.postgres.postgresqlUsername .Values.postgres.postgresqlPassword .Values.postgres.fullnameOverride .Values.postgres.servicePort ) }}
+{{ if eq "app" .Values.name }}
+  JWT_SECRET: {{ .Values.config.env.JWT_SECRET }}
+  SERVICE_JWT_SECRET: {{ .Values.config.env.SERVICE_JWT_SECRET }}
+  BCRYPT_SALT_OR_ROUNDS: {{ .Values.config.env.BCRYPT_SALT_OR_ROUNDS | quote }}
+  NODE_ENV: {{ .Values.config.env.NODE_ENV }}
+  CORS_ENABLE: {{ .Values.config.env.CORS_ENABLE | quote }}
+  PORT: {{ .Values.config.env.PORT | default .Values.service.port | quote }}
+  HOST: {{ .Values.config.env.HOST | default (printf "http://%s:%v" .Values.name .Values.service.port ) }}
+  DEFAULT_DISK: {{ .Values.config.env.DEFAULT_DISK }}
+  LOCAL_DISK_ROOT: {{ .Values.config.env.LOCAL_DISK_ROOT }}
+  CONTAINER_BUILDER_DEFAULT: {{ .Values.config.env.CONTAINER_BUILDER_DEFAULT }}
+  DOCKER_HOST: {{ .Values.config.env.DOCKER_HOST }} # | default (printf "tcp://%s:%v" (include "amplication.containerbuilder.docker.name" .) .Values.containerbuilder.docker.service.port )
+{{- end }}
+{{- end }}

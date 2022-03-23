@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: '{{ .Chart.Name }}-{{ .Values.name }}'
+  labels:
+    app: '{{ .Chart.Name }}-{{ .Values.name }}'
+spec:
+  {{- if not .Values.deployment.autoscaling.enabled }}
+  replicas: {{ .Values.deployment.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: '{{ .Chart.Name }}-{{ .Values.name }}'
+  template:
+    metadata:
+      {{- with .Values.deployment.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: '{{ .Chart.Name }}-{{ .Values.name }}'
+    spec:
+      {{- with .Values.deployment.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: '{{ .Chart.Name }}-{{ .Values.name }}'
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
+          {{- if eq .Values.name "scheduler" }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - "./scheduler --request.url {{ (printf "http://%s:%v/system/update-statuses" (include "amplication.app.name" .) .Values.app.service.port ) }} --request.method POST --schedule '* * * * *'"
+          {{- end }}
+          {{- if or (eq .Values.name "app") (eq .Values.name "scheduler") }}
+          envFrom:
+          - configMapRef:
+              name: '{{ .Chart.Name }}-{{ .Values.name }}'
+          {{- else if contains .Values.name "docker" }}
+          env:
+          - name: DOCKER_TLS_CERTDIR
+            value: ""
+          securityContext:
+            privileged: true
+          {{- end }}
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
+      {{- if ne .Values.name "scheduler" }}
+          ports:
+            - name: "{{ .Values.name }}-http"
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: {{ .Values.deployment.volume.name }}
+              mountPath: {{ .Values.deployment.volume.path }}
+      volumes:
+        - name: {{ .Values.deployment.volume.name }}
+          persistentVolumeClaim:
+              claimName: {{ .Values.deployment.volume.name }}
+      {{- end }}
