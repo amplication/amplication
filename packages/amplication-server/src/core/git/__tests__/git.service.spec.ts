@@ -1,6 +1,9 @@
-import { GitModule, GitService } from '@amplication/git-service';
-import { GithubService } from '@amplication/git-service/dist/providers/github.service';
-import { GitServiceFactory } from '@amplication/git-service/dist/utils/GitServiceFactory';
+import {
+  GitModule,
+  GitService,
+  GithubService,
+  GitServiceFactory
+} from '@amplication/git-service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'nestjs-prisma';
 import { App } from 'src/models/App';

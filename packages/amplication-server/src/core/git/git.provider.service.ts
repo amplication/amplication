@@ -14,8 +14,7 @@ import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInpu
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
-import { GitService } from '@amplication/git-service';
-import { EnumGitOrganizationType } from '@amplication/git-service/dist/Dto/enums/EnumGitOrganizationType';
+import { GitService, EnumGitOrganizationType } from '@amplication/git-service';
 
 const GIT_REPOSITORY_EXIST = 'Git Repository already connected to an other App';
 const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
