@@ -9,6 +9,6 @@ import { GitProviderService } from "../../providers/git/gitProvider.service";
   imports: [PrismaModule],
   controllers: [GitRepositoryPullController],
   providers: [GitRepositoryPullService, GitClientService, GitProviderService],
-  exports: [GitRepositoryPullService],
+  exports: [GitRepositoryPullService, PrismaModule],
 })
 export class GitRepositoryPullModule {}

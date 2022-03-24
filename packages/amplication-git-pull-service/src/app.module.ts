@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { GitRepositoryPullModule } from "./services/gitRepositoryPull/gitRepositoryPull.module";
+import { GitRepositoryPullModule } from "./core/gitRepositoryPull/gitRepositoryPull.module";
 import { HealthModule } from "./health/health.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
 import { MorganModule } from "nest-morgan";
