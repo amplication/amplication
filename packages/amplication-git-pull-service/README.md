@@ -1,1 +1,1 @@
-# Amplication git pull remote service
+# Amplication git pull service

@@ -4,8 +4,6 @@ import { HealthModule } from "./health/health.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
 import { MorganModule } from "nest-morgan";
 import { ConfigModule } from "@nestjs/config";
-import { ServeStaticModule } from "@nestjs/serve-static";
-import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 
 @Module({
   controllers: [],
@@ -15,9 +13,6 @@ import { ServeStaticOptionsService } from "./serveStaticOptions.service";
     SecretsManagerModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
-    ServeStaticModule.forRootAsync({
-      useClass: ServeStaticOptionsService,
-    }),
   ],
   providers: [],
 })
