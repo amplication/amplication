@@ -52,7 +52,7 @@ export function ApiNestedQuery(query: Function) {
   const properties = Reflect.getMetadata(
     "swagger/apiModelPropertiesArray",
     constructor
-  ).map((prop: any) => prop.substr(1));
+  ).map((prop: any) => prop.slice(1));
 
   const decorators = properties
     .map((property: any) => {
