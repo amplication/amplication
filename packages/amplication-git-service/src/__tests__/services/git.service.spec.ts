@@ -1,35 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EnumGitProvider } from '../../Dto/enums/EnumGitProvider';
-import { RemoteGitRepository } from '../..//Dto/entities/RemoteGitRepository';
 import { GitService } from '../../services/git.service';
 import { GitServiceFactory } from '../../utils/GitServiceFactory';
 import { MOCK_GIT_SERVICE_FACTORY } from '../../__mocks__/GitServiceFactory.mock';
 import { EnumGitOrganizationType } from '../../Dto/enums/EnumGitOrganizationType';
-
-const TEST_GIT_REPO: RemoteGitRepository = {
-  admin: true,
-  fullName: 'tupe12334/repo',
-  name: 'repo',
-  private: false,
-  url: 'localhost/repo',
-};
-
-const TEST_GIT_REPOS: RemoteGitRepository[] = [
-  {
-    admin: true,
-    fullName: 'tupe12334/ofek',
-    name: 'ofek',
-    private: true,
-    url: 'http://localhost/ofek',
-  },
-  {
-    admin: false,
-    fullName: 'tupe12334/test',
-    name: 'test',
-    private: true,
-    url: 'http://localhost/test',
-  },
-];
+import { TEST_GIT_REPO } from '../../__mocks__/RemoteGitRepository';
+import { TEST_GIT_REPOS } from '../../__mocks__/RemoteGitRepositories';
+import { TEST_GIT_REMOTE_ORGANIZATION } from '../../__mocks__/RemoteGitOrganization';
+import { INSTALLATION_URL, PR_HTML_URL } from '../../__mocks__/Constants';
+import { GIT_HUB_FILE } from '../../__mocks__/GithubFile';
 
 describe('GitService', () => {
   let gitService: GitService;
@@ -53,7 +32,7 @@ describe('GitService', () => {
   });
   {
     describe('GitService.createRepo()', () => {
-      it('should return repository', async () => {
+      it('should return remote git repository', async () => {
         const repository = await gitService.createGitRepository(
           'repoName',
           EnumGitProvider.Github,
@@ -74,6 +53,91 @@ describe('GitService', () => {
           installationId,
         );
         expect(remoteGitRepositories).toEqual(TEST_GIT_REPOS);
+      });
+    });
+
+    describe('GitService.RemoteGitOrganization()', () => {
+      it('should return RemoteGitOrganization', async () => {
+        const installationId = '123456';
+        const gitProvider = EnumGitProvider.Github;
+        const remoteGitOrganization = await gitService.getGitRemoteOrganization(
+          installationId,
+          gitProvider,
+        );
+        expect(remoteGitOrganization).toEqual(TEST_GIT_REMOTE_ORGANIZATION);
+      });
+    });
+
+    describe('GitService.deleteGitOrganization()', () => {
+      it('should return success', async () => {
+        const installationId = '123456';
+        const gitProvider = EnumGitProvider.Github;
+        const remoteGitOrganization = await gitService.deleteGitOrganization(
+          gitProvider,
+          installationId,
+        );
+        expect(remoteGitOrganization).toEqual(true);
+      });
+    });
+
+    describe('GitService.getGitInstallationUrl()', () => {
+      it('should return installationUrl (string)', async () => {
+        const installationId = '123456';
+        const gitProvider = EnumGitProvider.Github;
+        const remoteGitOrganization = await gitService.getGitInstallationUrl(
+          gitProvider,
+          installationId,
+        );
+        expect(remoteGitOrganization).toEqual(INSTALLATION_URL);
+      });
+    });
+
+    describe('GitService.getFile()', () => {
+      it('should return installationUrl (string)', async () => {
+        const installationId = '123456';
+        const gitProvider = EnumGitProvider.Github;
+        const userName = 'exampleUserName';
+        const repoName = 'exampleRepoName';
+        const path = 'examplePath';
+        const baseBranchName = null;
+
+        const gitHubFile = await gitService.getFile(
+          gitProvider,
+          userName,
+          repoName,
+          path,
+          baseBranchName,
+          installationId,
+        );
+        expect(gitHubFile).toEqual(GIT_HUB_FILE);
+      });
+    });
+
+    describe('GitService.createPullRequest()', () => {
+      it('should return PR url path (string)', async () => {
+        const installationId = '123456';
+        const gitProvider = EnumGitProvider.Github;
+        const userName = 'exampleUserName';
+        const repoName = 'exampleRepoName';
+        const path = 'examplePath';
+        const code = 'exampleCode';
+        const modules = [{ path: path, code: code }];
+        const commitName = 'exampleCommitName';
+        const commitMessage = 'exampleCommitMessage';
+        const commitDescription = 'exampleCommitDescription';
+        const baseBranchName = 'exampleBaseBranchName';
+        const remoteGitOrganization = await gitService.createPullRequest(
+          gitProvider,
+          userName,
+          repoName,
+          modules,
+          commitName,
+          commitMessage,
+          commitDescription,
+          baseBranchName,
+          installationId,
+        );
+        expect(remoteGitOrganization).toEqual(PR_HTML_URL);
       });
     });
   }
