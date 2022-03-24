@@ -9,17 +9,17 @@ export interface IGitPullEvent {
 export interface GitPullEvent {
   id: number;
   createdAt: string;
-  updatedAt: string
-  pushedAt: string
+  updatedAt: string;
+  pushedAt: string;
   provider: string;
   owner: string;
   branch: string;
-  status:EnumGitRepositoryPullStatus;
+  status: EnumGitRepositoryPullStatus;
   name: string;
 }
 
 export enum EnumGitRepositoryPullStatus {
-  Created = 'Created',
-  Ready = 'Ready',
-  Deleted = 'Deleted',
+  Created = "Created",
+  Ready = "Ready",
+  Deleted = "Deleted",
 }

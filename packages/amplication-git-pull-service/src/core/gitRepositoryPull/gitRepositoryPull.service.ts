@@ -7,18 +7,22 @@ import { GitPullEventRepository } from "../../database/gitPullEvent.repository";
 
 @Injectable()
 export class GitRepositoryPullService {
-  constructor(private gitClient: GitClientService,
-              private gitHubProvider: GitProviderService,
-              private database: GitPullEventRepository) {}
+  constructor(
+    private gitClient: GitClientService,
+    private gitHubProvider: GitProviderService,
+    private database: GitPullEventRepository
+  ) {}
 
   async clone(cloneParams: ICloneParams) {
     const { provider, owner, branch, commit, installationId } = cloneParams;
     const baseDir = `/Users/amitbarletz/Dev/remote/${provider}/${owner}/${name}/${branch}/${commit}`;
-    const accessToken = await this.gitHubProvider.createInstallationAccessToken(installationId);
+    const accessToken = await this.gitHubProvider.createInstallationAccessToken(
+      installationId
+    );
     return this.gitClient.clone(cloneParams, baseDir, accessToken);
   }
 
   pull(pullParams: IPullParams) {
-    return this.gitClient.pull(pullParams)
+    return this.gitClient.pull(pullParams);
   }
 }

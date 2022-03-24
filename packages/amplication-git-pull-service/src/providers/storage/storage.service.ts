@@ -3,9 +3,7 @@ import { IStorage } from "../../contracts/storage.interface";
 
 @Injectable()
 export class StorageService implements IStorage {
-  workDir = '';
+  workDir = "";
 
-  manageStorage() {
-
-  }
+  manageStorage() {}
 }
