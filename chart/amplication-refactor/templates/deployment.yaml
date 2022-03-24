@@ -28,29 +28,29 @@ spec:
         - name: '{{ .Chart.Name }}-{{ .Values.name }}'
           imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
           image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
-          {{- if eq .Values.name "scheduler" }}
+          {{- if .Values.deployment.command.enabled }}
           command: ["/bin/sh", "-c"]
           args:
-            - "./scheduler --request.url {{ (printf "http://%s:%v/system/update-statuses" (include "amplication.app.name" .) .Values.app.service.port ) }} --request.method POST --schedule '* * * * *'"
+            - "./scheduler --request.url {{ (printf "http://%s:%v/system/update-statuses" .Values.service.app_name .Values.service.app_port_number ) }} --request.method POST --schedule '* * * * *'"
           {{- end }}
-          {{- if or (eq .Values.name "app") (eq .Values.name "scheduler") }}
+          {{- if config.enabled }}
           envFrom:
           - configMapRef:
               name: '{{ .Chart.Name }}-{{ .Values.name }}'
-          {{- else if contains .Values.name "docker" }}
-          env:
-          - name: DOCKER_TLS_CERTDIR
-            value: ""
+          {{- end }}
+          {{- if deployment.securityContext.enabled }}
           securityContext:
             privileged: true
           {{- end }}
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
-      {{- if ne .Values.name "scheduler" }}
+          {{- if service.enabled }}
           ports:
-            - name: "{{ .Values.name }}-http"
-              containerPort: {{ .Values.service.port }}
+            - name: {{ .Values.service.port.name }}
+              containerPort: {{ .Values.service.port.number }}
               protocol: TCP
+          {{- end }}
+      {{- if .Values.deployment.volume.enabled }}
           volumeMounts:
             - name: {{ .Values.deployment.volume.name }}
               mountPath: {{ .Values.deployment.volume.path }}

@@ -5,6 +5,10 @@ name: docker
 
 deployment:
   replicaCount: 1
+  volume:
+    enabled: true 
+    name: registry-data
+    path: /var/lib/registry
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -26,18 +30,29 @@ deployment:
     repository: docker
     tag: dind
     imagePullSecrets: []
+  
+  command:
+    enabled: false
+  securityContext:
+    enabled: true
 
 service:
   enabled: true
   type: ClusterIP
-  port: 2375
+  port:
+    name: docker-tcp 
+    number: 2375
 
 config:
-  enabled: false
+  enabled: true
+  env:
+    IF_DOCKER_TLS_CERTDIR: true
+    DOCKER_TLS_CERTDIR: # Makes it so server starts on 2375.
 
 pvc:
-  enabled: false
-
+  enabled: true
+  storageLimit: 20Gi
+  storageRequest: 2Gi
 
 job:
   enabled: false

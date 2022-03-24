@@ -8,8 +8,8 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - name: "{{ .Values.name }}-http"
-      port: {{ .Values.service.port }}
+    - name: {{ .Values.service.port.name }}
+      port: {{ .Values.service.port.number }}
   selector:
     app: '{{ .Chart.Name }}-{{ .Values.name }}'
 {{- end }}

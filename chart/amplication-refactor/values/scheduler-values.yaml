@@ -5,6 +5,8 @@ name: scheduler
 
 deployment:
   replicaCount: 1
+  volume:
+    enabled: false
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -26,13 +28,21 @@ deployment:
     repository: amplication/scheduler
     tag: latest
     imagePullSecrets: []
+  
+  command:
+    enabled: true
+  securityContext:
+    enabled: false
 
 service:
   enabled: false
+  app_port_number: 3000
+  app_name: app
 
 config:
   enabled: true
   env:
+    IF_POSTGRESQL_URL: true
     POSTGRESQL_URL: # default managed by computed values
 
 pvc:

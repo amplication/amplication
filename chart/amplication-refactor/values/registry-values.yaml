@@ -5,7 +5,8 @@ name: registry
 
 deployment:
   replicaCount: 1
-  volume: # for app & registry need to set 
+  volume: 
+    enabled: true
     name: registry-data
     path: /var/lib/registry
   autoscaling:
@@ -30,11 +31,18 @@ deployment:
     repository: registry
     tag: 2
     imagePullSecrets: []
+  
+  command:
+    enabled: false
+  securityContext:
+    enabled: false
 
 service:
   enabled: true
   type: ClusterIP
-  port: 5000
+  port: 
+    name: registry-tcp
+    number: 5000
 
 config:
   enabled: false
