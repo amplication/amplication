@@ -51,7 +51,6 @@ export default function RepositoryActions({
                     <Button
                       buttonStyle={EnumButtonStyle.Primary}
                       onClick={onSelectRepository}
-                      icon="chevron_down"
                     >
                       Select repository
                     </Button>
