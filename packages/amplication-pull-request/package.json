@@ -16,6 +16,17 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage"
   },
+  "dependencies": {
+    "@apollo/gateway": "0.42.3",
+    "@nestjs/common": "8.2.3",
+    "@nestjs/config": "1.1.5",
+    "@nestjs/core": "8.2.3",
+    "@nestjs/graphql": "9.1.2",
+    "@nestjs/platform-express": "8.2.3",
+    "@nestjs/serve-static": "2.2.2",
+    "apollo-server-express": "3.6.5",
+    "ts-morph": "13.0.3"
+  },
   "devDependencies": {
     "@types/node": "17.0.23",
     "@typescript-eslint/eslint-plugin": "5.16.0",
