@@ -93,7 +93,7 @@ const Menu = ({ children }: MenuProps) => {
             <Popover
               className="main-layout__menu__popover"
               content={<SupportMenu />}
-              open={supportMenuOpen}
+              onOpen={handleSupportClick}
               placement="right"
             >
               <MenuItem
