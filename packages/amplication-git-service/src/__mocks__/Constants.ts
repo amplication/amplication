@@ -1,2 +1,2 @@
-export const INSTALLATION_URL: string = 'ExampleInstallationUrl';
-export const PR_HTML_URL: string = 'ExamplePrHtmlUrl';
+export const INSTALLATION_URL = 'ExampleInstallationUrl';
+export const PR_HTML_URL = 'ExamplePrHtmlUrl';

@@ -7,13 +7,13 @@ import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
 import { RemoteGitRepository } from '../Dto/entities/RemoteGitRepository';
 import { EnumGitOrganizationType } from '../Dto/enums/EnumGitOrganizationType';
 import { ConverterUtil } from '../utils/ConverterUtil';
-import { components } from '@octokit/openapi-types';
 import { createAppAuth } from '@octokit/auth-app';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import {
   REPO_NAME_TAKEN_ERROR_MESSAGE,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE,
 } from '../utils/constants';
+import { components } from '@octokit/openapi-types';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
