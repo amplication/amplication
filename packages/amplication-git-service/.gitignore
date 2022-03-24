@@ -34,6 +34,7 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
+prisma/migrations/dev/
 artifacts/
 .env.local
 .eslintcache
