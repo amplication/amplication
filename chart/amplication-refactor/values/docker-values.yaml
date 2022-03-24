@@ -7,7 +7,7 @@ deployment:
   replicaCount: 1
   volume:
     enabled: true 
-    name: registry-data
+    name: docker-data
     path: /var/lib/registry
   autoscaling:
     enabled: false

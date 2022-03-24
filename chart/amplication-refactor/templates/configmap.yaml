@@ -18,7 +18,6 @@ data:
   DEFAULT_DISK: {{ .Values.config.env.DEFAULT_DISK }}
   LOCAL_DISK_ROOT: {{ .Values.config.env.LOCAL_DISK_ROOT }}
   CONTAINER_BUILDER_DEFAULT: {{ .Values.config.env.CONTAINER_BUILDER_DEFAULT }}
-  # DOCKER_HOST: {{ .Values.config.env.DOCKER_HOST | default (printf "tcp://%s:%v" (include "amplication.containerbuilder.docker.name" .) .Values.containerbuilder.docker.service.port.number )}} 
   {{- end }}
   {{- if .Values.config.env.IF_DOCKER_TLS_CERTDIR }}
   DOCKER_TLS_CERTDIR: {{ .Values.config.env.DOCKER_TLS_CERTDIR | default .Values.service.port.number | quote }}

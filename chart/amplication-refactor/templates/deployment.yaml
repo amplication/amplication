@@ -33,18 +33,18 @@ spec:
           args:
             - "./scheduler --request.url {{ (printf "http://%s:%v/system/update-statuses" .Values.service.app_name .Values.service.app_port_number ) }} --request.method POST --schedule '* * * * *'"
           {{- end }}
-          {{- if config.enabled }}
+          {{- if .Values.config.enabled }}
           envFrom:
           - configMapRef:
               name: '{{ .Chart.Name }}-{{ .Values.name }}'
           {{- end }}
-          {{- if deployment.securityContext.enabled }}
+          {{- if .Values.deployment.securityContext.enabled }}
           securityContext:
             privileged: true
           {{- end }}
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
-          {{- if service.enabled }}
+          {{- if .Values.service.enabled }}
           ports:
             - name: {{ .Values.service.port.name }}
               containerPort: {{ .Values.service.port.number }}
