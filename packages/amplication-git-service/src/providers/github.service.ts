@@ -11,7 +11,7 @@ import { createAppAuth } from '@octokit/auth-app';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import {
   REPO_NAME_TAKEN_ERROR_MESSAGE,
-  UNSUPPORTED_GIT_ORGANIZATION_TYPE,
+  UNSUPPORTED_GIT_ORGANIZATION_TYPE
 } from '../utils/constants';
 import { components } from '@octokit/openapi-types';
 
@@ -40,7 +40,7 @@ export class GithubService implements IGitClient {
 
     this.app = new App({
       appId: appId,
-      privateKey: privateKey,
+      privateKey: privateKey
     });
   }
   createUserRepository(
@@ -69,7 +69,7 @@ export class GithubService implements IGitClient {
       name: name,
       org: owner,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      auto_init: true,
+      auto_init: true
     });
 
     return {
@@ -77,7 +77,7 @@ export class GithubService implements IGitClient {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
+      admin: repo.permissions.admin
     };
   }
   async getOrganizationRepos(
@@ -98,7 +98,7 @@ export class GithubService implements IGitClient {
     const octokit = await this.getInstallationOctokit(installationId);
     const deleteInstallationRes = await octokit.rest.apps.deleteInstallation({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: ConverterUtil.convertToNumber(installationId),
+      installation_id: ConverterUtil.convertToNumber(installationId)
     });
 
     if (deleteInstallationRes.status != 204) {
@@ -113,13 +113,13 @@ export class GithubService implements IGitClient {
     const octokit = await this.getInstallationOctokit(installationId);
     const gitRemoteOrganization = await octokit.rest.apps.getInstallation({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: ConverterUtil.convertToNumber(installationId),
+      installation_id: ConverterUtil.convertToNumber(installationId)
     });
     const { data: gitRemoteOrgs } = gitRemoteOrganization;
 
     return {
       name: gitRemoteOrgs.account.login,
-      type: EnumGitOrganizationType[gitRemoteOrganization.data.account.type],
+      type: EnumGitOrganizationType[gitRemoteOrganization.data.account.type]
     };
   }
   async getFile(
@@ -134,7 +134,7 @@ export class GithubService implements IGitClient {
       owner: userName,
       repo: repoName,
       path,
-      ref: baseBranchName ? baseBranchName : undefined,
+      ref: baseBranchName ? baseBranchName : undefined
     });
 
     if (!Array.isArray(content)) {
@@ -148,7 +148,7 @@ export class GithubService implements IGitClient {
           content: buff.toString('utf-8'),
           htmlUrl: item.html_url,
           name: item.name,
-          path: item.path,
+          path: item.path
         };
         return file;
       }
@@ -171,7 +171,7 @@ export class GithubService implements IGitClient {
 
     const token = await this.getInstallationAuthToken(installationId);
     const octokit = new myOctokit({
-      auth: token,
+      auth: token
     });
 
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
@@ -181,16 +181,16 @@ export class GithubService implements IGitClient {
       /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
       /^server\/src\/[^\/]+\/.+\.service.ts$/,
       /^server\/src\/[^\/]+\/.+\.module.ts$/,
-      /^server\/scripts\/customSeed.ts$/,
+      /^server\/scripts\/customSeed.ts$/
     ];
 
     const authFolder = 'server/src/auth';
 
     const files = Object.fromEntries(
-      modules.map((module) => {
+      modules.map(module => {
         if (
           !module.path.startsWith(authFolder) &&
-          doNotOverride.some((rx) => rx.test(module.path))
+          doNotOverride.some(rx => rx.test(module.path))
         ) {
           return [
             module.path,
@@ -199,7 +199,7 @@ export class GithubService implements IGitClient {
               if (exists) return null;
 
               return module.code;
-            },
+            }
           ];
         }
 
@@ -223,9 +223,9 @@ export class GithubService implements IGitClient {
         {
           /* optional: if `files` is not passed, an empty commit is created instead */
           files: files,
-          commit: commitName,
-        },
-      ],
+          commit: commitName
+        }
+      ]
     });
     return pr.data.html_url;
   }
@@ -241,12 +241,12 @@ export class GithubService implements IGitClient {
     octokit: Octokit
   ): Promise<RemoteGitRepository[]> {
     const results = await octokit.request('GET /installation/repositories');
-    return results.data.repositories.map((repo) => ({
+    return results.data.repositories.map(repo => ({
       name: repo.name,
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
+      admin: repo.permissions.admin
     }));
   }
 
@@ -255,7 +255,7 @@ export class GithubService implements IGitClient {
     name: string
   ): Promise<boolean> {
     const repos = await GithubService.getOrganizationReposWithOctokit(octokit);
-    return repos.map((repo) => repo.name).includes(name);
+    return repos.map(repo => repo.name).includes(name);
   }
   private async getInstallationAuthToken(
     installationId: string
@@ -264,13 +264,13 @@ export class GithubService implements IGitClient {
       appId: this.configService.get(GITHUB_APP_APP_ID_VAR),
       privateKey: this.configService
         .get(GITHUB_APP_PRIVATE_KEY_VAR)
-        .replace(/\\n/g, '\n'),
+        .replace(/\\n/g, '\n')
     });
     // Retrieve installation access token
     return (
       await auth({
         type: 'installation',
-        installationId: installationId,
+        installationId: installationId
       })
     ).token;
   }

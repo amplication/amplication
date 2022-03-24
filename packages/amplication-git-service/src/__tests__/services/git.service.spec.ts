@@ -19,9 +19,9 @@ describe('GitService', () => {
         GitService,
         {
           provide: GitServiceFactory,
-          useValue: MOCK_GIT_SERVICE_FACTORY,
-        },
-      ],
+          useValue: MOCK_GIT_SERVICE_FACTORY
+        }
+      ]
     }).compile();
 
     gitService = module.get<GitService>(GitService);

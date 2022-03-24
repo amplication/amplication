@@ -5,5 +5,5 @@ export const TEST_GIT_REPO: RemoteGitRepository = {
   fullName: 'tupe12334/repo',
   name: 'repo',
   private: false,
-  url: 'localhost/repo',
+  url: 'localhost/repo'
 };

@@ -6,13 +6,13 @@ export const TEST_GIT_REPOS: RemoteGitRepository[] = [
     fullName: 'tupe12334/ofek',
     name: 'ofek',
     private: true,
-    url: 'http://localhost/ofek',
+    url: 'http://localhost/ofek'
   },
   {
     admin: false,
     fullName: 'tupe12334/test',
     name: 'test',
     private: true,
-    url: 'http://localhost/test',
-  },
+    url: 'http://localhost/test'
+  }
 ];
