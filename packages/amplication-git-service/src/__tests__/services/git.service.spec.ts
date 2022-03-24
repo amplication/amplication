@@ -38,7 +38,7 @@ describe('GitService', () => {
           EnumGitProvider.Github,
           EnumGitOrganizationType.Organization,
           'gitOrganizationName',
-          '123456',
+          '123456'
         );
         expect(repository).toEqual(TEST_GIT_REPO);
       });
@@ -50,7 +50,7 @@ describe('GitService', () => {
         const gitProvider = EnumGitProvider.Github;
         const remoteGitRepositories = await gitService.getReposOfOrganization(
           gitProvider,
-          installationId,
+          installationId
         );
         expect(remoteGitRepositories).toEqual(TEST_GIT_REPOS);
       });
@@ -62,7 +62,7 @@ describe('GitService', () => {
         const gitProvider = EnumGitProvider.Github;
         const remoteGitOrganization = await gitService.getGitRemoteOrganization(
           installationId,
-          gitProvider,
+          gitProvider
         );
         expect(remoteGitOrganization).toEqual(TEST_GIT_REMOTE_ORGANIZATION);
       });
@@ -74,7 +74,7 @@ describe('GitService', () => {
         const gitProvider = EnumGitProvider.Github;
         const remoteGitOrganization = await gitService.deleteGitOrganization(
           gitProvider,
-          installationId,
+          installationId
         );
         expect(remoteGitOrganization).toEqual(true);
       });
@@ -86,7 +86,7 @@ describe('GitService', () => {
         const gitProvider = EnumGitProvider.Github;
         const remoteGitOrganization = await gitService.getGitInstallationUrl(
           gitProvider,
-          installationId,
+          installationId
         );
         expect(remoteGitOrganization).toEqual(INSTALLATION_URL);
       });
@@ -107,7 +107,7 @@ describe('GitService', () => {
           repoName,
           path,
           baseBranchName,
-          installationId,
+          installationId
         );
         expect(gitHubFile).toEqual(GIT_HUB_FILE);
       });
@@ -135,7 +135,7 @@ describe('GitService', () => {
           commitMessage,
           commitDescription,
           baseBranchName,
-          installationId,
+          installationId
         );
         expect(remoteGitOrganization).toEqual(PR_HTML_URL);
       });

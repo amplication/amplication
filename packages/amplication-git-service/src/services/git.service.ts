@@ -12,7 +12,7 @@ export class GitService {
 
   async getReposOfOrganization(
     gitProvider: EnumGitProvider,
-    installationId: string,
+    installationId: string
   ): Promise<RemoteGitRepository[]> {
     const gitService = this.gitServiceFactory.getService(gitProvider);
     return await gitService.getOrganizationRepos(installationId);
@@ -23,24 +23,24 @@ export class GitService {
     gitProvider: EnumGitProvider,
     gitOrganizationType: EnumGitOrganizationType,
     gitOrganizationName: string,
-    installationId: string,
+    installationId: string
   ): Promise<RemoteGitRepository> {
     const provider = this.gitServiceFactory.getService(gitProvider);
     return await (gitOrganizationType === EnumGitOrganizationType.Organization
       ? provider.createOrganizationRepository(
           installationId,
           gitOrganizationName,
-          repoName,
+          repoName
         )
       : provider.createUserRepository(
           installationId,
           gitOrganizationName,
-          repoName,
+          repoName
         ));
   }
   async getGitRemoteOrganization(
     installationId: string,
-    gitProvider: EnumGitProvider,
+    gitProvider: EnumGitProvider
   ): Promise<RemoteGitOrganization> {
     const provider = this.gitServiceFactory.getService(gitProvider);
     return await provider.getGitRemoteOrganization(installationId);
@@ -48,7 +48,7 @@ export class GitService {
 
   async deleteGitOrganization(
     gitProvider: EnumGitProvider,
-    installationId: string,
+    installationId: string
   ): Promise<boolean> {
     const provider = this.gitServiceFactory.getService(gitProvider);
     return await provider.deleteGitOrganization(installationId);
@@ -56,7 +56,7 @@ export class GitService {
 
   async getGitInstallationUrl(
     gitProvider: EnumGitProvider,
-    workspaceId: string,
+    workspaceId: string
   ): Promise<string> {
     const service = this.gitServiceFactory.getService(gitProvider);
     return await service.getGitInstallationUrl(workspaceId);
@@ -68,7 +68,7 @@ export class GitService {
     repoName: string,
     path: string,
     baseBranchName: string,
-    installationId: string,
+    installationId: string
   ): Promise<GithubFile> {
     const service = this.gitServiceFactory.getService(gitProvider);
     return await service.getFile(
@@ -76,7 +76,7 @@ export class GitService {
       repoName,
       path,
       baseBranchName,
-      installationId,
+      installationId
     );
   }
 
@@ -89,7 +89,7 @@ export class GitService {
     commitMessage: string,
     commitDescription: string,
     baseBranchName: string,
-    installationId: string,
+    installationId: string
   ): Promise<string> {
     const service = this.gitServiceFactory.getService(gitProvider);
     return await service.createPullRequest(
@@ -100,7 +100,7 @@ export class GitService {
       commitMessage,
       commitDescription,
       baseBranchName,
-      installationId,
+      installationId
     );
   }
 }

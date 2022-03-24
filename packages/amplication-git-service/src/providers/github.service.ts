@@ -30,7 +30,7 @@ export class GithubService implements IGitClient {
 
   constructor(private readonly configService: ConfigService) {
     this.gitInstallationUrl = this.configService.get(
-      GITHUB_APP_INSTALLATION_URL_VAR,
+      GITHUB_APP_INSTALLATION_URL_VAR
     );
 
     const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
@@ -46,20 +46,20 @@ export class GithubService implements IGitClient {
   createUserRepository(
     installationId: string,
     owner: string,
-    name: string,
+    name: string
   ): Promise<RemoteGitRepository> {
     throw new Error(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
   }
   async createOrganizationRepository(
     installationId: string,
     owner: string,
-    name: string,
+    name: string
   ): Promise<RemoteGitRepository> {
     const octokit = await this.getInstallationOctokit(installationId);
 
     const exists: boolean = await GithubService.isRepoExistWithOctokit(
       octokit,
-      name,
+      name
     );
     if (exists) {
       throw new Error(REPO_NAME_TAKEN_ERROR_MESSAGE);
@@ -81,7 +81,7 @@ export class GithubService implements IGitClient {
     };
   }
   async getOrganizationRepos(
-    installationId: string,
+    installationId: string
   ): Promise<RemoteGitRepository[]> {
     const octokit = await this.getInstallationOctokit(installationId);
     return await GithubService.getOrganizationReposWithOctokit(octokit);
@@ -108,7 +108,7 @@ export class GithubService implements IGitClient {
     return true;
   }
   async getGitRemoteOrganization(
-    installationId: string,
+    installationId: string
   ): Promise<RemoteGitOrganization> {
     const octokit = await this.getInstallationOctokit(installationId);
     const gitRemoteOrganization = await octokit.rest.apps.getInstallation({
@@ -127,7 +127,7 @@ export class GithubService implements IGitClient {
     repoName: string,
     path: string,
     baseBranchName: string,
-    installationId: string,
+    installationId: string
   ): Promise<GithubFile> {
     const octokit = await this.getInstallationOctokit(installationId);
     const content = await octokit.rest.repos.getContent({
@@ -165,7 +165,7 @@ export class GithubService implements IGitClient {
     commitMessage: string,
     commitDescription: string,
     baseBranchName: string,
-    installationId: string,
+    installationId: string
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
 
@@ -204,7 +204,7 @@ export class GithubService implements IGitClient {
         }
 
         return [module.path, module.code];
-      }),
+      })
     );
 
     //todo: delete files that are no longer part of the app
@@ -231,14 +231,14 @@ export class GithubService implements IGitClient {
   }
 
   private async getInstallationOctokit(
-    installationId: string,
+    installationId: string
   ): Promise<Octokit> {
     const installationIdNumber = ConverterUtil.convertToNumber(installationId);
     return await this.app.getInstallationOctokit(installationIdNumber);
   }
 
   private static async getOrganizationReposWithOctokit(
-    octokit: Octokit,
+    octokit: Octokit
   ): Promise<RemoteGitRepository[]> {
     const results = await octokit.request('GET /installation/repositories');
     return results.data.repositories.map((repo) => ({
@@ -252,13 +252,13 @@ export class GithubService implements IGitClient {
 
   private static async isRepoExistWithOctokit(
     octokit: Octokit,
-    name: string,
+    name: string
   ): Promise<boolean> {
     const repos = await GithubService.getOrganizationReposWithOctokit(octokit);
     return repos.map((repo) => repo.name).includes(name);
   }
   private async getInstallationAuthToken(
-    installationId: string,
+    installationId: string
   ): Promise<string> {
     const auth = createAppAuth({
       appId: this.configService.get(GITHUB_APP_APP_ID_VAR),

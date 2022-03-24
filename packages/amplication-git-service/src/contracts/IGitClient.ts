@@ -6,13 +6,13 @@ export interface IGitClient {
   createUserRepository(
     installationId: string,
     owner: string,
-    name: string,
+    name: string
   ): Promise<RemoteGitRepository>;
 
   createOrganizationRepository(
     installationId: string,
     owner: string,
-    name: string,
+    name: string
   ): Promise<RemoteGitRepository>;
 
   getOrganizationRepos(installationId: string): Promise<RemoteGitRepository[]>;
@@ -24,7 +24,7 @@ export interface IGitClient {
   deleteGitOrganization(installationId: string): Promise<boolean>;
 
   getGitRemoteOrganization(
-    installationId: string,
+    installationId: string
   ): Promise<RemoteGitOrganization>;
 
   getFile(
@@ -32,7 +32,7 @@ export interface IGitClient {
     repoName: string,
     path: string,
     baseBranchName: string,
-    installationId: string,
+    installationId: string
   ): Promise<GithubFile>;
 
   createPullRequest(
@@ -43,6 +43,6 @@ export interface IGitClient {
     commitMessage: string,
     commitDescription: string,
     baseBranchName: string,
-    installationId: string,
+    installationId: string
   ): Promise<string>;
 }
