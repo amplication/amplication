@@ -21,6 +21,10 @@ $empty-state-image-size: 120px;
   }
 
   &__empty-state {
+    .svg-theme-image{
+      width: 250px;
+      height: 250px;  
+    }
     display: flex;
     height: 100%;
     flex-direction: column;
