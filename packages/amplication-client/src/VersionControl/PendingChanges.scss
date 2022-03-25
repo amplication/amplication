@@ -26,14 +26,14 @@ $counter-height: 18px;
   }
 
   &__changes-count {
-    background-color: var(--black10);
+    background-color: var(--warning-default);
     height: $counter-height;
     border-radius: $counter-height * 0.5;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    color: var(--black100);
+    color: var(--static-black);
     box-sizing: border-box;
     white-space: nowrap;
     width: auto;
