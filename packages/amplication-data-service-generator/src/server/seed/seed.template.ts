@@ -32,7 +32,7 @@ if (require.main === module) {
 }
 
 async function seed(bcryptSalt: Salt) {
-  console.info("Seeding databases...");
+  console.info("Seeding database...");
 
   const client = new PrismaClient();
   const data = DATA;
@@ -43,8 +43,8 @@ async function seed(bcryptSalt: Salt) {
   });
   void client.$disconnect();
 
-  console.info("Seeding databases with custom seed...");
+  console.info("Seeding database with custom seed...");
   customSeed();
 
-  console.info("Seeded databases successfully");
+  console.info("Seeded database successfully");
 }

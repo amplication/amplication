@@ -2011,7 +2011,7 @@ export class EntityService {
         }
       });
 
-      // Delete the related field from the databases
+      // Delete the related field from the database
       await this.prisma.entityField.delete({
         where: {
           // eslint-disable-next-line @typescript-eslint/naming-convention

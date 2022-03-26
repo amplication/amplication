@@ -1,15 +1,15 @@
 # Deploy Amplication as a production service
 # This deployment includes
 # - An instance of the Amplication server
-# - A PostgreSQL databases instance
-# - A migration service to update the databases schema
+# - A PostgreSQL database instance
+# - A migration service to update the database schema
 # - A scheduler service to trigger Amplication server update every minute
 # Variables:
 # - POSTGRESQL_USER - PostgreSQL user name
 # - POSTGRESQL_PASSWORD - PostgreSQL user password
 # - JWT_SECRET - Server secret for creating JWT tokens
 # - SERVICE_JWT_SECRET - Server secret for creating JWT tokens for services
-# - BCRYPT_SALT_OR_ROUNDS - Server salt for hashing passwords in the databases
+# - BCRYPT_SALT_OR_ROUNDS - Server salt for hashing passwords in the database
 # - LOCAL_DISK_ROOT - Server parameter where to save artifacts (e.g. generated code) to
 
 version: "3"

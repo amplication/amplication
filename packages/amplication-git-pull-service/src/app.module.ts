@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { GitPullEventModule } from "./core/gitPullEvent/gitPullEvent.module";
+import { GitRepositoryPullModule } from "./core/gitRepositoryPull/gitRepositoryPull.module";
 import { HealthModule } from "./health/health.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
 import { MorganModule } from "nest-morgan";
@@ -8,7 +8,7 @@ import { ConfigModule } from "@nestjs/config";
 @Module({
   controllers: [],
   imports: [
-    GitPullEventModule,
+    GitRepositoryPullModule,
     HealthModule,
     SecretsManagerModule,
     MorganModule,
