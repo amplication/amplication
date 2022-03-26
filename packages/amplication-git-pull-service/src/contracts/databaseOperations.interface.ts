@@ -1,4 +1,4 @@
-export interface IDatabaseActions {
+export interface IDatabaseOperations {
   create: (eventData: IGitPullEvent) => Promise<IGitPullEvent>;
   update: (
     id: number,
@@ -8,7 +8,6 @@ export interface IDatabaseActions {
 }
 
 export interface IGitPullEvent {
-  id: number;
   provider: string;
   repositoryOwner: string;
   repositoryName: string;
@@ -16,8 +15,9 @@ export interface IGitPullEvent {
   commit: string;
   status: EnumGitPullEventStatus;
   pushedAt: string;
-  createdAt: string;
-  updatedAt: string;
+  id?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export enum EnumGitPullEventStatus {

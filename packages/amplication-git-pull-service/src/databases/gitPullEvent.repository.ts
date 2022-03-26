@@ -2,12 +2,18 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import {
   EnumGitPullEventStatus,
-  IDatabaseActions,
+  IDatabaseOperations,
   IGitPullEvent,
-} from "../contracts/databaseActions.interface";
+} from "../contracts/databaseOperations.interface";
+
+/** TODO:
+    1. figure out what is the return type of any operation
+    2. update / upsert ?
+    3. how to find by index
+    **/
 
 @Injectable()
-export class GitPullEventRepository implements IDatabaseActions {
+export class GitPullEventRepository implements IDatabaseOperations {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(eventData: IGitPullEvent): Promise<any> {
