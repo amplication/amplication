@@ -1,4 +1,4 @@
 export interface IStorage {
-  workDir: string;
+  baseDir: string;
   manageStorage: () => void;
 }
