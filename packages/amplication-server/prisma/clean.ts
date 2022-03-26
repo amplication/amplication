@@ -10,13 +10,13 @@ if (require.main === module) {
 }
 
 async function clean() {
-  console.info('Dropping all tables in the database...');
+  console.info('Dropping all tables in the databases...');
   const prisma = new PrismaClient();
   const tables = await getTables(prisma);
   const types = await getTypes(prisma);
   await dropTables(prisma, tables);
   await dropTypes(prisma, types);
-  console.info('Cleaned database successfully');
+  console.info('Cleaned databases successfully');
   await prisma.$disconnect();
 }
 

@@ -20,16 +20,22 @@ export class GitClientService implements IGitClient {
     });
   }
 
-  clone(cloneParams: ICloneParams, baseDir: string, accessToken: string): void {
-    const { owner, repository } = cloneParams;
+  clone(
+    cloneParams: ICloneParams,
+    baseDir: string,
+    installationId: string,
+    accessToken: string
+  ): void {
+    const { repositoryOwner, repositoryName } = cloneParams;
     this.git.clone(
-      `https://${owner}:${accessToken}@github.com/${owner}/${repository}`,
+      `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`,
       baseDir
     );
   }
 
   pull(pullParams: IPullParams): void {
     const { remote, branch } = pullParams;
+    /* TODO: figure out how to pass here the baseDir and the accessToken => simpleGit({//options//}) */
     this.git.pull(remote, branch);
   }
 }

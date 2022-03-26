@@ -15,4 +15,4 @@ async function main() {
 main().catch(console.error);
 
 // Execute from bash
-// $ POSTGRESQL_URL=postgres://[user]:[password]@127.0.0.1:5432/app-database npx ts-node delete-auto-number.ts
+// $ POSTGRESQL_URL=postgres://[user]:[password]@127.0.0.1:5432/app-databases npx ts-node delete-auto-number.ts

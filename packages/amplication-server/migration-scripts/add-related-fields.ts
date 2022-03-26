@@ -8,7 +8,7 @@ import cuid from 'cuid';
 // For every existing lookup field create a related field
 async function main() {
   const client = new PrismaClient();
-  // Find all lookup fields in the database
+  // Find all lookup fields in the databases
   const lookupFields = await client.entityField.findMany({
     where: {
       dataType: EnumDataType.Lookup,
@@ -184,4 +184,4 @@ async function main() {
 main().catch(console.error);
 
 // Execute from bash
-// $ POSTGRESQL_URL=postgres://[user]:[password]@127.0.0.1:5432/app-database npx ts-node add-related-fields.ts
+// $ POSTGRESQL_URL=postgres://[user]:[password]@127.0.0.1:5432/app-databases npx ts-node add-related-fields.ts

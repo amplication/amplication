@@ -2,14 +2,15 @@ import { PrismaClient } from "@prisma/client";
 
 export async function customSeed() {
   const client = new PrismaClient();
-  const owner = "test-organization-name";
+  const repositoryOwner = "test-organization-name";
+  const id = 123;
 
-  //replace this sample code to populate your database
+  //replace this sample code to populate your databases
   //with data that is required for your application to start
-  await client.gitRepositoryPull.update({
-    where: { owner: owner },
+  await client.gitPullEvent.update({
+    where: { id: id },
     data: {
-      owner,
+      repositoryOwner,
     },
   });
 

@@ -239,7 +239,7 @@ export const TASK_ENTITY: BulkEntityData = {
 
 /**
  * For given existing user entity ID creates sample app entities
- * @param userEntityId the ID of the user entity in the database
+ * @param userEntityId the ID of the user entity in the databases
  * @returns entities to create for the sample app
  */
 export function createSampleAppEntities(
