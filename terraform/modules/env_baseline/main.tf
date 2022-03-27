@@ -306,8 +306,8 @@ resource "google_cloud_run_service" "default" {
         }
 
         env {
-          name  = "NOTIFICATIONS_SERVER_ID"
-          value = var.notifications_server_id
+          name  = "DISABLE_EVENT_TRACKING"
+          value = 0
         }
 
 

@@ -1,16 +1,13 @@
 import os from 'os';
 import fetch from 'node-fetch';
-import { name as APP_NAME, version as APP_VERSION } from '../../package.json';
+import { PackageJsonHelper } from './packageJsonHelper';
+import { v4 as uuid } from 'uuid';
 
-//TODO: Move to shared util
-const convertToBase64 = (data: string) => Buffer.from(data).toString('base64');
 
 const getOSVersion = () =>
-  os['version'] instanceof Function ? os['version']() : 'UNKNOWN';
+    os['version'] instanceof Function ? os['version']() : 'UNKNOWN';
 
-const NOTIFIER_ID = process.env.NOTIFICATIONS_ID || '';
-const NOTIFIER_SERVER_ID =
-  process.env.NOTIFICATIONS_SERVER_ID || 'DEFAULT-SERVER-ID';
+const POSTHOG_ID = process.env.POSTHOG_ID || '';
 const NODE_VERSION = process.version;
 const OS_NAME = os.platform();
 const OS_VERSION = getOSVersion();
@@ -19,36 +16,70 @@ const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const HEADERS = {};
 HEADERS['Content-Type'] = 'application/json';
-HEADERS['Authorization'] = `Basic ${convertToBase64(NOTIFIER_ID)}`;
 
-export const serverLoadNotification = (): void => {
-  const data = {
-    anonymousId: NOTIFIER_SERVER_ID,
-    event: 'server-load',
-    context: {
-      app: {
-        name: APP_NAME,
-        version: APP_VERSION
-      },
-      library: {
-        name: 'node',
-        version: NODE_VERSION
-      },
-      os: {
-        name: OS_NAME,
-        version: OS_VERSION
-      },
+export const sendServerLoadEvent = (): void => {
+  void getValuesFromPackageJson().then(value => {
+    const { runtimeId, appName, appVersion } = value;
+    const data = {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      api_key: POSTHOG_ID,
+      event: 'server-load-event',
       properties: {
-        hostname: HOST_NAME
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        distinct_id: runtimeId,
+        appName: appName,
+        appVersion: appVersion,
+        nodeVersion: NODE_VERSION,
+        osName: OS_NAME,
+        osVersion: OS_VERSION,
+        hostName: HOST_NAME,
+        timezone: TIMEZONE
       },
-      timezone: TIMEZONE
-    },
-    timestamp: new Date()
-  };
+      timestamp: new Date()
+    };
 
-  void fetch('https://api.segment.io/v1/track', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: HEADERS
+    void fetch('https://app.posthog.com/capture/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: HEADERS
+    });
   });
 };
+
+const getRuntimeId: (
+  packageJsonHelper: PackageJsonHelper
+) => Promise<string> = async (
+  packageJsonHelper: PackageJsonHelper
+): Promise<string> => {
+  let runtimeId = await packageJsonHelper.getValue('runtime_id');
+  if (!runtimeId) {
+    runtimeId = uuid();
+    await packageJsonHelper.updateValue('runtime_id', runtimeId);
+  }
+  return JSON.stringify(runtimeId);
+};
+
+const getValuesFromPackageJson: () => Promise<{
+  runtimeId: string;
+  appName: string;
+  appVersion: string;
+}> = async (): Promise<{
+  runtimeId: string;
+  appName: string;
+  appVersion: string;
+}> => {
+  const packageJsonHelper = PackageJsonHelper.getInstance('../../package.json');
+  const [runtimeId, appName, appVersion] = await Promise.all([
+    getRuntimeId(packageJsonHelper),
+    packageJsonHelper.getStringValue('name'),
+    packageJsonHelper.getStringValue('version')
+  ]);
+
+  return {
+    runtimeId,
+    appName,
+    appVersion
+  };
+};
+
+

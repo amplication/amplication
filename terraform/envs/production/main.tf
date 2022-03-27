@@ -43,7 +43,6 @@ module "env" {
   apps_region                      = var.apps_region
   apps_terraform_state_bucket      = var.apps_terraform_state_bucket
   apps_domain                      = var.apps_domain
-  notifications_server_id          = var.notifications_server_id
   apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
 }

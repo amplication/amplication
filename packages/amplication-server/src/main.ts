@@ -1,15 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { serverLoadNotification } from './util/serverLoadNotification';
+import { sendServerLoadEvent } from './util/serverLoadNotification';
 
 async function bootstrap() {
   /**
-   * send server load notification.
-   * this function will send server load event.
-   * the event will contain runtime environment details.
+   * Send server load notification:
+   * sending runtime environment details.
+   *
+   * To disable event tracking set DISABLE_EVENT_TRACKING to 1
+   *
+   * To find more information regarding this feature visit https://docs.amplication.com/
    */
-  serverLoadNotification();
+  if (!process.env.DISABLE_EVENT_TRACKING) {
+    sendServerLoadEvent();
+  }
 
   /**
    * Cloud Tracing @see https://cloud.google.com/trace/docs

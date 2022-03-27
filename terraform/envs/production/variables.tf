@@ -161,7 +161,3 @@ variable "apps_terraform_state_bucket" {
 variable "apps_domain" {
   type = string
 }
-#Notifications
-variable "notifications_server_id" {
-  type = string
-}
