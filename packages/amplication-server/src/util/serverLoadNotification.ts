@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 const getOSVersion = () =>
     os['version'] instanceof Function ? os['version']() : 'UNKNOWN';
 
-const POSTHOG_ID = process.env.POSTHOG_ID || '';
+const POSTHOG_ID="phc_XYKT2bD5pjwUAOphl3BBxQnqGxTDPGTvu2BnG4tSeSF";
 const NODE_VERSION = process.version;
 const OS_NAME = os.platform();
 const OS_VERSION = getOSVersion();
@@ -38,6 +38,7 @@ export const sendServerLoadEvent = (): void => {
       timestamp: new Date()
     };
 
+    console.dir(data);
     void fetch('https://app.posthog.com/capture/', {
       method: 'POST',
       body: JSON.stringify(data),
