@@ -5,6 +5,8 @@ import {
 import { IPullParams } from "../contracts/gitClient.interface";
 import os from "os";
 
+export const MOCK_ACCESS_TOKEN = "accesstoken123";
+
 export const pullEventMock: IGitPullEvent = {
   id: 123,
   branch: "main",

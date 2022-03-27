@@ -14,7 +14,7 @@ import { ConfigModule } from "@nestjs/config";
     MorganModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [".env"],
+      envFilePath: [".env.local", ".env"],
     }),
   ],
   providers: [],

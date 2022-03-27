@@ -7,12 +7,12 @@ export interface IGitClient {
     baseDir: string,
     installationId: string,
     accessToken: string
-  ) => Response<string>;
+  ) => Promise<any>;
   pull: (
     pullParams: IPullParams,
     baseDir: string,
     installationId: string
-  ) => Response<resp.PullResult>;
+  ) => Promise<any>;
 }
 
 export interface ICloneParams {

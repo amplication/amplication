@@ -1,6 +1,7 @@
 import { ConfigModule } from "@nestjs/config";
-import { GitProviderService } from "../../providers/git/gitProvider.service";
+import { GitProviderService } from "../../../providers/gitProvider/gitProvider.service";
 import { Test, TestingModule } from "@nestjs/testing";
+import { MOCK_GIT_PROVIDER_SERVICE } from "../../../__mocks__/providers/gitProvider/gitProviderService";
 
 describe("Testing GitProviderService", () => {
   let gitProviderService: GitProviderService;
@@ -8,13 +9,13 @@ describe("Testing GitProviderService", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [".env"],
-        }),
+      imports: [ConfigModule.forRoot({})],
+      providers: [
+        {
+          provide: GitProviderService,
+          useValue: MOCK_GIT_PROVIDER_SERVICE,
+        },
       ],
-      providers: [GitProviderService],
     }).compile();
 
     gitProviderService = module.get<GitProviderService>(GitProviderService);
@@ -26,7 +27,7 @@ describe("Testing GitProviderService", () => {
 
   it("should return access token", async () => {
     const token = await gitProviderService.createInstallationAccessToken(
-      "24226448"
+      "12345678"
     );
     expect(token).not.toBe(null);
   });
