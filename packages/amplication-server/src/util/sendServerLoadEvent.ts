@@ -4,18 +4,17 @@ import { JsonHelper } from './jsonHelper';
 import { v4 as uuid } from 'uuid';
 import { name as APP_NAME, version as APP_VERSION } from '../../package.json';
 
-
 const getOSVersion = () =>
-    os['version'] instanceof Function ? os['version']() : 'UNKNOWN';
+  os['version'] instanceof Function ? os['version']() : 'UNKNOWN';
 
-const POSTHOG_ID="phc_XYKT2bD5pjwUAOphl3BBxQnqGxTDPGTvu2BnG4tSeSF";
+const POSTHOG_ID = 'phc_XYKT2bD5pjwUAOphl3BBxQnqGxTDPGTvu2BnG4tSeSF';
 const NODE_VERSION = process.version;
 const OS_NAME = os.platform();
 const OS_VERSION = getOSVersion();
 const HOST_NAME = os.hostname();
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-const SERVER_ID_FILE_NAME = "../.server-id"
+const SERVER_ID_FILE_NAME = '../.server-id';
 
 const HEADERS = {};
 HEADERS['Content-Type'] = 'application/json';
@@ -49,14 +48,11 @@ export const sendServerLoadEvent = (): void => {
   });
 };
 
-
-const getServerId: () => Promise<string> = async (): Promise<string>=> {
+const getServerId: () => Promise<string> = async (): Promise<string> => {
   const packageJsonHelper = JsonHelper.getInstance(SERVER_ID_FILE_NAME);
-  if(!await packageJsonHelper.exists()){
-    await packageJsonHelper.updateValue("runtime_id",uuid())
+  if (!(await packageJsonHelper.exists())) {
+    await packageJsonHelper.updateValue('runtime_id', uuid());
   }
 
-  return await packageJsonHelper.getStringValue("runtime_id")
+  return await packageJsonHelper.getStringValue('runtime_id');
 };
-
-

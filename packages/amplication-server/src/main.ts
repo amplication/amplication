@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { sendServerLoadEvent } from './util/serverLoadNotification';
+import { sendServerLoadEvent } from './util/sendServerLoadEvent';
 
 async function bootstrap() {
   /**
@@ -12,7 +12,10 @@ async function bootstrap() {
    *
    * To find more information regarding this feature visit https://docs.amplication.com/
    */
-  if (!process.env.DISABLE_EVENT_TRACKING || process.env.DISABLE_EVENT_TRACKING=='0') {
+  if (
+    !process.env.DISABLE_EVENT_TRACKING ||
+    process.env.DISABLE_EVENT_TRACKING == '0'
+  ) {
     sendServerLoadEvent();
   }
 
