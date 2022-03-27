@@ -42,8 +42,7 @@ service:
 config:
   enabled: true
   env:
-    IF_POSTGRESQL_URL: true
-    POSTGRESQL_URL: # default managed by computed values
+    POSTGRESQL_URL: "postgres://postgres:Fd7zZXWvCY3bdgLHz@postgres:5432"
 
 pvc:
   enabled: false
@@ -64,4 +63,4 @@ postgres:
   servicePort: 5432
   primary:
     podLabels: { name: "localpostgres" }
-  fullnameOverride: "localpostgres"
+  fullnameOverride: "postgres"

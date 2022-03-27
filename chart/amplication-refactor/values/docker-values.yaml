@@ -42,8 +42,7 @@ service:
   protocol: TCP
   port:
     name: docker-tcp 
-    number: 80
-  targetPort: 2375
+    number: 2375
 
 traefik:
   enabled: true
@@ -58,8 +57,7 @@ traefik:
 config:
   enabled: true
   env:
-    IF_DOCKER_TLS_CERTDIR: true
-    DOCKER_TLS_CERTDIR: # Makes it so server starts on 2375.
+    DOCKER_TLS_CERTDIR: 2375
 
 pvc:
   enabled: true

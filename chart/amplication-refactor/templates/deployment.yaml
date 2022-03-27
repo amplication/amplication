@@ -51,7 +51,7 @@ spec:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
           {{- if .Values.service.enabled }}
           ports:
-            - containerPort: {{ .Values.service.targetPort }}
+            - containerPort: {{ .Values.service.port.number }}
           {{- end }}
       {{- if .Values.deployment.volume.enabled }}
           volumeMounts:

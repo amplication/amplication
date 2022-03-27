@@ -25,7 +25,6 @@ deployment:
     #   cpu: 100m
     #   memory: 128Mi
 
-
   image:
     pullPolicy: Always
     repository: registry
@@ -42,8 +41,7 @@ service:
   type: ClusterIP
   port: 
     name: registry-tcp
-    number: 80
-  targetPort: 5000
+    number: 5000
   protocol: TCP
 
 traefik:

@@ -4,22 +4,40 @@ kind: ConfigMap
 metadata:
   name: '{{ .Chart.Name }}-{{ .Values.name }}'
 data:
-  {{- if .Values.config.env.IF_POSTGRESQL_URL }}
-  POSTGRESQL_URL: {{ .Values.config.env.POSTGRESQL_URL | default (printf "postgres://%s:%s@%s:%v" .Values.postgres.postgresqlUsername .Values.postgres.postgresqlPassword .Values.postgres.fullnameOverride .Values.postgres.servicePort ) }}
+  {{- if .Values.config.env.POSTGRESQL_URL }}
+  POSTGRESQL_URL: {{ .Values.config.env.POSTGRESQL_URL }}
   {{- end }}
-  {{- if .Values.config.env.if_app }}
+  {{- if .Values.config.env.JWT_SECRET }}
   JWT_SECRET: {{ .Values.config.env.JWT_SECRET }}
+  {{- end }}
+  {{- if .Values.config.env.SERVICE_JWT_SECRET }}
   SERVICE_JWT_SECRET: {{ .Values.config.env.SERVICE_JWT_SECRET }}
+  {{- end }}
+  {{- if .Values.config.env.BCRYPT_SALT_OR_ROUNDS }}
   BCRYPT_SALT_OR_ROUNDS: {{ .Values.config.env.BCRYPT_SALT_OR_ROUNDS | quote }}
+  {{- end }}
+  {{- if .Values.config.env.NODE_ENV }}
   NODE_ENV: {{ .Values.config.env.NODE_ENV }}
+  {{- end }}
+  {{- if .Values.config.env.CORS_ENABLE }}
   CORS_ENABLE: {{ .Values.config.env.CORS_ENABLE | quote }}
-  PORT: {{ .Values.config.env.PORT | default .Values.service.port.number | quote }}
-  HOST: {{ .Values.config.env.HOST | default (printf "http://%s:%v" .Values.name .Values.service.port.number ) }}
+  {{- end }}
+  {{- if .Values.config.env.PORT }}
+  PORT: {{ .Values.config.env.PORT | quote }}
+  {{- end }}
+  {{- if .Values.config.env.HOST }}
+  HOST: {{ .Values.config.env.HOST }}
+  {{- end }}
+  {{- if .Values.config.env.DEFAULT_DISK }}
   DEFAULT_DISK: {{ .Values.config.env.DEFAULT_DISK }}
+  {{- end }}
+  {{- if .Values.config.env.LOCAL_DISK_ROOT }}
   LOCAL_DISK_ROOT: {{ .Values.config.env.LOCAL_DISK_ROOT }}
+  {{- end }}
+  {{- if .Values.config.env.CONTAINER_BUILDER_DEFAULT }}
   CONTAINER_BUILDER_DEFAULT: {{ .Values.config.env.CONTAINER_BUILDER_DEFAULT }}
   {{- end }}
-  {{- if .Values.config.env.IF_DOCKER_TLS_CERTDIR }}
-  DOCKER_TLS_CERTDIR: {{ .Values.config.env.DOCKER_TLS_CERTDIR | default .Values.service.port.number | quote }}
+  {{- if .Values.config.env.DOCKER_TLS_CERTDIR }}
+  DOCKER_TLS_CERTDIR: {{ .Values.config.env.DOCKER_TLS_CERTDIR | quote }}
   {{- end }}
 {{- end }}

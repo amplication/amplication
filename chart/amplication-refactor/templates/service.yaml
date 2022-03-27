@@ -10,7 +10,6 @@ spec:
   ports:
     - name: {{ .Values.service.port.name }}
       port: {{ .Values.service.port.number }}
-      targetPort: {{ .Values.service.targetPort }}
       protocol: {{ .Values.service.protocol }}
   selector:
     app: '{{ .Chart.Name }}-{{ .Values.name }}'

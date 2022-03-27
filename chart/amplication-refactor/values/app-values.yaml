@@ -41,8 +41,7 @@ service:
   type: ClusterIP
   port: 
     name: app-http
-    number: 80
-  targetPort: 3000
+    number: 3000
   protocol: TCP
 
 traefik:
@@ -58,16 +57,14 @@ traefik:
 config:
   enabled: true
   env:
-    IF_POSTGRESQL_URL: true
-    if_app: true
-    POSTGRESQL_URL: # default managed by computed values
+    POSTGRESQL_URL: "postgres://postgres:Fd7zZXWvCY3bdgLHz@postgres:5432"
     JWT_SECRET: jwt-secret
     SERVICE_JWT_SECRET: service-jwt-secret
     BCRYPT_SALT_OR_ROUNDS: "10"
     NODE_ENV: production
     CORS_ENABLE: "1"
-    PORT: # default managed by computed values
-    HOST: # default managed by computed values
+    PORT: 3000
+    HOST: http://localhost:3000
     DEFAULT_DISK: local
     LOCAL_DISK_ROOT: /artifacts
     CONTAINER_BUILDER_DEFAULT: docker
@@ -93,4 +90,4 @@ postgres:
   servicePort: 5432
   primary:
     podLabels: { name: "localpostgres" }
-  fullnameOverride: "localpostgres"
+  fullnameOverride: "postgres"
