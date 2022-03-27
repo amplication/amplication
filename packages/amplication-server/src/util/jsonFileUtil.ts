@@ -20,13 +20,14 @@ export class JsonFileUtil {
     });
   };
 
-  static write: (path: string, packageJson: JsonObject) => Promise<boolean> = (
+  static write: (path: string, packageJson: JsonObject,space?: string | number) => Promise<boolean> = (
     path: string,
-    packageJson: JsonObject
+    packageJson: JsonObject,
+    space: string | number = 2
   ) => {
     return new Promise<boolean>((resolve, reject) => {
       const data = new Uint8Array(
-        Buffer.from(JSON.stringify(packageJson, null, '\t'))
+        Buffer.from(JSON.stringify(packageJson, null, space))
       );
       writeFile(path, data, err => {
         if (err) {

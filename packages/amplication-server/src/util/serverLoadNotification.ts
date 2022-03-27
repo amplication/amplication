@@ -68,7 +68,7 @@ const getValuesFromPackageJson: () => Promise<{
   appName: string;
   appVersion: string;
 }> => {
-  const packageJsonHelper = PackageJsonHelper.getInstance('../../package.json');
+  const packageJsonHelper = PackageJsonHelper.getInstance('../package.json');
   const [runtimeId, appName, appVersion] = await Promise.all([
     getRuntimeId(packageJsonHelper),
     packageJsonHelper.getStringValue('name'),

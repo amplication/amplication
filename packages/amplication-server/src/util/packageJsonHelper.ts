@@ -24,7 +24,7 @@ export class PackageJsonHelper {
   }
 
   async getStringValue(name: string): Promise<string> {
-    return JSON.stringify(this.getValue(name));
+    return JSON.stringify(await this.getValue(name));
   }
 
   async updateValue(name: string, value: JsonValue): Promise<boolean> {
