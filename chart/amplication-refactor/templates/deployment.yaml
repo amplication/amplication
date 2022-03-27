@@ -24,6 +24,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: default
       containers:
         - name: '{{ .Chart.Name }}-{{ .Values.name }}'
           imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}

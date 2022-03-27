@@ -16,12 +16,12 @@ spec:
         imagePullPolicy: {{ .Values.postgres.imagePullPolicy }}
         args:
           - "pod"
-          - "{{ .Values.postgres.fullnameOverride }}-0"
+          - "{{ .Release.Name }}-{{ .Values.postgres.fullnameOverride }}ql-0"
       {{ end }}
       containers:
       - name: "{{ .Values.name }}-migrate"
         image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
-        command: ["/bin/bash"]
+        command: ["/bin/sh"]
         args: ["-c", "npm run migrate:up"]
         env:
         - name: POSTGRESQL_URL

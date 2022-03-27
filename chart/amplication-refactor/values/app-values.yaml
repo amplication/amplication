@@ -45,7 +45,7 @@ service:
   protocol: TCP
 
 traefik:
-  enabled: true
+  enabled: false
   # traefik.path -- The path to match for Traefik to route to service
   rule: PathPrefix(`/`)
   entrypoints:
@@ -89,5 +89,5 @@ postgres:
   postgresqlPassword: Fd7zZXWvCY3bdgLHz
   servicePort: 5432
   primary:
-    podLabels: { name: "localpostgres" }
+    podLabels: { name: "postgres" }
   fullnameOverride: "postgres"

@@ -45,7 +45,7 @@ service:
   protocol: TCP
 
 traefik:
-  enabled: true
+  enabled: false
   # traefik.path -- The path to match for Traefik to route to service
   rule: PathPrefix(`/`)
   entrypoints:
