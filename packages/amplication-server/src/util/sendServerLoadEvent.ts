@@ -1,7 +1,8 @@
 import os from 'os';
 import fetch from 'node-fetch';
-import { PackageJsonHelper } from './packageJsonHelper';
+import { JsonHelper } from './jsonHelper';
 import { v4 as uuid } from 'uuid';
+import { name as APP_NAME, version as APP_VERSION } from '../../package.json';
 
 
 const getOSVersion = () =>
@@ -14,12 +15,13 @@ const OS_VERSION = getOSVersion();
 const HOST_NAME = os.hostname();
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+const SERVER_ID_FILE_NAME = "../.server-id"
+
 const HEADERS = {};
 HEADERS['Content-Type'] = 'application/json';
 
 export const sendServerLoadEvent = (): void => {
-  void getValuesFromPackageJson().then(value => {
-    const { runtimeId, appName, appVersion } = value;
+  void getServerId().then(runtimeId => {
     const data = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       api_key: POSTHOG_ID,
@@ -27,8 +29,8 @@ export const sendServerLoadEvent = (): void => {
       properties: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         distinct_id: runtimeId,
-        appName: appName,
-        appVersion: appVersion,
+        appName: APP_NAME,
+        appVersion: APP_VERSION,
         nodeVersion: NODE_VERSION,
         osName: OS_NAME,
         osVersion: OS_VERSION,
@@ -47,40 +49,14 @@ export const sendServerLoadEvent = (): void => {
   });
 };
 
-const getRuntimeId: (
-  packageJsonHelper: PackageJsonHelper
-) => Promise<string> = async (
-  packageJsonHelper: PackageJsonHelper
-): Promise<string> => {
-  let runtimeId = await packageJsonHelper.getValue('runtime_id');
-  if (!runtimeId) {
-    runtimeId = uuid();
-    await packageJsonHelper.updateValue('runtime_id', runtimeId);
+
+const getServerId: () => Promise<string> = async (): Promise<string>=> {
+  const packageJsonHelper = JsonHelper.getInstance(SERVER_ID_FILE_NAME);
+  if(!await packageJsonHelper.exists()){
+    await packageJsonHelper.updateValue("runtime_id",uuid())
   }
-  return JSON.stringify(runtimeId);
-};
 
-const getValuesFromPackageJson: () => Promise<{
-  runtimeId: string;
-  appName: string;
-  appVersion: string;
-}> = async (): Promise<{
-  runtimeId: string;
-  appName: string;
-  appVersion: string;
-}> => {
-  const packageJsonHelper = PackageJsonHelper.getInstance('../package.json');
-  const [runtimeId, appName, appVersion] = await Promise.all([
-    getRuntimeId(packageJsonHelper),
-    packageJsonHelper.getStringValue('name'),
-    packageJsonHelper.getStringValue('version')
-  ]);
-
-  return {
-    runtimeId,
-    appName,
-    appVersion
-  };
+  return await packageJsonHelper.getStringValue("runtime_id")
 };
 
 
