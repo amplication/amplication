@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { EnumGitProvider } from "../../../models";
+import { ArgsType, Field } from '@nestjs/graphql';
+import { EnumGitProvider } from '../../../models';
 
 @ArgsType()
 export class SendPullRequestArgs {

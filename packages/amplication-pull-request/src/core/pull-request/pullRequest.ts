@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class PullRequest {
@@ -6,7 +6,7 @@ export class PullRequest {
     this.create();
   }
   private create(): PullRequest {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   @Field(() => String)
   url!: string;

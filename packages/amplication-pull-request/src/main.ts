@@ -1,11 +1,11 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {});
 
   // Cors
-  if (process.env.CORS_ENABLE === "1") {
+  if (process.env.CORS_ENABLE === '1') {
     app.enableCors();
   }
 

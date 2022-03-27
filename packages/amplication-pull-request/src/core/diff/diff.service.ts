@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { compareSync, compare, Result } from "dir-compare";
-import { BUILDS_FOLDER_PATH_ENV_KEY } from "src/constants";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { compareSync, compare, Result } from 'dir-compare';
+import { BUILDS_FOLDER_PATH_ENV_KEY } from 'src/constants';
 
 @Injectable()
 export class DiffService {
@@ -14,6 +14,6 @@ export class DiffService {
     console.log(buildsFolder);
 
     // const res = await compare();
-    throw new Error("");
+    throw new Error('');
   }
 }

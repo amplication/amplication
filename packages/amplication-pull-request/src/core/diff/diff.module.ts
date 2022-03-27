@@ -1,6 +1,6 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { DiffService } from "./diff.service";
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { DiffService } from './diff.service';
 
 @Module({
   providers: [DiffService],

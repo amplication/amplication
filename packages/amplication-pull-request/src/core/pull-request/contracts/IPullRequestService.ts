@@ -1,4 +1,4 @@
-import { PullRequest } from "../pullRequest";
+import { PullRequest } from '../pullRequest';
 
 export interface IPullRequestService {
   /**

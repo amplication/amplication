@@ -1,8 +1,8 @@
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
-import { IPullRequestRouter } from "./contracts";
-import { SendPullRequestArgs } from "./dto";
-import { PullRequestService } from "./pull-request.service";
-import { PullRequest } from "./pullRequest";
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { IPullRequestRouter } from './contracts';
+import { SendPullRequestArgs } from './dto';
+import { PullRequestService } from './pull-request.service';
+import { PullRequest } from './pullRequest';
 
 @Resolver((of) => PullRequest)
 export class PullRequestResolver implements IPullRequestRouter {

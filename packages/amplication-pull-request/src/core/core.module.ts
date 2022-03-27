@@ -1,5 +1,5 @@
-import { Module } from "@nestjs/common";
-import { PullRequestModule } from "./pull-request";
+import { Module } from '@nestjs/common';
+import { PullRequestModule } from './pull-request';
 @Module({
   imports: [PullRequestModule],
   exports: [PullRequestModule],

@@ -1,1 +1,1 @@
-export * from "./sendPullRequest";
+export * from './sendPullRequest';
