@@ -1,19 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { compareSync, compare, Result } from 'dir-compare';
-import { BUILDS_FOLDER_PATH_ENV_KEY } from 'src/constants';
+import { compare, Options } from 'dir-compare';
+import { ChangedFile } from './dto/ChangedFile';
+import { BuildsPathFactory } from './utils/BuildsPathFactory';
 
 @Injectable()
 export class DiffService {
-  constructor(private readonly configService: ConfigService) {}
-  async listOfChangedFiles(): Promise<[]> {
-    // absolute path to the builds folder
-    const buildsFolder = this.configService.get<string>(
-      BUILDS_FOLDER_PATH_ENV_KEY
-    );
-    console.log(buildsFolder);
+  constructor(private readonly buildsPathFactory: BuildsPathFactory) {}
+  async listOfChangedFiles(
+    amplicationAppId: string,
+    previousAmplicationBuildId: string,
+    newAmplicationBuildId: string
+  ): Promise<ChangedFile[]> {
+    const { oldBuildPath, newBuildPath } =
+      this.buildsPathFactory.buildsFoldersPaths(
+        amplicationAppId,
+        previousAmplicationBuildId,
+        newAmplicationBuildId
+      );
 
-    // const res = await compare();
-    throw new Error('');
+    if (oldBuildPath === newBuildPath) {
+      throw new Error('Cant get the same build id');
+    }
+
+    const res = await compare(oldBuildPath, newBuildPath, CompareOptions);
+    const changedFiles = res.diffSet.filter((diff) => {
+      if (diff.state !== 'equal') {
+        return true;
+      }
+      return false;
+    });
+    return changedFiles.map((diff) => ({
+      path: this.fromAbsoluteToRelativePath(diff.path2),
+    }));
+  }
+  private fromAbsoluteToRelativePath(relativePath) {
+    return relativePath.replace(relativePath, '');
   }
 }
+
+const CompareOptions: Options = {
+  compareContent: true,
+  compareDate: false,
+  compareSize: false,
+  compareSymlink: false,
+};

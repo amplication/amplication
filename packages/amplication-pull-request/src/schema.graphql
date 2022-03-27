@@ -1,0 +1,11 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type PullRequest {
+  url: String!
+}
+
+type Query {
+  createPullRequest(amplicationAppId: String!, previousAmplicationBuildId: String!, newAmplicationBuildId: String!, installationId: String!): PullRequest!
+}

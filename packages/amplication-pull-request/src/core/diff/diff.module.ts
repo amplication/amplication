@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { DiffService } from './diff.service';
+import { BuildsPathFactory } from './utils/BuildsPathFactory';
 
 @Module({
-  providers: [DiffService],
+  providers: [DiffService, BuildsPathFactory],
   exports: [DiffService],
 })
 export class DiffModule {}

@@ -1,15 +1,15 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { IPullRequestRouter } from './contracts';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { SendPullRequestArgs } from './dto';
 import { PullRequestService } from './pull-request.service';
 import { PullRequest } from './pullRequest';
 
 @Resolver((of) => PullRequest)
-export class PullRequestResolver implements IPullRequestRouter {
+export class PullRequestResolver {
   constructor(private readonly pullRequestService: PullRequestService) {}
 
-  @Mutation((returns) => PullRequest, { nullable: false })
-  createPullRequest(@Args() args: SendPullRequestArgs) {
-    return this.pullRequestService.createPullRequest();
+  //TODO refactor to mutation
+  @Query((returns) => PullRequest, { nullable: false })
+  async createPullRequest(@Args() args: SendPullRequestArgs) {
+    return this.pullRequestService.createPullRequest(args);
   }
 }
