@@ -1,6 +1,6 @@
 # Default values for amplication.
 # This is a YAML-formatted file.
-
+environment: local
 name: docker
 
 deployment:
@@ -39,9 +39,21 @@ deployment:
 service:
   enabled: true
   type: ClusterIP
+  protocol: TCP
   port:
     name: docker-tcp 
-    number: 2375
+    number: 80
+  targetPort: 2375
+
+traefik:
+  enabled: true
+  # traefik.path -- The path to match for Traefik to route to service
+  rule: PathPrefix(`/`)
+  entrypoints:
+    http:
+      name: web
+    https:
+      name: websecure
 
 config:
   enabled: true

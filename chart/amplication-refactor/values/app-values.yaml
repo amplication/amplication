@@ -1,6 +1,6 @@
 # Default values for amplication.
 # This is a YAML-formatted file.
-
+environment: local
 name: app
 
 deployment:
@@ -25,7 +25,6 @@ deployment:
     #   cpu: 100m
     #   memory: 128Mi
 
-
   image:
     pullPolicy: Always
     repository: amplication/amplication
@@ -42,7 +41,19 @@ service:
   type: ClusterIP
   port: 
     name: app-http
-    number: 3000
+    number: 80
+  targetPort: 3000
+  protocol: TCP
+
+traefik:
+  enabled: true
+  # traefik.path -- The path to match for Traefik to route to service
+  rule: PathPrefix(`/`)
+  entrypoints:
+    http:
+      name: web
+    https:
+      name: websecure
 
 config:
   enabled: true

@@ -1,6 +1,6 @@
 # Default values for amplication.
 # This is a YAML-formatted file.
-
+environment: local
 name: scheduler
 
 deployment:

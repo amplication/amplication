@@ -1,6 +1,6 @@
 # Default values for amplication.
 # This is a YAML-formatted file.
-
+environment: local
 name: registry
 
 deployment:
@@ -42,7 +42,19 @@ service:
   type: ClusterIP
   port: 
     name: registry-tcp
-    number: 5000
+    number: 80
+  targetPort: 5000
+  protocol: TCP
+
+traefik:
+  enabled: true
+  # traefik.path -- The path to match for Traefik to route to service
+  rule: PathPrefix(`/`)
+  entrypoints:
+    http:
+      name: web
+    https:
+      name: websecure
 
 config:
   enabled: false

@@ -1,0 +1,18 @@
+{{- if .Values.traefik.enabled }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: '{{ .Chart.Name }}-{{ .Values.name }}'
+spec:
+  entryPoints:
+    - {{ .Values.traefik.entrypoints.http.name }}
+    - {{ .Values.traefik.entrypoints.https.name }}
+  routes:
+  - match: {{ .Values.traefik.rule }}
+    kind: Rule
+    services:
+    - name: '{{ .Chart.Name }}-{{ .Values.name }}'
+      port: {{ .Values.service.port.number }}
+{{- end }} 

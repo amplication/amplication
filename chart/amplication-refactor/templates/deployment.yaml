@@ -38,6 +38,11 @@ spec:
           - configMapRef:
               name: '{{ .Chart.Name }}-{{ .Values.name }}'
           {{- end }}
+          env: 
+            - name: ENVIRONMENT
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           {{- if .Values.deployment.securityContext.enabled }}
           securityContext:
             privileged: true
@@ -46,9 +51,7 @@ spec:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
           {{- if .Values.service.enabled }}
           ports:
-            - name: {{ .Values.service.port.name }}
-              containerPort: {{ .Values.service.port.number }}
-              protocol: TCP
+            - containerPort: {{ .Values.service.targetPort }}
           {{- end }}
       {{- if .Values.deployment.volume.enabled }}
           volumeMounts:
