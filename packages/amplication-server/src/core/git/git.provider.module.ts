@@ -18,7 +18,6 @@ import { GitProviderService } from './git.provider.service';
     GitService,
     GithubService,
     GitServiceFactory
-  ],
-  exports: [GitService]
+  ]
 })
 export class GitProviderModule {}
