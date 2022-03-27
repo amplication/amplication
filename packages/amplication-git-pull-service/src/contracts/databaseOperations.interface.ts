@@ -4,7 +4,6 @@ export interface IDatabaseOperations {
     id: number,
     status: EnumGitPullEventStatus
   ) => Promise<IGitPullEvent>;
-  remove: (id: number) => Promise<IGitPullEvent>;
 }
 
 export interface IGitPullEvent {

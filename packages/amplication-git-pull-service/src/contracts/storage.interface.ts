@@ -1,8 +1,10 @@
+import { IGitPullEvent } from "./databaseOperations.interface";
+
 export interface IStorage {
   /* TODO: change any to a real type */
   manageStorage: (
-    data: any,
     storage: FixedSizeArray<5, any>,
+    data: IGitPullEvent,
     baseDir: string
   ) => void;
 }

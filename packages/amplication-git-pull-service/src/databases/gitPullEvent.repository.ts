@@ -8,8 +8,7 @@ import {
 
 /** TODO:
     1. figure out what is the return type of any operation
-    2. update / upsert ?
-    3. how to find by index
+    2. how to find by index
     **/
 
 @Injectable()
@@ -20,14 +19,11 @@ export class GitPullEventRepository implements IDatabaseOperations {
     return this.prisma.gitPullEvent.create({ data: eventData });
   }
 
+  /* update status to ready or deleted  */
   async update(id: number, status: EnumGitPullEventStatus): Promise<any> {
     return this.prisma.gitPullEvent.update({
       where: { id: id },
       data: { status: status },
     });
-  }
-
-  async remove(id: number): Promise<any> {
-    return this.prisma.gitPullEvent.delete({ where: { id: id } });
   }
 }
