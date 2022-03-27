@@ -1,15 +1,18 @@
+import { Response } from "express";
+import * as resp from "simple-git/dist/typings/response";
+
 export interface IGitClient {
   clone: (
     cloneParams: ICloneParams,
     baseDir: string,
     installationId: string,
     accessToken: string
-  ) => void;
+  ) => Response<string>;
   pull: (
     pullParams: IPullParams,
     baseDir: string,
     installationId: string
-  ) => void;
+  ) => Response<resp.PullResult>;
 }
 
 export interface ICloneParams {
@@ -23,5 +26,6 @@ export interface ICloneParams {
 export interface IPullParams {
   branch: string;
   remote: string;
-  commit: string;
+  baseDir: string;
+  commit?: string;
 }

@@ -5,37 +5,39 @@ import {
   IPullParams,
 } from "../../contracts/gitClient.interface";
 import simpleGit, { SimpleGit } from "simple-git";
+import { Response } from "simple-git/dist/typings/simple-git";
+import * as resp from "simple-git/dist/typings/response";
 
 /*
  * SimpleGit integration
  * */
 @Injectable()
 export class GitClientService implements IGitClient {
-  private git: SimpleGit;
-
-  constructor() {
-    this.git = simpleGit({
-      binary: "git",
-      maxConcurrentProcesses: 6,
-    });
-  }
-
+  // @ts-ignore
   clone(
     cloneParams: ICloneParams,
     baseDir: string,
     installationId: string,
     accessToken: string
-  ): void {
+  ): Response<string> {
     const { repositoryOwner, repositoryName } = cloneParams;
-    this.git.clone(
+    return simpleGit({
+      binary: "git",
+      maxConcurrentProcesses: 6,
+    }).clone(
       `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`,
       baseDir
     );
   }
 
-  pull(pullParams: IPullParams): void {
-    const { remote, branch } = pullParams;
+  // @ts-ignore
+  pull(pullParams: IPullParams): Response<resp.PullResult> {
+    const { remote, branch, baseDir } = pullParams;
     /* TODO: figure out how to pass here the baseDir and the accessToken => simpleGit({//options//}) */
-    this.git.pull(remote, branch);
+    return simpleGit({
+      baseDir,
+      binary: "git",
+      maxConcurrentProcesses: 6,
+    }).pull(remote, branch);
   }
 }

@@ -29,7 +29,7 @@ export class GitProviderService implements IGitProvider {
     const installationIdNumber = convertToNumber(installationId);
     const octokit = await this.app.getInstallationOctokit(installationIdNumber);
     const { data } = await octokit.request(
-      "POST /app/installations/{installation_id}/access_tokens",
+      `POST /app/installations/${installationId}/access_tokens`,
       {
         installation_id: installationIdNumber,
         repositories: [],

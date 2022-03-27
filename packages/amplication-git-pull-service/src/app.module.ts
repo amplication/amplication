@@ -12,7 +12,10 @@ import { ConfigModule } from "@nestjs/config";
     HealthModule,
     SecretsManagerModule,
     MorganModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [".env.local", ".env"],
+    }),
   ],
   providers: [],
 })
