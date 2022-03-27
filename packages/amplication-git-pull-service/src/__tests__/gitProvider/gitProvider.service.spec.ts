@@ -11,7 +11,7 @@ describe("Testing GitProviderService", () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: [".env.local", ".env"],
+          envFilePath: [".env"],
         }),
       ],
       providers: [GitProviderService],
