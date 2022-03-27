@@ -4,7 +4,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.json',
-    sourceType: 'module'
+    sourceType: 'module',
   },
   plugins: ['@typescript-eslint/eslint-plugin', 'import'],
   extends: [
@@ -12,22 +12,22 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
-    'plugin:import/typescript'
+    'plugin:import/typescript',
   ],
   root: true,
   env: {
     node: true,
-    jest: true
+    jest: true,
   },
   settings: {
     'import/resolver': {
       node: {
-        paths: ['.']
+        paths: ['.'],
       },
       'eslint-import-resolver-lerna': {
-        packages: path.resolve(__dirname, '..')
-      }
-    }
+        packages: path.resolve(__dirname, '..'),
+      },
+    },
   },
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
@@ -41,21 +41,21 @@ module.exports = {
         selector: 'default',
         format: ['camelCase'],
         leadingUnderscore: 'allow',
-        trailingUnderscore: 'allow'
+        trailingUnderscore: 'allow',
       },
       {
         selector: 'variable',
         format: ['camelCase', 'UPPER_CASE'],
         leadingUnderscore: 'allow',
-        trailingUnderscore: 'allow'
+        trailingUnderscore: 'allow',
       },
       {
         selector: 'typeLike',
-        format: ['PascalCase']
+        format: ['PascalCase'],
       },
-      { selector: 'enumMember', format: ['PascalCase'] }
+      { selector: 'enumMember', format: ['PascalCase'] },
     ],
     '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
-    '@typescript-eslint/no-floating-promises': 'error'
-  }
+    '@typescript-eslint/no-floating-promises': 'error',
+  },
 };
