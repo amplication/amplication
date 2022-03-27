@@ -16,6 +16,8 @@ export class PullRequestService {
       previousAmplicationBuildId,
       newAmplicationBuildId
     );
+    console.log(changedFiles);
+
     throw new Error('fds');
   }
 }

@@ -22,7 +22,7 @@ export class DiffService {
       throw new Error('Cant get the same build id');
     }
 
-    const res = await compare(oldBuildPath, newBuildPath, CompareOptions);
+    const res = await compare(oldBuildPath, newBuildPath, compareOptions);
     const changedFiles = res.diffSet.filter((diff) => {
       if (diff.state !== 'equal') {
         return true;
@@ -38,7 +38,7 @@ export class DiffService {
   }
 }
 
-const CompareOptions: Options = {
+const compareOptions: Options = {
   compareContent: true,
   compareDate: false,
   compareSize: false,
