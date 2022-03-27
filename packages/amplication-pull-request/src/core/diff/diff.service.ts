@@ -30,11 +30,11 @@ export class DiffService {
       return false;
     });
     return changedFiles.map((diff) => ({
-      path: this.fromAbsoluteToRelativePath(diff.path2),
+      path: this.fromAbsoluteToRelativePath(newBuildPath, diff.path2),
     }));
   }
-  private fromAbsoluteToRelativePath(relativePath) {
-    return relativePath.replace(relativePath, '');
+  private fromAbsoluteToRelativePath(basePath, relativePath) {
+    return relativePath.replace(basePath, '');
   }
 }
 
