@@ -1,5 +1,6 @@
-import { IPullRequest } from "./IPullRequest";
+import { SendPullRequestArgs } from "../dto";
+import { PullRequest } from "../pullRequest";
 
 export interface IPullRequestRouter {
-  createPullRequest: () => IPullRequest;
+  createPullRequest(args: SendPullRequestArgs): PullRequest;
 }

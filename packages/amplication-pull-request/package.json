@@ -24,7 +24,9 @@
     "@nestjs/graphql": "9.1.2",
     "@nestjs/platform-express": "8.2.3",
     "@nestjs/serve-static": "2.2.2",
-    "apollo-server-express": "3.6.5",
+    "apollo-server-express": "3.5.0",
+    "dir-compare": "4.0.0",
+    "graphql": "15.8.0",
     "ts-morph": "13.0.3"
   },
   "devDependencies": {

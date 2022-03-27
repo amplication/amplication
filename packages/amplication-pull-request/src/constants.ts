@@ -1,0 +1,1 @@
+export const BUILDS_FOLDER_PATH_ENV_KEY = "BUILD_FOLDER";

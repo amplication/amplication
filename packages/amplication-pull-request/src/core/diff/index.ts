@@ -1,1 +1,2 @@
-export * from "./contracts";
+export * from "./diff.module";
+export * from "./diff.service";
