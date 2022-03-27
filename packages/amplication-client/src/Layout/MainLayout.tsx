@@ -98,7 +98,6 @@ const Menu = ({ children }: MenuProps) => {
                 icon="help_outline"
                 hideTooltip
                 title="Help and support"
-                onClick={handleSupportClick}
               />
             </Popover>
             <MenuItem
