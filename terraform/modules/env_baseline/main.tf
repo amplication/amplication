@@ -307,7 +307,7 @@ resource "google_cloud_run_service" "default" {
 
         env {
           name  = "DISABLE_EVENT_TRACKING"
-          value = 0
+          value = 1
         }
 
 
