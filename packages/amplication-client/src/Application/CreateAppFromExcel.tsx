@@ -334,15 +334,31 @@ export function CreateAppFromExcel() {
                 onClick={handleStartFromScratch}
                 className={`${CLASS_NAME}__other-options__option`}
               >
-                <SvgThemeImage image={EnumImages.AddApp} />
-                <div>Start from scratch</div>
+                <div
+                  className={`${CLASS_NAME}__other-options__option__option_text`}
+                >
+                  Start from
+                </div>
+                <div
+                  className={`${CLASS_NAME}__other-options__option__option_code_text`}
+                >
+                  &lt;Scratch&gt;
+                </div>
               </Link>
               <Link
                 onClick={handleStartFromSample}
                 className={`${CLASS_NAME}__other-options__option`}
               >
-                <SvgThemeImage image={EnumImages.SampleApp} />
-                <div>Start from a sample app</div>
+                <div
+                  className={`${CLASS_NAME}__other-options__option__option_text`}
+                >
+                  Start from
+                </div>
+                <div
+                  className={`${CLASS_NAME}__other-options__option__option_code_text`}
+                >
+                  &lt;Sample App&gt;
+                </div>
               </Link>
             </div>
             <div className={`${CLASS_NAME}__divider`}>or</div>

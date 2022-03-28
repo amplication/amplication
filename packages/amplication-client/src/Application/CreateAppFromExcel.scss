@@ -82,18 +82,30 @@ $option-image-size: 70px;
     display: flex;
     flex-direction: row;
     justify-content: stretch;
+    padding: 4% 0 2% 0;
 
     &__option {
       @include optionCard;
       @include body1;
-      height: auto;
+      min-height: 170px;
       flex: 1;
+      justify-content: center;
 
-      .svg-theme-image {
-        height: $option-image-size;
+      %__option_text_common {
+        font-weight: 500;
+        line-height: 32px;
+      }
 
-        margin-bottom: var(--default-spacing);
-        background-position: center;
+      &__option_text {
+        @extend %__option_text_common;
+        font-size: 18px;
+        color: white;
+      }
+
+      &__option_code_text {
+        @extend %__option_text_common;
+        font-size: 24px;
+        color: var(--secondary);
       }
     }
   }
