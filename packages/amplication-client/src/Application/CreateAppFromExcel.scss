@@ -94,23 +94,23 @@ $option-image-size: 70px;
       min-height: 170px;
       flex: 1;
       justify-content: center;
+    }
 
-      %__option_text_common {
-        font-weight: 500;
-        line-height: 32px;
-      }
+    %__option_text_common {
+      font-weight: 500;
+      line-height: 32px;
+    }
 
-      &__option_text {
-        @extend %__option_text_common;
-        font-size: 18px;
-        color: white;
-      }
+    &__option_text {
+      @extend %__option_text_common;
+      font-size: 18px;
+      color: white;
+    }
 
-      &__option_code_text {
-        @extend %__option_text_common;
-        font-size: 24px;
-        color: var(--secondary);
-      }
+    &__option_code_text {
+      @extend %__option_text_common;
+      font-size: 24px;
+      color: var(--secondary);
     }
   }
   &__dropzone {

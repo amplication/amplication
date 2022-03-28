@@ -310,6 +310,34 @@ export function CreateAppFromExcel() {
     </>
   );
 
+  const startFromScratch = (
+    <Link
+      onClick={handleStartFromScratch}
+      className={`${CLASS_NAME}__other-options__option`}
+    >
+      <div className={`${CLASS_NAME}__other-options__option_text`}>
+        Start from
+      </div>
+      <div className={`${CLASS_NAME}__other-options__option_code_text`}>
+        &lt;Scratch&gt;
+      </div>
+    </Link>
+  );
+
+  const startFromSampleApp = (
+    <Link
+      onClick={handleStartFromSample}
+      className={`${CLASS_NAME}__other-options__option`}
+    >
+      <div className={`${CLASS_NAME}__other-options__option_text`}>
+        Start from
+      </div>
+      <div className={`${CLASS_NAME}__other-options__option_code_text`}>
+        &lt;Sample App&gt;
+      </div>
+    </Link>
+  );
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__layout`}>
@@ -350,36 +378,8 @@ export function CreateAppFromExcel() {
                 </h2>
 
                 <div className={`${CLASS_NAME}__other-options`}>
-                  <Link
-                    onClick={handleStartFromScratch}
-                    className={`${CLASS_NAME}__other-options__option`}
-                  >
-                    <div
-                      className={`${CLASS_NAME}__other-options__option__option_text`}
-                    >
-                      Start from
-                    </div>
-                    <div
-                      className={`${CLASS_NAME}__other-options__option__option_code_text`}
-                    >
-                      &lt;Scratch&gt;
-                    </div>
-                  </Link>
-                  <Link
-                    onClick={handleStartFromSample}
-                    className={`${CLASS_NAME}__other-options__option`}
-                  >
-                    <div
-                      className={`${CLASS_NAME}__other-options__option__option_text`}
-                    >
-                      Start from
-                    </div>
-                    <div
-                      className={`${CLASS_NAME}__other-options__option__option_code_text`}
-                    >
-                      &lt;Sample App&gt;
-                    </div>
-                  </Link>
+                  {startFromScratch}
+                  {startFromSampleApp}
                 </div>
                 <div className={`${CLASS_NAME}__divider`}>or</div>
                 {excelOption}
