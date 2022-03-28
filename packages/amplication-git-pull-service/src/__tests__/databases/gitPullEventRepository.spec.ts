@@ -12,14 +12,7 @@ describe("Testing GitPullEventRepository", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
-      providers: [
-        PrismaService,
-        {
-          provide: GitPullEventRepository,
-          useValue: MOCK_GIT_PULL_EVENT_REPOSITORY,
-        },
-      ],
+      providers: [PrismaService, GitPullEventRepository],
     }).compile();
 
     gitPullEventRepository = module.get<GitPullEventRepository>(
