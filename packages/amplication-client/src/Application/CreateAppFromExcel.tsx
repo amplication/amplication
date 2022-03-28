@@ -311,7 +311,7 @@ export function CreateAppFromExcel() {
   );
 
   const startFromScratch = (
-    <Link
+    <div
       onClick={handleStartFromScratch}
       className={`${CLASS_NAME}__other-options__option`}
     >
@@ -321,11 +321,11 @@ export function CreateAppFromExcel() {
       <div className={`${CLASS_NAME}__other-options__option_code_text`}>
         &lt;Scratch&gt;
       </div>
-    </Link>
+    </div>
   );
 
   const startFromSampleApp = (
-    <Link
+    <div
       onClick={handleStartFromSample}
       className={`${CLASS_NAME}__other-options__option`}
     >
@@ -335,7 +335,7 @@ export function CreateAppFromExcel() {
       <div className={`${CLASS_NAME}__other-options__option_code_text`}>
         &lt;Sample App&gt;
       </div>
-    </Link>
+    </div>
   );
 
   return (
