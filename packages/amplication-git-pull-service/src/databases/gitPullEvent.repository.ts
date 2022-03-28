@@ -9,6 +9,7 @@ import {
 /** TODO:
     1. figure out what is the return type of any operation
     2. how to find by index
+    3. error handling
     **/
 
 @Injectable()

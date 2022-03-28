@@ -1,9 +1,14 @@
-import { PrismaModule, PrismaService } from "nestjs-prisma";
+import { PrismaService } from "nestjs-prisma";
 import { Test, TestingModule } from "@nestjs/testing";
 import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
-import { MOCK_GIT_PULL_EVENT_REPOSITORY } from "../../__mocks__/databases/gitPullEventRepository";
-import { pullEventMock } from "../../__mocks__/mockData";
+import { PULL_EVENT_MOCK } from "../../__mocks__/mockData";
 import { EnumGitPullEventStatus } from "../../contracts/databaseOperations.interface";
+
+const prismaGitPUllEventCreateMock = jest.fn(() => PULL_EVENT_MOCK);
+const prismaGitPUllEventUpdateMock = jest.fn(() => ({
+  ...PULL_EVENT_MOCK,
+  status: EnumGitPullEventStatus.Ready,
+}));
 
 describe("Testing GitPullEventRepository", () => {
   let gitPullEventRepository: GitPullEventRepository;
@@ -12,14 +17,23 @@ describe("Testing GitPullEventRepository", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PrismaService, GitPullEventRepository],
+      providers: [
+        GitPullEventRepository,
+        {
+          provide: PrismaService,
+          useClass: jest.fn(() => ({
+            gitPullEvent: {
+              create: prismaGitPUllEventCreateMock,
+              update: prismaGitPUllEventUpdateMock,
+            },
+          })),
+        },
+      ],
     }).compile();
 
     gitPullEventRepository = module.get<GitPullEventRepository>(
       GitPullEventRepository
     );
-
-    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it("should be defined", () => {
@@ -27,23 +41,27 @@ describe("Testing GitPullEventRepository", () => {
   });
 
   it("should create a new record on database", async () => {
-    prisma.gitPullEvent.create = jest.fn().mockReturnValueOnce(pullEventMock);
-    const newRecord = await gitPullEventRepository.create(pullEventMock);
-    expect(newRecord).toEqual(pullEventMock);
+    const newRecord = await gitPullEventRepository.create(PULL_EVENT_MOCK);
+    expect(newRecord).toEqual(PULL_EVENT_MOCK);
+    expect(prismaGitPUllEventCreateMock).toBeCalledTimes(1);
+    expect(prismaGitPUllEventCreateMock).toBeCalledWith({
+      data: { ...PULL_EVENT_MOCK },
+    });
   });
 
   it("should create a update a record's status on database", async () => {
-    prisma.gitPullEvent.update = jest.fn().mockReturnValueOnce({
-      ...pullEventMock,
-      status: EnumGitPullEventStatus.Ready,
-    });
     const newRecord = await gitPullEventRepository.update(
       123,
       EnumGitPullEventStatus.Ready
     );
     expect(newRecord).toEqual({
-      ...pullEventMock,
+      ...PULL_EVENT_MOCK,
       status: EnumGitPullEventStatus.Ready,
+    });
+    expect(prismaGitPUllEventUpdateMock).toBeCalledTimes(1);
+    expect(prismaGitPUllEventUpdateMock).toBeCalledWith({
+      where: { id: 123 },
+      data: { status: EnumGitPullEventStatus.Ready },
     });
   });
 });

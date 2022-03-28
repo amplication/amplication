@@ -7,7 +7,7 @@ import os from "os";
 
 export const MOCK_ACCESS_TOKEN = "accesstoken123";
 
-export const pullEventMock: IGitPullEvent = {
+export const PULL_EVENT_MOCK: IGitPullEvent = {
   id: 123,
   branch: "main",
   commit: "initial",
@@ -20,7 +20,7 @@ export const pullEventMock: IGitPullEvent = {
   updatedAt: "2022-10-20",
 };
 
-export const pullDataMock: IPullParams = {
+export const PULL_DATA_MOCK: IPullParams = {
   remote: "origin",
   branch: "main",
   baseDir: os.homedir() + "/Dev/gitPullTest/test-1",

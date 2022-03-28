@@ -1,5 +1,5 @@
 import { GitClientService } from "../../../providers/gitClient/gitClient.service";
-import { pullDataMock, pullEventMock } from "../../../__mocks__/mockData";
+import { PULL_DATA_MOCK, PULL_EVENT_MOCK } from "../../../__mocks__/mockData";
 import { Test, TestingModule } from "@nestjs/testing";
 import { MOCK_GIT_CLIENT_SERVICE } from "../../../__mocks__/providers/gitClient/gitClientService";
 
@@ -26,8 +26,8 @@ describe("Testing GitClientService", () => {
 
   it("should clone a repository to a specific dir", async () => {
     const result = await gitClientService.clone(
-      pullEventMock,
-      pullDataMock.baseDir,
+      PULL_EVENT_MOCK,
+      PULL_DATA_MOCK.baseDir,
       "123456",
       "acceestoken123"
     );
@@ -35,7 +35,7 @@ describe("Testing GitClientService", () => {
   });
 
   it("should pull a repository to a specific dir", async () => {
-    const result = await gitClientService.pull(pullDataMock);
+    const result = await gitClientService.pull(PULL_DATA_MOCK);
     expect(result).toEqual({});
   });
 });
