@@ -262,6 +262,38 @@ export function CreateAppFromExcel() {
     setImportList(fields);
   };
 
+  const dropExcel = (
+    <div
+      {...getRootProps()}
+      className={classNames(`${CLASS_NAME}__dropzone`, {
+        [`${CLASS_NAME}__dropzone--active`]: isDragActive,
+      })}
+    >
+      <input {...getInputProps()} />
+      {isDragActive ? (
+        <p>Drop the file here ...</p>
+      ) : (
+        <p>Drag and drop a file here, or click to select a file</p>
+      )}
+    </div>
+  );
+
+  const startWithExcel = (
+    <>
+      <div className={`${CLASS_NAME}__header`}>
+        <SvgThemeImage image={EnumImages.ImportExcel} />
+        <h2>Start with schema from excel</h2>
+        <div className={`${CLASS_NAME}__message`}>
+          Start building your application from an existing schema. Just upload
+          an excel or CSV file to import its schema, and generate your node.JS
+          application source code
+        </div>
+      </div>
+      {/* Add step */}
+      {false && dropExcel}
+    </>
+  );
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__layout`}>
@@ -291,30 +323,14 @@ export function CreateAppFromExcel() {
                 Back
               </Link>
             )}
-            <div className={`${CLASS_NAME}__header`}>
-              <SvgThemeImage image={EnumImages.ImportExcel} />
-              <h2>Start with schema from excel</h2>
-              <div className={`${CLASS_NAME}__message`}>
-                Start building your application from an existing schema. Just
-                upload an excel or CSV file to import its schema, and generate
-                your node.JS application source code
-              </div>
-            </div>
 
-            <div
-              {...getRootProps()}
-              className={classNames(`${CLASS_NAME}__dropzone`, {
-                [`${CLASS_NAME}__dropzone--active`]: isDragActive,
-              })}
-            >
-              <input {...getInputProps()} />
-              {isDragActive ? (
-                <p>Drop the file here ...</p>
-              ) : (
-                <p>Drag and drop a file here, or click to select a file</p>
-              )}
-            </div>
-            <div className={`${CLASS_NAME}__divider`}>or</div>
+            <h1 className={`${CLASS_NAME}__welcome_text`}>
+              Welcome to Amplication
+            </h1>
+            <h2 className={`${CLASS_NAME}__start_text`}>
+              Let's start building your app
+            </h2>
+
             <div className={`${CLASS_NAME}__other-options`}>
               <Link
                 onClick={handleStartFromScratch}
@@ -331,6 +347,8 @@ export function CreateAppFromExcel() {
                 <div>Start from a sample app</div>
               </Link>
             </div>
+            <div className={`${CLASS_NAME}__divider`}>or</div>
+            {startWithExcel}
           </div>
         ) : (
           <CreateAppFromExcelForm

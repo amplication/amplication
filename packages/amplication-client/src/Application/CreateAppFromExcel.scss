@@ -62,6 +62,19 @@ $option-image-size: 70px;
       left: 0;
     }
   }
+  %__title {
+    font-weight: 600;
+    text-align: center;
+    line-height: 40px;
+  }
+  &__start_text {
+    @extend %__title;
+    font-size: 32px;
+  }
+  &__welcome_text {
+    @extend %__title;
+    font-size: 18px;
+  }
   &__other-options {
     max-width: $options-max-width;
     width: 100%;
@@ -165,7 +178,7 @@ $option-image-size: 70px;
     height: 100%;
     width: 100%;
     align-items: stretch;
-    justify-content: stretch;
+    justify-content: center;
     background: var(--black2);
     overflow: auto;
 
