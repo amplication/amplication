@@ -1,6 +1,6 @@
 # Default values for amplication.
 # This is a YAML-formatted file.
-environment: local
+environment: test
 name: app
 
 deployment:
@@ -91,3 +91,4 @@ postgres:
   primary:
     podLabels: { name: "postgres" }
   fullnameOverride: "postgres"
+  

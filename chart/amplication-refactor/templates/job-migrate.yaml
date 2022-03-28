@@ -24,6 +24,8 @@ spec:
         command: ["/bin/sh"]
         args: ["-c", "npm run migrate:up"]
         env:
-        - name: POSTGRESQL_URL
-          value: {{ .Values.config.env.POSTGRESQL_URL | default (printf "postgres://%s:%s@%s:%v" .Values.postgres.postgresqlUsername .Values.postgres.postgresqlPassword .Values.postgres.fullnameOverride .Values.postgres.servicePort ) }}
+        {{- range $key, $val := .Values.config.env }}
+        - name: {{ $key | quote }}
+          value: {{ $val | quote }}
+       {{- end }}
 {{- end }}
