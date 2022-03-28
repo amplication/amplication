@@ -24,8 +24,6 @@ spec:
         command: ["/bin/sh"]
         args: ["-c", "npm run migrate:up"]
         env:
-        {{- range $key, $val := .Values.config.env }}
-        - name: {{ $key | quote }}
-          value: {{ $val | quote }}
-       {{- end }}
+        - name: POSTGRESQL_URL
+          value: {{ .Values.config.env.POSTGRESQL_URL }}
 {{- end }}
