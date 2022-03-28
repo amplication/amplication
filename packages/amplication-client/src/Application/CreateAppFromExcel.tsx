@@ -39,11 +39,17 @@ type TData = {
   createAppWithEntities: models.App;
 };
 
+enum Steps {
+  startScreen,
+  startWithExcel,
+}
+
 export const CLASS_NAME = "create-app-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
 export function CreateAppFromExcel() {
   const [importList, setImportList] = useState<ImportField[]>([]);
+  const [step, setStep] = useState(Steps.startScreen);
   const [fileName, setFileName] = useState<string | null>(null);
   const { data: appsData } = useQuery<{
     apps: Array<models.App>;
@@ -278,6 +284,19 @@ export function CreateAppFromExcel() {
     </div>
   );
 
+  const excelOption = (
+    <div
+      className={`${CLASS_NAME}__header ${CLASS_NAME}__excel_option`}
+      onClick={() => setStep(Steps.startWithExcel)}
+    >
+      <SvgThemeImage image={EnumImages.ImportExcel} />
+      <div className={`${CLASS_NAME}__message`}>
+        Just upload an Excel or CSV file to import its schema and then generate
+        your node.js application source code. More info
+      </div>
+    </div>
+  );
+
   const startWithExcel = (
     <>
       <div className={`${CLASS_NAME}__header`}>
@@ -287,8 +306,7 @@ export function CreateAppFromExcel() {
           generate your node.js application source code. More info
         </div>
       </div>
-      {/* Add step */}
-      {false && dropExcel}
+      {dropExcel}
     </>
   );
 
@@ -322,47 +340,53 @@ export function CreateAppFromExcel() {
               </Link>
             )}
 
-            <h1 className={`${CLASS_NAME}__welcome_text`}>
-              Welcome to Amplication
-            </h1>
-            <h2 className={`${CLASS_NAME}__start_text`}>
-              Let's start building your app
-            </h2>
+            {step === Steps.startScreen ? (
+              <>
+                <h1 className={`${CLASS_NAME}__welcome_text`}>
+                  Welcome to Amplication
+                </h1>
+                <h2 className={`${CLASS_NAME}__start_text`}>
+                  Let's start building your app
+                </h2>
 
-            <div className={`${CLASS_NAME}__other-options`}>
-              <Link
-                onClick={handleStartFromScratch}
-                className={`${CLASS_NAME}__other-options__option`}
-              >
-                <div
-                  className={`${CLASS_NAME}__other-options__option__option_text`}
-                >
-                  Start from
+                <div className={`${CLASS_NAME}__other-options`}>
+                  <Link
+                    onClick={handleStartFromScratch}
+                    className={`${CLASS_NAME}__other-options__option`}
+                  >
+                    <div
+                      className={`${CLASS_NAME}__other-options__option__option_text`}
+                    >
+                      Start from
+                    </div>
+                    <div
+                      className={`${CLASS_NAME}__other-options__option__option_code_text`}
+                    >
+                      &lt;Scratch&gt;
+                    </div>
+                  </Link>
+                  <Link
+                    onClick={handleStartFromSample}
+                    className={`${CLASS_NAME}__other-options__option`}
+                  >
+                    <div
+                      className={`${CLASS_NAME}__other-options__option__option_text`}
+                    >
+                      Start from
+                    </div>
+                    <div
+                      className={`${CLASS_NAME}__other-options__option__option_code_text`}
+                    >
+                      &lt;Sample App&gt;
+                    </div>
+                  </Link>
                 </div>
-                <div
-                  className={`${CLASS_NAME}__other-options__option__option_code_text`}
-                >
-                  &lt;Scratch&gt;
-                </div>
-              </Link>
-              <Link
-                onClick={handleStartFromSample}
-                className={`${CLASS_NAME}__other-options__option`}
-              >
-                <div
-                  className={`${CLASS_NAME}__other-options__option__option_text`}
-                >
-                  Start from
-                </div>
-                <div
-                  className={`${CLASS_NAME}__other-options__option__option_code_text`}
-                >
-                  &lt;Sample App&gt;
-                </div>
-              </Link>
-            </div>
-            <div className={`${CLASS_NAME}__divider`}>or</div>
-            {startWithExcel}
+                <div className={`${CLASS_NAME}__divider`}>or</div>
+                {excelOption}
+              </>
+            ) : (
+              startWithExcel
+            )}
           </div>
         ) : (
           <CreateAppFromExcelForm

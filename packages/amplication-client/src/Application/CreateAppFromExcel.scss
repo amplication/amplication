@@ -26,6 +26,10 @@ $option-image-size: 70px;
     }
   }
 
+  &__excel_option {
+    cursor: pointer;
+  }
+
   &__message {
     @include body1;
     line-height: 1.5;
