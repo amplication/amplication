@@ -5,7 +5,7 @@
 $max-width: 700px;
 $dropzone-height: 250px;
 $options-max-width: 1000px;
-$header-image-size: 40px;
+$import-image-size: 40px;
 $option-image-size: 70px;
 
 .create-app-from-excel {
@@ -21,7 +21,7 @@ $option-image-size: 70px;
     flex-direction: column;
     align-items: center;
     .svg-theme-image {
-      height: $header-image-size;
+      height: $import-image-size;
       background-position: center;
     }
   }
@@ -69,15 +69,21 @@ $option-image-size: 70px;
   %__title {
     font-weight: 600;
     text-align: center;
-    line-height: 40px;
   }
   &__start_text {
     @extend %__title;
     font-size: 32px;
+    line-height: 40px;
   }
   &__welcome_text {
     @extend %__title;
+    line-height: 40px;
     font-size: 18px;
+  }
+  &__excel_start_title {
+    @extend %__title;
+    font-size: 24px;
+    line-height: 36px;
   }
   &__other-options {
     max-width: $options-max-width;
@@ -139,6 +145,11 @@ $option-image-size: 70px;
     &--active {
       border-color: var(--primary);
       background-color: var(--black5);
+    }
+
+    .svg-theme-image {
+      height: $import-image-size;
+      background-position: center;
     }
   }
 
