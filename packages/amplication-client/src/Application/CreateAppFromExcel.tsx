@@ -282,11 +282,9 @@ export function CreateAppFromExcel() {
     <>
       <div className={`${CLASS_NAME}__header`}>
         <SvgThemeImage image={EnumImages.ImportExcel} />
-        <h2>Start with schema from excel</h2>
         <div className={`${CLASS_NAME}__message`}>
-          Start building your application from an existing schema. Just upload
-          an excel or CSV file to import its schema, and generate your node.JS
-          application source code
+          Just upload an Excel or CSV file to import its schema and then
+          generate your node.js application source code. More info
         </div>
       </div>
       {/* Add step */}
