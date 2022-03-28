@@ -8,16 +8,16 @@ export class PullRequestService {
   constructor(private readonly diffService: DiffService) {}
   async createPullRequest({
     amplicationAppId,
-    previousAmplicationBuildId,
-    newAmplicationBuildId,
+    oldBuildId,
+    newBuildId,
+    gitProvider,
   }: SendPullRequestArgs): Promise<PullRequest> {
     const changedFiles = await this.diffService.listOfChangedFiles(
       amplicationAppId,
-      previousAmplicationBuildId,
-      newAmplicationBuildId
+      oldBuildId,
+      newBuildId
     );
-    console.log(changedFiles);
-
-    throw new Error('fds');
+    const pullRequest = new PullRequest(gitProvider);
+    return pullRequest;
   }
 }

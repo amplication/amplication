@@ -3,9 +3,13 @@
 # ------------------------------------------------------
 
 type PullRequest {
-  url: String!
+  gitProvider: EnumGitProvider!
+}
+
+enum EnumGitProvider {
+  Github
 }
 
 type Query {
-  createPullRequest(amplicationAppId: String!, previousAmplicationBuildId: String!, newAmplicationBuildId: String!, installationId: String!): PullRequest!
+  createPullRequest(amplicationAppId: String!, oldBuildId: String!, newBuildId: String!, installationId: String!, gitProvider: EnumGitProvider!): PullRequest!
 }

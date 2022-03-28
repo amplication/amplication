@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { compare, Options } from 'dir-compare';
+import { join } from 'path';
 import { ChangedFile } from './dto/ChangedFile';
 import { BuildsPathFactory } from './utils/BuildsPathFactory';
 
@@ -30,11 +31,8 @@ export class DiffService {
       return false;
     });
     return changedFiles.map((diff) => ({
-      path: this.fromAbsoluteToRelativePath(newBuildPath, diff.path2),
+      path: join(diff.relativePath, diff.name2),
     }));
-  }
-  private fromAbsoluteToRelativePath(basePath, relativePath) {
-    return relativePath.replace(basePath, '');
   }
 }
 
