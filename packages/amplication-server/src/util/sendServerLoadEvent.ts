@@ -39,7 +39,6 @@ export const sendServerLoadEvent = (): void => {
       timestamp: new Date()
     };
 
-    console.dir(data);
     void fetch('https://app.posthog.com/capture/', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -49,10 +48,11 @@ export const sendServerLoadEvent = (): void => {
 };
 
 const getServerId: () => Promise<string> = async (): Promise<string> => {
+  const RUNTIME_ID = 'runtime_id'
   const packageJsonHelper = JsonHelper.getInstance(SERVER_ID_FILE_NAME);
   if (!(await packageJsonHelper.exists())) {
-    await packageJsonHelper.updateValue('runtime_id', uuid());
+    await packageJsonHelper.updateValue(RUNTIME_ID, uuid());
   }
 
-  return await packageJsonHelper.getStringValue('runtime_id');
+  return await packageJsonHelper.getStringValue(RUNTIME_ID);
 };

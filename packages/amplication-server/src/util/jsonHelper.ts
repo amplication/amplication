@@ -12,7 +12,7 @@ export class JsonHelper {
     return JsonHelper.instance;
   }
 
-  private readonly packageJson: Promise<JsonObject>;
+  private packageJson: Promise<JsonObject>;
 
   private constructor(private path: string) {
     this.packageJson = JsonHelper.read(path).catch(reason => {
@@ -45,6 +45,7 @@ export class JsonHelper {
       packageJson = {};
       packageJson[name] = value;
     }
+    this.packageJson = Promise.resolve(packageJson)
     return await JsonHelper.write(this.path, packageJson);
   }
 
