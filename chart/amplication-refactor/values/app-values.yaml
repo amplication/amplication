@@ -1,6 +1,5 @@
 # Default values for amplication.
 # This is a YAML-formatted file.
-environment: test
 name: app
 
 deployment:
@@ -63,7 +62,7 @@ config:
     BCRYPT_SALT_OR_ROUNDS: "10"
     NODE_ENV: production
     CORS_ENABLE: "1"
-    PORT: 3000
+    PORT: "3000"
     HOST: http://localhost:3000
     DEFAULT_DISK: local
     LOCAL_DISK_ROOT: /artifacts
