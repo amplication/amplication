@@ -45,7 +45,7 @@ export class JsonHelper {
       packageJson = {};
       packageJson[name] = value;
     }
-    this.packageJson = Promise.resolve(packageJson)
+    this.packageJson = Promise.resolve(packageJson);
     return await JsonHelper.write(this.path, packageJson);
   }
 
