@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "update-test-data-service-snapshot": "jest -u src/tests/create-data-service.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
-    "@amplication/data": "^0.12.1",
+    "@amplication/data": "^0.12.2",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
     "camel-case": "4.1.2",
@@ -119,7 +119,7 @@
     "passport": "0.5.2",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.0",
-    "ra-data-graphql-amplication": "0.0.8",
+    "ra-data-graphql-amplication": "0.0.12",
     "react-admin": "3.17.0",
     "reflect-metadata": "0.1.13",
     "sleep-promise": "9.1.0",

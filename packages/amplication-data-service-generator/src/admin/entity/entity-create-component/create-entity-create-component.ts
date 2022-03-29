@@ -14,7 +14,6 @@ import {
   importNames,
   interpolate,
 } from "../../../util/ast";
-import { isToManyRelationField } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { EntityComponent } from "../../types";
 import { jsxFragment } from "../../util";
@@ -53,9 +52,9 @@ export async function createEntityCreateComponent(
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
-  const fields = dtoProperties
-    .map((property) => fieldsByName[property.key.name])
-    .filter((field) => !isToManyRelationField(field));
+  const fields = dtoProperties.map(
+    (property) => fieldsByName[property.key.name]
+  );
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );

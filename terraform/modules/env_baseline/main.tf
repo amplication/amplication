@@ -305,6 +305,11 @@ resource "google_cloud_run_service" "default" {
           value = var.github_app_installation_url
         }
 
+        env {
+          name  = "DISABLE_EVENT_TRACKING"
+          value = 1
+        }
+
 
 
         resources {
