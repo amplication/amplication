@@ -4,6 +4,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
+  Icon,
 } from "@amplication/design-system";
 import React from "react";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
@@ -29,9 +30,19 @@ export default function ExistingConnectionsMenu({
 }: Props) {
   return (
     <SelectMenu
-      title={selectedGitOrganization?.name || "Select new organization"}
-      buttonStyle={EnumButtonStyle.Primary}
+      title={
+        selectedGitOrganization?.name ? (
+          <GitOrganizationMenuItemContent
+            gitOrganization={selectedGitOrganization}
+            isMenuTitle
+          />
+        ) : (
+          "Select new organization"
+        )
+      }
+      buttonStyle={EnumButtonStyle.Clear}
       className={`${CLASS_NAME}__menu`}
+      icon="chevron_down"
     >
       <SelectMenuModal>
         <SelectMenuList>
@@ -56,6 +67,11 @@ export default function ExistingConnectionsMenu({
 
             <SelectMenuItem onSelectionChange={onAddGitOrganization}>
               <span>Add another organization</span>
+              <Icon
+                icon="plus"
+                className={`${CLASS_NAME}__add-icon`}
+                size="xsmall"
+              />
             </SelectMenuItem>
           </>
         </SelectMenuList>

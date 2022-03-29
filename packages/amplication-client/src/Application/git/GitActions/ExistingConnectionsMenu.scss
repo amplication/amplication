@@ -19,4 +19,8 @@ hr {
     width: 100%;
     display: flex;
   }
+  &__add-icon {
+    position: absolute;
+    margin-right: var(--double-spacing);
+  }
 }

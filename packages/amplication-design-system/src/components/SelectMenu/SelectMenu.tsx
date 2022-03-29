@@ -18,7 +18,7 @@ import "./SelectMenu.scss";
 export type Props = SelectMenuProps & {
   buttonStyle?: EnumButtonStyle;
   disabled?: boolean;
-  title: string;
+  title: string | any;
   icon?: string;
 };
 
@@ -39,6 +39,7 @@ export const SelectMenu = ({
           disabled
           buttonStyle={buttonStyle}
           icon={icon}
+          iconSize={"xsmall"}
         >
           {title}
         </Button>
@@ -55,6 +56,7 @@ export const SelectMenu = ({
           className="select-menu__summary"
           buttonStyle={buttonStyle}
           icon={icon}
+          iconSize={"xsmall"}
         >
           {title}
         </Button>
