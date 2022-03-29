@@ -4,7 +4,5 @@ kind: ConfigMap
 metadata:
   name: '{{ .Chart.Name }}-{{ .Values.name }}'
 data:
-  {{- range $key, $val := .Values.config.env }}
-    {{ $key }}: {{ $val }}
-  {{- end }}
+  {{- toYaml .Values.config.env | nindent 2 }}
 {{- end }}
