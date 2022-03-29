@@ -111,7 +111,7 @@ $option-image-size: 70px;
     &__option_text {
       @extend %__option_text_common;
       font-size: 18px;
-      color: white;
+      color: var(--black100);
     }
 
     &__option_code_text {
