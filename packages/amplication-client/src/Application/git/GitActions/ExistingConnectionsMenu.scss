@@ -14,7 +14,7 @@ hr {
     margin-left: 0 !important;
   }
   &__hr {
-    background-color: #22273c;
+    background-color: var(--menu-background-color);
     border-bottom: none;
     width: 100%;
     display: flex;

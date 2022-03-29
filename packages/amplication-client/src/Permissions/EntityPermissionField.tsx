@@ -68,13 +68,17 @@ export const EntityPermissionField = ({
         return;
       }
 
-      const allOtherFields = currentAction.permissionFields?.filter(
-        (item) => item.id !== permissionField.id
+      // Find and update the changed field in the cache
+      const updateFieldIndex = (currentAction.permissionFields || []).findIndex(
+        (item) => item.id === permissionField.id
       );
-
-      currentAction.permissionFields = [
-        updateEntityPermissionFieldRoles,
-      ].concat(allOtherFields);
+      if (updateFieldIndex !== -1) {
+        currentAction.permissionFields?.splice(
+          updateFieldIndex,
+          1,
+          updateEntityPermissionFieldRoles
+        );
+      }
 
       cache.writeQuery({
         query: GET_ENTITY_PERMISSIONS,
