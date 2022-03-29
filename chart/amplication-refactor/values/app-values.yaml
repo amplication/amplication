@@ -56,7 +56,6 @@ traefik:
 config:
   enabled: true
   env:
-    POSTGRESQL_URL: "postgres://postgres:Fd7zZXWvCY3bdgLHz@postgres:5432"
     JWT_SECRET: jwt-secret
     SERVICE_JWT_SECRET: service-jwt-secret
     BCRYPT_SALT_OR_ROUNDS: "10"
@@ -83,11 +82,10 @@ postgres:
   install: true
   image: groundnuty/k8s-wait-for:v1.3
   imagePullPolicy: Always
-  postgresqlDatabase: postgres
-  postgresqlUsername: postgres
-  postgresqlPassword: Fd7zZXWvCY3bdgLHz
-  servicePort: 5432
   primary:
     podLabels: { name: "postgres" }
-  fullnameOverride: "postgres"
-  
+
+global:
+  postgresql:
+    postgresqlPassword: Fd7zZXWvCY3bdgLHz
+

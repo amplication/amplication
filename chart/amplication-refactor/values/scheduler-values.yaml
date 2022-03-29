@@ -42,9 +42,7 @@ traefik:
   enabled: false
 
 config:
-  enabled: true
-  env:
-    POSTGRESQL_URL: "postgres://postgres:Fd7zZXWvCY3bdgLHz@postgres:5432"
+  enabled: false
 
 pvc:
   enabled: false

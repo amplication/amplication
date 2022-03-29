@@ -56,7 +56,7 @@ traefik:
 config:
   enabled: true
   env:
-    DOCKER_TLS_CERTDIR: 2375
+    DOCKER_TLS_CERTDIR: "2375"
 
 pvc:
   enabled: true

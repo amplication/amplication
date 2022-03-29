@@ -16,7 +16,7 @@ spec:
         imagePullPolicy: {{ .Values.postgres.imagePullPolicy }}
         args:
           - "pod"
-          - "{{ .Release.Name }}-{{ .Values.postgres.fullnameOverride }}ql-0"
+          - "{{ .Release.Name }}-postgresql-0"
       {{ end }}
       containers:
       - name: "{{ .Values.name }}-migrate"
@@ -25,5 +25,5 @@ spec:
         args: ["-c", "npm run migrate:up"]
         env:
         - name: POSTGRESQL_URL
-          value: {{ .Values.config.env.POSTGRESQL_URL }}
+          value: "postgres://postgres:{{ .Values.global.postgresql.postgresqlPassword }}@{{ .Release.Name }}-postgresql:5432"
 {{- end }}

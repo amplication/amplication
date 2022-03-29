@@ -44,6 +44,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            {{- if .Values.postgres.install }}
+            - name: POSTGRESQL_URL
+              value: "postgres://postgres:{{ .Values.global.postgresql.postgresqlPassword }}@{{ .Release.Name }}-postgresql:5432"
+            {{- end }}
           {{- if .Values.deployment.securityContext.enabled }}
           securityContext:
             privileged: true
