@@ -48,7 +48,7 @@ export const sendServerLoadEvent = (): void => {
 };
 
 const getServerId: () => Promise<string> = async (): Promise<string> => {
-  const RUNTIME_ID = 'runtime_id'
+  const RUNTIME_ID = 'runtime_id';
   const packageJsonHelper = JsonHelper.getInstance(SERVER_ID_FILE_NAME);
   if (!(await packageJsonHelper.exists())) {
     await packageJsonHelper.updateValue(RUNTIME_ID, uuid());
