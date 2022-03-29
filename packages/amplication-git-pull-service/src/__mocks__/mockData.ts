@@ -6,16 +6,45 @@ import { IPullParams } from "../contracts/interfaces/clonePullParams.interface";
 export const MOCK_ACCESS_TOKEN = "accesstoken123";
 
 export const PULL_EVENT_MOCK: IGitPullEvent = {
-  id: 123,
+  id: BigInt(123),
   branch: "main",
   commit: "initial",
   provider: "GitHub",
   repositoryName: "test-repo",
   repositoryOwner: "amit-amp",
   status: EnumGitPullEventStatus.Created,
-  pushedAt: "2022-10-20",
-  createdAt: "2020-12-12",
-  updatedAt: "2022-10-20",
+  pushedAt: new Date("2020-12-12"),
+  createdAt: new Date("2020-12-12"),
+  updatedAt: new Date("2022-10-20"),
+};
+
+export const CREATE_PULL_EVENT_MOCK = {
+  data: { ...PULL_EVENT_MOCK },
+  select: {
+    id: true,
+    provider: true,
+    repositoryOwner: true,
+    repositoryName: true,
+    branch: true,
+    commit: true,
+    status: true,
+    pushedAt: true,
+  },
+};
+
+export const UPDATE_PULL_EVENT_MOCK = {
+  where: { id: 123 },
+  data: { status: EnumGitPullEventStatus.Ready },
+  select: {
+    id: true,
+    provider: true,
+    repositoryOwner: true,
+    repositoryName: true,
+    branch: true,
+    commit: true,
+    status: true,
+    pushedAt: true,
+  },
 };
 
 export const PULL_DATA_MOCK: IPullParams = {

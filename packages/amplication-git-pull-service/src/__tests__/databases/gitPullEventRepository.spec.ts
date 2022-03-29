@@ -1,8 +1,12 @@
 import { PrismaService } from "nestjs-prisma";
 import { Test, TestingModule } from "@nestjs/testing";
 import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
-import { PULL_EVENT_MOCK } from "../../__mocks__/mockData";
-import { EnumGitPullEventStatus } from "../../contracts/interfaces/databaseOperations.interface";
+import {
+  CREATE_PULL_EVENT_MOCK,
+  PULL_EVENT_MOCK,
+  UPDATE_PULL_EVENT_MOCK,
+} from "../../__mocks__/mockData";
+import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus";
 
 const prismaGitPUllEventCreateMock = jest.fn(() => PULL_EVENT_MOCK);
 const prismaGitPUllEventUpdateMock = jest.fn(() => ({
@@ -45,7 +49,7 @@ describe("Testing GitPullEventRepository", () => {
     expect(newRecord).toEqual(PULL_EVENT_MOCK);
     expect(prismaGitPUllEventCreateMock).toBeCalledTimes(1);
     expect(prismaGitPUllEventCreateMock).toBeCalledWith({
-      data: { ...PULL_EVENT_MOCK },
+      ...CREATE_PULL_EVENT_MOCK,
     });
   });
 
@@ -60,8 +64,7 @@ describe("Testing GitPullEventRepository", () => {
     });
     expect(prismaGitPUllEventUpdateMock).toBeCalledTimes(1);
     expect(prismaGitPUllEventUpdateMock).toBeCalledWith({
-      where: { id: 123 },
-      data: { status: EnumGitPullEventStatus.Ready },
+      ...UPDATE_PULL_EVENT_MOCK,
     });
   });
 });

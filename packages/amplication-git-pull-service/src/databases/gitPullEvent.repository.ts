@@ -9,7 +9,7 @@ import { AmplicationError } from "../errors/AmplicationError";
 export class GitPullEventRepository implements IDatabaseOperations {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(eventData: IGitPullEvent): Promise<any> {
+  async create(eventData: any): Promise<any> {
     return this.prisma.gitPullEvent.create({
       data: eventData,
       select: {
@@ -49,7 +49,7 @@ export class GitPullEventRepository implements IDatabaseOperations {
           status: EnumGitPullEventStatus.Ready,
         },
         orderBy: {
-          createdAt: "desc",
+          pushedAt: "desc",
         },
         take: 1,
         select: {
@@ -75,18 +75,27 @@ export class GitPullEventRepository implements IDatabaseOperations {
     }
   }
 
-  async getLastCommit(eventData: IGitPullEvent): Promise<any> {
-    const { provider, repositoryOwner, repositoryName } = eventData;
+  async getLastCommit(
+    eventData: IGitPullEvent,
+    skip: number,
+    timestamp: Date
+  ): Promise<any> {
+    const { provider, repositoryOwner, repositoryName, branch } = eventData;
     try {
       return this.prisma.gitPullEvent.findMany({
+        skip: skip,
         take: 1,
         where: {
           provider: provider,
           repositoryOwner: repositoryOwner,
           repositoryName: repositoryName,
+          branch: branch,
+          pushedAt: {
+            lt: timestamp,
+          },
         },
         orderBy: {
-          pushedAt: "asc",
+          pushedAt: "desc",
         },
       });
     } catch (err) {

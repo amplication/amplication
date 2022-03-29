@@ -9,6 +9,6 @@ export interface IGitPullEvent {
   commit: string;
   status: EnumGitPullEventStatus;
   pushedAt: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: any;
+  updatedAt?: any;
 }
