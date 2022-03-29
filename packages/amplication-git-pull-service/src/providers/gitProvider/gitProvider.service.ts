@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { IGitProvider } from "../../contracts/gitProvider.interface";
+import { IGitProvider } from "../../contracts/interfaces/gitProvider.interface";
 import { App } from "octokit";
 import { convertToNumber } from "../../utils/convertToNumber";
 import { ConfigService } from "@nestjs/config";

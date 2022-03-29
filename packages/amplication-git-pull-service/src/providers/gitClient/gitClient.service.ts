@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
+import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
+import simpleGit, { SimpleGit } from "simple-git";
 import {
   ICloneParams,
-  IGitClient,
   IPullParams,
-} from "../../contracts/gitClient.interface";
-import simpleGit, { SimpleGit } from "simple-git";
+} from "../../contracts/interfaces/clonePullParams.interface";
 
 /*
  * SimpleGit integration
@@ -29,7 +29,6 @@ export class GitClientService implements IGitClient {
 
   async pull(pullParams: IPullParams): Promise<any> {
     const { remote, branch, baseDir } = pullParams;
-    /* TODO: figure out how to pass here the baseDir and the accessToken => simpleGit({//options//}) */
     simpleGit({
       baseDir,
       binary: "git",

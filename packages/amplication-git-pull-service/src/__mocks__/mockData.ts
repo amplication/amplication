@@ -1,9 +1,7 @@
-import {
-  EnumGitPullEventStatus,
-  IGitPullEvent,
-} from "../contracts/databaseOperations.interface";
-import { IPullParams } from "../contracts/gitClient.interface";
 import os from "os";
+import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus";
+import { IGitPullEvent } from "../contracts/interfaces/gitPullEvent.interface";
+import { IPullParams } from "../contracts/interfaces/clonePullParams.interface";
 
 export const MOCK_ACCESS_TOKEN = "accesstoken123";
 

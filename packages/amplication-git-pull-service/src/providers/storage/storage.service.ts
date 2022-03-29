@@ -1,12 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { FixedSizeArray, IStorage } from "../../contracts/storage.interface";
-import { IGitPullEvent } from "../../contracts/databaseOperations.interface";
+import { IStorage } from "../../contracts/interfaces/storage.interface";
+import * as fse from "fs-extra";
 
 @Injectable()
 export class StorageService implements IStorage {
-  manageStorage(
-    storage: FixedSizeArray<5, any>,
-    data: IGitPullEvent,
-    baseDir: string
-  ) {}
+  async manageStorage(srcDir: string, destDir: string): Promise<void> {
+    try {
+      await fse.copy(srcDir, destDir);
+      console.log("success!");
+    } catch (err) {
+      console.error(err);
+    }
+  }
 }
