@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { IStorage } from "../../contracts/interfaces/storage.interface";
 import * as fse from "fs-extra";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 @Injectable()
 export class StorageService implements IStorage {
@@ -9,7 +10,7 @@ export class StorageService implements IStorage {
       await fse.copy(srcDir, destDir);
       console.log("success!");
     } catch (err) {
-      console.error(err);
+      throw new AmplicationError(`error from StorageService => manageStorage(): ${err}`);
     }
   }
 }

@@ -9,47 +9,60 @@ import { AmplicationError } from "../errors/AmplicationError";
 export class GitPullEventRepository implements IDatabaseOperations {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(eventData: any): Promise<any> {
-    return this.prisma.gitPullEvent.create({
-      data: eventData,
-      select: {
-        id: true,
-        provider: true,
-        repositoryOwner: true,
-        repositoryName: true,
-        branch: true,
-        commit: true,
-        status: true,
-        pushedAt: true,
-      },
-    });
+  async create(eventData: any): Promise<IGitPullEvent> {
+    try {
+      return this.prisma.gitPullEvent.create({
+        data: eventData,
+        select: {
+          id: true,
+          provider: true,
+          repositoryOwner: true,
+          repositoryName: true,
+          branch: true,
+          commit: true,
+          status: true,
+          pushedAt: true,
+        },
+      });
+    } catch (err) {
+      throw new AmplicationError(
+        `Error from GitPullEventRepository => create(): ${err}`
+      );
+    }
+
   }
 
-  async update(id: number, status: EnumGitPullEventStatus): Promise<any> {
-    return this.prisma.gitPullEvent.update({
-      where: { id: id },
-      data: { status: status },
-      select: {
-        id: true,
-        provider: true,
-        repositoryOwner: true,
-        repositoryName: true,
-        branch: true,
-        commit: true,
-        status: true,
-        pushedAt: true,
-      },
-    });
+  async update(id: bigint, status: EnumGitPullEventStatus): Promise<IGitPullEvent> {
+    try {
+      return this.prisma.gitPullEvent.update({
+        where: { id: id },
+        data: { status: status },
+        select: {
+          id: true,
+          provider: true,
+          repositoryOwner: true,
+          repositoryName: true,
+          branch: true,
+          commit: true,
+          status: true,
+          pushedAt: true,
+        },
+      });
+    } catch (err) {
+      throw new AmplicationError(
+        `Error from GitPullEventRepository => update(): ${err}`
+      );
+    }
   }
 
   async getPrevXReadyCommit(
     eventData: IGitPullEvent,
     skip: number,
     timestamp: Date
-  ): Promise<any> {
+  ): Promise<IGitPullEvent | null> {
     try {
       const { provider, repositoryOwner, repositoryName, branch } = eventData;
-      const prevXReadyCommit = await this.prisma.gitPullEvent.findMany({
+      const [prevXReadyCommit] = await this.prisma.gitPullEvent.findMany({
         where: {
           provider: provider,
           repositoryOwner: repositoryOwner,
@@ -72,6 +85,8 @@ export class GitPullEventRepository implements IDatabaseOperations {
           repositoryName: true,
           branch: true,
           commit: true,
+          status: true,
+          pushedAt: true,
         },
       });
 
@@ -79,6 +94,10 @@ export class GitPullEventRepository implements IDatabaseOperations {
       if (!prevXReadyCommit && skip === 1) {
         // no prev ready commit, need to clone
         return null;
+      }
+
+      if (prevXReadyCommit && skip !== 1) {
+        return this.update(prevXReadyCommit.id, EnumGitPullEventStatus.Deleted);
       }
 
       return prevXReadyCommit;

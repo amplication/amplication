@@ -14,8 +14,6 @@ export const PULL_EVENT_MOCK: IGitPullEvent = {
   repositoryOwner: "amit-amp",
   status: EnumGitPullEventStatus.Created,
   pushedAt: new Date("2020-12-12"),
-  createdAt: new Date("2020-12-12"),
-  updatedAt: new Date("2022-10-20"),
 };
 
 export const CREATE_PULL_EVENT_MOCK = {
