@@ -1,4 +1,4 @@
-import os from "os";
+import * as os from "os";
 import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus";
 import { IGitPullEvent } from "../contracts/interfaces/gitPullEvent.interface";
 import { IPullParams } from "../contracts/interfaces/clonePullParams.interface";
@@ -31,7 +31,7 @@ export const CREATE_PULL_EVENT_MOCK = {
 };
 
 export const UPDATE_PULL_EVENT_MOCK = {
-  where: { id: 123 },
+  where: { id: BigInt(123) },
   data: { status: EnumGitPullEventStatus.Ready },
   select: {
     id: true,

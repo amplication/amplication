@@ -3,6 +3,7 @@ import { IGitProvider } from "../../contracts/interfaces/gitProvider.interface";
 import { App } from "octokit";
 import { convertToNumber } from "../../utils/convertToNumber";
 import { ConfigService } from "@nestjs/config";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 const GITHUB_APP_APP_ID_VAR = "GITHUB_APP_APP_ID";
 const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
@@ -26,15 +27,23 @@ export class GitProviderService implements IGitProvider {
   }
 
   async createInstallationAccessToken(installationId: string): Promise<string> {
-    const installationIdNumber = convertToNumber(installationId);
-    const octokit = await this.app.getInstallationOctokit(installationIdNumber);
-    const { data } = await octokit.request(
-      `POST /app/installations/${installationId}/access_tokens`,
-      {
-        installation_id: installationIdNumber,
-        repositories: [],
-      }
-    );
-    return data.token;
+    try {
+      const installationIdNumber = convertToNumber(installationId);
+      const octokit = await this.app.getInstallationOctokit(
+        installationIdNumber
+      );
+      const { data } = await octokit.request(
+        `POST /app/installations/${installationId}/access_tokens`,
+        {
+          installation_id: installationIdNumber,
+          repositories: [],
+        }
+      );
+      return data.token;
+    } catch (err) {
+      throw new AmplicationError(
+        `error from GitProviderService => createInstallationAccessToken(): ${err}`
+      );
+    }
   }
 }

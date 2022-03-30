@@ -1,3 +1,3 @@
 export interface IStorage {
-  manageStorage: (srcDir: string, destDir: string) => void;
+  manageStorage: (srcDir: string, destDir: string) => Promise<void>;
 }

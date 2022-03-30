@@ -64,7 +64,7 @@ export class GitPullEventRepository implements IDatabaseOperations {
   ): Promise<IGitPullEvent | null> {
     try {
       const { provider, repositoryOwner, repositoryName, branch } = eventData;
-      const [prevXReadyCommit] = await this.prisma.gitPullEvent.findMany({
+      const prevXReadyCommit = await this.prisma.gitPullEvent.findMany({
         where: {
           provider: provider,
           repositoryOwner: repositoryOwner,
@@ -99,10 +99,13 @@ export class GitPullEventRepository implements IDatabaseOperations {
       }
 
       if (prevXReadyCommit && skip !== 1) {
-        return this.update(prevXReadyCommit.id, EnumGitPullEventStatus.Deleted);
+        return this.update(
+          prevXReadyCommit[0].id,
+          EnumGitPullEventStatus.Deleted
+        );
       }
 
-      return prevXReadyCommit;
+      return prevXReadyCommit[0];
     } catch (err) {
       throw new AmplicationError(
         `Error from GitPullEventRepository => getLastReadyCommit: ${err}`

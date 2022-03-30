@@ -5,6 +5,7 @@ import {
   ICloneParams,
   IPullParams,
 } from "../../contracts/interfaces/clonePullParams.interface";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 /*
  * SimpleGit integration
@@ -17,22 +18,34 @@ export class GitClientService implements IGitClient {
     installationId: string,
     accessToken: string
   ): Promise<any> {
-    const { repositoryOwner, repositoryName } = cloneParams;
-    simpleGit({
-      binary: "git",
-      maxConcurrentProcesses: 6,
-    }).clone(
-      `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`,
-      baseDir
-    );
+    try {
+      const { repositoryOwner, repositoryName } = cloneParams;
+      simpleGit({
+        binary: "git",
+        maxConcurrentProcesses: 6,
+      }).clone(
+        `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`,
+        baseDir
+      );
+    } catch (err) {
+      throw new AmplicationError(
+        `error from GitClientService => clone(): ${err}`
+      );
+    }
   }
 
   async pull(pullParams: IPullParams): Promise<any> {
-    const { remote, branch, baseDir } = pullParams;
-    simpleGit({
-      baseDir,
-      binary: "git",
-      maxConcurrentProcesses: 6,
-    }).pull(remote, branch);
+    try {
+      const { remote, branch, baseDir } = pullParams;
+      simpleGit({
+        baseDir,
+        binary: "git",
+        maxConcurrentProcesses: 6,
+      }).pull(remote, branch);
+    } catch (err) {
+      throw new AmplicationError(
+        `error from GitClientService => pull(): ${err}`
+      );
+    }
   }
 }

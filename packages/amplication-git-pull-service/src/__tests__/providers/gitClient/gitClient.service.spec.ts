@@ -1,7 +1,7 @@
 import { GitClientService } from "../../../providers/gitClient/gitClient.service";
 import { PULL_DATA_MOCK, PULL_EVENT_MOCK } from "../../../__mocks__/mockData";
-import { Test, TestingModule } from "@nestjs/testing";
 import { MOCK_GIT_CLIENT_SERVICE } from "../../../__mocks__/providers/gitClient/gitClientService";
+import { Test, TestingModule } from "@nestjs/testing";
 
 describe("Testing GitClientService", () => {
   let gitClientService: GitClientService;

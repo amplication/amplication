@@ -1,7 +1,7 @@
-import { ConfigModule } from "@nestjs/config";
 import { GitProviderService } from "../../../providers/gitProvider/gitProvider.service";
-import { Test, TestingModule } from "@nestjs/testing";
 import { MOCK_GIT_PROVIDER_SERVICE } from "../../../__mocks__/providers/gitProvider/gitProviderService";
+import { ConfigModule } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
 
 describe("Testing GitProviderService", () => {
   let gitProviderService: GitProviderService;
