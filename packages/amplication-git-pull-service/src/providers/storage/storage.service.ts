@@ -10,7 +10,9 @@ export class StorageService implements IStorage {
       await fse.copy(srcDir, destDir);
       console.log("success!");
     } catch (err) {
-      throw new AmplicationError(`error from StorageService => manageStorage(): ${err}`);
+      throw new AmplicationError(
+        `error from StorageService => manageStorage(): ${err}`
+      );
     }
   }
 }

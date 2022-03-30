@@ -3,7 +3,10 @@ import { IGitPullEvent } from "./gitPullEvent.interface";
 
 export interface IDatabaseOperations {
   create: (eventData: any) => Promise<IGitPullEvent>;
-  update: (id: bigint, status: EnumGitPullEventStatus) => Promise<IGitPullEvent>;
+  update: (
+    id: bigint,
+    status: EnumGitPullEventStatus
+  ) => Promise<IGitPullEvent>;
   getPrevXReadyCommit: (
     eventData: IGitPullEvent,
     skip: number,

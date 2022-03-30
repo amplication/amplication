@@ -29,10 +29,12 @@ export class GitPullEventRepository implements IDatabaseOperations {
         `Error from GitPullEventRepository => create(): ${err}`
       );
     }
-
   }
 
-  async update(id: bigint, status: EnumGitPullEventStatus): Promise<IGitPullEvent> {
+  async update(
+    id: bigint,
+    status: EnumGitPullEventStatus
+  ): Promise<IGitPullEvent> {
     try {
       return this.prisma.gitPullEvent.update({
         where: { id: id },
