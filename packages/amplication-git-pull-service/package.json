@@ -11,6 +11,8 @@
     "build": "nest build",
     "test": "jest",
     "seed": "ts-node scripts/seed.ts",
+    "migrate:save": "prisma migrate dev",
+    "migrate:up": "prisma migrate deploy",
     "db:migrate-save": "prisma migrate dev",
     "db:migrate-up": "prisma migrate deploy",
     "db:clean": "ts-node scripts/clean.ts",

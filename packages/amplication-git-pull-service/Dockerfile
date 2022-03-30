@@ -20,16 +20,16 @@ WORKDIR /app
 COPY packages/amplication-git-pull-service packages/amplication-git-pull-service
 
 # Installs all copied package node_modules ; Preparation for build
-RUN npm run bootstrap -- --scope @amplication/amplication-git-pull-service --include-dependencies
+RUN npm run bootstrap -- --scope @amplication/git-pull-service --include-dependencies
 RUN npm run prisma:generate
 # Build all distributions needed for amplicaiton/git-pull-service
-RUN npm run build -- --scope @amplication/amplication-git-pull-service --include-dependencies
+RUN npm run build -- --scope @amplication/git-pull-service --include-dependencies
 
 # Removes packages/*/node_modules
 # https://github.com/lerna/lerna/issues/2196#issuecomment-994882795
 RUN npm run clean -- --yes
 # Rebuild production node_modules
-RUN npm run bootstrap -- -- --production --scope @amplication/amplication-git-pull-service --include-dependencies
+RUN npm run bootstrap -- -- --production --scope @amplication/git-pull-service --include-dependencies
 
 FROM base as git-pull-service
 WORKDIR /app/packages/amplication-git-pull-service
@@ -39,6 +39,3 @@ COPY --from=build /app/packages/amplication-git-pull-service/dist /app/packages/
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]
-
-
-
