@@ -1,8 +1,5 @@
-import { Field, ObjectType } from '@nestjs/graphql';
 import { EnumGitProvider } from 'src/models';
-import { ChangedFile } from '../diff/dto/ChangedFile';
 
-@ObjectType({ isAbstract: false })
 export class PullRequest {
   constructor(gitProvider: EnumGitProvider) {
     this.gitProvider = gitProvider;
@@ -14,7 +11,6 @@ export class PullRequest {
   private create(): void {
     throw new Error('Method not implemented.');
   }
-  @Field(() => EnumGitProvider)
   gitProvider!: EnumGitProvider;
 
   // @Field((of) => String)
