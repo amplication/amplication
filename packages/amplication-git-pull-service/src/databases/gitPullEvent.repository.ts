@@ -42,15 +42,28 @@ export class GitPullEventRepository implements IDatabaseOperations {
     });
   }
 
-  async getPrevReadyCommit(): Promise<any> {
+  async getPrevXReadyCommit(
+    eventData: IGitPullEvent,
+    skip: number,
+    timestamp: Date
+  ): Promise<any> {
     try {
-      const prevReadyCommit = await this.prisma.gitPullEvent.findMany({
+      const { provider, repositoryOwner, repositoryName, branch } = eventData;
+      const prevXReadyCommit = await this.prisma.gitPullEvent.findMany({
         where: {
+          provider: provider,
+          repositoryOwner: repositoryOwner,
+          repositoryName: repositoryName,
+          branch: branch,
           status: EnumGitPullEventStatus.Ready,
+          pushedAt: {
+            lt: timestamp,
+          },
         },
         orderBy: {
           pushedAt: "desc",
         },
+        skip: skip,
         take: 1,
         select: {
           id: true,
@@ -62,45 +75,16 @@ export class GitPullEventRepository implements IDatabaseOperations {
         },
       });
 
-      if (!prevReadyCommit) {
+      // skip = 1 we want only the last ready commit, but we didn't find one
+      if (!prevXReadyCommit && skip === 1) {
         // no prev ready commit, need to clone
         return null;
       }
 
-      return prevReadyCommit;
+      return prevXReadyCommit;
     } catch (err) {
       throw new AmplicationError(
-        `Error from GitPullEventRepository => getPrevReadyCommit: ${err}`
-      );
-    }
-  }
-
-  async getLastCommit(
-    eventData: IGitPullEvent,
-    skip: number,
-    timestamp: Date
-  ): Promise<any> {
-    const { provider, repositoryOwner, repositoryName, branch } = eventData;
-    try {
-      return this.prisma.gitPullEvent.findMany({
-        skip: skip,
-        take: 1,
-        where: {
-          provider: provider,
-          repositoryOwner: repositoryOwner,
-          repositoryName: repositoryName,
-          branch: branch,
-          pushedAt: {
-            lt: timestamp,
-          },
-        },
-        orderBy: {
-          pushedAt: "desc",
-        },
-      });
-    } catch (err) {
-      throw new AmplicationError(
-        `Error from GitPullEventRepository => getLastCommit: ${err}`
+        `Error from GitPullEventRepository => getLastReadyCommit: ${err}`
       );
     }
   }
