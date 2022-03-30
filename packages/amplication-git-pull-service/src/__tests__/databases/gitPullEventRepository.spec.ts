@@ -13,6 +13,10 @@ const prismaGitPUllEventUpdateMock = jest.fn(() => ({
   ...PULL_EVENT_MOCK,
   status: EnumGitPullEventStatus.Ready,
 }));
+const prismaGitPullEventFindMayMock = jest.fn(() => ({
+  ...PULL_EVENT_MOCK,
+  status: EnumGitPullEventStatus.Ready,
+}));
 
 describe("Testing GitPullEventRepository", () => {
   let gitPullEventRepository: GitPullEventRepository;
@@ -29,6 +33,7 @@ describe("Testing GitPullEventRepository", () => {
             gitPullEvent: {
               create: prismaGitPUllEventCreateMock,
               update: prismaGitPUllEventUpdateMock,
+              findMany: prismaGitPullEventFindMayMock,
             },
           })),
         },
@@ -66,5 +71,14 @@ describe("Testing GitPullEventRepository", () => {
     expect(prismaGitPUllEventUpdateMock).toBeCalledWith({
       ...UPDATE_PULL_EVENT_MOCK,
     });
+  });
+
+  it("should return a single gitPullEvent record with status ready", async () => {
+    await gitPullEventRepository.getPrevXReadyCommit(
+      PULL_EVENT_MOCK,
+      1,
+      new Date()
+    );
+    expect(prismaGitPullEventFindMayMock).toBeCalledTimes(1);
   });
 });

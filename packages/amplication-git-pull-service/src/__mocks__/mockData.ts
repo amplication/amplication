@@ -7,11 +7,11 @@ export const MOCK_ACCESS_TOKEN = "accesstoken123";
 
 export const PULL_EVENT_MOCK: IGitPullEvent = {
   id: BigInt(123),
+  provider: "GitHub",
+  repositoryOwner: "amit-amp",
+  repositoryName: "test-repo",
   branch: "main",
   commit: "initial",
-  provider: "GitHub",
-  repositoryName: "test-repo",
-  repositoryOwner: "amit-amp",
   status: EnumGitPullEventStatus.Created,
   pushedAt: new Date("2020-12-12"),
 };

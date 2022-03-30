@@ -1,3 +1,5 @@
+import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus";
+
 export interface IGitPullEvent {
   id: bigint;
   provider: string;
@@ -5,6 +7,6 @@ export interface IGitPullEvent {
   repositoryName: string;
   branch: string;
   commit: string;
-  status: string;
+  status: keyof typeof EnumGitPullEventStatus;
   pushedAt: Date;
 }

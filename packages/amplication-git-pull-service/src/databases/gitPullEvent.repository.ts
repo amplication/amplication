@@ -9,7 +9,7 @@ import { AmplicationError } from "../errors/AmplicationError";
 export class GitPullEventRepository implements IDatabaseOperations {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(eventData: any): Promise<IGitPullEvent> {
+  async create(eventData: IGitPullEvent): Promise<IGitPullEvent> {
     try {
       return this.prisma.gitPullEvent.create({
         data: eventData,
@@ -64,33 +64,35 @@ export class GitPullEventRepository implements IDatabaseOperations {
   ): Promise<IGitPullEvent | null> {
     try {
       const { provider, repositoryOwner, repositoryName, branch } = eventData;
-      const prevXReadyCommit = await this.prisma.gitPullEvent.findMany({
-        where: {
-          provider: provider,
-          repositoryOwner: repositoryOwner,
-          repositoryName: repositoryName,
-          branch: branch,
-          status: EnumGitPullEventStatus.Ready,
-          pushedAt: {
-            lt: timestamp,
+      const prevXReadyCommit = (
+        await this.prisma.gitPullEvent.findMany({
+          where: {
+            provider: provider,
+            repositoryOwner: repositoryOwner,
+            repositoryName: repositoryName,
+            branch: branch,
+            status: EnumGitPullEventStatus.Ready,
+            pushedAt: {
+              lt: timestamp,
+            },
           },
-        },
-        orderBy: {
-          pushedAt: "desc",
-        },
-        skip: skip,
-        take: 1,
-        select: {
-          id: true,
-          provider: true,
-          repositoryOwner: true,
-          repositoryName: true,
-          branch: true,
-          commit: true,
-          status: true,
-          pushedAt: true,
-        },
-      });
+          orderBy: {
+            pushedAt: "desc",
+          },
+          skip: skip,
+          take: 1,
+          select: {
+            id: true,
+            provider: true,
+            repositoryOwner: true,
+            repositoryName: true,
+            branch: true,
+            commit: true,
+            status: true,
+            pushedAt: true,
+          },
+        })
+      )[0];
 
       // skip = 1 we want only the last ready commit, but we didn't find one
       if (!prevXReadyCommit && skip === 1) {
@@ -98,14 +100,12 @@ export class GitPullEventRepository implements IDatabaseOperations {
         return null;
       }
 
+      // skip !== 1 we want the prev x commit
       if (prevXReadyCommit && skip !== 1) {
-        return this.update(
-          prevXReadyCommit[0].id,
-          EnumGitPullEventStatus.Deleted
-        );
+        return this.update(prevXReadyCommit.id, EnumGitPullEventStatus.Deleted);
       }
-
-      return prevXReadyCommit[0];
+      // skip = 1 we want only the last ready commit, and we found it
+      return prevXReadyCommit;
     } catch (err) {
       throw new AmplicationError(
         `Error from GitPullEventRepository => getLastReadyCommit: ${err}`

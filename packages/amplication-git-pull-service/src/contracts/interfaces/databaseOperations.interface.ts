@@ -2,7 +2,7 @@ import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus";
 import { IGitPullEvent } from "./gitPullEvent.interface";
 
 export interface IDatabaseOperations {
-  create: (eventData: any) => Promise<IGitPullEvent>;
+  create: (eventData: IGitPullEvent) => Promise<IGitPullEvent>;
   update: (
     id: bigint,
     status: EnumGitPullEventStatus
