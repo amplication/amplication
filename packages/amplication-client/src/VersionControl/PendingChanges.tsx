@@ -60,7 +60,13 @@ const PendingChanges = ({ applicationId }: Props) => {
       <Commit applicationId={applicationId} noChanges={noChanges} />
       <div className={`${CLASS_NAME}__changes-header`}>
         <span>Changes</span>
-        <span className={`${CLASS_NAME}__changes-count`}>
+        <span
+          className={
+            data?.pendingChanges.length
+              ? `${CLASS_NAME}__changes-count-warning`
+              : `${CLASS_NAME}__changes-count`
+          }
+        >
           {data?.pendingChanges.length}
         </span>
         <div className="spacer" />
