@@ -2,22 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { compare, Options } from 'dir-compare';
 import { join } from 'path';
 import { ChangedFile } from './dto/ChangedFile';
-import { BuildsPathFactory } from './utils/BuildsPathFactory';
+import { BuildPathFactory } from './utils/BuildPathFactory';
 
 @Injectable()
 export class DiffService {
-  constructor(private readonly buildsPathFactory: BuildsPathFactory) {}
+  constructor(private readonly buildsPathFactory: BuildPathFactory) {}
   async listOfChangedFiles(
     amplicationAppId: string,
     previousAmplicationBuildId: string,
     newAmplicationBuildId: string
   ): Promise<ChangedFile[]> {
-    const { oldBuildPath, newBuildPath } =
-      this.buildsPathFactory.buildsFoldersPaths(
-        amplicationAppId,
-        previousAmplicationBuildId,
-        newAmplicationBuildId
-      );
+    const oldBuildPath = this.buildsPathFactory.get(
+      amplicationAppId,
+      previousAmplicationBuildId
+    );
+    const newBuildPath = this.buildsPathFactory.get(
+      amplicationAppId,
+      newAmplicationBuildId
+    );
 
     if (oldBuildPath === newBuildPath) {
       throw new Error('Cant get the same build id');
