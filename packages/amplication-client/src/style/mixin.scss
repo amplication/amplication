@@ -146,7 +146,6 @@ $bullet-size: 6px;
 
 @mixin optionCard {
   box-sizing: border-box;
-  background: var(--black5);
   border-radius: var(--default-border-radius);
   border: none;
 
@@ -168,7 +167,6 @@ $bullet-size: 6px;
   }
   &:hover {
     box-shadow: var(--hover-box-shadow);
-    background: var(--black10);
   }
 }
 

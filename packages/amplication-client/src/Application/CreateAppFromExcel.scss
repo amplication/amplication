@@ -66,6 +66,7 @@ $option-image-size: 70px;
       left: 0;
     }
   }
+
   %__title {
     font-weight: 600;
     text-align: center;
@@ -85,6 +86,7 @@ $option-image-size: 70px;
     font-size: 24px;
     line-height: 36px;
   }
+
   &__other-options {
     max-width: $options-max-width;
     width: 100%;
@@ -94,17 +96,49 @@ $option-image-size: 70px;
     justify-content: stretch;
     padding: 4% 0 2% 0;
 
-    &__option {
+    %__option {
       @include optionCard;
       @include body1;
       min-height: 170px;
       flex: 1;
       justify-content: center;
       cursor: pointer;
+
+      &:hover::before {
+        content: "";
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: var(--default-border-radius);
+      }
+    }
+
+    &__scratch_option {
+      @extend %__option;
+
+      &:hover {
+        position: relative;
+        background-image: url("../assets/gifs/start-scratch.gif");
+        background-size: cover;
+      }
+    }
+
+    &__sample_option {
+      @extend %__option;
+
+      &:hover {
+        position: relative;
+        background-image: url("../assets/gifs/start-sample-app.gif");
+        background-size: cover;
+      }
     }
 
     %__option_text_common {
       font-weight: 500;
+      position: relative;
       line-height: 32px;
     }
 
