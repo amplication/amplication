@@ -139,11 +139,12 @@ $option-image-size: 70px;
     color: var(--black80);
     outline: none;
     transition: border 0.1s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
     cursor: pointer;
 
     &:hover,
     &--active {
-      border-color: var(--primary);
+      border-color: var(--black100);
       background-color: var(--black5);
     }
 
