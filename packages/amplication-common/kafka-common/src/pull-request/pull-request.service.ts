@@ -1,10 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {
-  ClientKafka,
-  ClientProvider,
-  ClientsModuleOptionsFactory,
-  Transport,
-} from "@nestjs/microservices";
+import { ClientKafka } from "@nestjs/microservices";
 import { PullRequestTopicsEnum } from "./";
 
 @Injectable()
