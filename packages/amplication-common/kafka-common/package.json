@@ -12,6 +12,10 @@
     "typescript": "4.6.3"
   },
   "dependencies": {
-    "@nestjs/microservices": "^8.3.0"
+    "class-transformer": "0.5.1"
+  },
+  "peerDependencies": {
+    "@nestjs/microservices": "^8.3.0",
+    "kafkajs": "^1.0.0"
   }
 }
