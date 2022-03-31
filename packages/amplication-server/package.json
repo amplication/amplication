@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@amplication/container-builder": "^0.12.3",
+    "@amplication/kafka-common": "*",
     "@amplication/data": "^0.12.3",
     "@amplication/data-service-generator": "^0.12.3",
     "@amplication/deployer": "^0.12.3",
