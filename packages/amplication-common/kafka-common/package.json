@@ -10,5 +10,8 @@
   "author": "tupe12334",
   "devDependencies": {
     "typescript": "4.6.3"
+  },
+  "dependencies": {
+    "@nestjs/microservices": "^8.3.0"
   }
 }
