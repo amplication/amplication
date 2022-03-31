@@ -1,11 +1,22 @@
 import * as os from "os";
 import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus";
-import { IGitPullEvent } from "../contracts/interfaces/gitPullEvent.interface";
-import { IPullParams } from "../contracts/interfaces/clonePullParams.interface";
+import { EventData } from "../contracts/interfaces/eventData";
 
 export const MOCK_ACCESS_TOKEN = "accesstoken123";
 
-export const PULL_EVENT_MOCK: IGitPullEvent = {
+export const CLONE_EVENT_MOCK = {
+  provider: "GitHub",
+  repositoryOwner: "amit-amp",
+  repositoryName: "test-repo",
+  branch: "main",
+  commit: "initial",
+  pushedAt: new Date(),
+  baseDir: os.homedir() + "/Dev/gitPullTest/test-1",
+  installationId: "123456",
+  accessToken: "112233445566"
+}
+
+export const PULL_EVENT_MOCK: EventData = {
   id: BigInt(123),
   provider: "GitHub",
   repositoryOwner: "amit-amp",
@@ -13,6 +24,17 @@ export const PULL_EVENT_MOCK: IGitPullEvent = {
   branch: "main",
   commit: "initial",
   status: EnumGitPullEventStatus.Created,
+  pushedAt: new Date("2020-12-12"),
+};
+
+export const LAST_READY_COMMIT_MOCK: EventData = {
+  id: BigInt(123),
+  provider: "GitHub",
+  repositoryOwner: "amit-amp",
+  repositoryName: "test-repo",
+  branch: "main",
+  commit: "initial",
+  status: EnumGitPullEventStatus.Ready,
   pushedAt: new Date("2020-12-12"),
 };
 
@@ -45,9 +67,3 @@ export const UPDATE_PULL_EVENT_MOCK = {
   },
 };
 
-export const PULL_DATA_MOCK: IPullParams = {
-  remote: "origin",
-  branch: "main",
-  baseDir: os.homedir() + "/Dev/gitPullTest/test-1",
-  commit: "as122df",
-};

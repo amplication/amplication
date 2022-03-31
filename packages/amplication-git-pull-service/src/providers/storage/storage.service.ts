@@ -1,18 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { IStorage } from "../../contracts/interfaces/storage.interface";
 import * as fse from "fs-extra";
-import { AmplicationError } from "../../errors/AmplicationError";
+import { CustomError } from "../../errors/CustomError";
 
 @Injectable()
 export class StorageService implements IStorage {
-  async manageStorage(srcDir: string, destDir: string): Promise<void> {
+  async copyDir(srcDir: string, destDir: string): Promise<void> {
     try {
       await fse.copy(srcDir, destDir);
-      console.log("success!");
     } catch (err) {
-      throw new AmplicationError(
-        `error from StorageService => manageStorage(): ${err}`
-      );
+      throw new CustomError('failed to copy files from srcDir to destDir', err);
     }
   }
 }

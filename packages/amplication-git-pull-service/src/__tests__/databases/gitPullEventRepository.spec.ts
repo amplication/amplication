@@ -1,9 +1,9 @@
 import { PrismaService } from "nestjs-prisma";
 import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
 import {
-  CREATE_PULL_EVENT_MOCK,
+  CREATE_PULL_EVENT_MOCK, LAST_READY_COMMIT_MOCK,
   PULL_EVENT_MOCK,
-  UPDATE_PULL_EVENT_MOCK,
+  UPDATE_PULL_EVENT_MOCK
 } from "../../__mocks__/mockData";
 import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus";
 import { Test, TestingModule } from "@nestjs/testing";
@@ -13,14 +13,12 @@ const prismaGitPUllEventUpdateMock = jest.fn(() => ({
   ...PULL_EVENT_MOCK,
   status: EnumGitPullEventStatus.Ready,
 }));
-const prismaGitPullEventFindMayMock = jest.fn(() => ({
-  ...PULL_EVENT_MOCK,
-  status: EnumGitPullEventStatus.Ready,
-}));
+const prismaGitPUllEventManyMock = jest.fn( () => {
+  return [LAST_READY_COMMIT_MOCK].shift();
+});
 
 describe("Testing GitPullEventRepository", () => {
   let gitPullEventRepository: GitPullEventRepository;
-  let prisma: PrismaService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -33,7 +31,7 @@ describe("Testing GitPullEventRepository", () => {
             gitPullEvent: {
               create: prismaGitPUllEventCreateMock,
               update: prismaGitPUllEventUpdateMock,
-              findMany: prismaGitPullEventFindMayMock,
+              findMany: prismaGitPUllEventManyMock,
             },
           })),
         },
@@ -73,12 +71,38 @@ describe("Testing GitPullEventRepository", () => {
     });
   });
 
-  it("should return a single gitPullEvent record with status ready", async () => {
-    await gitPullEventRepository.getPrevXReadyCommit(
-      PULL_EVENT_MOCK,
+  it.skip("should return a single gitPullEvent record with status ready", async () => {
+    const args = {
+      where: {
+        provider: "GitHub",
+        repositoryOwner: "amit-amp",
+        repositoryName: "test-repo",
+        branch: "main",
+        status: EnumGitPullEventStatus.Ready,
+        pushedAt: {
+          lt: new Date("2020-12-12")
+        }
+      },
+      orderBy: {
+        pushedAt: 'desc'
+      },
+      skip: 1,
+      take: 1,
+      select: {
+        id: true,
+        provider: true,
+        repositoryOwner: true,
+        repositoryName: true,
+        branch: true,
+        commit: true,
+        status: true,
+        pushedAt: true,
+      }}
+    expect(await gitPullEventRepository.getPreviousReadyCommit(
+      { ...PULL_EVENT_MOCK, status: EnumGitPullEventStatus.Ready },
       1,
-      new Date()
-    );
-    expect(prismaGitPullEventFindMayMock).toBeCalledTimes(1);
+    )).toEqual([LAST_READY_COMMIT_MOCK].shift());
+    expect(prismaGitPUllEventManyMock).toBeCalledTimes(1);
+    expect(prismaGitPUllEventManyMock).toBeCalledWith(args);
   });
 });

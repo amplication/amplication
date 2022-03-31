@@ -1,7 +1,7 @@
 import { GitClientService } from "../../../providers/gitClient/gitClient.service";
-import { PULL_DATA_MOCK, PULL_EVENT_MOCK } from "../../../__mocks__/mockData";
 import { MOCK_GIT_CLIENT_SERVICE } from "../../../__mocks__/providers/gitClient/gitClientService";
 import { Test, TestingModule } from "@nestjs/testing";
+import * as os from "os";
 
 describe("Testing GitClientService", () => {
   let gitClientService: GitClientService;
@@ -26,16 +26,26 @@ describe("Testing GitClientService", () => {
 
   it("should clone a repository to a specific dir", async () => {
     const result = await gitClientService.clone(
-      PULL_EVENT_MOCK,
-      PULL_DATA_MOCK.baseDir,
+      "GitHub",
+      "amit-amp",
+      "test-repo",
+      "main",
+      "initial",
+      new Date(),
+      os.homedir() + "/Dev/gitPullTest/test-1",
       "123456",
-      "acceestoken123"
+      "112233445566"
     );
     expect(result).toEqual({});
   });
 
   it("should pull a repository to a specific dir", async () => {
-    const result = await gitClientService.pull(PULL_DATA_MOCK);
+    const result = await gitClientService.pull(
+      "origin",
+      "main",
+      "as122df",
+      os.homedir() + "/Dev/gitPullTest/test-1",
+    );
     expect(result).toEqual({});
   });
 });

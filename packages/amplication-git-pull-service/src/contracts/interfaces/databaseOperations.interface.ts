@@ -1,15 +1,15 @@
 import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus";
-import { IGitPullEvent } from "./gitPullEvent.interface";
+import { EventData } from "./eventData";
 
 export interface IDatabaseOperations {
-  create: (eventData: IGitPullEvent) => Promise<IGitPullEvent>;
+  create: (eventData: EventData) => Promise<EventData>;
   update: (
     id: bigint,
     status: EnumGitPullEventStatus
-  ) => Promise<IGitPullEvent>;
-  getPrevXReadyCommit: (
-    eventData: IGitPullEvent,
+  ) => Promise<EventData>;
+  getPreviousReadyCommit: (
+    eventData: EventData,
     skip: number,
     timestamp: Date
-  ) => Promise<IGitPullEvent | null>;
+  ) => Promise<EventData | undefined>;
 }

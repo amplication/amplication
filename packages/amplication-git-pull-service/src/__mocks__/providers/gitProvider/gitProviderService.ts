@@ -1,8 +1,8 @@
 import { mock } from "jest-mock-extended";
-import { GitProviderService } from "../../../providers/gitProvider/gitProvider.service";
+import { GitHostProviderService } from "../../../providers/gitProvider/gitHostProvider.service";
 import { MOCK_ACCESS_TOKEN } from "../../mockData";
 
-export const MOCK_GIT_PROVIDER_SERVICE = mock<GitProviderService>({});
+export const MOCK_GIT_PROVIDER_SERVICE = mock<GitHostProviderService>({});
 
 MOCK_GIT_PROVIDER_SERVICE.createInstallationAccessToken.mockReturnValue(
   Promise.resolve(MOCK_ACCESS_TOKEN)

@@ -1,10 +1,10 @@
-import { GitProviderService } from "../../../providers/gitProvider/gitProvider.service";
+import { GitHostProviderService } from "../../../providers/gitProvider/gitHostProvider.service";
 import { MOCK_GIT_PROVIDER_SERVICE } from "../../../__mocks__/providers/gitProvider/gitProviderService";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 
 describe("Testing GitProviderService", () => {
-  let gitProviderService: GitProviderService;
+  let gitProviderService: GitHostProviderService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -12,13 +12,13 @@ describe("Testing GitProviderService", () => {
       imports: [ConfigModule.forRoot({})],
       providers: [
         {
-          provide: GitProviderService,
+          provide: GitHostProviderService,
           useValue: MOCK_GIT_PROVIDER_SERVICE,
         },
       ],
     }).compile();
 
-    gitProviderService = module.get<GitProviderService>(GitProviderService);
+    gitProviderService = module.get<GitHostProviderService>(GitHostProviderService);
   });
 
   it("should be defined", () => {

@@ -1,4 +1,4 @@
-import { StorageService } from "../../providers/storage/storage.service";
+import { StorageService } from "../../../providers/storage/storage.service";
 import { Test, TestingModule } from "@nestjs/testing";
 
 describe("Testing StorageService", () => {

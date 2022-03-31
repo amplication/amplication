@@ -1,11 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
-import simpleGit, { SimpleGit } from "simple-git";
-import {
-  ICloneParams,
-  IPullParams,
-} from "../../contracts/interfaces/clonePullParams.interface";
-import { AmplicationError } from "../../errors/AmplicationError";
+import simpleGit from "simple-git";
+import { CustomError } from "../../errors/CustomError";
 
 /*
  * SimpleGit integration
@@ -13,39 +9,50 @@ import { AmplicationError } from "../../errors/AmplicationError";
 @Injectable()
 export class GitClientService implements IGitClient {
   async clone(
-    cloneParams: ICloneParams,
+    provider: string,
+    repositoryOwner: string,
+    repositoryName: string,
+    branch: string,
+    commit: string,
+    pushedAt: Date,
     baseDir: string,
     installationId: string,
     accessToken: string
-  ): Promise<any> {
+  ): Promise<void> {
     try {
-      const { repositoryOwner, repositoryName } = cloneParams;
       simpleGit({
         binary: "git",
         maxConcurrentProcesses: 6,
       }).clone(
+        // TODO:
+        //  1. clone specific branch and commit
+        //  2. filter out assets
         `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`,
         baseDir
       );
     } catch (err) {
-      throw new AmplicationError(
-        `error from GitClientService => clone(): ${err}`
-      );
+      // TODO: add error class
+      throw new CustomError('failed to clone a repository', err);
     }
   }
-
-  async pull(pullParams: IPullParams): Promise<any> {
+  // TODO:
+  //  1. check if need to add destroy (maxConcurrentProcesses)
+  //  2. check if we can work with x amount of clients
+  //  3. change any type
+  async pull(
+    remote: string,
+    branch: string,
+    commit: string,
+    baseDir: string,
+  ): Promise<void> {
     try {
-      const { remote, branch, baseDir } = pullParams;
       simpleGit({
         baseDir,
         binary: "git",
         maxConcurrentProcesses: 6,
       }).pull(remote, branch);
     } catch (err) {
-      throw new AmplicationError(
-        `error from GitClientService => pull(): ${err}`
-      );
+      throw new CustomError('failed to pull a repository', err);
     }
   }
 }

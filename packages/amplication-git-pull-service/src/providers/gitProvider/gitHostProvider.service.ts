@@ -3,7 +3,7 @@ import { IGitProvider } from "../../contracts/interfaces/gitProvider.interface";
 import { App } from "octokit";
 import { convertToNumber } from "../../utils/convertToNumber";
 import { ConfigService } from "@nestjs/config";
-import { AmplicationError } from "../../errors/AmplicationError";
+import { CustomError } from "../../errors/CustomError";
 
 const GITHUB_APP_APP_ID_VAR = "GITHUB_APP_APP_ID";
 const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
@@ -11,7 +11,7 @@ const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
  * Octokit integration
  * */
 @Injectable()
-export class GitProviderService implements IGitProvider {
+export class GitHostProviderService implements IGitProvider {
   private app: App;
 
   constructor(private readonly configService: ConfigService) {
@@ -36,14 +36,11 @@ export class GitProviderService implements IGitProvider {
         `POST /app/installations/${installationId}/access_tokens`,
         {
           installation_id: installationIdNumber,
-          repositories: [],
         }
       );
       return data.token;
     } catch (err) {
-      throw new AmplicationError(
-        `error from GitProviderService => createInstallationAccessToken(): ${err}`
-      );
+      throw new CustomError('failed to create new access token', err);
     }
   }
 }
