@@ -23,6 +23,7 @@
     "isequalwith",
     "linkcode",
     "loglevel",
+    "microservices",
     "nestjs",
     "oclif",
     "Octokit",
