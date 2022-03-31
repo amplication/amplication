@@ -193,10 +193,13 @@ export class GitProviderService {
             id: gitOrganizationId
           }
         });
-        return true;
+      } else {
+        throw new AmplicationError(
+          `delete installationId: ${installationId} failed`
+        );
       }
     }
-    return false;
+    return true;
   }
 
   private async getInstallationIdByGitOrganizationId(

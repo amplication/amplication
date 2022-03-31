@@ -10,6 +10,7 @@ import * as semver from 'semver';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
+import { AmplicationError } from 'src/errors/AmplicationError';
 import { App, Commit, User, Workspace } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
@@ -710,7 +711,7 @@ export class AppService {
     try {
       config = JSON.parse(configFile.content);
     } catch (error) {
-      throw new Error(
+      throw new AmplicationError(
         `Unexpected config file format in the linked GitHub repo. The file must be a valid JSON object`
       );
     }

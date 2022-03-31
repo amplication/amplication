@@ -62,7 +62,7 @@ export class GithubService implements IGitClient {
       name
     );
     if (exists) {
-      throw new Error(REPO_NAME_TAKEN_ERROR_MESSAGE);
+      return null;
     }
 
     const { data: repo } = await octokit.rest.repos.createInOrg({
@@ -102,7 +102,7 @@ export class GithubService implements IGitClient {
     });
 
     if (deleteInstallationRes.status != 204) {
-      throw new Error(`delete installationId: ${installationId} failed`);
+      return false;
     }
 
     return true;
@@ -153,8 +153,7 @@ export class GithubService implements IGitClient {
         return file;
       }
     }
-
-    throw new Error(UNEXPECTED_FILE_TYPE_OR_ENCODING);
+    return null;
   }
 
   async createPullRequest(
