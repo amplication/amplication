@@ -25,14 +25,11 @@ export class GitPullEventRepository implements IDatabaseOperations {
         },
       });
     } catch (err) {
-      throw new CustomError('failed to create a new record in DB', err);
+      throw new CustomError("failed to create a new record in DB", err);
     }
   }
 
-  async update(
-    id: bigint,
-    status: EnumGitPullEventStatus
-  ): Promise<EventData> {
+  async update(id: bigint, status: EnumGitPullEventStatus): Promise<EventData> {
     try {
       return this.prisma.gitPullEvent.update({
         where: { id: id },
@@ -49,47 +46,48 @@ export class GitPullEventRepository implements IDatabaseOperations {
         },
       });
     } catch (err) {
-      throw new CustomError('failed to create a new record in DB', err);
+      throw new CustomError("failed to create a new record in DB", err);
     }
   }
 
   async getPreviousReadyCommit(
     eventData: EventData,
-    skip: number,
+    skip: number
   ): Promise<EventData | undefined> {
     try {
-      const { provider, repositoryOwner, repositoryName, branch, pushedAt } = eventData;
+      const { provider, repositoryOwner, repositoryName, branch, pushedAt } =
+        eventData;
       const previousReadyCommit = await this.prisma.gitPullEvent.findMany({
-          where: {
-            provider: provider,
-            repositoryOwner: repositoryOwner,
-            repositoryName: repositoryName,
-            branch: branch,
-            status: EnumGitPullEventStatus.Ready,
-            pushedAt: {
-              lt: pushedAt,
-            },
+        where: {
+          provider: provider,
+          repositoryOwner: repositoryOwner,
+          repositoryName: repositoryName,
+          branch: branch,
+          status: EnumGitPullEventStatus.Ready,
+          pushedAt: {
+            lt: pushedAt,
           },
-          orderBy: {
-            pushedAt: "desc",
-          },
-          skip: skip,
-          take: 1,
-          select: {
-            id: true,
-            provider: true,
-            repositoryOwner: true,
-            repositoryName: true,
-            branch: true,
-            commit: true,
-            status: true,
-            pushedAt: true,
-          },
-        });
+        },
+        orderBy: {
+          pushedAt: "desc",
+        },
+        skip: skip,
+        take: 1,
+        select: {
+          id: true,
+          provider: true,
+          repositoryOwner: true,
+          repositoryName: true,
+          branch: true,
+          commit: true,
+          status: true,
+          pushedAt: true,
+        },
+      });
 
       return previousReadyCommit.shift();
     } catch (err) {
-      throw new CustomError('failed to find previous ready commit in DB', err);
+      throw new CustomError("failed to find previous ready commit in DB", err);
     }
   }
 }

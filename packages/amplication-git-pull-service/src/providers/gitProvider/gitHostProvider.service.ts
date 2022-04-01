@@ -40,7 +40,7 @@ export class GitHostProviderService implements IGitProvider {
       );
       return data.token;
     } catch (err) {
-      throw new CustomError('failed to create new access token', err);
+      throw new CustomError("failed to create new access token", err);
     }
   }
 }

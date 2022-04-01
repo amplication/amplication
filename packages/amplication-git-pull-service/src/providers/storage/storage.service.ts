@@ -9,7 +9,7 @@ export class StorageService implements IStorage {
     try {
       await fse.copy(srcDir, destDir);
     } catch (err) {
-      throw new CustomError('failed to copy files from srcDir to destDir', err);
+      throw new CustomError("failed to copy files from srcDir to destDir", err);
     }
   }
 }

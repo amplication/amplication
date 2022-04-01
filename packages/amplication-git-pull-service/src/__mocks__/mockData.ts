@@ -13,8 +13,8 @@ export const CLONE_EVENT_MOCK = {
   pushedAt: new Date(),
   baseDir: os.homedir() + "/Dev/gitPullTest/test-1",
   installationId: "123456",
-  accessToken: "112233445566"
-}
+  accessToken: "112233445566",
+};
 
 export const PULL_EVENT_MOCK: EventData = {
   id: BigInt(123),
@@ -66,4 +66,3 @@ export const UPDATE_PULL_EVENT_MOCK = {
     pushedAt: true,
   },
 };
-

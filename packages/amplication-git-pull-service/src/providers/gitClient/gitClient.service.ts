@@ -29,10 +29,10 @@ export class GitClientService implements IGitClient {
         //  2. filter out assets
         `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`,
         baseDir,
-        ['--branch', branch]
+        ["--branch", branch]
       );
     } catch (err) {
-      throw new CustomError('failed to clone a repository', err);
+      throw new CustomError("failed to clone a repository", err);
     }
   }
   // TODO:
@@ -42,7 +42,7 @@ export class GitClientService implements IGitClient {
     remote: string,
     branch: string,
     commit: string,
-    baseDir: string,
+    baseDir: string
   ): Promise<void> {
     try {
       simpleGit({
@@ -51,7 +51,7 @@ export class GitClientService implements IGitClient {
         maxConcurrentProcesses: 6,
       }).pull(remote, branch);
     } catch (err) {
-      throw new CustomError('failed to pull a repository', err);
+      throw new CustomError("failed to pull a repository", err);
     }
   }
 }

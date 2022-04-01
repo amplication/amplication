@@ -1,6 +1,3 @@
-import * as resp from "simple-git/dist/typings/response";
-import { Response } from "simple-git/dist/typings/simple-git";
-
 export interface IGitClient {
   clone: (
     provider: string,
@@ -17,6 +14,6 @@ export interface IGitClient {
     remote: string,
     branch: string,
     commit: string,
-    baseDir: string,
+    baseDir: string
   ) => Promise<void>;
 }

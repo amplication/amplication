@@ -18,16 +18,15 @@ export class EventData {
     branch: string,
     commit: string,
     status: keyof typeof EnumGitPullEventStatus,
-    pushedAt: Date,
+    pushedAt: Date
   ) {
-      this.id = id;
-      this.provider = provider;
-      this.repositoryOwner = repositoryOwner;
-      this.repositoryName = repositoryName;
-      this.branch = branch;
-      this.commit = commit;
-      this.status = status;
-      this.pushedAt = pushedAt;
-
+    this.id = id;
+    this.provider = provider;
+    this.repositoryOwner = repositoryOwner;
+    this.repositoryName = repositoryName;
+    this.branch = branch;
+    this.commit = commit;
+    this.status = status;
+    this.pushedAt = pushedAt;
   }
 }

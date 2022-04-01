@@ -3,10 +3,7 @@ import { EventData } from "./eventData";
 
 export interface IDatabaseOperations {
   create: (eventData: EventData) => Promise<EventData>;
-  update: (
-    id: bigint,
-    status: EnumGitPullEventStatus
-  ) => Promise<EventData>;
+  update: (id: bigint, status: EnumGitPullEventStatus) => Promise<EventData>;
   getPreviousReadyCommit: (
     eventData: EventData,
     skip: number,

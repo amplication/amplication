@@ -36,7 +36,7 @@ describe("Testing GitClientService", () => {
       "123456",
       "112233445566"
     );
-    expect(result).toEqual({});
+    expect(result).toEqual(undefined);
   });
 
   it("should pull a repository to a specific dir", async () => {
@@ -44,8 +44,8 @@ describe("Testing GitClientService", () => {
       "origin",
       "main",
       "as122df",
-      os.homedir() + "/Dev/gitPullTest/test-1",
+      os.homedir() + "/Dev/gitPullTest/test-1"
     );
-    expect(result).toEqual({});
+    expect(result).toEqual(undefined);
   });
 });

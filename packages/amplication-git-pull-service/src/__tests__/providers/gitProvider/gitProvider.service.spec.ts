@@ -18,7 +18,9 @@ describe("Testing GitProviderService", () => {
       ],
     }).compile();
 
-    gitProviderService = module.get<GitHostProviderService>(GitHostProviderService);
+    gitProviderService = module.get<GitHostProviderService>(
+      GitHostProviderService
+    );
   });
 
   it("should be defined", () => {

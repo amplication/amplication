@@ -1,9 +1,10 @@
 import { PrismaService } from "nestjs-prisma";
 import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
 import {
-  CREATE_PULL_EVENT_MOCK, LAST_READY_COMMIT_MOCK,
+  CREATE_PULL_EVENT_MOCK,
+  LAST_READY_COMMIT_MOCK,
   PULL_EVENT_MOCK,
-  UPDATE_PULL_EVENT_MOCK
+  UPDATE_PULL_EVENT_MOCK,
 } from "../../__mocks__/mockData";
 import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus";
 import { Test, TestingModule } from "@nestjs/testing";
@@ -13,7 +14,7 @@ const prismaGitPUllEventUpdateMock = jest.fn(() => ({
   ...PULL_EVENT_MOCK,
   status: EnumGitPullEventStatus.Ready,
 }));
-const prismaGitPUllEventManyMock = jest.fn( () => {
+const prismaGitPUllEventManyMock = jest.fn(() => {
   return [LAST_READY_COMMIT_MOCK].shift();
 });
 
@@ -80,11 +81,11 @@ describe("Testing GitPullEventRepository", () => {
         branch: "main",
         status: EnumGitPullEventStatus.Ready,
         pushedAt: {
-          lt: new Date("2020-12-12")
-        }
+          lt: new Date("2020-12-12"),
+        },
       },
       orderBy: {
-        pushedAt: 'desc'
+        pushedAt: "desc",
       },
       skip: 1,
       take: 1,
@@ -97,11 +98,14 @@ describe("Testing GitPullEventRepository", () => {
         commit: true,
         status: true,
         pushedAt: true,
-      }}
-    expect(await gitPullEventRepository.getPreviousReadyCommit(
-      { ...PULL_EVENT_MOCK, status: EnumGitPullEventStatus.Ready },
-      1,
-    )).toEqual([LAST_READY_COMMIT_MOCK].shift());
+      },
+    };
+    expect(
+      await gitPullEventRepository.getPreviousReadyCommit(
+        { ...PULL_EVENT_MOCK, status: EnumGitPullEventStatus.Ready },
+        1
+      )
+    ).toEqual([LAST_READY_COMMIT_MOCK].shift());
     expect(prismaGitPUllEventManyMock).toBeCalledTimes(1);
     expect(prismaGitPUllEventManyMock).toBeCalledWith(args);
   });
