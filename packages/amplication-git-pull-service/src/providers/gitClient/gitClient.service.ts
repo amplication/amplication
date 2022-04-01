@@ -1,13 +1,27 @@
 import { Injectable } from "@nestjs/common";
 import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
-import simpleGit from "simple-git";
+import simpleGit, { SimpleGitOptions } from "simple-git";
 import { CustomError } from "../../errors/CustomError";
+import * as fs from "fs";
+import * as os from "os";
 
 /*
  * SimpleGit integration
  * */
 @Injectable()
 export class GitClientService implements IGitClient {
+  options: Partial<SimpleGitOptions> = {
+    binary: "git",
+    maxConcurrentProcesses: 6,
+    timeout: {
+      block: 4000,
+    },
+    completion: {
+      onExit: 50,
+      onClose: true,
+    },
+  }
+
   async clone(
     provider: string,
     repositoryOwner: string,
@@ -20,21 +34,17 @@ export class GitClientService implements IGitClient {
     accessToken: string
   ): Promise<void> {
     try {
-      simpleGit({
-        binary: "git",
-        maxConcurrentProcesses: 6,
-      }).clone(
-        // TODO:
-        //  1. clone commit
-        //  2. filter out assets
-        `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`,
-        baseDir,
-        ["--branch", branch]
-      );
+      // baseDir => `${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}`;
+      fs.mkdirSync(baseDir, {recursive: true});
+      const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`;
+      simpleGit({...this.options, baseDir})
+        // TODO: filter out assets
+        .clone(repository, baseDir, ["--branch", branch]);
     } catch (err) {
       throw new CustomError("failed to clone a repository", err);
     }
   }
+
   // TODO:
   //  1. check if need to add destroy (maxConcurrentProcesses)
   //  2. check if we can work with x amount of clients
@@ -45,11 +55,8 @@ export class GitClientService implements IGitClient {
     baseDir: string
   ): Promise<void> {
     try {
-      simpleGit({
-        baseDir,
-        binary: "git",
-        maxConcurrentProcesses: 6,
-      }).pull(remote, branch);
+      simpleGit({...this.options, baseDir})
+        .pull(remote, branch);
     } catch (err) {
       throw new CustomError("failed to pull a repository", err);
     }
