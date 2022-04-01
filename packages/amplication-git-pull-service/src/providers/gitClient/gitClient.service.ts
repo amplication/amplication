@@ -3,7 +3,6 @@ import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
 import simpleGit, { SimpleGitOptions } from "simple-git";
 import { CustomError } from "../../errors/CustomError";
 import * as fs from "fs";
-import * as os from "os";
 
 /*
  * SimpleGit integration
@@ -20,7 +19,7 @@ export class GitClientService implements IGitClient {
       onExit: 50,
       onClose: true,
     },
-  }
+  };
 
   async clone(
     provider: string,
@@ -35,9 +34,9 @@ export class GitClientService implements IGitClient {
   ): Promise<void> {
     try {
       // baseDir => `${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}`;
-      fs.mkdirSync(baseDir, {recursive: true});
+      fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`;
-      simpleGit({...this.options, baseDir})
+      simpleGit({ ...this.options, baseDir })
         // TODO: filter out assets
         .clone(repository, baseDir, ["--branch", branch]);
     } catch (err) {
@@ -55,8 +54,9 @@ export class GitClientService implements IGitClient {
     baseDir: string
   ): Promise<void> {
     try {
-      simpleGit({...this.options, baseDir})
-        .pull(remote, branch);
+      simpleGit({ ...this.options, baseDir }).pull(remote, branch);
+      // .fetch(remote, branch)
+      // .merge([commit])
     } catch (err) {
       throw new CustomError("failed to pull a repository", err);
     }
