@@ -40,8 +40,15 @@ $option-image-size: 70px;
     margin: var(--default-spacing);
   }
 
-  &__select-file {
+  &__option_container {
     padding: var(--double-spacing);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  &__option_content {
+    width: 100%;
+    margin: auto;
   }
   &__divider {
     @include body2;
@@ -302,6 +309,7 @@ $option-image-size: 70px;
 
   &__back {
     display: flex;
+    cursor: pointer;
     .amp-icon {
       padding-right: var(--default-spacing-small);
     }

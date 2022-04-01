@@ -343,6 +343,28 @@ export function CreateAppFromExcel() {
     </div>
   );
 
+  const getBackButton = () => {
+    if (step === Steps.startWithExcel) {
+      return (
+        <div
+          className={`${CLASS_NAME}__back`}
+          onClick={() => setStep(Steps.startScreen)}
+        >
+          <Icon icon="arrow_left" />
+          Back
+        </div>
+      );
+    }
+    if (appsExist) {
+      return (
+        <Link to="/" className={`${CLASS_NAME}__back`}>
+          <Icon icon="arrow_left" />
+          Back
+        </Link>
+      );
+    }
+  };
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__layout`}>
@@ -365,33 +387,30 @@ export function CreateAppFromExcel() {
             </div>
           </div>
         ) : isEmpty(fileName) ? (
-          <div className={`${CLASS_NAME}__select-file`}>
-            {appsExist && (
-              <Link to="/" className={`${CLASS_NAME}__back`}>
-                <Icon icon="arrow_left" />
-                Back
-              </Link>
-            )}
+          <div className={`${CLASS_NAME}__option_container`}>
+            {getBackButton()}
 
-            {step === Steps.startScreen ? (
-              <>
-                <h1 className={`${CLASS_NAME}__welcome_text`}>
-                  Welcome to Amplication
-                </h1>
-                <h2 className={`${CLASS_NAME}__start_text`}>
-                  Let's start building your app
-                </h2>
+            <div className={`${CLASS_NAME}__option_content`}>
+              {step === Steps.startScreen ? (
+                <>
+                  <h1 className={`${CLASS_NAME}__welcome_text`}>
+                    Welcome to Amplication
+                  </h1>
+                  <h2 className={`${CLASS_NAME}__start_text`}>
+                    Let's start building your app
+                  </h2>
 
-                <div className={`${CLASS_NAME}__other-options`}>
-                  {startFromScratch}
-                  {startFromSampleApp}
-                </div>
-                <div className={`${CLASS_NAME}__divider`}>or</div>
-                {excelOption}
-              </>
-            ) : (
-              startWithExcel
-            )}
+                  <div className={`${CLASS_NAME}__other-options`}>
+                    {startFromScratch}
+                    {startFromSampleApp}
+                  </div>
+                  <div className={`${CLASS_NAME}__divider`}>or</div>
+                  {excelOption}
+                </>
+              ) : (
+                startWithExcel
+              )}
+            </div>
           </div>
         ) : (
           <CreateAppFromExcelForm
