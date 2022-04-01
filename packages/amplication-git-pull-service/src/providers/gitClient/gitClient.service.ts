@@ -25,20 +25,19 @@ export class GitClientService implements IGitClient {
         maxConcurrentProcesses: 6,
       }).clone(
         // TODO:
-        //  1. clone specific branch and commit
+        //  1. clone commit
         //  2. filter out assets
         `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`,
-        baseDir
+        baseDir,
+        ['--branch', branch]
       );
     } catch (err) {
-      // TODO: add error class
       throw new CustomError('failed to clone a repository', err);
     }
   }
   // TODO:
   //  1. check if need to add destroy (maxConcurrentProcesses)
   //  2. check if we can work with x amount of clients
-  //  3. change any type
   async pull(
     remote: string,
     branch: string,
