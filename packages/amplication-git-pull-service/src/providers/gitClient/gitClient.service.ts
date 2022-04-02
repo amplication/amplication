@@ -12,9 +12,25 @@ export class GitClientService implements IGitClient {
   git: SimpleGit;
 
   constructor() {
-    // TODO:
-    //  1. check if need to add destroy (maxConcurrentProcesses)
-    //  2. check if we can work with x amount of clients
+    /*
+     * @maxConcurrentProcesses: each `simple-git` instance limits the number of
+     * spawned child processes that can be run simultaneously and manages the queue
+     * of pending tasks for you
+     *
+     * @timeout(milliseconds): handle the case where the underlying git processes
+     * appear to hang wait after last received content on either stdOut or stdErr
+     * streams before sending a SIGINT kill message.
+     *
+     * @completion: (default: onClose = true, onExit = false)
+     * onExit (boolean / number(ms)):  wait an arbitrary number of ms after the
+     * event has fired before treating the task as complete
+     * onClose (boolean)
+     * - false: ignore this event from the child process
+     * - true: treat the task as complete as soon as the event has fired
+     * it should only be necessary to handle the exit event when the child processes
+     * are configured to not close (with keep-alive)
+     * */
+
     const options: Partial<SimpleGitOptions> = {
       binary: "git",
       maxConcurrentProcesses: 6,
@@ -42,7 +58,7 @@ export class GitClientService implements IGitClient {
     accessToken: string
   ): Promise<void> {
     try {
-      // baseDir => `${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}`;
+      // baseDir: `${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}`;
       fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`;
       // TODO: filter out assets
