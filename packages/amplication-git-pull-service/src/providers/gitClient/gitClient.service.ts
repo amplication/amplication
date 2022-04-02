@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
-import simpleGit, { SimpleGitOptions } from "simple-git";
+import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
 import { CustomError } from "../../errors/CustomError";
 import * as fs from "fs";
 
@@ -9,17 +9,26 @@ import * as fs from "fs";
  * */
 @Injectable()
 export class GitClientService implements IGitClient {
-  options: Partial<SimpleGitOptions> = {
-    binary: "git",
-    maxConcurrentProcesses: 6,
-    timeout: {
-      block: 4000,
-    },
-    completion: {
-      onExit: 50,
-      onClose: true,
-    },
-  };
+  git: SimpleGit;
+
+  constructor() {
+    // TODO:
+    //  1. check if need to add destroy (maxConcurrentProcesses)
+    //  2. check if we can work with x amount of clients
+    const options: Partial<SimpleGitOptions> = {
+      binary: "git",
+      maxConcurrentProcesses: 6,
+      timeout: {
+        block: 2000,
+      },
+      completion: {
+        onExit: 50,
+        onClose: true,
+      },
+    };
+
+    this.git = simpleGit(options);
+  }
 
   async clone(
     provider: string,
@@ -36,17 +45,16 @@ export class GitClientService implements IGitClient {
       // baseDir => `${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}`;
       fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}`;
-      simpleGit({ ...this.options, baseDir })
-        // TODO: filter out assets
-        .clone(repository, baseDir, ["--branch", branch]);
+      // TODO: filter out assets
+      this.git
+        .clone(repository, baseDir, ["--branch", branch])
+        .cwd(baseDir)
+        .checkout(commit);
     } catch (err) {
       throw new CustomError("failed to clone a repository", err);
     }
   }
 
-  // TODO:
-  //  1. check if need to add destroy (maxConcurrentProcesses)
-  //  2. check if we can work with x amount of clients
   async pull(
     remote: string,
     branch: string,
@@ -54,9 +62,7 @@ export class GitClientService implements IGitClient {
     baseDir: string
   ): Promise<void> {
     try {
-      simpleGit({ ...this.options, baseDir }).pull(remote, branch);
-      // .fetch(remote, branch)
-      // .merge([commit])
+      this.git.cwd(baseDir).fetch(remote, branch).merge([commit]);
     } catch (err) {
       throw new CustomError("failed to pull a repository", err);
     }
