@@ -15,6 +15,24 @@ $option-image-size: 70px;
   justify-content: stretch;
   align-items: stretch;
 
+  // Transition screen
+  /* enter */
+  &__options_screen_fade-enter {
+    opacity: 0;
+  }
+  &__options_screen_fade-enter-active {
+    opacity: 1;
+    transition: all 500ms ease-in;
+  }
+  /* exit */
+  &__options_screen_fade-exit {
+    opacity: 1;
+  }
+  &__options_screen_fade-exit-active {
+    opacity: 0;
+    transition: all 500ms ease-in;
+  }
+
   &__header {
     margin: var(--double-spacing);
     display: flex;

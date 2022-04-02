@@ -10,7 +10,12 @@ import {
   COMMON_FIELDS,
   EntitiesDiagramFormData,
 } from "../EntitiesDiagram/EntitiesDiagram";
-import { Snackbar, Icon } from "@amplication/design-system";
+import {
+  Snackbar,
+  Icon,
+  CSSTransition,
+  SwitchTransition,
+} from "@amplication/design-system";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
@@ -387,31 +392,39 @@ export function CreateAppFromExcel() {
             </div>
           </div>
         ) : isEmpty(fileName) ? (
-          <div className={`${CLASS_NAME}__option_container`}>
-            {getBackButton()}
+          <SwitchTransition mode="out-in">
+            <CSSTransition
+              key={step}
+              timeout={500}
+              classNames={`${CLASS_NAME}__options_screen_fade`}
+            >
+              <div className={`${CLASS_NAME}__option_container`}>
+                {getBackButton()}
 
-            <div className={`${CLASS_NAME}__option_content`}>
-              {step === Steps.startScreen ? (
-                <>
-                  <h1 className={`${CLASS_NAME}__welcome_text`}>
-                    Welcome to Amplication
-                  </h1>
-                  <h2 className={`${CLASS_NAME}__start_text`}>
-                    Let's start building your app
-                  </h2>
+                <div className={`${CLASS_NAME}__option_content`}>
+                  {step === Steps.startScreen ? (
+                    <>
+                      <h1 className={`${CLASS_NAME}__welcome_text`}>
+                        Welcome to Amplication
+                      </h1>
+                      <h2 className={`${CLASS_NAME}__start_text`}>
+                        Let's start building your app
+                      </h2>
 
-                  <div className={`${CLASS_NAME}__other-options`}>
-                    {startFromScratch}
-                    {startFromSampleApp}
-                  </div>
-                  <div className={`${CLASS_NAME}__divider`}>or</div>
-                  {excelOption}
-                </>
-              ) : (
-                startWithExcel
-              )}
-            </div>
-          </div>
+                      <div className={`${CLASS_NAME}__other-options`}>
+                        {startFromScratch}
+                        {startFromSampleApp}
+                      </div>
+                      <div className={`${CLASS_NAME}__divider`}>or</div>
+                      {excelOption}
+                    </>
+                  ) : (
+                    startWithExcel
+                  )}
+                </div>
+              </div>
+            </CSSTransition>
+          </SwitchTransition>
         ) : (
           <CreateAppFromExcelForm
             fileName={fileName}
