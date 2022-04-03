@@ -10,7 +10,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { groupBy, omit, orderBy } from 'lodash';
-import path from 'path';
+import path, { join } from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import {
@@ -45,6 +45,7 @@ import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs
 import { StepNotFoundError } from './errors/StepNotFoundError';
 
 import { GithubService } from '../github/github.service';
+import { BuildFilesSaver } from './utils/BuildFilesSaver';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -162,6 +163,7 @@ export class BuildService {
     private readonly appService: AppService,
     private readonly appSettingsService: AppSettingsService,
     private readonly userService: UserService,
+    private readonly buildFilesSaver: BuildFilesSaver,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -426,6 +428,8 @@ export class BuildService {
 
         // the path to the tar.gz artifact
         const tarballURL = await this.save(build, modules);
+
+        await this.buildFilesSaver.saveFiles(join(app.id, build.id), modules);
 
         await this.saveToGitHub(build, modules);
 

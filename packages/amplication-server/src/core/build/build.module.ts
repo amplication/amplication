@@ -19,6 +19,7 @@ import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilder
 import { StorageOptionsModule } from '../storage/storage-options.module';
 // eslint-disable-next-line import/no-cycle
 import { GithubModule } from '../github/github.module';
+import { BuildFilesSaver } from './utils/BuildFilesSaver';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { GithubModule } from '../github/github.module';
     forwardRef(() => AppModule),
     AppSettingsModule
   ],
-  providers: [BuildService, BuildResolver],
+  providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],
   controllers: [BuildController]
 })

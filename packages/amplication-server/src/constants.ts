@@ -1,0 +1,1 @@
+export const BASE_BUILDS_FOLDER = 'BASE_BUILDS_FOLDER';
