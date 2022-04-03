@@ -10,7 +10,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { groupBy, omit, orderBy } from 'lodash';
-import path from 'path';
+import path, { join } from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import {
@@ -429,7 +429,7 @@ export class BuildService {
         // the path to the tar.gz artifact
         const tarballURL = await this.save(build, modules);
 
-        await this.buildFilesSaver.saveFiles(app.id, build.id, modules);
+        await this.buildFilesSaver.saveFiles(join(app.id, build.id), modules);
 
         await this.saveToGitHub(build, modules);
 
