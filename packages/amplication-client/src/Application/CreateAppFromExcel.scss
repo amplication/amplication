@@ -204,12 +204,23 @@ $option-image-size: 70px;
     &:hover,
     &--active {
       border-color: var(--black100);
+      color: var(--black100);
       background-color: var(--black5);
     }
 
     .svg-theme-image {
       height: $import-image-size;
       background-position: center;
+    }
+
+    &__active_content {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+
+      .svg-theme-image {
+        width: 50px;
+      }
     }
   }
 

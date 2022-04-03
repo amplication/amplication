@@ -54,7 +54,7 @@ const MAX_SAMPLE_DATA = 3;
 
 export function CreateAppFromExcel() {
   const [importList, setImportList] = useState<ImportField[]>([]);
-  const [step, setStep] = useState<Steps>(Steps.startScreen);
+  const [step, setStep] = useState<Steps>(Steps.startWithExcel);
   const [fileName, setFileName] = useState<string | null>(null);
   const { data: appsData } = useQuery<{
     apps: Array<models.App>;
@@ -273,7 +273,7 @@ export function CreateAppFromExcel() {
     setImportList(fields);
   };
 
-  const dropExcel = (
+  const dropExcel = () => (
     <div
       {...getRootProps()}
       className={classNames(`${CLASS_NAME}__dropzone`, {
@@ -282,7 +282,10 @@ export function CreateAppFromExcel() {
     >
       <input {...getInputProps()} />
       {isDragActive ? (
-        <p>Drop the file here ...</p>
+        <div className={`${CLASS_NAME}__dropzone__active_content`}>
+          <p>Drop it like it's hot</p>
+          <SvgThemeImage image={EnumImages.DropExcel} />
+        </div>
       ) : (
         <>
           <SvgThemeImage image={EnumImages.ImportExcel} />
@@ -292,7 +295,7 @@ export function CreateAppFromExcel() {
     </div>
   );
 
-  const excelOption = (
+  const excelOption = () => (
     <div
       className={`${CLASS_NAME}__header ${CLASS_NAME}__excel_option`}
       onClick={() => setStep(Steps.startWithExcel)}
@@ -300,12 +303,12 @@ export function CreateAppFromExcel() {
       <SvgThemeImage image={EnumImages.ImportExcel} />
       <div className={`${CLASS_NAME}__message`}>
         Just upload an Excel or CSV file to import its schema and then generate
-        your node.js application source code. More info
+        your node.js application source code.
       </div>
     </div>
   );
 
-  const startWithExcel = (
+  const startWithExcel = () => (
     <>
       <div className={`${CLASS_NAME}__header`}>
         <h1 className={`${CLASS_NAME}__excel_start_title`}>
@@ -313,14 +316,14 @@ export function CreateAppFromExcel() {
         </h1>
         <div className={`${CLASS_NAME}__message`}>
           Just upload an Excel or CSV file to import its schema and then
-          generate your node.js application source code. More info
+          generate your node.js application source code.
         </div>
       </div>
-      {dropExcel}
+      {dropExcel()}
     </>
   );
 
-  const startFromScratch = (
+  const startFromScratch = () => (
     <div
       onClick={handleStartFromScratch}
       className={`${CLASS_NAME}__other-options__scratch_option`}
@@ -334,7 +337,7 @@ export function CreateAppFromExcel() {
     </div>
   );
 
-  const startFromSampleApp = (
+  const startFromSampleApp = () => (
     <div
       onClick={handleStartFromSample}
       className={`${CLASS_NAME}__other-options__sample_option`}
@@ -412,14 +415,14 @@ export function CreateAppFromExcel() {
                       </h2>
 
                       <div className={`${CLASS_NAME}__other-options`}>
-                        {startFromScratch}
-                        {startFromSampleApp}
+                        {startFromScratch()}
+                        {startFromSampleApp()}
                       </div>
                       <div className={`${CLASS_NAME}__divider`}>or</div>
-                      {excelOption}
+                      {excelOption()}
                     </>
                   ) : (
-                    startWithExcel
+                    startWithExcel()
                   )}
                 </div>
               </div>

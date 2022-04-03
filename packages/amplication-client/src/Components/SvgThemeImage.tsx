@@ -11,6 +11,7 @@ export enum EnumImages {
   AddApp = "--image-add-app",
   Relations = "--image-relations",
   ImportExcel = "--image-import-excel",
+  DropExcel = "--image-drop-excel",
   MyApps = "--image-my-apps",
   Generating = "--image-generating",
 }
