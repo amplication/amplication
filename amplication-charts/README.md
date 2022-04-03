@@ -108,10 +108,10 @@ $ helm delete [RELEASE_NAME] -n [NAMESPACE]
 ```
 NOTE:
 - The deletion of the release is NOT deleting the `Persistent-Volumes` in the namespace you worked on, and can cause problems later on, run the command:
-- `<pvc-name>` - The name of the `Persistent-Volume-Claim` in charts/services/app/values.yaml
+- `<pv-name>` - The name of the `Persistent-Volume` in charts/services/app/values.yaml
 ```console
-$ kubectl get pvc -n [NAMESPACE]
-$ kubectl delete pv/<pvc-name> -n [NAMESPACE]
+$ kubectl get pv -n [NAMESPACE]
+$ kubectl delete pv/<pv-name> -n [NAMESPACE]
 ```
 The commands remove all the Kubernetes components associated with the chart and deletes the release and the persistent volumes.
 
