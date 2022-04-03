@@ -1,0 +1,31 @@
+name: scheduler
+
+deployment:
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  image:
+    pullPolicy: Always
+    repository: amplication/scheduler
+    tag: latest
+    imagePullSecrets: []
+  securityContext:
+    enabled: false
+  command:
+    appName: app
+    appPort: 3000
+
+postgres:
+  postgresqlPassword: Fd7zZXWvCY3bdgLHz

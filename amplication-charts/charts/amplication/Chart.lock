@@ -1,0 +1,15 @@
+dependencies:
+- name: app
+  repository: file://../services/app
+  version: 0.1.0
+- name: docker
+  repository: file://../services/docker
+  version: 0.1.0
+- name: registry
+  repository: file://../services/registry
+  version: 0.1.0
+- name: scheduler
+  repository: file://../services/scheduler
+  version: 0.1.0
+digest: sha256:e5631827532ce4789ca1b642e0b6047d570d235be4f7882edad227f15a86e007
+generated: "2022-03-30T19:40:12.9276355+03:00"

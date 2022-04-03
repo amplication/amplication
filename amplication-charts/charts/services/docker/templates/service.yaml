@@ -1,0 +1,3 @@
+{{ include "base.service" (list . "docker.service") -}}
+{{- define "docker.service" -}}
+{{- end }}

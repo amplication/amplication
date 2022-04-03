@@ -1,0 +1,39 @@
+name: docker
+
+deployment:
+  replicaCount: 1
+  volume:
+    name: registry-data
+    path: /var/lib/registry
+  autoscaling:
+    enabled: false
+    # minReplicas: 1
+    # maxReplicas: 100
+    # targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  image:
+    pullPolicy: Always
+    repository: docker
+    tag: dind
+    imagePullSecrets: []
+  securityContext:
+    privileged: true
+
+service:
+  type: ClusterIP
+  protocol: TCP
+  port:
+    name: docker-tcp 
+    number: 2375
+
+config:
+  env:
+    DOCKER_TLS_CERTDIR: ""

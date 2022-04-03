@@ -1,0 +1,38 @@
+name: registry
+
+deployment:
+  replicaCount: 1
+  volume: 
+    name: registry-data
+    path: /var/lib/registry
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  image:
+    pullPolicy: Always
+    repository: registry
+    tag: 2
+    imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 
+    name: registry-tcp
+    number: 5000
+  protocol: TCP
+
+pvc:
+  enabled: true
+  storageLimit: 20Gi
+  storageRequest: 2Gi

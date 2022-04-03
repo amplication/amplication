@@ -1,0 +1,5 @@
+{{- define "app.ingress" -}}
+{{- end }}
+{{- if .Values.traefik.enabled }}
+{{ include "base.ingress" (list . "app.ingress") -}}
+{{- end }}

@@ -1,0 +1,3 @@
+{{ include "base.pvc" (list . "registry.pvc") -}}
+{{- define "registry.pvc" -}}
+{{- end }}

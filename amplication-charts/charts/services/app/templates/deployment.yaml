@@ -1,0 +1,37 @@
+{{ include "base.deployment" (list . "app.deployment") -}}
+{{- define "app.deployment" -}}
+spec:
+  template:  
+    spec:
+      containers:
+        - name: '{{ .Values.name }}'
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
+          {{- if hasKey .Values "config" }}
+          envFrom:
+          - configMapRef:
+              name: '{{ .Values.name }}'
+          {{- end }}
+          env: 
+            - name: ENVIRONMENT
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POSTGRESQL_URL
+              value: "postgres://postgres:{{ .Values.postgres.postgresqlPassword}}@postgresql:5432"
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
+          {{- if hasKey .Values "service" }}
+          ports:
+            - containerPort: {{ .Values.service.port.number }}
+          {{- end }}
+      {{- if hasKey .Values.deployment "volume" }}
+          volumeMounts:
+            - name: {{ .Values.deployment.volume.name }}
+              mountPath: {{ .Values.deployment.volume.path }}
+      volumes:
+        - name: {{ .Values.deployment.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.deployment.volume.name }}
+{{- end }}
+{{- end }}

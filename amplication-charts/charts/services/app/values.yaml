@@ -1,0 +1,69 @@
+name: app
+
+deployment:
+  replicaCount: 1
+  volume:
+    name: app-artifacts-data
+    path: /artifacts
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  image:
+    pullPolicy: Always
+    repository: amplication/amplication
+    tag: latest
+    imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 
+    name: app-http
+    number: 3000
+  protocol: TCP
+
+traefik:
+  enabled: false
+  entrypoints:
+    http: web
+    https: websecure
+  rule: PathPrefix(`/`)
+
+config:
+  env:
+    JWT_SECRET: jwt-secret
+    SERVICE_JWT_SECRET: service-jwt-secret
+    BCRYPT_SALT_OR_ROUNDS: "10"
+    NODE_ENV: production
+    CORS_ENABLE: "1"
+    PORT: "3000"
+    HOST: http://localhost:3000
+    DEFAULT_DISK: local
+    LOCAL_DISK_ROOT: /artifacts
+    CONTAINER_BUILDER_DEFAULT: docker
+    DOCKER_HOST: tcp://docker:2375
+
+pvc:
+  storageLimit: 5Gi
+  storageRequest: 1Gi
+
+# Postgresql Server
+postgres:
+  install: true
+  postgresqlPassword: Fd7zZXWvCY3bdgLHz
+  fullnameOverride: postgresql
+  postgresql:
+    image: groundnuty/k8s-wait-for:v1.3
+    imagePullPolicy: Always
+    primary:
+      podLabels: { name: "postgres" }

@@ -1,0 +1,3 @@
+{{ include "base.service" (list . "registry.service") -}}
+{{- define "registry.service" -}}
+{{- end }}
