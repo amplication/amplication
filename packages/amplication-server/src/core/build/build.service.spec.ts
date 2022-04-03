@@ -54,6 +54,7 @@ import { AppSettingsService } from '../appSettings/appSettings.service';
 
 import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { BuildFilesSaver } from './utils/BuildFilesSaver';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -531,6 +532,10 @@ describe('BuildService', () => {
             child: loggerChildMock,
             format: EXAMPLE_LOGGER_FORMAT
           }
+        },
+        {
+          provide: BuildFilesSaver,
+          useClass: BuildFilesSaver
         }
       ]
     }).compile();
