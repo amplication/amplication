@@ -1,10 +1,11 @@
 import { Module } from '@amplication/data-service-generator';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { outputFile } from 'fs-extra';
+import { outputFile, remove } from 'fs-extra';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { BASE_BUILDS_FOLDER } from 'src/constants';
+import { AmplicationError } from 'src/errors/AmplicationError';
 
 @Injectable()
 export class BuildFilesSaver {
@@ -15,10 +16,17 @@ export class BuildFilesSaver {
     this.baseBuildsPath = join(envFilePath ? envFilePath : tmpdir(), 'builds');
   }
   async saveFiles(relativePath: string, modules: Module[]): Promise<void> {
-    const filesPromises = modules.map(async (module, i) => {
-      const filePath = join(this.baseBuildsPath, relativePath, module.path);
-      return outputFile(filePath, module.code);
-    });
-    await Promise.all(filesPromises);
+    try {
+      const filesPromises = modules.map(async (module, i) => {
+        const filePath = join(this.baseBuildsPath, relativePath, module.path);
+        return outputFile(filePath, module.code);
+      });
+      await Promise.all(filesPromises);
+    } catch (error) {
+      await remove(join(this.baseBuildsPath, relativePath));
+      throw new AmplicationError(
+        'There was a error in saving the generated files to the amplication file system'
+      );
+    }
   }
 }
