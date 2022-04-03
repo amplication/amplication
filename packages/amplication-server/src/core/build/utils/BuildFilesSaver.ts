@@ -7,6 +7,9 @@ import { join } from 'path';
 import { BASE_BUILDS_FOLDER } from 'src/constants';
 import { AmplicationError } from 'src/errors/AmplicationError';
 
+const savingErrorMessage =
+  'There was a error in saving the generated files to the amplication file system';
+
 @Injectable()
 export class BuildFilesSaver {
   private baseBuildsPath: string;
@@ -24,9 +27,7 @@ export class BuildFilesSaver {
       await Promise.all(filesPromises);
     } catch (error) {
       await remove(join(this.baseBuildsPath, relativePath));
-      throw new AmplicationError(
-        'There was a error in saving the generated files to the amplication file system'
-      );
+      throw new AmplicationError(savingErrorMessage);
     }
   }
 }
