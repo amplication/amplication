@@ -16,6 +16,12 @@ export class BuildFilesSaver {
 
   constructor(configService: ConfigService) {
     const envFilePath = configService.get<string>(BASE_BUILDS_FOLDER);
+    // Make sure that in production env we use a static path instead of tmp
+    if (process.env.NODE_ENV.toLowerCase() === 'production' && !envFilePath) {
+      throw new Error(
+        `The ${BASE_BUILDS_FOLDER} env variable isn't set in production!`
+      );
+    }
     this.baseBuildsPath = join(envFilePath ? envFilePath : tmpdir(), 'builds');
   }
   async saveFiles(relativePath: string, modules: Module[]): Promise<void> {
