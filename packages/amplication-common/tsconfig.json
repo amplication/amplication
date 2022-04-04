@@ -9,7 +9,7 @@
     "sourceMap": true,
     "outDir": "./lib",
     "baseUrl": "./",
-    "incremental": true,
+    "incremental": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strictBindCallApply": true,
@@ -17,5 +17,5 @@
     "noImplicitUseStrict": true,
     "resolveJsonModule": true
   },
-  "exclude": ["node_modules", "libs"]
+  "exclude": ["node_modules", "lib"]
 }
