@@ -6,8 +6,9 @@ import {
   PULL_EVENT_MOCK,
   UPDATE_PULL_EVENT_MOCK,
 } from "../../__mocks__/mockData";
-import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus";
+import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
 import { Test, TestingModule } from "@nestjs/testing";
+import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 
 const prismaGitPullEventCreateMock = jest.fn(() => PULL_EVENT_MOCK);
 const prismaGitPullEventUpdateMock = jest.fn(() => ({
@@ -50,7 +51,7 @@ describe("Testing GitPullEventRepository", () => {
 
   it("should create a new record on database", async () => {
     const newRecord = await gitPullEventRepository.create(
-      "GitHub",
+      GitProviderEnum.Github,
       "amit-amp",
       "test-repo",
       "main",
@@ -83,7 +84,7 @@ describe("Testing GitPullEventRepository", () => {
   it("should return a single gitPullEvent record with status ready", async () => {
     const args = {
       where: {
-        provider: "GitHub",
+        provider: GitProviderEnum,
         repositoryOwner: "amit-amp",
         repositoryName: "test-repo",
         branch: "main",

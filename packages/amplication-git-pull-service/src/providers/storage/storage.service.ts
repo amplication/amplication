@@ -5,6 +5,7 @@ import { CustomError } from "../../errors/CustomError";
 import klaw from "klaw";
 import path from "path";
 import fs from "fs";
+import { ErrorMessages } from "../../constants/errorMessages";
 
 @Injectable()
 export class StorageService implements IStorage {
@@ -12,7 +13,7 @@ export class StorageService implements IStorage {
     try {
       await fse.copy(srcDir, destDir);
     } catch (err) {
-      throw new CustomError("failed to copy files from srcDir to destDir", err);
+      throw new CustomError(ErrorMessages.COPY_DIR_FAILURE, err);
     }
   }
 
@@ -27,7 +28,7 @@ export class StorageService implements IStorage {
         }
       }
     } catch (err) {
-      throw new CustomError("failed to remove non-code files from srcDir", err);
+      throw new CustomError(ErrorMessages.CLEAN_DIR_FAILURE, err);
     }
   }
 }

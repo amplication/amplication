@@ -1,17 +1,11 @@
-import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus";
+import { EventData } from "./eventData";
 
 export interface IGitPullEvent {
-  fetchRepository: (
-    provider: string,
-    repositoryOwner: string,
-    repositoryName: string,
-    branch: string,
-    commit: string,
-    status: keyof typeof EnumGitPullEventStatus,
-    pushedAt: Date,
+  pushEventHandler: (
+    eventData: EventData,
     baseDir: string,
     remote: string,
     installationId: string,
     skip: number
-  ) => void;
+  ) => Promise<void>;
 }

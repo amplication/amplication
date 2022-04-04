@@ -3,6 +3,8 @@ import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
 import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
 import { CustomError } from "../../errors/CustomError";
 import * as fs from "fs";
+import { EventData } from "../../contracts/interfaces/eventData";
+import { ErrorMessages } from "../../constants/errorMessages";
 
 /*
  * SimpleGit integration
@@ -47,16 +49,13 @@ export class GitClientService implements IGitClient {
   }
 
   async clone(
-    provider: string,
-    repositoryOwner: string,
-    repositoryName: string,
-    branch: string,
-    commit: string,
-    pushedAt: Date,
+    eventData: EventData,
     baseDir: string,
     installationId: string,
     accessToken: string
   ): Promise<void> {
+    const { provider, repositoryOwner, repositoryName, branch, commit } =
+      eventData;
     try {
       fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}.git`;
@@ -66,7 +65,7 @@ export class GitClientService implements IGitClient {
         .cwd(baseDir)
         .checkout(commit);
     } catch (err) {
-      throw new CustomError("failed to clone a repository", err);
+      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
     }
   }
 
@@ -79,7 +78,7 @@ export class GitClientService implements IGitClient {
     try {
       this.git.cwd(baseDir).fetch(remote, branch).merge([commit]);
     } catch (err) {
-      throw new CustomError("failed to pull a repository", err);
+      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
     }
   }
 }

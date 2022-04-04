@@ -1,11 +1,12 @@
 import * as os from "os";
-import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus";
+import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus.enum";
 import { EventData } from "../contracts/interfaces/eventData";
+import { GitProviderEnum } from "../contracts/enums/gitProvider.enum";
 
 export const MOCK_ACCESS_TOKEN = "accesstoken123";
 
 export const CLONE_EVENT_MOCK = {
-  provider: "GitHub",
+  provider: GitProviderEnum.Github,
   repositoryOwner: "amit-amp",
   repositoryName: "test-repo",
   branch: "main",
@@ -17,8 +18,7 @@ export const CLONE_EVENT_MOCK = {
 };
 
 export const PULL_EVENT_MOCK: EventData = {
-  id: BigInt(123),
-  provider: "GitHub",
+  provider: GitProviderEnum.Github,
   repositoryOwner: "amit-amp",
   repositoryName: "test-repo",
   branch: "main",
@@ -28,7 +28,7 @@ export const PULL_EVENT_MOCK: EventData = {
 };
 
 export const CREATE_GIT_PULL_EVENT_RECORD_0N_DB = {
-  provider: "GitHub",
+  provider: GitProviderEnum.Github,
   repositoryOwner: "amit-amp",
   repositoryName: "test-repo",
   branch: "main",
@@ -38,8 +38,7 @@ export const CREATE_GIT_PULL_EVENT_RECORD_0N_DB = {
 };
 
 export const LAST_READY_COMMIT_MOCK: EventData = {
-  id: BigInt(123),
-  provider: "GitHub",
+  provider: GitProviderEnum.Github,
   repositoryOwner: "amit-amp",
   repositoryName: "test-repo",
   branch: "main",
@@ -75,4 +74,18 @@ export const UPDATE_PULL_EVENT_MOCK = {
     status: true,
     pushedAt: true,
   },
+};
+
+export const PUSH_EVENT_HANDLER_MOCK_PARAMS = {
+  provider: GitProviderEnum.Github,
+  repositoryOwner: "amit-amp-org",
+  repositoryName: "sample-test",
+  branch: "main",
+  commit: "66a4b76",
+  status: EnumGitPullEventStatus.Created,
+  pushedAt: new Date(),
+  baseDir: `${os.homedir()}/git-remote/amit-amp-org/sample-test/main/66a4b76`,
+  remote: "origin",
+  installationId: "123456",
+  skip: 0,
 };

@@ -1,7 +1,5 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-// @ts-ignore
-// eslint-disable-next-line
 import { AppModule } from "./app.module";
 
 const { PORT = 3000 } = process.env;

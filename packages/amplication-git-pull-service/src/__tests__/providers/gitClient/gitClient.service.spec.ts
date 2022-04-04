@@ -2,6 +2,7 @@ import { GitClientService } from "../../../providers/gitClient/gitClient.service
 import { MOCK_GIT_CLIENT_SERVICE } from "../../../__mocks__/providers/gitClient/gitClientService";
 import { Test, TestingModule } from "@nestjs/testing";
 import * as os from "os";
+import { GitProviderEnum } from "../../../contracts/enums/gitProvider.enum";
 
 describe("Testing GitClientService", () => {
   let gitClientService: GitClientService;
@@ -26,12 +27,14 @@ describe("Testing GitClientService", () => {
 
   it("should clone a repository to a specific dir", async () => {
     const result = await gitClientService.clone(
-      "GitHub",
-      "amit-amp",
-      "test-repo",
-      "main",
-      "initial",
-      new Date(),
+      {
+        provider: GitProviderEnum.Github,
+        repositoryOwner: "amit-amp",
+        repositoryName: "test-repo",
+        branch: "main",
+        commit: "qwe234g",
+        pushedAt: new Date(),
+      },
       os.homedir() + "/Dev/gitPullTest/test-1",
       "123456",
       "112233445566"

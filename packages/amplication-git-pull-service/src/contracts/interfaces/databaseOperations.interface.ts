@@ -1,9 +1,10 @@
-import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus";
+import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus.enum";
 import { EventData } from "./eventData";
+import { GitProviderEnum } from "../enums/gitProvider.enum";
 
 export interface IDatabaseOperations {
   create: (
-    provider: string,
+    provider: keyof typeof GitProviderEnum,
     repositoryOwner: string,
     repositoryName: string,
     branch: string,

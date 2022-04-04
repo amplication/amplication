@@ -1,16 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import { IDatabaseOperations } from "../contracts/interfaces/databaseOperations.interface";
-import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus";
+import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus.enum";
 import { EventData } from "../contracts/interfaces/eventData";
 import { CustomError } from "../errors/CustomError";
+import { GitProviderEnum } from "../contracts/enums/gitProvider.enum";
+import { ErrorMessages } from "../constants/errorMessages";
 
 @Injectable()
 export class GitPullEventRepository implements IDatabaseOperations {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(
-    provider: string,
+    provider: keyof typeof GitProviderEnum,
     repositoryOwner: string,
     repositoryName: string,
     branch: string,
@@ -41,7 +43,7 @@ export class GitPullEventRepository implements IDatabaseOperations {
         },
       });
     } catch (err) {
-      throw new CustomError("failed to create a new record in DB", err);
+      throw new CustomError(ErrorMessages.CREATE_NEW_RECORD_ERROR, err);
     }
   }
 
@@ -62,7 +64,7 @@ export class GitPullEventRepository implements IDatabaseOperations {
         },
       });
     } catch (err) {
-      throw new CustomError("failed to create a new record in DB", err);
+      throw new CustomError(ErrorMessages.UPDATE_RECORD_ERROR, err);
     }
   }
 
@@ -103,7 +105,7 @@ export class GitPullEventRepository implements IDatabaseOperations {
 
       return previousReadyCommit.shift();
     } catch (err) {
-      throw new CustomError("failed to find previous ready commit in DB", err);
+      throw new CustomError(ErrorMessages.PREVIOUS_READY_COMMIT_NOT_FOUND_ERROR, err);
     }
   }
 }
