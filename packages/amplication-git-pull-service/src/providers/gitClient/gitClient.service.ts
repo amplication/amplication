@@ -61,7 +61,7 @@ export class GitClientService implements IGitClient {
       // baseDir: `${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}`;
       fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}.git`;
-      // TODO: filter out assets
+      // TODO: filter out assets and files > 250KB
       this.git
         .clone(repository, baseDir, ["--branch", branch])
         .cwd(baseDir)

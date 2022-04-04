@@ -16,7 +16,7 @@ export class StorageService implements IStorage {
     }
   }
 
-  // TODO: ask Matan about this method and add test if needed
+  // TODO: check if needed
   async removeNonCodeFiles(srcDir: string, forbiddenFilesExtension: string[]) {
     try {
       for await (const file of klaw(srcDir)) {
