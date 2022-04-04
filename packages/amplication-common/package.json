@@ -4,12 +4,14 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
+    "prebuild": "rimraf ./lib",
     "build": "tsc"
   },
   "keywords": [],
   "author": "tupe12334",
   "license": "ISC",
   "devDependencies": {
+    "rimraf": "3.0.2",
     "typescript": "4.6.3"
   }
 }
