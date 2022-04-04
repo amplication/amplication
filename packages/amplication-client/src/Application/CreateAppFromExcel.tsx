@@ -54,7 +54,7 @@ const MAX_SAMPLE_DATA = 3;
 
 export function CreateAppFromExcel() {
   const [importList, setImportList] = useState<ImportField[]>([]);
-  const [step, setStep] = useState<Steps>(Steps.startWithExcel);
+  const [step, setStep] = useState<Steps>(Steps.startScreen);
   const [fileName, setFileName] = useState<string | null>(null);
   const { data: appsData } = useQuery<{
     apps: Array<models.App>;
