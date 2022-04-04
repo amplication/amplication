@@ -9,10 +9,26 @@ import { CustomError } from "../errors/CustomError";
 export class GitPullEventRepository implements IDatabaseOperations {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(eventData: EventData): Promise<EventData> {
+  async create(
+    provider: string,
+    repositoryOwner: string,
+    repositoryName: string,
+    branch: string,
+    commit: string,
+    status: keyof typeof EnumGitPullEventStatus,
+    pushedAt: Date
+  ): Promise<EventData> {
     try {
       return this.prisma.gitPullEvent.create({
-        data: eventData,
+        data: {
+          provider,
+          repositoryOwner,
+          repositoryName,
+          branch,
+          commit,
+          status,
+          pushedAt,
+        },
         select: {
           id: true,
           provider: true,
@@ -51,7 +67,7 @@ export class GitPullEventRepository implements IDatabaseOperations {
   }
 
   async getPreviousReadyCommit(
-    eventData: EventData,
+    eventData: Partial<EventData>,
     skip: number
   ): Promise<EventData | undefined> {
     try {
