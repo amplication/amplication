@@ -49,7 +49,15 @@ describe("Testing GitPullEventRepository", () => {
   });
 
   it("should create a new record on database", async () => {
-    const newRecord = await gitPullEventRepository.create(PULL_EVENT_MOCK);
+    const newRecord = await gitPullEventRepository.create(
+      "GitHub",
+      "amit-amp",
+      "test-repo",
+      "main",
+      "initial",
+      EnumGitPullEventStatus.Created,
+      new Date("2020-12-12"),
+    );
     expect(newRecord).toEqual(PULL_EVENT_MOCK);
     expect(prismaGitPullEventCreateMock).toBeCalledTimes(1);
     expect(prismaGitPullEventCreateMock).toBeCalledWith({

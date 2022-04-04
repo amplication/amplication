@@ -27,6 +27,16 @@ export const PULL_EVENT_MOCK: EventData = {
   pushedAt: new Date("2020-12-12"),
 };
 
+export const CREATE_GIT_PULL_EVENT_RECORD_0N_DB = {
+  provider: "GitHub",
+  repositoryOwner: "amit-amp",
+  repositoryName: "test-repo",
+  branch: "main",
+  commit: "initial",
+  status: EnumGitPullEventStatus.Created,
+  pushedAt: new Date("2020-12-12"),
+}
+
 export const LAST_READY_COMMIT_MOCK: EventData = {
   id: BigInt(123),
   provider: "GitHub",
@@ -39,7 +49,7 @@ export const LAST_READY_COMMIT_MOCK: EventData = {
 };
 
 export const CREATE_PULL_EVENT_MOCK = {
-  data: { ...PULL_EVENT_MOCK },
+  data: { ...CREATE_GIT_PULL_EVENT_RECORD_0N_DB },
   select: {
     id: true,
     provider: true,
