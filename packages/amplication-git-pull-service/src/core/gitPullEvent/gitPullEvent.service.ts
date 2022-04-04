@@ -27,9 +27,12 @@ export class GitPullEventService implements IGitPullEvent {
     baseDir: string,
     remote: string,
     installationId: string,
-    accessToken: string,
     skip: number
   ) {
+    const accessToken =
+      await this.gitHostProviderService.createInstallationAccessToken(
+        installationId
+      );
     const previousReadyCommit =
       await this.gitPullEventRepository.getPreviousReadyCommit(
         {
@@ -76,10 +79,11 @@ export class GitPullEventService implements IGitPullEvent {
 
     if (previousReadyCommit && skip !== 0) {
       await this.storageService.copyDir(
-        `${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${
+        `${os.homedir()}/git-remote-/${repositoryOwner}/${repositoryName}/${branch}/${
           previousReadyCommit.commit
         }`,
-        `${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}`
+        // ${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}
+        baseDir
       );
       await this.gitClientService.pull(remote, branch, commit, baseDir);
       await this.gitPullEventRepository.update(

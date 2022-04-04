@@ -12,7 +12,6 @@ export interface IGitPullEvent {
     baseDir: string,
     remote: string,
     installationId: string,
-    accessToken: string,
     skip: number
   ) => void;
 }
