@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { QueueService, QUEUE_SERVICE_NAME } from './queue.service';
 
-export const BROKER_IP_ENV_KEY = 'BROKER_IP_ENV_KEY';
+export const QUEUE_BROKER_URL_VAR = 'QUEUE_BROKER_URL_VAR';
 
 @Module({
   imports: [
@@ -11,7 +11,7 @@ export const BROKER_IP_ENV_KEY = 'BROKER_IP_ENV_KEY';
       {
         name: QUEUE_SERVICE_NAME,
         useFactory: (configService: ConfigService) => {
-          const envBrokerIp = configService.get<string>(BROKER_IP_ENV_KEY);
+          const envBrokerIp = configService.get<string>(QUEUE_BROKER_URL_VAR);
           if (!envBrokerIp) {
             throw new Error('Missing broker ip in env file');
           }
