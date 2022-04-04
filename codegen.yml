@@ -15,7 +15,7 @@ generates:
   packages/amplication-pull-request/src/models.ts:
     plugins:
       - "typescript"
-  packages/amplication-common/kafka-common/src/models.ts:
+  packages/amplication-common/src/models.ts:
     plugins:
       - "typescript"
 hooks:
