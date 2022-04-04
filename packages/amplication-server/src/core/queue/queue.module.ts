@@ -15,13 +15,13 @@ const clientId = 'server-queue-client';
           if (!envBrokerIp) {
             throw new Error('Missing broker ip in env file');
           }
-          const brokersIpsArray = envBrokerIp.split(',');
+          const brokers = envBrokerIp.split(',');
           return {
             transport: Transport.KAFKA,
             options: {
               client: {
                 clientId,
-                brokers: brokersIpsArray
+                brokers
               }
             }
           };
