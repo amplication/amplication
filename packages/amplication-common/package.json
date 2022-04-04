@@ -1,0 +1,15 @@
+{
+  "name": "@amplication/common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "tupe12334",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "4.6.3"
+  }
+}
