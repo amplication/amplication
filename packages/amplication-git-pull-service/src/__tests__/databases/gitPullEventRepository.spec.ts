@@ -56,7 +56,7 @@ describe("Testing GitPullEventRepository", () => {
       "main",
       "initial",
       EnumGitPullEventStatus.Created,
-      new Date("2020-12-12"),
+      new Date("2020-12-12")
     );
     expect(newRecord).toEqual(PULL_EVENT_MOCK);
     expect(prismaGitPullEventCreateMock).toBeCalledTimes(1);

@@ -35,7 +35,7 @@ export const CREATE_GIT_PULL_EVENT_RECORD_0N_DB = {
   commit: "initial",
   status: EnumGitPullEventStatus.Created,
   pushedAt: new Date("2020-12-12"),
-}
+};
 
 export const LAST_READY_COMMIT_MOCK: EventData = {
   id: BigInt(123),
