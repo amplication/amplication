@@ -16,7 +16,7 @@ $option-image-size: 70px;
   align-items: stretch;
 
   // Transition screen
-  /* enter */
+  // enter
   &__options_screen_fade-enter {
     opacity: 0;
   }
@@ -24,7 +24,7 @@ $option-image-size: 70px;
     opacity: 1;
     transition: all 500ms ease-in;
   }
-  /* exit */
+  // exit
   &__options_screen_fade-exit {
     opacity: 1;
   }
@@ -128,6 +128,14 @@ $option-image-size: 70px;
       flex: 1;
       justify-content: center;
       cursor: pointer;
+
+      &:hover {
+        // To resolve: On light mode, the gif is black and the color of text is also black
+        // !! Dependency with parent classnames
+        .create-app-from-excel__other-options__option_text {
+          color: var(--static-white);
+        }
+      }
 
       &:hover::before {
         content: "";
