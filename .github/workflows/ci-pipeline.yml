@@ -135,8 +135,8 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
-        service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
+        service: ${{ needs.get-name-all.outputs.services }} 
+        service_modified: ${{ needs.get-name-modified.outputs.services }} 
 
     steps:
     - name: Checkout repository
