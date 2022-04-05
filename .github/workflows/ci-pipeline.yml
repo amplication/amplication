@@ -64,7 +64,7 @@ jobs:
     # if: ${{ needs.check-aws-resources.outputs.create_folder == 'false' }}
     outputs:
       # Expose matched filters as job 'apps' output variable
-      apps: ${{ steps.filter.outputs.changed_files }}
+      apps: ${{ steps.filter.outputs.changes }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -74,10 +74,50 @@ jobs:
         id: filter
         with:
           base: ${{ github.ref }}
-          list-files: json
           filters: |
-            changed:
-              - 'packages/**'
+            amplication-cli:
+              - packages/amplication-cli/**
+            amplicaion-client:
+              - packages/amplicaion-client/**
+            amplication-container-builder:
+              - packages/amplication-container-builder/**
+            amplication-data:
+              - packages/amplication-data/**
+            amplication-data-service-generator:
+              - packages/amplication-data-service-generator/**
+            amplication-deployer:
+              - packages/amplication-deployer/**
+            amplication-design-system:
+              - packages/amplication-design-system/**
+            amplication-scheduler:
+              - packages/amplication-scheduler/**
+            amplication-server:
+              - packages/amplication-server/**
+
+      # - name: Get changed files
+      #   id: changed-files
+      #   uses: tj-actions/changed-files@v17.3
+      #   with:
+      #     separator: ","
+      #     files_ignore: |
+      #       .github/**
+      #     files: |
+      #       packages/**
+
+      # - uses: kanga333/json-array-builder@v0.1.0
+      #   id: array
+      #   with:
+      #     separator: ","
+      #     str: ${{ steps.changed-files.outputs.all_changed_files }}
+
+      # - name: Filter array
+      #   id: filter
+      #   env:
+      #     ARRAY: ${{ steps.array.outputs.build }}
+      #   run: |
+      #     FILTERED_ARRAY=$(echo $ARRAY | jq -c '.[] |= sub("(\/[^/]*\/([^/]*)\/)"; "") | unique')
+      #     echo $FILTERED_ARRAY
+      #     echo "::set-output name=filtered-array::$FILTERED_ARRAY"
 
   # first run - need to get all services folders
   get-name-all:
@@ -102,41 +142,42 @@ jobs:
         #   for d in $dirs; do service_arr+=$(echo $d | cut -d / -f 2); done
         #   echo "::set-output name=services::$service_arr"
 
-  get-name-modified:
-    runs-on: ubuntu-latest
-    needs: changes
-    if: ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }}
-    outputs:
-      services: ${{ steps.set-name.outputs.services }}
-    strategy:
-      matrix:
-        service: ${{ fromJSON(needs.changes.outputs.apps) }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+  # get-name-modified:
+  #   runs-on: ubuntu-latest
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }}
+  #   outputs:
+  #     services: ${{ steps.set-name.outputs.services }}
+  #   strategy:
+  #     matrix:
+  #       service: ${{ fromJSON(needs.changes.outputs.apps) }}
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
       
-      - name: get service name
-        id: set-name
-        env: 
-          SERVICE: ${{ matrix.service }}
-        run: |
-          echo "============= get service names ================"
-          service_arr=()
-          echo $SERVICE
-          for d in $SERVICE; do service_arr+=$(echo $d | cut -d / -f 2); done
-          echo $service_arr
-          echo "============ set output ============="
-          echo "::set-output name=services::{\"include\":[$service_arr]}"
+  #     - name: get service name
+  #       id: set-name
+  #       env: 
+  #         SERVICE: ${{ matrix.service }}
+  #       run: |
+  #         echo "============= get service names ================"
+  #         service_arr=()
+  #         echo $SERVICE
+  #         for d in $SERVICE; do service_arr+=$(echo $d | cut -d / -f 2); done
+  #         echo $service_arr
+  #         echo "============ set output ============="
+  #         echo "::set-output name=services::$service_arr"
 
   install:
     runs-on: ubuntu-latest
-    needs: [get-name-modified,get-name-all]
-    if: always() && needs.get-name-modified.outputs.services || needs.get-name-all.outputs.services
+    needs: changes
+    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }}
     strategy:
       matrix:
         node-version: [16.x]
-        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
-        service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
+        apps: ${{ steps.filter.outputs.changes }}
+        # service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
+        # service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
 
     steps:
     - name: Checkout repository
@@ -151,15 +192,15 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: "Install packages dependencies: ${{ matrix.service_modified }}"
-      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
-      working-directory: packages/${{ matrix.service_modified }}
+    - name: "Install packages dependencies: ${{ matrix.apps }}"
+      # if: ${{ matrix.apps != '[]' &&  matrix.service_modified != '' }}
+      working-directory: packages/${{ matrix.apps }}
       run: npm run bootstrap -- --loglevel verbose
 
-    - name: "Install packages dependencies first run: ${{ matrix.service }}"
-      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
-      working-directory: packages/${{ matrix.service }}
-      run: npm run bootstrap -- --loglevel verbose
+    # - name: "Install packages dependencies first run: ${{ matrix.service }}"
+    #   if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
+    #   working-directory: packages/${{ matrix.service }}
+    #   run: npm run bootstrap -- --loglevel verbose
 
   # generate:
   #   runs-on: ubuntu-latest
