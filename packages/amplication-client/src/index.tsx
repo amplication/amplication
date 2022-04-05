@@ -13,15 +13,20 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { getToken, setToken } from "./authentication/authentication";
 import { setContext } from "@apollo/client/link/context";
-
+import { config } from "dotenv";
+config();
 const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
 if (token) {
   setToken(token);
 }
 
+const dataSource = process.env.DATA_SOURCE;
+
+if (!dataSource) throw new Error("Missing data source env variable");
+
 const httpLink = createHttpLink({
-  uri: "/graphql",
+  uri: dataSource,
 });
 
 const authLink = setContext((_, { headers }) => {
