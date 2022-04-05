@@ -65,6 +65,7 @@ export class GitPullEventService implements IGitPullEvent {
         );
 
       if (!previousReadyCommit) {
+        this.logger.log("previous ready commit not found, start cloning...");
         return this.resolveFetchType(
           GitFetchTypeEnum.Clone,
           eventData,
@@ -75,6 +76,8 @@ export class GitPullEventService implements IGitPullEvent {
           skip
         );
       }
+
+      this.logger.log("previous ready commit was found, start pulling...");
       return this.resolveFetchType(
         GitFetchTypeEnum.Pull,
         eventData,
@@ -150,15 +153,28 @@ export class GitPullEventService implements IGitPullEvent {
     installationId: string,
     accessToken: string
   ) {
+    const {
+      provider,
+      repositoryOwner,
+      repositoryName,
+      branch,
+      commit,
+      pushedAt,
+    } = eventData;
     await this.gitClientService.clone(
       eventData,
       baseDir,
       installationId,
       accessToken
     );
-    await this.gitPullEventRepository.update(
-      eventData.id,
-      EnumGitPullEventStatus.Ready
+    await this.gitPullEventRepository.create(
+      provider,
+      repositoryOwner,
+      repositoryName,
+      branch,
+      commit,
+      EnumGitPullEventStatus.Ready,
+      pushedAt
     );
   }
 
@@ -179,7 +195,7 @@ export class GitPullEventService implements IGitPullEvent {
     );
     await this.gitClientService.pull(remote, branch, commit, baseDir);
     await this.gitPullEventRepository.update(
-      eventData.id,
+      eventData.id!,
       GitPullEventService.updateEventPullStatus(skip)
     );
   }

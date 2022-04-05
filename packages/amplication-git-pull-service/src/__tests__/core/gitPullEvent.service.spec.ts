@@ -16,6 +16,7 @@ import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus
 import path from "path";
 import * as winston from "winston";
 import { utilities as nestWinstonModuleUtilities } from "nest-winston/dist/winston.utilities";
+import { NEW_RECORD } from "../../__mocks__/mockData";
 
 describe("Testing GitPullEventService", () => {
   let gitPullEventService: GitPullEventService;
@@ -49,7 +50,17 @@ describe("Testing GitPullEventService", () => {
         { provide: GitClientService, useValue: MOCK_GIT_CLIENT_SERVICE },
         {
           provide: GitPullEventRepository,
-          useValue: GIT_PULL_EVENT_REPOSITORY_MOCK,
+          useClass: jest.fn(() => ({
+            create: jest.fn(() => NEW_RECORD),
+            update: jest.fn(() => ({
+              ...NEW_RECORD,
+              status: EnumGitPullEventStatus.Ready,
+            })),
+            getPreviousReadyCommit: jest.fn(() => ({
+              ...NEW_RECORD,
+              status: EnumGitPullEventStatus.Ready,
+            })),
+          })),
         },
       ],
     }).compile();
@@ -61,7 +72,7 @@ describe("Testing GitPullEventService", () => {
     expect(gitPullEventService).toBeDefined();
   });
 
-  it("should should clone a new repository and save to db", async () => {
+  it("should should save new record to db", async () => {
     // arrange
     const eventData: EventData = {
       id: BigInt(112233),
@@ -74,7 +85,7 @@ describe("Testing GitPullEventService", () => {
       pushedAt: new Date(),
     };
 
-    const baseDir = path.resolve("git-remote-test");
+    const baseDir = path.resolve("/git-remote-test");
     const remote = "origin";
     const installationId = "24226448";
     const skip = 0;

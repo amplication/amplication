@@ -91,3 +91,14 @@ export const PUSH_EVENT_HANDLER_MOCK_PARAMS = {
   installationId: "123456",
   skip: 0,
 };
+
+export const NEW_RECORD = {
+  id: BigInt(112233),
+  provider: GitProviderEnum.Github,
+  repositoryOwner: "amit-amp-org",
+  repositoryName: "sample-test",
+  branch: "main",
+  commit: "11erf44",
+  status: EnumGitPullEventStatus.Created,
+  pushedAt: new Date(),
+};
