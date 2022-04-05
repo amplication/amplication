@@ -126,7 +126,7 @@ jobs:
           for d in $SERVICE; do service_arr+=$(echo $d | cut -d / -f 2); done
           echo $service_arr
           echo "============ set output ============="
-          echo "::set-output name=services::$service_arr"
+          echo "::set-output name=services::{\"include\":[$service_arr]}"
 
   install:
     runs-on: ubuntu-latest
@@ -135,8 +135,8 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        service: ${{ needs.get-name-all.outputs.services }} 
-        service_modified: ${{ needs.get-name-modified.outputs.services }} 
+        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
+        service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
 
     steps:
     - name: Checkout repository
