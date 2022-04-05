@@ -145,12 +145,12 @@ jobs:
       run: npm ci
     
     - name: "Install packages dependencies: ${{ matrix.service_modified }}"
-      if: ${{ metrix.service_modified != '[]' &&  metrix.service_modified != '' }}
+      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
       working-directory: packages/${{ matrix.service_modified }}
       run: npm run bootstrap -- --loglevel verbose
 
     - name: "Install packages dependencies first run: ${{ matrix.service }}"
-      if: ${{ metrix.service != '[]' &&  metrix.service != '' }}
+      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run bootstrap -- --loglevel verbose
 
@@ -178,12 +178,12 @@ jobs:
       run: npm ci
 
     - name: "Update Prisma client: ${{ matrix.service_modified }}"
-      if: ${{ metrix.service_modified != '[]' &&  metrix.service_modified != '' }}
+      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
       working-directory: packages/${{ matrix.service_modified }}
       run: npm run prisma:generate
     
     - name: "Update Prisma client first run: ${{ matrix.service }}"
-      if: ${{ metrix.service != '[]' &&  metrix.service != '' }}
+      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run prisma:generate
 
@@ -216,12 +216,12 @@ jobs:
       run: echo "SINCE=origin/master" >> $GITHUB_ENV
 
     - name: "Check format: ${{ matrix.service_modified }}"
-      if: ${{ metrix.service_modified != '[]' &&  metrix.service_modified != '' }}
+      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
       working-directory: packages/${{ matrix.service_modified }}
       run: npm run check-format -- --since $SINCE
       
     - name: "Check format first run: ${{ matrix.service }}"
-      if: ${{ metrix.service != '[]' &&  metrix.service != '' }}
+      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run check-format -- --since $SINCE
 
@@ -253,14 +253,14 @@ jobs:
       if: ${{ github.ref != 'refs/heads/master' }}
       run: echo "SINCE=origin/master" >> $GITHUB_ENV
 
-    - name: "Lint: ${{ metrix.service_modified }}"
-      if: ${{ metrix.service_modified != '[]' &&  metrix.service_modified != '' }}
-      working-directory: packages/${{ metrix.service_modified }}
+    - name: "Lint: ${{ matrix.service_modified }}"
+      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
+      working-directory: packages/${{ matrix.service_modified }}
       run: npm run lint -- --since $SINCE
     
-    - name: "Lint first run: ${{ metrix.service }}"
-      if: ${{ metrix.service != '[]' &&  metrix.service != '' }}
-      working-directory: packages/${{ metrix.service }}
+    - name: "Lint first run: ${{ matrix.service }}"
+      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
+      working-directory: packages/${{ matrix.service }}
       run: npm run lint -- --since $SINCE
 
   
@@ -291,14 +291,14 @@ jobs:
       if: ${{ github.ref != 'refs/heads/master' }}
       run: echo "SINCE=origin/master" >> $GITHUB_ENV
 
-    - name: "Build packages: ${{ metrix.service_modified }}"
-      if: ${{ metrix.service_modified != '[]' &&  metrix.service_modified != '' }}
-      working-directory: packages/${{ metrix.service_modified }}
+    - name: "Build packages: ${{ matrix.service_modified }}"
+      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
+      working-directory: packages/${{ matrix.service_modified }}
       run: npm run build -- --since $SINCE
 
-    - name: "Build packages first run: ${{ metrix.service }}"
-      if: ${{ metrix.service != '[]' &&  metrix.service != '' }}
-      working-directory: packages/${{ metrix.service }}
+    - name: "Build packages first run: ${{ matrix.service }}"
+      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
+      working-directory: packages/${{ matrix.service }}
       run: npm run build -- --since $SINCE
   
   test:
@@ -328,14 +328,14 @@ jobs:
       if: ${{ github.ref != 'refs/heads/master' }}
       run: echo "SINCE=origin/master" >> $GITHUB_ENV
 
-    - name: "Test: ${{ metrix.service_modified }}"
-      if: ${{ metrix.service_modified != '[]' &&  metrix.service_modified != '' }}
-      working-directory: packages/${{ metrix.service_modified }}
+    - name: "Test: ${{ matrix.service_modified }}"
+      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
+      working-directory: packages/${{ matrix.service_modified }}
       run: npm test -- --since $SINCE
 
-    - name: "Test first run: ${{ metrix.service }}"
-      if: ${{ metrix.service != '[]' &&  metrix.service != '' }}
-      working-directory: packages/${{ metrix.service }}
+    - name: "Test first run: ${{ matrix.service }}"
+      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
+      working-directory: packages/${{ matrix.service }}
       run: npm test -- --since $SINCE
 
   # docker:
