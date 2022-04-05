@@ -14,5 +14,8 @@
     "kafkajs": "1.16.0",
     "rimraf": "3.0.2",
     "typescript": "4.6.3"
+  },
+  "dependencies": {
+    "class-validator": "0.13.2"
   }
 }
