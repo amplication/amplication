@@ -1,5 +1,6 @@
+import { IsString, ValidateNested } from "class-validator";
 import { EnumGitProvider } from "../types";
-import { IsString } from "class-validator";
+import { GitCommit } from "./GitCommit";
 export class SendPullRequestArgs {
   @IsString()
   amplicationAppId!: string;
@@ -11,7 +12,10 @@ export class SendPullRequestArgs {
   installationId!: string;
   @IsString()
   gitProvider!: EnumGitProvider;
-  // @Field(() => GitOrganization, { nullable: false })
-  // gitOrganization: GitOrganization;
-  // gitRepository: GitRepository;
+  @IsString()
+  gitOrganizationName!: string;
+  @IsString()
+  gitRepositoryName!: string;
+  @ValidateNested()
+  commit: GitCommit;
 }
