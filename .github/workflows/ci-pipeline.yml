@@ -78,24 +78,28 @@ jobs:
             packages:
               - 'packages/**'
 
-  ## first run - need to get all services folders
-  # get-name-all:
-  #   runs-on: ubuntu-latest
+  # first run - need to get all services folders
+  get-name-all:
+    runs-on: ubuntu-latest
   #   needs: [check-aws-resources]
   #   if: ${{ needs.check-aws-resources.outputs.create_folder == 'true' }}
-  #   outputs:
-  #     services: ${{ steps.get-service.outputs.services }}
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
+    outputs:
+      services: ${{ steps.get-service.outputs.services }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
       
-  #     - name: get service name
-  #       id: get-service
-  #       run: |
-  #         dirs=(packages/*/)
-  #         service_arr=()
-  #         for d in $dirs; do service_arr+=$(echo $d | cut -d / -f 2); done
-  #         echo "::set-output name=services::$service_arr"
+      - name: test
+        run: echo "testing"
+      
+      - name: get service name
+        id: get-service
+        run: echo "::set-output name=services::[]"
+        # run: |
+        #   dirs=(packages/*/)
+        #   service_arr=()
+        #   for d in $dirs; do service_arr+=$(echo $d | cut -d / -f 2); done
+        #   echo "::set-output name=services::$service_arr"
 
   get-name-modified:
     runs-on: ubuntu-latest

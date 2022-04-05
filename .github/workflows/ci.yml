@@ -5,20 +5,20 @@ name: CI
 
 on:
   workflow_dispatch:
-  push:
-    branches: [master]
-    paths-ignore:
-      - "**.md"
-      - ".github/workflows/**.yml"
-      - "renovate.json"
-      - ".all-contributorsrc"
-  pull_request:
-    branches: [master]
-    paths-ignore:
-      - "**.md"
-      - ".github/workflows/**.yml"
-      - "renovate.json"
-      - ".all-contributorsrc"
+  # push:
+  #   branches: [master]
+  #   paths-ignore:
+  #     - "**.md"
+  #     - ".github/workflows/**.yml"
+  #     - "renovate.json"
+  #     - ".all-contributorsrc"
+  # pull_request:
+  #   branches: [master]
+  #   paths-ignore:
+  #     - "**.md"
+  #     - ".github/workflows/**.yml"
+  #     - "renovate.json"
+  #     - ".all-contributorsrc"
 jobs:
   build:
     runs-on: ubuntu-latest
