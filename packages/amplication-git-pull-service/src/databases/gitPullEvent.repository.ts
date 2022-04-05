@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import { IGitPullEventRepository } from "../contracts/interfaces/gitPullEventRepository.interface";
-import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus";
 import { EventData } from "../contracts/interfaces/eventData";
 import { CustomError } from "../errors/CustomError";
+import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus.enum";
 
 @Injectable()
 export class GitPullEventRepository implements IGitPullEventRepository {
@@ -70,6 +70,7 @@ export class GitPullEventRepository implements IGitPullEventRepository {
         },
       });
 
+      // @ts-ignore
       return previousReadyCommit.shift();
     } catch (err) {
       throw new CustomError("failed to find previous ready commit in DB", err);

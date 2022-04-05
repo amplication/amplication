@@ -1,10 +1,11 @@
-import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus";
+import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
+import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
 
 export const MOCK_ACCESS_TOKEN = "accesstoken123";
 
 export const MOCK_EVENT_DATA = {
   id: BigInt(123),
-  provider: "GitHub",
+  provider: GitProviderEnum.Github,
   repositoryOwner: "amit-amp",
   repositoryName: "test-repo",
   branch: "main",

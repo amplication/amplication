@@ -52,7 +52,7 @@ export class GitPullEventService implements IGitPullEvent {
       await this.createNewGitPullEventRecord(eventData);
 
       const previousReadyCommit =
-        await this.gitPullEventRepository.getPreviousReadyCommit(
+        await this.gitPullEventRepository.findByPreviousReadyCommit(
           {
             provider,
             repositoryOwner,
@@ -99,23 +99,7 @@ export class GitPullEventService implements IGitPullEvent {
   }
 
   private async createNewGitPullEventRecord(eventData: EventData) {
-    const {
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      commit,
-      pushedAt,
-    } = eventData;
-    await this.gitPullEventRepository.create(
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      commit,
-      EnumGitPullEventStatus.Created,
-      pushedAt
-    );
+    await this.gitPullEventRepository.create(eventData);
   }
 
   private resolveFetchType(
@@ -153,29 +137,13 @@ export class GitPullEventService implements IGitPullEvent {
     installationId: string,
     accessToken: string
   ) {
-    const {
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      commit,
-      pushedAt,
-    } = eventData;
     await this.gitClientService.clone(
       eventData,
       baseDir,
       installationId,
       accessToken
     );
-    await this.gitPullEventRepository.create(
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      commit,
-      EnumGitPullEventStatus.Ready,
-      pushedAt
-    );
+    await this.gitPullEventRepository.create(eventData);
   }
 
   private async pullRepository(
@@ -193,7 +161,7 @@ export class GitPullEventService implements IGitPullEvent {
       ),
       baseDir
     );
-    await this.gitClientService.pull(remote, branch, commit, baseDir);
+    await this.gitClientService.pull(branch, commit, baseDir);
     await this.gitPullEventRepository.update(
       eventData.id!,
       GitPullEventService.updateEventPullStatus(skip)

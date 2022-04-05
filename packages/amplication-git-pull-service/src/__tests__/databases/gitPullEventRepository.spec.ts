@@ -1,9 +1,9 @@
 import { PrismaService } from "nestjs-prisma";
 import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
-import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus";
 import { Test, TestingModule } from "@nestjs/testing";
 import { MOCK_EVENT_DATA } from "../../__mocks__/stubs/gitClient.stub";
 import { eventRepositoryStub } from "../../__mocks__/stubs/eventRepository.stub";
+import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
 
 const prismaGitPullEventCreateMock = jest.fn(() =>
   Promise.resolve({ id: BigInt(123) })

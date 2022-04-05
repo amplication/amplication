@@ -1,5 +1,5 @@
-import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus";
 import { EventData } from "./eventData";
+import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus.enum";
 
 export interface IGitPullEventRepository {
   create: (eventData: EventData) => Promise<{ id: bigint }>;
