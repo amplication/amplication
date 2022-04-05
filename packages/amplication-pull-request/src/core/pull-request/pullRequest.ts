@@ -1,8 +1,11 @@
 import { EnumGitProvider } from 'src/models';
+import { ChangedFile } from '../diff/dto/ChangedFile';
 
 export class PullRequest {
-  constructor(gitProvider: EnumGitProvider) {
-    this.gitProvider = gitProvider;
+  constructor(
+    public readonly gitProvider: EnumGitProvider,
+    public readonly files: ChangedFile[]
+  ) {
     // this.create();
   }
   /**
@@ -11,7 +14,6 @@ export class PullRequest {
   private create(): void {
     throw new Error('Method not implemented.');
   }
-  gitProvider!: EnumGitProvider;
 
   // @Field((of) => String)
   // url!: string;

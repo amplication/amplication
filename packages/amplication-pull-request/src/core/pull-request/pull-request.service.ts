@@ -17,7 +17,7 @@ export class PullRequestService {
       oldBuildId,
       newBuildId
     );
-    const pullRequest = new PullRequest(gitProvider);
+    const pullRequest = new PullRequest(gitProvider, changedFiles);
     return pullRequest;
   }
 }
