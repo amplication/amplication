@@ -77,8 +77,8 @@ jobs:
           filters: |
             amplication-cli:
               - packages/amplication-cli/**
-            amplicaion-client:
-              - packages/amplicaion-client/**
+            amplication-client:
+              - packages/amplication-client/**
             amplication-container-builder:
               - packages/amplication-container-builder/**
             amplication-data:
