@@ -5,8 +5,9 @@ export const previousBuild = async (
   prisma: PrismaService,
   appId: string,
   newBuildId: string
-): Promise<Build> => {
-  //TODO what happend for the first build
+): Promise<Build | null> => {
+  console.log('jfh');
+
   const oldBuild = (
     await prisma.build.findMany({
       take: 1,
@@ -15,5 +16,5 @@ export const previousBuild = async (
       orderBy: { createdAt: 'desc' }
     })
   )[0];
-  return oldBuild;
+  return oldBuild || null;
 };

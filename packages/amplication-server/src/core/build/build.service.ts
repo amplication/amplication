@@ -46,6 +46,9 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 
 import { GithubService } from '../github/github.service';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
+import { QueueService } from '../queue/queue.service';
+import { EnumGitProvider } from '@amplication/common';
+import { previousBuild } from './utils';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -164,6 +167,7 @@ export class BuildService {
     private readonly appSettingsService: AppSettingsService,
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
+    private readonly queueService: QueueService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -218,12 +222,14 @@ export class BuildService {
       }
     });
 
+    const oldBuild = await previousBuild(this.prisma, appId, build.id);
+
     const logger = this.logger.child({
       buildId: build.id
     });
 
     logger.info(JOB_STARTED_LOG);
-    const tarballURL = await this.generate(build, user);
+    const tarballURL = await this.generate(build, user, oldBuild.id);
     if (!skipPublish) {
       await this.buildDockerImage(build, tarballURL);
     }
@@ -380,7 +386,11 @@ export class BuildService {
    * @DSG The connection between the server and the DSG (Data Service Generator)
    * @param build the build object to generate code for
    */
-  private async generate(build: Build, user: User): Promise<string> {
+  private async generate(
+    build: Build,
+    user: User,
+    oldBuildId: string
+  ): Promise<string> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
@@ -431,7 +441,7 @@ export class BuildService {
 
         await this.buildFilesSaver.saveFiles(join(app.id, build.id), modules);
 
-        await this.saveToGitHub(build, modules);
+        await this.saveToGitHub(build, modules, oldBuildId);
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
@@ -590,7 +600,8 @@ export class BuildService {
 
   private async saveToGitHub(
     build: Build,
-    modules: DataServiceGenerator.Module[]
+    modules: DataServiceGenerator.Module[],
+    oldBuildId: string
   ) {
     const app = build.app;
 
@@ -623,6 +634,26 @@ export class BuildService {
         async step => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
+            await this.queueService.emitCreateGitPullRequest({
+              gitOrganizationName: appRepository.gitOrganization.name,
+              gitRepositoryName: appRepository.name,
+              amplicationAppId: app.id,
+              gitProvider: EnumGitProvider.Github,
+              installationId: appRepository.gitOrganization.installationId,
+              newBuildId: build.id,
+              oldBuildId,
+              commit: {
+                base: 'main',
+                head: `amplication-build-${build.id}`,
+                body: `Amplication build # ${build.id}.
+                Commit message: ${commit.message}
+                
+                ${url}
+                `,
+                title: commitMessage
+              }
+            });
+
             const prUrl = await this.githubService.createPullRequest(
               appRepository.gitOrganization.name,
               appRepository.name,
