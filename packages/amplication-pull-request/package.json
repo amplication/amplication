@@ -25,6 +25,7 @@
     "@nestjs/platform-express": "8.2.3",
     "@nestjs/serve-static": "2.2.2",
     "apollo-server-express": "3.5.0",
+    "class-validator": "0.13.2",
     "dir-compare": "4.0.0",
     "kafkajs": "1.16.0",
     "ts-morph": "13.0.3"
@@ -34,7 +35,9 @@
     "@types/node": "17.0.23",
     "@typescript-eslint/eslint-plugin": "5.16.0",
     "@typescript-eslint/parser": "5.16.0",
+    "jest-mock-extended": "2.0.5",
     "eslint": "8.11.0",
+    "type-fest": "2.12.2",
     "eslint-import-resolver-lerna": "2.0.0",
     "eslint-plugin-import": "2.25.4",
     "jest": "27.5.1",
