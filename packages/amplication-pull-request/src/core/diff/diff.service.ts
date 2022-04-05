@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { compare, Options } from 'dir-compare';
 import { join } from 'path';
-import { ChangedFile } from './dto/ChangedFile';
+import { ChangedFile } from '@amplication/common/src/dto/ChangedFile';
 import { BuildPathFactory } from './utils/BuildPathFactory';
 
 @Injectable()
@@ -32,9 +32,14 @@ export class DiffService {
       }
       return false;
     });
-    return changedFiles.map((diff) => ({
-      path: join(diff.relativePath, diff.name2),
-    }));
+    return (
+      changedFiles
+        // Remove all the old deleted files
+        .filter((diff) => diff.name2)
+        .map((diff) => ({
+          path: join(diff.relativePath, diff.name2),
+        }))
+    );
   }
 }
 
