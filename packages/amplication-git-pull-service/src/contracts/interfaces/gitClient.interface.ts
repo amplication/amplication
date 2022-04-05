@@ -7,10 +7,5 @@ export interface IGitClient {
     installationId: string,
     accessToken: string
   ) => Promise<void>;
-  pull: (
-    remote: string,
-    branch: string,
-    commit: string,
-    baseDir: string
-  ) => Promise<void>;
+  pull: (branch: string, commit: string, baseDir: string) => Promise<void>;
 }

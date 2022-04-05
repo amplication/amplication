@@ -1,74 +1,41 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
-import { IDatabaseOperations } from "../contracts/interfaces/databaseOperations.interface";
-import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus.enum";
+import { IGitPullEventRepository } from "../contracts/interfaces/gitPullEventRepository.interface";
+import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus";
 import { EventData } from "../contracts/interfaces/eventData";
 import { CustomError } from "../errors/CustomError";
-import { GitProviderEnum } from "../contracts/enums/gitProvider.enum";
-import { ErrorMessages } from "../constants/errorMessages";
 
 @Injectable()
-export class GitPullEventRepository implements IDatabaseOperations {
+export class GitPullEventRepository implements IGitPullEventRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(
-    provider: keyof typeof GitProviderEnum,
-    repositoryOwner: string,
-    repositoryName: string,
-    branch: string,
-    commit: string,
-    status: keyof typeof EnumGitPullEventStatus,
-    pushedAt: Date
-  ): Promise<EventData> {
+  async create(eventData: EventData): Promise<{ id: bigint }> {
     try {
       return this.prisma.gitPullEvent.create({
-        data: {
-          provider,
-          repositoryOwner,
-          repositoryName,
-          branch,
-          commit,
-          status,
-          pushedAt,
-        },
+        data: eventData,
         select: {
           id: true,
-          provider: true,
-          repositoryOwner: true,
-          repositoryName: true,
-          branch: true,
-          commit: true,
-          status: true,
-          pushedAt: true,
         },
       });
     } catch (err) {
-      throw new CustomError(ErrorMessages.CREATE_NEW_RECORD_ERROR, err);
+      throw new CustomError("failed to create a new record in DB", err);
     }
   }
 
-  async update(id: bigint, status: EnumGitPullEventStatus): Promise<EventData> {
+  async update(id: bigint, status: EnumGitPullEventStatus): Promise<boolean> {
     try {
-      return this.prisma.gitPullEvent.update({
+      const updatedEvent = this.prisma.gitPullEvent.update({
         where: { id: id },
         data: { status: status },
-        select: {
-          id: true,
-          provider: true,
-          repositoryOwner: true,
-          repositoryName: true,
-          branch: true,
-          commit: true,
-          status: true,
-          pushedAt: true,
-        },
       });
+
+      return !!updatedEvent;
     } catch (err) {
-      throw new CustomError(ErrorMessages.UPDATE_RECORD_ERROR, err);
+      throw new CustomError("failed to create a new record in DB", err);
     }
   }
 
-  async getPreviousReadyCommit(
+  async findByPreviousReadyCommit(
     eventData: Partial<EventData>,
     skip: number
   ): Promise<EventData | undefined> {
@@ -105,10 +72,7 @@ export class GitPullEventRepository implements IDatabaseOperations {
 
       return previousReadyCommit.shift();
     } catch (err) {
-      throw new CustomError(
-        ErrorMessages.PREVIOUS_READY_COMMIT_NOT_FOUND_ERROR,
-        err
-      );
+      throw new CustomError("failed to find previous ready commit in DB", err);
     }
   }
 }

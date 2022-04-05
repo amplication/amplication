@@ -54,11 +54,12 @@ export class GitClientService implements IGitClient {
     installationId: string,
     accessToken: string
   ): Promise<void> {
-    const { repositoryOwner, repositoryName, branch, commit } = eventData;
     try {
+      const { provider, repositoryOwner, repositoryName, branch, commit } =
+        eventData;
       fs.mkdirSync(baseDir, { recursive: true });
-      const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}.git`;
-      // TODO: filter out assets && files > 250KB
+      const repository = `https://${repositoryOwner}:${accessToken}@${provider}.com/${repositoryOwner}/${repositoryName}.git`;
+      // TODO: filter out assets and files > 250KB
       this.git
         .clone(repository, baseDir, ["--branch", branch])
         .cwd(baseDir)
@@ -68,14 +69,9 @@ export class GitClientService implements IGitClient {
     }
   }
 
-  async pull(
-    remote: string,
-    branch: string,
-    commit: string,
-    baseDir: string
-  ): Promise<void> {
+  async pull(branch: string, commit: string, baseDir: string): Promise<void> {
     try {
-      this.git.cwd(baseDir).fetch(remote, branch).merge([commit]);
+      this.git.cwd(baseDir).fetch("origin", branch).merge([commit]);
     } catch (err) {
       throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
     }

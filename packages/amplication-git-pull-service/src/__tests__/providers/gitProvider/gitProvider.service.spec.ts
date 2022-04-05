@@ -1,7 +1,7 @@
 import { GitHostProviderService } from "../../../providers/gitProvider/gitHostProvider.service";
+import { mockGitHostProviderService } from "../../../__mocks__/providers/gitProvider/gitProviderService";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { MOCK_GITHUB_PROVIDER_SERVICE } from "../../../__mocks__/providers/gitProvider/gitHubProviderService";
 
 describe("Testing GitProviderService", () => {
   let gitProviderService: GitHostProviderService;
@@ -13,7 +13,7 @@ describe("Testing GitProviderService", () => {
       providers: [
         {
           provide: GitHostProviderService,
-          useValue: MOCK_GITHUB_PROVIDER_SERVICE,
+          useClass: mockGitHostProviderService,
         },
       ],
     }).compile();
