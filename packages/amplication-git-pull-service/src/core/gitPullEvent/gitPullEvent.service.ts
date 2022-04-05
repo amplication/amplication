@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
 import { StorageService } from "../../providers/storage/storage.service";
 import { GitClientService } from "../../providers/gitClient/gitClient.service";
@@ -9,6 +9,9 @@ import { resolve } from "path";
 import { EventData } from "../../contracts/interfaces/eventData";
 import { GitFetchTypeEnum } from "../../contracts/enums/gitFetchType.enum";
 import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
+import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
+import { LoggerMessages } from "../../constants/loggerMessages";
+import * as os from "os";
 
 @Injectable()
 export class GitPullEventService implements IGitPullEvent {
@@ -16,7 +19,8 @@ export class GitPullEventService implements IGitPullEvent {
     private gitPullEventRepository: GitPullEventRepository,
     private storageService: StorageService,
     private readonly gitHostProviderFactory: GitHostProviderFactory,
-    private gitClientService: GitClientService
+    private gitClientService: GitClientService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
   ) {}
 
   async pushEventHandler(
@@ -34,44 +38,60 @@ export class GitPullEventService implements IGitPullEvent {
       commit,
       pushedAt,
     } = eventData;
-    const accessToken = await this.gitHostProviderFactory
-      .getHostProvider(provider as GitProviderEnum)
-      .createInstallationAccessToken(installationId);
 
-    const previousReadyCommit =
-      await this.gitPullEventRepository.getPreviousReadyCommit(
-        {
-          provider,
-          repositoryOwner,
-          repositoryName,
-          branch,
-          commit,
-          pushedAt,
-        },
-        skip
+    try {
+      const accessToken = await this.gitHostProviderFactory
+        .getHostProvider(provider as GitProviderEnum)
+        .createInstallationAccessToken(installationId);
+
+      this.logger.log(
+        LoggerMessages.log.GENERATE_OCTOKIT_ACCESS_TOKEN,
+        GitPullEventService.name,
+        "pushEventHandler"
       );
 
-    if (!previousReadyCommit) {
+      const previousReadyCommit =
+        await this.gitPullEventRepository.getPreviousReadyCommit(
+          {
+            provider,
+            repositoryOwner,
+            repositoryName,
+            branch,
+            commit,
+            pushedAt,
+          },
+          skip
+        );
+
+      if (!previousReadyCommit) {
+        return this.resolveFetchType(
+          GitFetchTypeEnum.Clone,
+          eventData,
+          baseDir,
+          installationId,
+          accessToken,
+          remote,
+          skip
+        );
+      }
       return this.resolveFetchType(
-        GitFetchTypeEnum.Clone,
+        GitFetchTypeEnum.Pull,
         eventData,
         baseDir,
         installationId,
         accessToken,
         remote,
-        skip
+        skip,
+        previousReadyCommit
+      );
+    } catch (err) {
+      // TODO: catch the error from the service ?
+      this.logger.error(
+        LoggerMessages.error.CATCH_ERROR_MESSAGE,
+        GitPullEventService.name,
+        { err }
       );
     }
-    return this.resolveFetchType(
-      GitFetchTypeEnum.Pull,
-      eventData,
-      baseDir,
-      installationId,
-      accessToken,
-      remote,
-      skip,
-      previousReadyCommit
-    );
   }
 
   private resolveFetchType(
@@ -141,17 +161,17 @@ export class GitPullEventService implements IGitPullEvent {
     remote: string,
     skip: number
   ) {
-    const { repositoryOwner, repositoryName, branch, commit } = eventData;
+    const { provider, repositoryOwner, repositoryName, branch, commit } =
+      eventData;
     await this.storageService.copyDir(
       resolve(
-        `/git-remote-/${repositoryOwner}/${repositoryName}/${branch}/${previousReadyCommit.commit}`
+        `/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}/${previousReadyCommit.commit}`
       ),
-      ///git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}
       baseDir
     );
     await this.gitClientService.pull(remote, branch, commit, baseDir);
     await this.gitPullEventRepository.update(
-      previousReadyCommit.id,
+      eventData.id,
       GitPullEventService.updateEventPullStatus(skip)
     );
   }

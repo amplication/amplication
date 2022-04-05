@@ -54,8 +54,7 @@ export class GitClientService implements IGitClient {
     installationId: string,
     accessToken: string
   ): Promise<void> {
-    const { provider, repositoryOwner, repositoryName, branch, commit } =
-      eventData;
+    const { repositoryOwner, repositoryName, branch, commit } = eventData;
     try {
       fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}.git`;
