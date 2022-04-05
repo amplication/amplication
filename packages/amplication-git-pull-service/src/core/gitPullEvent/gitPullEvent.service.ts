@@ -24,10 +24,7 @@ export class GitPullEventService implements IGitPullEvent {
 
   async pushEventHandler(
     eventData: EventData,
-    baseDir: string,
-    remote: string,
     installationId: string,
-    skip: number
   ): Promise<void> {
     const {
       provider,
@@ -37,6 +34,10 @@ export class GitPullEventService implements IGitPullEvent {
       commit,
       pushedAt,
     } = eventData;
+
+    const baseDir = resolve(
+      `/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}/${commit}`
+    );
 
     try {
       const accessToken = await this.gitHostProviderFactory
@@ -61,7 +62,7 @@ export class GitPullEventService implements IGitPullEvent {
             commit,
             pushedAt,
           },
-          skip
+          this.getSkipValue(),
         );
 
       if (!previousReadyCommit) {
@@ -72,8 +73,7 @@ export class GitPullEventService implements IGitPullEvent {
           baseDir,
           installationId,
           accessToken,
-          remote,
-          skip
+          this.getSkipValue()
         );
       }
 
@@ -84,8 +84,7 @@ export class GitPullEventService implements IGitPullEvent {
         baseDir,
         installationId,
         accessToken,
-        remote,
-        skip,
+        this.getSkipValue(),
         previousReadyCommit
       );
     } catch (err) {
@@ -99,7 +98,9 @@ export class GitPullEventService implements IGitPullEvent {
   }
 
   private async createNewGitPullEventRecord(eventData: EventData) {
-    await this.gitPullEventRepository.create(eventData);
+    await this.gitPullEventRepository.create(
+      eventData
+    );
   }
 
   private resolveFetchType(
@@ -108,7 +109,6 @@ export class GitPullEventService implements IGitPullEvent {
     baseDir: string,
     installationId: string,
     accessToken: string,
-    remote: string,
     skip: number,
     previousReadyCommit?: EventData
   ) {
@@ -125,7 +125,6 @@ export class GitPullEventService implements IGitPullEvent {
           previousReadyCommit!,
           eventData,
           baseDir,
-          remote,
           skip
         );
     }
@@ -150,7 +149,6 @@ export class GitPullEventService implements IGitPullEvent {
     previousReadyCommit: EventData,
     eventData: EventData,
     baseDir: string,
-    remote: string,
     skip: number
   ) {
     const { provider, repositoryOwner, repositoryName, branch, commit } =
@@ -166,6 +164,10 @@ export class GitPullEventService implements IGitPullEvent {
       eventData.id!,
       GitPullEventService.updateEventPullStatus(skip)
     );
+  }
+
+  private getSkipValue(): number {
+    return 0
   }
 
   private static updateEventPullStatus(skip: number) {

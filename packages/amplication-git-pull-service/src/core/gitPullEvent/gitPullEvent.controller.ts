@@ -17,10 +17,8 @@ export class GitPullEventController {
     const skip = 0;
     return this.service.pushEventHandler(
       eventData,
-      baseDir,
-      remote,
       installationId,
-      skip
+
     );
   }
 }
