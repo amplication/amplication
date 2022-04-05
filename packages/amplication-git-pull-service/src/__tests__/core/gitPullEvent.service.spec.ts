@@ -10,6 +10,12 @@ import { GitHostProviderFactory } from "../../utils/gitHostProviderFactory/gitHo
 import { MOCK_STORAGE_SERVICE } from "../../__mocks__/providers/storage/storageService";
 import { WinstonModule } from "nest-winston";
 import { PrismaModule } from "nestjs-prisma";
+import { EventData } from "../../contracts/interfaces/eventData";
+import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
+import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
+import path from "path";
+import * as winston from "winston";
+import { utilities as nestWinstonModuleUtilities } from "nest-winston/dist/winston.utilities";
 
 describe("Testing GitPullEventService", () => {
   let gitPullEventService: GitPullEventService;
@@ -17,7 +23,22 @@ describe("Testing GitPullEventService", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [WinstonModule.forRoot({}), PrismaModule],
+      imports: [
+        WinstonModule.forRoot({
+          transports: [
+            new winston.transports.Console({
+              format: winston.format.combine(
+                winston.format.errors({ stack: true }),
+                winston.format.timestamp(),
+                winston.format.ms(),
+                winston.format.json(),
+                nestWinstonModuleUtilities.format.nestLike()
+              ),
+            }),
+          ],
+        }),
+        PrismaModule,
+      ],
       providers: [
         GitPullEventService,
         { provide: StorageService, useValue: MOCK_STORAGE_SERVICE },
@@ -39,4 +60,39 @@ describe("Testing GitPullEventService", () => {
   it("should be defined", () => {
     expect(gitPullEventService).toBeDefined();
   });
+
+  it("should should clone a new repository and save to db", async () => {
+    // arrange
+    const eventData: EventData = {
+      id: BigInt(112233),
+      provider: GitProviderEnum.Github,
+      repositoryOwner: "amit-amp-org",
+      repositoryName: "sample-test",
+      branch: "main",
+      commit: "11erf44",
+      status: EnumGitPullEventStatus.Created,
+      pushedAt: new Date(),
+    };
+
+    const baseDir = path.resolve("git-remote-test");
+    const remote = "origin";
+    const installationId = "24226448";
+    const skip = 0;
+
+    // act
+    const result = await gitPullEventService.pushEventHandler(
+      eventData,
+      baseDir,
+      remote,
+      installationId,
+      skip
+    );
+
+    // assert
+    expect(result).toBeUndefined();
+  });
+
+  it("should should pull a repository and update status to Ready", async () => {});
+
+  it("should should pull a repository and update status to Deleted", async () => {});
 });

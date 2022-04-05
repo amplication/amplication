@@ -11,7 +11,6 @@ import { GitFetchTypeEnum } from "../../contracts/enums/gitFetchType.enum";
 import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { LoggerMessages } from "../../constants/loggerMessages";
-import * as os from "os";
 
 @Injectable()
 export class GitPullEventService implements IGitPullEvent {
@@ -49,6 +48,8 @@ export class GitPullEventService implements IGitPullEvent {
         GitPullEventService.name,
         "pushEventHandler"
       );
+
+      await this.createNewGitPullEventRecord(eventData);
 
       const previousReadyCommit =
         await this.gitPullEventRepository.getPreviousReadyCommit(
@@ -94,6 +95,26 @@ export class GitPullEventService implements IGitPullEvent {
     }
   }
 
+  private async createNewGitPullEventRecord(eventData: EventData) {
+    const {
+      provider,
+      repositoryOwner,
+      repositoryName,
+      branch,
+      commit,
+      pushedAt,
+    } = eventData;
+    await this.gitPullEventRepository.create(
+      provider,
+      repositoryOwner,
+      repositoryName,
+      branch,
+      commit,
+      EnumGitPullEventStatus.Created,
+      pushedAt
+    );
+  }
+
   private resolveFetchType(
     gitFetchType: GitFetchTypeEnum,
     eventData: EventData,
@@ -129,28 +150,15 @@ export class GitPullEventService implements IGitPullEvent {
     installationId: string,
     accessToken: string
   ) {
-    const {
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      commit,
-      pushedAt,
-    } = eventData;
     await this.gitClientService.clone(
       eventData,
       baseDir,
       installationId,
       accessToken
     );
-    await this.gitPullEventRepository.create(
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      commit,
-      EnumGitPullEventStatus.Created,
-      pushedAt
+    await this.gitPullEventRepository.update(
+      eventData.id,
+      EnumGitPullEventStatus.Ready
     );
   }
 
