@@ -2,10 +2,11 @@
 name: Helm Template
 # Configure Triggers
 on:
-  push:
-  pull_request:
-    branches: [ main ]
-    types: [opened, reopened]
+  workflow_dispatch:
+  # push:
+  # pull_request:
+  #   branches: [ main ]
+  #   types: [opened, reopened]
 
 # Configure Env
 env:

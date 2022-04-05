@@ -64,7 +64,7 @@ jobs:
     # if: ${{ needs.check-aws-resources.outputs.create_folder == 'false' }}
     outputs:
       # Expose matched filters as job 'apps' output variable
-      apps: ${{ steps.filter.outputs.changes }}
+      apps: ${{ steps.filter.outputs.changed_files }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -74,8 +74,9 @@ jobs:
         id: filter
         with:
           base: ${{ github.ref }}
+          list-files: json
           filters: |
-            packages:
+            changed:
               - 'packages/**'
 
   # first run - need to get all services folders
