@@ -175,7 +175,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        apps: ${{ steps.filter.outputs.changes }}
+        apps: ${{ fromJSON(needs.changes.outputs.apps) }}
         # service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
         # service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
 
