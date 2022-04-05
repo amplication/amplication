@@ -1,5 +1,5 @@
 # Amplication Client
-test
+testing
 Amplication Client is the front end of the platform that provides the beautiful UI to build your next low-code application.
 The client is built with React, Apollo client, Primer components, React Material Web Components, Formik, and many more.
 
