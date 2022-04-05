@@ -1,27 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
-import { IDatabaseOperations } from "../contracts/interfaces/databaseOperations.interface";
+import { IGitPullEventRepository } from "../contracts/interfaces/gitPullEventRepository.interface";
 import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus";
 import { EventData } from "../contracts/interfaces/eventData";
 import { CustomError } from "../errors/CustomError";
 
 @Injectable()
-export class GitPullEventRepository implements IDatabaseOperations {
+export class GitPullEventRepository implements IGitPullEventRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(eventData: EventData): Promise<EventData> {
+  async create(eventData: EventData): Promise<{ id: bigint }> {
     try {
       return this.prisma.gitPullEvent.create({
         data: eventData,
         select: {
           id: true,
-          provider: true,
-          repositoryOwner: true,
-          repositoryName: true,
-          branch: true,
-          commit: true,
-          status: true,
-          pushedAt: true,
         },
       });
     } catch (err) {
@@ -29,29 +22,21 @@ export class GitPullEventRepository implements IDatabaseOperations {
     }
   }
 
-  async update(id: bigint, status: EnumGitPullEventStatus): Promise<EventData> {
+  async update(id: bigint, status: EnumGitPullEventStatus): Promise<boolean> {
     try {
-      return this.prisma.gitPullEvent.update({
+      const updatedEvent = this.prisma.gitPullEvent.update({
         where: { id: id },
         data: { status: status },
-        select: {
-          id: true,
-          provider: true,
-          repositoryOwner: true,
-          repositoryName: true,
-          branch: true,
-          commit: true,
-          status: true,
-          pushedAt: true,
-        },
       });
+
+      return !!updatedEvent;
     } catch (err) {
       throw new CustomError("failed to create a new record in DB", err);
     }
   }
 
-  async getPreviousReadyCommit(
-    eventData: EventData,
+  async findByPreviousReadyCommit(
+    eventData: Partial<EventData>,
     skip: number
   ): Promise<EventData | undefined> {
     try {

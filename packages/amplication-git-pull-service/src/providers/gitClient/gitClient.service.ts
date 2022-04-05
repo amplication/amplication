@@ -3,6 +3,7 @@ import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
 import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
 import { CustomError } from "../../errors/CustomError";
 import * as fs from "fs";
+import { EventData } from "../../contracts/interfaces/eventData";
 
 /*
  * SimpleGit integration
@@ -47,20 +48,16 @@ export class GitClientService implements IGitClient {
   }
 
   async clone(
-    provider: string,
-    repositoryOwner: string,
-    repositoryName: string,
-    branch: string,
-    commit: string,
-    pushedAt: Date,
+    eventData: EventData,
     baseDir: string,
     installationId: string,
     accessToken: string
   ): Promise<void> {
     try {
-      // baseDir: `${os.homedir()}/git-remote/${repositoryOwner}/${repositoryName}/${branch}/${commit}`;
+      const { provider, repositoryOwner, repositoryName, branch, commit } =
+        eventData;
       fs.mkdirSync(baseDir, { recursive: true });
-      const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}.git`;
+      const repository = `https://${repositoryOwner}:${accessToken}@${provider}.com/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
       this.git
         .clone(repository, baseDir, ["--branch", branch])
@@ -71,14 +68,9 @@ export class GitClientService implements IGitClient {
     }
   }
 
-  async pull(
-    remote: string,
-    branch: string,
-    commit: string,
-    baseDir: string
-  ): Promise<void> {
+  async pull(branch: string, commit: string, baseDir: string): Promise<void> {
     try {
-      this.git.cwd(baseDir).fetch(remote, branch).merge([commit]);
+      this.git.cwd(baseDir).fetch("origin", branch).merge([commit]);
     } catch (err) {
       throw new CustomError("failed to pull a repository", err);
     }

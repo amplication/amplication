@@ -1,19 +1,11 @@
+import { EventData } from "./eventData";
+
 export interface IGitClient {
   clone: (
-    provider: string,
-    repositoryOwner: string,
-    repositoryName: string,
-    branch: string,
-    commit: string,
-    pushedAt: Date,
+    eventData: EventData,
     baseDir: string,
     installationId: string,
     accessToken: string
   ) => Promise<void>;
-  pull: (
-    remote: string,
-    branch: string,
-    commit: string,
-    baseDir: string
-  ) => Promise<void>;
+  pull: (branch: string, commit: string, baseDir: string) => Promise<void>;
 }
