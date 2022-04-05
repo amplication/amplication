@@ -81,7 +81,7 @@ jobs:
   ## first run - need to get all services folders
   # get-name-all:
   #   runs-on: ubuntu-latest
-  #   need: [check-aws-resources]
+  #   needs: [check-aws-resources]
   #   if: ${{ needs.check-aws-resources.outputs.create_folder == 'true' }}
   #   outputs:
   #     services: ${{ steps.get-service.outputs.services }}
@@ -99,7 +99,7 @@ jobs:
 
   get-name-modified:
     runs-on: ubuntu-latest
-    need: changes
+    needs: changes
     if: ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }}
     outputs:
       services: ${{ steps.set-name.outputs.services }}
