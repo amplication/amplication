@@ -52,7 +52,7 @@ export class GitPullEventService implements IGitPullEvent {
       );
 
     if (!previousReadyCommit) {
-      await this.resolveFetchType(
+      return this.resolveFetchType(
         GitFetchTypeEnum.Clone,
         eventData,
         baseDir,
@@ -61,18 +61,17 @@ export class GitPullEventService implements IGitPullEvent {
         remote,
         skip
       );
-    } else {
-      await this.resolveFetchType(
-        GitFetchTypeEnum.Pull,
-        eventData,
-        baseDir,
-        installationId,
-        accessToken,
-        remote,
-        skip,
-        previousReadyCommit
-      );
     }
+    return this.resolveFetchType(
+      GitFetchTypeEnum.Pull,
+      eventData,
+      baseDir,
+      installationId,
+      accessToken,
+      remote,
+      skip,
+      previousReadyCommit
+    );
   }
 
   private resolveFetchType(

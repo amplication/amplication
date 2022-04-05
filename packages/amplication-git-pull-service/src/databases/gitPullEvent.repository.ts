@@ -105,7 +105,10 @@ export class GitPullEventRepository implements IDatabaseOperations {
 
       return previousReadyCommit.shift();
     } catch (err) {
-      throw new CustomError(ErrorMessages.PREVIOUS_READY_COMMIT_NOT_FOUND_ERROR, err);
+      throw new CustomError(
+        ErrorMessages.PREVIOUS_READY_COMMIT_NOT_FOUND_ERROR,
+        err
+      );
     }
   }
 }

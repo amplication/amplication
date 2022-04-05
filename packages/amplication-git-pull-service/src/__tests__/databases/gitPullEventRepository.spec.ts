@@ -84,7 +84,7 @@ describe("Testing GitPullEventRepository", () => {
   it("should return a single gitPullEvent record with status ready", async () => {
     const args = {
       where: {
-        provider: GitProviderEnum,
+        provider: GitProviderEnum.Github,
         repositoryOwner: "amit-amp",
         repositoryName: "test-repo",
         branch: "main",

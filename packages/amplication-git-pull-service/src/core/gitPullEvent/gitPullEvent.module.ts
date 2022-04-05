@@ -6,6 +6,7 @@ import { GitPullEventRepository } from "../../databases/gitPullEvent.repository"
 import { StorageService } from "../../providers/storage/storage.service";
 import { GitHostProviderService } from "../../providers/gitProvider/gitHostProvider.service";
 import { GitClientService } from "../../providers/gitClient/gitClient.service";
+import { GitHostProviderFactory } from "../../utils/gitHostProviderFactory/gitHostProviderFactory";
 
 @Module({
   imports: [PrismaModule],
@@ -15,6 +16,7 @@ import { GitClientService } from "../../providers/gitClient/gitClient.service";
     GitPullEventRepository,
     StorageService,
     GitHostProviderService,
+    GitHostProviderFactory,
     GitClientService,
   ],
   exports: [GitPullEventService, PrismaModule],

@@ -18,6 +18,7 @@ export const CLONE_EVENT_MOCK = {
 };
 
 export const PULL_EVENT_MOCK: EventData = {
+  id: BigInt(123),
   provider: GitProviderEnum.Github,
   repositoryOwner: "amit-amp",
   repositoryName: "test-repo",
@@ -38,6 +39,7 @@ export const CREATE_GIT_PULL_EVENT_RECORD_0N_DB = {
 };
 
 export const LAST_READY_COMMIT_MOCK: EventData = {
+  id: BigInt(123),
   provider: GitProviderEnum.Github,
   repositoryOwner: "amit-amp",
   repositoryName: "test-repo",
