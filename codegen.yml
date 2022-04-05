@@ -12,9 +12,6 @@ generates:
   packages/amplication-cli/src/models.ts:
     plugins:
       - "typescript"
-  packages/amplication-pull-request/src/models.ts:
-    plugins:
-      - "typescript"
   packages/amplication-common/src/types/models.ts:
     plugins:
       - "typescript"
