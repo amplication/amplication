@@ -103,7 +103,7 @@ jobs:
           echo "::set-output name=filtered-array::$modif"
 
       - name: test output
-        run: echo "${{ fromJSON(steps.filter.outputs.filtered-array) }}"
+        run: echo "${{ steps.filter.outputs.filtered-array }}"
 
   # first run - need to get all services folders
   # get-name-all:
