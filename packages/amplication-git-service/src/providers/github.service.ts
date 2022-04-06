@@ -1,22 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createAppAuth } from '@octokit/auth-app';
-//@octokit/openapi-types constantly fails with linting error "Unable to resolve path to module '@octokit/openapi-types'."
-// We currently ignore it and should look deeper into the root cause
-// eslint-disable-next-line import/no-unresolved
-import { components } from '@octokit/openapi-types';
 import { App, Octokit } from 'octokit';
+import { IGitClient } from '../contracts/IGitClient';
+import { GithubFile } from '../Dto/entities/GithubFile';
+import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
+import { RemoteGitRepository } from '../Dto/entities/RemoteGitRepository';
+import { EnumGitOrganizationType } from '../Dto/enums/EnumGitOrganizationType';
+import { ConverterUtil } from '../utils/ConverterUtil';
+import { createAppAuth } from '@octokit/auth-app';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { AmplicationError } from 'src/errors/AmplicationError';
 import {
   REPO_NAME_TAKEN_ERROR_MESSAGE,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE
-} from '../git/constants';
-import { IGitClient } from '../git/contracts/IGitClient';
-import { RemoteGitRepository } from '../git/dto/objects/RemoteGitRepository';
-import { GithubFile } from './dto/githubFile';
-import { EnumGitOrganizationType } from '../git/dto/enums/EnumGitOrganizationType';
-import { RemoteGitOrganization } from '../git/dto/objects/RemoteGitOrganization';
+} from '../utils/constants';
+import { components } from '@octokit/openapi-types';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -26,7 +23,6 @@ export const GITHUB_APP_INSTALLATION_URL_VAR = 'GITHUB_APP_INSTALLATION_URL';
 export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encoding received`;
 
 type DirectoryItem = components['schemas']['content-directory'][number];
-
 @Injectable()
 export class GithubService implements IGitClient {
   private app: App;
@@ -47,62 +43,13 @@ export class GithubService implements IGitClient {
       privateKey: privateKey
     });
   }
-
-  async getGitRemoteOrganization(
-    installationId: string
-  ): Promise<RemoteGitOrganization> {
-    const octokit = await this.getInstallationOctokit(installationId);
-    const gitRemoteOrganization = await octokit.rest.apps.getInstallation({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: GithubService.convertToNumber(installationId)
-    });
-    const { data: gitRemoteOrgs } = gitRemoteOrganization;
-
-    return {
-      name: gitRemoteOrgs.account.login,
-      type: EnumGitOrganizationType[gitRemoteOrganization.data.account.type]
-    };
-  }
-
-  async deleteGitOrganization(installationId: string): Promise<boolean> {
-    const octokit = await this.getInstallationOctokit(installationId);
-    const deleteInstallationRes = await octokit.rest.apps.deleteInstallation({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: GithubService.convertToNumber(installationId)
-    });
-
-    if (deleteInstallationRes.status != 204) {
-      throw new AmplicationError('delete installationId {} failed');
-    }
-
-    return true;
-  }
-
-  async getGitInstallationUrl(workspaceId: string): Promise<string> {
-    return this.gitInstallationUrl.replace('{state}', workspaceId);
-  }
-
-  private static async isRepoExistWithOctokit(
-    octokit: Octokit,
-    name: string
-  ): Promise<boolean> {
-    const repos = await GithubService.getOrganizationReposWithOctokit(octokit);
-    return repos.map(repo => repo.name).includes(name);
-  }
-
-  async isRepoExist(installationId: string, name: string): Promise<boolean> {
-    const octokit = await this.getInstallationOctokit(installationId);
-    return await GithubService.isRepoExistWithOctokit(octokit, name);
-  }
-
-  async createUserRepository(
+  createUserRepository(
     installationId: string,
     owner: string,
     name: string
   ): Promise<RemoteGitRepository> {
-    throw new AmplicationError(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
+    throw new Error(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
   }
-
   async createOrganizationRepository(
     installationId: string,
     owner: string,
@@ -115,7 +62,7 @@ export class GithubService implements IGitClient {
       name
     );
     if (exists) {
-      throw new AmplicationError(REPO_NAME_TAKEN_ERROR_MESSAGE);
+      return null;
     }
 
     const { data: repo } = await octokit.rest.repos.createInOrg({
@@ -133,20 +80,6 @@ export class GithubService implements IGitClient {
       admin: repo.permissions.admin
     };
   }
-
-  private static async getOrganizationReposWithOctokit(
-    octokit: Octokit
-  ): Promise<RemoteGitRepository[]> {
-    const results = await octokit.request('GET /installation/repositories');
-    return results.data.repositories.map(repo => ({
-      name: repo.name,
-      url: repo.html_url,
-      private: repo.private,
-      fullName: repo.full_name,
-      admin: repo.permissions.admin
-    }));
-  }
-
   async getOrganizationRepos(
     installationId: string
   ): Promise<RemoteGitRepository[]> {
@@ -154,21 +87,41 @@ export class GithubService implements IGitClient {
     return await GithubService.getOrganizationReposWithOctokit(octokit);
   }
 
-  private async getInstallationOctokit(
-    installationId: string
-  ): Promise<Octokit> {
-    const installationIdNumber = GithubService.convertToNumber(installationId);
-    return await this.app.getInstallationOctokit(installationIdNumber);
+  async isRepoExist(installationId: string, name: string): Promise<boolean> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    return await GithubService.isRepoExistWithOctokit(octokit, name);
   }
+  async getGitInstallationUrl(workspaceId: string): Promise<string> {
+    return this.gitInstallationUrl.replace('{state}', workspaceId);
+  }
+  async deleteGitOrganization(installationId: string): Promise<boolean> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const deleteInstallationRes = await octokit.rest.apps.deleteInstallation({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      installation_id: ConverterUtil.convertToNumber(installationId)
+    });
 
-  /**
-   * Gets a file from GitHub - Currently only returns the content of a single file and only if it is base64 encoded . Otherwise, returns null
-   * @param userName
-   * @param repoName
-   * @param path
-   * @param baseBranchName
-   * @param installationId
-   */
+    if (deleteInstallationRes.status != 204) {
+      return false;
+    }
+
+    return true;
+  }
+  async getGitRemoteOrganization(
+    installationId: string
+  ): Promise<RemoteGitOrganization> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const gitRemoteOrganization = await octokit.rest.apps.getInstallation({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      installation_id: ConverterUtil.convertToNumber(installationId)
+    });
+    const { data: gitRemoteOrgs } = gitRemoteOrganization;
+
+    return {
+      name: gitRemoteOrgs.account.login,
+      type: EnumGitOrganizationType[gitRemoteOrganization.data.account.type]
+    };
+  }
   async getFile(
     userName: string,
     repoName: string,
@@ -200,8 +153,7 @@ export class GithubService implements IGitClient {
         return file;
       }
     }
-
-    throw new Error(UNEXPECTED_FILE_TYPE_OR_ENCODING);
+    return null;
   }
 
   async createPullRequest(
@@ -270,24 +222,6 @@ export class GithubService implements IGitClient {
         {
           /* optional: if `files` is not passed, an empty commit is created instead */
           files: files,
-          // {
-          //   'path/to/file1.txt': 'Content for file1',
-          //   'path/to/file2.png': {
-          //     content: '_base64_encoded_content_',
-          //     encoding: 'base64'
-          //   },
-          //   // deletes file if it exists,
-          //   'path/to/file3.txt': null,
-          //   // updates file based on current content
-          //   'path/to/file4.txt': ({ exists, encoding, content }) => {
-          //     // do not create the file if it does not exist
-          //     if (!exists) return null;
-
-          //     return Buffer.from(content, encoding)
-          //       .toString('utf-8')
-          //       .toUpperCase();
-          //   }
-          // },
           commit: commitName
         }
       ]
@@ -295,6 +229,33 @@ export class GithubService implements IGitClient {
     return pr.data.html_url;
   }
 
+  private async getInstallationOctokit(
+    installationId: string
+  ): Promise<Octokit> {
+    const installationIdNumber = ConverterUtil.convertToNumber(installationId);
+    return await this.app.getInstallationOctokit(installationIdNumber);
+  }
+
+  private static async getOrganizationReposWithOctokit(
+    octokit: Octokit
+  ): Promise<RemoteGitRepository[]> {
+    const results = await octokit.request('GET /installation/repositories');
+    return results.data.repositories.map(repo => ({
+      name: repo.name,
+      url: repo.html_url,
+      private: repo.private,
+      fullName: repo.full_name,
+      admin: repo.permissions.admin
+    }));
+  }
+
+  private static async isRepoExistWithOctokit(
+    octokit: Octokit,
+    name: string
+  ): Promise<boolean> {
+    const repos = await GithubService.getOrganizationReposWithOctokit(octokit);
+    return repos.map(repo => repo.name).includes(name);
+  }
   private async getInstallationAuthToken(
     installationId: string
   ): Promise<string> {
@@ -311,15 +272,5 @@ export class GithubService implements IGitClient {
         installationId: installationId
       })
     ).token;
-  }
-
-  private static convertToNumber(value: string): number {
-    const result = parseInt(value);
-    if (isNaN(result)) {
-      throw new AmplicationError(
-        'GitHub App installation identifier is invalid'
-      );
-    }
-    return result;
   }
 }

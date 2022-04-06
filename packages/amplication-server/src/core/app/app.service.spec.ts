@@ -32,7 +32,6 @@ import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from '../entity/constants';
 import { InvalidColorError } from './InvalidColorError';
 import { BuildService } from '../build/build.service';
 import { Build } from '../build/dto/Build';
-import { GithubService } from '../github/github.service';
 import { BlockService } from '../block/block.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
@@ -40,6 +39,7 @@ import { QueryMode } from 'src/enums/QueryMode';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { GitRepository } from '@prisma/client';
+import { GitService } from '@amplication/git-service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -325,7 +325,7 @@ describe('AppService', () => {
           }))
         },
         {
-          provide: GithubService,
+          provide: GitService,
           useValue: {}
         },
         {
