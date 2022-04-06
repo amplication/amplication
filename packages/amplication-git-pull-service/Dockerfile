@@ -20,8 +20,8 @@ WORKDIR /app
 COPY packages/amplication-git-pull-service packages/amplication-git-pull-service
 
 # Installs all copied package node_modules ; Preparation for build
-RUN npm run bootstrap -- --scope @amplication/git-pull-service --include-dependencies
-RUN npm run prisma:generate
+RUN npm run bootstrap -- --scope=@amplication/git-pull-service --include-dependencies
+RUN npm run prisma:generate -- --scope=@amplication/git-pull-service
 # Build all distributions needed for amplicaiton/git-pull-service
 RUN npm run build -- --scope @amplication/git-pull-service --include-dependencies
 
