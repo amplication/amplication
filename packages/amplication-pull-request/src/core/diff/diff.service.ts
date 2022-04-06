@@ -4,7 +4,8 @@ import { join } from 'path';
 import { ChangedFile } from '@amplication/common/src/dto/ChangedFile';
 import { BuildPathFactory } from './utils/BuildPathFactory';
 import { sync } from 'fast-glob';
-
+import { existsSync } from 'fs';
+import assert from 'assert';
 @Injectable()
 export class DiffService {
   constructor(private readonly buildsPathFactory: BuildPathFactory) {}
@@ -22,37 +23,37 @@ export class DiffService {
       newAmplicationBuildId
     );
 
-    if (oldBuildPath === newBuildPath) {
-      throw new Error('Cant get the same build id');
+    assert.notEqual(oldBuildPath, newBuildPath, 'Cant get the same build id');
+
+    // return all the new files if an old build folder dont exist
+    if (existsSync(oldBuildPath) === false) {
+      return this.firstBuild(newBuildPath);
     }
-    try {
-      const res = await compare(oldBuildPath, newBuildPath, compareOptions);
-      const changedFiles = res.diffSet.filter((diff) => {
-        if (diff.state !== 'equal') {
+
+    const res = await compare(oldBuildPath, newBuildPath, {
+      compareContent: true,
+      compareDate: false,
+      compareSize: false,
+      compareSymlink: false,
+    });
+    const changedFiles = res.diffSet.filter((diff) => {
+      if (diff.state !== 'equal') {
+        //make sure that only new files enter and ignore old files
+        if (diff.state !== 'left') {
           return true;
         }
-        return false;
-      });
-      return (
-        changedFiles
-          // Remove all the old deleted files
-          .filter((diff) => diff.name2)
-          .map((diff) => ({
-            path: join(diff.relativePath, diff.name2),
-          }))
-      );
-    } catch (error) {
-      const files = sync(`${newBuildPath}/**`).map((file) => ({
-        path: file,
-      }));
-      return files;
-    }
+      }
+      return false;
+    });
+    return changedFiles.map((diff) => ({
+      path: join(diff.relativePath, diff.name2),
+    }));
+  }
+
+  private firstBuild(newBuildPath: string) {
+    const files = sync(`${newBuildPath}/**`).map((file) => ({
+      path: file,
+    }));
+    return files;
   }
 }
-
-const compareOptions: Options = {
-  compareContent: true,
-  compareDate: false,
-  compareSize: false,
-  compareSymlink: false,
-};
