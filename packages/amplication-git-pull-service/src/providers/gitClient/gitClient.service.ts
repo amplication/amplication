@@ -12,7 +12,7 @@ import { EventData } from "../../contracts/interfaces/eventData";
 export class GitClientService implements IGitClient {
   git: SimpleGit;
 
-  constructor() {
+  constructor(private provideDomain: string) {
     /*
      * @maxConcurrentProcesses: each `simple-git` instance limits the number of
      * spawned child processes that can be run simultaneously and manages the queue
@@ -57,7 +57,7 @@ export class GitClientService implements IGitClient {
       const { provider, repositoryOwner, repositoryName, branch, commit } =
         eventData;
       fs.mkdirSync(baseDir, { recursive: true });
-      const repository = `https://${repositoryOwner}:${accessToken}@${provider}.com/${repositoryOwner}/${repositoryName}.git`;
+      const repository = `https://${repositoryOwner}:${accessToken}@${this.provideDomain}/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
       this.git
         .clone(repository, baseDir, ["--branch", branch])

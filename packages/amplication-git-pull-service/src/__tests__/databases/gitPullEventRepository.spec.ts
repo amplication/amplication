@@ -69,7 +69,14 @@ describe("Testing GitPullEventRepository", () => {
   it("should return a single gitPullEvent record with status ready", async () => {
     const { eventData, skip } = eventRepositoryStub.findByPreviousReadyCommit;
     expect(
-      await gitPullEventRepository.findByPreviousReadyCommit(eventData, skip)
+      await gitPullEventRepository.findByPreviousReadyCommit(
+        eventData.provider,
+        eventData.repositoryOwner,
+        eventData.repositoryName,
+        eventData.branch,
+        eventData.pushedAt,
+        skip
+      )
     ).toEqual(MOCK_EVENT_DATA);
     expect(prismaGitPullEventManyMock).toBeCalledTimes(1);
     expect(prismaGitPullEventManyMock).toBeCalledWith(
