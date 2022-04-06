@@ -115,7 +115,6 @@ jobs:
       
       - name: get service name
         id: get-service
-        run: echo "::set-output name=services::[]"
         run: |
           dirs=(packages/*/)
           final="["
