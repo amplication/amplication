@@ -22,7 +22,8 @@ const clientId = 'server-queue-client';
               client: {
                 clientId,
                 brokers
-              }
+              },
+              consumer: { groupId: 'main' }
             }
           };
         },
