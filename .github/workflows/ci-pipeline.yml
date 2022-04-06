@@ -118,11 +118,11 @@ jobs:
         uses: actions/checkout@v2
             
       - name: get service name
-        working-directory: packages
         id: get-service
         run: |
+          pwd
           final=''
-          for d in packages
+          for d in packages/*
           do
             prefix="packages/"
             no_prefix=${d#"$prefix"}
