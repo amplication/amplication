@@ -1,5 +1,4 @@
-import { EnumGitProvider } from '@amplication/common';
-import { GitCommit } from '@amplication/common/lib/dto/GitCommit';
+import { EnumGitProvider, GitCommit } from '@amplication/common';
 import { ChangedFile } from '@amplication/common/src/dto/ChangedFile';
 
 export class PullRequest {
