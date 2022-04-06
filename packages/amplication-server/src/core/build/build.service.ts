@@ -634,7 +634,7 @@ export class BuildService {
         async step => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
-            await this.queueService.emitCreateGitPullRequest({
+            const response = await this.queueService.emitCreateGitPullRequest({
               gitOrganizationName: appRepository.gitOrganization.name,
               gitRepositoryName: appRepository.name,
               amplicationAppId: app.id,
@@ -654,21 +654,23 @@ export class BuildService {
               }
             });
 
-            const prUrl = await this.gitService.createPullRequest(
-              EnumGitProvider[appRepository.gitOrganization.provider],
-              appRepository.gitOrganization.name,
-              appRepository.name,
-              modules,
-              `amplication-build-${build.id}`,
-              commitMessage,
-              `Amplication build # ${build.id}.
-Commit message: ${commit.message}
+            //             const prUrl = await this.gitService.createPullRequest(
+            //               EnumGitProvider[appRepository.gitOrganization.provider],
+            //               appRepository.gitOrganization.name,
+            //               appRepository.name,
+            //               modules,
+            //               `amplication-build-${build.id}`,
+            //               commitMessage,
+            //               `Amplication build # ${build.id}.
+            // Commit message: ${commit.message}
 
-${url}
-`,
-              null,
-              appRepository.gitOrganization.installationId
-            );
+            // ${url}
+            // `,
+            //               null,
+            //               appRepository.gitOrganization.installationId
+            //             );
+
+            const { url: prUrl } = response;
 
             await this.appService.reportSyncMessage(
               build.appId,

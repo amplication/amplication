@@ -2,8 +2,10 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import {
   SendPullRequestArgs,
-  GENERATE_PULL_REQUEST_MESSAGE
+  GENERATE_PULL_REQUEST_MESSAGE,
+  SendPullRequestResponse
 } from '@amplication/common';
+import { plainToClass } from 'class-transformer';
 
 export const QUEUE_SERVICE_NAME = 'QUEUE_SERVICE';
 
@@ -17,12 +19,16 @@ export class QueueService implements OnModuleInit {
     this.kafkaService.subscribeToResponseOf(GENERATE_PULL_REQUEST_MESSAGE);
   }
 
-  emitCreateGitPullRequest(data: SendPullRequestArgs) {
-    this.kafkaService
-      .send(GENERATE_PULL_REQUEST_MESSAGE, data)
-      .subscribe(response => {
-        console.log(response);
-      });
-    // return this.kafkaService.emit(generatePullRequestMessage, data);
+  emitCreateGitPullRequest(
+    data: SendPullRequestArgs
+  ): Promise<SendPullRequestResponse> {
+    return new Promise(res => {
+      this.kafkaService
+        .send(GENERATE_PULL_REQUEST_MESSAGE, data)
+        .subscribe(response => {
+          const validClass = plainToClass(SendPullRequestResponse, response);
+          res(validClass);
+        });
+    });
   }
 }
