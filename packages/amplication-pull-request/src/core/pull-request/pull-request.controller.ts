@@ -1,5 +1,5 @@
 import {
-  generatePullRequestMessage,
+  GENERATE_PULL_REQUEST_MESSAGE,
   SendPullRequestArgs,
 } from '@amplication/common';
 import { Controller } from '@nestjs/common';
@@ -11,7 +11,7 @@ import { plainToClass } from 'class-transformer';
 @Controller()
 export class PullRequestController {
   constructor(private readonly pullRequestService: PullRequestService) {}
-  @MessagePattern(generatePullRequestMessage)
+  @MessagePattern(GENERATE_PULL_REQUEST_MESSAGE)
   async generatePullRequest({ value }: KafkaMessage) {
     const validArgs = plainToClass(SendPullRequestArgs, value);
     const pullRequest = await this.pullRequestService.createPullRequest(
