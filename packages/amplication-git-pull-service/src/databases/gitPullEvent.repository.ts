@@ -36,12 +36,14 @@ export class GitPullEventRepository implements IGitPullEventRepository {
   }
 
   async findByPreviousReadyCommit(
-    eventData: Partial<EventData>,
+    provider: string,
+    repositoryOwner: string,
+    repositoryName: string,
+    branch: string,
+    pushedAt: Date,
     skip: number
   ): Promise<EventData | undefined> {
     try {
-      const { provider, repositoryOwner, repositoryName, branch, pushedAt } =
-        eventData;
       const previousReadyCommit = await this.prisma.gitPullEvent.findMany({
         where: {
           provider: provider,
