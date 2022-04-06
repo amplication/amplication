@@ -11,6 +11,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { LoggerMessages } from "../../constants/loggerMessages";
 import { ConfigService } from "@nestjs/config";
 import * as os from "os";
+import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
 
 const ROOT_DIR = "ROOT_DIR_ENV";
 const SKIP = "SKIP_ENV";
@@ -32,8 +33,7 @@ export class GitPullEventService implements IGitPullEvent {
   }
 
   async pushEventHandler(
-    eventData: EventData,
-    installationId: string
+    pushEventMessage: PushEventMessage
   ): Promise<void> {
     const {
       provider,
@@ -42,16 +42,18 @@ export class GitPullEventService implements IGitPullEvent {
       branch,
       commit,
       pushedAt,
-    } = eventData;
+    } = pushEventMessage;
 
     const mainDir = `${this.rootDir}/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}`;
     const baseDir = `${mainDir}/${commit}`;
 
     try {
-      await this.gitPullEventRepository.create({
-        ...eventData,
+      const newRepository = await this.gitPullEventRepository.create({
+        ...pushEventMessage,
         status: EnumGitPullEventStatus.Created,
       });
+
+      this.logger.log('new repository', GitPullEventService.name, {newRepository})
 
       const previousReadyCommit =
         await this.gitPullEventRepository.findByPreviousReadyCommit(
@@ -63,11 +65,12 @@ export class GitPullEventService implements IGitPullEvent {
           this.skip
         );
 
+      this.logger.log('previousReadyCommit', GitPullEventService.name, {previousReadyCommit})
+
       if (!previousReadyCommit) {
         await this.cloneRepository(
           provider as GitProviderEnum,
-          installationId,
-          eventData,
+          pushEventMessage,
           baseDir
         );
       } else {
@@ -81,36 +84,39 @@ export class GitPullEventService implements IGitPullEvent {
       }
 
       await this.gitPullEventRepository.update(
-        eventData.id,
+        pushEventMessage.id,
         this.skip === 0
           ? EnumGitPullEventStatus.Ready
           : EnumGitPullEventStatus.Deleted
       );
     } catch (err) {
       this.logger.error(
-        LoggerMessages.error.CATCH_ERROR_MESSAGE,
         GitPullEventService.name,
+        LoggerMessages.error.CATCH_ERROR_MESSAGE,
         { err }
       );
+      console.log(err, 'error!!!')
     }
   }
 
   private async cloneRepository(
     provider: GitProviderEnum,
-    installationId: string,
-    eventData: EventData,
+    pushEventMessage: PushEventMessage,
     baseDir: string
   ) {
     const accessToken = await this.gitHostProviderFactory
       .getHostProvider(provider as GitProviderEnum)
-      .createInstallationAccessToken(installationId);
+      .createInstallationAccessToken(pushEventMessage.installationId);
 
+    this.logger.log('accessToken was created', GitPullEventService.name, {accessToken})
     await this.gitClientService.clone(
-      eventData,
+      pushEventMessage,
       baseDir,
-      installationId,
+      pushEventMessage.installationId,
       accessToken
     );
+
+    this.logger.log('after clone', GitPullEventService.name, {accessToken})
   }
 
   private async managePullEventStorage(
@@ -123,5 +129,6 @@ export class GitPullEventService implements IGitPullEvent {
     const srcDir = `${mainDir}/${previousReadyCommit.commit}`;
     await this.storageService.copyDir(srcDir, baseDir);
     await this.gitClientService.pull(branch, commit, baseDir);
+    this.logger.log('after pull and copy', GitPullEventService.name)
   }
 }

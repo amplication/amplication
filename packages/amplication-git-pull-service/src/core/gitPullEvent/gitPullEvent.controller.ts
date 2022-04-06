@@ -1,15 +1,15 @@
 import { Controller } from "@nestjs/common";
 import { GitPullEventService } from "./gitPullEvent.service";
 import { MessagePattern, Payload } from "@nestjs/microservices";
-import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
 
-@Controller("gitRepositoriesPull")
+@Controller()
 export class GitPullEventController {
   constructor(protected readonly gitPullEventService: GitPullEventService) {}
 
-  @MessagePattern("")
-  async processRepositoryPushEvent(@Payload() message: PushEventMessage) {
-    await this.gitPullEventService.pushEventHandler(message);
+  @MessagePattern('pull.event')
+  async processRepositoryPushEvent(@Payload() message: any) {
+    console.log({ message: message.value });
+    await this.gitPullEventService.pushEventHandler(message.value);
 
     return {
       key: 'kafka-key',

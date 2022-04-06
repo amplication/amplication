@@ -23,7 +23,7 @@
     "docker:build": "docker build ."
   },
   "dependencies": {
-    "@nestjs/common": "8.2.3",
+    "@nestjs/common": "8.4.3",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "8.2.3",
     "@nestjs/microservices": "8.4.3",
