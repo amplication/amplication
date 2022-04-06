@@ -97,7 +97,7 @@ jobs:
           echo $final
           mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
           echo $mod
-          modi=${mod:1:-1}
+          modi=${mod%?}
           echo $modi
           modif=[$(echo "$modi")]
           echo $modif
