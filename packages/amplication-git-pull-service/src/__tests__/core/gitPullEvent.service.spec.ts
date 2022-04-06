@@ -16,46 +16,46 @@ import { GIT_PULL_EVENT_REPOSITORY_MOCK } from "../../__mocks__/databases/gitPul
 describe("Testing GitPullEventService", () => {
   let gitPullEventService: GitPullEventService;
 
-  beforeEach(async () => {
-    jest.clearAllMocks();
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        WinstonModule.forRoot({
-          transports: [
-            new winston.transports.Console({
-              format: winston.format.combine(
-                winston.format.errors({ stack: true }),
-                winston.format.timestamp(),
-                winston.format.ms(),
-                winston.format.json(),
-                nestWinstonModuleUtilities.format.nestLike()
-              ),
-            }),
-          ],
-        }),
-        PrismaModule,
-      ],
-      providers: [
-        GitPullEventService,
-        { provide: StorageService, useValue: MOCK_STORAGE_SERVICE },
-        {
-          provide: GitHostProviderFactory,
-          useValue: MOCK_GIT_PROVIDER_FACTORY,
-        },
-        { provide: GitClientService, useClass: mockGitClientService },
-        {
-          provide: GitPullEventRepository,
-          useValue: GIT_PULL_EVENT_REPOSITORY_MOCK,
-        },
-      ],
-    }).compile();
-
-    gitPullEventService = module.get<GitPullEventService>(GitPullEventService);
-  });
-
-  it("should be defined", () => {
-    expect(gitPullEventService).toBeDefined();
-  });
+  // beforeEach(async () => {
+  //   jest.clearAllMocks();
+  //   const module: TestingModule = await Test.createTestingModule({
+  //     imports: [
+  //       WinstonModule.forRoot({
+  //         transports: [
+  //           new winston.transports.Console({
+  //             format: winston.format.combine(
+  //               winston.format.errors({ stack: true }),
+  //               winston.format.timestamp(),
+  //               winston.format.ms(),
+  //               winston.format.json(),
+  //               nestWinstonModuleUtilities.format.nestLike()
+  //             ),
+  //           }),
+  //         ],
+  //       }),
+  //       PrismaModule,
+  //     ],
+  //     providers: [
+  //       GitPullEventService,
+  //       { provide: StorageService, useValue: MOCK_STORAGE_SERVICE },
+  //       {
+  //         provide: GitHostProviderFactory,
+  //         useValue: MOCK_GIT_PROVIDER_FACTORY,
+  //       },
+  //       { provide: GitClientService, useClass: mockGitClientService },
+  //       {
+  //         provide: GitPullEventRepository,
+  //         useValue: GIT_PULL_EVENT_REPOSITORY_MOCK,
+  //       },
+  //     ],
+  //   }).compile();
+  //
+  //   gitPullEventService = module.get<GitPullEventService>(GitPullEventService);
+  // });
+  //
+  // it("should be defined", () => {
+  //   expect(gitPullEventService).toBeDefined();
+  // });
 
   it("should should save new record to db", async () => {
     expect(undefined).toBeUndefined();

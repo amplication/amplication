@@ -62,7 +62,7 @@ export class GitPullEventService implements IGitPullEvent {
             commit,
             pushedAt,
           },
-          this.getSkipValue(),
+          GitPullEventService.getSkipValue(),
         );
 
       if (!previousReadyCommit) {
@@ -73,7 +73,7 @@ export class GitPullEventService implements IGitPullEvent {
           baseDir,
           installationId,
           accessToken,
-          this.getSkipValue()
+          GitPullEventService.getSkipValue()
         );
       }
 
@@ -84,7 +84,7 @@ export class GitPullEventService implements IGitPullEvent {
         baseDir,
         installationId,
         accessToken,
-        this.getSkipValue(),
+        GitPullEventService.getSkipValue(),
         previousReadyCommit
       );
     } catch (err) {
@@ -166,7 +166,7 @@ export class GitPullEventService implements IGitPullEvent {
     );
   }
 
-  private getSkipValue(): number {
+  private static getSkipValue(): number {
     return 0
   }
 
