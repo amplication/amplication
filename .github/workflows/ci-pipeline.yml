@@ -86,21 +86,21 @@ jobs:
           ARRAY: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           echo "$ARRAY"
-          final="["
+          final=''
           for string in $(echo $ARRAY | sed "s/,/ /g")
           do
             prefix="packages/"
             no_prefix=${string#"$prefix"}
-            final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\","
+            final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
           done
-          final+="]"
+          final+=''
           echo $final
-          modified=${final[@]%??}
-          modified+="]"
-          echo $modified
-          filter_arr=$(echo $modified | jq 'unique')
-          echo $filter_arr
-          echo "::set-output name=filtered-array::$filter_arr"
+          mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
+          echo $mod
+          modi=${mod:1:-1}
+          modif=[$(echo $modi)]
+          echo $modif
+          echo "::set-output name=filtered-array::$modif"
 
       - name: test output
         run: echo "${{ fromJSON(steps.filter.outputs.filtered-array) }}"
