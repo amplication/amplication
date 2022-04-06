@@ -49,12 +49,12 @@ import {
 import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
-import { GithubService } from '../github/github.service';
 import { AppSettingsService } from '../appSettings/appSettings.service';
 
 import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
+import { GitService } from '@amplication/git-service/';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -522,7 +522,7 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: GithubService,
+          provide: GitService,
           useValue: {}
         },
         {

@@ -5,7 +5,6 @@ import { FindOneArgs } from 'src/dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { App } from 'src/models/App';
 import { GitOrganization } from 'src/models/GitOrganization';
-import { GIT_REPOSITORY_EXIST, INVALID_GIT_REPOSITORY_ID } from './constants';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
@@ -15,25 +14,28 @@ import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInpu
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
-import { GitServiceFactory } from './utils/GitServiceFactory/GitServiceFactory';
-import { EnumGitOrganizationType } from './dto/enums/EnumGitOrganizationType';
+import { GitService, EnumGitOrganizationType } from '@amplication/git-service';
+
+const GIT_REPOSITORY_EXIST = 'Git Repository already connected to an other App';
+const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
 
 @Injectable()
-export class GitService {
+export class GitProviderService {
   constructor(
-    private readonly gitServiceFactory: GitServiceFactory,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly gitService: GitService
   ) {}
 
   async getReposOfOrganization(
     args: RemoteGitRepositoriesWhereUniqueInput
   ): Promise<RemoteGitRepository[]> {
-    const { gitProvider, gitOrganizationId } = args;
-    const gitService = this.gitServiceFactory.getService(gitProvider);
     const installationId = await this.getInstallationIdByGitOrganizationId(
-      gitOrganizationId
+      args.gitOrganizationId
     );
-    return await gitService.getOrganizationRepos(installationId);
+    return await this.gitService.getReposOfOrganization(
+      args.gitProvider,
+      installationId
+    );
   }
 
   async createGitRepository(args: CreateGitRepositoryInput): Promise<App> {
@@ -43,19 +45,13 @@ export class GitService {
       }
     });
 
-    const provider = this.gitServiceFactory.getService(args.gitProvider); //TODO: organization.provider
-    const repository = await (organization.type ===
-    EnumGitOrganizationType.Organization
-      ? provider.createOrganizationRepository(
-          organization.installationId,
-          organization.name,
-          args.name
-        )
-      : provider.createUserRepository(
-          organization.installationId,
-          organization.name,
-          args.name
-        ));
+    const repository = await this.gitService.createGitRepository(
+      args.name,
+      args.gitProvider,
+      EnumGitOrganizationType[organization.type],
+      organization.name,
+      organization.installationId
+    );
 
     if (!repository) {
       throw new AmplicationError(
@@ -117,10 +113,10 @@ export class GitService {
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
-    const service = this.gitServiceFactory.getService(gitProvider);
 
-    const gitRemoteOrganization = await service.getGitRemoteOrganization(
-      installationId
+    const gitRemoteOrganization = await this.gitService.getGitRemoteOrganization(
+      installationId,
+      gitProvider
     );
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
@@ -173,24 +169,36 @@ export class GitService {
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
     const { gitProvider, workspaceId } = args.data;
-    const service = this.gitServiceFactory.getService(gitProvider);
-    return await service.getGitInstallationUrl(workspaceId);
+    return await this.gitService.getGitInstallationUrl(
+      gitProvider,
+      workspaceId
+    );
   }
 
   async deleteGitOrganization(
     args: DeleteGitOrganizationArgs
   ): Promise<boolean> {
     const { gitProvider, gitOrganizationId } = args;
-    const service = this.gitServiceFactory.getService(gitProvider);
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
     );
-    await service.deleteGitOrganization(installationId);
-    await this.prisma.gitOrganization.delete({
-      where: {
-        id: gitOrganizationId
+    if (installationId) {
+      const isDelete = await this.gitService.deleteGitOrganization(
+        gitProvider,
+        installationId
+      );
+      if (isDelete) {
+        await this.prisma.gitOrganization.delete({
+          where: {
+            id: gitOrganizationId
+          }
+        });
+      } else {
+        throw new AmplicationError(
+          `delete installationId: ${installationId} failed`
+        );
       }
-    });
+    }
     return true;
   }
 

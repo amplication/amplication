@@ -44,11 +44,11 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 
-import { GithubService } from '../github/github.service';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { QueueService } from '../queue/queue.service';
 import { EnumGitProvider } from '@amplication/common';
 import { previousBuild } from './utils';
+import { GitService } from '@amplication/git-service';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -161,7 +161,7 @@ export class BuildService {
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
-    private readonly githubService: GithubService,
+    private readonly gitService: GitService,
     @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
     private readonly appSettingsService: AppSettingsService,
@@ -654,7 +654,8 @@ export class BuildService {
               }
             });
 
-            const prUrl = await this.githubService.createPullRequest(
+            const prUrl = await this.gitService.createPullRequest(
+              EnumGitProvider[appRepository.gitOrganization.provider],
               appRepository.gitOrganization.name,
               appRepository.name,
               modules,
