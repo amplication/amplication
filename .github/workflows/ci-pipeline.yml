@@ -101,7 +101,9 @@ jobs:
           filter_arr=$(echo $modified | jq 'unique')
           echo $filter_arr
           echo "::set-output name=filtered-array::$filter_arr"
-          echo $filtered-array
+      
+      - name: test ouput
+        run: echo "${{ steps.filter.outputs.filtered-array }}"
 
   # first run - need to get all services folders
   # get-name-all:
@@ -170,32 +172,32 @@ jobs:
     #   working-directory: packages/${{ matrix.service }}
     #   run: npm run bootstrap -- --loglevel verbose
 
-  generate:
-    runs-on: ubuntu-latest
-    needs: [changes]
-    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }}
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
-        apps: ${{ fromJSON(needs.changes.outputs.apps) }}
+  # generate:
+  #   runs-on: ubuntu-latest
+  #   needs: [changes]
+  #   if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }}
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       # service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
+  #       apps: ${{ fromJSON(needs.changes.outputs.apps) }}
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+  #   - name: Use Node.js ${{ matrix.node-version }}
+  #     uses: actions/setup-node@v2
+  #     with:
+  #       node-version: ${{ matrix.node-version }}
+  #       cache: 'npm'
         
-    - name: Install dependencies
-      run: npm ci
+  #   - name: Install dependencies
+  #     run: npm ci
 
-    - name: "npm test: ${{ matrix.apps }}"
-      working-directory: packages/${{ matrix.apps }}
-      run: npm test
+  #   - name: "npm test: ${{ matrix.apps }}"
+  #     working-directory: packages/${{ matrix.apps }}
+  #     run: npm test
     
     # - name: "Update Prisma client first run: ${{ matrix.service }}"
     #   if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
