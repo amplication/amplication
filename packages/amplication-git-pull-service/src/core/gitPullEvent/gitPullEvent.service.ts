@@ -24,7 +24,7 @@ export class GitPullEventService implements IGitPullEvent {
 
   async pushEventHandler(
     eventData: EventData,
-    installationId: string,
+    installationId: string
   ): Promise<void> {
     const {
       provider,
@@ -62,7 +62,7 @@ export class GitPullEventService implements IGitPullEvent {
             commit,
             pushedAt,
           },
-          GitPullEventService.getSkipValue(),
+          GitPullEventService.getSkipValue()
         );
 
       if (!previousReadyCommit) {
@@ -98,9 +98,7 @@ export class GitPullEventService implements IGitPullEvent {
   }
 
   private async createNewGitPullEventRecord(eventData: EventData) {
-    await this.gitPullEventRepository.create(
-      eventData
-    );
+    await this.gitPullEventRepository.create(eventData);
   }
 
   private resolveFetchType(
@@ -167,7 +165,7 @@ export class GitPullEventService implements IGitPullEvent {
   }
 
   private static getSkipValue(): number {
-    return 0
+    return 0;
   }
 
   private static updateEventPullStatus(skip: number) {

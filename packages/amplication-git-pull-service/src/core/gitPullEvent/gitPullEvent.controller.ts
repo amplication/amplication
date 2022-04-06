@@ -15,10 +15,6 @@ export class GitPullEventController {
     const installationId = "24226448";
     const remote = "origin";
     const skip = 0;
-    return this.service.pushEventHandler(
-      eventData,
-      installationId,
-
-    );
+    return this.service.pushEventHandler(eventData, installationId);
   }
 }
