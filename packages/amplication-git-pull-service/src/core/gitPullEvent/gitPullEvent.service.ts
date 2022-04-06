@@ -40,16 +40,12 @@ export class GitPullEventService implements IGitPullEvent {
     );
 
     try {
-      const accessToken = await this.gitHostProviderFactory
-        .getHostProvider(provider as GitProviderEnum)
-        .createInstallationAccessToken(installationId);
-
-      this.logger.log(
-        LoggerMessages.log.GENERATE_OCTOKIT_ACCESS_TOKEN,
-        GitPullEventService.name,
-        "pushEventHandler"
+      const accessToken = await this.generateOctokitAccessToken(
+        provider as GitProviderEnum,
+        installationId
       );
 
+      /* after receiving push event: create a new event record with status 'Created'  */
       await this.createNewGitPullEventRecord(eventData);
 
       const previousReadyCommit =
@@ -66,7 +62,6 @@ export class GitPullEventService implements IGitPullEvent {
         );
 
       if (!previousReadyCommit) {
-        this.logger.log("previous ready commit not found, start cloning...");
         return this.resolveFetchType(
           GitFetchTypeEnum.Clone,
           eventData,
@@ -77,7 +72,6 @@ export class GitPullEventService implements IGitPullEvent {
         );
       }
 
-      this.logger.log("previous ready commit was found, start pulling...");
       return this.resolveFetchType(
         GitFetchTypeEnum.Pull,
         eventData,
@@ -97,7 +91,27 @@ export class GitPullEventService implements IGitPullEvent {
     }
   }
 
+  private async generateOctokitAccessToken(
+    provider: GitProviderEnum,
+    installationId: string
+  ) {
+    this.logger.log(
+      LoggerMessages.log.GENERATE_OCTOKIT_ACCESS_TOKEN,
+      GitPullEventService.name,
+      "pushEventHandler"
+    );
+
+    return this.gitHostProviderFactory
+      .getHostProvider(provider)
+      .createInstallationAccessToken(installationId);
+  }
+
   private async createNewGitPullEventRecord(eventData: EventData) {
+    this.logger.log(
+      "Creating new pullEvent record on db...",
+      GitPullEventService.name,
+      "createNewGitPullEventRecord"
+    );
     await this.gitPullEventRepository.create(eventData);
   }
 
@@ -134,6 +148,11 @@ export class GitPullEventService implements IGitPullEvent {
     installationId: string,
     accessToken: string
   ) {
+    this.logger.log(
+      "previous ready commit not found, start cloning",
+      GitPullEventService.name,
+      "cloneRepository"
+    );
     await this.gitClientService.clone(
       eventData,
       baseDir,
@@ -149,6 +168,11 @@ export class GitPullEventService implements IGitPullEvent {
     baseDir: string,
     skip: number
   ) {
+    this.logger.log(
+      "previous ready commit was found...start pulling",
+      GitPullEventService.name,
+      "resolveFetchType"
+    );
     const { provider, repositoryOwner, repositoryName, branch, commit } =
       eventData;
     await this.storageService.copyDir(
