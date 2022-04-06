@@ -6,6 +6,9 @@ import { sync } from 'fast-glob';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { BuildPathFactory } from './utils/BuildPathFactory';
+
+export const SAME_FOLDER_ERROR = 'Cant get the same build id';
+
 @Injectable()
 export class DiffService {
   constructor(private readonly buildsPathFactory: BuildPathFactory) {}
@@ -23,7 +26,7 @@ export class DiffService {
       newAmplicationBuildId
     );
 
-    assert.notEqual(oldBuildPath, newBuildPath, 'Cant get the same build id');
+    assert.notStrictEqual(oldBuildPath, newBuildPath, SAME_FOLDER_ERROR);
 
     // return all the new files if an old build folder dont exist
     if (existsSync(oldBuildPath) === false) {
