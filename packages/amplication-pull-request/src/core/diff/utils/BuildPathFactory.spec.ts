@@ -15,6 +15,6 @@ describe('Testing the BuildPathFactory', () => {
   });
   it('should combine the root folder that get form the env, the folder with appId and the new buildId', () => {
     const path = buildPathFactory.get(appId, buildId);
-    expect(path).toBe(`${rootEnvPath}/${appId}/${buildId}`);
+    expect(path).toBe(`${rootEnvPath}/builds/${appId}/${buildId}`);
   });
 });
