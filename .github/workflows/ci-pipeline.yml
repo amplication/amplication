@@ -99,11 +99,14 @@ jobs:
           modified+="]"
           echo $modified
           filter_arr=$(echo $modified | jq 'unique')
+          filter_arr="${filter_arr//$'\n'/}"
+          filter_arr="${filter_arr//$'\r'/}"
+          filter_arr=$(echo $filter_arr | sed "s/ //g")
           echo $filter_arr
           echo "::set-output name=filtered-array::$filter_arr"
-      
-      - name: test ouput
-        run: echo "${{ steps.filter.outputs.filtered-array }}"
+
+      - name: test output
+        run: echo "${{ fromJSON(steps.filter.outputs.filtered-array) }}"
 
   # first run - need to get all services folders
   # get-name-all:
