@@ -12,6 +12,12 @@ import {
   WinstonModule,
 } from "nest-winston";
 import * as winston from "winston";
+import { ClientsModule, Transport } from "@nestjs/microservices";
+import { ConfigService } from "@nestjs/config";
+
+export const BROKER_IP_ENV_KEY = 'BROKER_IP_ENV_KEY';
+export const GIT_PULL_EVENT_SERVICE_NAME = 'GIT_PULL_EVENT_SERVICE';
+export const CONSUMER_GROUP_ID = 'CONSUMER_GROUP_ENV_ID';
 
 @Module({
   imports: [
@@ -29,6 +35,38 @@ import * as winston from "winston";
       ],
     }),
     PrismaModule,
+    ClientsModule.registerAsync([
+      {
+        name: GIT_PULL_EVENT_SERVICE_NAME,
+        useFactory: (configService: ConfigService) => {
+          const envBrokerIp =
+            configService.get<string>(BROKER_IP_ENV_KEY);
+          const groupId = configService.get<string>(CONSUMER_GROUP_ID);
+
+          if (!envBrokerIp) {
+            throw new Error('Missing broker ip in env file');
+          }
+
+          if (!groupId) {
+            throw new Error('Missing group id in env file');
+          }
+
+          return {
+            transport: Transport.KAFKA,
+            options: {
+              client: {
+                clientId: 'repository-pull',
+                brokers: [envBrokerIp],
+              },
+              consumer: {
+                groupId: groupId
+              }
+            },
+          };
+        },
+        inject: [ConfigService],
+      },
+    ]),
   ],
   controllers: [GitPullEventController],
   providers: [

@@ -11,6 +11,7 @@ import { GitFetchTypeEnum } from "../../contracts/enums/gitFetchType.enum";
 import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { LoggerMessages } from "../../constants/loggerMessages";
+import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
 
 @Injectable()
 export class GitPullEventService implements IGitPullEvent {
@@ -23,8 +24,7 @@ export class GitPullEventService implements IGitPullEvent {
   ) {}
 
   async pushEventHandler(
-    eventData: EventData,
-    installationId: string
+    pushEventMessage: PushEventMessage,
   ): Promise<void> {
     const {
       provider,
@@ -33,7 +33,8 @@ export class GitPullEventService implements IGitPullEvent {
       branch,
       commit,
       pushedAt,
-    } = eventData;
+      installationId
+    } = pushEventMessage;
 
     const baseDir = resolve(
       `/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}/${commit}`
@@ -46,7 +47,7 @@ export class GitPullEventService implements IGitPullEvent {
       );
 
       /* after receiving push event: create a new event record with status 'Created'  */
-      await this.createNewGitPullEventRecord(eventData);
+      await this.createNewGitPullEventRecord(pushEventMessage);
 
       const previousReadyCommit =
         await this.gitPullEventRepository.findByPreviousReadyCommit(
@@ -64,7 +65,7 @@ export class GitPullEventService implements IGitPullEvent {
       if (!previousReadyCommit) {
         return this.resolveFetchType(
           GitFetchTypeEnum.Clone,
-          eventData,
+          pushEventMessage,
           baseDir,
           installationId,
           accessToken,
@@ -74,7 +75,7 @@ export class GitPullEventService implements IGitPullEvent {
 
       return this.resolveFetchType(
         GitFetchTypeEnum.Pull,
-        eventData,
+        pushEventMessage,
         baseDir,
         installationId,
         accessToken,

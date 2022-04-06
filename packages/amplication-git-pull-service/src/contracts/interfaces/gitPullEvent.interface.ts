@@ -1,9 +1,5 @@
-import { EventData } from "./eventData";
+import { PushEventMessage } from "./pushEventMessage";
 
 export interface IGitPullEvent {
-  pushEventHandler: (
-    eventData: EventData,
-    installationId: string,
-    skip: number
-  ) => Promise<void>;
+  pushEventHandler: (pushEventMessage: PushEventMessage) => Promise<void>;
 }
