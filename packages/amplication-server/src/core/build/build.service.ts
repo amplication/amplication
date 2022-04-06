@@ -161,7 +161,6 @@ export class BuildService {
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
-    private readonly gitService: GitService,
     @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
     private readonly appSettingsService: AppSettingsService,
@@ -653,22 +652,6 @@ export class BuildService {
                 title: commitMessage
               }
             });
-
-            //             const prUrl = await this.gitService.createPullRequest(
-            //               EnumGitProvider[appRepository.gitOrganization.provider],
-            //               appRepository.gitOrganization.name,
-            //               appRepository.name,
-            //               modules,
-            //               `amplication-build-${build.id}`,
-            //               commitMessage,
-            //               `Amplication build # ${build.id}.
-            // Commit message: ${commit.message}
-
-            // ${url}
-            // `,
-            //               null,
-            //               appRepository.gitOrganization.installationId
-            //             );
 
             const { url: prUrl } = response;
 

@@ -17,7 +17,6 @@ import { ActionModule } from '../action/action.module';
 import { DeploymentModule } from '../deployment/deployment.module';
 import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilderRoot.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
-import { GitModule } from '@amplication/git-service';
 // eslint-disable-next-line import/no-cycle
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { QueueModule } from '../queue/queue.module';
@@ -37,7 +36,6 @@ import { QueueModule } from '../queue/queue.module';
     ContainerBuilderRootModule,
     StorageOptionsModule,
     DeploymentModule,
-    GitModule,
     forwardRef(() => AppModule),
     AppSettingsModule,
     QueueModule
