@@ -5,22 +5,31 @@ import { GitClientService } from "../../providers/gitClient/gitClient.service";
 import { IGitPullEvent } from "../../contracts/interfaces/gitPullEvent.interface";
 import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
 import { GitHostProviderFactory } from "../../utils/gitHostProviderFactory/gitHostProviderFactory";
-import { resolve } from "path";
 import { EventData } from "../../contracts/interfaces/eventData";
-import { GitFetchTypeEnum } from "../../contracts/enums/gitFetchType.enum";
 import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { LoggerMessages } from "../../constants/loggerMessages";
+import { ConfigService } from "@nestjs/config";
+import * as os from "os";
+
+const ROOT_DIR = "ROOT_DIR_ENV";
+const SKIP = "SKIP_ENV";
 
 @Injectable()
 export class GitPullEventService implements IGitPullEvent {
+  rootDir: string;
+  skip: number;
   constructor(
     private gitPullEventRepository: GitPullEventRepository,
     private storageService: StorageService,
     private readonly gitHostProviderFactory: GitHostProviderFactory,
     private gitClientService: GitClientService,
+    private configService: ConfigService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
-  ) {}
+  ) {
+    this.rootDir = configService.get<string>(ROOT_DIR) || os.homedir();
+    this.skip = configService.get<number>(SKIP) || 0;
+  }
 
   async pushEventHandler(
     eventData: EventData,
@@ -35,54 +44,49 @@ export class GitPullEventService implements IGitPullEvent {
       pushedAt,
     } = eventData;
 
-    const baseDir = resolve(
-      `/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}/${commit}`
-    );
+    const mainDir = `${this.rootDir}/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}`;
+    const baseDir = `${mainDir}/${commit}`;
 
     try {
-      const accessToken = await this.generateOctokitAccessToken(
-        provider as GitProviderEnum,
-        installationId
-      );
-
-      /* after receiving push event: create a new event record with status 'Created'  */
-      await this.createNewGitPullEventRecord(eventData);
+      await this.gitPullEventRepository.create({
+        ...eventData,
+        status: EnumGitPullEventStatus.Created,
+      });
 
       const previousReadyCommit =
         await this.gitPullEventRepository.findByPreviousReadyCommit(
-          {
-            provider,
-            repositoryOwner,
-            repositoryName,
-            branch,
-            commit,
-            pushedAt,
-          },
-          GitPullEventService.getSkipValue()
+          provider,
+          repositoryOwner,
+          repositoryName,
+          branch,
+          pushedAt,
+          this.skip
         );
 
       if (!previousReadyCommit) {
-        return this.resolveFetchType(
-          GitFetchTypeEnum.Clone,
-          eventData,
-          baseDir,
+        await this.cloneRepository(
+          provider as GitProviderEnum,
           installationId,
-          accessToken,
-          GitPullEventService.getSkipValue()
+          eventData,
+          baseDir
+        );
+      } else {
+        await this.managePullEventStorage(
+          previousReadyCommit,
+          mainDir,
+          baseDir,
+          branch,
+          commit
         );
       }
 
-      return this.resolveFetchType(
-        GitFetchTypeEnum.Pull,
-        eventData,
-        baseDir,
-        installationId,
-        accessToken,
-        GitPullEventService.getSkipValue(),
-        previousReadyCommit
+      await this.gitPullEventRepository.update(
+        eventData.id,
+        this.skip === 0
+          ? EnumGitPullEventStatus.Ready
+          : EnumGitPullEventStatus.Deleted
       );
     } catch (err) {
-      // TODO: catch the error from the service ?
       this.logger.error(
         LoggerMessages.error.CATCH_ERROR_MESSAGE,
         GitPullEventService.name,
@@ -91,113 +95,33 @@ export class GitPullEventService implements IGitPullEvent {
     }
   }
 
-  private async generateOctokitAccessToken(
-    provider: GitProviderEnum,
-    installationId: string
-  ) {
-    this.logger.log(
-      LoggerMessages.log.GENERATE_OCTOKIT_ACCESS_TOKEN,
-      GitPullEventService.name,
-      "pushEventHandler"
-    );
-
-    return this.gitHostProviderFactory
-      .getHostProvider(provider)
-      .createInstallationAccessToken(installationId);
-  }
-
-  private async createNewGitPullEventRecord(eventData: EventData) {
-    this.logger.log(
-      "Creating new pullEvent record on db...",
-      GitPullEventService.name,
-      "createNewGitPullEventRecord"
-    );
-    await this.gitPullEventRepository.create(eventData);
-  }
-
-  private resolveFetchType(
-    gitFetchType: GitFetchTypeEnum,
-    eventData: EventData,
-    baseDir: string,
-    installationId: string,
-    accessToken: string,
-    skip: number,
-    previousReadyCommit?: EventData
-  ) {
-    switch (gitFetchType) {
-      case GitFetchTypeEnum.Clone:
-        return this.cloneRepository(
-          eventData,
-          baseDir,
-          installationId,
-          accessToken
-        );
-      case GitFetchTypeEnum.Pull:
-        return this.pullRepository(
-          previousReadyCommit!,
-          eventData,
-          baseDir,
-          skip
-        );
-    }
-  }
-
   private async cloneRepository(
-    eventData: EventData,
-    baseDir: string,
+    provider: GitProviderEnum,
     installationId: string,
-    accessToken: string
+    eventData: EventData,
+    baseDir: string
   ) {
-    this.logger.log(
-      "previous ready commit not found, start cloning",
-      GitPullEventService.name,
-      "cloneRepository"
-    );
+    const accessToken = await this.gitHostProviderFactory
+      .getHostProvider(provider as GitProviderEnum)
+      .createInstallationAccessToken(installationId);
+
     await this.gitClientService.clone(
       eventData,
       baseDir,
       installationId,
       accessToken
     );
-    await this.gitPullEventRepository.create(eventData);
   }
 
-  private async pullRepository(
+  private async managePullEventStorage(
     previousReadyCommit: EventData,
-    eventData: EventData,
+    mainDir: string,
     baseDir: string,
-    skip: number
+    branch: string,
+    commit: string
   ) {
-    this.logger.log(
-      "previous ready commit was found...start pulling",
-      GitPullEventService.name,
-      "resolveFetchType"
-    );
-    const { provider, repositoryOwner, repositoryName, branch, commit } =
-      eventData;
-    await this.storageService.copyDir(
-      resolve(
-        `/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}/${previousReadyCommit.commit}`
-      ),
-      baseDir
-    );
+    const srcDir = `${mainDir}/${previousReadyCommit.commit}`;
+    await this.storageService.copyDir(srcDir, baseDir);
     await this.gitClientService.pull(branch, commit, baseDir);
-    await this.gitPullEventRepository.update(
-      eventData.id!,
-      GitPullEventService.updateEventPullStatus(skip)
-    );
-  }
-
-  private static getSkipValue(): number {
-    return 0;
-  }
-
-  private static updateEventPullStatus(skip: number) {
-    switch (skip) {
-      case 0:
-        return EnumGitPullEventStatus.Ready;
-      default:
-        return EnumGitPullEventStatus.Deleted;
-    }
   }
 }
