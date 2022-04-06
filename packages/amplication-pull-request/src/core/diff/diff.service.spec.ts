@@ -1,4 +1,4 @@
-import { DiffService, SAME_FOLDER_ERROR } from './diff.service';
+import { DiffService } from './diff.service';
 import { MOCK_BUILD_PATH_FACTORY } from './utils/BuildPathFactory.mock';
 
 const amplicationAppId = 'appId';

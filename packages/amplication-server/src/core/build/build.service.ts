@@ -48,7 +48,6 @@ import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { QueueService } from '../queue/queue.service';
 import { EnumGitProvider } from '@amplication/common';
 import { previousBuild } from './utils';
-import { GitService } from '@amplication/git-service';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
