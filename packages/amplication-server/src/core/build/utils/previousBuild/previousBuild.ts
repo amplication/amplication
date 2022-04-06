@@ -6,8 +6,6 @@ export const previousBuild = async (
   appId: string,
   newBuildId: string
 ): Promise<Build | null> => {
-  console.log('jfh');
-
   const oldBuild = (
     await prisma.build.findMany({
       take: 1,
