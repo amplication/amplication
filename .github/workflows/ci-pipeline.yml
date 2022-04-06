@@ -112,20 +112,53 @@ jobs:
   #   needs: [check-aws-resources]
   #   if: ${{ needs.check-aws-resources.outputs.create_folder == 'true' }}
     outputs:
-      services: ${{ steps.get-service.outputs.services }}
+      services: ${{ steps.get-service.outputs.all-services }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      
-      - name: test
-        run: echo "testing"
-      
+            
       - name: get service name
+        working-directory: packages
         id: get-service
         run: |
-          dirs=(packages/*/)
-          echo $dirs
+          final=''
+          for d in packages/*
+          do
+            prefix="packages/"
+            no_prefix=${d#"$prefix"}
+            final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
+          done
+          echo $final
+          mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
+          echo $mod
+          modi=${mod%?}
+          echo $modi
+          modif=[$(echo "$modi")]
+          echo $modif
+          echo "::set-output name=all-services::$modif"
 
+  install-testing:
+    runs-on: ubuntu-latest
+    needs: [get-name-all]
+    if: always() && ${{ needs.get-name-all.outputs.services != '[]' && needs.get-name-all.outputs.services != '' }}
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # apps: ${{ fromJSON(needs.changes.outputs.apps) }}
+        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: "Install dependencies ${{ matrix.services }}"
+      run: npm ci
 
   # install:
   #   runs-on: ubuntu-latest
