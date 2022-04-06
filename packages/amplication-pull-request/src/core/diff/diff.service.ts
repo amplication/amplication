@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { compare, Options } from 'dir-compare';
-import { join } from 'path';
 import { ChangedFile } from '@amplication/common/src/dto/ChangedFile';
-import { BuildPathFactory } from './utils/BuildPathFactory';
+import { Injectable } from '@nestjs/common';
+import assert from 'assert';
+import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync } from 'fs';
-import assert from 'assert';
+import { join } from 'path';
+import { BuildPathFactory } from './utils/BuildPathFactory';
 @Injectable()
 export class DiffService {
   constructor(private readonly buildsPathFactory: BuildPathFactory) {}
