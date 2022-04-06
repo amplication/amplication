@@ -17,5 +17,6 @@
     "noImplicitUseStrict": true,
     "resolveJsonModule": true
   },
+  "include": ["src"],
   "exclude": ["node_modules", "lib"]
 }
