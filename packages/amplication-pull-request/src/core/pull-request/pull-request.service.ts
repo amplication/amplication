@@ -1,11 +1,18 @@
-import { SendPullRequestArgs } from '@amplication/common';
+import {
+  Module,
+  SendPullRequestArgs,
+  SendPullRequestResponse,
+} from '@amplication/common';
+import { GitService } from '@amplication/git-service';
 import { Injectable } from '@nestjs/common';
 import { DiffService } from '../diff';
-import { PullRequest } from './pullRequest';
 
 @Injectable()
 export class PullRequestService {
-  constructor(private readonly diffService: DiffService) {}
+  constructor(
+    private readonly diffService: DiffService,
+    protected readonly gitService: GitService
+  ) {}
   async createPullRequest({
     amplicationAppId,
     oldBuildId,
@@ -15,19 +22,31 @@ export class PullRequestService {
     installationId,
     commit,
     gitProvider,
-  }: SendPullRequestArgs): Promise<PullRequest> {
+  }: SendPullRequestArgs): Promise<SendPullRequestResponse> {
     const changedFiles = await this.diffService.listOfChangedFiles(
       amplicationAppId,
       oldBuildId,
       newBuildId
     );
-    const pullRequest = new PullRequest(
+    const { base, body, head, title } = commit;
+
+    const prUrl = await this.gitService.createPullRequest(
       gitProvider,
       gitOrganizationName,
       gitRepositoryName,
-      commit,
-      changedFiles
+      this.removeFirstSlashFromPath(changedFiles),
+      head,
+      title,
+      body,
+      base,
+      installationId
     );
-    return pullRequest;
+
+    return { url: prUrl };
+  }
+  private removeFirstSlashFromPath(changedFiles: Module[]): Module[] {
+    return changedFiles.map((module) => {
+      return { ...module, path: module.path.replace(new RegExp('^/'), '') };
+    });
   }
 }

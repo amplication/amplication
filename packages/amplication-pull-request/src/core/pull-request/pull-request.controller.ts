@@ -17,7 +17,6 @@ export class PullRequestController {
     const pullRequest = await this.pullRequestService.createPullRequest(
       validArgs
     );
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    return pullRequest.files;
+    return pullRequest;
   }
 }

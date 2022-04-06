@@ -1,9 +1,9 @@
-import { ChangedFile } from '@amplication/common/src/dto/ChangedFile';
+import { Module } from '@amplication/common';
 import { Injectable } from '@nestjs/common';
 import assert from 'assert';
 import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { BuildPathFactory } from './utils/BuildPathFactory';
 
@@ -16,7 +16,7 @@ export class DiffService {
     amplicationAppId: string,
     previousAmplicationBuildId: string,
     newAmplicationBuildId: string
-  ): Promise<ChangedFile[]> {
+  ): Promise<Module[]> {
     const oldBuildPath = this.buildsPathFactory.get(
       amplicationAppId,
       previousAmplicationBuildId
@@ -48,15 +48,28 @@ export class DiffService {
       }
       return false;
     });
-    return changedFiles.map((diff) => ({
-      path: join(diff.relativePath, diff.name2),
-    }));
+    const modules = changedFiles.map(async (diff) => {
+      const path = join(diff.relativePath, diff.name2);
+      const code = await readFileSync(join(diff.path2, diff.name2)).toString(
+        'utf8'
+      );
+      return {
+        path,
+        code,
+      };
+    });
+
+    return await Promise.all(modules);
   }
 
-  private firstBuild(newBuildPath: string) {
-    const files = sync(`${newBuildPath}/**`).map((file) => ({
-      path: file,
-    }));
-    return files;
+  private async firstBuild(newBuildPath: string) {
+    const files = sync(`${newBuildPath}/**`).map(async (file) => {
+      const code = await readFileSync(file).toString('utf8');
+      return {
+        path: file,
+        code,
+      };
+    });
+    return await Promise.all(files);
   }
 }
