@@ -1,5 +1,5 @@
 # Amplication Server
-
+test
 Amplication Server is the main component of the platform that provides all the core functionality to design and create low-code applications.
 The server exposes a GraphQL API for all actions. The server is built with the following awesome open source technologies: Node.js, NestJS, Prisma over PostgreSQL, GraphQL API, and many more...
 
