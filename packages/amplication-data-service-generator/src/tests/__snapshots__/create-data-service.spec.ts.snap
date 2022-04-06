@@ -121,7 +121,7 @@ export default Pagination;
 import { useState } from \\"react\\";
 import { useLogin, useNotify, Notification, defaultTheme } from \\"react-admin\\";
 import { ThemeProvider } from \\"@material-ui/styles\\";
-import { createMuiTheme } from \\"@material-ui/core/styles\\";
+import { createTheme } from \\"@material-ui/core/styles\\";
 import { Button } from \\"@material-ui/core\\";
 import \\"./login.scss\\";
 
@@ -140,7 +140,7 @@ const Login = ({ theme }: { theme?: object }) => {
   };
 
   return (
-    <ThemeProvider theme={createMuiTheme(defaultTheme)}>
+    <ThemeProvider theme={createTheme(defaultTheme)}>
       <div className={\`\${CLASS_NAME}\`}>
         <div className={\`\${CLASS_NAME}__wrapper\`}>
           <div className={\`\${CLASS_NAME}__box\`}>
@@ -1140,9 +1140,11 @@ import {
   SelectArrayInput,
   SelectInput,
   ReferenceInput,
+  ReferenceArrayInput,
 } from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { OrderTitle } from \\"../order/OrderTitle\\";
 
 export const CustomerCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -1207,6 +1209,14 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
         >
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
+        <ReferenceArrayInput
+          source=\\"orders\\"
+          reference=\\"Order\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={OrderTitle} />
+        </ReferenceArrayInput>
       </SimpleForm>
     </Create>
   );
@@ -1225,9 +1235,11 @@ import {
   SelectArrayInput,
   SelectInput,
   ReferenceInput,
+  ReferenceArrayInput,
 } from \\"react-admin\\";
 
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { OrderTitle } from \\"../order/OrderTitle\\";
 
 export const CustomerEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -1292,6 +1304,14 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
         >
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
+        <ReferenceArrayInput
+          source=\\"orders\\"
+          reference=\\"Order\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={OrderTitle} />
+        </ReferenceArrayInput>
       </SimpleForm>
     </Edit>
   );
@@ -1743,26 +1763,96 @@ export const OrderTitle = (record: TOrder): string => {
 };
 ",
   "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
-import { Create, SimpleForm, CreateProps, TextInput } from \\"react-admin\\";
+
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  TextInput,
+  ReferenceArrayInput,
+  SelectArrayInput,
+} from \\"react-admin\\";
+
+import { UserTitle } from \\"../user/UserTitle\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 
 export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
+        <ReferenceArrayInput
+          source=\\"users\\"
+          reference=\\"User\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={UserTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source=\\"customers\\"
+          reference=\\"Customer\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={CustomerTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source=\\"vipCustomers\\"
+          reference=\\"Customer\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={CustomerTitle} />
+        </ReferenceArrayInput>
       </SimpleForm>
     </Create>
   );
 };
 ",
   "admin-ui/src/organization/OrganizationEdit.tsx": "import * as React from \\"react\\";
-import { Edit, SimpleForm, EditProps, TextInput } from \\"react-admin\\";
+
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  TextInput,
+  ReferenceArrayInput,
+  SelectArrayInput,
+} from \\"react-admin\\";
+
+import { UserTitle } from \\"../user/UserTitle\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 
 export const OrganizationEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
+        <ReferenceArrayInput
+          source=\\"users\\"
+          reference=\\"User\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={UserTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source=\\"customers\\"
+          reference=\\"Customer\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={CustomerTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source=\\"vipCustomers\\"
+          reference=\\"Customer\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={CustomerTitle} />
+        </ReferenceArrayInput>
       </SimpleForm>
     </Edit>
   );
@@ -2039,10 +2129,12 @@ import {
   DateTimeInput,
   ReferenceInput,
   SelectInput,
+  ReferenceArrayInput,
   BooleanInput,
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
@@ -2066,6 +2158,22 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
+        <ReferenceArrayInput
+          source=\\"employees\\"
+          reference=\\"User\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={UserTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source=\\"organizations\\"
+          reference=\\"Organization\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={OrganizationTitle} />
+        </ReferenceArrayInput>
         <SelectArrayInput
           label=\\"Interests\\"
           source=\\"interests\\"
@@ -2108,10 +2216,12 @@ import {
   DateTimeInput,
   ReferenceInput,
   SelectInput,
+  ReferenceArrayInput,
   BooleanInput,
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
@@ -2135,6 +2245,22 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
+        <ReferenceArrayInput
+          source=\\"employees\\"
+          reference=\\"User\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={UserTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source=\\"organizations\\"
+          reference=\\"Organization\\"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={OrganizationTitle} />
+        </ReferenceArrayInput>
         <SelectArrayInput
           label=\\"Interests\\"
           source=\\"interests\\"
@@ -4890,9 +5016,9 @@ describe(\\"Customer\\", () => {
   test(\\"GET /customers/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/customers\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
@@ -6034,7 +6160,7 @@ export function ApiNestedQuery(query: Function) {
   const properties = Reflect.getMetadata(
     \\"swagger/apiModelPropertiesArray\\",
     constructor
-  ).map((prop: any) => prop.substr(1));
+  ).map((prop: any) => prop.slice(1));
 
   const decorators = properties
     .map((property: any) => {
@@ -6536,9 +6662,9 @@ describe(\\"Empty\\", () => {
   test(\\"GET /empties/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/empties\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
@@ -7947,9 +8073,9 @@ describe(\\"Order\\", () => {
   test(\\"GET /orders/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/orders\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
@@ -9546,9 +9672,9 @@ describe(\\"Organization\\", () => {
   test(\\"GET /organizations/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/organizations\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
@@ -12735,9 +12861,9 @@ describe(\\"User\\", () => {
   test(\\"GET /users/:id non existing\\", async () => {
     await request(app.getHttpServer())
       .get(\`\${\\"/users\\"}/\${nonExistingId}\`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
         error: \\"Not Found\\",
       });
