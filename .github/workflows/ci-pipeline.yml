@@ -101,6 +101,7 @@ jobs:
           filter_arr=$(echo $modified | jq 'unique')
           echo $filter_arr
           echo "::set-output name=filtered-array::$filter_arr"
+          echo $filtered-array
 
   # first run - need to get all services folders
   # get-name-all:
