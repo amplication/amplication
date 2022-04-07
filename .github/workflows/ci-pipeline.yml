@@ -139,11 +139,8 @@ jobs:
             no_prefix=${d#"$prefix"}
             final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
           done
-          echo $final
           mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
-          echo $mod
           modi=${mod%?}
-          echo $modi
           modif=[$(echo "$modi")]
           echo $modif
           echo "::set-output name=all-services::$modif"
@@ -203,7 +200,7 @@ jobs:
       matrix:
         node-version: [16.x]
         apps: ${{ fromJSON(needs.changes.outputs.apps) }}
-        service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
+        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
 
     steps:
     - name: Checkout repository
@@ -258,7 +255,7 @@ jobs:
       matrix:
         node-version: [16.x]
         apps: ${{ fromJSON(needs.changes.outputs.apps) }}
-        service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
+        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
 
     steps:
     - name: Checkout repository
@@ -368,7 +365,7 @@ jobs:
       matrix:
         node-version: [16.x]
         apps: ${{ fromJSON(needs.changes.outputs.apps) }}
-        service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
+        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
 
     steps:
     - name: Checkout repository
@@ -428,7 +425,7 @@ jobs:
       matrix:
         node-version: [16.x]
         app: ${{ fromJSON(needs.changes.outputs.apps) }}
-        service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
+        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
 
     steps:
       - name: Checkout
