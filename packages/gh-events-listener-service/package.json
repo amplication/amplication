@@ -29,6 +29,7 @@
     "@octokit/webhooks": "9.23.0",
     "eventsource": "^2.0.0",
     "kafkajs": "^1.16.0",
+    "node-fetch": "3.2.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

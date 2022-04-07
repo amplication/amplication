@@ -1,39 +1,39 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { QueueService } from './queue.service';
+import { Controller, Post, Req, Request } from '@nestjs/common';
 import { Webhooks } from '@octokit/webhooks';
-import { CreateRepositoryPushRequest } from './entities/dto/CreateRepositoryPushRequest';
+import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly queueService: QueueService) {}
+  webhooks = new Webhooks({
+    secret: '3d751fb7-816d-40a0-87f4-4bd8781c3ed9',
+  });
+  constructor(private readonly appService: AppService) {}
+  @Post('/payload')
+  async createRepositoryPush(@Req() request: Request) {
+    let resBody: string = null;
+    fetch(request)
+      .then((response) => response.body)
+      .then(async (body) => {
+        const reader = body.getReader();
+        const res = await reader.read();
+        resBody = res.value.toString();
+        console.log(res.value.toString());
+      });
+    const res = await this.webhooks
+      .verifyAndReceive({
+        id: request.headers['x-github-delivery'],
+        name: request.headers['x-github-event'],
+        payload: 'request.bod',
+        signature: request.headers['x-hub-signature-256'],
+      })
+      .catch(console.error);
+    console.log(res);
 
-  @Post('Push')
-  createRepositoryPush(
-    @Body() createRepositoryPushRequest: CreateRepositoryPushRequest,
-  ) {
-    this.queueService.createPushRequest(createRepositoryPushRequest);
+    this.appService.verifyAndReceive(
+      request.headers['x-github-delivery'],
+      request.headers['x-github-event'],
+      resBody,
+      request.headers['x-hub-signature-256'],
+    );
   }
 }
-
-// async function webhookBoot() {
-//   const webhooks = new Webhooks({
-//     secret: 'f52f279d-8d55-446e-a5ba-5b07bf4218f7',
-//   });
-//   // eslint-disable-next-line @typescript-eslint/no-var-requires
-//   const EventSource = require('eventsource');
-
-//   const webhookProxyUrl = 'https://smee.io/5Dp9sYKOx0TxtiOR';
-//   const source = new EventSource(webhookProxyUrl);
-//   source.onmessage = (event) => {
-//     const webhookEvent = JSON.parse(event.data);
-//     webhooks
-//       .verifyAndReceive({
-//         id: webhookEvent['x-request-id'],
-//         name: webhookEvent['x-github-event'],
-//         signature: webhookEvent['x-hub-signature'],
-//         payload: webhookEvent.body,
-//       })
-//       .catch(console.error);
-//     console.log(webhookEvent.body);
-//   };
-//

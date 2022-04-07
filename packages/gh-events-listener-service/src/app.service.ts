@@ -6,33 +6,33 @@ import { QueueService } from './queue.service';
 
 @Injectable()
 export class AppService {
-  constructor(private readonly queueService: QueueService) {
-    this.webhookBoot();
+  constructor(
+    private readonly queueService: QueueService,
+    private webhooks: Webhooks,
+  ) {
+    webhooks = new Webhooks({
+      secret: '3d751fb7-816d-40a0-87f4-4bd8781c3ed9',
+    });
   }
 
-  webhookBoot() {
-    const webhooks = new Webhooks({
-      secret: 'f52f279d-8d55-446e-a5ba-5b07bf4218f7',
-    });
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const EventSource = require('eventsource');
-    const webhookProxyUrl = 'https://smee.io/5Dp9sYKOx0TxtiOR';
-    const source = new EventSource(webhookProxyUrl);
-    source.onmessage = (event) => {
-      const webhookEvent = JSON.parse(event.data);
-      webhooks
-        .verifyAndReceive({
-          id: webhookEvent['x-request-id'],
-          name: webhookEvent['x-github-event'],
-          signature: webhookEvent['x-hub-signature'],
-          payload: webhookEvent.body,
-        })
-        .catch(console.error);
-      console.log(webhookEvent.body);
-      const resObj = this.createPushRequestObject(webhookEvent.body);
-      console.log(resObj);
-      this.queueService.createPushRequest(resObj);
-    };
+  async verifyAndReceive(
+    id: string,
+    eventName: any,
+    body: string,
+    signature: string,
+  ) {
+    const res = await this.webhooks
+      .verifyAndReceive({
+        id: id,
+        name: eventName,
+        payload: body,
+        signature: signature,
+      })
+      .catch(console.error);
+    console.log(res);
+
+    const pushRequest = this.createPushRequestObject(body);
+    this.queueService.createPushRequest(pushRequest);
   }
 
   createPushRequestObject(body: any): CreateRepositoryPushRequest {
