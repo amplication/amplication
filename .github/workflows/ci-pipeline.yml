@@ -3,10 +3,10 @@ name: CI-Pipeline
 on:
   workflow_dispatch:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
-    types: [opened, reopened]
+  #   branches: [master]
+  # pull_request:
+  #   branches: [master]
+  #   types: [opened, reopened]
 
 jobs:
   check-aws-resources:
