@@ -198,7 +198,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     needs: [changes,get-name-all]
-    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' || needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
+    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }} || ${{ needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
     strategy:
       matrix:
         node-version: [16.x]
@@ -253,7 +253,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     needs: [changes,get-name-all]
-    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' || needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
+    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }} || ${{ needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
     strategy:
       matrix:
         node-version: [16.x]
@@ -308,7 +308,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: [changes,get-name-all]
-    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' || needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
+    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }} || ${{ needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
     strategy:
       matrix:
         node-version: [16.x]
@@ -363,7 +363,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: [changes,get-name-all]
-    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' || needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
+    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }} || ${{ needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
     strategy:
       matrix:
         node-version: [16.x]
