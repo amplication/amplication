@@ -544,7 +544,7 @@ jobs:
       ## on first run will build all services with dockerfile
       - name: Build, tag, and push image to Amazon ECR
         working-directory: packages/${{ matrix.service }}
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' && steps.tag-exist.outputs.tag_exist == 'false' }}
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ matrix.service }}
