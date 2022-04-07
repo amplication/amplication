@@ -142,15 +142,14 @@ jobs:
           echo $modif
           echo "::set-output name=all-services::$modif"
 
-  format:
+  format-modified:
     runs-on: ubuntu-latest
-    needs: [changes,get-name-all]
-    if: always() && (${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }} || ${{ needs.get-name-all.outputs.services != '[]' && needs.get-name-all.outputs.services != '' }})
+    needs: [changes]
+    if: ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }}
     strategy:
       matrix:
         node-version: [16.x]
         apps: ${{ fromJSON(needs.changes.outputs.apps) }}
-        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
 
     steps:
     - name: Checkout repository
@@ -160,14 +159,8 @@ jobs:
       id: check-docker-service
       env: 
         CHANGED_SERVICE: ${{ matrix.apps }}
-        SERVICE: ${{ matrix.service }}
       run: |
-        if [ $CHANGED_SERVICE != '[]' && $CHANGED_SERVICE != '' ]
-        then
-          [ -f packages/$CHANGED_SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service-changed::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service-changed::false"
-        else 
-          [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
-        fi
+        [ -f packages/$CHANGED_SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service-changed::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service-changed::false"
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -178,10 +171,6 @@ jobs:
     - name: "Install dependencies ${{ matrix.apps }}"
       if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
       run: npm ci
-
-    - name: "Install dependencies ${{ matrix.service }}"
-      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-      run: npm ci
     
     - name: Define Lerna `SINCE` variable
       if: ${{ github.ref != 'refs/heads/master' }}
@@ -191,6 +180,40 @@ jobs:
       if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
       working-directory: packages/${{ matrix.apps }}
       run: npm run check-format -- --since $SINCE
+      
+  format:
+    runs-on: ubuntu-latest
+    needs: [get-name-all]
+    if: ${{ needs.get-name-all.outputs.services != '[]' && needs.get-name-all.outputs.services != '' }}
+    strategy:
+      matrix:
+        node-version: [16.x]
+        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Check docker-service
+      id: check-docker-service
+      env: 
+        SERVICE: ${{ matrix.service }}
+      run: |
+        [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: "Install dependencies ${{ matrix.service }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      run: npm ci
+    
+    - name: Define Lerna `SINCE` variable
+      if: ${{ github.ref != 'refs/heads/master' }}
+      run: echo "SINCE=origin/master" >> $GITHUB_ENV
       
     - name: "Check format: ${{ matrix.service }}"
       if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
