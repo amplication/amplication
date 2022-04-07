@@ -45,7 +45,7 @@ jobs:
         id: check_chart
         run: |
           server_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication-server")
-          if [-z "$server_folder"]
+          if [[ -z "$server_folder" ]]
           then
             echo "No such folder in bucket" 
             echo "::set-output name=create_folder_server::true"
@@ -54,7 +54,7 @@ jobs:
           fi
           
           client_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication-client")
-          if [-z "$client_folder"]
+          if [[ -z "$client_folder" ]]
           then
             echo "No such folder in bucket" 
             echo "::set-output name=create_folder_client::true"
@@ -63,7 +63,7 @@ jobs:
           fi
 
           amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
-          if [-z "$amplication_folder"]
+          if [[ -z "$amplication_folder" ]]
           then
             echo "No such folder in bucket" 
             echo "::set-output name=create_folder_amplication::true"
