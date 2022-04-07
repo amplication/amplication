@@ -348,11 +348,9 @@ jobs:
         env:
           working-directory: packages/${{ matrix.service }}/Dockerfile
         run: |
-          GITHUB_HASH_MOD=$(sha1sum packages/amplication-client/Dockerfile | sha1sum)
-          GITHUB_HASH=${GITHUB_HASH_MOD%???}
-          echo $GITHUB_HASH
-          echo "GITHUB_HASH" >> $GITHUB_ENV
-            
+          GITHUB_HASH_MOD=$(sha1sum packages/${{ matrix.service }}/Dockerfile | sha1sum)
+          echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
+       
       - name: Check if repo exist
         working-directory: packages/${{ matrix.service }}
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
