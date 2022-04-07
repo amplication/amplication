@@ -21,13 +21,17 @@ export class QueueService implements OnModuleInit {
 
   emitCreateGitPullRequest(
     data: SendPullRequestArgs
-  ): Promise<SendPullRequestResponse> {
+  ): Promise<SendPullRequestResponse | null> {
     return new Promise(res => {
       this.kafkaService
         .send(GENERATE_PULL_REQUEST_MESSAGE, data)
         .subscribe(response => {
-          const validClass = plainToClass(SendPullRequestResponse, response);
-          res(validClass);
+          try {
+            const validClass = plainToClass(SendPullRequestResponse, response);
+            res(validClass);
+          } catch (error) {
+            res(null);
+          }
         });
     });
   }

@@ -29,20 +29,22 @@ export class PullRequestService {
       newBuildId
     );
     const { base, body, head, title } = commit;
-
-    const prUrl = await this.gitService.createPullRequest(
-      gitProvider,
-      gitOrganizationName,
-      gitRepositoryName,
-      this.removeFirstSlashFromPath(changedFiles),
-      head,
-      title,
-      body,
-      base,
-      installationId
-    );
-
-    return { url: prUrl };
+    try {
+      const prUrl = await this.gitService.createPullRequest(
+        gitProvider,
+        gitOrganizationName,
+        gitRepositoryName,
+        this.removeFirstSlashFromPath(changedFiles),
+        head,
+        title,
+        body,
+        base,
+        installationId
+      );
+      return { url: prUrl };
+    } catch (error) {
+      return null;
+    }
   }
   private removeFirstSlashFromPath(changedFiles: Module[]): Module[] {
     return changedFiles.map((module) => {
