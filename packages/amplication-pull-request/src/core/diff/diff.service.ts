@@ -40,7 +40,7 @@ export class DiffService {
       compareSymlink: false,
     });
     const changedFiles = res.diffSet.filter((diff) => {
-      if (diff.state !== 'equal') {
+      if (diff.state !== 'equal' && diff.type2 === 'file') {
         //make sure that only new files enter and ignore old files
         if (diff.state !== 'left') {
           return true;
