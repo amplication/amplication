@@ -2,21 +2,23 @@ name: CI-Pipeline
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [master]
-  # pull_request:
-  #   branches: [master]
-  #   types: [opened, reopened]
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+    types: [opened, reopened]
 
 jobs:
   check-aws-resources:
     name: Check aws resources exist
     runs-on: ubuntu-latest
     outputs:
-      create_folder: ${{ steps.check_chart.outputs.create_folder }}
+      create_folder_amplication: ${{ steps.check_chart.outputs.create_folder_amplication }}
+      create_folder_server: ${{ steps.check_chart.outputs.create_folder_server }}
+      create_folder_client: ${{ steps.check_chart.outputs.create_folder_client }}
+
     env:
-      working-directory: amplication-charts
-      BUCKET_NAME: "amplication-bucket"
+      BUCKET_NAME: "amplication-charts"
       REGION: us-east-2
 
     steps:
@@ -38,30 +40,39 @@ jobs:
           verbose: false 
           arch: amd64  
       
-      # - name: Check if S3-bucket exist
-      #   run: |
-      #     if aws s3 ls s3://$BUCKET_NAME 2>&1 | grep -q 'NoSuchBucket'
-      #     then
-      #       aws s3api create-bucket --bucket $BUCKET_NAME --region $REGION --create-bucket-configuration LocationConstraint=$REGION
-      #     fi
-
         ## Will be false if this is first run.
       - name: Check umbrella-chart folder exist
         id: check_chart
         run: |
-          if aws s3 ls "s3://$BUCKET_NAME/amplication-charts" 2>&1 | grep -q 'NoSuchFile'
+          if aws s3 ls "s3://$BUCKET_NAME/amplication-server" 2>&1 | grep -q 'NoSuchFile'
           then
             echo "No such folder in bucket" 
-            echo "::set-output name=create_folder::true"
+            echo "::set-output name=create_folder_server::true"
           else
-            echo "::set-output name=create_folder::false"
-            aws s3 cp s3://$BUCKET_NAME/amplication-charts $GITHUB_WORKSPACE --recursive
+            echo "::set-output name=create_folder_server::false"
           fi
-      
+
+          if aws s3 ls "s3://$BUCKET_NAME/amplication-client" 2>&1 | grep -q 'NoSuchFile'
+          then
+            echo "No such folder in bucket" 
+            echo "::set-output name=create_folder_client::true"
+          else
+            echo "::set-output name=create_folder_client::false"
+          fi
+
+          if aws s3 ls "s3://$BUCKET_NAME/amplication" 2>&1 | grep -q 'NoSuchFile'
+          then
+            echo "No such folder in bucket" 
+            echo "::set-output name=create_folder_amplication::true"
+          else
+            echo "::set-output name=create_folder_amplication::false"
+          fi
+         
+    
   changes:
     runs-on: ubuntu-latest
-    # needs: check-aws-resources
-    # if: ${{ needs.check-aws-resources.outputs.create_folder == 'false' }}
+    needs: check-aws-resources
+    if: ${{ needs.check-aws-resources.outputs.create_folder_amplication == 'false' && needs.check-aws-resources.outputs.create_folder_server == 'false' && needs.check-aws-resources.outputs.create_folder_client == 'false' }}
     outputs:
       # Expose matched filters as job 'apps' output variable
       apps: ${{ steps.filter.outputs.filtered-array }}
@@ -103,14 +114,11 @@ jobs:
           echo $modif
           echo "::set-output name=filtered-array::$modif"
 
-      - name: test output
-        run: echo "${{ steps.filter.outputs.filtered-array }}"
-
   # first run - need to get all services folders
   get-name-all:
     runs-on: ubuntu-latest
-  #   needs: [check-aws-resources]
-  #   if: ${{ needs.check-aws-resources.outputs.create_folder == 'true' }}
+    needs: [check-aws-resources]
+    if: ${{ needs.check-aws-resources.outputs.create_folder_amplication == 'true' && needs.check-aws-resources.outputs.create_folder_server == 'true' && needs.check-aws-resources.outputs.create_folder_client == 'true' }}
     outputs:
       services: ${{ steps.get-service.outputs.all-services }}
     steps:
@@ -137,43 +145,79 @@ jobs:
           echo $modif
           echo "::set-output name=all-services::$modif"
 
-  install-testing:
-    runs-on: ubuntu-latest
-    needs: [get-name-all]
-    if: always() && ${{ needs.get-name-all.outputs.services != '[]' && needs.get-name-all.outputs.services != '' }}
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # apps: ${{ fromJSON(needs.changes.outputs.apps) }}
-        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
+  # install:
+  #   runs-on: ubuntu-latest
+  #   needs: [changes,get-name-all]
+  #   if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' || needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       apps: ${{ fromJSON(needs.changes.outputs.apps) }}
+  #       service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+  #   - name: Check docker-service
+  #     id: check-docker-service
+  #     env: 
+  #       CHANGED_SERVICE: ${{ matrix.apps }}
+  #       SERVICE: ${{ matrix.service }}
+  #     run: |
+  #       if [ $CHANGED_SERVICE != '[]' && $CHANGED_SERVICE != '' ]
+  #       then
+  #         [ -f packages/$CHANGED_SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service-changed::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service-changed::false"
+  #       else 
+  #         [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
+  #       fi
+
+  #   - name: Use Node.js ${{ matrix.node-version }}
+  #     uses: actions/setup-node@v2
+  #     with:
+  #       node-version: ${{ matrix.node-version }}
+  #       cache: 'npm'
         
-    - name: "Install dependencies ${{ matrix.services }}"
-      run: npm ci
+  #   - name: "Install dependencies ${{ matrix.apps }}"
+  #     if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
+  #     run: npm ci
 
-  install:
+  #   - name: "Install dependencies ${{ matrix.service }}"
+  #     if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+  #     run: npm ci
+    
+  #   # - name: "Update Prisma client first run: ${{ matrix.service }}"
+  #   #   if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
+  #   #   working-directory: packages/${{ matrix.service }}
+  #   #   run: npm run prisma:generate
+
+  
+  format:
     runs-on: ubuntu-latest
-    needs: changes
-    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }}
+    needs: [changes,get-name-all]
+    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' || needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
     strategy:
       matrix:
         node-version: [16.x]
         apps: ${{ fromJSON(needs.changes.outputs.apps) }}
-        # service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
-        # service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
+        service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
+    - name: Check docker-service
+      id: check-docker-service
+      env: 
+        CHANGED_SERVICE: ${{ matrix.apps }}
+        SERVICE: ${{ matrix.service }}
+      run: |
+        if [ $CHANGED_SERVICE != '[]' && $CHANGED_SERVICE != '' ]
+        then
+          [ -f packages/$CHANGED_SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service-changed::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service-changed::false"
+        else 
+          [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
+        fi
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -182,102 +226,53 @@ jobs:
         cache: 'npm'
         
     - name: "Install dependencies ${{ matrix.apps }}"
-      run: npm ci
-    
-    - name: "Install packages dependencies: ${{ matrix.apps }}"
-      # if: ${{ matrix.apps != '[]' &&  matrix.service_modified != '' }}
-      working-directory: packages/${{ matrix.apps }}
-      run: npm run bootstrap -- --loglevel verbose
-
-    - name: "Install packages dependencies first run: ${{ matrix.service }}"
-      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
-      working-directory: packages/${{ matrix.service }}
-      run: npm run bootstrap -- --loglevel verbose
-
-  generate:
-    runs-on: ubuntu-latest
-    needs: [changes]
-    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' }}
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
-        apps: ${{ fromJSON(needs.changes.outputs.apps) }}
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: Install dependencies
+      if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
       run: npm ci
 
-    - name: "npm test: ${{ matrix.apps }}"
-      working-directory: packages/${{ matrix.apps }}
-      run: npm test
-    
-    - name: "Update Prisma client first run: ${{ matrix.service }}"
-      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
-      working-directory: packages/${{ matrix.service }}
-      run: npm run prisma:generate
-
-  
-  format:
-    runs-on: ubuntu-latest
-    needs: [get-name-modified,get-name-all]
-    if: always() && needs.get-name-modified.outputs.services || needs.get-name-all.outputs.services
-    strategy:
-      matrix:
-        node-version: [16.x]
-        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
-        service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: Install dependencies
+    - name: "Install dependencies ${{ matrix.service }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       run: npm ci
     
     - name: Define Lerna `SINCE` variable
       if: ${{ github.ref != 'refs/heads/master' }}
       run: echo "SINCE=origin/master" >> $GITHUB_ENV
 
-    - name: "Check format: ${{ matrix.service_modified }}"
-      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
-      working-directory: packages/${{ matrix.service_modified }}
+    - name: "Check format: ${{ matrix.apps }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
+      working-directory: packages/${{ matrix.apps }}
       run: npm run check-format -- --since $SINCE
       
-    - name: "Check format first run: ${{ matrix.service }}"
-      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
+    - name: "Check format: ${{ matrix.service }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run check-format -- --since $SINCE
 
-  
   lint:
     runs-on: ubuntu-latest
-    needs: [get-name-modified,get-name-all]
-    if: always() && needs.get-name-modified.outputs.services || needs.get-name-all.outputs.services
+    needs: [changes,get-name-all]
+    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' || needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
     strategy:
       matrix:
         node-version: [16.x]
-        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
-        service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
+        apps: ${{ fromJSON(needs.changes.outputs.apps) }}
+        service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
+    - name: Check docker-service
+      id: check-docker-service
+      env: 
+        CHANGED_SERVICE: ${{ matrix.apps }}
+        SERVICE: ${{ matrix.service }}
+      run: |
+        if [ $CHANGED_SERVICE != '[]' && $CHANGED_SERVICE != '' ]
+        then
+          [ -f packages/$CHANGED_SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service-changed::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service-changed::false"
+        else 
+          [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
+        fi
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -285,37 +280,54 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         
-    - name: Install dependencies
+    - name: "Install dependencies ${{ matrix.apps }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
+      run: npm ci
+
+    - name: "Install dependencies ${{ matrix.service }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       run: npm ci
     
     - name: Define Lerna `SINCE` variable
       if: ${{ github.ref != 'refs/heads/master' }}
       run: echo "SINCE=origin/master" >> $GITHUB_ENV
 
-    - name: "Lint: ${{ matrix.service_modified }}"
-      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
-      working-directory: packages/${{ matrix.service_modified }}
+    - name: "Lint: ${{ matrix.apps }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
+      working-directory: packages/${{ matrix.apps }}
       run: npm run lint -- --since $SINCE
     
     - name: "Lint first run: ${{ matrix.service }}"
-      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run lint -- --since $SINCE
-
-  
+ 
   build:
     runs-on: ubuntu-latest
-    needs: [get-name-modified,get-name-all]
-    if: always() && needs.get-name-modified.outputs.services || needs.get-name-all.outputs.services
+    needs: [changes,get-name-all]
+    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' || needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
     strategy:
       matrix:
         node-version: [16.x]
-        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
-        service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
+        apps: ${{ fromJSON(needs.changes.outputs.apps) }}
+        service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
+    - name: Check docker-service
+      id: check-docker-service
+      env: 
+        CHANGED_SERVICE: ${{ matrix.apps }}
+        SERVICE: ${{ matrix.service }}
+      run: |
+        if [ $CHANGED_SERVICE != '[]' && $CHANGED_SERVICE != '' ]
+        then
+          [ -f packages/$CHANGED_SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service-changed::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service-changed::false"
+        else 
+          [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
+        fi
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -323,36 +335,54 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         
-    - name: Install dependencies
+    - name: "Install dependencies ${{ matrix.apps }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
+      run: npm ci
+
+    - name: "Install dependencies ${{ matrix.service }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       run: npm ci
     
     - name: Define Lerna `SINCE` variable
       if: ${{ github.ref != 'refs/heads/master' }}
       run: echo "SINCE=origin/master" >> $GITHUB_ENV
 
-    - name: "Build packages: ${{ matrix.service_modified }}"
-      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
-      working-directory: packages/${{ matrix.service_modified }}
+    - name: "Build packages: ${{ matrix.apps }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
+      working-directory: packages/${{ matrix.apps }}
       run: npm run build -- --since $SINCE
 
     - name: "Build packages first run: ${{ matrix.service }}"
-      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run build -- --since $SINCE
   
   test:
     runs-on: ubuntu-latest
-    needs: [get-name-modified,get-name-all]
-    if: always() && needs.get-name-modified.outputs.services || needs.get-name-all.outputs.services
+    needs: [changes,get-name-all]
+    if: always() && ${{ needs.changes.outputs.apps != '[]' && needs.changes.outputs.apps != '' || needs.get-name-all.outputs.all-services != '[]' && needs.get-name-all.outputs.all-services != '' }}
     strategy:
       matrix:
         node-version: [16.x]
-        service: ${{ fromJSON(needs.get-name-all.outputs.services) }} 
-        service_modified: ${{ fromJSON(needs.get-name-modified.outputs.services) }} 
+        apps: ${{ fromJSON(needs.changes.outputs.apps) }}
+        service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
+    - name: Check docker-service
+      id: check-docker-service
+      env: 
+        CHANGED_SERVICE: ${{ matrix.apps }}
+        SERVICE: ${{ matrix.service }}
+      run: |
+        if [ $CHANGED_SERVICE != '[]' && $CHANGED_SERVICE != '' ]
+        then
+          [ -f packages/$CHANGED_SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service-changed::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service-changed::false"
+        else 
+          [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
+        fi
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -360,35 +390,43 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         
-    - name: Install dependencies
+    - name: "Install dependencies ${{ matrix.apps }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
+      run: npm ci
+
+    - name: "Install dependencies ${{ matrix.service }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       run: npm ci
     
     - name: Define Lerna `SINCE` variable
       if: ${{ github.ref != 'refs/heads/master' }}
       run: echo "SINCE=origin/master" >> $GITHUB_ENV
 
-    - name: "Test: ${{ matrix.service_modified }}"
-      if: ${{ matrix.service_modified != '[]' &&  matrix.service_modified != '' }}
-      working-directory: packages/${{ matrix.service_modified }}
+    - name: "Test: ${{ matrix.apps }}"
+      if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
+      working-directory: packages/${{ matrix.apps }}
       run: npm test -- --since $SINCE
 
     - name: "Test first run: ${{ matrix.service }}"
-      if: ${{ matrix.service != '[]' &&  matrix.service != '' }}
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm test -- --since $SINCE
 
   docker:
     name: docker
-    needs: [get-name-all,get-name-modified,install,generate,format,lint.build,test]
-    if: success() && (github.event_name == 'push') && always()
+    needs: [changes,get-name-all,format,lint,build,test]
+    if: always() && success() && (github.event_name == 'push')
     runs-on: ubuntu-latest
     outputs:
       docker-services: ${{ steps.check-docker-service.outputs.docker-service }}
+      docker-services-changed: ${{ steps.check-docker-service.outputs.docker-service-changed }}
+
     strategy:
       matrix:
         node-version: [16.x]
         app: ${{ fromJSON(needs.changes.outputs.apps) }}
-    
+        service: ${{ fromJSON(needs.get-name-all.outputs.all-services) }} 
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -396,9 +434,15 @@ jobs:
       - name: Check docker-service
         id: check-docker-service
         env: 
-          SERVICE: ${{ matrix.app }}
+          CHANGED_SERVICE: ${{ matrix.apps }}
+          SERVICE: ${{ matrix.service }}
         run: |
-          [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
+          if [ $CHANGED_SERVICE != '[]' && $CHANGED_SERVICE != '' ]
+          then
+            [ -f packages/$CHANGED_SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service-changed::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service-changed::false"
+          else 
+            [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
+          fi
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v100
@@ -406,8 +450,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # need to add secret
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # need to add secret
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
           aws-region: us-east-2
           
       - name: Login to Amazon ECR
@@ -420,16 +464,53 @@ jobs:
           working-directory: packages/${{ matrix.app }}/Dockerfile
         run: echo "GITHUB_HASH=$(sha1sum $working-directory | sha1sum)" >> $GITHUB_ENV
       
+      ## only on first run
+      - name: Check if repo exist
+        working-directory: packages/${{ matrix.service }}
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+        env: 
+          ECR_REPOSITORY: ${{ matrix.service }}
+        run: aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
+
+      ## if new service will be added in the future
       - name: Check if repo exist
         working-directory: packages/${{ matrix.app }}
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+        if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' }}
         env: 
           ECR_REPOSITORY: ${{ matrix.app }}
         run: aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
 
+      - name: Check if tag already exist
+        id: tag-exist
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+        env: 
+          ECR_REPOSITORY: ${{ matrix.service }}
+        run: |
+          cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$GITHUB_HASH 2> /dev/null )"
+          if [[ ! -z "$cmd" ]]
+          then  
+            echo "tag already exist"
+            echo "::set-output name=tag_exist::true"
+          else
+            echo "tag doesn't exist"
+            echo "::set-output name=tag_exist::false"
+          fi
+      ## on first run will build all services with dockerfile
+      - name: Build, tag, and push image to Amazon ECR
+        working-directory: packages/${{ matrix.service }}
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' && steps.tag-exist.outputs.tag_exist == 'false' }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ matrix.service }}
+          IMAGE_TAG: ${{ github.sha }}-${{ github.ref_name }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      ## for modified services
       - name: Build, tag, and push image to Amazon ECR
         working-directory: packages/${{ matrix.app }}
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+        if: ${{ steps.check-docker-service.outputs.docker-service-changed == 'true' && steps.tag-exist.outputs.tag_exist == 'false' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ matrix.app }}
@@ -437,8 +518,18 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-  
-      
+
+  # update-helm-chart:
+  #   runs-on: ubuntu-latest
+  #   needs: docker
+
+  #   ## download artifats from s3
+  #   ## aws s3api get-object --bucket DOC-EXAMPLE-BUCKET1 --key dir/my_images.tar.bz2 my_images.tar.bz2
+
+  #   ## upload artifact to s3
+  #   # aws s3 cp s3://$BUCKET_NAME/amplication-server amplication-charts/charts/services/server --recursive
+
+
  
       
 
