@@ -44,15 +44,17 @@ jobs:
       - name: Check umbrella-chart folder exist
         id: check_chart
         run: |
-          if aws s3 ls "s3://$BUCKET_NAME/amplication-server" 2>&1 | grep -q 'NoSuchFile'
+          server_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication-server")
+          if [-z "$server_folder"]
           then
             echo "No such folder in bucket" 
             echo "::set-output name=create_folder_server::true"
           else
             echo "::set-output name=create_folder_server::false"
           fi
-
-          if aws s3 ls "s3://$BUCKET_NAME/amplication-client" 2>&1 | grep -q 'NoSuchFile'
+          
+          client_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication-client")
+          if [-z "$client_folder"]
           then
             echo "No such folder in bucket" 
             echo "::set-output name=create_folder_client::true"
@@ -60,7 +62,8 @@ jobs:
             echo "::set-output name=create_folder_client::false"
           fi
 
-          if aws s3 ls "s3://$BUCKET_NAME/amplication" 2>&1 | grep -q 'NoSuchFile'
+          amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
+          if [-z "$amplication_folder"]
           then
             echo "No such folder in bucket" 
             echo "::set-output name=create_folder_amplication::true"
