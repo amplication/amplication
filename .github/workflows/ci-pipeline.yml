@@ -391,7 +391,6 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-
   # update-helm-chart:
   #   runs-on: ubuntu-latest
   #   needs: docker
