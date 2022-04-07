@@ -5,6 +5,7 @@ import { CustomError } from "../../errors/CustomError";
 import * as fs from "fs";
 import { EventData } from "../../contracts/interfaces/eventData";
 import { ErrorMessages } from "../../constants/errorMessages";
+import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
 
 /*
  * SimpleGit integration
@@ -37,7 +38,7 @@ export class GitClientService implements IGitClient {
       binary: "git",
       maxConcurrentProcesses: 6,
       timeout: {
-        block: 2000,
+        block: 5000,
       },
       completion: {
         onExit: 50,
@@ -49,18 +50,17 @@ export class GitClientService implements IGitClient {
   }
 
   async clone(
-    eventData: EventData,
+    pushEventMessage: PushEventMessage,
     baseDir: string,
-    installationId: string,
     accessToken: string
   ): Promise<void> {
     try {
       const { provider, repositoryOwner, repositoryName, branch, commit } =
-        eventData;
+        pushEventMessage;
       fs.mkdirSync(baseDir, { recursive: true });
-      const repository = `https://${repositoryOwner}:${accessToken}@${provider}.com/${repositoryOwner}/${repositoryName}.git`;
+      const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
-      this.git
+      await this.git
         .clone(repository, baseDir, ["--branch", branch])
         .cwd(baseDir)
         .checkout(commit);
@@ -71,7 +71,7 @@ export class GitClientService implements IGitClient {
 
   async pull(branch: string, commit: string, baseDir: string): Promise<void> {
     try {
-      this.git.cwd(baseDir).fetch("origin", branch).merge([commit]);
+      await this.git.cwd(baseDir).fetch("origin", branch).merge([commit]);
     } catch (err) {
       throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
     }

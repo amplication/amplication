@@ -4,6 +4,7 @@ import { IGitPullEventRepository } from "../contracts/interfaces/gitPullEventRep
 import { EventData } from "../contracts/interfaces/eventData";
 import { CustomError } from "../errors/CustomError";
 import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus.enum";
+import { GitProviderEnum } from "../contracts/enums/gitProvider.enum";
 
 @Injectable()
 export class GitPullEventRepository implements IGitPullEventRepository {
@@ -24,19 +25,19 @@ export class GitPullEventRepository implements IGitPullEventRepository {
 
   async update(id: bigint, status: EnumGitPullEventStatus): Promise<boolean> {
     try {
-      const updatedEvent = this.prisma.gitPullEvent.update({
+      const updatedEvent = await this.prisma.gitPullEvent.update({
         where: { id: id },
         data: { status: status },
       });
 
-      return !!updatedEvent;
+      return updatedEvent.status === EnumGitPullEventStatus.Ready;
     } catch (err) {
       throw new CustomError("failed to create a new record in DB", err);
     }
   }
 
   async findByPreviousReadyCommit(
-    provider: string,
+    provider: keyof typeof GitProviderEnum,
     repositoryOwner: string,
     repositoryName: string,
     branch: string,

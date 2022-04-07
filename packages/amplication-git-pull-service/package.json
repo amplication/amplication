@@ -34,6 +34,7 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
     "fs-extra": "9.1.0",
+    "kafkajs": "1.16.0",
     "nest-access-control": "2.0.3",
     "nest-morgan": "1.0.1",
     "nest-winston": "1.6.2",

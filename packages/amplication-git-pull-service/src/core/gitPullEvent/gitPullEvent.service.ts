@@ -12,6 +12,7 @@ import { LoggerMessages } from "../../constants/loggerMessages";
 import { ConfigService } from "@nestjs/config";
 import * as os from "os";
 import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
+import { convertToNumber } from "../../utils/convertToNumber";
 
 const ROOT_DIR = "ROOT_DIR_ENV";
 const SKIP = "SKIP_ENV";
@@ -83,6 +84,11 @@ export class GitPullEventService implements IGitPullEvent {
           pushEventMessage,
           baseDir
         );
+
+        await this.gitPullEventRepository.update(
+          newRepository.id,
+          EnumGitPullEventStatus.Ready
+        );
       } else {
         await this.managePullEventStorage(
           previousReadyCommit,
@@ -91,14 +97,13 @@ export class GitPullEventService implements IGitPullEvent {
           branch,
           commit
         );
+        await this.gitPullEventRepository.update(
+          previousReadyCommit.id,
+          this.skip === 0
+            ? EnumGitPullEventStatus.Ready
+            : EnumGitPullEventStatus.Deleted
+        );
       }
-
-      await this.gitPullEventRepository.update(
-        pushEventMessage.id,
-        this.skip === 0
-          ? EnumGitPullEventStatus.Ready
-          : EnumGitPullEventStatus.Deleted
-      );
     } catch (err) {
       this.logger.error(
         GitPullEventService.name,
@@ -122,12 +127,7 @@ export class GitPullEventService implements IGitPullEvent {
       accessToken,
     });
 
-    await this.gitClientService.clone(
-      pushEventMessage,
-      baseDir,
-      pushEventMessage.installationId,
-      accessToken
-    );
+    await this.gitClientService.clone(pushEventMessage, baseDir, accessToken);
 
     this.logger.log("after clone", GitPullEventService.name, { accessToken });
   }

@@ -26,9 +26,8 @@ describe("Testing GitClientService", () => {
 
   it.skip("should clone a repository to a specific dir", async () => {
     const result = await gitClientService.clone(
-      cloneStub.eventData,
+      cloneStub.pushEventMessage,
       cloneStub.baseDir,
-      cloneStub.installationId,
       cloneStub.accessToken
     );
     expect(result).toEqual(undefined);

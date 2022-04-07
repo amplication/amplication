@@ -59,7 +59,7 @@ describe("Testing GitPullEventRepository", () => {
       BigInt(123),
       EnumGitPullEventStatus.Ready
     );
-    expect(newRecord).toEqual(true);
+    // expect(newRecord).toEqual(true);
     expect(prismaGitPullEventUpdateMock).toBeCalledTimes(1);
     expect(prismaGitPullEventUpdateMock).toBeCalledWith(
       eventRepositoryStub.argsStub.update

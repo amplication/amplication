@@ -14,8 +14,13 @@ export const MOCK_EVENT_DATA = {
   pushedAt: new Date("2020-12-12"),
 };
 
+export const PUSHED_EVENT_DATA = {
+  ...MOCK_EVENT_DATA,
+  installationId: "123456",
+};
+
 export const cloneStub = {
-  eventData: MOCK_EVENT_DATA,
+  pushEventMessage: PUSHED_EVENT_DATA,
   baseDir: "/git-remote/github/amit-org/sample-app/main/commit",
   installationId: "11552233",
   accessToken: "123456",
