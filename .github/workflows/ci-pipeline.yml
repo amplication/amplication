@@ -44,7 +44,7 @@ jobs:
       - name: Check umbrella-chart folder exist
         id: check_chart
         run: |
-          set -e
+          set +e
           server_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication-server")
           if [[ -z "$server_folder" ]]
           then
