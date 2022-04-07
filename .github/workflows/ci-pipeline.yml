@@ -209,9 +209,9 @@ jobs:
         if [[ -f "$FILE" ]] 
         then
           echo "$FILE exists."
-          echo "::set-output name=docker-service-changed::true"
+          echo "::set-output name=docker-service::true"
         else
-          echo "::set-output name=docker-service-changed::false"
+          echo "::set-output name=docker-service::false"
         fi
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
