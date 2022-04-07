@@ -160,8 +160,14 @@ jobs:
       env: 
         CHANGED_SERVICE: ${{ matrix.apps }}
       run: |
-        [ -f packages/$CHANGED_SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service-changed::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service-changed::false"
-
+        FILE=packages/$SERVICE/Dockerfile
+        if [[ -f "$FILE" ]] 
+        then
+          echo "$FILE exists."
+          echo "::set-output name=docker-service-changed::true"
+        else
+          echo "::set-output name=docker-service-changed::false"
+        fi
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -199,8 +205,14 @@ jobs:
       env: 
         SERVICE: ${{ matrix.service }}
       run: |
-        [ -f packages/$SERVICE/Dockerfile ] && echo "$FILE exist." && echo "::set-output name=docker-service::true" || echo "$FILE does not exist." && echo "::set-output name=docker-service::false"
-
+        FILE=packages/$SERVICE/Dockerfile
+        if [[ -f "$FILE" ]] 
+        then
+          echo "$FILE exists."
+          echo "::set-output name=docker-service-changed::true"
+        else
+          echo "::set-output name=docker-service-changed::false"
+        fi
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
