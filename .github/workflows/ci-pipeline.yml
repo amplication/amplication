@@ -55,7 +55,7 @@ jobs:
           fi
           
           client_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication-client")
-          if [-z "$server_folder"]
+          if [[ -z "$server_folder" ]]
           then
             echo "No such folder in bucket" 
             echo "::set-output name=create_folder_client::true"
