@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-aws-resources
     outputs:
-      services: ${{ steps.get-service.outputs.array }}
+      services: ${{ steps.filter.outputs.array }}
     steps:
       - uses: actions/checkout@v2
         with:
