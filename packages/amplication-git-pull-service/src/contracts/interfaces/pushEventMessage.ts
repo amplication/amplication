@@ -13,7 +13,7 @@ export class PushEventMessage extends EventData {
     commit: string,
     status: keyof typeof EnumGitPullEventStatus,
     pushedAt: Date,
-    installationId: string,
+    installationId: string
   ) {
     super(
       id,
@@ -23,7 +23,7 @@ export class PushEventMessage extends EventData {
       branch,
       commit,
       status,
-      pushedAt,
+      pushedAt
     );
 
     this.installationId = installationId;

@@ -32,9 +32,7 @@ export class GitPullEventService implements IGitPullEvent {
     this.skip = configService.get<number>(SKIP) || 0;
   }
 
-  async pushEventHandler(
-    pushEventMessage: PushEventMessage
-  ): Promise<void> {
+  async pushEventHandler(pushEventMessage: PushEventMessage): Promise<void> {
     const {
       provider,
       repositoryOwner,
@@ -48,12 +46,22 @@ export class GitPullEventService implements IGitPullEvent {
     const baseDir = `${mainDir}/${commit}`;
 
     try {
+      this.logger.log(
+        "trying to create new repository",
+        GitPullEventService.name
+      );
+      const { installationId, ...gitPullEventParams } = pushEventMessage;
+
       const newRepository = await this.gitPullEventRepository.create({
-        ...pushEventMessage,
+        ...gitPullEventParams,
         status: EnumGitPullEventStatus.Created,
       });
 
-      this.logger.log('new repository', GitPullEventService.name, {newRepository})
+      this.logger.log(
+        "succeeded to create new repository",
+        GitPullEventService.name,
+        { newRepository }
+      );
 
       const previousReadyCommit =
         await this.gitPullEventRepository.findByPreviousReadyCommit(
@@ -65,7 +73,9 @@ export class GitPullEventService implements IGitPullEvent {
           this.skip
         );
 
-      this.logger.log('previousReadyCommit', GitPullEventService.name, {previousReadyCommit})
+      this.logger.log("previousReadyCommit", GitPullEventService.name, {
+        previousReadyCommit,
+      });
 
       if (!previousReadyCommit) {
         await this.cloneRepository(
@@ -95,7 +105,7 @@ export class GitPullEventService implements IGitPullEvent {
         LoggerMessages.error.CATCH_ERROR_MESSAGE,
         { err }
       );
-      console.log(err, 'error!!!')
+      console.log(err, "error!!!");
     }
   }
 
@@ -108,7 +118,10 @@ export class GitPullEventService implements IGitPullEvent {
       .getHostProvider(provider as GitProviderEnum)
       .createInstallationAccessToken(pushEventMessage.installationId);
 
-    this.logger.log('accessToken was created', GitPullEventService.name, {accessToken})
+    this.logger.log("accessToken was created", GitPullEventService.name, {
+      accessToken,
+    });
+
     await this.gitClientService.clone(
       pushEventMessage,
       baseDir,
@@ -116,7 +129,7 @@ export class GitPullEventService implements IGitPullEvent {
       accessToken
     );
 
-    this.logger.log('after clone', GitPullEventService.name, {accessToken})
+    this.logger.log("after clone", GitPullEventService.name, { accessToken });
   }
 
   private async managePullEventStorage(
@@ -129,6 +142,6 @@ export class GitPullEventService implements IGitPullEvent {
     const srcDir = `${mainDir}/${previousReadyCommit.commit}`;
     await this.storageService.copyDir(srcDir, baseDir);
     await this.gitClientService.pull(branch, commit, baseDir);
-    this.logger.log('after pull and copy', GitPullEventService.name)
+    this.logger.log("after pull and copy", GitPullEventService.name);
   }
 }

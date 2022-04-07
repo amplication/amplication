@@ -19,7 +19,7 @@ export class EventData {
     branch: string,
     commit: string,
     status: keyof typeof EnumGitPullEventStatus,
-    pushedAt: Date,
+    pushedAt: Date
   ) {
     this.provider = provider;
     this.id = id;
