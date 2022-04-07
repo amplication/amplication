@@ -511,7 +511,7 @@ jobs:
           fi
       
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v100
+        uses: docker/setup-buildx-action@v1
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -567,7 +567,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
   docker-modified:
-    name: docker
+    name: docker-modified
     needs: [changes,format-modified,lint-modified,build-modified,test-modified]
     if: always() && success() && (github.event_name == 'push')
     runs-on: ubuntu-latest
