@@ -375,13 +375,18 @@ jobs:
             echo "::set-output name=tag_exist::false"
           fi
 
+      - name: set branch-name
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+        run: |
+          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+
       - name: Build, tag, and push image to Amazon ECR
         working-directory: packages/${{ matrix.service }}
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ matrix.service }}
-          IMAGE_TAG: ${{ github.sha }}-${{ github.ref_name }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
+          IMAGE_TAG: ${{ github.sha }}-${{ env.BRANCH_NAME }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
