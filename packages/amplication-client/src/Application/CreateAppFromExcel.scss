@@ -92,24 +92,17 @@ $option-image-size: 70px;
     }
   }
 
-  %__title {
-    font-weight: 600;
+  &__start_text {
+    @include headline1;
     text-align: center;
   }
-  &__start_text {
-    @extend %__title;
-    font-size: 32px;
-    line-height: 40px;
-  }
   &__welcome_text {
-    @extend %__title;
-    line-height: 40px;
-    font-size: 18px;
+    @include sectionTitle;
+    text-align: center;
   }
   &__excel_start_title {
-    @extend %__title;
-    font-size: 24px;
-    line-height: 36px;
+    @include pageTitle;
+    font-weight: 700;
   }
 
   &__other-options {
@@ -169,26 +162,21 @@ $option-image-size: 70px;
       }
     }
 
-    %__option_text_common {
-      font-weight: 500;
-      position: relative;
-      line-height: 32px;
-    }
-
     &__option_text {
-      @extend %__option_text_common;
-      font-size: 18px;
-      color: var(--black100);
+      @include sectionTitle;
+      position: relative;
+      font-weight: 700;
     }
 
     &__option_code_text {
-      @extend %__option_text_common;
-      font-size: 24px;
+      @include pageTitle;
+      position: relative;
+      font-weight: 500;
       color: var(--secondary);
     }
   }
   &__dropzone {
-    @include body1;
+    @include body2;
     margin: var(--double-spacing) auto;
     height: $dropzone-height;
     max-width: $options-max-width;

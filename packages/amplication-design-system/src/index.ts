@@ -146,5 +146,5 @@ export { Icon, Props as IconProps } from "./components/Icon/Icon";
 export { Tooltip, Props as TooltipProps } from "./components/Tooltip/Tooltip";
 export { SkeletonWrapper } from "./components/SkeletonWrapper/SkeletonWrapper";
 
-// exports from installed design libraries
+// exports from installed design packages
 export { CSSTransition, SwitchTransition } from "react-transition-group";
