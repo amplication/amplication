@@ -511,9 +511,11 @@ jobs:
           fi
       
       - name: Set up Docker Buildx
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         uses: docker/setup-buildx-action@v1
       
       - name: Configure AWS credentials
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -522,6 +524,7 @@ jobs:
           
       - name: Login to Amazon ECR
         id: login-ecr
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Set hash
@@ -537,22 +540,6 @@ jobs:
         env: 
           ECR_REPOSITORY: ${{ matrix.service }}
         run: aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
-
-      - name: Check if tag already exist
-        id: tag-exist
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-        env: 
-          ECR_REPOSITORY: ${{ matrix.service }}
-        run: |
-          cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$GITHUB_HASH 2> /dev/null )"
-          if [[ ! -z "$cmd" ]]
-          then  
-            echo "tag already exist"
-            echo "::set-output name=tag_exist::true"
-          else
-            echo "tag doesn't exist"
-            echo "::set-output name=tag_exist::false"
-          fi
 
       ## on first run will build all services with dockerfile
       - name: Build, tag, and push image to Amazon ECR
@@ -597,9 +584,11 @@ jobs:
           fi
       
       - name: Set up Docker Buildx
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         uses: docker/setup-buildx-action@v100
       
       - name: Configure AWS credentials
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -607,6 +596,7 @@ jobs:
           aws-region: us-east-2
           
       - name: Login to Amazon ECR
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
@@ -630,7 +620,8 @@ jobs:
         env: 
           ECR_REPOSITORY: ${{ matrix.service }}
         run: |
-          cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$GITHUB_HASH 2> /dev/null )"
+          set +e
+          cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$GITHUB_HASH)"
           if [[ ! -z "$cmd" ]]
           then  
             echo "tag already exist"
