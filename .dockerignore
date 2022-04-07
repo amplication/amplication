@@ -18,6 +18,7 @@ packages/amplication-server/artifacts
 packages/amplication-client/**/*.spec.*
 packages/amplication-data/**/*.spec.*
 packages/amplication-server/**/*.spec.*
+packages/amplication-server/**/*.mock.*
 packages/amplication-data-service-generator/src/tests
 packages/amplication-container-builder/**/*.spec.*
 packages/amplication-client/build
