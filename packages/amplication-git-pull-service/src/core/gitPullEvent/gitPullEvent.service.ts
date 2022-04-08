@@ -47,8 +47,6 @@ export class GitPullEventService implements IGitPullEvent {
         pushEventMessage
       );
 
-      console.log({ previousReadyCommit }, "prev ready commit");
-
       if (!previousReadyCommit) {
         await this.cloneRepository(
           provider as GitProviderEnum,

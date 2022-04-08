@@ -72,7 +72,6 @@ export class GitClientService implements IGitClient {
       fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
-      console.log({ repository });
       await this.git
         .addConfig("init.defaultBranch", "main", false, CONFIG_SCOPE_GLOBAL)
         .cwd(baseDir)

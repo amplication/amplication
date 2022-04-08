@@ -44,14 +44,6 @@ export class GitPullEventRepository implements IGitPullEventRepository {
     pushedAt: Date,
     skip: number
   ): Promise<EventData | undefined> {
-    console.log({
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      pushedAt,
-      skip,
-    });
     try {
       const previousReadyCommit = await this.prisma.gitPullEvent.findMany({
         where: {

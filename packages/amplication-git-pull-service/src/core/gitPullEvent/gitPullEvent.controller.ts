@@ -9,7 +9,6 @@ export class GitPullEventController {
 
   // @MessagePattern("pull.event")
   // async processRepositoryPushEvent(@Payload() message: any) {
-  //   console.log({ message: message.value });
   //   await this.gitPullEventService.pushEventHandler({
   //     ...message.value,
   //     pushedAt: new Date(),
