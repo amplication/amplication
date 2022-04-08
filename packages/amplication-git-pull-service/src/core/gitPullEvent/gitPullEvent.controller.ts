@@ -7,24 +7,24 @@ import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
 export class GitPullEventController {
   constructor(protected readonly gitPullEventService: GitPullEventService) {}
 
-  // @MessagePattern("pull.event")
-  // async processRepositoryPushEvent(@Payload() message: any) {
-  //   await this.gitPullEventService.pushEventHandler({
-  //     ...message.value,
-  //     pushedAt: new Date(),
-  //   });
-  //
-  //   return {
-  //     key: "kafka-key",
-  //     value: "items",
-  //   };
-  // }
-
-  @Post("push-event")
-  async processRepositoryPushEvent(@Body() message: PushEventMessage) {
-    return this.gitPullEventService.pushEventHandler({
-      ...message,
+  @MessagePattern("pull.event")
+  async processRepositoryPushEvent(@Payload() message: any) {
+    await this.gitPullEventService.pushEventHandler({
+      ...message.value,
       pushedAt: new Date(),
     });
+
+    return {
+      key: "kafka-key",
+      value: "items",
+    };
   }
+
+  // @Post("push-event")
+  // async processRepositoryPushEvent(@Body() message: PushEventMessage) {
+  //   return this.gitPullEventService.pushEventHandler({
+  //     ...message,
+  //     pushedAt: new Date(),
+  //   });
+  // }
 }
