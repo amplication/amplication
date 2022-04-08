@@ -15,6 +15,11 @@ const appInfo: AppInfo = {
     dbUser: "testUsername",
     authProvider: EnumAuthProviderType.Http,
   },
+  generationSettings: {
+    generateAdminUI: true,
+    generateGraphQL: true,
+    generateRestApi: true,
+  },
 };
 
 export default appInfo;
