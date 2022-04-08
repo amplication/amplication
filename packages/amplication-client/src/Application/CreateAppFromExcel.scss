@@ -119,16 +119,18 @@ $option-image-size: 70px;
       @include body1;
       min-height: 170px;
       flex: 1;
+      position: relative;
       justify-content: center;
       cursor: pointer;
 
-      &:hover {
-        // To resolve: On light mode, the gif is black and the color of text is also black
-        // !! Dependency with parent classnames
-        .create-app-from-excel__other-options__option_text {
-          color: var(--static-white);
-        }
-      }
+      // &:hover {
+      // box-shadow: 0px 44px 40px -24px rgba(var(--black2), 0.3);
+      // To resolve: On light mode, the gif is black and the color of text is also black
+      // !! Dependency with parent classnames
+      // .create-app-from-excel__other-options__option_text {
+      //   color: var(--static-white);
+      // }
+      // }
 
       &:hover::before {
         content: "";
@@ -137,28 +139,25 @@ $option-image-size: 70px;
         right: 0px;
         bottom: 0px;
         left: 0px;
-        background-color: rgba(0, 0, 0, 0.5);
         border-radius: var(--default-border-radius);
+        background-size: cover;
+        opacity: 0.3;
       }
     }
 
     &__scratch_option {
       @extend %__option;
 
-      &:hover {
-        position: relative;
+      &:hover::before {
         background-image: url("../assets/gifs/start-scratch.gif");
-        background-size: cover;
       }
     }
 
     &__sample_option {
       @extend %__option;
 
-      &:hover {
-        position: relative;
+      &:hover::before {
         background-image: url("../assets/gifs/start-sample-app.gif");
-        background-size: cover;
       }
     }
 
