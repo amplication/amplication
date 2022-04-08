@@ -35,9 +35,9 @@ describe("Testing GitClientService", () => {
 
   it.skip("should pull a repository to a specific dir", async () => {
     const result = await gitClientService.pull(
-      pullStub.branch,
-      pullStub.commit,
-      pullStub.baseDir
+      pullStub.pushEventMessage,
+      pullStub.baseDir,
+      pullStub.accessToken
     );
     expect(result).toEqual(undefined);
   });

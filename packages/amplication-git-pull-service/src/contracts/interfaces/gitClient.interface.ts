@@ -6,5 +6,9 @@ export interface IGitClient {
     baseDir: string,
     accessToken: string
   ) => Promise<void>;
-  pull: (branch: string, commit: string, baseDir: string) => Promise<void>;
+  pull: (
+    pushEventMessage: PushEventMessage,
+    baseDir: string,
+    accessToken: string
+  ) => Promise<void>;
 }

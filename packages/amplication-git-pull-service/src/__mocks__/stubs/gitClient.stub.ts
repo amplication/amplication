@@ -27,7 +27,7 @@ export const cloneStub = {
 };
 
 export const pullStub = {
-  branch: "main",
-  commit: "7eac38d",
+  pushEventMessage: PUSHED_EVENT_DATA,
   baseDir: "/git-remote/github/amit-org/sample-app/main/commit",
+  accessToken: "123456",
 };

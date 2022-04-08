@@ -44,6 +44,14 @@ export class GitPullEventRepository implements IGitPullEventRepository {
     pushedAt: Date,
     skip: number
   ): Promise<EventData | undefined> {
+    console.log({
+      provider,
+      repositoryOwner,
+      repositoryName,
+      branch,
+      pushedAt,
+      skip,
+    });
     try {
       const previousReadyCommit = await this.prisma.gitPullEvent.findMany({
         where: {
@@ -73,7 +81,6 @@ export class GitPullEventRepository implements IGitPullEventRepository {
         },
       });
 
-      // @ts-ignore
       return previousReadyCommit.shift();
     } catch (err) {
       throw new CustomError("failed to find previous ready commit in DB", err);

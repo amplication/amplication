@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  LoggerService,
-  MessageEvent,
-} from "@nestjs/common";
+import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
 import { StorageService } from "../../providers/storage/storage.service";
 import { GitClientService } from "../../providers/gitClient/gitClient.service";
@@ -17,6 +12,7 @@ import { LoggerMessages } from "../../constants/loggerMessages";
 import { ConfigService } from "@nestjs/config";
 import * as os from "os";
 import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
+import { convertToNumber } from "src/utils/convertToNumber";
 
 const ROOT_DIR = "ENV_ROOT_DIR";
 const SKIP = "ENV_SKIP";
@@ -33,8 +29,8 @@ export class GitPullEventService implements IGitPullEvent {
     private configService: ConfigService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
   ) {
-    this.rootDir = configService.get<string>(ROOT_DIR) || os.homedir();
-    this.skip = configService.get<number>(SKIP) || 0;
+    this.rootDir = this.configService.get<string>(ROOT_DIR) || os.homedir();
+    this.skip = convertToNumber(this.configService.get<string>(SKIP) || "0");
   }
 
   async pushEventHandler(pushEventMessage: PushEventMessage): Promise<void> {
@@ -51,6 +47,8 @@ export class GitPullEventService implements IGitPullEvent {
         pushEventMessage
       );
 
+      console.log({ previousReadyCommit }, "prev ready commit");
+
       if (!previousReadyCommit) {
         await this.cloneRepository(
           provider as GitProviderEnum,
@@ -64,11 +62,10 @@ export class GitPullEventService implements IGitPullEvent {
         );
       } else {
         await this.managePullEventStorage(
-          previousReadyCommit,
+          pushEventMessage,
+          previousReadyCommit.commit,
           mainDir,
-          baseDir,
-          branch,
-          commit
+          baseDir
         );
         await this.gitPullEventRepository.update(
           previousReadyCommit.id,
@@ -77,7 +74,7 @@ export class GitPullEventService implements IGitPullEvent {
             : EnumGitPullEventStatus.Deleted
         );
       }
-    } catch (err) {
+    } catch (err: any) {
       this.logger.error(
         GitPullEventService.name,
         { err: err.message },
@@ -154,15 +151,19 @@ export class GitPullEventService implements IGitPullEvent {
   }
 
   private async managePullEventStorage(
-    previousReadyCommit: EventData,
+    pushEventMessage: PushEventMessage,
+    prevCommit: string,
     mainDir: string,
-    baseDir: string,
-    branch: string,
-    commit: string
+    baseDir: string
   ): Promise<void> {
-    const srcDir = `${mainDir}/${previousReadyCommit.commit}`;
+    const { provider, installationId } = pushEventMessage;
+    const accessToken = await this.gitHostProviderFactory
+      .getHostProvider(provider as GitProviderEnum)
+      .createInstallationAccessToken(installationId);
+
+    const srcDir = `${mainDir}/${prevCommit}`;
     await this.storageService.copyDir(srcDir, baseDir);
-    await this.gitClientService.pull(branch, commit, baseDir);
+    await this.gitClientService.pull(pushEventMessage, baseDir, accessToken);
 
     this.logger.log(
       LoggerMessages.log.PULL_COPY_SUCCESS,
