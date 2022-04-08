@@ -1,4 +1,3 @@
-import { EventData } from "./eventData";
 import { PushEventMessage } from "./pushEventMessage";
 
 export interface IGitClient {

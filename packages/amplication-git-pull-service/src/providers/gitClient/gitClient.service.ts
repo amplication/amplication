@@ -6,6 +6,11 @@ import * as fs from "fs";
 import { EventData } from "../../contracts/interfaces/eventData";
 import { ErrorMessages } from "../../constants/errorMessages";
 import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
+import { ConfigService } from "@nestjs/config";
+import { CONFIG_SCOPE_GLOBALE } from "../../constants/variables";
+import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
+
+const REMOTE_ORIGIN = "ENV_REMOTE_ORIGIN";
 
 /*
  * SimpleGit integration
@@ -13,8 +18,15 @@ import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
 @Injectable()
 export class GitClientService implements IGitClient {
   git: SimpleGit;
+  remoteOrigin: string;
+  gitHostDomains: Record<GitProviderEnum, string>;
 
-  constructor() {
+  constructor(private configService: ConfigService) {
+    this.remoteOrigin = configService.get<string>(REMOTE_ORIGIN) || "origin";
+
+    this.gitHostDomains = {
+      [GitProviderEnum.Github]: "github.com",
+    };
     /*
      * @maxConcurrentProcesses: each `simple-git` instance limits the number of
      * spawned child processes that can be run simultaneously and manages the queue
@@ -58,22 +70,31 @@ export class GitClientService implements IGitClient {
       const { provider, repositoryOwner, repositoryName, branch, commit } =
         pushEventMessage;
       fs.mkdirSync(baseDir, { recursive: true });
-      const repository = `https://${repositoryOwner}:${accessToken}@github.com/${repositoryOwner}/${repositoryName}.git`;
+      const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
+      console.log({ repository });
       await this.git
-        .clone(repository, baseDir, ["--branch", branch])
+        .addConfig("init.defaultBranch", "main", false, CONFIG_SCOPE_GLOBALE)
         .cwd(baseDir)
+        .init()
+        .addRemote(REMOTE_ORIGIN, repository)
+        .fetch(REMOTE_ORIGIN, branch)
         .checkout(commit);
+      // .clone(repository, baseDir, ["--branch", branch])
+      // .cwd(baseDir)
+      // .checkout(commit);
     } catch (err) {
-      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
+      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, {
+        message: err,
+      });
     }
   }
 
   async pull(branch: string, commit: string, baseDir: string): Promise<void> {
     try {
-      await this.git.cwd(baseDir).fetch("origin", branch).merge([commit]);
+      await this.git.cwd(baseDir).fetch(REMOTE_ORIGIN, branch).merge([commit]);
     } catch (err) {
-      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
+      throw new CustomError(ErrorMessages.REPOSITORY_PULL_FAILURE, err);
     }
   }
 }
