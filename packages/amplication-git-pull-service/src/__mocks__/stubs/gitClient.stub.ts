@@ -26,7 +26,7 @@ export const PUSHED_EVENT_DATA = {
 
 export const cloneStub = {
   pushEventMessage: PUSHED_EVENT_DATA,
-  baseDir: "/git-remote/github/amit-org/sample-app/main/commit",
+  baseDir: "/git-remote-test/github/amit-org/sample-app/main/commit",
   installationId: "11552233",
   accessToken: "123456",
 };

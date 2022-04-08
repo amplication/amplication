@@ -1,5 +1,5 @@
+import { ConfigModule } from "@nestjs/config";
 import { GitClientService } from "../../../providers/gitClient/gitClient.service";
-import { mockGitClientService } from "../../../__mocks__/providers/gitClient/gitClientService";
 import { Test, TestingModule } from "@nestjs/testing";
 import { cloneStub, pullStub } from "../../../__mocks__/stubs/gitClient.stub";
 
@@ -9,12 +9,8 @@ describe("Testing GitClientService", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: GitClientService,
-          useClass: mockGitClientService,
-        },
-      ],
+      imports: [ConfigModule.forRoot({})],
+      providers: [GitClientService],
     }).compile();
 
     gitClientService = module.get<GitClientService>(GitClientService);
@@ -25,6 +21,11 @@ describe("Testing GitClientService", () => {
   });
 
   it.skip("should clone a repository to a specific dir", async () => {
+    jest.mock("simple-git", () => {
+      return {
+        clone: jest.fn(() => Promise.resolve()),
+      };
+    });
     const result = await gitClientService.clone(
       cloneStub.pushEventMessage,
       cloneStub.baseDir,
