@@ -10,6 +10,8 @@ import {
   addImports,
   removeTSClassDeclares,
   removeESLintComments,
+  findFirstDecoratorByName,
+  removeObjectPropertyByName,
 } from "../../../util/ast";
 import { SRC_DIRECTORY } from "../../constants";
 import { createControllerId } from "../controller/create-controller";
@@ -19,11 +21,14 @@ import { createResolverId } from "../resolver/create-resolver";
 const moduleTemplatePath = require.resolve("./module.template.ts");
 const moduleBaseTemplatePath = require.resolve("./module.base.template.ts");
 
+const CONTROLLER_PROPERTY_NAME = "controllers";
+const MODULE_DECORATOR_NAME = "Module";
+
 export async function createModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entityControllerModule: string,
+  entityControllerModule: string | undefined,
   entityResolverModule: string
 ): Promise<Module[]> {
   const moduleBaseId = createBaseModuleId(entityType);
@@ -45,7 +50,7 @@ async function createModule(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entityControllerModule: string,
+  entityControllerModule: string | undefined,
   entityResolverModule: string,
   moduleBaseId: namedTypes.Identifier
 ): Promise<Module> {
@@ -75,22 +80,33 @@ async function createModule(
     relativeImportPath(modulePath, entityServiceModule)
   );
 
-  const controllerImport = importNames(
-    [controllerId],
-    relativeImportPath(modulePath, entityControllerModule)
-  );
+  const controllerImport = entityControllerModule
+    ? importNames(
+        [controllerId],
+        relativeImportPath(modulePath, entityControllerModule)
+      )
+    : undefined;
+
+  //if we are not generating the controller, remove the controller property
+  if (!entityControllerModule) {
+    const moduleDecorator = findFirstDecoratorByName(
+      file,
+      MODULE_DECORATOR_NAME
+    );
+    removeObjectPropertyByName(moduleDecorator, CONTROLLER_PROPERTY_NAME);
+  }
 
   const resolverImport = importNames(
     [resolverId],
     relativeImportPath(modulePath, entityResolverModule)
   );
 
-  addImports(file, [
-    moduleBaseImport,
-    serviceImport,
-    controllerImport,
-    resolverImport,
-  ]);
+  addImports(
+    file,
+    [moduleBaseImport, serviceImport, controllerImport, resolverImport].filter(
+      (x) => x //remove nulls and undefined
+    ) as namedTypes.ImportDeclaration[]
+  );
 
   removeTSIgnoreComments(file);
   removeESLintComments(file);
