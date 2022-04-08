@@ -1,7 +1,7 @@
 import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
 
-export const MOCK_ACCESS_TOKEN = "accesstoken123";
+export const MOCK_ACCESS_TOKEN = "access_token123";
 
 export const MOCK_EVENT_DATA = {
   id: BigInt(123),
@@ -12,6 +12,11 @@ export const MOCK_EVENT_DATA = {
   commit: "initial",
   status: EnumGitPullEventStatus.Created,
   pushedAt: new Date("2020-12-12"),
+};
+
+export const MOCK_UPDATED_EVENT_DATA = {
+  ...MOCK_EVENT_DATA,
+  status: EnumGitPullEventStatus.Ready,
 };
 
 export const PUSHED_EVENT_DATA = {

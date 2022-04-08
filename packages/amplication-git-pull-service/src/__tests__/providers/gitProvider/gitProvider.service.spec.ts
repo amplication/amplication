@@ -1,7 +1,9 @@
 import { GitHostProviderService } from "../../../providers/gitProvider/gitHostProvider.service";
-import { mockGitHostProviderService } from "../../../__mocks__/providers/gitProvider/gitHubProviderService";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
+import { MOCK_GITHUB_PROVIDER_SERVICE } from "../../../__mocks__/providers/gitProvider/gitHubProviderService";
+import { MOCK_INSTALLATION_ID } from "../../../__mocks__/stubs/gitProvider.stub";
+import { MOCK_ACCESS_TOKEN } from "../../../__mocks__/stubs/gitClient.stub";
 
 describe("Testing GitProviderService", () => {
   let gitProviderService: GitHostProviderService;
@@ -13,7 +15,7 @@ describe("Testing GitProviderService", () => {
       providers: [
         {
           provide: GitHostProviderService,
-          useClass: mockGitHostProviderService,
+          useValue: MOCK_GITHUB_PROVIDER_SERVICE,
         },
       ],
     }).compile();
@@ -28,9 +30,9 @@ describe("Testing GitProviderService", () => {
   });
 
   it("should return access token", async () => {
-    const token = await gitProviderService.createInstallationAccessToken(
-      "12345678"
+    const token: any = await gitProviderService.createInstallationAccessToken(
+      MOCK_INSTALLATION_ID
     );
-    expect(token).not.toBe(null);
+    expect(token).toEqual(MOCK_ACCESS_TOKEN);
   });
 });
