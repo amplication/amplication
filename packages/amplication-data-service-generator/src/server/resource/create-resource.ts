@@ -64,13 +64,16 @@ async function createResourceModules(
 
   const [controllerModule, controllerBaseModule] = controllerModules;
 
-  const resolverModules = await createResolverModules(
-    entityName,
-    entityType,
-    serviceModule.path,
-    entity,
-    dtos
-  );
+  const resolverModules =
+    (appInfo.generationSettings.generateGraphQL &&
+      (await createResolverModules(
+        entityName,
+        entityType,
+        serviceModule.path,
+        entity,
+        dtos
+      ))) ||
+    [];
   const [resolverModule] = resolverModules;
 
   const resourceModules = await createModules(
@@ -78,7 +81,7 @@ async function createResourceModules(
     entityType,
     serviceModule.path,
     controllerModule?.path,
-    resolverModule.path
+    resolverModule?.path
   );
 
   const testModule =

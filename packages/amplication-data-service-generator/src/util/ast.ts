@@ -816,23 +816,3 @@ export function findFirstDecoratorByName(
 
   return decorator;
 }
-
-/**
- * Removes an object property with a specific name in the given AST
- * @param ast the AST to remove the object property from
- */
-export function removeObjectPropertyByName(
-  ast: ASTNode,
-  propertyName: string
-): void {
-  recast.visit(ast, {
-    visitIdentifier(path) {
-      if (path.value.name === propertyName) {
-        if (path.parent.value.type === "ObjectProperty") {
-          path.parent.prune();
-        }
-      }
-      this.traverse(path);
-    },
-  });
-}
