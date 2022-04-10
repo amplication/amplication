@@ -8,70 +8,7 @@ on:
   #   branches: [master]
   #   types: [opened, reopened]
 
-jobs:
-  check-aws-resources:
-    name: Check aws resources exist
-    runs-on: ubuntu-latest
-    outputs:
-      create_folder_amplication: ${{ steps.check_chart.outputs.create_folder_amplication }}
-      create_folder_server: ${{ steps.check_chart.outputs.create_folder_server }}
-      create_folder_client: ${{ steps.check_chart.outputs.create_folder_client }}
-
-    env:
-      BUCKET_NAME: "amplication-charts"
-      REGION: us-east-1
-
-    steps:
-      - name: Checkout 
-        uses: actions/checkout@v2
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # need to add secret
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # need to add secret
-          aws-region: ${{ env.REGION }}
-
-      - name: Install aws cli
-        id: install-aws-cli
-        uses: unfor19/install-aws-cli-action@v1.0.2
-        with:
-          version: 2    
-          verbose: false 
-          arch: amd64  
-      
-        ## Will be false if this is first run.
-      - name: Check umbrella-chart folder exist
-        id: check_chart
-        run: |
-          set +e
-          server_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication-server")
-          if [[ -z "$server_folder" ]]
-          then
-            echo "No such folder in bucket" 
-            echo "::set-output name=create_folder_server::true"
-          else
-            echo "::set-output name=create_folder_server::false"
-          fi
-          
-          client_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication-client")
-          if [[ -z "$server_folder" ]]
-          then
-            echo "No such folder in bucket" 
-            echo "::set-output name=create_folder_client::true"
-          else
-            echo "::set-output name=create_folder_client::false"
-          fi
-
-          amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
-          if [[ -z "$amplication_folder" ]]
-          then
-            echo "No such folder in bucket" 
-            echo "::set-output name=create_folder_amplication::true"
-          else
-            echo "::set-output name=create_folder_amplication::false"
-          fi
-         
+jobs:       
   changes:
     runs-on: ubuntu-latest
     needs: check-aws-resources
@@ -420,19 +357,17 @@ jobs:
             aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
           fi
 
-  # update-helm-chart:
+  # update-service-chart:
   #   runs-on: ubuntu-latest
   #   needs: docker
   #   if: ${{ needs.docker.outputs.docker-services == 'true' }}
   #   env:
   #     BUCKET_NAME: amplication-charts
   #     REGION: us-east-1
-  #     AMPLICATION_CHART_PATH: amplication-charts/charts/amplication
   #     SERVICE_CHART_PATH: amplication-charts/charts/services
   #   strategy:
   #     matrix:
   #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
-
   #   steps:
   #     - name: Checkout
   #       uses: actions/checkout@v2
@@ -447,27 +382,17 @@ jobs:
   #     - name: Get last artifact of ${{ matrix.service }} from s3 
   #       run: |
   #         KEY=`aws s3 ls s3://$BUCKET_NAME/${{ matrix.service }} --recursive | sort | tail -n 1 | awk '{print $4}'"`
-  #         echo $KEY
-  #         if [[ $KEY != ]]
-  #         then
-  #         fi
+  #         aws s3 cp s3://$BUCKET_NAME/${{ matrix.service }}/$KEY ./latest-object
+  #         echo "::set-output name=service_artifact::$KEY"
 
-  #     - name: Set new tag on values.yaml
-  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
-  #       run: |
 
   #     - name: Update dependencies for service chart
   #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
   #       run: |
   #         helm dependency update
 
-  #     - name: Helm Update Dependencies for umbrella-chart
-  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-  #       run: |
-  #         helm dependency update
-
   #     - name: Helm Template
-  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
   #       id: helm-template
   #       run: |
   #         helm template amplication . > helm.log
@@ -476,13 +401,81 @@ jobs:
   #         TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
   #       run: echo ${TEMPLATES}
 
+  #     - name: Check service folder exist
+  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
+  #       run: |
+  #         set +e
+  #         server_folder=$(aws s3 ls "s3://$BUCKET_NAME/${{ metrix.service }}")
+  #         if [[ -z "$server_folder" ]]
+  #         then
+  #           echo "No such folder in bucket"
+  #           helm package ./${{ metrix.service }} /charts
+  #           aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
+  #           helm install ${{ metrix.service }} --set deployment.image.tag=${{ github.sha }} ./${{ metrix.service }}
+  #         else
+  #           echo "folder exist in bucket"
+  #           helm package ./${{ metrix.service }} /charts
+  #           aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
+  #           helm upgrade ${{ metrix.service }} --set deployment.image.tag=${{ github.sha }} ./${{ metrix.service }}
+  #         fi
 
-    ## can run helm template for validate the chart
+  #   update-umbrella-chart:
+  #     needs: docker
+  #     if: ${{ needs.docker.outputs.docker-services == 'true' }}
+  #     env:
+  #       BUCKET_NAME: amplication-charts
+  #       REGION: us-east-1
+  #       AMPLICATION_CHART_PATH: amplication-charts/charts/amplication
+  #       SERVICE_CHART_PATH: amplication-charts/charts/services
 
-    ## compress each chart to zip file for uploading to s3 - use helm package
+  #     steps:
+  #       - name: Checkout
+  #         uses: actions/checkout@v2
+        
+  #       - name: Configure AWS credentials
+  #         uses: aws-actions/configure-aws-credentials@v1
+  #         with:
+  #           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+  #           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+  #           aws-region: ${{ env.REGION }}
+        
+  #       - name: Get last artifact of amplication from s3 
+  #         run: |
+  #           KEY=`aws s3 ls s3://$BUCKET_NAME/amplication --recursive | sort | tail -n 1 | awk '{print $4}'"`
+  #           aws s3 cp s3://$BUCKET_NAME/amplication/$KEY ./latest-object
+  #           echo "::set-output name=amplication_artifact::$KEY"
 
-    ## upload new artifact to s3 it will create automatically the folder for each file
-    # aws s3 cp s3://$BUCKET_NAME/amplication-server amplication-charts/charts/services/server --recursive
+  #       - name: Helm Update Dependencies for umbrella-chart
+  #         working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #         run: |
+  #           helm dependency update
+
+  #       - name: Helm Template
+  #         working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #         id: helm-template
+  #         run: |
+  #           helm template amplication . > helm.log
+        
+  #       - env:
+  #           TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
+  #         run: echo ${TEMPLATES}
+        
+  #       - name: Check umbrella-chart folder exist
+  #         working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #         id: check_chart
+  #         run: |
+  #           set +e
+  #           amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
+  #           if [[ -z "$amplication_folder" ]]
+  #           then
+  #             echo "No such folder in bucket" 
+  #             helm package ./amplication /charts
+  #             aws s3 cp charts/amplication*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/amplication.tgz
+  #           else
+
+  #           fi
+
+
 
 
 
