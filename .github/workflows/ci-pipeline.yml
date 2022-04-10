@@ -11,7 +11,6 @@ on:
 jobs:       
   changes:
     runs-on: ubuntu-latest
-    needs: check-aws-resources
     outputs:
       services: ${{ steps.filter.outputs.array }}
     steps:
@@ -379,7 +378,8 @@ jobs:
   #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
   #         aws-region: ${{ env.REGION }}
 
-  #     - name: Get last artifact of ${{ matrix.service }} from s3 
+  #     - name: Get last artifact of ${{ matrix.service }} from s3
+  #       id: last_artifact 
   #       run: |
   #         KEY=`aws s3 ls s3://$BUCKET_NAME/${{ matrix.service }} --recursive | sort | tail -n 1 | awk '{print $4}'"`
   #         aws s3 cp s3://$BUCKET_NAME/${{ matrix.service }}/$KEY ./latest-object
@@ -403,6 +403,8 @@ jobs:
 
   #     - name: Check service folder exist
   #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
+  #       env:
+  #         last_artifact: ${{ steps.last_artifact.outputs.service_artifact }}
   #       run: |
   #         set +e
   #         server_folder=$(aws s3 ls "s3://$BUCKET_NAME/${{ metrix.service }}")
@@ -411,12 +413,15 @@ jobs:
   #           echo "No such folder in bucket"
   #           helm package ./${{ metrix.service }} /charts
   #           aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
-  #           helm install ${{ metrix.service }} --set deployment.image.tag=${{ github.sha }} ./${{ metrix.service }}
+  #           helm install ${{ metrix.service }} ./${{ metrix.service }}
   #         else
   #           echo "folder exist in bucket"
   #           helm package ./${{ metrix.service }} /charts
-  #           aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
-  #           helm upgrade ${{ metrix.service }} --set deployment.image.tag=${{ github.sha }} ./${{ metrix.service }}
+  #           if [[ $last_artifact != 'charts/${{ metrix.service }}*.tgz' ]]
+  #           then 
+  #             aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
+  #             helm upgrade ${{ metrix.service }} ./${{ metrix.service }}
+  #           fi
   #         fi
 
   #   update-umbrella-chart:
@@ -440,6 +445,7 @@ jobs:
   #           aws-region: ${{ env.REGION }}
         
   #       - name: Get last artifact of amplication from s3 
+  #         id: last_artifact
   #         run: |
   #           KEY=`aws s3 ls s3://$BUCKET_NAME/amplication --recursive | sort | tail -n 1 | awk '{print $4}'"`
   #           aws s3 cp s3://$BUCKET_NAME/amplication/$KEY ./latest-object
@@ -462,7 +468,8 @@ jobs:
         
   #       - name: Check umbrella-chart folder exist
   #         working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-  #         id: check_chart
+  #         env:
+  #           last_artifact: ${{ steps.last_artifact.outputs.amplication_artifact }}
   #         run: |
   #           set +e
   #           amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
@@ -471,8 +478,14 @@ jobs:
   #             echo "No such folder in bucket" 
   #             helm package ./amplication /charts
   #             aws s3 cp charts/amplication*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/amplication.tgz
+  #             helm install amplication ./amplication
   #           else
-
+  #             helm package ./amplication /charts
+  #             if [[ $last_artifact != 'charts/amplication*.tgz' ]] 
+  #             then
+  #               aws s3 cp charts/amplication*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/amplication.tgz
+  #               helm upgrade amplication ./amplication
+  #             fi
   #           fi
 
 
