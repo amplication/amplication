@@ -358,7 +358,7 @@ jobs:
 
   service-chart:
     runs-on: ubuntu-latest
-    needs: docker
+    needs: [docker,changes]
     if: ${{ needs.docker.outputs.docker-services == 'true' }}
     env:
       BUCKET_NAME: amplication-charts
