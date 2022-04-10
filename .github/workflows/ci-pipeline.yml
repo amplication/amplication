@@ -356,82 +356,78 @@ jobs:
             aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
           fi
 
-  # service-chart:
-  #   runs-on: ubuntu-latest
-  #   needs: docker
-  #   if: ${{ needs.docker.outputs.docker-services == 'true' }}
-  #   env:
-  #     BUCKET_NAME: amplication-charts
-  #     REGION: us-east-1
-  #     SERVICE_CHART_PATH: amplication-charts/charts/services
-  #   strategy:
-  #     matrix:
-  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
+  service-chart:
+    runs-on: ubuntu-latest
+    needs: docker
+    if: ${{ needs.docker.outputs.docker-services == 'true' }}
+    env:
+      BUCKET_NAME: amplication-charts
+      REGION: us-east-1
+      SERVICE_CHART_PATH: amplication-charts/charts/services
+    strategy:
+      matrix:
+        service: ${{ fromJSON(needs.changes.outputs.services) }} 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-  #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-  #         aws-region: ${{ env.REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+          aws-region: ${{ env.REGION }}
 
-  #     - name: Check service folder exist
-  #       id: check_folder
-  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
-  #       env:
-  #         last_artifact: ${{ steps.last_artifact.outputs.service_artifact }}
-  #       run: |
-  #         set +e
-  #         server_folder=$(aws s3 ls "s3://$BUCKET_NAME/${{ metrix.service }}")
-  #         if [[ -z "$server_folder" ]]
-  #         then
-  #           echo "No such folder in bucket"
-  #           echo "::set-output name=create_folder::true"
-  #         else
-  #           echo "folder exist in bucket"
-  #           echo "::set-output name=create_folder::false"
-  #         fi
+      - name: Check service folder exist
+        id: check_folder
+        working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
+        run: |
+          set +e
+          server_folder=$(aws s3 ls "s3://$BUCKET_NAME/${{ metrix.service }}")
+          if [[ -z "$server_folder" ]]
+          then
+            echo "No such folder in bucket"
+            echo "::set-output name=create_folder::true"
+          else
+            echo "folder exist in bucket"
+            echo "::set-output name=create_folder::false"
+          fi
 
-  #     - name: Get last artifact of ${{ matrix.service }} from s3
-  #       if: ${{ steps.check_folder.outputs.create_folder == 'false' }}
-  #       id: last_artifact 
-  #       run: |
-  #         KEY=`aws s3 ls s3://$BUCKET_NAME/${{ matrix.service }} --recursive | sort | tail -n 1 | awk '{print $4}'"`
-  #         aws s3 cp s3://$BUCKET_NAME/${{ matrix.service }}/$KEY ./latest-object
-  #         echo "::set-output name=service_artifact::$KEY"
+      - name: Update dependencies for service chart
+        working-directory: ${{ env.SERVICE_CHART_PATH }}/app
+        run: |
+          helm dependency update
 
-  #     - name: Update dependencies for service chart
-  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
-  #       run: |
-  #         helm dependency update
-
-  #     - name: Helm Template
-  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
-  #       id: helm-template
-  #       run: |
-  #         helm template amplication . > helm.log
+      - name: Helm Template
+        working-directory: ${{ env.SERVICE_CHART_PATH }}/app
+        id: helm-template
+        run: |
+          helm template amplication . > helm.log
       
-  #     - env:
-  #         TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
-  #       run: echo ${TEMPLATES}
+      - env:
+          TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
+        run: echo ${TEMPLATES}
 
-  #     - name: Upload artifact to s3
-  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
-  #       run: |
-  #         if [[ ${{ steps.check_folder.outputs.create_folder == 'true' }} ]]
-  #         then
-  #           helm package ./${{ metrix.service }} /charts
-  #           aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
-  #         else
-  #           helm package ./${{ metrix.service }} /charts
-  #           if [[ ./latest-object != 'charts/${{ metrix.service }}*.tgz' ]]
-  #           then 
-  #             aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
-  #           fi
-  #         fi
+      - name: Upload artifact to s3
+        working-directory: ${{ env.SERVICE_CHART_PATH }}
+        run: |
+          set +e
+          if [[ ${{ steps.check_folder.outputs.create_folder == 'true' }} ]]
+          then
+            pwd
+            tar -cvzf ${{ metrix.service }}_$GITHUB_RUN_ID.tgz ./app
+            ls -l
+            aws s3 cp ${{ metrix.service }}_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}_$GITHUB_RUN_ID.tgz
+          else
+            pwd
+            tar -cvzf ${{ metrix.service }}_$GITHUB_RUN_ID.tgz ./app
+            ls -l
+            isTagExist=$(aws s3 ls s3://BUCKET-NAME/${{ metrix.service }} --recursive | grep ${{ metrix.service }}_$GITHUB_RUN_ID.tgz)
+            if [[ ! -z  "$isTagExist" ]]
+            then 
+              aws s3 cp ${{ metrix.service }}_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}_$GITHUB_RUN_ID.tgz
+            fi
+          fi
 
   # umbrella-chart:
   #   needs: service-chart
