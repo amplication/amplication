@@ -396,7 +396,7 @@ jobs:
             echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
           fi
 
-      - name: Build, tag, and push image to Amazon ECR on staging
+      - name: Build, tag, and push image to Amazon ECR
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -418,8 +418,8 @@ jobs:
   #   runs-on: ubuntu-latest
   #   needs: docker
 
-    ## download artifats from s3
-    ## aws s3 cp s3://mybucket/test.txt test2.txt
+    ## get last modified artifact on foloder artifats from s3
+    ## aws s3 ls s3://$BUCKET_NAME/ --recursive | sort | tail -n 1 | awk '{print $4}'
 
     ## set new tag on values.yaml
     ## update dependencies for-each service chart
