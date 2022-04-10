@@ -3,6 +3,10 @@ import { AppModule } from "./app.module";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 
+const CLIENT_ID_KEY = "CLIENT_ID_ENV" || "repository-pull";
+const BROKER_IP_KEY = "BROKER_IP_ENV";
+const GROUP_ID_KEY = "GROUP_ID_ENV" || "git-pull-event";
+
 async function main() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
@@ -10,17 +14,15 @@ async function main() {
       transport: Transport.KAFKA,
       options: {
         client: {
-          clientId: "repository-pull",
+          clientId: CLIENT_ID_KEY,
           brokers: ["localhost:9092"],
         },
         consumer: {
-          groupId: "git-pull-event",
+          groupId: GROUP_ID_KEY,
         },
       },
     }
   );
-  // const app = await NestFactory.create(AppModule, { cors: true });
-  // app.setGlobalPrefix("api");
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   app.listen();
