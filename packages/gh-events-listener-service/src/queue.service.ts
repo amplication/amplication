@@ -11,7 +11,7 @@ export class QueueService {
     @Inject(QUEUE_SERVICE_NAME)
     private readonly RepositoryClient: ClientKafka,
   ) {}
-  createPushRequest({
+  async createPushRequest({
     provider,
     owner,
     repositoryName,
@@ -20,7 +20,7 @@ export class QueueService {
     pushAt,
     installationId,
   }: CreateRepositoryPushRequest) {
-    this.RepositoryClient.emit(
+    await this.RepositoryClient.emit(
       'repositoryPush_created',
       new RepositoryPushCreateEvent(
         provider,
