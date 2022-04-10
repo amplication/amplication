@@ -6,6 +6,7 @@ import { StorageService } from '@codebrew/nestjs-storage';
 import { subSeconds } from 'date-fns';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import assert from 'assert';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
@@ -653,6 +654,8 @@ export class BuildService {
             });
 
             const { url: prUrl } = response;
+
+            assert(prUrl, 'Failed to get pull request url');
 
             await this.appService.reportSyncMessage(
               build.appId,
