@@ -356,7 +356,7 @@ jobs:
             aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
           fi
 
-  # update-service-chart:
+  # service-chart:
   #   runs-on: ubuntu-latest
   #   needs: docker
   #   if: ${{ needs.docker.outputs.docker-services == 'true' }}
@@ -433,8 +433,8 @@ jobs:
   #           fi
   #         fi
 
-  # update-umbrella-chart:
-  #   needs: docker
+  # umbrella-chart:
+  #   needs: service-chart
   #   if: ${{ needs.docker.outputs.docker-services == 'true' }}
   #   env:
   #     BUCKET_NAME: amplication-charts

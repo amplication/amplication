@@ -22,5 +22,5 @@ packages/amplication-data-service-generator/src/tests
 packages/amplication-container-builder/**/*.spec.*
 packages/amplication-client/build
 packages/amplication-data-service-generator/generated
-**/*.spec.ts
-**/*.mock.ts
+packages/amplication-server/**/*.spec.*
+packages/amplication-server/**/*.mock.*
