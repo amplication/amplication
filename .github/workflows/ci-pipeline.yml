@@ -397,33 +397,85 @@ jobs:
           fi
 
       - name: Build, tag, and push image to Amazon ECR
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' && steps.tag-exist.outputs.tag_exist == 'false' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
           ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
-          IMAGE_TAG_STAGING: ${{ github.sha }}-${{ env.BRANCH_NAME }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
-          IMAGE_TAG_PROD: ${{ github.sha }}-${{ github.ref_name }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
         run: |
           if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then 
-            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING
+            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
+            MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY_STAGING --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+            aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
+            aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ env.BRANCH_NAME }} --image-manifest "$MANIFEST"
+            aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
           else 
-            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$IMAGE_TAG_PROD
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$IMAGE_TAG_PROD
+            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
+            MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY_PROD --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+            aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
+            aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
+            aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
           fi
 
   # update-helm-chart:
   #   runs-on: ubuntu-latest
   #   needs: docker
+  #   if: ${{ needs.docker.outputs.docker-services == 'true' }}
+  #   env:
+  #     BUCKET_NAME: amplication-charts
+  #     REGION: us-east-1
+  #     AMPLICATION_CHART_PATH: amplication-charts/charts/amplication
+  #     SERVICE_CHART_PATH: amplication-charts/charts/services
+  #   strategy:
+  #     matrix:
+  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
 
-    ## get last modified artifact on foloder artifats from s3
-    ## aws s3 ls s3://$BUCKET_NAME/ --recursive | sort | tail -n 1 | awk '{print $4}'
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-    ## set new tag on values.yaml
-    ## update dependencies for-each service chart
-    ## update dependencies for umbrella-chart
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+  #         aws-region: ${{ env.REGION }}
+
+  #     - name: Get last artifact of ${{ matrix.service }} from s3 
+  #       run: |
+  #         KEY=`aws s3 ls s3://$BUCKET_NAME/${{ matrix.service }} --recursive | sort | tail -n 1 | awk '{print $4}'"`
+  #         echo $KEY
+  #         if [[ $KEY != ]]
+  #         then
+  #         fi
+
+  #     - name: Set new tag on values.yaml
+  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
+  #       run: |
+
+  #     - name: Update dependencies for service chart
+  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
+  #       run: |
+  #         helm dependency update
+
+  #     - name: Helm Update Dependencies for umbrella-chart
+  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #       run: |
+  #         helm dependency update
+
+  #     - name: Helm Template
+  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #       id: helm-template
+  #       run: |
+  #         helm template amplication . > helm.log
+      
+  #     - env:
+  #         TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
+  #       run: echo ${TEMPLATES}
+
 
     ## can run helm template for validate the chart
 
