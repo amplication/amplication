@@ -1,48 +1,71 @@
 import { Injectable } from '@nestjs/common';
-import { Webhooks } from '@octokit/webhooks';
+import { EmitterWebhookEventName, Webhooks } from '@octokit/webhooks';
 import { CreateRepositoryPushRequest } from './entities/dto/CreateRepositoryPushRequest';
 import { EnumProvider } from './entities/enums/provider';
 import { QueueService } from './queue.service';
+import { ConfigService } from '@nestjs/config';
+
+const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 
 @Injectable()
 export class AppService {
+  private webhooks: Webhooks;
   constructor(
     private readonly queueService: QueueService,
-    private webhooks: Webhooks,
+    configService: ConfigService,
   ) {
-    webhooks = new Webhooks({
-      secret: '3d751fb7-816d-40a0-87f4-4bd8781c3ed9',
+    this.webhooks = new Webhooks({
+      secret: configService.get<string>(WEBHOOKS_SECRET_KEY),
     });
   }
 
   async verifyAndReceive(
     id: string,
-    eventName: any,
-    body: string,
+    eventName: EmitterWebhookEventName,
+    body: any,
     signature: string,
   ) {
-    const res = await this.webhooks
-      .verifyAndReceive({
-        id: id,
-        name: eventName,
-        payload: body,
-        signature: signature,
-      })
-      .catch(console.error);
-    console.log(res);
+    if (eventName.toString().toLowerCase() === 'push') {
+      const currentBranch = await this.getBranchName(body.ref);
+      const masterBranch = body.repository.master_branch;
+      if (this.isMasterBranch(currentBranch, masterBranch)) {
+        try {
+          await this.webhooks.verifyAndReceive({
+            id: id,
+            name: eventName,
+            payload: body,
+            signature: signature,
+          });
+        } catch (error) {
+          console.log(console.error); //todo: write more informative info
+          return;
+        }
 
-    const pushRequest = this.createPushRequestObject(body);
-    this.queueService.createPushRequest(pushRequest);
+        const pushRequest = await this.createPushRequestObject(body);
+        await this.queueService.createPushRequest(pushRequest);
+      }
+    }
   }
 
-  createPushRequestObject(body: any): CreateRepositoryPushRequest {
+  async getBranchName(fullName: string): Promise<string> {
+    const splitName = fullName.split('/');
+    return await splitName[2];
+  }
+
+  isMasterBranch(currentBranch: string, masterBranch: string): boolean {
+    return currentBranch === masterBranch;
+  }
+
+  async createPushRequestObject(
+    body: any,
+  ): Promise<CreateRepositoryPushRequest> {
     const req: CreateRepositoryPushRequest = {
       provider: EnumProvider.Github,
       owner: body.repository.owner.login,
       repositoryName: body.repository.name,
-      branchName: body.check_suite.head_branch,
-      commit: body.head_commit.message,
-      pushAt: new Date(),
+      branchName: await this.getBranchName(body.ref),
+      commit: body.head_commit.id,
+      pushAt: new Date(body.repository.pushed_at * 1000),
       installationId: body.installation.id,
     };
     return req;
