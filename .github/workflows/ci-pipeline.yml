@@ -2,7 +2,7 @@ name: CI-Pipeline
 
 on:
   workflow_dispatch:
-  push:
+  # push:
   #   branches: [master]
   # pull_request:
   #   branches: [master]
@@ -393,12 +393,12 @@ jobs:
           fi
 
       - name: Update dependencies for service chart
-        working-directory: ${{ env.SERVICE_CHART_PATH }}/app
+        working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ matrix.service }}
         run: |
           helm dependency update
 
       - name: Helm Template
-        working-directory: ${{ env.SERVICE_CHART_PATH }}/app
+        working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ matrix.service }}
         id: helm-template
         run: |
           helm template amplication . > helm.log
@@ -407,6 +407,13 @@ jobs:
           TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
         run: echo ${TEMPLATES}
 
+      - name: Set hash
+        env:
+          working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ matrix.service }}
+        run: |
+          GITHUB_HASH_MOD=$(sha1sum $working-directory | sha1sum)
+          echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
+
       - name: Upload artifact to s3
         working-directory: ${{ env.SERVICE_CHART_PATH }}
         run: |
@@ -414,98 +421,93 @@ jobs:
           if [[ ${{ steps.check_folder.outputs.create_folder == 'true' }} ]]
           then
             pwd
-            tar -cvzf ${{ matrix.service }}_$GITHUB_RUN_ID.tgz ./app
+            tar -cvzf ${{ matrix.service }}_$GITHUB_HASH.tgz ./${{ matrix.service }}
             ls -l
-            aws s3 cp ${{ matrix.service }}_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/${{ matrix.service }}/${{ matrix.service }}_$GITHUB_RUN_ID.tgz
+            aws s3 cp ${{ matrix.service }}_$GITHUB_HASH.tgz s3://$BUCKET_NAME/${{ matrix.service }}/${{ matrix.service }}_$GITHUB_HASH.tgz
           else
             pwd
-            tar -cvzf ${{ matrix.service }}_$GITHUB_RUN_ID.tgz ./app
+            tar -cvzf ${{ matrix.service }}_$GITHUB_HASH.tgz ./${{ matrix.service }}
             ls -l
-            isTagExist=$(aws s3 ls s3://BUCKET-NAME/${{ matrix.service }} --recursive | grep ${{ matrix.service }}_$GITHUB_RUN_ID.tgz)
+            isTagExist=$(aws s3 ls s3://BUCKET-NAME/${{ matrix.service }} --recursive | grep ${{ matrix.service }}_$GITHUB_HASH.tgz)
             if [[ ! -z  "$isTagExist" ]]
             then 
-              aws s3 cp ${{ matrix.service }}_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/${{ matrix.service }}/${{ matrix.service }}_$GITHUB_RUN_ID.tgz
+              aws s3 cp ${{ matrix.service }}_$GITHUB_HASH.tgz s3://$BUCKET_NAME/${{ matrix.service }}/${{ matrix.service }}_$GITHUB_HASH.tgz
             fi
           fi
 
-  # umbrella-chart:
-  #   needs: service-chart
-  #   if: ${{ needs.docker.outputs.docker-services == 'true' }}
-  #   env:
-  #     BUCKET_NAME: amplication-charts
-  #     REGION: us-east-1
-  #     AMPLICATION_CHART_PATH: amplication-charts/charts/amplication
-  #     SERVICE_CHART_PATH: amplication-charts/charts/services
+  umbrella-chart:
+    needs: service-chart
+    if: ${{ needs.docker.outputs.docker-services == 'true' }}
+    env:
+      BUCKET_NAME: amplication-charts
+      REGION: us-east-1
+      AMPLICATION_CHART_PATH: amplication-charts/charts/amplication
+      SERVICE_CHART_PATH: amplication-charts/charts/services
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       
-  #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-  #         aws-region: ${{ env.REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+          aws-region: ${{ env.REGION }}
       
-  #     - name: Check amplication folder exist
-  #       id: check_folder
-  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-  #       env:
-  #         last_artifact: ${{ steps.last_artifact.outputs.service_artifact }}
-  #       run: |
-  #         set +e
-  #         amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
-  #         if [[ -z "$amplication_folder" ]]
-  #         then
-  #           echo "No such folder in bucket"
-  #           echo "::set-output name=create_folder::true"
-  #         else
-  #           echo "folder exist in bucket"
-  #           echo "::set-output name=create_folder::false"
-  #         fi
+      - name: Check amplication folder exist
+        id: check_folder
+        env:
+          last_artifact: ${{ steps.last_artifact.outputs.service_artifact }}
+        run: |
+          set +e
+          amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
+          if [[ -z "$amplication_folder" ]]
+          then
+            echo "No such folder in bucket"
+            echo "::set-output name=create_folder::true"
+          else
+            echo "folder exist in bucket"
+            echo "::set-output name=create_folder::false"
+          fi
 
-  #     - name: Get last artifact of amplication from s3 
-  #       if: ${{ steps.check_folder.outputs.create_folder == 'false' }}
-  #       id: last_artifact
-  #       run: |
-  #         KEY=`aws s3 ls s3://$BUCKET_NAME/amplication --recursive | sort | tail -n 1 | awk '{print $4}'"`
-  #         aws s3 cp s3://$BUCKET_NAME/amplication/$KEY ./latest-object
-  #         echo "::set-output name=amplication_artifact::$KEY"
+      - name: Helm Update Dependencies for umbrella-chart
+        working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+        run: |
+          helm dependency update
 
-  #     - name: Helm Update Dependencies for umbrella-chart
-  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-  #       run: |
-  #         helm dependency update
-
-  #     - name: Helm Template
-  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-  #       id: helm-template
-  #       run: |
-  #         helm template amplication . > helm.log
+      - name: Helm Template
+        working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+        id: helm-template
+        run: |
+          helm template amplication . > helm.log
       
-  #     - env:
-  #         TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
-  #       run: echo ${TEMPLATES}
+      - env:
+          TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
+        run: echo ${TEMPLATES}
       
-  #     - name: Upload artifact to s3
-  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-  #       env:
-  #         last_artifact: ${{ steps.last_artifact.outputs.amplication_artifact }}
-  #       run: |
-  #         set +e
-  #         amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
-  #         if [[ -z "$amplication_folder" ]]
-  #         then
-  #           helm package ./amplication /charts
-  #           aws s3 cp charts/amplication*.tgz s3://$BUCKET_NAME/${{ matrix.service }}/amplication.tgz
-  #         else
-  #           helm package ./amplication /charts
-  #           if [[ ./latest-object != 'charts/amplication*.tgz' ]] 
-  #           then
-  #             aws s3 cp charts/amplication*.tgz s3://$BUCKET_NAME/${{ matrix.service }}/amplication.tgz
-  #           fi
-  #         fi
+      - name: Upload artifact to s3
+        working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+        env:
+          last_artifact: ${{ steps.last_artifact.outputs.amplication_artifact }}
+        run: |
+          set +e
+          if [[ ${{ steps.check_folder.outputs.create_folder == 'true' }} ]]
+          then
+            pwd
+            tar -cvzf amplication_$GITHUB_RUN_ID.tgz ./
+            ls -l
+            aws s3 cp amplication_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/amplication_/amplication__$GITHUB_RUN_ID.tgz
+          else
+            pwd
+            tar -cvzf amplication_$GITHUB_RUN_ID.tgz ./
+            ls -l
+            isTagExist=$(aws s3 ls s3://BUCKET-NAME/amplication_ --recursive | grep amplication__$GITHUB_RUN_ID.tgz)
+            if [[ ! -z  "$isTagExist" ]]
+            then 
+              aws s3 cp amplication_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/amplication_/amplication__$GITHUB_RUN_ID.tgz
+            fi
+          fi
 
 
 
