@@ -3,22 +3,22 @@ import { EnumProvider } from '../enums/provider';
 export class RepositoryPushCreateEvent {
   constructor(
     public readonly provider: EnumProvider,
-    public readonly owner: string,
+    public readonly repositoryOwner: string,
     public readonly repositoryName: string,
-    public readonly branchName: string,
+    public readonly branch: string,
     public readonly commit: string,
-    public readonly pushAt: Date,
+    public readonly pushedAt: Date,
     public readonly installationId: string,
   ) {}
 
   toString() {
     return JSON.stringify({
       provider: this.provider,
-      owner: this.owner,
+      repositoryOwner: this.repositoryOwner,
       repositoryName: this.repositoryName,
-      branchName: this.branchName,
+      branch: this.branch,
       commit: this.commit,
-      pushAt: this.pushAt,
+      pushedAt: this.pushedAt,
       installationId: this.installationId,
     });
   }

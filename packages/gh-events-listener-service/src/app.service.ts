@@ -61,11 +61,11 @@ export class AppService {
   ): Promise<CreateRepositoryPushRequest> {
     const req: CreateRepositoryPushRequest = {
       provider: EnumProvider.Github,
-      owner: body.repository.owner.login,
+      repositoryOwner: body.repository.owner.login,
       repositoryName: body.repository.name,
-      branchName: await this.getBranchName(body.ref),
+      branch: await this.getBranchName(body.ref),
       commit: body.head_commit.id,
-      pushAt: new Date(body.repository.pushed_at * 1000),
+      pushedAt: new Date(body.repository.pushed_at * 1000),
       installationId: body.installation.id,
     };
     return req;

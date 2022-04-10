@@ -2,10 +2,10 @@ import { EnumProvider } from '../enums/provider';
 
 export class CreateRepositoryPushRequest {
   provider: EnumProvider;
-  owner: string;
+  repositoryOwner: string;
   repositoryName: string;
-  branchName: string;
+  branch: string;
   commit: string;
-  pushAt: Date;
+  pushedAt: Date;
   installationId: string;
 }

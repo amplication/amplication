@@ -13,22 +13,22 @@ export class QueueService {
   ) {}
   async createPushRequest({
     provider,
-    owner,
+    repositoryOwner,
     repositoryName,
-    branchName,
+    branch,
     commit,
-    pushAt,
+    pushedAt,
     installationId,
   }: CreateRepositoryPushRequest) {
     await this.RepositoryClient.emit(
       'repositoryPush_created',
       new RepositoryPushCreateEvent(
         provider,
-        owner,
+        repositoryOwner,
         repositoryName,
-        branchName,
+        branch,
         commit,
-        pushAt,
+        pushedAt,
         installationId,
       ),
     );
