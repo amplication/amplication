@@ -358,7 +358,7 @@ jobs:
           ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
           ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
         run: |
-          if $GITHUB_REF != 'refs/heads/master'
+          if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then 
             aws ecr describe-repositories --repository-names $ECR_REPOSITORY_STAGING || aws ecr create-repository --repository-name $ECR_REPOSITORY_STAGING
           else
@@ -373,7 +373,7 @@ jobs:
           ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
         run: |
           set +e
-          if $GITHUB_REF != 'refs/heads/master'
+          if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then 
             cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_STAGING --image-ids=imageTag=$GITHUB_HASH)"
           else
@@ -391,7 +391,7 @@ jobs:
       - name: set branch-name
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         run: |
-          if $GITHUB_REF != 'refs/heads/master'
+          if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then 
             echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
           fi
@@ -405,7 +405,7 @@ jobs:
           IMAGE_TAG_STAGING: ${{ github.sha }}-${{ env.BRANCH_NAME }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
           IMAGE_TAG_PROD: ${{ github.sha }}-${{ github.ref_name }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
         run: |
-          if $GITHUB_REF != 'refs/heads/master'
+          if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then 
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING -f packages/${{ matrix.service }}/Dockerfile .
             docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING
