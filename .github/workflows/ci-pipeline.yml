@@ -330,89 +330,92 @@ jobs:
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         uses: docker/setup-buildx-action@v1
       
-      - name: Configure AWS credentials
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-          aws-region: us-east-2
-          
-      - name: Login to Amazon ECR
-        id: login-ecr
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Set hash
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-        env:
-          working-directory: packages/${{ matrix.service }}/Dockerfile
-        run: |
-          GITHUB_HASH_MOD=$(sha1sum packages/${{ matrix.service }}/Dockerfile | sha1sum)
-          echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
-       
-      - name: Check if repo exist
-        working-directory: packages/${{ matrix.service }}
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-        env: 
-          ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
-          ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
-        run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            aws ecr describe-repositories --repository-names $ECR_REPOSITORY_STAGING || aws ecr create-repository --repository-name $ECR_REPOSITORY_STAGING
-          else
-            aws ecr describe-repositories --repository-names $ECR_REPOSITORY_PROD || aws ecr create-repository --repository-name $ECR_REPOSITORY_PROD
-          fi
-
-      - name: Check if tag already exist
-        id: tag-exist
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-        env: 
-          ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
-          ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
-        run: |
-          set +e
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_STAGING --image-ids=imageTag=$GITHUB_HASH)"
-          else
-            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_PROD --image-ids=imageTag=$GITHUB_HASH)"
-          fi
-          if [[ ! -z "$cmd" ]]
-          then  
-            echo "tag already exist"
-            echo "::set-output name=tag_exist::true"
-          else
-            echo "tag doesn't exist"
-            echo "::set-output name=tag_exist::false"
-          fi
+      - name: Docker version
+        run: docker version
       
-      - name: set branch-name
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-        run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-          fi
+      # - name: Configure AWS credentials
+      #   if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+      #     aws-region: us-east-2
+          
+      # - name: Login to Amazon ECR
+      #   id: login-ecr
+      #   if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      #   uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR on staging
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
-          ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
-          IMAGE_TAG_STAGING: ${{ github.sha }}-${{ env.BRANCH_NAME }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
-          IMAGE_TAG_PROD: ${{ github.sha }}-${{ github.ref_name }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
-        run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING -f packages/${{ matrix.service }}/Dockerfile .
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING
-          else 
-            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$IMAGE_TAG_PROD -f packages/${{ matrix.service }}/Dockerfile .
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$IMAGE_TAG_PROD
-          fi
+      # - name: Set hash
+      #   if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      #   env:
+      #     working-directory: packages/${{ matrix.service }}/Dockerfile
+      #   run: |
+      #     GITHUB_HASH_MOD=$(sha1sum packages/${{ matrix.service }}/Dockerfile | sha1sum)
+      #     echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
+       
+      # - name: Check if repo exist
+      #   working-directory: packages/${{ matrix.service }}
+      #   if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      #   env: 
+      #     ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
+      #     ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
+      #   run: |
+      #     if [[ $GITHUB_REF != 'refs/heads/master' ]]
+      #     then 
+      #       aws ecr describe-repositories --repository-names $ECR_REPOSITORY_STAGING || aws ecr create-repository --repository-name $ECR_REPOSITORY_STAGING
+      #     else
+      #       aws ecr describe-repositories --repository-names $ECR_REPOSITORY_PROD || aws ecr create-repository --repository-name $ECR_REPOSITORY_PROD
+      #     fi
+
+      # - name: Check if tag already exist
+      #   id: tag-exist
+      #   if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      #   env: 
+      #     ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
+      #     ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
+      #   run: |
+      #     set +e
+      #     if [[ $GITHUB_REF != 'refs/heads/master' ]]
+      #     then 
+      #       cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_STAGING --image-ids=imageTag=$GITHUB_HASH)"
+      #     else
+      #       cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_PROD --image-ids=imageTag=$GITHUB_HASH)"
+      #     fi
+      #     if [[ ! -z "$cmd" ]]
+      #     then  
+      #       echo "tag already exist"
+      #       echo "::set-output name=tag_exist::true"
+      #     else
+      #       echo "tag doesn't exist"
+      #       echo "::set-output name=tag_exist::false"
+      #     fi
+      
+      # - name: set branch-name
+      #   if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      #   run: |
+      #     if [[ $GITHUB_REF != 'refs/heads/master' ]]
+      #     then 
+      #       echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+      #     fi
+
+      # - name: Build, tag, and push image to Amazon ECR on staging
+      #   if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
+      #     ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
+      #     IMAGE_TAG_STAGING: ${{ github.sha }}-${{ env.BRANCH_NAME }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
+      #     IMAGE_TAG_PROD: ${{ github.sha }}-${{ github.ref_name }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
+      #   run: |
+      #     if [[ $GITHUB_REF != 'refs/heads/master' ]]
+      #     then 
+      #       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING -f packages/${{ matrix.service }}/Dockerfile .
+      #       docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING
+      #     else 
+      #       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$IMAGE_TAG_PROD -f packages/${{ matrix.service }}/Dockerfile .
+      #       docker push $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$IMAGE_TAG_PROD
+      #     fi
 
   # update-helm-chart:
   #   runs-on: ubuntu-latest
