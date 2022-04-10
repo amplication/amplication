@@ -378,13 +378,30 @@ jobs:
   #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
   #         aws-region: ${{ env.REGION }}
 
+  #     - name: Check service folder exist
+  #       id: check_folder
+  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
+  #       env:
+  #         last_artifact: ${{ steps.last_artifact.outputs.service_artifact }}
+  #       run: |
+  #         set +e
+  #         server_folder=$(aws s3 ls "s3://$BUCKET_NAME/${{ metrix.service }}")
+  #         if [[ -z "$server_folder" ]]
+  #         then
+  #           echo "No such folder in bucket"
+  #           echo "::set-output name=create_folder::true"
+  #         else
+  #           echo "folder exist in bucket"
+  #           echo "::set-output name=create_folder::false"
+  #         fi
+
   #     - name: Get last artifact of ${{ matrix.service }} from s3
+  #       if: ${{ steps.check_folder.outputs.create_folder == 'false' }}
   #       id: last_artifact 
   #       run: |
   #         KEY=`aws s3 ls s3://$BUCKET_NAME/${{ matrix.service }} --recursive | sort | tail -n 1 | awk '{print $4}'"`
   #         aws s3 cp s3://$BUCKET_NAME/${{ matrix.service }}/$KEY ./latest-object
   #         echo "::set-output name=service_artifact::$KEY"
-
 
   #     - name: Update dependencies for service chart
   #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
@@ -401,92 +418,99 @@ jobs:
   #         TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
   #       run: echo ${TEMPLATES}
 
-  #     - name: Check service folder exist
+  #     - name: Upload artifact to s3
   #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ metrix.service }}
+  #       run: |
+  #         if [[ ${{ steps.check_folder.outputs.create_folder == 'true' }} ]]
+  #         then
+  #           helm package ./${{ metrix.service }} /charts
+  #           aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
+  #         else
+  #           helm package ./${{ metrix.service }} /charts
+  #           if [[ ./latest-object != 'charts/${{ metrix.service }}*.tgz' ]]
+  #           then 
+  #             aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
+  #           fi
+  #         fi
+
+  # update-umbrella-chart:
+  #   needs: docker
+  #   if: ${{ needs.docker.outputs.docker-services == 'true' }}
+  #   env:
+  #     BUCKET_NAME: amplication-charts
+  #     REGION: us-east-1
+  #     AMPLICATION_CHART_PATH: amplication-charts/charts/amplication
+  #     SERVICE_CHART_PATH: amplication-charts/charts/services
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+      
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+  #         aws-region: ${{ env.REGION }}
+      
+  #     - name: Check amplication folder exist
+  #       id: check_folder
+  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
   #       env:
   #         last_artifact: ${{ steps.last_artifact.outputs.service_artifact }}
   #       run: |
   #         set +e
-  #         server_folder=$(aws s3 ls "s3://$BUCKET_NAME/${{ metrix.service }}")
-  #         if [[ -z "$server_folder" ]]
+  #         amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
+  #         if [[ -z "$amplication_folder" ]]
   #         then
   #           echo "No such folder in bucket"
-  #           helm package ./${{ metrix.service }} /charts
-  #           aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
-  #           helm install ${{ metrix.service }} ./${{ metrix.service }}
+  #           echo "::set-output name=create_folder::true"
   #         else
   #           echo "folder exist in bucket"
-  #           helm package ./${{ metrix.service }} /charts
-  #           if [[ $last_artifact != 'charts/${{ metrix.service }}*.tgz' ]]
-  #           then 
-  #             aws s3 cp charts/${{ metrix.service }}*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/${{ metrix.service }}.tgz
-  #             helm upgrade ${{ metrix.service }} ./${{ metrix.service }}
-  #           fi
+  #           echo "::set-output name=create_folder::false"
   #         fi
 
-  #   update-umbrella-chart:
-  #     needs: docker
-  #     if: ${{ needs.docker.outputs.docker-services == 'true' }}
-  #     env:
-  #       BUCKET_NAME: amplication-charts
-  #       REGION: us-east-1
-  #       AMPLICATION_CHART_PATH: amplication-charts/charts/amplication
-  #       SERVICE_CHART_PATH: amplication-charts/charts/services
+  #     - name: Get last artifact of amplication from s3 
+  #       if: ${{ steps.check_folder.outputs.create_folder == 'false' }}
+  #       id: last_artifact
+  #       run: |
+  #         KEY=`aws s3 ls s3://$BUCKET_NAME/amplication --recursive | sort | tail -n 1 | awk '{print $4}'"`
+  #         aws s3 cp s3://$BUCKET_NAME/amplication/$KEY ./latest-object
+  #         echo "::set-output name=amplication_artifact::$KEY"
 
-  #     steps:
-  #       - name: Checkout
-  #         uses: actions/checkout@v2
-        
-  #       - name: Configure AWS credentials
-  #         uses: aws-actions/configure-aws-credentials@v1
-  #         with:
-  #           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-  #           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-  #           aws-region: ${{ env.REGION }}
-        
-  #       - name: Get last artifact of amplication from s3 
-  #         id: last_artifact
-  #         run: |
-  #           KEY=`aws s3 ls s3://$BUCKET_NAME/amplication --recursive | sort | tail -n 1 | awk '{print $4}'"`
-  #           aws s3 cp s3://$BUCKET_NAME/amplication/$KEY ./latest-object
-  #           echo "::set-output name=amplication_artifact::$KEY"
+  #     - name: Helm Update Dependencies for umbrella-chart
+  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #       run: |
+  #         helm dependency update
 
-  #       - name: Helm Update Dependencies for umbrella-chart
-  #         working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-  #         run: |
-  #           helm dependency update
-
-  #       - name: Helm Template
-  #         working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-  #         id: helm-template
-  #         run: |
-  #           helm template amplication . > helm.log
-        
-  #       - env:
-  #           TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
-  #         run: echo ${TEMPLATES}
-        
-  #       - name: Check umbrella-chart folder exist
-  #         working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-  #         env:
-  #           last_artifact: ${{ steps.last_artifact.outputs.amplication_artifact }}
-  #         run: |
-  #           set +e
-  #           amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
-  #           if [[ -z "$amplication_folder" ]]
+  #     - name: Helm Template
+  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #       id: helm-template
+  #       run: |
+  #         helm template amplication . > helm.log
+      
+  #     - env:
+  #         TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
+  #       run: echo ${TEMPLATES}
+      
+  #     - name: Upload artifact to s3
+  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #       env:
+  #         last_artifact: ${{ steps.last_artifact.outputs.amplication_artifact }}
+  #       run: |
+  #         set +e
+  #         amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
+  #         if [[ -z "$amplication_folder" ]]
+  #         then
+  #           helm package ./amplication /charts
+  #           aws s3 cp charts/amplication*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/amplication.tgz
+  #         else
+  #           helm package ./amplication /charts
+  #           if [[ ./latest-object != 'charts/amplication*.tgz' ]] 
   #           then
-  #             echo "No such folder in bucket" 
-  #             helm package ./amplication /charts
   #             aws s3 cp charts/amplication*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/amplication.tgz
-  #             helm install amplication ./amplication
-  #           else
-  #             helm package ./amplication /charts
-  #             if [[ $last_artifact != 'charts/amplication*.tgz' ]] 
-  #             then
-  #               aws s3 cp charts/amplication*.tgz s3://$BUCKET_NAME/${{ metrix.service }}/amplication.tgz
-  #               helm upgrade amplication ./amplication
-  #             fi
   #           fi
+  #         fi
 
 
 
