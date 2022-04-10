@@ -121,7 +121,7 @@ export default Pagination;
 import { useState } from \\"react\\";
 import { useLogin, useNotify, Notification, defaultTheme } from \\"react-admin\\";
 import { ThemeProvider } from \\"@material-ui/styles\\";
-import { createMuiTheme } from \\"@material-ui/core/styles\\";
+import { createTheme } from \\"@material-ui/core/styles\\";
 import { Button } from \\"@material-ui/core\\";
 import \\"./login.scss\\";
 
@@ -140,7 +140,7 @@ const Login = ({ theme }: { theme?: object }) => {
   };
 
   return (
-    <ThemeProvider theme={createMuiTheme(defaultTheme)}>
+    <ThemeProvider theme={createTheme(defaultTheme)}>
       <div className={\`\${CLASS_NAME}\`}>
         <div className={\`\${CLASS_NAME}__wrapper\`}>
           <div className={\`\${CLASS_NAME}__box\`}>
@@ -1210,7 +1210,7 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <ReferenceArrayInput
-          source=\\"order\\"
+          source=\\"orders\\"
           reference=\\"Order\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -1305,7 +1305,7 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <ReferenceArrayInput
-          source=\\"order\\"
+          source=\\"orders\\"
           reference=\\"Order\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -1782,7 +1782,7 @@ export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
         <ReferenceArrayInput
-          source=\\"user\\"
+          source=\\"users\\"
           reference=\\"User\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -1790,7 +1790,7 @@ export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
           <SelectArrayInput optionText={UserTitle} />
         </ReferenceArrayInput>
         <ReferenceArrayInput
-          source=\\"customer\\"
+          source=\\"customers\\"
           reference=\\"Customer\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -1798,7 +1798,7 @@ export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
           <SelectArrayInput optionText={CustomerTitle} />
         </ReferenceArrayInput>
         <ReferenceArrayInput
-          source=\\"customer\\"
+          source=\\"vipCustomers\\"
           reference=\\"Customer\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -1830,7 +1830,7 @@ export const OrganizationEdit = (props: EditProps): React.ReactElement => {
       <SimpleForm>
         <TextInput label=\\"Name\\" source=\\"name\\" />
         <ReferenceArrayInput
-          source=\\"user\\"
+          source=\\"users\\"
           reference=\\"User\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -1838,7 +1838,7 @@ export const OrganizationEdit = (props: EditProps): React.ReactElement => {
           <SelectArrayInput optionText={UserTitle} />
         </ReferenceArrayInput>
         <ReferenceArrayInput
-          source=\\"customer\\"
+          source=\\"customers\\"
           reference=\\"Customer\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -1846,7 +1846,7 @@ export const OrganizationEdit = (props: EditProps): React.ReactElement => {
           <SelectArrayInput optionText={CustomerTitle} />
         </ReferenceArrayInput>
         <ReferenceArrayInput
-          source=\\"customer\\"
+          source=\\"vipCustomers\\"
           reference=\\"Customer\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -2159,7 +2159,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
         <ReferenceArrayInput
-          source=\\"user\\"
+          source=\\"employees\\"
           reference=\\"User\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -2167,7 +2167,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
           <SelectArrayInput optionText={UserTitle} />
         </ReferenceArrayInput>
         <ReferenceArrayInput
-          source=\\"organization\\"
+          source=\\"organizations\\"
           reference=\\"Organization\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -2246,7 +2246,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
         <ReferenceArrayInput
-          source=\\"user\\"
+          source=\\"employees\\"
           reference=\\"User\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
@@ -2254,7 +2254,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
           <SelectArrayInput optionText={UserTitle} />
         </ReferenceArrayInput>
         <ReferenceArrayInput
-          source=\\"organization\\"
+          source=\\"organizations\\"
           reference=\\"Organization\\"
           parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
           format={(value: any) => value && value.map((v: any) => v.id)}
