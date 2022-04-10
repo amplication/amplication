@@ -19,7 +19,7 @@ jobs:
 
     env:
       BUCKET_NAME: "amplication-charts"
-      REGION: us-east-2
+      REGION: us-east-1
 
     steps:
       - name: Checkout 
@@ -336,7 +336,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-          aws-region: us-east-2
+          aws-region: us-east-1
           
       - name: Login to Amazon ECR
         id: login-ecr
