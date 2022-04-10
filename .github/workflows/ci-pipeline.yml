@@ -355,17 +355,30 @@ jobs:
         working-directory: packages/${{ matrix.service }}
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         env: 
-          ECR_REPOSITORY: ${{ matrix.service }}
-        run: aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
-      
+          ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
+          ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
+        run: |
+          if $GITHUB_REF != 'refs/heads/master'
+          then 
+            aws ecr describe-repositories --repository-names $ECR_REPOSITORY_STAGING || aws ecr create-repository --repository-name $ECR_REPOSITORY_STAGING
+          else
+            aws ecr describe-repositories --repository-names $ECR_REPOSITORY_PROD || aws ecr create-repository --repository-name $ECR_REPOSITORY_PROD
+          fi
+
       - name: Check if tag already exist
         id: tag-exist
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         env: 
-          ECR_REPOSITORY: ${{ matrix.service }}
+          ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
+          ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
         run: |
           set +e
-          cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$GITHUB_HASH)"
+          if $GITHUB_REF != 'refs/heads/master'
+          then 
+            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_STAGING --image-ids=imageTag=$GITHUB_HASH)"
+          else
+            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_PROD --image-ids=imageTag=$GITHUB_HASH)"
+          fi
           if [[ ! -z "$cmd" ]]
           then  
             echo "tag already exist"
@@ -374,32 +387,52 @@ jobs:
             echo "tag doesn't exist"
             echo "::set-output name=tag_exist::false"
           fi
-
+      
       - name: set branch-name
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         run: |
-          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+          if $GITHUB_REF != 'refs/heads/master'
+          then 
+            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+          fi
 
-      - name: Build, tag, and push image to Amazon ECR
-        working-directory: packages/${{ matrix.service }}
+      - name: Build, tag, and push image to Amazon ECR on staging
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ matrix.service }}
-          IMAGE_TAG: ${{ github.sha }}-${{ env.BRANCH_NAME }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
+          ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
+          ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
+          IMAGE_TAG_STAGING: ${{ github.sha }}-${{ env.BRANCH_NAME }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
+          IMAGE_TAG_PROD: ${{ github.sha }}-${{ github.ref_name }}-${{ github.run_id }}-${{ env.GITHUB_HASH }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          if $GITHUB_REF != 'refs/heads/master'
+          then 
+            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING -f packages/${{ matrix.service }}/Dockerfile .
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG_STAGING
+          else 
+            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$IMAGE_TAG_PROD -f packages/${{ matrix.service }}/Dockerfile .
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$IMAGE_TAG_PROD
+          fi
 
   # update-helm-chart:
   #   runs-on: ubuntu-latest
   #   needs: docker
 
-  #   ## download artifats from s3
-  #   ## aws s3api get-object --bucket DOC-EXAMPLE-BUCKET1 --key dir/my_images.tar.bz2 my_images.tar.bz2
+    ## download artifats from s3
+    ## aws s3 cp s3://mybucket/test.txt test2.txt
 
-  #   ## upload artifact to s3
-  #   # aws s3 cp s3://$BUCKET_NAME/amplication-server amplication-charts/charts/services/server --recursive
+    ## set new tag on values.yaml
+    ## update dependencies for-each service chart
+    ## update dependencies for umbrella-chart
+
+    ## can run helm template for validate the chart
+
+    ## compress each chart to zip file for uploading to s3 - use helm package
+
+    ## upload new artifact to s3 it will create automatically the folder for each file
+    # aws s3 cp s3://$BUCKET_NAME/amplication-server amplication-charts/charts/services/server --recursive
+
+
 
 
  
