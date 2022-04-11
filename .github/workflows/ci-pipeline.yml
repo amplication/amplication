@@ -63,71 +63,71 @@ jobs:
             echo $modif
             echo "::set-output name=array::$modif"
           fi
-  =============================
-  docker-service:
-    runs-on: ubuntu-latest
-    needs: [changes]
-    if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
-    strategy:
-      matrix:
-        node-version: [16.x]
-        service: ${{ fromJSON(needs.changes.outputs.services) }} 
-    outputs:
-      is-docker: ${{ steps.filter.outputs.array }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+  # =============================
+  # docker-service:
+  #   runs-on: ubuntu-latest
+  #   needs: [changes]
+  #   if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
+  #   outputs:
+  #     is-docker: ${{ steps.filter.outputs.array }}
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Check docker-service
-      id: check-docker-service
-      env: 
-        SERVICE: ${{ matrix.service }}
-      run: |
-        FILE=packages/$SERVICE/Dockerfile
-        if [[ -f "$FILE" ]] 
-        then
-          echo "$FILE exists."
-          echo "::set-output name=docker-service::true"
-        else
-          echo "::set-output name=docker-service::false"
-        fi
-      - name: Filter array
-        id: filter
-        env:
-          ARRAY: ${{ steps.changed-files.outputs.all_changed_files }}
-        run: |
-          if [[ ! -z $ARRAY ]]
-          then 
-            echo "$ARRAY"
-            final=''
-            for string in $(echo $ARRAY | sed "s/,/ /g")
-            do
-              prefix="packages/"
-              no_prefix=${string#"$prefix"}
-              final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
-            done
-            final+=''
-            mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
-            modi=${mod%?}
-            modif=[$(echo "$modi")]
-            echo $modif
-            echo "::set-output name=array::$modif"
-          else
-            final=''
-            for d in packages/*
-            do
-              prefix="packages/"
-              no_prefix=${d#"$prefix"}
-              final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
-            done
-            mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
-            modi=${mod%?}
-            modif=[$(echo "$modi")]
-            echo $modif
-            echo "::set-output name=array::$modif"
-          fi
-  =============================
+  #     - name: Check docker-service
+  #     id: check-docker-service
+  #     env: 
+  #       SERVICE: ${{ matrix.service }}
+  #     run: |
+  #       FILE=packages/$SERVICE/Dockerfile
+  #       if [[ -f "$FILE" ]] 
+  #       then
+  #         echo "$FILE exists."
+  #         echo "::set-output name=docker-service::true"
+  #       else
+  #         echo "::set-output name=docker-service::false"
+  #       fi
+  #     - name: Filter array
+  #       id: filter
+  #       env:
+  #         ARRAY: ${{ steps.changed-files.outputs.all_changed_files }}
+  #       run: |
+  #         if [[ ! -z $ARRAY ]]
+  #         then 
+  #           echo "$ARRAY"
+  #           final=''
+  #           for string in $(echo $ARRAY | sed "s/,/ /g")
+  #           do
+  #             prefix="packages/"
+  #             no_prefix=${string#"$prefix"}
+  #             final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
+  #           done
+  #           final+=''
+  #           mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
+  #           modi=${mod%?}
+  #           modif=[$(echo "$modi")]
+  #           echo $modif
+  #           echo "::set-output name=array::$modif"
+  #         else
+  #           final=''
+  #           for d in packages/*
+  #           do
+  #             prefix="packages/"
+  #             no_prefix=${d#"$prefix"}
+  #             final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
+  #           done
+  #           mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
+  #           modi=${mod%?}
+  #           modif=[$(echo "$modi")]
+  #           echo $modif
+  #           echo "::set-output name=array::$modif"
+  #         fi
+  # =============================
 
   npm:
     runs-on: ubuntu-latest
