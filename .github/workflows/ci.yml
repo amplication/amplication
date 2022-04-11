@@ -261,7 +261,7 @@ jobs:
 
     - name: Check docker-service
       run: |
-        echo ${{ needs.docker-service.outputs.is-docker}}
+        echo docker_exists = ${{ needs.docker-service.outputs.is-docker}}
 
 
     - name: "Install dependencies ${{ matrix.service }}"
