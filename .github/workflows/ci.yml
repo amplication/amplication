@@ -228,7 +228,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [changes]
+    needs: [changes,docker-service]
     if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
     strategy:
       matrix:
@@ -239,28 +239,33 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Check docker-service
-      id: check-docker-service
-      env: 
-        SERVICE: ${{ matrix.service }}
-      run: |
-        FILE=packages/$SERVICE/Dockerfile
-        if [[ -f "$FILE" ]] 
-        then
-          echo "$FILE exists."
-          echo "::set-output name=docker-service::true"
-        else
-          echo "::set-output name=docker-service::false"
-        fi
+    # - name: Check docker-service
+    #   id: check-docker-service
+    #   env: 
+    #     SERVICE: ${{ matrix.service }}
+    #   run: |
+    #     FILE=packages/$SERVICE/Dockerfile
+    #     if [[ -f "$FILE" ]] 
+    #     then
+    #       echo "$FILE exists."
+    #       echo "::set-output name=docker-service::true"
+    #     else
+    #       echo "::set-output name=docker-service::false"
+    #     fi
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        
+
+    - name: Check docker-service
+      run: |
+        echo ${{ needs.docker-service.outputs.is-docker}}
+
+
     - name: "Install dependencies ${{ matrix.service }}"
-      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      if: ${{ needs.docker-service.outputs.is-docker == 'true' }}
       run: npm ci
 
     - name: "Build packages first run: ${{ matrix.service }}"
