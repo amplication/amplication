@@ -31,10 +31,13 @@
     "dir-compare": "4.0.0",
     "fast-glob": "3.2.11",
     "kafkajs": "1.16.0",
-    "ts-morph": "13.0.3"
+    "nest-winston": "1.6.2",
+    "ts-morph": "13.0.3",
+    "winston-cloud-logging": "1.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "8.2.4",
+    "@nestjs/testing": "8.4.4",
     "@types/jest": "27.4.1",
     "@types/node": "17.0.23",
     "@typescript-eslint/eslint-plugin": "5.16.0",
