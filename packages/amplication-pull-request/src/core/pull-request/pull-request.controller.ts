@@ -26,7 +26,7 @@ export class PullRequestController {
   async generatePullRequest(
     @Payload() message: KafkaMessage,
     @Ctx() context: KafkaContext
-  ): Promise<ResultMessage<SendPullRequestResponse>> {
+  ): Promise<{ value: ResultMessage<SendPullRequestResponse> }> {
     this.logger.info(`Got a new generate pull request item from queue.`, {
       topic: context.getTopic(),
       partition: context.getPartition(),
@@ -42,6 +42,6 @@ export class PullRequestController {
       partition: context.getPartition(),
       offset: message.offset,
     });
-    return pullRequest;
+    return { value: pullRequest };
   }
 }
