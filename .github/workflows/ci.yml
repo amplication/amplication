@@ -67,6 +67,8 @@ jobs:
 
       - name: Check docker existance
         id: docker-services
+        env: 
+          SERVICE: ${{ steps.filter.outputs.array }}
         run: |
           FILE=packages/$SERVICE/Dockerfile
           if [[ -f "$FILE" ]] 
