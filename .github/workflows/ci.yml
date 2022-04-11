@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       services: ${{ steps.filter.outputs.array }}
+      docker-exists: ${{ steps.docker-services.outputs.docker-exists }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -64,34 +65,46 @@ jobs:
             echo "::set-output name=array::$modif"
           fi
 
-  docker-service:
-    runs-on: ubuntu-latest
-    needs: [changes]
-    if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
-    strategy:
-      matrix:
-        node-version: [16.x]
-        service: ${{ fromJSON(needs.changes.outputs.services) }} 
-    outputs:
-      is-docker: ${{ steps.check-docker-service.outputs.docker-service }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Check docker-service
-        id: check-docker-service
-        env: 
-          SERVICE: ${{ matrix.service }}
+      - name: Check docker existance
+        id: docker-services
         run: |
           FILE=packages/$SERVICE/Dockerfile
           if [[ -f "$FILE" ]] 
           then
             echo "$FILE exists."
-            echo "::set-output name=docker-service::true"
+            echo "::set-output name=docker-exists::true"
           else
-            echo "::set-output name=docker-service::false"
+            echo "::set-output name=docker-exists::false"
           fi
+        
+  # docker-service:
+  #   runs-on: ubuntu-latest
+  #   needs: [changes]
+  #   if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
+  #   outputs:
+  #     is-docker: ${{ steps.check-docker-service.outputs.docker-service }}
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+
+  #     - name: Check docker-service
+  #       id: check-docker-service
+  #       env: 
+  #         SERVICE: ${{ matrix.service }}
+  #       run: |
+  #         FILE=packages/$SERVICE/Dockerfile
+  #         if [[ -f "$FILE" ]] 
+  #         then
+  #           echo "$FILE exists."
+  #           echo "::set-output name=docker-service::true"
+  #         else
+  #           echo "::set-output name=docker-service::false"
+  #         fi
    
 
 
@@ -228,7 +241,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [changes,docker-service]
+    needs: [changes]
     if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
     strategy:
       matrix:
@@ -261,11 +274,11 @@ jobs:
 
     - name: Check docker-service
       run: |
-        echo docker_exists = ${{ needs.docker-service.outputs.is-docker}}
+        echo docker_exists = ${{ needs.changes.outputs.docker-exists }}
 
 
     - name: "Install dependencies ${{ matrix.service }}"
-      if: ${{ needs.docker-service.outputs.is-docker == 'true' }}
+      if: ${{ needs.changes.outputs.docker-exists == 'true' }}
       run: npm ci
 
     - name: "Build packages first run: ${{ matrix.service }}"
