@@ -4,6 +4,7 @@ import { CreateRepositoryPushRequest } from './entities/dto/CreateRepositoryPush
 import { EnumProvider } from './entities/enums/provider';
 import { QueueService } from './queue.service';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '@amplication/prisma-db';
 
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 
@@ -13,6 +14,7 @@ export class AppService {
   constructor(
     private readonly queueService: QueueService,
     configService: ConfigService,
+    private readonly prisma: PrismaService,
   ) {
     this.webhooks = new Webhooks({
       secret: configService.get<string>(WEBHOOKS_SECRET_KEY),
@@ -42,6 +44,20 @@ export class AppService {
         }
 
         const pushRequest = await this.createPushRequestObject(body);
+        const installationId = (
+          await this.prisma.gitOrganization.findFirst({
+            where: {
+              installationId: pushRequest.installationId,
+            },
+          })
+        ).installationId;
+
+        if (installationId === null) {
+          console.log(
+            `installationId: ${pushRequest.installationId} does not exist`,
+          );
+          return;
+        }
         await this.queueService.createPushRequest(pushRequest);
       }
     }
