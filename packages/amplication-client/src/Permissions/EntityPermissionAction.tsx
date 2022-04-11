@@ -25,6 +25,7 @@ type TData = {
 };
 
 const OPTIONS = [
+  { value: models.EnumEntityPermissionType.Public, label: "Public" },
   { value: models.EnumEntityPermissionType.AllRoles, label: "All Roles" },
   { value: models.EnumEntityPermissionType.Granular, label: "Granular" },
 ];
@@ -229,6 +230,10 @@ export const EntityPermissionAction = ({
                 models.EnumEntityPermissionType.Granular ? (
                 <span className={`${CLASS_NAME}__action-summary`}>
                   {selectedRoleIds.size} roles selected
+                </span>
+              ) : permission.type === models.EnumEntityPermissionType.Public ? (
+                <span className={`${CLASS_NAME}__action-summary`}>
+                  Public endpoint selected
                 </span>
               ) : (
                 <span className={`${CLASS_NAME}__action-summary--muted`}>
