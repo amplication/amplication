@@ -3,7 +3,8 @@ import { ClientKafka } from '@nestjs/microservices';
 import {
   SendPullRequestArgs,
   GENERATE_PULL_REQUEST_MESSAGE,
-  SendPullRequestResponse
+  SendPullRequestResponse,
+  ResultMessage
 } from '@amplication/common';
 import { plainToClass } from 'class-transformer';
 
@@ -25,9 +26,12 @@ export class QueueService implements OnModuleInit {
     return new Promise(res => {
       this.kafkaService
         .send(GENERATE_PULL_REQUEST_MESSAGE, data)
-        .subscribe(response => {
+        .subscribe((response: ResultMessage<SendPullRequestResponse>) => {
           try {
-            const validClass = plainToClass(SendPullRequestResponse, response);
+            const validClass = plainToClass(
+              SendPullRequestResponse,
+              response.value
+            );
             res(validClass);
           } catch (error) {
             res(null);
