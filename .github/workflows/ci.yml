@@ -514,6 +514,7 @@ jobs:
           fi
 
   umbrella-chart:
+    runs-on: ubuntu-latest
     needs: service-chart
     if: ${{ needs.docker.outputs.docker-services == 'true' }}
     env:
