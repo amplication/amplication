@@ -2,13 +2,18 @@ import {
   GENERATE_PULL_REQUEST_MESSAGE,
   SendPullRequestArgs,
 } from '@amplication/common';
-import { Controller, Inject } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
 import { KafkaMessage } from 'kafkajs';
-import { PullRequestService } from './pull-request.service';
+import { Controller, Inject } from '@nestjs/common';
+import {
+  Ctx,
+  KafkaContext,
+  MessagePattern,
+  Payload,
+} from '@nestjs/microservices';
 import { plainToClass } from 'class-transformer';
-import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
+import { PullRequestService } from './pull-request.service';
 @Controller()
 export class PullRequestController {
   constructor(
@@ -16,11 +21,23 @@ export class PullRequestController {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
   @MessagePattern(GENERATE_PULL_REQUEST_MESSAGE)
-  async generatePullRequest({ value }: KafkaMessage) {
-    this.logger.info('Got a new generate pull request item from queue.');
-    const validArgs = plainToClass(SendPullRequestArgs, value);
+  async generatePullRequest(
+    @Payload() message: KafkaMessage,
+    @Ctx() context: KafkaContext
+  ) {
+    this.logger.info(
+      `Topic: ${context.getTopic()} -> Partition: ${context.getPartition()} Offset: ${
+        message.offset
+      } -> ,Got a new generate pull request item from queue.`
+    );
+    const validArgs = plainToClass(SendPullRequestArgs, message.value);
     const pullRequest = await this.pullRequestService.createPullRequest(
       validArgs
+    );
+    this.logger.info(
+      `Committing Topic: ${context.getTopic()} -> Partition: ${context.getPartition()} Offset: ${
+        message.offset
+      }`
     );
     return pullRequest;
   }
