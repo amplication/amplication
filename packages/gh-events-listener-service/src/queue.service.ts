@@ -29,7 +29,7 @@ export class QueueService {
         branch,
         commit,
         pushedAt,
-        installationId,
+        installationId.toString(),
       ),
     );
   }

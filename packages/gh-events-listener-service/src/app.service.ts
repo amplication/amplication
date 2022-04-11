@@ -47,10 +47,12 @@ export class AppService {
         const installationId = (
           await this.prisma.gitOrganization.findFirst({
             where: {
-              installationId: pushRequest.installationId,
+              installationId: pushRequest.installationId.toString(),
             },
           })
         ).installationId;
+
+        console.log(installationId);
 
         if (installationId === null) {
           console.log(
