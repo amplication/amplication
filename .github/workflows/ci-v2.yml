@@ -1,4 +1,4 @@
-name: CI-Pipeline
+name: ci-v2
 
 on:
   workflow_dispatch:
