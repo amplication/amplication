@@ -3,9 +3,9 @@ name: ci-v2
 on:
   workflow_dispatch:
     push:
-      branches: [ci-v2]
+      branches: [master]
     pull_request:
-      branches: [ci-v2]
+      branches: [master]
       types: [opened, reopened]
 
 jobs:       
