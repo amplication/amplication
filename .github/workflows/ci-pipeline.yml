@@ -64,9 +64,10 @@ jobs:
             echo "::set-output name=array::$modif"
           fi
   
-  format:
+  
+  npm:
     runs-on: ubuntu-latest
-    needs: changes
+    needs: [changes]
     if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
     strategy:
       matrix:
@@ -105,48 +106,95 @@ jobs:
       if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run check-format
-      
-  lint:
-    runs-on: ubuntu-latest
-    needs: [changes]
-    if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
-    strategy:
-      matrix:
-        node-version: [16.x]
-        service: ${{ fromJSON(needs.changes.outputs.services) }} 
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Check docker-service
-      id: check-docker-service
-      env: 
-        SERVICE: ${{ matrix.service }}
-      run: |
-        FILE=packages/$SERVICE/Dockerfile
-        if [[ -f "$FILE" ]] 
-        then
-          echo "$FILE exists."
-          echo "::set-output name=docker-service::true"
-        else
-          echo "::set-output name=docker-service::false"
-        fi
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: "Install dependencies ${{ matrix.service }}"
-      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-      run: npm ci
-        
     - name: "Lint first run: ${{ matrix.service }}"
       if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run lint
+
+  # format:
+  #   runs-on: ubuntu-latest
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
+
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v2
+
+  #   - name: Check docker-service
+  #     id: check-docker-service
+  #     env: 
+  #       SERVICE: ${{ matrix.service }}
+  #     run: |
+  #       FILE=packages/$SERVICE/Dockerfile
+  #       if [[ -f "$FILE" ]] 
+  #       then
+  #         echo "$FILE exists."
+  #         echo "::set-output name=docker-service::true"
+  #       else
+  #         echo "::set-output name=docker-service::false"
+  #       fi
+
+  #   - name: Use Node.js ${{ matrix.node-version }}
+  #     uses: actions/setup-node@v2
+  #     with:
+  #       node-version: ${{ matrix.node-version }}
+  #       cache: 'npm'
+        
+  #   - name: "Install dependencies ${{ matrix.service }}"
+  #     if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+  #     run: npm ci
+
+  #   - name: "Check format: ${{ matrix.service }}"
+  #     if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+  #     working-directory: packages/${{ matrix.service }}
+  #     run: npm run check-format
+      
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   needs: [changes]
+  #   if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
+
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v2
+
+  #   - name: Check docker-service
+  #     id: check-docker-service
+  #     env: 
+  #       SERVICE: ${{ matrix.service }}
+  #     run: |
+  #       FILE=packages/$SERVICE/Dockerfile
+  #       if [[ -f "$FILE" ]] 
+  #       then
+  #         echo "$FILE exists."
+  #         echo "::set-output name=docker-service::true"
+  #       else
+  #         echo "::set-output name=docker-service::false"
+  #       fi
+
+  #   - name: Use Node.js ${{ matrix.node-version }}
+  #     uses: actions/setup-node@v2
+  #     with:
+  #       node-version: ${{ matrix.node-version }}
+  #       cache: 'npm'
+        
+  #   - name: "Install dependencies ${{ matrix.service }}"
+  #     if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+  #     run: npm ci
+        
+  #   - name: "Lint first run: ${{ matrix.service }}"
+  #     if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+  #     working-directory: packages/${{ matrix.service }}
+  #     run: npm run lint
 
   build:
     runs-on: ubuntu-latest
