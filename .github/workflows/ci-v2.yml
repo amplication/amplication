@@ -2,11 +2,11 @@ name: ci-v2
 
 on:
   workflow_dispatch:
-    push:
-      branches: [master]
-    pull_request:
-      branches: [master]
-      types: [opened, reopened]
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+    types: [opened, reopened]
 
 jobs:       
   changes:
