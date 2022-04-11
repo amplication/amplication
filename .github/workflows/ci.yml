@@ -68,7 +68,11 @@ jobs:
       - name: Check docker existance
         id: docker-services
         env: 
-          SERVICE: ${{ steps.filter.outputs.array }}
+          tmp: 
+            matrix:
+              node-version: [16.x]
+              service: ${{ fromJSON(steps.filter.outputs.array) }}
+          SERVICE: ${{ tmp.matrix.service }}
         run: |
           FILE=packages/$SERVICE/Dockerfile
           if [[ -f "$FILE" ]] 
