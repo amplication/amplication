@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
 import {
   WinstonModuleOptionsFactory,
-  WinstonModuleOptions
+  WinstonModuleOptions,
 } from 'nest-winston';
 import * as winstonCloudLogging from 'winston-cloud-logging';
 
@@ -34,7 +34,7 @@ export class WinstonConfigService implements WinstonModuleOptionsFactory {
         this.configService.get('NODE_ENV') === 'production'
           ? this.productionFormat
           : this.developmentFormat,
-      transports: [new winston.transports.Console()]
+      transports: [new winston.transports.Console()],
     };
   }
 }
