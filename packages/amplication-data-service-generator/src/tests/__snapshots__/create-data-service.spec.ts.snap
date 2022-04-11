@@ -3247,9 +3247,33 @@ export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
   "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
 export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
 ",
-  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
+  "server/src/auth/defaultAuth.guard.ts": "import { Reflector } from \\"@nestjs/core\\";
+import { ExecutionContext } from \\"@nestjs/common\\";
+import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
+import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
 
-export class DefaultAuthGuard extends BasicAuthGuard {}
+export class DefaultAuthGuard extends BasicAuthGuard {
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    let parentCanActivate = false;
+
+    try {
+      parentCanActivate = (await super.canActivate(context)) as boolean;
+    } catch (err) {
+      parentCanActivate = false;
+    }
+
+    const isPublic = this.reflector.get<boolean>(
+      IS_PUBLIC_KEY,
+      context.getHandler()
+    );
+
+    return isPublic || parentCanActivate;
+  }
+}
 ",
   "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
@@ -6186,6 +6210,13 @@ export function ApiNestedQuery(query: Function) {
 
   return applyDecorators(...decorators);
 }
+",
+  "server/src/decorators/public.decorator.ts": "import { CustomDecorator, SetMetadata } from \\"@nestjs/common\\";
+
+export const IS_PUBLIC_KEY = \\"isPublic\\";
+
+export const Public = (): CustomDecorator<string> =>
+  SetMetadata(IS_PUBLIC_KEY, true);
 ",
   "server/src/empty/base/DeleteEmptyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
