@@ -1,4 +1,4 @@
-name: CI-Pipeline-gal
+name: CI-Pipeline
 
 on:
   workflow_dispatch:
