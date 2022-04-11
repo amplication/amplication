@@ -2,7 +2,7 @@ name: CI-Pipeline
 
 on:
   workflow_dispatch:
-  # push:
+  push:
   #   branches: [master]
   # pull_request:
   #   branches: [master]
@@ -63,10 +63,41 @@ jobs:
             echo $modif
             echo "::set-output name=array::$modif"
           fi
-  
-  
+
+  # docker-service:
+  #   runs-on: ubuntu-latest
+  #   needs: [changes]
+  #   if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
+  #   outputs:
+  #     is-docker: ${{ steps.check-docker-service.outputs.docker-service }}
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+
+  #     - name: Check docker-service
+  #       id: check-docker-service
+  #       env: 
+  #         SERVICE: ${{ matrix.service }}
+  #       run: |
+  #         FILE=packages/$SERVICE/Dockerfile
+  #         if [[ -f "$FILE" ]] 
+  #         then
+  #           echo "$FILE exists."
+  #           echo "::set-output name=docker-service::true"
+  #         else
+  #           echo "::set-output name=docker-service::false"
+  #         fi
+   
+
+
   npm:
     runs-on: ubuntu-latest
+    # needs: [changes,docker-service]
     needs: [changes]
     if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
     strategy:
