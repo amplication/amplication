@@ -1,2 +1,3 @@
 export * from './BuildFilesSaver';
-export * from './previousBuild';
+export * from './getXPreviousBuild';
+export * from './OldBuildsCleaner';
