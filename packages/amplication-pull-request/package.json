@@ -14,7 +14,8 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@amplication/common": "^1.0.0",

@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "prebuild": "rimraf ./lib",
-    "build": "tsc"
+    "build": "tsc",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "tupe12334",
