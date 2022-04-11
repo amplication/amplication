@@ -65,4 +65,6 @@
   --diffViewerTitleBackground: var(--white);
   --diffViewerTitleColor: var(--black100);
   --diffViewerTitleBorderColor: var(--white);
+
+  --floating-box-shadow: 0px 44px 40px -24px rgba(9, 11, 20, 0.3);
 }

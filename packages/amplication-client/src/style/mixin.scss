@@ -147,7 +147,6 @@ $bullet-size: 6px;
 @mixin optionCard {
   box-sizing: border-box;
   border-radius: var(--default-border-radius);
-  border: none;
 
   padding: var(--large-spacing);
   width: var(--application-card-width);
@@ -166,7 +165,8 @@ $bullet-size: 6px;
     margin-left: 0;
   }
   &:hover {
-    box-shadow: var(--hover-box-shadow);
+    border: 1px solid var(--black30);
+    box-shadow: var(--floating-box-shadow);
   }
 }
 
