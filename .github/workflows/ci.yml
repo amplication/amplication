@@ -110,7 +110,7 @@ jobs:
 
   npm:
     runs-on: ubuntu-latest
-    needs: [changes,docker-service]
+    needs: [changes]
     if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
     strategy:
       matrix:
