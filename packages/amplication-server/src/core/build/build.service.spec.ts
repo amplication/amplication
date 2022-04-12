@@ -39,6 +39,7 @@ import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
+import { QueueService } from '../queue/queue.service';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App, Commit, Entity } from 'src/models';
 import {
@@ -536,6 +537,10 @@ describe('BuildService', () => {
         {
           provide: BuildFilesSaver,
           useClass: BuildFilesSaver
+        },
+        {
+          provide: QueueService,
+          useClass: QueueService
         }
       ]
     }).compile();
