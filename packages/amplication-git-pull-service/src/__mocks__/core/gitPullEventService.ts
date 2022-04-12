@@ -3,4 +3,4 @@ import { GitPullEventService } from "../../core/gitPullEvent/gitPullEvent.servic
 
 export const GIT_PULL_EVENT_SERVICE_MOCK = mock<GitPullEventService>({});
 
-GIT_PULL_EVENT_SERVICE_MOCK.HandlePushEvent.mockReturnValue(Promise.resolve());
+GIT_PULL_EVENT_SERVICE_MOCK.handlePushEvent.mockReturnValue(Promise.resolve());
