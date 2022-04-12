@@ -3,9 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { QueueModule } from './queue.module';
-import { PrismaModule } from '@amplication/prisma-db';
-
-export const BROKER_IP_ENV_KEY = 'BROKER_IP_ENV_KEY';
+import { GitOrganizationModule } from './repositories/gitOrganization.module';
 
 @Module({
   imports: [
@@ -14,7 +12,7 @@ export const BROKER_IP_ENV_KEY = 'BROKER_IP_ENV_KEY';
       envFilePath: ['.env.local', '.env'],
     }),
     QueueModule,
-    PrismaModule,
+    GitOrganizationModule,
   ],
   providers: [AppService],
   exports: [AppService],
