@@ -490,6 +490,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: valudate if a docker service
+        run: |
+          echo service : ${{ matrix.service }} , docker-service? - ${{ needs.docker.outputs.docker-services }}
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
