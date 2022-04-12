@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@amplication/prisma-db';
 import { ConfigModule } from '@nestjs/config';
 import { DockerModule } from '../docker/docker.module';
 import { PermissionsModule } from '../permissions/permissions.module';

@@ -4,7 +4,7 @@ import {
   EnvironmentService,
   DEFAULT_ENVIRONMENT_NAME
 } from './environment.service';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { Environment } from './dto';
 
 const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';

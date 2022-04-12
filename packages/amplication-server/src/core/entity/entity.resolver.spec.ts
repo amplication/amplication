@@ -20,7 +20,7 @@ import {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType
-} from '@prisma/client';
+} from '@amplication/prisma-db';
 import { EntityPermission } from 'src/models/EntityPermission';
 import { EntityVersion } from 'src/models/EntityVersion';
 import { Commit, EntityPermissionField } from 'src/models';

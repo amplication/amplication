@@ -7,7 +7,7 @@ import {
   ConflictException
 } from '@nestjs/common';
 import { DataConflictError } from 'src/errors/DataConflictError';
-import { Prisma } from '@prisma/client';
+import { Prisma,PrismaService} from '@amplication/prisma-db';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
@@ -25,7 +25,6 @@ import {
   EntityPermissionField
 } from 'src/models';
 import { JsonObject } from 'type-fest';
-import { PrismaService } from 'nestjs-prisma';
 import { getSchemaForDataType, types } from '@amplication/data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { DiffService } from 'src/services/diff.service';

@@ -8,9 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import { subDays } from 'date-fns';
 import cuid from 'cuid';
 
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaService } from '@amplication/prisma-db';
 import { Profile as GitHubProfile } from 'passport-github2';
-import { PrismaService } from 'nestjs-prisma';
 import { Account, User, UserRole, Workspace } from 'src/models';
 import { AccountService } from '../account/account.service';
 import { WorkspaceService } from '../workspace/workspace.service';

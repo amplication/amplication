@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { GqlExceptionFilter, GqlArgumentsHost } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@amplication/prisma-db';
 import { ApolloError } from 'apollo-server-express';
 import { Request } from 'express';
 import { AmplicationError } from '../errors/AmplicationError';

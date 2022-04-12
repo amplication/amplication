@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountService } from './account.service';
-import { PrismaService } from '@amplication/prisma-db';
-import { Account } from '@prisma/client';
+import { PrismaService, Account } from '@amplication/prisma-db';
 
 const EXAMPLE_ACCOUNT_ID = 'ExampleAccountId',
   EXAMPLE_EMAIL = 'example@email.com',

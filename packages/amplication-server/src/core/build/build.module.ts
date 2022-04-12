@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@amplication/prisma-db';
 import { GqlAuthModule } from 'src/guards/gql-auth.module';
 import { EntityModule } from 'src/core/entity/entity.module';
 import { PermissionsModule } from 'src/core/permissions/permissions.module';
