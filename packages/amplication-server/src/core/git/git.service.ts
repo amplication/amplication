@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { FindOneArgs } from 'src/dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { App } from 'src/models/App';

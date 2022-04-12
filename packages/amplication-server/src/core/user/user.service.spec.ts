@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
-import { PrismaService, Prisma} from '@amplication/prisma-db';
+import { PrismaService, Prisma } from '@amplication/prisma-db';
 import { User, UserRole, Account } from 'src/models';
 import { Role } from 'src/enums/Role';
 import { FindOneArgs } from 'src/dto';

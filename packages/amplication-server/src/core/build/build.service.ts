@@ -4,7 +4,7 @@ import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { subSeconds } from 'date-fns';
-import { Prisma,PrismaService } from '@amplication/prisma-db';
+import { Prisma, PrismaService } from '@amplication/prisma-db';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';

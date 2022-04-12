@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
-import { PrismaService, Prisma} from '@amplication/prisma-db';
+import { PrismaService, Prisma } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { orderBy } from 'lodash';

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService,Prisma } from '@amplication/prisma-db';
+import { PrismaService, Prisma } from '@amplication/prisma-db';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { subSeconds, differenceInSeconds, subDays } from 'date-fns';
 

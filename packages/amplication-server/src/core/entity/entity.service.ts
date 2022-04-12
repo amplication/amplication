@@ -7,7 +7,7 @@ import {
   ConflictException
 } from '@nestjs/common';
 import { DataConflictError } from 'src/errors/DataConflictError';
-import { Prisma,PrismaService} from '@amplication/prisma-db';
+import { Prisma, PrismaService } from '@amplication/prisma-db';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
