@@ -125,9 +125,11 @@ jobs:
 
     steps:
     - name: Checkout repository
+      continue-on-error: true
       uses: actions/checkout@v2
 
     - name: Check docker-service
+      continue-on-error: true
       id: check-docker-service
       env: 
         SERVICE: ${{ matrix.service }}
@@ -142,21 +144,25 @@ jobs:
         fi
 
     - name: Use Node.js ${{ matrix.node-version }}
+      continue-on-error: true
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         
     - name: "Install dependencies ${{ matrix.service }}"
+      continue-on-error: true
       if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       run: npm ci
 
     - name: "Check format: ${{ matrix.service }}"
+      continue-on-error: true
       if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run check-format
 
     - name: "Lint first run: ${{ matrix.service }}"
+      continue-on-error: true
       if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run lint
@@ -288,6 +294,7 @@ jobs:
       run: npm ci
 
     - name: "Build packages first run: ${{ matrix.service }}"
+      continue-on-error: true
       if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run build
@@ -330,6 +337,7 @@ jobs:
       run: npm ci
     
     - name: "Test first run: ${{ matrix.service }}"
+      continue-on-error: true
       if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm test
