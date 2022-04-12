@@ -8,6 +8,6 @@ export class GitPullEventController {
 
   @MessagePattern("pull.event")
   async processRepositoryPushEvent(@Payload() message: any) {
-    await this.gitPullEventService.pushEventHandler(message.value);
+    await this.gitPullEventService.handlePushEvent(message.value);
   }
 }

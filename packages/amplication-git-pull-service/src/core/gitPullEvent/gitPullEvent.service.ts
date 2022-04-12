@@ -36,7 +36,7 @@ export class GitPullEventService implements IGitPullEvent {
     );
   }
 
-  async HandlePushEvent(pushEventMessage: PushEventMessage): Promise<void> {
+  async handlePushEvent(pushEventMessage: PushEventMessage): Promise<void> {
     const { provider, repositoryOwner, repositoryName, branch, commit } =
       pushEventMessage;
 

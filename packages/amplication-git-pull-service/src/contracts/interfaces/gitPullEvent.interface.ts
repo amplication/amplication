@@ -1,5 +1,5 @@
 import { PushEventMessage } from "./pushEventMessage";
 
 export interface IGitPullEvent {
-  HandlePushEvent: (pushEventMessage: PushEventMessage) => Promise<void>;
+  handlePushEvent: (pushEventMessage: PushEventMessage) => Promise<void>;
 }
