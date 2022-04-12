@@ -3,9 +3,9 @@ import { AppModule } from "./app.module";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 
-const CLIENT_ID_KEY = "CLIENT_ID_ENV" || "repository-pull";
-const BROKER_IP_KEY = "BROKER_IP_ENV";
-const GROUP_ID_KEY = "GROUP_ID_ENV" || "git-pull-event";
+const CLIENT_ID_KEY = "KAFKA_CLIENT_ID";
+const BROKER_IP_KEY = "BROKER_IP_ENV_KEY";
+const GROUP_ID_KEY = "KAFKA_CONSUMER_GROUP";
 
 async function main() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(

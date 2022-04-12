@@ -14,8 +14,8 @@ import * as os from "os";
 import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
 import { convertToNumber } from "src/utils/convertToNumber";
 
-const ROOT_STORAGE_DIR = "ENV_ROOT_STORAGE_DIR";
-const PRISMA_SKIP_VALUE = "ENV_PRISMA_SKIP_VALUE";
+const ROOT_STORAGE_DIR = "STORAGE_PATH";
+const PRISMA_SKIP_VALUE = "MAX_SNAPSHOTS";
 
 @Injectable()
 export class GitPullEventService implements IGitPullEvent {
