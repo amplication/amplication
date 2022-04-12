@@ -33,11 +33,23 @@ import * as winston from "winston";
   controllers: [GitPullEventController],
   providers: [
     GitPullEventService,
-    GitPullEventRepository,
-    StorageService,
     GitHostProviderService,
-    GitHostProviderFactory,
-    GitClientService,
+    {
+      provide: "IGitHostProviderFactory",
+      useClass: GitHostProviderFactory,
+    },
+    {
+      provide: "IGitClient",
+      useClass: GitClientService,
+    },
+    {
+      provide: "IGitPullEventRepository",
+      useClass: GitPullEventRepository,
+    },
+    {
+      provide: "IStorage",
+      useClass: StorageService,
+    },
   ],
   exports: [GitPullEventService, PrismaModule],
 })

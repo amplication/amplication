@@ -1,18 +1,18 @@
+import * as os from "os";
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
-import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
-import { StorageService } from "../../providers/storage/storage.service";
-import { GitClientService } from "../../providers/gitClient/gitClient.service";
 import { IGitPullEvent } from "../../contracts/interfaces/gitPullEvent.interface";
 import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
-import { GitHostProviderFactory } from "../../utils/gitHostProviderFactory/gitHostProviderFactory";
 import { EventData } from "../../contracts/interfaces/eventData";
 import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { LoggerMessages } from "../../constants/loggerMessages";
 import { ConfigService } from "@nestjs/config";
-import * as os from "os";
 import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
-import { convertToNumber } from "src/utils/convertToNumber";
+import { convertToNumber } from "../../utils/convertToNumber";
+import { IGitPullEventRepository } from "../../contracts/interfaces/gitPullEventRepository.interface";
+import { IStorage } from "../../contracts/interfaces/storage.interface";
+import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
+import { IGitHostProviderFactory } from "../../contracts/interfaces/gitHostProviderFactory.interface";
 
 const ROOT_STORAGE_DIR = "STORAGE_PATH";
 const PRISMA_SKIP_VALUE = "MAX_SNAPSHOTS";
@@ -22,11 +22,13 @@ export class GitPullEventService implements IGitPullEvent {
   rootStorageDir: string;
   skipPrismaValue: number;
   constructor(
-    private gitPullEventRepository: GitPullEventRepository,
-    private storageService: StorageService,
-    private readonly gitHostProviderFactory: GitHostProviderFactory,
-    private gitClientService: GitClientService,
     private configService: ConfigService,
+    @Inject("IGitHostProviderFactory")
+    private gitHostProviderFactory: IGitHostProviderFactory,
+    @Inject("IGitPullEventRepository")
+    private gitPullEventRepository: IGitPullEventRepository,
+    @Inject("IGitClient") private gitClientService: IGitClient,
+    @Inject("IStorage") private storageService: IStorage,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
   ) {
     this.rootStorageDir =
@@ -99,7 +101,7 @@ export class GitPullEventService implements IGitPullEvent {
     });
 
     this.logger.log(
-      LoggerMessages.log.NEW_REPOSITORY_WAS_CREATED,
+      LoggerMessages.log.NEW_GIT_PULL_EVENT_RECORD_CREATED,
       GitPullEventService.name,
       { newPullEventRecord }
     );
@@ -139,7 +141,7 @@ export class GitPullEventService implements IGitPullEvent {
     baseDir: string
   ): Promise<void> {
     const accessToken = await this.gitHostProviderFactory
-      .getHostProvider(provider as GitProviderEnum)
+      .getHostProvider(provider)
       .createInstallationAccessToken(pushEventMessage.installationId);
 
     this.logger.log(
