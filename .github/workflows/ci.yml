@@ -345,7 +345,7 @@ jobs:
   docker:
     name: docker
     needs: [changes]
-    if: always() && success() && (github.event_name == 'push')
+    if: always() && success() #&& (github.event_name == 'push')
     runs-on: ubuntu-latest
     outputs:
       docker-services: ${{ steps.check-docker-service.outputs.docker-service }}
