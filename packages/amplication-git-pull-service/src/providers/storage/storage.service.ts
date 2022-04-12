@@ -15,6 +15,14 @@ export class StorageService implements IStorage {
   }
 
   deleteDir(dir: string): void {
-    fs.rmSync(dir, { recursive: true, force: true });
+    try {
+      fs.rm(dir, { recursive: true }, (err) => {
+        if (!err) {
+          console.log("succeeded");
+        }
+      });
+    } catch (err: any) {
+      throw new CustomError("failed to delete directory", err);
+    }
   }
 }

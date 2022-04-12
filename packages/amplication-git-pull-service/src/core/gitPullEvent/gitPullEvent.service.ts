@@ -59,12 +59,13 @@ export class GitPullEventService implements IGitPullEvent {
           currentCommitDir
         );
       } else {
-        await this.managePullEventStorage(
-          pushEventMessage,
-          previousReadyCommit.commit,
+        await this.copyPrevCommitDirToCurrCommitDir(
           repositoryDir,
+          previousReadyCommit.commit,
           currentCommitDir
         );
+
+        await this.pullRepository(pushEventMessage, currentCommitDir);
 
         if (this.skipPrismaValue !== 0) {
           await this.manageDelete(
@@ -154,33 +155,41 @@ export class GitPullEventService implements IGitPullEvent {
     this.logger.log(LoggerMessages.log.CLONE_SUCCESS, GitPullEventService.name);
   }
 
-  private async managePullEventStorage(
+  private async pullRepository(
     pushEventMessage: PushEventMessage,
-    prevCommit: string,
-    mainDir: string,
-    baseDir: string
+    currentCommitDir: string
   ): Promise<void> {
     const { provider, installationId } = pushEventMessage;
     const accessToken = await this.gitHostProviderFactory
       .getHostProvider(provider as GitProviderEnum)
       .createInstallationAccessToken(installationId);
 
-    const srcDir = `${mainDir}/${prevCommit}`;
-    await this.storageService.copyDir(srcDir, baseDir);
-    await this.gitClientService.pull(pushEventMessage, baseDir, accessToken);
-
-    this.logger.log(
-      LoggerMessages.log.PULL_COPY_SUCCESS,
-      GitPullEventService.name
+    await this.gitClientService.pull(
+      pushEventMessage,
+      currentCommitDir,
+      accessToken
     );
+
+    this.logger.log(LoggerMessages.log.PULL_SUCCESS, GitPullEventService.name);
+  }
+
+  private async copyPrevCommitDirToCurrCommitDir(
+    repositoryDir: string,
+    prevCommit: string,
+    currentCommitDir: string
+  ) {
+    const prevCommitDir = `${repositoryDir}/${prevCommit}`;
+    await this.storageService.copyDir(prevCommitDir, currentCommitDir);
+
+    this.logger.log(LoggerMessages.log.COPY_SUCCESS, GitPullEventService.name);
   }
 
   private async manageDelete(pullEventRecordId: bigint, dirToDelete: string) {
+    this.storageService.deleteDir(dirToDelete);
     await this.gitPullEventRepository.update(
       pullEventRecordId,
       EnumGitPullEventStatus.Deleted
     );
-    this.storageService.deleteDir(dirToDelete);
 
     this.logger.log(
       LoggerMessages.log.DELETE_SUCCESSFULLY,
