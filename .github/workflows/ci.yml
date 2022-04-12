@@ -443,6 +443,7 @@ jobs:
           fi
 
       - name: Build, tag, and push image to Amazon ECR
+        continue-on-error: true
         if: ${{ steps.check-docker-service.outputs.docker-service == 'true' && steps.tag-exist.outputs.tag_exist == 'false' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
