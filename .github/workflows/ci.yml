@@ -482,7 +482,7 @@ jobs:
     env:
       BUCKET_NAME: amplication-charts
       REGION: us-east-1
-      SERVICE_CHART_PATH: helm\helm_chart\charts\services
+      SERVICE_CHART_PATH: helm/helm_chart/charts/services
     strategy:
       matrix:
         service: ${{ fromJSON(needs.changes.outputs.services) }} 
