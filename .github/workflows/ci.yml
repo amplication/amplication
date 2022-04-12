@@ -451,21 +451,38 @@ jobs:
           ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
         run: |
           if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
-            MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY_STAGING --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-            aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
-            aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ env.BRANCH_NAME }} --image-manifest "$MANIFEST"
-            aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
-          else 
-            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
-            MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY_PROD --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-            aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
-            aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
-            aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
+          then
+            Docker_image = $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
+            Ecr_repository = $ECR_REPOSITORY_STAGING
+          else  
+            Docker_image = $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
+            ECR_repository = $ECR_REPOSITORY_PROD
           fi
+          docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
+          docker push $Docker_image
+          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_repository --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
+          aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
+          aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
+          
+          
+        # if [[ $GITHUB_REF != 'refs/heads/master' ]]
+        # then 
+        #   docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
+        #   docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
+        #   MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY_STAGING --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+        #   aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
+        #   aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ env.BRANCH_NAME }} --image-manifest "$MANIFEST"
+        #   aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
+        # else 
+        #   docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
+        #   docker push $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
+        #   MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY_PROD --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+        #   aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
+        #   aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
+        #   aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
+        # fi
+
 
   service-chart:
     runs-on: ubuntu-latest
