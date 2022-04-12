@@ -540,7 +540,9 @@ describe('BuildService', () => {
         },
         {
           provide: QueueService,
-          useClass: QueueService
+          useValue: {
+            emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
+          }
         }
       ]
     }).compile();
