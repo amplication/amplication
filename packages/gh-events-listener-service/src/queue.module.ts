@@ -11,17 +11,22 @@ export const BROKER_IP_ENV_KEY = 'BROKER_IP_ENV_KEY';
       {
         name: QUEUE_SERVICE_NAME,
         useFactory: (configService: ConfigService) => {
-          const envBrokerIp: string =
-            configService.get<string>(BROKER_IP_ENV_KEY);
-          if (!envBrokerIp) {
-            throw new Error('Missing broker ip in env file');
+          let envBrokerIp: string[] = null;
+          try {
+            envBrokerIp = configService
+              .get<string>(BROKER_IP_ENV_KEY)
+              .split(',');
+          } catch (error) {
+            throw new Error(
+              'Missing broker ip in env file or configure is not in the correct format',
+            );
           }
           return {
             transport: Transport.KAFKA,
             options: {
               client: {
                 clientId: 'repositoryPush',
-                brokers: [envBrokerIp],
+                brokers: envBrokerIp,
               },
             },
           };
