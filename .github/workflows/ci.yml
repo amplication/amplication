@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       services: ${{ steps.filter.outputs.array }}
-      docker-exists: ${{ steps.docker-services.outputs.docker-exists }}
+      # docker-exists: ${{ steps.docker-services.outputs.docker-exists }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -65,23 +65,23 @@ jobs:
             echo "::set-output name=array::$modif"
           fi
 
-      - name: Check docker existance
-        id: docker-services
-        env: 
-          tmp: 
-            matrix:
-              node-version: [16.x]
-              service: ${{ fromJSON(steps.filter.outputs.array) }}
-          SERVICE: ${{ tmp.matrix.service }}
-        run: |
-          FILE=packages/$SERVICE/Dockerfile
-          if [[ -f "$FILE" ]] 
-          then
-            echo "$FILE exists."
-            echo "::set-output name=docker-exists::true"
-          else
-            echo "::set-output name=docker-exists::false"
-          fi
+      # - name: Check docker existance
+      #   id: docker-services
+      #   env: 
+      #     tmp: 
+      #       matrix:
+      #         node-version: [16.x]
+      #         service: ${{ fromJSON(steps.filter.outputs.array) }}
+      #     SERVICE: ${{ tmp.matrix.service }}
+      #   run: |
+      #     FILE=packages/$SERVICE/Dockerfile
+      #     if [[ -f "$FILE" ]] 
+      #     then
+      #       echo "$FILE exists."
+      #       echo "::set-output name=docker-exists::true"
+      #     else
+      #       echo "::set-output name=docker-exists::false"
+      #     fi
         
   # docker-service:
   #   runs-on: ubuntu-latest
@@ -258,19 +258,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    # - name: Check docker-service
-    #   id: check-docker-service
-    #   env: 
-    #     SERVICE: ${{ matrix.service }}
-    #   run: |
-    #     FILE=packages/$SERVICE/Dockerfile
-    #     if [[ -f "$FILE" ]] 
-    #     then
-    #       echo "$FILE exists."
-    #       echo "::set-output name=docker-service::true"
-    #     else
-    #       echo "::set-output name=docker-service::false"
-    #     fi
+    - name: Check docker-service
+      id: check-docker-service
+      env: 
+        SERVICE: ${{ matrix.service }}
+      run: |
+        FILE=packages/$SERVICE/Dockerfile
+        if [[ -f "$FILE" ]] 
+        then
+          echo "$FILE exists."
+          echo "::set-output name=docker-service::true"
+        else
+          echo "::set-output name=docker-service::false"
+        fi
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -280,11 +280,11 @@ jobs:
 
     - name: Check docker-service
       run: |
-        echo docker_exists = ${{ needs.changes.outputs.docker-exists }}
+        echo docker_exists = ${{ steps.check-docker-service.outputs.docker-service }}
 
 
     - name: "Install dependencies ${{ matrix.service }}"
-      if: ${{ needs.changes.outputs.docker-exists == 'true' }}
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       run: npm ci
 
     - name: "Build packages first run: ${{ matrix.service }}"
