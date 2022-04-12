@@ -11,9 +11,11 @@ import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { LoggerMessages } from "../../constants/loggerMessages";
 import { ConfigService } from "@nestjs/config";
 import * as os from "os";
+import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
+import { convertToNumber } from "src/utils/convertToNumber";
 
-const ROOT_DIR = "ROOT_DIR_ENV";
-const SKIP = "SKIP_ENV";
+const ROOT_DIR = "ENV_ROOT_DIR";
+const SKIP = "ENV_SKIP";
 
 @Injectable()
 export class GitPullEventService implements IGitPullEvent {
@@ -27,101 +29,143 @@ export class GitPullEventService implements IGitPullEvent {
     private configService: ConfigService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
   ) {
-    this.rootDir = configService.get<string>(ROOT_DIR) || os.homedir();
-    this.skip = configService.get<number>(SKIP) || 0;
+    this.rootDir = this.configService.get<string>(ROOT_DIR) || os.homedir();
+    this.skip = convertToNumber(this.configService.get<string>(SKIP) || "0");
   }
 
-  async pushEventHandler(
-    eventData: EventData,
-    installationId: string
-  ): Promise<void> {
-    const {
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      commit,
-      pushedAt,
-    } = eventData;
+  async pushEventHandler(pushEventMessage: PushEventMessage): Promise<void> {
+    const { provider, repositoryOwner, repositoryName, branch, commit } =
+      pushEventMessage;
 
     const mainDir = `${this.rootDir}/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}`;
     const baseDir = `${mainDir}/${commit}`;
 
     try {
-      await this.gitPullEventRepository.create({
-        ...eventData,
-        status: EnumGitPullEventStatus.Created,
-      });
+      const newRepository = await this.createNewRepository(pushEventMessage);
 
-      const previousReadyCommit =
-        await this.gitPullEventRepository.findByPreviousReadyCommit(
-          provider,
-          repositoryOwner,
-          repositoryName,
-          branch,
-          pushedAt,
-          this.skip
-        );
+      const previousReadyCommit = await this.findPreviousReadyCommit(
+        pushEventMessage
+      );
 
       if (!previousReadyCommit) {
         await this.cloneRepository(
           provider as GitProviderEnum,
-          installationId,
-          eventData,
+          pushEventMessage,
           baseDir
+        );
+
+        await this.gitPullEventRepository.update(
+          newRepository.id,
+          EnumGitPullEventStatus.Ready
         );
       } else {
         await this.managePullEventStorage(
-          previousReadyCommit,
+          pushEventMessage,
+          previousReadyCommit.commit,
           mainDir,
-          baseDir,
-          branch,
-          commit
+          baseDir
+        );
+        await this.gitPullEventRepository.update(
+          previousReadyCommit.id,
+          this.skip === 0
+            ? EnumGitPullEventStatus.Ready
+            : EnumGitPullEventStatus.Deleted
         );
       }
-
-      await this.gitPullEventRepository.update(
-        eventData.id,
-        this.skip === 0
-          ? EnumGitPullEventStatus.Ready
-          : EnumGitPullEventStatus.Deleted
-      );
-    } catch (err) {
+    } catch (err: any) {
       this.logger.error(
-        LoggerMessages.error.CATCH_ERROR_MESSAGE,
         GitPullEventService.name,
-        { err }
+        { err: err.message },
+        LoggerMessages.error.CATCH_ERROR_MESSAGE,
+        "pushEventHandler method"
       );
     }
   }
 
+  private async createNewRepository(
+    pushEventMessage: PushEventMessage
+  ): Promise<{ id: bigint }> {
+    const { installationId, ...gitPullEventParams } = pushEventMessage;
+    const newRepository = await this.gitPullEventRepository.create({
+      ...gitPullEventParams,
+      status: EnumGitPullEventStatus.Created,
+    });
+
+    this.logger.log(
+      LoggerMessages.log.NEW_REPOSITORY_WAS_CREATED,
+      GitPullEventService.name,
+      { newRepository }
+    );
+
+    return newRepository;
+  }
+
+  private async findPreviousReadyCommit(
+    pushEventMessage: PushEventMessage
+  ): Promise<EventData | undefined> {
+    const { provider, repositoryOwner, repositoryName, branch, pushedAt } =
+      pushEventMessage;
+    const previousReadyCommit =
+      await this.gitPullEventRepository.findByPreviousReadyCommit(
+        provider,
+        repositoryOwner,
+        repositoryName,
+        branch,
+        pushedAt,
+        this.skip
+      );
+
+    this.logger.log(
+      LoggerMessages.log.FOUND_PREVIOUS_READY_COMMIT,
+      GitPullEventService.name,
+      {
+        previousReadyCommit,
+      }
+    );
+
+    return previousReadyCommit;
+  }
+
   private async cloneRepository(
     provider: GitProviderEnum,
-    installationId: string,
-    eventData: EventData,
+    pushEventMessage: PushEventMessage,
     baseDir: string
-  ) {
+  ): Promise<void> {
+    const accessToken = await this.gitHostProviderFactory
+      .getHostProvider(provider as GitProviderEnum)
+      .createInstallationAccessToken(pushEventMessage.installationId);
+
+    this.logger.log(
+      LoggerMessages.log.GENERATE_OCTOKIT_ACCESS_TOKEN,
+      GitPullEventService.name,
+      {
+        accessToken,
+      }
+    );
+
+    await this.gitClientService.clone(pushEventMessage, baseDir, accessToken);
+
+    this.logger.log(LoggerMessages.log.CLONE_SUCCESS, GitPullEventService.name);
+  }
+
+  private async managePullEventStorage(
+    pushEventMessage: PushEventMessage,
+    prevCommit: string,
+    mainDir: string,
+    baseDir: string
+  ): Promise<void> {
+    const { provider, installationId } = pushEventMessage;
     const accessToken = await this.gitHostProviderFactory
       .getHostProvider(provider as GitProviderEnum)
       .createInstallationAccessToken(installationId);
 
-    await this.gitClientService.clone(
-      eventData,
-      baseDir,
-      installationId,
-      accessToken
-    );
-  }
-
-  private async managePullEventStorage(
-    previousReadyCommit: EventData,
-    mainDir: string,
-    baseDir: string,
-    branch: string,
-    commit: string
-  ) {
-    const srcDir = `${mainDir}/${previousReadyCommit.commit}`;
+    const srcDir = `${mainDir}/${prevCommit}`;
     await this.storageService.copyDir(srcDir, baseDir);
-    await this.gitClientService.pull(branch, commit, baseDir);
+    await this.gitClientService.pull(pushEventMessage, baseDir, accessToken);
+
+    this.logger.log(
+      LoggerMessages.log.PULL_COPY_SUCCESS,
+      GitPullEventService.name
+    );
   }
 }

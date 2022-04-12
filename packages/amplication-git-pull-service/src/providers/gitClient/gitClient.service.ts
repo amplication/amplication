@@ -1,10 +1,15 @@
-import { Injectable } from "@nestjs/common";
-import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
-import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
-import { CustomError } from "../../errors/CustomError";
 import * as fs from "fs";
-import { EventData } from "../../contracts/interfaces/eventData";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
+import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
+import { CustomError } from "../../errors/CustomError";
 import { ErrorMessages } from "../../constants/errorMessages";
+import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
+import { CONFIG_SCOPE_GLOBAL } from "../../constants/variables";
+import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
+
+const REMOTE_ORIGIN = "ENV_REMOTE_ORIGIN";
 
 /*
  * SimpleGit integration
@@ -12,8 +17,16 @@ import { ErrorMessages } from "../../constants/errorMessages";
 @Injectable()
 export class GitClientService implements IGitClient {
   git: SimpleGit;
+  remoteOrigin: string;
+  gitHostDomains: Record<GitProviderEnum, string>;
 
-  constructor() {
+  constructor(private configService: ConfigService) {
+    this.remoteOrigin =
+      this.configService.get<string>(REMOTE_ORIGIN) || "origin";
+
+    this.gitHostDomains = {
+      [GitProviderEnum.Github]: "github.com",
+    };
     /*
      * @maxConcurrentProcesses: each `simple-git` instance limits the number of
      * spawned child processes that can be run simultaneously and manages the queue
@@ -37,7 +50,7 @@ export class GitClientService implements IGitClient {
       binary: "git",
       maxConcurrentProcesses: 6,
       timeout: {
-        block: 2000,
+        block: 5000,
       },
       completion: {
         onExit: 50,
@@ -49,30 +62,43 @@ export class GitClientService implements IGitClient {
   }
 
   async clone(
-    eventData: EventData,
+    pushEventMessage: PushEventMessage,
     baseDir: string,
-    installationId: string,
     accessToken: string
   ): Promise<void> {
     try {
       const { provider, repositoryOwner, repositoryName, branch, commit } =
-        eventData;
+        pushEventMessage;
       fs.mkdirSync(baseDir, { recursive: true });
-      const repository = `https://${repositoryOwner}:${accessToken}@${provider}.com/${repositoryOwner}/${repositoryName}.git`;
+      const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
       this.git
-        .clone(repository, baseDir, ["--branch", branch])
+        .addConfig("init.defaultBranch", "main", false, CONFIG_SCOPE_GLOBAL)
         .cwd(baseDir)
+        .init()
+        .addRemote(REMOTE_ORIGIN, repository)
+        .fetch(REMOTE_ORIGIN, branch)
         .checkout(commit);
-    } catch (err) {
+      // .clone(repository, baseDir, ["--branch", branch])
+      // .cwd(baseDir)
+      // .checkout(commit);
+    } catch (err: any) {
       throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
     }
   }
 
-  async pull(branch: string, commit: string, baseDir: string): Promise<void> {
+  async pull(
+    pushEventMessage: PushEventMessage,
+    baseDir: string,
+    accessToken: string
+  ): Promise<void> {
+    const { provider, repositoryOwner, repositoryName, branch, commit } =
+      pushEventMessage;
+
+    const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
     try {
-      this.git.cwd(baseDir).fetch("origin", branch).merge([commit]);
-    } catch (err) {
+      await this.git.cwd(baseDir).fetch(repository, branch).merge([commit]);
+    } catch (err: any) {
       throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
     }
   }

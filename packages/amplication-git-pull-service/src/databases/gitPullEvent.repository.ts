@@ -1,3 +1,4 @@
+import { GitProviderEnum } from "./../contracts/enums/gitProvider.enum";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import { IGitPullEventRepository } from "../contracts/interfaces/gitPullEventRepository.interface";
@@ -17,7 +18,7 @@ export class GitPullEventRepository implements IGitPullEventRepository {
           id: true,
         },
       });
-    } catch (err) {
+    } catch (err: any) {
       throw new CustomError("failed to create a new record in DB", err);
     }
   }
@@ -30,13 +31,13 @@ export class GitPullEventRepository implements IGitPullEventRepository {
       });
 
       return !!updatedEvent;
-    } catch (err) {
+    } catch (err: any) {
       throw new CustomError("failed to create a new record in DB", err);
     }
   }
 
   async findByPreviousReadyCommit(
-    provider: string,
+    provider: keyof typeof GitProviderEnum,
     repositoryOwner: string,
     repositoryName: string,
     branch: string,
@@ -74,7 +75,7 @@ export class GitPullEventRepository implements IGitPullEventRepository {
 
       // @ts-ignore
       return previousReadyCommit.shift();
-    } catch (err) {
+    } catch (err: any) {
       throw new CustomError("failed to find previous ready commit in DB", err);
     }
   }
