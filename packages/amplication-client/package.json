@@ -1,10 +1,10 @@
 {
   "name": "@amplication/client",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "private": true,
   "dependencies": {
-    "@amplication/data": "^0.12.2",
-    "@amplication/design-system": "^0.12.2",
+    "@amplication/data": "^0.12.3",
+    "@amplication/design-system": "^0.12.3",
     "@apollo/client": "3.3.16",
     "@extra-set/difference": "2.2.3",
     "@rooks/use-window-size": "3.6.0",
