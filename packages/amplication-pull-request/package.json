@@ -33,6 +33,7 @@
     "fast-glob": "3.2.11",
     "kafkajs": "1.16.0",
     "nest-winston": "1.6.2",
+    "reflect-metadata": "0.1.13",
     "ts-morph": "13.0.3",
     "winston-cloud-logging": "1.0.2"
   },
