@@ -233,7 +233,7 @@ export const EntityPermissionAction = ({
                 </span>
               ) : permission.type === models.EnumEntityPermissionType.Public ? (
                 <span className={`${CLASS_NAME}__action-summary`}>
-                  Public endpoint selected
+                  This action is public 
                 </span>
               ) : (
                 <span className={`${CLASS_NAME}__action-summary--muted`}>

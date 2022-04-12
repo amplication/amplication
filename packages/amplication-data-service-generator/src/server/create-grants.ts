@@ -33,6 +33,7 @@ export type Grant = {
  * Matches all resource attributes (glob notation)
  */
 export const ALL_ATTRIBUTES_ALLOWED = "*";
+export const PUBLIC = "public";
 
 // ACL actions
 export const CREATE_ANY: Action = "create:any";
@@ -94,7 +95,7 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
         }
         case EnumEntityPermissionType.Public: {
           grants.push({
-            role: ALL_ATTRIBUTES_ALLOWED,
+            role: PUBLIC,
             resource: "entity.name",
             action: actionToACLAction[permission.action],
             attributes: ALL_ATTRIBUTES_ALLOWED,
