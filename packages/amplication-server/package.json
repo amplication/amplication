@@ -1,6 +1,6 @@
 {
   "name": "@amplication/server",
-  "version": "0.12.1",
+  "version": "0.12.3",
   "private": true,
   "scripts": {
     "prebuild": "rimraf dist",
@@ -32,10 +32,10 @@
     "check-graphql-schema": "ts-node -r tsconfig-paths/register scripts/check-graphql-schema"
   },
   "dependencies": {
-    "@amplication/container-builder": "^0.12.1",
-    "@amplication/data": "^0.12.1",
-    "@amplication/data-service-generator": "^0.12.1",
-    "@amplication/deployer": "^0.12.1",
+    "@amplication/container-builder": "^0.12.3",
+    "@amplication/data": "^0.12.3",
+    "@amplication/data-service-generator": "^0.12.3",
+    "@amplication/deployer": "^0.12.3",
     "@apollo/gateway": "0.42.3",
     "@codebrew/nestjs-storage": "0.1.6",
     "@extra-set/difference": "2.2.3",
@@ -82,6 +82,7 @@
     "nest-morgan": "1.0.1",
     "nest-winston": "1.6.2",
     "nestjs-prisma": "0.14.3",
+    "node-fetch": "2.6.7",
     "node-jose": "2.0.0",
     "octokit": "1.7.1",
     "octokit-plugin-create-pull-request": "3.9.3",
@@ -95,6 +96,7 @@
     "semver": "7.3.5",
     "tar-stream": "2.2.0",
     "ts-morph": "^13.0.2",
+    "uuid": "8.3.2",
     "validate-color": "2.2.1",
     "winston": "3.3.4",
     "winston-cloud-logging": "1.0.2",
@@ -116,6 +118,7 @@
     "@types/lodash.omit": "4.5.6",
     "@types/lodash.set": "4.3.6",
     "@types/node": "13.7.4",
+    "@types/node-fetch": "2.6.1",
     "@types/passport": "1.0.7",
     "@types/passport-github": "1.1.7",
     "@types/passport-jwt": "3.0.6",

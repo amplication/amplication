@@ -207,7 +207,7 @@ export class AuthService {
 
     const tokenId = cuid();
     const token = await this.prepareApiToken(user, tokenId);
-    const previewChars = token.substr(-TOKEN_PREVIEW_LENGTH);
+    const previewChars = token.slice(-TOKEN_PREVIEW_LENGTH);
     const hashedToken = await this.passwordService.hashPassword(token);
 
     const apiToken = await this.prismaService.apiToken.create({
