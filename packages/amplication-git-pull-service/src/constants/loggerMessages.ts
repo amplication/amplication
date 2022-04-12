@@ -4,7 +4,8 @@ export const LoggerMessages = {
     NEW_REPOSITORY_WAS_CREATED: "create new repository successfully",
     FOUND_PREVIOUS_READY_COMMIT: "found previous ready commit",
     CLONE_SUCCESS: "clone successfully",
-    PULL_COPY_SUCCESS: "pull and copy successfully",
+    PULL_SUCCESS: "pull successfully",
+    COPY_SUCCESS: "copy successfully",
     DELETE_SUCCESSFULLY:
       "update record status to Deleted and delete from storage",
   },
