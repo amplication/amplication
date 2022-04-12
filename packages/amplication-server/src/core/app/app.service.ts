@@ -2,7 +2,7 @@ import { AppGenerationConfig } from '@amplication/data-service-generator';
 import { Injectable } from '@nestjs/common';
 import { GitRepository } from '@prisma/client';
 import { isEmpty } from 'lodash';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { pascalCase } from 'pascal-case';
 import pluralize from 'pluralize';
 import * as semver from 'semver';

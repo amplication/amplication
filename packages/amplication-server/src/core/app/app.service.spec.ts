@@ -8,7 +8,7 @@ import {
   INVALID_APP_ID
 } from './app.service';
 
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { EntityService } from '../entity/entity.service';
 import {
   EnvironmentService,

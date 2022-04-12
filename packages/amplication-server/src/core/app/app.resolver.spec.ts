@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { BuildService } from '../build/build.service';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';

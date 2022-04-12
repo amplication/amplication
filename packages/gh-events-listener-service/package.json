@@ -1,5 +1,5 @@
 {
-  "name": "gh-events-listener-service",
+  "name": "@amplication/gh-events-listener-service",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -21,11 +21,11 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@amplication/prisma-db": "^0.0.1",
     "@nestjs/common": "8.2.3",
     "@nestjs/config": "2.0.0",
     "@nestjs/core": "8.4.4",
     "@nestjs/microservices": "8.4.4",
-    "@amplication/prisma-db": "*",
     "@octokit/webhooks": "9.23.0",
     "@prisma/client": "3.12.0",
     "eventsource": "^2.0.0",
