@@ -452,11 +452,11 @@ jobs:
         run: |
           if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then
-            Docker_image = $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
-            Ecr_repository = $ECR_REPOSITORY_STAGING
+            Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
+            Ecr_repository=$ECR_REPOSITORY_STAGING
           else  
-            Docker_image = $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
-            ECR_repository = $ECR_REPOSITORY_PROD
+            Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
+            ECR_repository=$ECR_REPOSITORY_PROD
           fi
           docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
           docker push $Docker_image
