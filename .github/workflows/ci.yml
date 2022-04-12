@@ -474,7 +474,7 @@ jobs:
     env:
       BUCKET_NAME: amplication-charts
       REGION: us-east-1
-      SERVICE_CHART_PATH: amplication-charts/charts/services
+      SERVICE_CHART_PATH: amplication/packages
     strategy:
       matrix:
         service: ${{ fromJSON(needs.changes.outputs.services) }} 
@@ -553,7 +553,7 @@ jobs:
     env:
       BUCKET_NAME: amplication-charts
       REGION: us-east-1
-      AMPLICATION_CHART_PATH: amplication-charts/charts/amplication
+      AMPLICATION_CHART_PATH: amplication/chart/amplication
       SERVICE_CHART_PATH: amplication-charts/charts/services
 
     steps:
