@@ -14,13 +14,13 @@ import * as os from "os";
 import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
 import { convertToNumber } from "src/utils/convertToNumber";
 
-const ROOT_DIR = "ENV_ROOT_DIR";
-const SKIP = "ENV_SKIP";
+const ROOT_STORAGE_DIR = "ENV_ROOT_STORAGE_DIR";
+const PRISMA_SKIP_VALUE = "ENV_PRISMA_SKIP_VALUE";
 
 @Injectable()
 export class GitPullEventService implements IGitPullEvent {
-  rootDir: string;
-  skip: number;
+  rootStorageDir: string;
+  skipPrismaValue: number;
   constructor(
     private gitPullEventRepository: GitPullEventRepository,
     private storageService: StorageService,
@@ -29,19 +29,24 @@ export class GitPullEventService implements IGitPullEvent {
     private configService: ConfigService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
   ) {
-    this.rootDir = this.configService.get<string>(ROOT_DIR) || os.homedir();
-    this.skip = convertToNumber(this.configService.get<string>(SKIP) || "0");
+    this.rootStorageDir =
+      this.configService.get<string>(ROOT_STORAGE_DIR) || os.homedir();
+    this.skipPrismaValue = convertToNumber(
+      this.configService.get<string>(PRISMA_SKIP_VALUE) || "0"
+    );
   }
 
-  async pushEventHandler(pushEventMessage: PushEventMessage): Promise<void> {
+  async HandlePushEvent(pushEventMessage: PushEventMessage): Promise<void> {
     const { provider, repositoryOwner, repositoryName, branch, commit } =
       pushEventMessage;
 
-    const mainDir = `${this.rootDir}/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}`;
-    const baseDir = `${mainDir}/${commit}`;
+    const repositoryDir = `${this.rootStorageDir}/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}`;
+    const currentCommitDir = `${repositoryDir}/${commit}`;
 
     try {
-      const newRepository = await this.createNewRepository(pushEventMessage);
+      const newPullEventRecord = await this.createPullEventRecordOnDB(
+        pushEventMessage
+      );
 
       const previousReadyCommit = await this.findPreviousReadyCommit(
         pushEventMessage
@@ -51,27 +56,28 @@ export class GitPullEventService implements IGitPullEvent {
         await this.cloneRepository(
           provider as GitProviderEnum,
           pushEventMessage,
-          baseDir
-        );
-
-        await this.gitPullEventRepository.update(
-          newRepository.id,
-          EnumGitPullEventStatus.Ready
+          currentCommitDir
         );
       } else {
         await this.managePullEventStorage(
           pushEventMessage,
           previousReadyCommit.commit,
-          mainDir,
-          baseDir
+          repositoryDir,
+          currentCommitDir
         );
-        await this.gitPullEventRepository.update(
-          previousReadyCommit.id,
-          this.skip === 0
-            ? EnumGitPullEventStatus.Ready
-            : EnumGitPullEventStatus.Deleted
-        );
+
+        if (this.skipPrismaValue !== 0) {
+          await this.manageDelete(
+            previousReadyCommit.id,
+            `${repositoryDir}/${previousReadyCommit.commit}`
+          );
+        }
       }
+
+      await this.gitPullEventRepository.update(
+        newPullEventRecord.id,
+        EnumGitPullEventStatus.Ready
+      );
     } catch (err: any) {
       this.logger.error(
         GitPullEventService.name,
@@ -82,11 +88,11 @@ export class GitPullEventService implements IGitPullEvent {
     }
   }
 
-  private async createNewRepository(
+  private async createPullEventRecordOnDB(
     pushEventMessage: PushEventMessage
   ): Promise<{ id: bigint }> {
     const { installationId, ...gitPullEventParams } = pushEventMessage;
-    const newRepository = await this.gitPullEventRepository.create({
+    const newPullEventRecord = await this.gitPullEventRepository.create({
       ...gitPullEventParams,
       status: EnumGitPullEventStatus.Created,
     });
@@ -94,10 +100,10 @@ export class GitPullEventService implements IGitPullEvent {
     this.logger.log(
       LoggerMessages.log.NEW_REPOSITORY_WAS_CREATED,
       GitPullEventService.name,
-      { newRepository }
+      { newPullEventRecord }
     );
 
-    return newRepository;
+    return newPullEventRecord;
   }
 
   private async findPreviousReadyCommit(
@@ -112,7 +118,7 @@ export class GitPullEventService implements IGitPullEvent {
         repositoryName,
         branch,
         pushedAt,
-        this.skip
+        this.skipPrismaValue
       );
 
     this.logger.log(
@@ -165,6 +171,19 @@ export class GitPullEventService implements IGitPullEvent {
 
     this.logger.log(
       LoggerMessages.log.PULL_COPY_SUCCESS,
+      GitPullEventService.name
+    );
+  }
+
+  private async manageDelete(pullEventRecordId: bigint, dirToDelete: string) {
+    await this.gitPullEventRepository.update(
+      pullEventRecordId,
+      EnumGitPullEventStatus.Deleted
+    );
+    this.storageService.deleteDir(dirToDelete);
+
+    this.logger.log(
+      LoggerMessages.log.DELETE_SUCCESSFULLY,
       GitPullEventService.name
     );
   }

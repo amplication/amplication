@@ -16,6 +16,11 @@ export enum EnumButtonStyle {
   Clear = "clear",
 }
 
+export enum EnumIconPosition {
+  Left = "left",
+  Right = "right",
+}
+
 type ButtonProps = {
   /** The display style of the button */
   buttonStyle?: EnumButtonStyle;
@@ -25,6 +30,8 @@ type ButtonProps = {
   splitValue?: string;
   icon?: string;
   iconSize?: IconSize;
+  /** Icon can have left or right position. Default position is right */
+  iconPosition?: EnumIconPosition;
 };
 
 export type Props = PrimerButtonProps & ButtonProps;
@@ -37,6 +44,7 @@ export const Button = ({
   children,
   icon,
   iconSize,
+  iconPosition = EnumIconPosition.Right,
   ...rest
 }: Props) => {
   if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
@@ -55,6 +63,7 @@ export const Button = ({
       )}
       {...rest}
     >
+      {iconPosition === EnumIconPosition.Right && children}
       {!isEmpty(icon) && (
         <Icon
           icon={icon as string}
@@ -65,7 +74,7 @@ export const Button = ({
           className="amp-button__icon"
         />
       )}
-      {children}
+      {iconPosition === EnumIconPosition.Left && children}
       {isSplit && (
         <span className="amp-button__split">
           {splitValue ? (

@@ -1,3 +1,4 @@
+import { GitProviderEnum } from "./../enums/gitProvider.enum";
 import { EventData } from "./eventData";
 import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus.enum";
 import { GitProviderEnum } from "../enums/gitProvider.enum";

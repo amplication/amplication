@@ -1,6 +1,6 @@
 {
   "name": "admin-template",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "private": true,
   "dependencies": {
     "@apollo/client": "3.3.18",
@@ -10,7 +10,7 @@
     "graphql-tag": "2.12.4",
     "lodash": "4.17.21",
     "pluralize": "8.0.0",
-    "ra-data-graphql-amplication": "0.0.12",
+    "ra-data-graphql-amplication": "0.0.13",
     "react": "16.14.0",
     "react-admin": "3.17.0",
     "react-dom": "16.14.0",
