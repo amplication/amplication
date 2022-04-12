@@ -1,0 +1,9 @@
+dependencies:
+- name: amplication-client
+  repository: file://../services/amplication-client
+  version: 0.1.0
+- name: amplication-server
+  repository: file://../services/amplication-server
+  version: 0.1.0
+digest: sha256:6059995285f801029c1bb4e443c416229094cbfa85007409e98d80e098a7013d
+generated: "2022-04-07T22:21:41.951261+03:00"

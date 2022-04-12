@@ -1,0 +1,53 @@
+{{ include "base.deployment" (list . "amplication-server.deployment") -}}
+{{- define "amplication-server.deployment" -}}
+spec:
+  template:  
+    spec:
+      containers:
+        - name: '{{ .Values.name }}'
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - cd /var && ls && cd /var/gcp-secert && ls
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
+          {{- if hasKey .Values "config" }}
+          envFrom:
+          - configMapRef:
+              name: '{{ .Values.name }}'
+          {{- end }}
+          env: 
+            - name: ENVIRONMENT
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POSTGRESQL_URL
+              value: "postgresql://{{ .Values.postgres.postgresqlUsername}}:{{ .Values.postgres.postgresqlPassword}}@{{ .Values.postgres.domain}}:{{ .Values.postgres.postgresqlPort}}/{{ .Values.postgres.db}}?sslmode=disable"
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
+          {{- if hasKey .Values "service" }}
+          ports:
+            - containerPort: {{ .Values.service.port.target }}
+          {{- end }}
+      {{- if hasKey .Values.deployment "volume" }}
+          volumeMounts:
+            - name: {{ .Values.deployment.volume.name }}
+              mountPath: {{ .Values.deployment.volume.path }}
+            - name: gcp-secret
+              mountPath: "/var/gcp-secret"
+              readOnly: true  
+      volumes:
+        - name: gcp-secret
+          secret:
+            secretName: gcp-secret
+            items:
+            - key: gcp-secret
+              path: gcp-secret
+        - name: {{ .Values.deployment.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.deployment.volume.name }}
+{{- end }}
+{{- end }}

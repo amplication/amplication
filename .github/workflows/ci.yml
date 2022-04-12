@@ -113,8 +113,52 @@ jobs:
   #         fi
    
 
+  # test:
+  #   runs-on: ubuntu-latest
+  #   needs: [changes]
+  #   if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
 
-  npm:
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v2
+
+  #   - name: Check docker-service
+  #     id: check-docker-service
+  #     env: 
+  #       SERVICE: ${{ matrix.service }}
+  #     run: |
+  #       FILE=packages/$SERVICE/Dockerfile
+  #       if [[ -f "$FILE" ]] 
+  #       then
+  #         echo "$FILE exists."
+  #         echo "::set-output name=docker-service::true"
+  #       else
+  #         echo "::set-output name=docker-service::false"
+  #       fi
+
+  #   - name: Use Node.js ${{ matrix.node-version }}
+  #     uses: actions/setup-node@v2
+  #     with:
+  #       node-version: ${{ matrix.node-version }}
+  #       cache: 'npm'
+        
+  #   - name: "Install dependencies ${{ matrix.service }}"
+  #     if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+  #     run: npm ci
+  # - name: "Test first run: ${{ matrix.service }}"
+  #     continue-on-error: true
+  #     if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+  #     working-directory: packages/${{ matrix.service }}
+  #     run: npm test
+    
+
+
+
+  tests:
     runs-on: ubuntu-latest
     needs: [changes]
     if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
@@ -154,6 +198,12 @@ jobs:
       continue-on-error: true
       if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       run: npm ci
+
+    - name: "Test first run: ${{ matrix.service }}"
+      continue-on-error: true
+      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
+      working-directory: packages/${{ matrix.service }}
+      run: npm test
 
     - name: "Check format: ${{ matrix.service }}"
       continue-on-error: true
@@ -299,49 +349,7 @@ jobs:
       working-directory: packages/${{ matrix.service }}
       run: npm run build
  
-  test:
-    runs-on: ubuntu-latest
-    needs: [changes]
-    if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
-    strategy:
-      matrix:
-        node-version: [16.x]
-        service: ${{ fromJSON(needs.changes.outputs.services) }} 
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Check docker-service
-      id: check-docker-service
-      env: 
-        SERVICE: ${{ matrix.service }}
-      run: |
-        FILE=packages/$SERVICE/Dockerfile
-        if [[ -f "$FILE" ]] 
-        then
-          echo "$FILE exists."
-          echo "::set-output name=docker-service::true"
-        else
-          echo "::set-output name=docker-service::false"
-        fi
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: "Install dependencies ${{ matrix.service }}"
-      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-      run: npm ci
-    
-    - name: "Test first run: ${{ matrix.service }}"
-      continue-on-error: true
-      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
-      working-directory: packages/${{ matrix.service }}
-      run: npm test
-
+  
   docker:
     name: docker
     needs: [changes]
@@ -469,12 +477,12 @@ jobs:
 
   service-chart:
     runs-on: ubuntu-latest
-    needs: [docker,changes]
+    needs: [docker,changes,tests]
     if: ${{ needs.docker.outputs.docker-services == 'true' }}
     env:
       BUCKET_NAME: amplication-charts
       REGION: us-east-1
-      SERVICE_CHART_PATH: packages
+      SERVICE_CHART_PATH: helm\helm_chart\charts\services
     strategy:
       matrix:
         service: ${{ fromJSON(needs.changes.outputs.services) }} 

@@ -1,0 +1,75 @@
+name: amplication-server
+
+deployment:
+  replicaCount: 1
+  volume:
+    name: amplication-server-artifacts-data
+    path: /artifacts
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  image:
+    pullPolicy: Always
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-prod-server
+    tag: 0.0.3
+    imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 
+    target: 3000
+  protocol: TCP
+ingress:
+  enabled: true
+  hostname: server.amplication-dev.com
+
+config:
+  env:
+    BCRYPT_SALT_OR_ROUNDS: "10"
+    CONTAINER_BUILDER_DEFAULT: docker
+    CORS_ENABLE: "1"
+    DEFAULT_DISK: local
+    DOCKER_HOST: tcp://docker:2375
+    GITHUB_APP_APP_ID: "189214"
+    GITHUB_APP_AUTH_SCOPE: user:email,repo,read:org
+    GITHUB_APP_CLIENT_ID: Iv1.7eb319d8e3c170d7
+    GITHUB_APP_INSTALLATION_URL: https://github.com/apps/amplication-aws/installations/new?state={state}
+    GITHUB_REDIRECT_URI: https://server.amplication-dev.com/github/callback
+    GITHUB_SCOPE: user:email
+    GITHUB_SECRET_SECRET_NAME: projects/948093699220/secrets/github-secret-amplication-dev-aWS/versions/1
+    GOOGLE_APPLICATION_CREDENTIALS: /app/packages/amplication-server/amplication-production-8234651f2ee4.json
+    HOST: http://localhost:3000
+    JWT_SECRET: jwt-secret
+    LOCAL_DISK_ROOT: /artifacts
+    NODE_ENV: production
+    PORT: "3000"
+    SERVICE_JWT_SECRET: service-jwt-secret
+pvc:
+  storageLimit: 5Gi
+  storageRequest: 1Gi
+
+# Postgresql Server
+postgres:
+  install: false
+  postgresqlPassword: atGgu!Y81Uwb
+  postgresqlUsername: postgres
+  db: amplication
+  domain: amplication-useast1-prod-primary.csf5nwabym5c.us-east-1.rds.amazonaws.com
+  postgresqlPort: 5432
+  fullnameOverride: postgresql
+  postgresql:
+    image: groundnuty/k8s-wait-for:v1.3
+    imagePullPolicy: Always
+    primary:
+      podLabels: { name: "postgres" }

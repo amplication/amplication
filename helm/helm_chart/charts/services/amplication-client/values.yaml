@@ -1,0 +1,40 @@
+name: amplication-client
+
+deployment:
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  image:
+    pullPolicy: Always
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-prod-client
+    tag: 0.0.1
+    imagePullSecrets: []
+
+service:
+  type: LoadBalancer
+  port: 
+    target: 8080
+  protocol: TCP
+  certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/5c7e86d0-5a8f-41d0-a0b5-db6a13dea090
+
+ingress:
+  enabled: true
+  hostname: app.amplication-dev.com	
+  
+config:
+  env:
+    REACT_APP_DATA_SOURCE: https://server.amplication-dev.com/graphql
+    REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: https://server.amplication-dev.com/github
+
