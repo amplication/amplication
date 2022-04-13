@@ -74,11 +74,11 @@ jobs:
           then 
             echo "$ARRAY"
             services=()
-            if printf '%s\n' "${ARRAY[@]}" | grep -Fxq 'amplication-client'; then  
+            if [[ " ${ARRAY[*]} " =~ "amplication-client" ]]; then
               echo amplication-client in array 
               services+="amplication-client" 
             else
-            echo not working
+              echo not working 
             fi
             echo services : %services
             echo "::set-output name=array::$services"
