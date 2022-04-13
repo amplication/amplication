@@ -27,7 +27,7 @@ jobs:
           files_ignore: |
             .github/**
           files: |
-            ['packages/amplication-client/**','packages/amplication-server/**']
+            packages/**
 
       - name: Filter array
         id: filter
@@ -65,6 +65,27 @@ jobs:
             echo "::set-output name=array::$modif"
           fi
 
+      - name: Filter services from array
+        id: filter-services
+        env:
+          ARRAY: ${{ steps.filter.outputs.array }}
+        run: |
+          if [[ ! -z $ARRAY ]]
+          then 
+            echo "$ARRAY"
+            services = []
+            for string in $(echo $ARRAY | sed "s/,/ /g")
+            do
+              if [string = 'amplication-client'] || [string = 'amplication-server']
+              then
+                $services+=string 
+              fi
+            done
+            echo $services
+            echo "::set-output name=array::$services"
+          else
+            echo "array is empty, no files changed"
+          fi
       # - name: Check docker existance
       #   id: docker-services
       #   env: 
