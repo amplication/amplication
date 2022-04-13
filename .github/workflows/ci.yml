@@ -12,7 +12,8 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      services: ${{ steps.filter.outputs.array }}
+      services: ${{ steps.filter-services.outputs.array }}
+      all_changed_files: ${{ steps.filter.outputs.array }}
       # docker-exists: ${{ steps.docker-services.outputs.docker-exists }}
     steps:
       - uses: actions/checkout@v2
@@ -75,73 +76,19 @@ jobs:
             echo "$ARRAY"
             services=()
             if [[ " ${ARRAY[*]} " =~ "amplication-client" ]]; then
-              echo amplication-client in array 
+              echo amplication-client in ARRAY 
               services+=('amplication-client') 
-            else
-              echo not working 
+            fi
+            if [[ " ${ARRAY[*]} " =~ "amplication-server" ]]; then
+              echo amplication-server in ARRAY 
+              services+=('amplication-server') 
             fi
             echo services : ${services[*]}
             echo "::set-output name=array::$services"
           else
             echo "array is empty, no files changed"
           fi
-      # fi
-      # for string in $(echo $ARRAY | sed "s/,/ /g")
-      # do
-      #   echo $string
-      #   if ((string = "amplication-client"))
-      #   then
-      #     echo string equal amplication-client
-      #     $services+=string 
-      #   fi
-      # done
-      # - name: Check docker existance
-      #   id: docker-services
-      #   env: 
-      #     tmp: 
-      #       matrix:
-      #         node-version: [16.x]
-      #         service: ${{ fromJSON(steps.filter.outputs.array) }}
-      #     SERVICE: ${{ tmp.matrix.service }}
-      #   run: |
-      #     FILE=packages/$SERVICE/Dockerfile
-      #     if [[ -f "$FILE" ]] 
-      #     then
-      #       echo "$FILE exists."
-      #       echo "::set-output name=docker-exists::true"
-      #     else
-      #       echo "::set-output name=docker-exists::false"
-      #     fi
-        
-  # docker-service:
-  #   runs-on: ubuntu-latest
-  #   needs: [changes]
-  #   if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
-  #   strategy:
-  #     matrix:
-  #       node-version: [16.x]
-  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
-  #   outputs:
-  #     is-docker: ${{ steps.check-docker-service.outputs.docker-service }}
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
 
-  #     - name: Check docker-service
-  #       id: check-docker-service
-  #       env: 
-  #         SERVICE: ${{ matrix.service }}
-  #       run: |
-  #         FILE=packages/$SERVICE/Dockerfile
-  #         if [[ -f "$FILE" ]] 
-  #         then
-  #           echo "$FILE exists."
-  #           echo "::set-output name=docker-service::true"
-  #         else
-  #           echo "::set-output name=docker-service::false"
-  #         fi
-   
 
   # test:
   #   runs-on: ubuntu-latest
@@ -206,19 +153,19 @@ jobs:
       run: |
         python devlopment_scripts/update_helm_versions.py $GITHUB_RUN_ID ${{ matrix.service }}
 
-    - name: Check docker-service
-      id: check-docker-service
-      env: 
-        SERVICE: ${{ matrix.service }}
-      run: |
-        FILE=packages/$SERVICE/Dockerfile
-        if [[ -f "$FILE" ]] 
-        then
-          echo "$FILE exists."
-          echo "::set-output name=docker-service::true"
-        else
-          echo "::set-output name=docker-service::false"
-        fi
+    # - name: Check docker-service
+    #   id: check-docker-service
+    #   env: 
+    #     SERVICE: ${{ matrix.service }}
+    #   run: |
+    #     FILE=packages/$SERVICE/Dockerfile
+    #     if [[ -f "$FILE" ]] 
+    #     then
+    #       echo "$FILE exists."
+    #       echo "::set-output name=docker-service::true"
+    #     else
+    #       echo "::set-output name=docker-service::false"
+    #     fi
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -227,21 +174,17 @@ jobs:
         cache: 'npm'
         
     - name: "Install dependencies ${{ matrix.service }}"
-      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       run: npm ci
 
     - name: "Test first run: ${{ matrix.service }}"
-      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm test
 
     - name: "Check format: ${{ matrix.service }}"
-      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run check-format
 
     - name: "Lint first run: ${{ matrix.service }}"
-      if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
       working-directory: packages/${{ matrix.service }}
       run: npm run lint
 
@@ -383,8 +326,6 @@ jobs:
     needs: [changes]
     if: always() && success() #&& (github.event_name == 'push')
     runs-on: ubuntu-latest
-    outputs:
-      docker-services: ${{ steps.check-docker-service.outputs.docker-service }}
     strategy:
       matrix:
         node-version: [16.x]
@@ -394,26 +335,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Check docker-service
-        id: check-docker-service
-        env: 
-          SERVICE: ${{ matrix.service }}
-        run: |
-          FILE=packages/$SERVICE/Dockerfile
-          if [[ -f "$FILE" ]] 
-          then
-            echo "$FILE exists."
-            echo "::set-output name=docker-service::true"
-          else
-            echo "::set-output name=docker-service::false"
-          fi
+      # - name: Check docker-service
+      #   id: check-docker-service
+      #   env: 
+      #     SERVICE: ${{ matrix.service }}
+      #   run: |
+      #     FILE=packages/$SERVICE/Dockerfile
+      #     if [[ -f "$FILE" ]] 
+      #     then
+      #       echo "$FILE exists."
+      #       echo "::set-output name=docker-service::true"
+      #     else
+      #       echo "::set-output name=docker-service::false"
+      #     fi
       
       - name: Set up Docker Buildx
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         uses: docker/setup-buildx-action@v1
             
       - name: Configure AWS credentials
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -422,11 +361,9 @@ jobs:
           
       - name: Login to Amazon ECR
         id: login-ecr
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Set hash
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         env:
           working-directory: packages/${{ matrix.service }}/Dockerfile
         run: |
@@ -435,7 +372,6 @@ jobs:
        
       - name: Check if repo exist
         working-directory: packages/${{ matrix.service }}
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         env: 
           ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
           ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
@@ -449,7 +385,6 @@ jobs:
 
       - name: Check if tag already exist
         id: tag-exist
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         env: 
           ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
           ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
@@ -471,7 +406,6 @@ jobs:
           fi
       
       - name: set branch-name
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' }}
         run: |
           if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then 
@@ -479,7 +413,7 @@ jobs:
           fi
 
       - name: Build, tag, and push image to Amazon ECR
-        if: ${{ steps.check-docker-service.outputs.docker-service == 'true' && steps.tag-exist.outputs.tag_exist == 'false' }}
+        if: ${{ steps.tag-exist.outputs.tag_exist == 'false' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
@@ -501,24 +435,6 @@ jobs:
           aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
           
           
-        # if [[ $GITHUB_REF != 'refs/heads/master' ]]
-        # then 
-        #   docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
-        #   docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
-        #   MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY_STAGING --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-        #   aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
-        #   aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ env.BRANCH_NAME }} --image-manifest "$MANIFEST"
-        #   aws ecr put-image --repository-name $ECR_REPOSITORY_STAGING --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
-        # else 
-        #   docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
-        #   docker push $ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
-        #   MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY_PROD --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-        #   aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
-        #   aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
-        #   aws ecr put-image --repository-name $ECR_REPOSITORY_PROD --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
-        # fi
-
-
   service-chart:
     runs-on: ubuntu-latest
     needs: [docker,changes,tests]
