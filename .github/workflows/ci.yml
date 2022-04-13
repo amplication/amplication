@@ -27,7 +27,7 @@ jobs:
           files_ignore: |
             .github/**
           files: |
-            packages/**
+            ['packages/amplication-client','packages/amplication-server']
 
       - name: Filter array
         id: filter
@@ -174,7 +174,7 @@ jobs:
     
     - name: replace helm version to run_id
       run: |
-        python devlopment_scripts/update_helm_versions.py $GITHUB_RUN_ID
+        python devlopment_scripts/update_helm_versions.py $GITHUB_RUN_ID ${{ matrix.service }}
 
     - name: Check docker-service
       id: check-docker-service
