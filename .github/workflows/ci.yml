@@ -76,7 +76,7 @@ jobs:
             services=()
             if [[ " ${ARRAY[*]} " =~ "amplication-client" ]]; then
               echo amplication-client in array 
-              services+="amplication-client" 
+              services+=('amplication-client') 
             else
               echo not working 
             fi
