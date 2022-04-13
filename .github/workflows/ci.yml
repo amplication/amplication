@@ -174,9 +174,9 @@ jobs:
 
     #next 2 steps are here temporarly only for checks cause tests and docker fails and i still want to test them
     - name: install python dependencies
-        run: |
-          pip install ruamel.yaml
-          pip install shutil
+      run: |
+        pip install ruamel.yaml
+        pip install shutil
 
 
     - name: replace helm version to run_id
