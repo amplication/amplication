@@ -76,9 +76,11 @@ jobs:
             services=()
             if printf '%s\n' "${ARRAY[@]}" | grep -Fxq 'amplication-client'; then  
               echo amplication-client in array 
-              services+=("amplication-client") 
+              services+="amplication-client" 
+            else
+            echo not working
             fi
-            echo services : $services
+            echo services : %services
             echo "::set-output name=array::$services"
           else
             echo "array is empty, no files changed"
