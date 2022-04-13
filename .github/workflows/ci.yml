@@ -76,7 +76,7 @@ jobs:
             services=()
             if printf '%s\n' "${ARRAY[@]}" | grep -Fxq 'amplication-client'; then  
               echo amplication-client in array 
-              $services+=("amplication-client") 
+              services+=("amplication-client") 
             fi
             echo services : $services
             echo "::set-output name=array::$services"
