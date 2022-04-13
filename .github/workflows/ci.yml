@@ -77,7 +77,7 @@ jobs:
             for string in $(echo $ARRAY | sed "s/,/ /g")
             do
               echo $string
-              if ((string = 'amplication-client'))
+              if ((string = "amplication-client"))
               then
                 echo string equal amplication-client
                 $services+=string 
