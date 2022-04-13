@@ -70,23 +70,33 @@ jobs:
         env:
           ARRAY: ${{ steps.filter.outputs.array }}
         run: |
-          if [[ ! -z $ARRAY ]]
-          then 
             echo "$ARRAY"
-            services=()
-            if [[ " ${ARRAY[*]} " =~ "amplication-client" ]]; then
-              echo amplication-client in ARRAY 
-              services+=('amplication-client') 
-            fi
-            if [[ " ${ARRAY[*]} " =~ "amplication-server" ]]; then
-              echo amplication-server in ARRAY 
-              services+=('amplication-server') 
-            fi
+            services=("amplication-client", "amplication-server")
             echo services : ${services[*]}
             echo "::set-output name=array::$services"
-          else
-            echo "array is empty, no files changed"
-          fi
+
+      # - name: Filter services from array
+      #   id: filter-services
+      #   env:
+      #     ARRAY: ${{ steps.filter.outputs.array }}
+      #   run: |
+      #     if [[ ! -z $ARRAY ]]
+      #     then 
+      #       echo "$ARRAY"
+      #       services=()
+      #       if [[ " ${ARRAY[*]} " =~ "amplication-client" ]]; then
+      #         echo amplication-client in ARRAY 
+      #         services+=('amplication-client') 
+      #       fi
+      #       if [[ " ${ARRAY[*]} " =~ "amplication-server" ]]; then
+      #         echo amplication-server in ARRAY 
+      #         services+=('amplication-server') 
+      #       fi
+      #       echo services : ${services[*]}
+      #       echo "::set-output name=array::$services"
+      #     else
+      #       echo "array is empty, no files changed"
+      #     fi
 
 
   # test:
