@@ -14,7 +14,6 @@ jobs:
     outputs:
       services: ${{ steps.filter-services.outputs.array }}
       all_changed_files: ${{ steps.filter.outputs.array }}
-      # docker-exists: ${{ steps.docker-services.outputs.docker-exists }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -138,7 +137,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     needs: [changes]
-    if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
+    # if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
     strategy:
       matrix:
         node-version: [16.x]
