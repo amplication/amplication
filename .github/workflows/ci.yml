@@ -71,9 +71,8 @@ jobs:
           ARRAY: ${{ steps.filter.outputs.array }}
         run: |
             echo "$ARRAY"
-            services=("amplication-client" "amplication-server")
-            modif=[$(echo "$services")]
-            echo "$modif"
+            services=["amplication-client", "amplication-server"]
+            echo "$services"
             echo "::set-output name=array::$services"
 
       # - name: Filter services from array
