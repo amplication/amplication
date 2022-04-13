@@ -78,10 +78,11 @@ jobs:
             do
               if [string = 'amplication-client'] || [string = 'amplication-server']
               then
+                echo $string
                 $services+=string 
               fi
             done
-            echo $services
+            echo services : $services
             echo "::set-output name=array::$services"
           else
             echo "array is empty, no files changed"
