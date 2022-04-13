@@ -176,7 +176,7 @@ jobs:
     - name: install python dependencies
       run: |
         pip install ruamel.yaml
-        pip install shutil
+        pip install pytest-shutil
 
 
     - name: replace helm version to run_id
