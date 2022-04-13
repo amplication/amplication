@@ -157,11 +157,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    
-    - name: replace helm version to run_id
-      run: |
-        python devlopment_scripts/update_helm_versions.py $GITHUB_RUN_ID ${{ matrix.service }}
-
     # - name: Check docker-service
     #   id: check-docker-service
     #   env: 
@@ -447,7 +442,7 @@ jobs:
   service-chart:
     runs-on: ubuntu-latest
     needs: [docker,changes,tests]
-    if: ${{ needs.docker.outputs.docker-services == 'true' }}
+    # if: ${{ needs.docker.outputs.docker-services == 'true' }}
     env:
       BUCKET_NAME: amplication-charts
       REGION: us-east-1
@@ -459,9 +454,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: valudate if a docker service
+      # - name: valudate if a docker service
+      #   run: |
+      #     echo service : ${{ matrix.service }} , docker-service? - ${{ needs.docker.outputs.docker-services }}
+
+      - name: install python dependencies
         run: |
-          echo service : ${{ matrix.service }} , docker-service? - ${{ needs.docker.outputs.docker-services }}
+          pip install ruamel.yaml
+          pip install shutil
+
+
+      - name: replace helm version to run_id
+        run: |
+          python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${{ matrix.service }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
