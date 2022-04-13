@@ -1,5 +1,5 @@
 import { GitHostProviderService } from "../../../providers/gitProvider/gitHostProvider.service";
-import { mockGitHostProviderService } from "../../../__mocks__/providers/gitProvider/gitProviderService";
+import { mockGitHostProviderService } from "../../../__mocks__/providers/gitProvider/gitHubProviderService";
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 

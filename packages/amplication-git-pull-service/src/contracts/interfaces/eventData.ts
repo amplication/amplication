@@ -1,8 +1,9 @@
-import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus";
+import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus.enum";
+import { GitProviderEnum } from "../enums/gitProvider.enum";
 
 export class EventData {
   id: bigint;
-  provider: string;
+  provider: keyof typeof GitProviderEnum;
   repositoryOwner: string;
   repositoryName: string;
   branch: string;
@@ -12,7 +13,7 @@ export class EventData {
 
   constructor(
     id: bigint,
-    provider: string,
+    provider: keyof typeof GitProviderEnum,
     repositoryOwner: string,
     repositoryName: string,
     branch: string,
