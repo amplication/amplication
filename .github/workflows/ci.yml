@@ -74,20 +74,25 @@ jobs:
           then 
             echo "$ARRAY"
             services=()
-            for string in $(echo $ARRAY | sed "s/,/ /g")
-            do
-              echo $string
-              if ((string = "amplication-client"))
-              then
-                echo string equal amplication-client
-                $services+=string 
-              fi
-            done
+            if printf '%s\n' "${ARRAY[@]}" | grep -Fxq 'amplication-client'; then  
+              echo amplication-client in array 
+              $services+=("amplication-client") 
+            fi
             echo services : $services
             echo "::set-output name=array::$services"
           else
             echo "array is empty, no files changed"
           fi
+      # fi
+      # for string in $(echo $ARRAY | sed "s/,/ /g")
+      # do
+      #   echo $string
+      #   if ((string = "amplication-client"))
+      #   then
+      #     echo string equal amplication-client
+      #     $services+=string 
+      #   fi
+      # done
       # - name: Check docker existance
       #   id: docker-services
       #   env: 
