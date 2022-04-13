@@ -171,6 +171,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    
+    - name: replace helm version to run_id
+      run: |
+        python devlopment_scripts/update_helm_versions.py $GITHUB_RUN_ID
+
     - name: Check docker-service
       id: check-docker-service
       env: 
