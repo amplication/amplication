@@ -72,7 +72,7 @@ jobs:
         run: |
             echo "$ARRAY"
             services=("amplication-client", "amplication-server")
-            echo services : ${services[*]}
+            echo "$services"
             echo "::set-output name=array::$services"
 
       # - name: Filter services from array
