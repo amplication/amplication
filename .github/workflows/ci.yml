@@ -72,7 +72,7 @@ jobs:
         run: |
             echo "$ARRAY"
             services=("amplication-client" "amplication-server")
-            modif=[$(echo "$modi")]
+            modif=[$(echo "$services")]
             echo "$modif"
             echo "::set-output name=array::$services"
 
