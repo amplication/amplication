@@ -80,7 +80,7 @@ jobs:
             else
               echo not working 
             fi
-            echo services : %services
+            echo services : ${FILES[*]}
             echo "::set-output name=array::$services"
           else
             echo "array is empty, no files changed"
