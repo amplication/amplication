@@ -170,19 +170,6 @@ jobs:
     #     else
     #       echo "::set-output name=docker-service::false"
     #     fi
-
-
-    #next 2 steps are here temporarly only for checks cause tests and docker fails and i still want to test them
-    - name: install python dependencies
-      run: |
-        pip install ruamel.yaml
-        pip install pytest-shutil
-
-
-    - name: replace helm version to run_id
-      run: |
-        python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${{ matrix.service }}
-  
   
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
