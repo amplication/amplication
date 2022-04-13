@@ -39,8 +39,8 @@ with io.open(umbrella_chart, 'w', encoding='utf8') as outfile:
     ruamel.yaml.round_trip_dump(data_loaded, outfile, explicit_start=True)
 
 #build new package:
-os.remove(f'helm/helm_chart/charts/amplication/charts/{service_name}-{old_version}.tgz')
-os.system(f'helm package helm/helm_chart/charts/services/{service_name}')
+os.remove(f'../helm/helm_chart/charts/amplication/charts/{service_name}-{old_version}.tgz')
+os.system(f'helm package ../helm/helm_chart/charts/services/{service_name}')
 
 source_dir = './'
 target_dir = 'helm/helm_chart/charts/amplication/charts/'
