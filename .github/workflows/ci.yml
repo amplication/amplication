@@ -27,7 +27,7 @@ jobs:
           files_ignore: |
             .github/**
           files: |
-            ['packages/amplication-client','packages/amplication-server']
+            ['packages/amplication-client/**','packages/amplication-server/**']
 
       - name: Filter array
         id: filter
