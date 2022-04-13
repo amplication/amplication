@@ -19,7 +19,7 @@ deployment:
   image:
     pullPolicy: Always
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-prod-client
-    tag: 0.0.1
+    tag: latest
     imagePullSecrets: []
 
 service:

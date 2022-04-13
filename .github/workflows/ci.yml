@@ -510,7 +510,11 @@ jobs:
         run: |
           GITHUB_HASH_MOD=$(sha1sum $working-directory | sha1sum)
           echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
-
+      
+      - name: replace image tag in values.yml
+        run: |
+          python devlopment_scripts\update_tag.py ${GITHUB_HASH} ${{ matrix.service }}
+      
       - name: Upload artifact to s3
         working-directory: ${{ env.SERVICE_CHART_PATH }}
         run: |
