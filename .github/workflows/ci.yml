@@ -173,7 +173,7 @@ jobs:
 
     - name: print node env
       run: |
-        echo $NODE_ENV
+        echo ${NODE_ENV}
 
     - name: set branch-name
       run: |
