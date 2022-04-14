@@ -162,7 +162,7 @@ jobs:
   #     run: npm test
     
 
-  validate-package:
+  tests:
     runs-on: ubuntu-20.04
     needs:
       - changes
