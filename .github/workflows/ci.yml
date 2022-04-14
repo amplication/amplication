@@ -178,6 +178,14 @@ jobs:
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
         fi
   
+
+    - name: download folder if service not changed 
+      run: |
+        set +e
+        if [[ " ${needs.changes.outputs.services[*]} " =~ "amplication-server" ]]; then
+          echo true
+
+
     - name: install python dependencies
       run: |
         pip install ruamel.yaml
@@ -186,7 +194,7 @@ jobs:
 
     - name: replace helm version to run_id
       run: |
-        python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${BRANCH_NAME} "${{ needs.changes.outputs.all_changed_files }}"
+        python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${BRANCH_NAME} "${{ needs.changes.outputs.services }}"
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -478,6 +486,23 @@ jobs:
       #   run: |
       #     echo service : ${{ matrix.service }} , docker-service? - ${{ needs.docker.outputs.docker-services }}
 
+
+      # - name: download folder if service not changed 
+      #   run: |
+      #     set +e
+      #     echo ${{ needs.changes.outputs.services }}
+      #     echo ${{ needs.changes.outputs.services[0] }}
+        # if [[ " ${array[*]} " =~ " ${value} " ]]; then
+        # server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
+        # if [[ -z "$server_folder" ]]
+        # then
+        #   echo "No such folder in bucket"
+        #   echo "::set-output name=create_folder::true"
+        # else
+        #   echo "folder exist in bucket"
+        #   echo "::set-output name=create_folder::false"
+        # fi
+
       - name: install python dependencies
         run: |
           pip install ruamel.yaml
@@ -495,11 +520,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
           aws-region: ${{ env.REGION }}
 
+      - name: set branch-name
+        run: |
+          if [[ $GITHUB_REF != 'refs/heads/master' ]]
+          then 
+            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+          fi
+
       - name: Check service folder exist
         id: check_folder
         run: |
           set +e
-          server_folder=$(aws s3 ls "s3://$BUCKET_NAME/${{ matrix.service }}")
+          server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
           if [[ -z "$server_folder" ]]
           then
             echo "No such folder in bucket"
