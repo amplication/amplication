@@ -182,10 +182,10 @@ jobs:
       run: |
         set +e
         if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
-          echo true
+          echo server doesnt exists
         fi
         if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-client" ]]; then
-          echo true
+          echo client doesnt exists
         fi
 
 
