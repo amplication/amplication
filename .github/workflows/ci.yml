@@ -74,7 +74,6 @@ jobs:
             services=['"amplication-client", "amplication-server"']
             echo "$services"
             echo "::set-output name=tmp_array::$services"
-            echo "::set-output name=list::$services"
 
       # - name: Filter services from array
       #   id: filter-services
