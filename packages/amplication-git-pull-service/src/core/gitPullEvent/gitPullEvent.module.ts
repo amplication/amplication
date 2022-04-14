@@ -14,22 +14,7 @@ import {
 import * as winston from "winston";
 
 @Module({
-  imports: [
-    WinstonModule.forRoot({
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.errors({ stack: true }),
-            winston.format.timestamp(),
-            winston.format.ms(),
-            winston.format.json(),
-            nestWinstonModuleUtilities.format.nestLike()
-          ),
-        }),
-      ],
-    }),
-    PrismaModule,
-  ],
+  imports: [PrismaModule],
   controllers: [GitPullEventController],
   providers: [
     GitPullEventService,

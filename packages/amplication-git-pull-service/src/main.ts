@@ -23,7 +23,6 @@ async function main() {
       },
     }
   );
-  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   app.listen();
 
