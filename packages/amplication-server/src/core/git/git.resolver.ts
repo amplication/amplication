@@ -19,12 +19,12 @@ import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs'
 import { RemoteGitRepositoriesFindManyArgs } from './dto/args/RemoteGitRepositoriesFindManyArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
-import { GitService } from './git.service';
+import { GitProviderService } from './git.provider.service';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class GitResolver {
-  constructor(private readonly gitService: GitService) {}
+  constructor(private readonly gitService: GitProviderService) {}
   @Mutation(() => App)
   @AuthorizeContext(
     AuthorizableResourceParameter.GitOrganizationId,
