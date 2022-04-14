@@ -171,10 +171,6 @@ jobs:
     #       echo "::set-output name=docker-service::false"
     #     fi
 
-    - name: print node env
-      run: |
-        echo ${NODE_ENV}
-
     - name: set branch-name
       run: |
         if [[ $GITHUB_REF != 'refs/heads/master' ]]
@@ -194,6 +190,11 @@ jobs:
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
+
+    - name: print node env
+      run: |
+        echo $NODE_ENV
+
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
