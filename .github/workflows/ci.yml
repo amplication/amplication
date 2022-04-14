@@ -184,6 +184,7 @@ jobs:
         set +e
         if [[ " ${needs.changes.outputs.services[*]} " =~ "amplication-server" ]]; then
           echo true
+        fi
 
 
     - name: install python dependencies
