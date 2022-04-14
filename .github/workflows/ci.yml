@@ -182,7 +182,7 @@ jobs:
     - name: download folder if service not changed 
       run: |
         set +e
-        if [[ " ${needs.changes.outputs.services[*]} " =~ "amplication-server" ]]; then
+        if [[ " ${{ fromJSON(needs.changes.outputs.services)[*] }} " =~ "amplication-server" ]]; then
           echo true
         fi
 
@@ -488,21 +488,21 @@ jobs:
       #     echo service : ${{ matrix.service }} , docker-service? - ${{ needs.docker.outputs.docker-services }}
 
 
-      # - name: download folder if service not changed 
-      #   run: |
-      #     set +e
-      #     echo ${{ needs.changes.outputs.services }}
-      #     echo ${{ needs.changes.outputs.services[0] }}
-        # if [[ " ${array[*]} " =~ " ${value} " ]]; then
-        # server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
-        # if [[ -z "$server_folder" ]]
-        # then
-        #   echo "No such folder in bucket"
-        #   echo "::set-output name=create_folder::true"
-        # else
-        #   echo "folder exist in bucket"
-        #   echo "::set-output name=create_folder::false"
-        # fi
+      - name: download folder if service not changed 
+        run: |
+          set +e
+          echo ${{ needs.changes.outputs.services }}
+          echo ${{ needs.changes.outputs.services[0] }}
+        if [[ " ${array[*]} " =~ " ${value} " ]]; then
+        server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
+        if [[ -z "$server_folder" ]]
+        then
+          echo "No such folder in bucket"
+          echo "::set-output name=create_folder::true"
+        else
+          echo "folder exist in bucket"
+          echo "::set-output name=create_folder::false"
+        fi
 
       - name: install python dependencies
         run: |
