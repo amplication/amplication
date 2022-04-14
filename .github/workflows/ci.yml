@@ -178,15 +178,15 @@ jobs:
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
         fi
   
-    - name: install python dependencies
-      run: |
-        pip install ruamel.yaml
-        pip install pytest-shutil
+    # - name: install python dependencies
+    #   run: |
+    #     pip install ruamel.yaml
+    #     pip install pytest-shutil
 
 
-    - name: replace helm version to run_id
-      run: |
-        python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${BRANCH_NAME} "${{ needs.changes.outputs.all_changed_files }}""
+    # - name: replace helm version to run_id
+    #   run: |
+    #     python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${BRANCH_NAME} "${{ needs.changes.outputs.all_changed_files }}""
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
