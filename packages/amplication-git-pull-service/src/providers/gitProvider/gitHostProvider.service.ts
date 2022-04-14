@@ -4,6 +4,7 @@ import { App } from "octokit";
 import { convertToNumber } from "../../utils/convertToNumber";
 import { ConfigService } from "@nestjs/config";
 import { CustomError } from "../../errors/CustomError";
+import { ErrorMessages } from "../../constants/errorMessages";
 
 const GITHUB_APP_APP_ID_VAR = "GITHUB_APP_APP_ID";
 const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
@@ -40,7 +41,7 @@ export class GitHostProviderService implements IGitProvider {
       );
       return data.token;
     } catch (err) {
-      throw new CustomError("failed to create new access token", err);
+      throw new CustomError(ErrorMessages.ACCESS_TOKEN_ERROR, err);
     }
   }
 }

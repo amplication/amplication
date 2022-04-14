@@ -1,5 +1,6 @@
-import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus";
+import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
 import { MOCK_EVENT_DATA } from "./gitClient.stub";
+import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 
 const CREATE_ARGS = {
   data: MOCK_EVENT_DATA,
@@ -15,7 +16,7 @@ const UPDATE_ARGS = {
 
 const FIND_BY_ARGS = {
   where: {
-    provider: "GitHub",
+    provider: GitProviderEnum.Github,
     repositoryOwner: "amit-amp",
     repositoryName: "test-repo",
     branch: "main",
@@ -44,7 +45,7 @@ const FIND_BY_ARGS = {
 export const eventRepositoryStub = {
   create: {
     id: BigInt(123),
-    provider: "GitHub",
+    provider: GitProviderEnum.Github,
     repositoryOwner: "amit-amp",
     repositoryName: "test-repo",
     branch: "main",

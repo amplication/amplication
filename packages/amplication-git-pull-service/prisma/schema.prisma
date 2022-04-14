@@ -9,7 +9,7 @@ generator client {
 
 model GitPullEvent {
   id                    BigInt                       @postgres.BigInt @default(autoincrement()) @unique
-  provider              String
+  provider              GitProviderEnum
   repositoryOwner       String
   repositoryName        String
   branch                String
@@ -27,4 +27,8 @@ enum EnumGitPullEventStatus {
   Created
   Ready
   Deleted
+}
+
+enum GitProviderEnum {
+  Github
 }

@@ -1,10 +1,13 @@
 -- CreateEnum
 CREATE TYPE "EnumGitPullEventStatus" AS ENUM ('Created', 'Ready', 'Deleted');
 
+-- CreateEnum
+CREATE TYPE "GitProviderEnum" AS ENUM ('Github');
+
 -- CreateTable
 CREATE TABLE "GitPullEvent" (
     "id" BIGSERIAL NOT NULL,
-    "provider" TEXT NOT NULL,
+    "provider" "GitProviderEnum" NOT NULL,
     "repositoryOwner" TEXT NOT NULL,
     "repositoryName" TEXT NOT NULL,
     "branch" TEXT NOT NULL,
