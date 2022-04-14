@@ -1,5 +1,5 @@
 import { PrismaService } from "nestjs-prisma";
-import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
+import { GitPullEventRepository } from "../../repositories/gitPullEvent.repository";
 import { Test, TestingModule } from "@nestjs/testing";
 import {
   MOCK_EVENT_DATA,

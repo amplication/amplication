@@ -1,4 +1,4 @@
-import { EnvironmentVariables } from "./../../services/EnvironmentVariables";
+import { EnvironmentVariables } from "./../../services/environmentVariables";
 import { Body, Controller } from "@nestjs/common";
 import { GitPullEventService } from "./gitPullEvent.service";
 import { MessagePattern, Payload } from "@nestjs/microservices";
