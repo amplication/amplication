@@ -70,7 +70,7 @@ jobs:
         env:
           ARRAY: ${{ steps.filter.outputs.array }}
         run: |
-            services=['"amplication-client"']
+            services=['"amplication-client", "amplication-server"']
             echo "$services"
             echo "::set-output name=array::$services"
 
@@ -181,12 +181,14 @@ jobs:
     - name: download folder if service not changed 
       run: |
         set +e
+        unupdated_services=()
         if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
-          echo server doesnt exists
+          unupdated_services+=("amplication-server")
         fi
         if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-client" ]]; then
-          echo client doesnt exists
+          unupdated_services+=("amplication-client")
         fi
+        echo $unupdated_services
 
 
     - name: install python dependencies
@@ -493,23 +495,41 @@ jobs:
       # - name: download folder if service not changed 
       #   run: |
       #     set +e
-      #   if [[ ! " ${array[*]} " =~ " ${value} " ]]; then
-      #     server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}") 
-          # if [[ ! -z "$server_folder" ]]
-          #   then
-          #     $ KEY=`aws s3 ls $BUCKET --recursive | sort | tail -n 1 | awk '{print $4}'` $ aws s3 sync s3://$BUCKET/$KEY ./latest-object
-          #   else
-          #       server_folder=$(aws s3 ls "s3://$BUCKET_NAME/master/${{ matrix.service }}") 
-                # if [[ ! -z "$server_folder" ]]
-                #   then
-                #     $ KEY=`aws s3 ls $BUCKET --recursive | sort | tail -n 1 | awk '{print $4}'` $ aws s3 sync s3://$BUCKET/$KEY ./latest-object
-                #   else
-                #     copy helm has it is in local repo
-        #         fi
-        #   fi
-      #     aws s3 sync s3://mybucket/dir localdir
-        # fi
-      #   
+            # if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
+            #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-server")
+            #   if [[ ! -z "$server_folder" ]]; then    
+            #     KEY=`aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-server" --recursive | sort | tail -n 1 | awk '{print $4}'`
+            #     aws s3 sync s3://$BUCKET_NAME/$BRANCH_NAME/amplication-server/$KEY ./downloaded_helms
+            #   fi
+            #   else
+            #     server_folder=$(aws s3 ls "s3://$BUCKET_NAME/master/amplication-server")
+            #     if [[ ! -z "$server_folder" ]]; then    
+            #       KEY=`aws s3 ls "s3://$BUCKET_NAME/master/amplication-server" --recursive | sort | tail -n 1 | awk '{print $4}'`
+            #       aws s3 sync s3://$BUCKET_NAME/master/amplication-server/$KEY /downloaded_helms/amplication-server
+            #     fi
+            #     else
+            #       cp helm/helm_chart/charts/services/amplication-server /downloaded_helms/amplication-server
+            #     fi
+            #   fi
+            # fi
+            # if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-client" ]]; then
+            #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-client")
+            #   if [[ ! -z "$server_folder" ]]; then    
+            #     KEY=`aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-client" --recursive | sort | tail -n 1 | awk '{print $4}'`
+            #     aws s3 sync s3://$BUCKET_NAME/$BRANCH_NAME/amplication-client/$KEY ./downloaded_helms
+            #   fi
+            #   else
+            #     server_folder=$(aws s3 ls "s3://$BUCKET_NAME/master/amplication-client")
+            #     if [[ ! -z "$server_folder" ]]; then    
+            #       KEY=`aws s3 ls "s3://$BUCKET_NAME/master/amplication-client" --recursive | sort | tail -n 1 | awk '{print $4}'`
+            #       aws s3 sync s3://$BUCKET_NAME/master/amplication-client/$KEY /downloaded_helms/amplication-client
+            #     fi
+            #     else
+            #       cp helm/helm_chart/charts/services/amplication-client /downloaded_helms/amplication-client
+            #     fi
+            #   fi
+            # fi
+
 
       - name: install python dependencies
         run: |
