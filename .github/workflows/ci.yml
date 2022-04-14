@@ -71,7 +71,8 @@ jobs:
           ARRAY: ${{ steps.filter.outputs.array }}
         run: |
             echo "$ARRAY"
-            services=['"amplication-client", "amplication-server"']
+          # services=['"amplication-client", "amplication-server"']
+            services=['"amplication-client"']
             echo "$services"
             echo "::set-output name=array::$services"
 
@@ -182,7 +183,10 @@ jobs:
     - name: download folder if service not changed 
       run: |
         set +e
-        if [[ " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
+        if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
+          echo true
+        fi
+        if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-client" ]]; then
           echo true
         fi
 
@@ -491,19 +495,22 @@ jobs:
       # - name: download folder if service not changed 
       #   run: |
       #     set +e
-      #   if [[ " ${array[*]} " =~ " ${value} " ]]; then
+      #   if [[ ! " ${array[*]} " =~ " ${value} " ]]; then
       #     server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}") 
-          # if [[ -z "$server_folder" ]]
+          # if [[ ! -z "$server_folder" ]]
           #   then
-          #     echo "No such folder in bucket"
-          #     echo "::set-output name=create_folder::true"
+          #     $ KEY=`aws s3 ls $BUCKET --recursive | sort | tail -n 1 | awk '{print $4}'` $ aws s3 sync s3://$BUCKET/$KEY ./latest-object
           #   else
-          #     echo "folder exist in bucket"
-          #     echo "::set-output name=create_folder::false"
+          #       server_folder=$(aws s3 ls "s3://$BUCKET_NAME/master/${{ matrix.service }}") 
+                # if [[ ! -z "$server_folder" ]]
+                #   then
+                #     $ KEY=`aws s3 ls $BUCKET --recursive | sort | tail -n 1 | awk '{print $4}'` $ aws s3 sync s3://$BUCKET/$KEY ./latest-object
+                #   else
+                #     copy helm has it is in local repo
+        #         fi
         #   fi
       #     aws s3 sync s3://mybucket/dir localdir
         # fi
-      #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
       #   
 
       - name: install python dependencies
