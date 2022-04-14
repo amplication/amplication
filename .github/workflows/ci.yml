@@ -170,7 +170,12 @@ jobs:
     #     else
     #       echo "::set-output name=docker-service::false"
     #     fi
-  
+    - name: set branch-name
+      run: |
+        if [[ $GITHUB_REF != 'refs/heads/master' ]]
+        then 
+          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+        fi
   
     - name: install python dependencies
       run: |
@@ -180,7 +185,7 @@ jobs:
 
     - name: replace helm version to run_id
       run: |
-        python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${{ needs.changes.outputs.services }}
+        python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${{ needs.changes.outputs.services }} ${BRANCH_NAME}
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -471,7 +476,7 @@ jobs:
       - name: install python dependencies
         run: |
           pip install ruamel.yaml
-          pip install shutil
+          pip install pytest-shutil
 
 
       - name: replace helm version to run_id
