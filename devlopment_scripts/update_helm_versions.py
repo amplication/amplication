@@ -9,8 +9,8 @@ print(f'services : {services}')
 print(f'branch : {branch_name}')
 # print(f'first {services_list[0]}')
 # print(f'second {services_list[1]}')
-# data = json.load(services)
-# print(f'data : {data}')
+data = json.load(services)
+print(f'data : {data}')
 umbrella_chart = 'helm/helm_chart/charts/amplication/Chart.yaml'
 def my_function(version):
   splited_version = version.split('.')
@@ -57,15 +57,3 @@ for service in services:
 
 #     #pull from s3 
 #     #load its chart yaml and give its version to umbrella 
-
-# # # # #build new package:
-# # # # print("")
-# # # # print(os.getcwd())
-# # # # os.remove(f'./../helm/helm_chart/charts/amplication/charts/{service_name}-{old_version}.tgz')
-# # # # os.system(f'helm package ./../helm/helm_chart/charts/services/{service_name}')
-
-# # # # source_dir = './'
-# # # # target_dir = 'helm/helm_chart/charts/amplication/charts/'
-# # # # file_name = f'{service_name}-{new_version}.tgz'
-
-# # # # shutil.move(os.path.join(source_dir, file_name), target_dir)
