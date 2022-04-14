@@ -22,7 +22,8 @@ packages/amplication-data-service-generator/generated
 **/*.yaml
 
 packages/**/dist
-packages/**/build
+packages/amplication-client/build
+packages/**/lib
 
 **/*.spec.ts
 **/*.mock.ts
