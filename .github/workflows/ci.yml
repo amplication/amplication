@@ -171,6 +171,17 @@ jobs:
     #       echo "::set-output name=docker-service::false"
     #     fi
   
+  
+    - name: install python dependencies
+      run: |
+        pip install ruamel.yaml
+        pip install shutil
+
+
+    - name: replace helm version to run_id
+      run: |
+        python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${{ needs.changes.outputs.services }}
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -465,7 +476,7 @@ jobs:
 
       - name: replace helm version to run_id
         run: |
-          python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${{ matrix.service }}
+          python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${{ needs.changes.outputs.services }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
