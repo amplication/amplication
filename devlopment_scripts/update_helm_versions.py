@@ -4,10 +4,8 @@ import io,sys,os,shutil
 build_number = sys.argv[1]
 branch_name = sys.argv[2]
 services = sys.argv[3]
-serv_list = list(services)
 print(f'build number : {build_number}')
 print(f'services : {services}')
-print(f'services list: {serv_list}')
 print(f'branch : {branch_name}')
 # print(f'first {services_list[0]}')
 # print(f'second {services_list[1]}')
@@ -15,7 +13,7 @@ umbrella_chart = 'helm/helm_chart/charts/amplication/Chart.yaml'
 def my_function(version):
   splited_version = version.split('.')
   return f'{splited_version[0]}.{splited_version[1]}.{build_number}'
-for service in serv_list:
+for service in services:
     print(f'service : {service}')
 #     # print(f'first {services_list[0]}')
 #     # print(f'second {services_list[1]}')
