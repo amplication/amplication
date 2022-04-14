@@ -182,7 +182,8 @@ jobs:
     - name: download folder if service not changed 
       run: |
         set +e
-        if [[ " ${{ fromJSON(needs.changes.outputs.services)[*] }} " =~ "amplication-server" ]]; then
+        echo ${needs.changes.outputs.services}
+        if [[ " ${needs.changes.outputs.services[*]} " =~ "amplication-server" ]]; then
           echo true
         fi
 
@@ -491,9 +492,9 @@ jobs:
       # - name: download folder if service not changed 
       #   run: |
       #     set +e
-      #     echo ${{ needs.changes.outputs.services }}
-      #     echo ${{ needs.changes.outputs.services[0] }}
       #   if [[ " ${array[*]} " =~ " ${value} " ]]; then
+      #     aws s3 sync s3://mybucket/dir localdir
+        # fi
       #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
       #   if [[ -z "$server_folder" ]]
       #   then
