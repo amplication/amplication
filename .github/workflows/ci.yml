@@ -182,11 +182,9 @@ jobs:
     - name: download folder if service not changed 
       run: |
         set +e
-        echo $needs.changes.outputs.services
-        if [[ " $needs.changes.outputs.services[*] " =~ "amplication-server" ]]; then
+        if [[ " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
           echo true
         fi
-        echo "${{ needs.changes.outputs.services }}"
 
 
     - name: install python dependencies
@@ -494,18 +492,19 @@ jobs:
       #   run: |
       #     set +e
       #   if [[ " ${array[*]} " =~ " ${value} " ]]; then
-      #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}") 
+      #     server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}") 
+          # if [[ -z "$server_folder" ]]
+          #   then
+          #     echo "No such folder in bucket"
+          #     echo "::set-output name=create_folder::true"
+          #   else
+          #     echo "folder exist in bucket"
+          #     echo "::set-output name=create_folder::false"
+        #   fi
       #     aws s3 sync s3://mybucket/dir localdir
         # fi
       #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
-      #   if [[ -z "$server_folder" ]]
-      #   then
-      #     echo "No such folder in bucket"
-      #     echo "::set-output name=create_folder::true"
-      #   else
-      #     echo "folder exist in bucket"
-      #     echo "::set-output name=create_folder::false"
-      #   fi
+      #   
 
       - name: install python dependencies
         run: |
