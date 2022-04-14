@@ -7,15 +7,14 @@ services = sys.argv[3]
 print(f'build number : {build_number}')
 print(f'services : {services}')
 print(f'branch : {branch_name}')
-# print(f'first {services_list[0]}')
-# print(f'second {services_list[1]}')
-data = json.load(services)
-print(f'data : {data}')
+tmp = services[1:-1]
+x = tmp.split(", ")
+print(x)
 umbrella_chart = 'helm/helm_chart/charts/amplication/Chart.yaml'
 def my_function(version):
   splited_version = version.split('.')
   return f'{splited_version[0]}.{splited_version[1]}.{build_number}'
-for service in services:
+for service in x:
     print(f'service : {service}')
 #     # print(f'first {services_list[0]}')
 #     # print(f'second {services_list[1]}')
