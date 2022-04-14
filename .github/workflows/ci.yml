@@ -185,7 +185,7 @@ jobs:
 
     - name: replace helm version to run_id
       run: |
-        python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${BRANCH_NAME} ${ needs.changes.outputs.services }
+        python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${BRANCH_NAME} ${{ needs.changes.outputs.services }}
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
