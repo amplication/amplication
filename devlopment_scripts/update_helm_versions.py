@@ -6,6 +6,7 @@ branch_name = sys.argv[2]
 services = sys.argv[3]
 serv_list = list(services)
 print(f'build number : {build_number}')
+print(f'services : {services}')
 print(f'services list: {serv_list}')
 print(f'branch : {branch_name}')
 # print(f'first {services_list[0]}')
