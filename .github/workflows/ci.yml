@@ -182,10 +182,11 @@ jobs:
     - name: download folder if service not changed 
       run: |
         set +e
-        echo ${needs.changes.outputs.services}
-        if [[ " ${needs.changes.outputs.services[*]} " =~ "amplication-server" ]]; then
+        echo $needs.changes.outputs.services
+        if [[ " $needs.changes.outputs.services[*] " =~ "amplication-server" ]]; then
           echo true
         fi
+        echo "${{ needs.changes.outputs.services }}"
 
 
     - name: install python dependencies
@@ -493,6 +494,7 @@ jobs:
       #   run: |
       #     set +e
       #   if [[ " ${array[*]} " =~ " ${value} " ]]; then
+      #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}") 
       #     aws s3 sync s3://mybucket/dir localdir
         # fi
       #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
