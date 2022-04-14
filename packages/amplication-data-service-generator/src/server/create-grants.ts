@@ -94,12 +94,6 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
           break;
         }
         case EnumEntityPermissionType.Public: {
-          grants.push({
-            role: PUBLIC,
-            resource: "entity.name",
-            action: actionToACLAction[permission.action],
-            attributes: ALL_ATTRIBUTES_ALLOWED,
-          });
           break;
         }
         case EnumEntityPermissionType.Granular: {
