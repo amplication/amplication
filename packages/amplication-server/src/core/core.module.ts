@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
-
 import { AccountModule } from './account/account.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { AppModule } from './app/app.module';
@@ -19,11 +17,11 @@ import { DeploymentModule } from './deployment/deployment.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
 import { SystemModule } from './system/system.module';
-import { GithubModule } from './github/github.module';
 import { MailModule } from './mail/mail.module';
 import { AppSettingsModule } from './appSettings/appSettings.module';
 import { SubscriptionModule } from './subscription/subscription.module';
-import { GitModule } from './git/git.module';
+import { GitModule } from '@amplication/git-service';
+import { GitProviderModule } from './git/git.provider.module';
 @Module({
   imports: [
     AccountModule,
@@ -44,11 +42,11 @@ import { GitModule } from './git/git.module';
     EnvironmentModule,
     CommitModule,
     SystemModule,
-    GithubModule,
     AppSettingsModule,
     GitModule,
     MailModule,
-    SubscriptionModule
+    SubscriptionModule,
+    GitProviderModule
   ],
   exports: [
     AccountModule,
@@ -67,11 +65,11 @@ import { GitModule } from './git/git.module';
     DeploymentModule,
     EnvironmentModule,
     CommitModule,
-    GithubModule,
     AppSettingsModule,
     GitModule,
     MailModule,
-    SubscriptionModule
+    SubscriptionModule,
+    GitProviderModule
   ]
 })
 export class CoreModule {}

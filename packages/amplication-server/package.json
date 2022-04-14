@@ -32,6 +32,7 @@
     "check-graphql-schema": "ts-node -r tsconfig-paths/register scripts/check-graphql-schema"
   },
   "dependencies": {
+    "@amplication/git-service": "^0.12.1",
     "@amplication/container-builder": "^0.12.3",
     "@amplication/data": "^0.12.3",
     "@amplication/data-service-generator": "^0.12.3",

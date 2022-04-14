@@ -25,7 +25,8 @@ COPY packages/amplication-deployer packages/amplication-deployer
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/server --include-dependencies
-RUN npm run prisma:generate
+RUN npm run prisma:generate -- --scope @amplication/server --include-dependencies
+
 # Build all distributions needed for amplicaiton/server
 RUN npm run build -- --scope @amplication/server --include-dependencies
 
@@ -41,6 +42,9 @@ WORKDIR /app/packages/amplication-server
 COPY --from=build /app/packages/amplication-server/package.json /app/packages/amplication-server/package.json
 COPY --from=build /app/packages/amplication-server/node_modules /app/packages/amplication-server/node_modules
 COPY --from=build /app/packages/amplication-server/dist /app/packages/amplication-server/dist
+
+COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
+
 
 COPY --from=build /app/packages/amplication-container-builder/package.json /app/packages/amplication-container-builder/package.json
 COPY --from=build /app/packages/amplication-container-builder/node_modules /app/packages/amplication-container-builder/node_modules
