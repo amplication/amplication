@@ -1,4 +1,4 @@
-import ruamel.yaml
+import ruamel.yaml,json
 import io,sys,os,shutil
 
 build_number = sys.argv[1]
@@ -9,11 +9,13 @@ print(f'services : {services}')
 print(f'branch : {branch_name}')
 # print(f'first {services_list[0]}')
 # print(f'second {services_list[1]}')
+data = json.load(services)
+print(f'data : {data}')
 umbrella_chart = 'helm/helm_chart/charts/amplication/Chart.yaml'
 def my_function(version):
   splited_version = version.split('.')
   return f'{splited_version[0]}.{splited_version[1]}.{build_number}'
-for service in services:
+for service in data:
     print(f'service : {service}')
 #     # print(f'first {services_list[0]}')
 #     # print(f'second {services_list[1]}')
