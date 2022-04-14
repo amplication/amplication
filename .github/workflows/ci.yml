@@ -73,7 +73,7 @@ jobs:
             echo "$ARRAY"
             services=['"amplication-client", "amplication-server"']
             echo "$services"
-            echo "::set-output name=tmp_array::$services"
+            echo "::set-output name=array::$services"
 
       # - name: Filter services from array
       #   id: filter-services
