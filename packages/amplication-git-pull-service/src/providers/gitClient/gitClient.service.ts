@@ -73,15 +73,9 @@ export class GitClientService implements IGitClient {
       const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
       await this.git
-        .addConfig("init.defaultBranch", "main", false, CONFIG_SCOPE_GLOBAL)
+        .clone(repository, baseDir, ["--branch", branch])
         .cwd(baseDir)
-        .init()
-        .addRemote(REMOTE_ORIGIN, repository)
-        .fetch(REMOTE_ORIGIN, branch)
         .checkout(commit);
-      // .clone(repository, baseDir, ["--branch", branch])
-      // .cwd(baseDir)
-      // .checkout(commit);
     } catch (err) {
       throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, {
         message: err,
