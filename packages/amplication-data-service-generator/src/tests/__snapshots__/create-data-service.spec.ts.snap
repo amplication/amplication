@@ -3266,7 +3266,7 @@ export class DefaultAuthGuard extends BasicAuthGuard {
       parentCanActivate = false;
     }
 
-    const isPublic = this.reflector.get<boolean>(
+    const isPublic = this.reflector?.get<boolean>(
       IS_PUBLIC_KEY,
       context.getHandler()
     );

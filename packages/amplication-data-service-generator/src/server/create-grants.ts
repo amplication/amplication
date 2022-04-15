@@ -94,6 +94,15 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
           break;
         }
         case EnumEntityPermissionType.Public: {
+          for (const role of roles) {
+            grants.push({
+              role: role.name,
+              resource: entity.name,
+              action: actionToACLAction[permission.action],
+              /** @todo */
+              attributes: ALL_ATTRIBUTES_ALLOWED,
+            });
+          }
           break;
         }
         case EnumEntityPermissionType.Granular: {
