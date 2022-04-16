@@ -67,22 +67,23 @@ Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
 ### Initializing all the packages
 
-Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, including running a docker image for the DB and seeding the DB
+Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, including running a docker image for the DB and seeding the DB.
 
 1. Execute the following commands in the project root folder:
 
 ```jsx
 npm install
 npm run setup:dev
+npm run start
 ```
 
-2. Go to .../packages/amplication-server and execute the following command:
+2. Go to `.../packages/amplication-server` and execute the following command:
 
 ```jsx
 npm run start
 ```
 
-3. Go to .../packages/amplication-client and execute the following command:
+3. Go to `.../packages/amplication-client` and execute the following command:
 
 ```jsx
 npm run start
