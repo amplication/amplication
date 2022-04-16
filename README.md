@@ -76,7 +76,7 @@ npm install
 npm run setup:dev
 ```
 
-2. Go to .../packages/amplication-server and excecute the following command:
+2. Go to .../packages/amplication-server and execute the following command:
 
 ```jsx
 npm run start
