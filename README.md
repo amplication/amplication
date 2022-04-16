@@ -82,7 +82,7 @@ npm run setup:dev
 npm run start
 ```
 
-3. Go to .../packages/amplication-client and excecute the following command:
+3. Go to .../packages/amplication-client and execute the following command:
 
 ```jsx
 npm run start
