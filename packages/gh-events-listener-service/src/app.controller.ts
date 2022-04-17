@@ -8,11 +8,13 @@ export class AppController {
     @Headers() headers: Headers,
     @Body() payload: string,
   ) {
+    //log start
     await this.appService.createMessage(
       headers['x-github-delivery'],
       headers['x-github-event'],
       payload,
       headers['x-hub-signature-256'],
     );
+    //log end
   }
 }

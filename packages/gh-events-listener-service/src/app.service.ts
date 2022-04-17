@@ -44,7 +44,7 @@ export class AppService {
     signature: string,
   ) {
     const pushEventObj: PushEvent = JSON.parse(JSON.stringify(payload));
-    if (await this.isMasterBranch(pushEventObj)) {
+    if (this.isMasterBranch(pushEventObj)) {
       if (await this.verifyAndReceive(id, eventName, payload, signature)) {
         const pushRequest = await this.createPushRequestObject(pushEventObj);
         if (!this.isInstallationIdExist(pushRequest.installationId)) {
@@ -55,6 +55,8 @@ export class AppService {
         }
         await this.queueService.createPushRequest(pushRequest);
       }
+    } else {
+      console.log(``); //convert to winston
     }
   }
 
@@ -81,19 +83,19 @@ export class AppService {
         signature: signature,
       });
     } catch (error) {
-      console.log(error); //todo: write more informative info
+      console.log(error); //todo: write more informative info// copy from the server winston logger
       return false;
     }
     return true;
   }
 
-  async getBranchName(fullName: string): Promise<string> {
+  getBranchName(fullName: string): string {
     const splitName = fullName.split('/');
-    return await splitName[2];
+    return splitName[2];
   }
 
-  async isMasterBranch(payload: PushEvent): Promise<boolean> {
-    const currentBranch = await this.getBranchName(payload.ref);
+  isMasterBranch(payload: PushEvent): boolean {
+    const currentBranch = this.getBranchName(payload.ref);
     const masterBranch = payload.repository.master_branch;
     return currentBranch === masterBranch;
   }
