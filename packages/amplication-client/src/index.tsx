@@ -13,6 +13,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { getToken, setToken } from "./authentication/authentication";
 import { setContext } from "@apollo/client/link/context";
+import { REACT_APP_DATA_SOURCE } from "./env";
 
 const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
@@ -20,8 +21,12 @@ if (token) {
   setToken(token);
 }
 
+if (!REACT_APP_DATA_SOURCE) {
+  throw new Error("Missing ֿREACT_APP_DATA_SOURCE env variable");
+}
+
 const httpLink = createHttpLink({
-  uri: "/graphql",
+  uri: REACT_APP_DATA_SOURCE,
 });
 
 const authLink = setContext((_, { headers }) => {

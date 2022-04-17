@@ -20,7 +20,18 @@ RUN npm run bootstrap -- --scope @amplication/client --include-dependencies
 RUN npm run build -- --scope @amplication/client --include-dependencies
 
 FROM nginx:$NGINX_VERSION as client
+
+RUN apk add --update nodejs
+
 WORKDIR /app
 
 COPY --from=build /app/packages/amplication-client/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/packages/amplication-client/build /app
+COPY --from=build /app/packages/amplication-client/src/scripts/inject-variables.js .
+COPY --from=build /app/packages/amplication-client/entrypoint.sh .
+
+RUN chmod 755 entrypoint.sh
+
+ENTRYPOINT [ "/app/entrypoint.sh" ]
+
+CMD ["nginx", "-g", "daemon off;"]
