@@ -4,6 +4,7 @@ import "./style/icon.scss";
 export {
   Button,
   EnumButtonStyle,
+  EnumIconPosition,
   Props as ButtonProps,
 } from "./components/Button/Button";
 

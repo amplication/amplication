@@ -1,4 +1,5 @@
 import { AppGenerationConfig } from '@amplication/data-service-generator';
+import { GitService } from '@amplication/git-service';
 import { Injectable } from '@nestjs/common';
 import { GitRepository } from '@prisma/client';
 import { isEmpty } from 'lodash';
@@ -9,6 +10,7 @@ import * as semver from 'semver';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
+import { AmplicationError } from 'src/errors/AmplicationError';
 import { App, Commit, User, Workspace } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
@@ -17,7 +19,7 @@ import { BuildService } from '../build/build.service'; // eslint-disable-line im
 import { USER_ENTITY_NAME } from '../entity/constants';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
-import { GithubService } from '../github/github.service';
+import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import {
   AppCreateWithEntitiesInput,
   AppValidationErrorTypes,
@@ -63,7 +65,7 @@ export class AppService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
-    private readonly githubService: GithubService
+    private readonly gitService: GitService
   ) {}
 
   /**
@@ -692,7 +694,8 @@ export class AppService {
     let configFile;
 
     try {
-      configFile = await this.githubService.getFile(
+      configFile = await this.gitService.getFile(
+        EnumGitProvider[appRepository.gitOrganization.provider],
         appRepository.gitOrganization.name,
         appRepository.name,
         APP_CONFIG_FILE_PATH,
@@ -708,7 +711,7 @@ export class AppService {
     try {
       config = JSON.parse(configFile.content);
     } catch (error) {
-      throw new Error(
+      throw new AmplicationError(
         `Unexpected config file format in the linked GitHub repo. The file must be a valid JSON object`
       );
     }

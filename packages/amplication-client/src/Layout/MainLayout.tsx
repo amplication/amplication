@@ -41,7 +41,6 @@ type MenuProps = {
 
 const Menu = ({ children }: MenuProps) => {
   const history = useHistory();
-  const [supportMenuOpen, setSupportMenuOpen] = React.useState(false);
   const { trackEvent } = useTracking();
 
   const apolloClient = useApolloClient();
@@ -62,8 +61,7 @@ const Menu = ({ children }: MenuProps) => {
     trackEvent({
       eventName: "supportButtonClick",
     });
-    setSupportMenuOpen(!supportMenuOpen);
-  }, [setSupportMenuOpen, supportMenuOpen, trackEvent]);
+  }, [trackEvent]);
 
   return (
     <div className={classNames("main-layout__menu")}>
@@ -93,14 +91,13 @@ const Menu = ({ children }: MenuProps) => {
             <Popover
               className="main-layout__menu__popover"
               content={<SupportMenu />}
-              open={supportMenuOpen}
+              onOpen={handleSupportClick}
               placement="right"
             >
               <MenuItem
                 icon="help_outline"
                 hideTooltip
                 title="Help and support"
-                onClick={handleSupportClick}
               />
             </Popover>
             <MenuItem

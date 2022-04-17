@@ -17,6 +17,10 @@ $counter-height: 18px;
     @include flexFullRowWithSpacing;
     @include body2;
 
+    :first-child {
+      color: var(--black100);
+    }
+
     :last-child {
       margin-left: 0;
     }
@@ -25,20 +29,30 @@ $counter-height: 18px;
     }
   }
 
-  &__changes-count {
-    background-color: var(--warning-default);
+  %__changes-count {
     height: $counter-height;
     border-radius: $counter-height * 0.5;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    color: var(--static-black);
     box-sizing: border-box;
     white-space: nowrap;
     width: auto;
     margin-left: var(--default-spacing-small);
     min-width: $counter-height;
+  }
+
+  &__changes-count-warning {
+    @extend %__changes-count;
+    background-color: var(--warning-default);
+    color: var(--static-black);
+  }
+
+  &__changes-count {
+    @extend %__changes-count;
+    background-color: var(--black5);
+    color: var(--black100);
   }
 
   &__empty-state {
@@ -61,6 +75,11 @@ $counter-height: 18px;
     margin-top: var(--default-spacing);
     position: relative;
     margin-bottom: var(--default-spacing);
+  }
+
+  .amp-button__icon {
+    color: var(--black100);
+    cursor: pointer;
   }
 }
 
