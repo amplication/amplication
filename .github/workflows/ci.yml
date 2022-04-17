@@ -349,9 +349,9 @@ jobs:
 
       - name: Set hash
         env:
-          working-directory: packages/${{ matrix.service }}/Dockerfile
+          working-directory: packages/${{ matrix.service }}
         run: |
-          GITHUB_HASH_MOD=$(sha1sum packages/${{ matrix.service }}/Dockerfile | sha1sum)
+          GITHUB_HASH_MOD=$(sha1sum packages/${{ matrix.service }} | sha1sum)
           echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
        
       - name: Check if repo exist
@@ -420,217 +420,217 @@ jobs:
           aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
           
           
-  service-chart:
-    runs-on: ubuntu-latest
-    needs: [docker,changes,tests]
-    env:
-      BUCKET_NAME: amplication-charts
-      REGION: us-east-1
-      SERVICE_CHART_PATH: helm/helm_chart/charts/services
-    strategy:
-      matrix:
-        service: ${{ fromJSON(needs.changes.outputs.services) }} 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # service-chart:
+  #   runs-on: ubuntu-latest
+  #   needs: [docker,changes,tests]
+  #   env:
+  #     BUCKET_NAME: amplication-charts
+  #     REGION: us-east-1
+  #     SERVICE_CHART_PATH: helm/helm_chart/charts/services
+  #   strategy:
+  #     matrix:
+  #       service: ${{ fromJSON(needs.changes.outputs.services) }} 
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      # - name: download folder if service not changed 
-      #   run: |
-      #     set +e
-            # if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
-            #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-server")
-            #   if [[ ! -z "$server_folder" ]]; then    
-            #     KEY=`aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-server" --recursive | sort | tail -n 1 | awk '{print $4}'`
-            #     aws s3 sync s3://$BUCKET_NAME/$BRANCH_NAME/amplication-server/$KEY ./downloaded_helms
-            #   fi
-            #   else
-            #     server_folder=$(aws s3 ls "s3://$BUCKET_NAME/master/amplication-server")
-            #     if [[ ! -z "$server_folder" ]]; then    
-            #       KEY=`aws s3 ls "s3://$BUCKET_NAME/master/amplication-server" --recursive | sort | tail -n 1 | awk '{print $4}'`
-            #       aws s3 sync s3://$BUCKET_NAME/master/amplication-server/$KEY /downloaded_helms/amplication-server
-            #     fi
-            #     else
-            #       cp helm/helm_chart/charts/services/amplication-server /downloaded_helms/amplication-server
-            #     fi
-            #   fi
-            # fi
-            # if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-client" ]]; then
-            #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-client")
-            #   if [[ ! -z "$server_folder" ]]; then    
-            #     KEY=`aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-client" --recursive | sort | tail -n 1 | awk '{print $4}'`
-            #     aws s3 sync s3://$BUCKET_NAME/$BRANCH_NAME/amplication-client/$KEY ./downloaded_helms
-            #   fi
-            #   else
-            #     server_folder=$(aws s3 ls "s3://$BUCKET_NAME/master/amplication-client")
-            #     if [[ ! -z "$server_folder" ]]; then    
-            #       KEY=`aws s3 ls "s3://$BUCKET_NAME/master/amplication-client" --recursive | sort | tail -n 1 | awk '{print $4}'`
-            #       aws s3 sync s3://$BUCKET_NAME/master/amplication-client/$KEY /downloaded_helms/amplication-client
-            #     fi
-            #     else
-            #       cp helm/helm_chart/charts/services/amplication-client /downloaded_helms/amplication-client
-            #     fi
-            #   fi
-            # fi
-
-
-      - name: install python dependencies
-        run: |
-          pip install ruamel.yaml
-          pip install pytest-shutil
+  #     # - name: download folder if service not changed 
+  #     #   run: |
+  #     #     set +e
+  #           # if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
+  #           #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-server")
+  #           #   if [[ ! -z "$server_folder" ]]; then    
+  #           #     KEY=`aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-server" --recursive | sort | tail -n 1 | awk '{print $4}'`
+  #           #     aws s3 sync s3://$BUCKET_NAME/$BRANCH_NAME/amplication-server/$KEY ./downloaded_helms
+  #           #   fi
+  #           #   else
+  #           #     server_folder=$(aws s3 ls "s3://$BUCKET_NAME/master/amplication-server")
+  #           #     if [[ ! -z "$server_folder" ]]; then    
+  #           #       KEY=`aws s3 ls "s3://$BUCKET_NAME/master/amplication-server" --recursive | sort | tail -n 1 | awk '{print $4}'`
+  #           #       aws s3 sync s3://$BUCKET_NAME/master/amplication-server/$KEY /downloaded_helms/amplication-server
+  #           #     fi
+  #           #     else
+  #           #       cp helm/helm_chart/charts/services/amplication-server /downloaded_helms/amplication-server
+  #           #     fi
+  #           #   fi
+  #           # fi
+  #           # if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-client" ]]; then
+  #           #   server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-client")
+  #           #   if [[ ! -z "$server_folder" ]]; then    
+  #           #     KEY=`aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/amplication-client" --recursive | sort | tail -n 1 | awk '{print $4}'`
+  #           #     aws s3 sync s3://$BUCKET_NAME/$BRANCH_NAME/amplication-client/$KEY ./downloaded_helms
+  #           #   fi
+  #           #   else
+  #           #     server_folder=$(aws s3 ls "s3://$BUCKET_NAME/master/amplication-client")
+  #           #     if [[ ! -z "$server_folder" ]]; then    
+  #           #       KEY=`aws s3 ls "s3://$BUCKET_NAME/master/amplication-client" --recursive | sort | tail -n 1 | awk '{print $4}'`
+  #           #       aws s3 sync s3://$BUCKET_NAME/master/amplication-client/$KEY /downloaded_helms/amplication-client
+  #           #     fi
+  #           #     else
+  #           #       cp helm/helm_chart/charts/services/amplication-client /downloaded_helms/amplication-client
+  #           #     fi
+  #           #   fi
+  #           # fi
 
 
-      - name: replace helm version to run_id
-        run: |
-          python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${{ needs.changes.outputs.services }}
+  #     - name: install python dependencies
+  #       run: |
+  #         pip install ruamel.yaml
+  #         pip install pytest-shutil
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-          aws-region: ${{ env.REGION }}
 
-      - name: set branch-name
-        run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-          fi
+  #     - name: replace helm version to run_id
+  #       run: |
+  #         python devlopment_scripts/update_helm_versions.py ${GITHUB_RUN_ID} ${{ needs.changes.outputs.services }}
 
-      - name: Check service folder exist
-        id: check_folder
-        run: |
-          set +e
-          server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
-          if [[ -z "$server_folder" ]]
-          then
-            echo "No such folder in bucket"
-            echo "::set-output name=create_folder::true"
-          else
-            echo "folder exist in bucket"
-            echo "::set-output name=create_folder::false"
-          fi
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+  #         aws-region: ${{ env.REGION }}
 
-      - name: Update dependencies for service chart
-        working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ matrix.service }}
-        run: |
-          helm dependency update
+  #     - name: set branch-name
+  #       run: |
+  #         if [[ $GITHUB_REF != 'refs/heads/master' ]]
+  #         then 
+  #           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+  #         fi
 
-      - name: Helm Template
-        working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ matrix.service }}
-        id: helm-template
-        run: |
-          helm template amplication . > helm.log
+  #     - name: Check service folder exist
+  #       id: check_folder
+  #       run: |
+  #         set +e
+  #         server_folder=$(aws s3 ls "s3://$BUCKET_NAME/$BRANCH_NAME/${{ matrix.service }}")
+  #         if [[ -z "$server_folder" ]]
+  #         then
+  #           echo "No such folder in bucket"
+  #           echo "::set-output name=create_folder::true"
+  #         else
+  #           echo "folder exist in bucket"
+  #           echo "::set-output name=create_folder::false"
+  #         fi
+
+  #     - name: Update dependencies for service chart
+  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ matrix.service }}
+  #       run: |
+  #         helm dependency update
+
+  #     - name: Helm Template
+  #       working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ matrix.service }}
+  #       id: helm-template
+  #       run: |
+  #         helm template amplication . > helm.log
       
-      - env:
-          TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
-        run: echo ${TEMPLATES}
+  #     - env:
+  #         TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
+  #       run: echo ${TEMPLATES}
 
-      - name: Set hash
-        env:
-          working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ matrix.service }}
-        run: |
-          GITHUB_HASH_MOD=$(sha1sum $working-directory | sha1sum)
-          echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
+  #     - name: Set hash
+  #       env:
+  #         working-directory: ${{ env.SERVICE_CHART_PATH }}/${{ matrix.service }}
+  #       run: |
+  #         GITHUB_HASH_MOD=$(sha1sum $working-directory | sha1sum)
+  #         echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
       
-      - name: replace image tag in values.yml
-        run: |
-          python devlopment_scripts\update_tag.py ${GITHUB_HASH} ${{ matrix.service }}
+  #     - name: replace image tag in values.yml
+  #       run: |
+  #         python devlopment_scripts\update_tag.py ${GITHUB_HASH} ${{ matrix.service }}
       
-      - name: Upload artifact to s3
-        working-directory: ${{ env.SERVICE_CHART_PATH }}
-        run: |
-          set +e
-          if [[ ${{ steps.check_folder.outputs.create_folder == 'true' }} ]]
-          then
-            pwd
-            tar -cvzf ${{ matrix.service }}_$GITHUB_HASH.tgz ./${{ matrix.service }}
-            ls -l
-            aws s3 cp ${{ matrix.service }}_$GITHUB_HASH.tgz s3://$BUCKET_NAME/${{ matrix.service }}/${{ matrix.service }}_$GITHUB_HASH.tgz
-          else
-            pwd
-            tar -cvzf ${{ matrix.service }}_$GITHUB_HASH.tgz ./${{ matrix.service }}
-            ls -l
-            isTagExist=$(aws s3 ls s3://BUCKET-NAME/${{ matrix.service }} --recursive | grep ${{ matrix.service }}_$GITHUB_HASH.tgz)
-            if [[ ! -z  "$isTagExist" ]]
-            then 
-              aws s3 cp ${{ matrix.service }}_$GITHUB_HASH.tgz s3://$BUCKET_NAME/${{ matrix.service }}/${{ matrix.service }}_$GITHUB_HASH.tgz
-            fi
-          fi
+  #     - name: Upload artifact to s3
+  #       working-directory: ${{ env.SERVICE_CHART_PATH }}
+  #       run: |
+  #         set +e
+  #         if [[ ${{ steps.check_folder.outputs.create_folder == 'true' }} ]]
+  #         then
+  #           pwd
+  #           tar -cvzf ${{ matrix.service }}_$GITHUB_HASH.tgz ./${{ matrix.service }}
+  #           ls -l
+  #           aws s3 cp ${{ matrix.service }}_$GITHUB_HASH.tgz s3://$BUCKET_NAME/${{ matrix.service }}/${{ matrix.service }}_$GITHUB_HASH.tgz
+  #         else
+  #           pwd
+  #           tar -cvzf ${{ matrix.service }}_$GITHUB_HASH.tgz ./${{ matrix.service }}
+  #           ls -l
+  #           isTagExist=$(aws s3 ls s3://BUCKET-NAME/${{ matrix.service }} --recursive | grep ${{ matrix.service }}_$GITHUB_HASH.tgz)
+  #           if [[ ! -z  "$isTagExist" ]]
+  #           then 
+  #             aws s3 cp ${{ matrix.service }}_$GITHUB_HASH.tgz s3://$BUCKET_NAME/${{ matrix.service }}/${{ matrix.service }}_$GITHUB_HASH.tgz
+  #           fi
+  #         fi
 
-  umbrella-chart:
-    runs-on: ubuntu-latest
-    needs: service-chart
-    env:
-      BUCKET_NAME: amplication-charts
-      REGION: us-east-1
-      AMPLICATION_CHART_PATH: amplication/chart/amplication
-      SERVICE_CHART_PATH: amplication-charts/charts/services
+  # umbrella-chart:
+  #   runs-on: ubuntu-latest
+  #   needs: service-chart
+  #   env:
+  #     BUCKET_NAME: amplication-charts
+  #     REGION: us-east-1
+  #     AMPLICATION_CHART_PATH: amplication/chart/amplication
+  #     SERVICE_CHART_PATH: amplication-charts/charts/services
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
       
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-          aws-region: ${{ env.REGION }}
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+  #         aws-region: ${{ env.REGION }}
       
-      - name: Check amplication folder exist
-        id: check_folder
-        env:
-          last_artifact: ${{ steps.last_artifact.outputs.service_artifact }}
-        run: |
-          set +e
-          amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
-          if [[ -z "$amplication_folder" ]]
-          then
-            echo "No such folder in bucket"
-            echo "::set-output name=create_folder::true"
-          else
-            echo "folder exist in bucket"
-            echo "::set-output name=create_folder::false"
-          fi
+  #     - name: Check amplication folder exist
+  #       id: check_folder
+  #       env:
+  #         last_artifact: ${{ steps.last_artifact.outputs.service_artifact }}
+  #       run: |
+  #         set +e
+  #         amplication_folder=$(aws s3 ls "s3://$BUCKET_NAME/amplication")
+  #         if [[ -z "$amplication_folder" ]]
+  #         then
+  #           echo "No such folder in bucket"
+  #           echo "::set-output name=create_folder::true"
+  #         else
+  #           echo "folder exist in bucket"
+  #           echo "::set-output name=create_folder::false"
+  #         fi
 
-      - name: Helm Update Dependencies for umbrella-chart
-        working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-        run: |
-          helm dependency update
+  #     - name: Helm Update Dependencies for umbrella-chart
+  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #       run: |
+  #         helm dependency update
 
-      - name: Helm Template
-        working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-        id: helm-template
-        run: |
-          helm template amplication . > helm.log
+  #     - name: Helm Template
+  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #       id: helm-template
+  #       run: |
+  #         helm template amplication . > helm.log
       
-      - env:
-          TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
-        run: echo ${TEMPLATES}
+  #     - env:
+  #         TEMPLATES: "helm template\n${{ steps.helm-template.outputs.stdout }}"
+  #       run: echo ${TEMPLATES}
       
-      - name: Upload artifact to s3
-        working-directory: ${{ env.AMPLICATION_CHART_PATH }}
-        env:
-          last_artifact: ${{ steps.last_artifact.outputs.amplication_artifact }}
-        run: |
-          set +e
-          if [[ ${{ steps.check_folder.outputs.create_folder == 'true' }} ]]
-          then
-            pwd
-            tar -cvzf amplication_$GITHUB_RUN_ID.tgz ./
-            ls -l
-            aws s3 cp amplication_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/amplication_/amplication__$GITHUB_RUN_ID.tgz
-          else
-            pwd
-            tar -cvzf amplication_$GITHUB_RUN_ID.tgz ./
-            ls -l
-            isTagExist=$(aws s3 ls s3://BUCKET-NAME/amplication_ --recursive | grep amplication__$GITHUB_RUN_ID.tgz)
-            if [[ ! -z  "$isTagExist" ]]
-            then 
-              aws s3 cp amplication_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/amplication_/amplication__$GITHUB_RUN_ID.tgz
-            fi
-          fi
+  #     - name: Upload artifact to s3
+  #       working-directory: ${{ env.AMPLICATION_CHART_PATH }}
+  #       env:
+  #         last_artifact: ${{ steps.last_artifact.outputs.amplication_artifact }}
+  #       run: |
+  #         set +e
+  #         if [[ ${{ steps.check_folder.outputs.create_folder == 'true' }} ]]
+  #         then
+  #           pwd
+  #           tar -cvzf amplication_$GITHUB_RUN_ID.tgz ./
+  #           ls -l
+  #           aws s3 cp amplication_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/amplication_/amplication__$GITHUB_RUN_ID.tgz
+  #         else
+  #           pwd
+  #           tar -cvzf amplication_$GITHUB_RUN_ID.tgz ./
+  #           ls -l
+  #           isTagExist=$(aws s3 ls s3://BUCKET-NAME/amplication_ --recursive | grep amplication__$GITHUB_RUN_ID.tgz)
+  #           if [[ ! -z  "$isTagExist" ]]
+  #           then 
+  #             aws s3 cp amplication_$GITHUB_RUN_ID.tgz s3://$BUCKET_NAME/amplication_/amplication__$GITHUB_RUN_ID.tgz
+  #           fi
+  #         fi
 
 
 
