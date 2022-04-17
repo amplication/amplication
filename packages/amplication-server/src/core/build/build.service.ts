@@ -438,7 +438,7 @@ export class BuildService {
 
         await this.buildFilesSaver.saveFiles(join(app.id, build.id), modules);
 
-        await this.saveToGitHub(build, modules, oldBuildId);
+        await this.saveToGitHub(build, oldBuildId);
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
@@ -595,11 +595,7 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  private async saveToGitHub(
-    build: Build,
-    modules: DataServiceGenerator.Module[],
-    oldBuildId: string
-  ) {
+  private async saveToGitHub(build: Build, oldBuildId: string) {
     const app = build.app;
 
     const appRepository = await this.prisma.gitRepository.findUnique({
