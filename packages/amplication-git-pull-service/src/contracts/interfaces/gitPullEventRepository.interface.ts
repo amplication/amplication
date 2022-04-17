@@ -11,7 +11,6 @@ export interface IGitPullEventRepository {
     repositoryName: string,
     branch: string,
     pushedAt: Date,
-    skip: number,
-    timestamp: Date
+    skip: number
   ) => Promise<EventData | undefined>;
 }
