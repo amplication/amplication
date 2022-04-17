@@ -1,4 +1,5 @@
 import {
+  EnvironmentVariables,
   ResultMessage,
   SendPullRequestArgs,
   SendPullRequestResponse,
@@ -14,7 +15,6 @@ import {
 import { plainToClass } from 'class-transformer';
 import { KafkaMessage } from 'kafkajs';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { EnvironmentVariables } from 'src/utils/env';
 import { Logger } from 'winston';
 import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';
 import { PullRequestService } from './pull-request.service';
@@ -25,7 +25,7 @@ export class PullRequestController {
     private readonly pullRequestService: PullRequestService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
-  @MessagePattern(EnvironmentVariables.getStrict(GENERATE_PULL_REQUEST_TOPIC))
+  @MessagePattern(EnvironmentVariables.get(GENERATE_PULL_REQUEST_TOPIC, true))
   async generatePullRequest(
     @Payload() message: KafkaMessage,
     @Ctx() context: KafkaContext

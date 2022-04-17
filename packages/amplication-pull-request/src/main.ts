@@ -1,18 +1,18 @@
+import { EnvironmentVariables } from '@amplication/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
-import { config } from 'dotenv';
 
 export const QUEUE_BROKER_URL_VAR = 'QUEUE_BROKER_URL_VAR';
 const clientId = 'pull-request-queue-client';
 
 async function bootstrap() {
-  config();
-  const envBrokerIp = process.env[QUEUE_BROKER_URL_VAR];
-  if (!envBrokerIp) {
-    throw new Error('Missing broker ip in env file');
-  }
-  const brokers = envBrokerIp.split(',');
+  const brokers = EnvironmentVariables.getArray(
+    QUEUE_BROKER_URL_VAR,
+    true,
+    ','
+  );
+
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
