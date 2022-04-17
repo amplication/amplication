@@ -1,21 +1,35 @@
+import {
+  GitModule,
+  GitService,
+  GithubService,
+  GitServiceFactory
+} from '@amplication/git-service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { GitRepository } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { App } from 'src/models/App';
-// import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
-// import { CreateGitRepositoryInput } from '../dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from '../dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
-import { GitService } from '../git.service';
-import { GitServiceFactory } from '../utils/GitServiceFactory/GitServiceFactory';
-import { MOCK_GIT_SERVICE_FACTORY } from '../utils/GitServiceFactory/GitServiceFactory.mock';
+import { GitProviderService } from '../git.provider.service';
 import { TEST_GIT_REPOS } from '../__mocks__/GitRepos';
-
+import { MOCK_GIT_SERVICE_FACTORY } from '../utils/GitServiceFactory/GitServiceFactory.mock';
+import { CreateGitRepositoryInput } from '../dto/inputs/CreateGitRepositoryInput';
+import { GitRepository } from 'src/models/GitRepository';
+import { GitOrganization } from 'src/models/GitOrganization';
+import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: 'exampleGitRepositoryId',
   name: 'repositoryTest',
-  appId: 'exampleAppId',
   gitOrganizationId: 'exampleGitOrganizationId',
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
+const EXAMPLE_GIT_ORGANIZATION: GitOrganization = {
+  id: 'exampleGitOrganizationId',
+  provider: EnumGitProvider.Github,
+  type: EnumGitOrganizationType.Organization,
+  name: 'organizationTest',
+  installationId: '123456',
   createdAt: new Date(),
   updatedAt: new Date()
 };
@@ -38,6 +52,10 @@ const prismaGitRepositoryCreateMock = jest.fn(() => {
   return EXAMPLE_GIT_REPOSITORY;
 });
 
+const prismaGitOrganizationCreateMock = jest.fn(() => {
+  return EXAMPLE_GIT_ORGANIZATION;
+});
+
 const prismaAppCreateMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -47,12 +65,15 @@ const prismaGitRepositoryReturnEmptyMock = jest.fn(() => {
 });
 
 describe('GitService', () => {
-  let gitService: GitService;
+  let gitService: GitProviderService;
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        GitProviderService,
         GitService,
+        GitServiceFactory,
+        GithubService,
         {
           provide: PrismaService,
           useValue: {
@@ -61,7 +82,7 @@ describe('GitService', () => {
               findUnique: prismaGitRepositoryReturnEmptyMock
             },
             gitOrganization: {
-              findUnique: prismaGitRepositoryCreateMock
+              findUnique: prismaGitOrganizationCreateMock
             },
             app: {
               findUnique: prismaAppCreateMock
@@ -72,10 +93,11 @@ describe('GitService', () => {
           provide: GitServiceFactory,
           useValue: MOCK_GIT_SERVICE_FACTORY
         }
-      ]
+      ],
+      imports: [GitModule]
     }).compile();
 
-    gitService = module.get<GitService>(GitService);
+    gitService = module.get<GitProviderService>(GitProviderService);
   });
 
   it('should be defined', () => {
@@ -93,25 +115,24 @@ describe('GitService', () => {
           remoteGitRepositoriesWhereUniqueInput
         );
         expect(remoteGitRepositories).toEqual(TEST_GIT_REPOS);
-        expect(prismaGitRepositoryCreateMock).toBeCalledTimes(1);
       });
     });
-    // describe('GitService.createRepo()', () => {
-    //   it('should return App', async () => {
-    //     const createGitRepositoryInput: CreateGitRepositoryInput = {
-    //       name: 'EXAMPLE_APP_NAME',
-    //       appId: 'EXAMPLE_APP_DESCRIPTION',
-    //       gitOrganizationId: 'DEFAULT_APP_COLOR',
-    //       gitProvider: EnumGitProvider.Github,
-    //       public: true,
-    //       gitOrganizationType: EnumGitOrganizationType.Organization
-    //     };
-    //     expect(
-    //       await gitService.createGitRepository(createGitRepositoryInput)
-    //     ).toEqual(EXAMPLE_APP);
-    //     expect(prismaAppCreateMock).toBeCalledTimes(1);
-    //   });
-    // });
+    describe('GitService.createRepo()', () => {
+      it('should return App', async () => {
+        const createGitRepositoryInput: CreateGitRepositoryInput = {
+          name: 'EXAMPLE_APP_NAME',
+          appId: 'EXAMPLE_APP_DESCRIPTION',
+          gitOrganizationId: 'DEFAULT_APP_COLOR',
+          gitProvider: EnumGitProvider.Github,
+          public: true,
+          gitOrganizationType: EnumGitOrganizationType.Organization
+        };
+        expect(
+          await gitService.createGitRepository(createGitRepositoryInput)
+        ).toEqual(EXAMPLE_APP);
+        expect(prismaAppCreateMock).toBeCalledTimes(1);
+      });
+    });
   }
   //#endregion
 });
