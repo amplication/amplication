@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService, Prisma } from '@amplication/prisma-db';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DiffModule } from 'src/services/diff.module';
 import {
@@ -12,7 +12,6 @@ import {
   BlockInputOutput,
   User
 } from 'src/models';
-import { Prisma } from '@prisma/client';
 import { DiffService } from 'src/services/diff.service';
 
 const INITIAL_VERSION_NUMBER = 0;

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@amplication/prisma-db';
-import { GitOrganizationDal } from './gitOrganization.dal.service';
+import { GitOrganizationRepository } from './gitOrganization.repository';
 
 @Module({
   imports: [PrismaModule],
-  providers: [GitOrganizationDal],
-  exports: [GitOrganizationDal],
+  providers: [GitOrganizationRepository],
+  exports: [GitOrganizationRepository],
 })
 export class GitOrganizationModule {}

@@ -2,7 +2,7 @@ import { PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class GitOrganizationDal {
+export class GitOrganizationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async getOrganizationByInstallationId(
