@@ -64,3 +64,4 @@ COPY --from=build /app/packages/amplication-deployer/dist /app/packages/amplicat
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]
+ 
