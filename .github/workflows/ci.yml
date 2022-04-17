@@ -95,17 +95,17 @@ jobs:
           # Create array of objects, => [{"package": "@amplication/cli", "path": "amplication-cli"}]
           jq -Rs 'split("\n")|map(split(":")|{(.[0]):.[1],(.[2]):.[3]}?)')
 
-      - name: download folder if service not changed 
-        run: |
-          set +e
-          unupdated_services=()
-          if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
-            unupdated_services+=("amplication-server")
-          fi
-          if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-client" ]]; then
-            unupdated_services+=("amplication-client")
-          fi
-          echo $unupdated_services
+      # - name: download folder if service not changed 
+      #   run: |
+      #     set +e
+      #     unupdated_services=()
+      #     if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
+      #       unupdated_services+=("amplication-server")
+      #     fi
+      #     if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-client" ]]; then
+      #       unupdated_services+=("amplication-client")
+      #     fi
+      #     echo $unupdated_services
       # - name: Filter services from array
       #   id: filter-services
       #   env:
