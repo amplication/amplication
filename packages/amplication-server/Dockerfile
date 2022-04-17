@@ -22,10 +22,10 @@ COPY packages/amplication-container-builder packages/amplication-container-build
 COPY packages/amplication-data packages/amplication-data
 COPY packages/amplication-data-service-generator packages/amplication-data-service-generator
 COPY packages/amplication-deployer packages/amplication-deployer
+COPY packages/amplication-prisma-db packages/amplication-prisma-db
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/server --include-dependencies
-RUN npm run prisma:generate -- --scope @amplication/server --include-dependencies
 
 # Build all distributions needed for amplicaiton/server
 RUN npm run build -- --scope @amplication/server --include-dependencies
@@ -61,6 +61,10 @@ COPY --from=build /app/packages/amplication-data-service-generator/dist /app/pac
 COPY --from=build /app/packages/amplication-deployer/package.json /app/packages/amplication-deployer/package.json
 COPY --from=build /app/packages/amplication-deployer/node_modules /app/packages/amplication-deployer/node_modules
 COPY --from=build /app/packages/amplication-deployer/dist /app/packages/amplication-deployer/dist
+
+COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
+COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
+COPY --from=build /app/packages/amplication-prisma-db/dist /app/packages/amplication-prisma-db/dist
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]
