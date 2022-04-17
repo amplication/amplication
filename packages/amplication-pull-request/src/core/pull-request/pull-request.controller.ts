@@ -45,6 +45,8 @@ export class PullRequestController {
         topic: context.getTopic(),
         partition: context.getPartition(),
         offset: message.offset,
+        class: this.constructor.name,
+        buildId: validArgs.newBuildId,
       });
       return { value: pullRequest };
     } catch (error) {
