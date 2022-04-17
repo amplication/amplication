@@ -220,7 +220,6 @@ export class BuildService {
     });
 
     const oldBuild = await previousBuild(
-      1,
       this.prisma,
       appId,
       build.id,
