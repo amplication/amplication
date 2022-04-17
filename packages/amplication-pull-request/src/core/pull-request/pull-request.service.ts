@@ -39,7 +39,7 @@ export class PullRequestService {
         gitProvider,
         gitOrganizationName,
         gitRepositoryName,
-        this.removeFirstSlashFromPath(changedFiles),
+        PullRequestService.removeFirstSlashFromPath(changedFiles),
         head,
         title,
         body,
@@ -49,12 +49,12 @@ export class PullRequestService {
       return { value: { url: prUrl }, status: StatusEnum.Success, error: null };
     } catch (error) {
       this.logger.error(`Failed to make a pull request in ${gitProvider}`, {
-        errorMassage: error,
+        error,
       });
       return { value: null, status: StatusEnum.GeneralFail, error };
     }
   }
-  private removeFirstSlashFromPath(changedFiles: Module[]): Module[] {
+  private static removeFirstSlashFromPath(changedFiles: Module[]): Module[] {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp('^/'), '') };
     });
