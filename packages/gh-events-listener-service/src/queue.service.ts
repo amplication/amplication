@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
+import { IQueue } from './contracts/IQueue';
 import { CreateRepositoryPushRequest } from './entities/dto/CreateRepositoryPushRequest';
 import { RepositoryPushCreateEvent } from './entities/dto/RepositoryPushCreateEvent';
 
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
 
 @Injectable()
-export class QueueService {
+export class QueueService implements IQueue {
   constructor(
     @Inject(QUEUE_SERVICE_NAME)
     private readonly RepositoryClient: ClientKafka,
