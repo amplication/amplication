@@ -33,7 +33,7 @@ export class QueueService implements OnModuleInit {
     this.kafkaService.subscribeToResponseOf(this.generatePullRequestTopic);
   }
 
-  emitCreateGitPullRequest(
+  sendCreateGitPullRequest(
     data: SendPullRequestArgs
   ): Promise<SendPullRequestResponse | null> {
     return new Promise(res => {

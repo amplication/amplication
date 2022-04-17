@@ -627,7 +627,7 @@ export class BuildService {
         async step => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
-            const response = await this.queueService.emitCreateGitPullRequest({
+            const response = await this.queueService.sendCreateGitPullRequest({
               gitOrganizationName: appRepository.gitOrganization.name,
               gitRepositoryName: appRepository.name,
               amplicationAppId: app.id,
