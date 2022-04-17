@@ -4,18 +4,19 @@ import { CreateRepositoryPushRequest } from './entities/dto/CreateRepositoryPush
 import { EnumProvider } from './entities/enums/provider';
 import { QueueService } from './queue.service';
 import { ConfigService } from '@nestjs/config';
-import { GitOrganizationDal } from './repositories/gitOrganization.dal.service';
+import { GitOrganizationRepository } from './repositories/gitOrganization.repository';
 import { PushEvent } from '@octokit/webhooks-types';
+import { IApp } from './contracts/IApp';
 
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 
 @Injectable()
-export class AppService {
+export class AppService implements IApp {
   private webhooks: Webhooks;
   constructor(
     private readonly queueService: QueueService,
     configService: ConfigService,
-    private readonly gitOrganizationDal: GitOrganizationDal,
+    private readonly gitOrganizationRepository: GitOrganizationRepository,
   ) {
     this.webhooks = new Webhooks({
       secret: configService.get<string>(WEBHOOKS_SECRET_KEY),
@@ -60,7 +61,7 @@ export class AppService {
 
   async isInstallationIdExist(installationId: string): Promise<boolean> {
     const gitInstallationId =
-      await this.gitOrganizationDal.getOrganizationByInstallationId(
+      await this.gitOrganizationRepository.getOrganizationByInstallationId(
         installationId,
       );
     if (gitInstallationId) return true;
