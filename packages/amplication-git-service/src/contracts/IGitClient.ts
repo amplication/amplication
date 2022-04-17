@@ -1,6 +1,7 @@
-import { RemoteGitOrganization } from '../dto/objects/RemoteGitOrganization';
-import { RemoteGitRepository } from '../dto/objects/RemoteGitRepository';
-import { GithubFile } from '../../github/dto/githubFile';
+import { GithubFile } from '../Dto/entities/GithubFile';
+import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
+import { RemoteGitRepository } from '../Dto/entities/RemoteGitRepository';
+
 export interface IGitClient {
   createUserRepository(
     installationId: string,
