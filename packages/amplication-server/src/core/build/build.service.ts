@@ -46,7 +46,7 @@ import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
 import { EnumGitProvider } from '@amplication/common';
-import { getXPreviousBuild, BuildFilesSaver } from './utils';
+import { previousBuild, BuildFilesSaver } from './utils';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -219,7 +219,13 @@ export class BuildService {
       }
     });
 
-    const oldBuild = await getXPreviousBuild(1, this.prisma, appId, build.id);
+    const oldBuild = await previousBuild(
+      1,
+      this.prisma,
+      appId,
+      build.id,
+      build.createdAt
+    );
 
     const logger = this.logger.child({
       buildId: build.id
