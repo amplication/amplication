@@ -1,4 +1,3 @@
-import { Module } from '@amplication/common';
 import { Injectable } from '@nestjs/common';
 import assert from 'assert';
 import { compare } from 'dir-compare';
@@ -16,7 +15,7 @@ export class DiffService {
     amplicationAppId: string,
     previousAmplicationBuildId: string,
     newAmplicationBuildId: string
-  ): Promise<Module[]> {
+  ): Promise<{ path: string; code: string }[]> {
     const oldBuildPath = this.buildsPathFactory.get(
       amplicationAppId,
       previousAmplicationBuildId

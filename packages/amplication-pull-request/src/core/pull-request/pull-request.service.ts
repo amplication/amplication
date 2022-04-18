@@ -1,5 +1,4 @@
 import {
-  Module,
   ResultMessage,
   SendPullRequestArgs,
   SendPullRequestResponse,
@@ -54,7 +53,9 @@ export class PullRequestService {
       return { value: null, status: StatusEnum.GeneralFail, error };
     }
   }
-  private static removeFirstSlashFromPath(changedFiles: Module[]): Module[] {
+  private static removeFirstSlashFromPath(
+    changedFiles: { code: string; path: string }[]
+  ): { code: string; path: string }[] {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp('^/'), '') };
     });

@@ -15,6 +15,9 @@ generates:
   packages/amplication-common/src/types/models.ts:
     plugins:
       - "typescript"
+  packages/amplication-pull-request/src/models.ts:
+    plugins:
+      - "typescript"
 hooks:
   afterAllFileWrite:
     - prettier --write
