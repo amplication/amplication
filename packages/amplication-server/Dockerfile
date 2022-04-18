@@ -43,9 +43,6 @@ COPY --from=build /app/packages/amplication-server/package.json /app/packages/am
 COPY --from=build /app/packages/amplication-server/node_modules /app/packages/amplication-server/node_modules
 COPY --from=build /app/packages/amplication-server/dist /app/packages/amplication-server/dist
 
-COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
-
-
 COPY --from=build /app/packages/amplication-container-builder/package.json /app/packages/amplication-container-builder/package.json
 COPY --from=build /app/packages/amplication-container-builder/node_modules /app/packages/amplication-container-builder/node_modules
 COPY --from=build /app/packages/amplication-container-builder/dist /app/packages/amplication-container-builder/dist
