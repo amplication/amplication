@@ -4,7 +4,7 @@ import { HealthModule } from "./health/health.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
 import { MorganModule } from "nest-morgan";
 import { ConfigModule } from "@nestjs/config";
-import { RootWinstonModule } from "./services/root-winston.module";
+import { RootWinstonModule } from "@amplication/logger";
 
 @Module({
   controllers: [],
