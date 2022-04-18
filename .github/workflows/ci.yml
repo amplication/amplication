@@ -279,16 +279,17 @@ jobs:
           if [[ $GITHUB_REF != 'refs/heads/master' ]]
           then
             Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
-            Ecr_repository=$ECR_REPOSITORY_STAGING
+            ECR_repository=$ECR_REPOSITORY_STAGING
           else  
             Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
             ECR_repository=$ECR_REPOSITORY_PROD
           fi
-          echo $Ecr_repository
           docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
+          echo $ECR_repository
+          echo command : aws ecr put-image --repository-name ${{ ECR_repository }} --image-tag ${{ github.sha }} --image-manifest ${{ MANIFEST }}
           docker push $Docker_image
           MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_repository --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-          echo command : aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
+
           aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
           aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
           aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
