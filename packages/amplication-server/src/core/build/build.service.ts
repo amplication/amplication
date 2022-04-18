@@ -9,7 +9,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { groupBy, omit, orderBy } from 'lodash';
-import path from 'path';
+import path, { join } from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import {
@@ -42,7 +42,8 @@ import { Deployment } from '../deployment/dto/Deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
-import { GitService } from '@amplication/git-service';
+import { QueueService } from '../queue/queue.service';
+import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 
 export const HOST_VAR = 'HOST';
@@ -156,11 +157,12 @@ export class BuildService {
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
-    private readonly gitService: GitService,
     @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
     private readonly appSettingsService: AppSettingsService,
     private readonly userService: UserService,
+    private readonly buildFilesSaver: BuildFilesSaver,
+    private readonly queueService: QueueService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -215,12 +217,19 @@ export class BuildService {
       }
     });
 
+    const oldBuild = await previousBuild(
+      this.prisma,
+      appId,
+      build.id,
+      build.createdAt
+    );
+
     const logger = this.logger.child({
       buildId: build.id
     });
 
     logger.info(JOB_STARTED_LOG);
-    const tarballURL = await this.generate(build, user);
+    const tarballURL = await this.generate(build, user, oldBuild.id);
     if (!skipPublish) {
       await this.buildDockerImage(build, tarballURL);
     }
@@ -377,7 +386,11 @@ export class BuildService {
    * @DSG The connection between the server and the DSG (Data Service Generator)
    * @param build the build object to generate code for
    */
-  private async generate(build: Build, user: User): Promise<string> {
+  private async generate(
+    build: Build,
+    user: User,
+    oldBuildId: string
+  ): Promise<string> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
@@ -426,7 +439,9 @@ export class BuildService {
         // the path to the tar.gz artifact
         const tarballURL = await this.save(build, modules);
 
-        await this.saveToGitHub(build, modules);
+        await this.buildFilesSaver.saveFiles(join(app.id, build.id), modules);
+
+        await this.saveToGitHub(build, oldBuildId);
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
@@ -583,10 +598,7 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  private async saveToGitHub(
-    build: Build,
-    modules: DataServiceGenerator.Module[]
-  ) {
+  private async saveToGitHub(build: Build, oldBuildId: string) {
     const app = build.app;
 
     const appRepository = await this.prisma.gitRepository.findUnique({
@@ -618,21 +630,29 @@ export class BuildService {
         async step => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
-            const prUrl = await this.gitService.createPullRequest(
-              EnumGitProvider[appRepository.gitOrganization.provider],
-              appRepository.gitOrganization.name,
-              appRepository.name,
-              modules,
-              `amplication-build-${build.id}`,
-              commitMessage,
-              `Amplication build # ${build.id}.
-Commit message: ${commit.message}
+            const response = await this.queueService.sendCreateGitPullRequest({
+              gitOrganizationName: appRepository.gitOrganization.name,
+              gitRepositoryName: appRepository.name,
+              amplicationAppId: app.id,
+              gitProvider: EnumGitProvider.Github,
+              installationId: appRepository.gitOrganization.installationId,
+              newBuildId: build.id,
+              oldBuildId,
+              commit: {
+                base: 'main',
+                head: `amplication-build-${build.id}`,
+                body: `Amplication build # ${build.id}.
+                Commit message: ${commit.message}
+                
+                ${url}
+                `,
+                title: commitMessage
+              }
+            });
 
-${url}
-`,
-              null,
-              appRepository.gitOrganization.installationId
-            );
+            const { url: prUrl } = response;
+
+            assert(prUrl, 'Failed to get pull request url');
 
             await this.appService.reportSyncMessage(
               build.appId,
