@@ -35,3 +35,4 @@ RUN chmod 755 entrypoint.sh
 ENTRYPOINT [ "/app/entrypoint.sh" ]
 
 CMD ["nginx", "-g", "daemon off;"]
+
