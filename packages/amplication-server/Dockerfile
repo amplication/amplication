@@ -71,3 +71,4 @@ COPY --from=build /app/packages/amplication-git-service/dist /app/packages/ampli
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]
 
+#
