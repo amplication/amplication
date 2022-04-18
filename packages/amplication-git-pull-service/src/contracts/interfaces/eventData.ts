@@ -21,8 +21,8 @@ export class EventData {
     status: keyof typeof EnumGitPullEventStatus,
     pushedAt: Date
   ) {
-    this.id = id;
     this.provider = provider;
+    this.id = id;
     this.repositoryOwner = repositoryOwner;
     this.repositoryName = repositoryName;
     this.branch = branch;

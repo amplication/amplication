@@ -1,14 +1,19 @@
 import { PrismaService } from "nestjs-prisma";
-import { GitPullEventRepository } from "../../databases/gitPullEvent.repository";
+import { GitPullEventRepository } from "../../repositories/gitPullEvent.repository";
 import { Test, TestingModule } from "@nestjs/testing";
-import { MOCK_EVENT_DATA } from "../../__mocks__/stubs/gitClient.stub";
+import {
+  MOCK_EVENT_DATA,
+  MOCK_UPDATED_EVENT_DATA,
+} from "../../__mocks__/stubs/gitClient.stub";
 import { eventRepositoryStub } from "../../__mocks__/stubs/eventRepository.stub";
 import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
 
 const prismaGitPullEventCreateMock = jest.fn(() =>
   Promise.resolve({ id: BigInt(123) })
 );
-const prismaGitPullEventUpdateMock = jest.fn(() => Promise.resolve(true));
+const prismaGitPullEventUpdateMock = jest.fn(() =>
+  Promise.resolve(MOCK_UPDATED_EVENT_DATA)
+);
 const prismaGitPullEventManyMock = jest.fn(async () =>
   Promise.resolve([MOCK_EVENT_DATA])
 );
@@ -54,7 +59,7 @@ describe("Testing GitPullEventRepository", () => {
     );
   });
 
-  it("should create a update a record's status on database", async () => {
+  it("should update a record's status on database", async () => {
     const newRecord = await gitPullEventRepository.update(
       BigInt(123),
       EnumGitPullEventStatus.Ready

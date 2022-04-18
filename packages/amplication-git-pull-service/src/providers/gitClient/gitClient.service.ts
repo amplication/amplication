@@ -21,12 +21,12 @@ export class GitClientService implements IGitClient {
   gitHostDomains: Record<GitProviderEnum, string>;
 
   constructor(private configService: ConfigService) {
-    this.remoteOrigin =
-      this.configService.get<string>(REMOTE_ORIGIN) || "origin";
+    this.remoteOrigin = configService.get<string>(REMOTE_ORIGIN) || "origin";
 
     this.gitHostDomains = {
       [GitProviderEnum.Github]: "github.com",
     };
+
     /*
      * @maxConcurrentProcesses: each `simple-git` instance limits the number of
      * spawned child processes that can be run simultaneously and manages the queue
@@ -72,18 +72,14 @@ export class GitClientService implements IGitClient {
       fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
-      this.git
-        .addConfig("init.defaultBranch", "main", false, CONFIG_SCOPE_GLOBAL)
+      await this.git
+        .clone(repository, baseDir, ["--branch", branch])
         .cwd(baseDir)
-        .init()
-        .addRemote(REMOTE_ORIGIN, repository)
-        .fetch(REMOTE_ORIGIN, branch)
         .checkout(commit);
-      // .clone(repository, baseDir, ["--branch", branch])
-      // .cwd(baseDir)
-      // .checkout(commit);
-    } catch (err: any) {
-      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
+    } catch (err) {
+      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, {
+        message: err,
+      });
     }
   }
 
@@ -98,8 +94,8 @@ export class GitClientService implements IGitClient {
     const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
     try {
       await this.git.cwd(baseDir).fetch(repository, branch).merge([commit]);
-    } catch (err: any) {
-      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
+    } catch (err) {
+      throw new CustomError(ErrorMessages.REPOSITORY_PULL_FAILURE, err);
     }
   }
 }
