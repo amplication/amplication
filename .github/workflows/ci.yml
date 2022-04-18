@@ -150,9 +150,10 @@ jobs:
         env:
           working-directory: packages/${{ matrix.service }}
         run: |
-          GITHUB_HASH_MOD=$(find . -type f \( -exec sha1sum "$PWD"/packages/${{ matrix.service }}/{} \; \) | awk '{print $1}' | sort | sha1sum)
+          GITHUB_HASH_MOD=$(find . -type f \( -exec sha1sum packages/${{ matrix.service }}/{} \; \) | awk '{print $1}' | sort | sha1sum)
           echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
           echo $GITHUB_HASH
+
       - name: Check if repo exist
         working-directory: packages/${{ matrix.service }}
         env: 
