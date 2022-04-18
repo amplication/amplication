@@ -1,7 +1,7 @@
 import { Module, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CoreModule } from './core';
-import { RootWinstonModule } from './services';
+import { RootWinstonModule } from '@amplication/logger';
 
 @Module({
   imports: [
