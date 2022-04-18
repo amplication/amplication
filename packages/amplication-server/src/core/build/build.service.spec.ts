@@ -39,6 +39,7 @@ import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
+import { QueueService } from '../queue/queue.service';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App, Commit, Entity } from 'src/models';
 import {
@@ -53,6 +54,7 @@ import { AppSettingsService } from '../appSettings/appSettings.service';
 
 import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
 
 jest.mock('winston');
@@ -530,6 +532,16 @@ describe('BuildService', () => {
             error: loggerErrorMock,
             child: loggerChildMock,
             format: EXAMPLE_LOGGER_FORMAT
+          }
+        },
+        {
+          provide: BuildFilesSaver,
+          useClass: BuildFilesSaver
+        },
+        {
+          provide: QueueService,
+          useValue: {
+            emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
           }
         }
       ]
