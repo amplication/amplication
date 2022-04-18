@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       services: ${{ steps.filter-services.outputs.array }}
-      all_changed_files: ${{ steps.filter.outputs.array }}
       packages: ${{ steps.resolved-packages.outputs.packages }}
     steps:
       - uses: actions/checkout@v2
@@ -30,46 +29,8 @@ jobs:
           files: |
             packages/**
 
-      - name: Filter array
-        id: filter
-        env:
-          ARRAY: ${{ steps.changed-files.outputs.all_changed_files }}
-        run: |
-          if [[ ! -z $ARRAY ]]
-          then 
-            echo "$ARRAY"
-            final=''
-            for string in $(echo $ARRAY | sed "s/,/ /g")
-            do
-              prefix="packages/"
-              no_prefix=${string#"$prefix"}
-              final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
-            done
-            final+=''
-            mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
-            modi=${mod%?}
-            modif=[$(echo "$modi")]
-            echo $modif
-            echo "::set-output name=array::$modif"
-          else
-            final=''
-            for d in packages/*
-            do
-              prefix="packages/"
-              no_prefix=${d#"$prefix"}
-              final+="\"$( cut -d '/' -f 1 <<< "$no_prefix" )\", "
-            done
-            mod=$(echo $final | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed -e 's/[[:space:]]*$//')
-            modi=${mod%?}
-            modif=[$(echo "$modi")]
-            echo $modif
-            echo "::set-output name=array::$modif"
-          fi
-
       - name: Filter services from array
         id: filter-services
-        env:
-          ARRAY: ${{ steps.filter.outputs.array }}
         run: |
             services=['"amplication-client", "amplication-server"']
             echo "$services"
@@ -95,44 +56,9 @@ jobs:
           # Create array of objects, => [{"package": "@amplication/cli", "path": "amplication-cli"}]
           jq -Rs 'split("\n")|map(split(":")|{(.[0]):.[1],(.[2]):.[3]}?)')
 
-      # - name: download folder if service not changed 
-      #   run: |
-      #     set +e
-      #     unupdated_services=()
-      #     if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-server" ]]; then
-      #       unupdated_services+=("amplication-server")
-      #     fi
-      #     if [[ ! " ${{ needs.changes.outputs.services }}[*] " =~ "amplication-client" ]]; then
-      #       unupdated_services+=("amplication-client")
-      #     fi
-      #     echo $unupdated_services
-      # - name: Filter services from array
-      #   id: filter-services
-      #   env:
-      #     ARRAY: ${{ steps.filter.outputs.array }}
-      #   run: |
-      #     if [[ ! -z $ARRAY ]]
-      #     then 
-      #       echo "$ARRAY"
-      #       services=()
-      #       if [[ " ${ARRAY[*]} " =~ "amplication-client" ]]; then
-      #         echo amplication-client in ARRAY 
-      #         services+=('amplication-client') 
-      #       fi
-      #       if [[ " ${ARRAY[*]} " =~ "amplication-server" ]]; then
-      #         echo amplication-server in ARRAY 
-      #         services+=('amplication-server') 
-      #       fi
-      #       echo services : ${services[*]}
-      #       echo "::set-output name=array::$services"
-      #     else
-      #       echo "array is empty, no files changed"
-      #     fi
-
   tests:
     runs-on: ubuntu-20.04
-    needs:
-      - changes
+    needs: [changes]
     timeout-minutes: 45
     strategy:
       matrix:
@@ -194,7 +120,7 @@ jobs:
 
   docker:
     name: docker
-    needs: [changes,tests]
+    needs: [changes]
     if: success() #&& (github.event_name == 'push')
     runs-on: ubuntu-latest
     strategy:
@@ -226,7 +152,6 @@ jobs:
         run: |
           GITHUB_HASH_MOD=$(find . -type f \( -exec sha1sum "$PWD"/{} \; \) | awk '{print $1}' | sort | sha1sum)
           echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
-      # GITHUB_HASH_MOD=$(sha1sum packages/${{ matrix.service }} | sha1sum)
        
       - name: Check if repo exist
         working-directory: packages/${{ matrix.service }}
