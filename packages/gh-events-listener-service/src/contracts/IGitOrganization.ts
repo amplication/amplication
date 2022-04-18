@@ -1,3 +1,8 @@
+import { EnumProvider } from '../entities/enums/provider';
+
 export interface IGitOrganization {
-  getOrganizationByInstallationId(installationId: string): Promise<string>;
+  getOrganizationByInstallationId(
+    installationId: string,
+    provider: EnumProvider,
+  ): Promise<string>;
 }

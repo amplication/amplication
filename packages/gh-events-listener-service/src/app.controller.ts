@@ -13,7 +13,7 @@ export class AppController {
       headers['x-github-delivery'],
       headers['x-github-event'],
       payload,
-      headers['x-hub-signature-256'],
+      headers['x-hub-signature-256'], //add gitProvider
     );
     //log end
   }

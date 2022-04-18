@@ -1,6 +1,7 @@
 import { PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { IGitOrganization } from 'src/contracts/IGitOrganization';
+import { EnumProvider } from '../entities/enums/provider';
 
 @Injectable()
 export class GitOrganizationRepository implements IGitOrganization {
@@ -8,11 +9,15 @@ export class GitOrganizationRepository implements IGitOrganization {
 
   async getOrganizationByInstallationId(
     installationId: string,
+    provider: EnumProvider,
   ): Promise<string> {
     return (
-      await this.prisma.gitOrganization.findFirst({
+      await this.prisma.gitOrganization.findUnique({
         where: {
-          installationId: installationId,
+          provider_installationId: {
+            installationId,
+            provider,
+          },
         },
       })
     ).installationId;
