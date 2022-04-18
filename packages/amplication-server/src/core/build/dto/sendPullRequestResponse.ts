@@ -1,4 +1,4 @@
-import { IsUrl } from "class-validator";
+import { IsUrl } from 'class-validator';
 export class SendPullRequestResponse {
   @IsUrl()
   url!: string;
