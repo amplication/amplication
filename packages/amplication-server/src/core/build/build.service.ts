@@ -6,6 +6,7 @@ import { StorageService } from '@codebrew/nestjs-storage';
 import { subSeconds } from 'date-fns';
 import { Prisma, PrismaService } from '@amplication/prisma-db';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import assert from 'assert';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { groupBy, omit, orderBy } from 'lodash';
