@@ -1,14 +1,12 @@
-import {
-  ResultMessage,
-  SendPullRequestArgs,
-  StatusEnum,
-} from '@amplication/common';
 import { GitService } from '@amplication/git-service';
 import { Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { DiffService } from '../diff';
+import { ResultMessage } from './dto/ResultMessage';
+import { SendPullRequestArgs } from './dto/sendPullRequest';
 import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
+import { StatusEnum } from './dto/StatusEnum';
 
 @Injectable()
 export class PullRequestService {

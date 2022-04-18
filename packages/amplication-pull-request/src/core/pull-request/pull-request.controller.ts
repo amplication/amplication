@@ -1,9 +1,3 @@
-import {
-  EnvironmentVariables,
-  ResultMessage,
-  SendPullRequestArgs,
-  StatusEnum,
-} from '@amplication/common';
 import { Controller, Inject } from '@nestjs/common';
 import {
   Ctx,
@@ -14,9 +8,13 @@ import {
 import { plainToClass } from 'class-transformer';
 import { KafkaMessage } from 'kafkajs';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { EnvironmentVariables } from 'src/services/environmentVariables';
 import { Logger } from 'winston';
 import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';
+import { ResultMessage } from './dto/ResultMessage';
+import { SendPullRequestArgs } from './dto/sendPullRequest';
 import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
+import { StatusEnum } from './dto/StatusEnum';
 import { PullRequestService } from './pull-request.service';
 
 @Controller()

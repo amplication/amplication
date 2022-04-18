@@ -1,4 +1,3 @@
-import { ResultMessage, SendPullRequestArgs } from '@amplication/common';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientKafka } from '@nestjs/microservices';
@@ -6,6 +5,8 @@ import { plainToClass } from 'class-transformer';
 import { GENERATE_PULL_REQUEST_TOPIC } from 'src/constants';
 import assert from 'assert';
 import { SendPullRequestResponse } from '../build/dto/sendPullRequestResponse';
+import { SendPullRequestArgs } from '../build/dto/sendPullRequest';
+import { ResultMessage } from './dto/ResultMessage';
 
 export const QUEUE_SERVICE_NAME = 'QUEUE_SERVICE';
 

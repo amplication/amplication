@@ -45,8 +45,8 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
-import { EnumGitProvider } from '@amplication/common';
 import { previousBuild, BuildFilesSaver } from './utils';
+import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
