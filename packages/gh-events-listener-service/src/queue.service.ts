@@ -3,15 +3,23 @@ import { ClientKafka } from '@nestjs/microservices';
 import { IQueue } from './contracts/IQueue';
 import { CreateRepositoryPushRequest } from './entities/dto/CreateRepositoryPushRequest';
 import { RepositoryPushCreateEvent } from './entities/dto/RepositoryPushCreateEvent';
+import { ConfigService } from '@nestjs/config';
 
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
-
+const KAFKA_REPOSITORY_PUSH_QUEUE_VAR = 'KAFKA_REPOSITORY_PUSH_QUEUE';
 @Injectable()
 export class QueueService implements IQueue {
+  private kafkaRepositoryPushQueue: string;
+
   constructor(
     @Inject(QUEUE_SERVICE_NAME)
     private readonly RepositoryClient: ClientKafka,
-  ) {}
+    configService: ConfigService,
+  ) {
+    this.kafkaRepositoryPushQueue = configService.get<string>(
+      KAFKA_REPOSITORY_PUSH_QUEUE_VAR,
+    );
+  }
   async createPushRequest({
     provider,
     repositoryOwner,
@@ -22,7 +30,7 @@ export class QueueService implements IQueue {
     installationId,
   }: CreateRepositoryPushRequest) {
     await this.RepositoryClient.emit(
-      'repositoryPush_created',
+      this.kafkaRepositoryPushQueue,
       new RepositoryPushCreateEvent(
         provider,
         repositoryOwner,

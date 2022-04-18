@@ -1,15 +1,31 @@
-import { Controller, Post, Headers, Body } from '@nestjs/common';
-import { AppService } from './app.service';
+import {
+  Controller,
+  Post,
+  Headers,
+  Body,
+  LoggerService,
+  Inject,
+} from '@nestjs/common';
+import { AppService } from './services/app.service';
 import { EnumProvider } from './entities/enums/provider';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
+  ) {}
   @Post('/github')
   async createWebhooksMessage(
     @Headers() headers: Headers,
     @Body() payload: string,
   ) {
-    //log start
+    this.logger.log(
+      'start createWebhooksMessage',
+      AppController.name,
+      `data: ${payload}`,
+    );
     await this.appService.createMessage(
       headers['x-github-delivery'],
       headers['x-github-event'],
@@ -17,6 +33,9 @@ export class AppController {
       headers['x-hub-signature-256'],
       EnumProvider.Github,
     );
-    //log end
+    this.logger.log(
+      'successfully ended createWebhooksMessage',
+      AppController.name,
+    );
   }
 }

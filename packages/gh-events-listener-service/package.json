@@ -33,9 +33,12 @@
     "@prisma/client": "3.12.0",
     "eventsource": "^2.0.0",
     "kafkajs": "1.16.0",
+    "nest-winston": "1.6.2",
     "nestjs-prisma": "0.15.1",
     "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "winston": "3.7.2",
+    "winston-cloud-logging": "1.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
