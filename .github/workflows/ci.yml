@@ -150,7 +150,7 @@ jobs:
         env:
           working-directory: packages/${{ matrix.service }}
         run: |
-          GITHUB_HASH_MOD=$(find ./packages/${{ matrix.service }} -type f \( -exec sha1sum /{} \; \) | awk '{print $1}' | sort | sha1sum)
+          GITHUB_HASH_MOD=$(find ./packages/${{ matrix.service }} -type f \( -exec sha1sum {} \; \) | awk '{print $1}' | sort | sha1sum)
           echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
           echo $GITHUB_HASH
 
