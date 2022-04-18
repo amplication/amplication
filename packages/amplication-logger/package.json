@@ -12,6 +12,7 @@
   "author": "tupe12334",
   "license": "ISC",
   "devDependencies": {
+    "@nestjs/config": "2.0.0",
     "@nestjs/testing": "8.4.4",
     "@types/jest": "27.4.1",
     "@types/node": "17.0.25",
