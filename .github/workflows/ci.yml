@@ -289,7 +289,6 @@ jobs:
           echo command : aws ecr put-image --repository-name ${{ ECR_repository }} --image-tag ${{ github.sha }} --image-manifest ${{ MANIFEST }}
           docker push $Docker_image
           MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_repository --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-
           aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
           aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
           aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
