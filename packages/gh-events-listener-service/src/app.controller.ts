@@ -1,5 +1,6 @@
 import { Controller, Post, Headers, Body } from '@nestjs/common';
 import { AppService } from './app.service';
+import { EnumProvider } from './entities/enums/provider';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -13,7 +14,8 @@ export class AppController {
       headers['x-github-delivery'],
       headers['x-github-event'],
       payload,
-      headers['x-hub-signature-256'], //add gitProvider
+      headers['x-hub-signature-256'],
+      EnumProvider.Github,
     );
     //log end
   }

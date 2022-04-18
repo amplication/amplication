@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { QueueService, QUEUE_SERVICE_NAME } from './queue.service';
 
-export const BROKER_IP_ENV_KEY = 'BROKER_IP_ENV_KEY';
+export const BROKER_IP_ENV_KEY = 'KAFKA_BROKER_IP_ENV_KEY';
 
 @Module({
   imports: [

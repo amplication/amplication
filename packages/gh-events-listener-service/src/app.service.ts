@@ -28,10 +28,17 @@ export class AppService implements IApp {
     eventName: EmitterWebhookEventName,
     payload: string,
     signature: string,
+    provider: EnumProvider,
   ) {
     switch (eventName.toString().toLowerCase()) {
       case 'push':
-        await this.createPushMessage(id, eventName, payload, signature);
+        await this.createPushMessage(
+          id,
+          eventName,
+          payload,
+          signature,
+          provider,
+        );
         break;
       default:
         return;
@@ -43,12 +50,13 @@ export class AppService implements IApp {
     eventName: EmitterWebhookEventName,
     payload: string,
     signature: string,
+    provider: EnumProvider,
   ) {
     const pushEventObj: PushEvent = JSON.parse(JSON.stringify(payload));
     if (this.isMasterBranch(pushEventObj)) {
       if (await this.verifyAndReceive(id, eventName, payload, signature)) {
         const pushRequest = await this.createPushRequestObject(pushEventObj);
-        if (!this.isInstallationIdExist(pushRequest.installationId)) {
+        if (!this.isInstallationIdExist(pushRequest.installationId, provider)) {
           console.log(
             `installationId: ${pushRequest.installationId} does not exist`,
           );
@@ -61,10 +69,14 @@ export class AppService implements IApp {
     }
   }
 
-  async isInstallationIdExist(installationId: string): Promise<boolean> {
+  async isInstallationIdExist(
+    installationId: string,
+    provider: EnumProvider,
+  ): Promise<boolean> {
     const gitInstallationId =
       await this.gitOrganizationRepository.getOrganizationByInstallationId(
         installationId,
+        provider,
       );
     if (gitInstallationId) return true;
     else return false;

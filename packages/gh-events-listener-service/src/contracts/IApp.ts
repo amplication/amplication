@@ -1,11 +1,13 @@
 import { EmitterWebhookEventName } from '@octokit/webhooks';
+import { EnumProvider } from 'src/entities/enums/provider';
 
 export interface IApp {
-  createPushMessage(
+  createMessage(
     id: string,
     eventName: EmitterWebhookEventName,
     payload: string,
     signature: string,
+    provider: EnumProvider,
   );
 
   verifyAndReceive(
