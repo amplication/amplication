@@ -42,6 +42,8 @@ model GitOrganization {
   type            EnumGitOrganizationType? @default(User)
   workspace       Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction)
   gitRepositories GitRepository[]
+
+  @@unique([provider, installationId])
 }
 
 model GitRepository {
