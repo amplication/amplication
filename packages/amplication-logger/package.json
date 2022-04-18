@@ -13,6 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "@nestjs/testing": "8.4.4",
+    "@types/jest": "27.4.1",
     "@types/node": "17.0.25",
     "jest": "27.5.1",
     "ts-jest": "27.1.4",
