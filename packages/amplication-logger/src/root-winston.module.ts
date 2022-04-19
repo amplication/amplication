@@ -1,9 +1,6 @@
-import { ConfigModule } from '@nestjs/config';
-import { WinstonModule } from 'nest-winston';
-import { WinstonConfigService } from './winstonConfig.service';
+import { WinstonModule } from "nest-winston";
+import { winstonConfigFactory } from "./winstonConfig.factory";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const RootWinstonModule = WinstonModule.forRootAsync({
-  imports: [ConfigModule],
-  useClass: WinstonConfigService
+  useFactory: () => winstonConfigFactory(process.env.NODE_ENV === "production"),
 });
