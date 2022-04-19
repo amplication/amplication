@@ -15,7 +15,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "postinstall": "npm run build"
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@amplication/git-service": "^0.12.1",
