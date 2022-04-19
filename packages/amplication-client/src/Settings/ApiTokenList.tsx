@@ -41,10 +41,12 @@ export const ApiTokenList = React.memo(() => {
 
   const handleCopyToken = async () => {
     const token = data?.userApiTokens[0].token;
-    if (token) {
-      await navigator.clipboard.writeText(token);
-      setTokenCopied(true);
+    if (!token) {
+      console.log("Token does not exist");
+      return;
     }
+    await navigator.clipboard.writeText(token);
+    setTokenCopied(true);
   }
 
   const { data, loading, error: errorLoading } = useQuery<TData>(
