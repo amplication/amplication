@@ -7,7 +7,7 @@ import {
 } from '@nestjs/microservices';
 import { plainToClass } from 'class-transformer';
 import { KafkaMessage } from 'kafkajs';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { EnvironmentVariables } from 'src/services/environmentVariables';
 import { Logger } from 'winston';
 import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';

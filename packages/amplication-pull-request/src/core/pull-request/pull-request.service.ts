@@ -1,6 +1,6 @@
 import { GitService } from '@amplication/git-service';
 import { Inject, Injectable } from '@nestjs/common';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { Logger } from 'winston';
 import { DiffService } from '../diff';
 import { ResultMessage } from './dto/ResultMessage';
