@@ -65,4 +65,5 @@
   --diffViewerTitleBackground: var(--white);
   --diffViewerTitleColor: var(--black100);
   --diffViewerTitleBorderColor: var(--white);
+  --screenResolutionMessageColor: var(--white);
 }
