@@ -4,7 +4,7 @@ import { IGitPullEvent } from "../../contracts/interfaces/gitPullEvent.interface
 import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
 import { EventData } from "../../contracts/interfaces/eventData";
 import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
-import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
+import { WINSTON_MODULE_NEST_PROVIDER } from "@amplication/logger";
 import { LoggerMessages } from "../../constants/loggerMessages";
 import { ConfigService } from "@nestjs/config";
 import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";

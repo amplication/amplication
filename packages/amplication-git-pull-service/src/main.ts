@@ -1,7 +1,7 @@
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
+import { WINSTON_MODULE_NEST_PROVIDER } from "@amplication/logger";
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 
 const CLIENT_ID_KEY = "KAFKA_CLIENT_ID";
