@@ -85,7 +85,6 @@
     "lodash.omit": "4.5.0",
     "lodash.set": "4.3.2",
     "nest-morgan": "1.0.1",
-    "nest-winston": "1.6.2",
     "nestjs-prisma": "0.14.3",
     "node-fetch": "2.6.7",
     "node-jose": "2.0.0",
@@ -103,8 +102,6 @@
     "ts-morph": "^13.0.2",
     "uuid": "8.3.2",
     "validate-color": "2.2.1",
-    "winston": "3.3.4",
-    "winston-cloud-logging": "1.0.2",
     "zlib": "1.0.5"
   },
   "devDependencies": {
