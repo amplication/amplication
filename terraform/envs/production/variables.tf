@@ -161,3 +161,15 @@ variable "apps_terraform_state_bucket" {
 variable "apps_domain" {
   type = string
 }
+
+# Webhooks & kafka 
+
+ variable "kafka_broker_ip" {
+  type = string
+}
+variable "webhooks_secret_key" {
+  type = string
+}
+variable "kafka_repository_push_queue" {
+  type = string
+}
