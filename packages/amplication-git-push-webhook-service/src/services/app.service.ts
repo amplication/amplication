@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { EmitterWebhookEventName, Webhooks } from '@octokit/webhooks';
 import { CreateRepositoryPushRequest } from '../entities/dto/CreateRepositoryPushRequest';
 import { EnumProvider } from '../entities/enums/provider';
@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { GitOrganizationRepository } from '../repositories/gitOrganization.repository';
 import { PushEvent } from '@octokit/webhooks-types';
 import { IApp } from '../contracts/IApp';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 
@@ -17,6 +18,8 @@ export class AppService implements IApp {
     private readonly queueService: QueueService,
     configService: ConfigService,
     private readonly gitOrganizationRepository: GitOrganizationRepository,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
   ) {
     this.webhooks = new Webhooks({
       secret: configService.get<string>(WEBHOOKS_SECRET_KEY),
@@ -30,6 +33,11 @@ export class AppService implements IApp {
     signature: string,
     provider: EnumProvider,
   ) {
+    this.logger.log(
+      'start createMessage',
+      AppService.name,
+      `message id: ${id}`,
+    );
     switch (eventName.toString().toLowerCase()) {
       case 'push':
         await this.createPushMessage(
@@ -57,15 +65,22 @@ export class AppService implements IApp {
       if (await this.verifyAndReceive(id, eventName, payload, signature)) {
         const pushRequest = await this.createPushRequestObject(pushEventObj);
         if (!this.isInstallationIdExist(pushRequest.installationId, provider)) {
-          console.log(
-            `installationId: ${pushRequest.installationId} does not exist`,
+          this.logger.log(
+            `createWebhooksMessage not send, installationId: ${pushRequest.installationId} does not exist`,
+            AppService.name,
+            `message id: ${id}`,
           );
+
           return;
         }
         await this.queueService.createPushRequest(pushRequest);
       }
     } else {
-      console.log(``); //convert to winston
+      this.logger.log(
+        `createWebhooksMessage not send, event name: ${eventName}`,
+        AppService.name,
+        `message id: ${id}`,
+      );
     }
   }
 
@@ -96,7 +111,11 @@ export class AppService implements IApp {
         signature: signature,
       });
     } catch (error) {
-      console.log(error); //todo: write more informative info// copy from the server winston logger
+      this.logger.error(
+        `failed to createWebhooksMessage: verifyAndReceive, error: ${error}`,
+        AppService.name,
+        `message id: ${id}`,
+      );
       return false;
     }
     return true;

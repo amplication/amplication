@@ -1,5 +1,5 @@
 {
-  "name": "@amplication/gh-events-listener-service",
+  "name": "@amplication/git-push-webhook-service",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -30,7 +30,6 @@
     "@nestjs/microservices": "8.4.4",
     "@octokit/webhooks": "9.23.0",
     "@octokit/webhooks-types": "5.5.1",
-    "@prisma/client": "3.12.0",
     "eventsource": "^2.0.0",
     "kafkajs": "1.16.0",
     "nest-winston": "1.6.2",
