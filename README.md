@@ -90,7 +90,6 @@ npm run start
 ```
 
 
-This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
 
 
 ### Setting Up Amplication Manually
