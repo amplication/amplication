@@ -77,6 +77,7 @@ npm run setup:dev
 npm run start
 ```
 This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
+
 2. Go to `.../packages/amplication-server` and execute the following command:
 
 ```jsx
