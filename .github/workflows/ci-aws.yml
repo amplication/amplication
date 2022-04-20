@@ -160,6 +160,24 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Set github repository
+        run: |
+          REPO_NAME_TEMP=${GITHUB_REPOSITORY}
+          REPO_NAME=${REPO_NAME##*/}
+          echo "REPO_NAME: $REPO_NAME"
+          if [ "$REPO_NAME" = "amplication" ]; then
+            if [[ $GITHUB_REF != 'refs/heads/master' ]]; then
+              ECR_REPOSITORY_PREFIX="dev-staging-os"
+            else
+              ECR_REPOSITORY_PREFIX="-staging-os"
+            fi
+          else
+            if [[ $GITHUB_REF != 'refs/heads/master' ]]; then
+              ECR_REPOSITORY_PREFIX="dev"
+            fi  
+          fi
+          echo "ECR_REPOSITORY=${{ matrix.service }}${ECR_REPOSITORY_PREFIX}" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY: $ECR_REPOSITORY"
       - name: Set hash
         env:
           working-directory: packages/${{ matrix.service }}
@@ -167,33 +185,16 @@ jobs:
           GITHUB_HASH_MOD=$(find ./packages/${{ matrix.service }} -type f \( -exec sha1sum {} \; \) | awk '{print $1}' | sort | sha1sum)
           echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
           echo $GITHUB_HASH
-
       - name: Check if repo exist
         working-directory: packages/${{ matrix.service }}
-        env: 
-          ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
-          ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
+        
         run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            aws ecr describe-repositories --repository-names $ECR_REPOSITORY_STAGING || aws ecr create-repository --repository-name $ECR_REPOSITORY_STAGING
-          else
-            aws ecr describe-repositories --repository-names $ECR_REPOSITORY_PROD || aws ecr create-repository --repository-name $ECR_REPOSITORY_PROD
-          fi
-
+          aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
       - name: Check if tag already exist
         id: tag-exist
-        env: 
-          ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
-          ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
         run: |
           set +e
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_STAGING --image-ids=imageTag=$GITHUB_HASH)"
-          else
-            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY_PROD --image-ids=imageTag=$GITHUB_HASH)"
-          fi
+          cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$GITHUB_HASH)"
           if [[ ! -z "$cmd" ]]
           then  
             echo "tag already exist"
@@ -214,31 +215,11 @@ jobs:
         if: ${{ steps.tag-exist.outputs.tag_exist == 'false' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_STAGING: ${{ matrix.service }}-staging
-          ECR_REPOSITORY_PROD: ${{ matrix.service }}-prod
         run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then
-            Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$GITHUB_HASH
-            ECR_repository=$ECR_REPOSITORY_STAGING
-          else  
-            Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY_PROD:$GITHUB_HASH
-            ECR_repository=$ECR_REPOSITORY_PROD
-          fi
+          Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
           docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
           docker push $Docker_image
-          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_repository --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-          aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
-          aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
-          aws ecr put-image --repository-name $ECR_repository --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
-          
-          
-
- 
-      
-
-
-      
-
-
-
+          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
+          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
+          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
