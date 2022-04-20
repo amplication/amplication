@@ -212,7 +212,7 @@ jobs:
           Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
           docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
           docker push $Docker_image
-          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=master --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
           aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
           aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"          
