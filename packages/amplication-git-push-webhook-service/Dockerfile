@@ -18,8 +18,10 @@ FROM base AS build
 WORKDIR /app
 # Copy amplication-git-push-webhook-service  and the its dependent packages
 COPY packages/amplication-git-push-webhook-service packages/amplication-git-push-webhook-service
+COPY packages/amplication-prisma-db packages/amplication-prisma-db
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/git-push-webhook-service --include-dependencies
+RUN npm run prisma:generate -- --scope @amplication/git-push-webhook-service --include-dependencies
 
 # Build all distributions needed for amplication-git-push-webhook-service
 RUN npm run build -- --scope @amplication/git-push-webhook-service --include-dependencies
@@ -40,7 +42,7 @@ COPY --from=build /app/packages/amplication-git-push-webhook-service/dist /app/p
 
 COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
 COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
-COPY --from=build /app/packages/amplication-prisma-db/dist /app/packages/amplication-prisma-db/dist
+COPY --from=build /app/packages/amplication-prisma-db/lib /app/packages/amplication-prisma-db/lib
 
 EXPOSE 4567
 CMD [ "node", "dist/src/main"]

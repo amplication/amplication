@@ -1,5 +1,5 @@
 import { EmitterWebhookEventName } from '@octokit/webhooks';
-import { EnumProvider } from 'src/entities/enums/provider';
+import { EnumProvider } from '../entities/enums/provider';
 
 export interface IApp {
   createMessage(
