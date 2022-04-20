@@ -20,8 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docker": "docker-compose up -d",
-    "docker:down": "docker-compose down --volumes",
-    "prisma:generate": "prisma generate"
+    "docker:down": "docker-compose down --volumes"
   },
   "dependencies": {
     "@amplication/prisma-db": "^0.12.2",
