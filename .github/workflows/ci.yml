@@ -169,6 +169,8 @@ jobs:
       - name: Set ecr repository
         run: |
           sh .github/workflows/scripts/get_ecr_repository.sh
+        env:
+          SERVICE_NAME: ${{ matrix.service }}
       - name: Set hash
         env:
           working-directory: packages/${{ matrix.service }}
@@ -240,6 +242,8 @@ jobs:
       - name: Set ecr repository
         run: |
           sh .github/workflows/scripts/get_ecr_repository.sh
+        env:
+          SERVICE_NAME: ${{ matrix.service }}
       - name: set branch-name
         run: |
           if [[ $GITHUB_REF != 'refs/heads/master' ]]
