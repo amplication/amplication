@@ -21,7 +21,6 @@ COPY packages/amplication-git-push-webhook-service packages/amplication-git-push
 COPY packages/amplication-prisma-db packages/amplication-prisma-db
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/git-push-webhook-service --include-dependencies
-RUN npm run prisma:generate -- --scope @amplication/git-push-webhook-service --include-dependencies
 
 # Build all distributions needed for amplication-git-push-webhook-service
 RUN npm run build -- --scope @amplication/git-push-webhook-service --include-dependencies
