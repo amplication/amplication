@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { IQueue } from './contracts/IQueue';
+import { QueueInterface } from './contracts/queue.interface';
 import { CreateRepositoryPushRequest } from './entities/dto/CreateRepositoryPushRequest';
 import { RepositoryPushCreateEvent } from './entities/dto/RepositoryPushCreateEvent';
 import { ConfigService } from '@nestjs/config';
@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
 const KAFKA_REPOSITORY_PUSH_QUEUE_VAR = 'KAFKA_REPOSITORY_PUSH_QUEUE';
 @Injectable()
-export class QueueService implements IQueue {
+export class QueueService implements QueueInterface {
   private kafkaRepositoryPushQueue: string;
 
   constructor(

@@ -6,13 +6,13 @@ import { QueueService } from '../queue.service';
 import { ConfigService } from '@nestjs/config';
 import { GitOrganizationRepository } from '../repositories/gitOrganization.repository';
 import { PushEvent } from '@octokit/webhooks-types';
-import { IApp } from '../contracts/IApp';
+import { AppInterface } from '../contracts/app.interface';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 
 @Injectable()
-export class AppService implements IApp {
+export class AppService implements AppInterface {
   private webhooks: Webhooks;
   constructor(
     private readonly queueService: QueueService,
