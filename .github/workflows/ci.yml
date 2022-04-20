@@ -1,4 +1,7 @@
-name: CI-AWS
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: CI
 
 on:
   workflow_dispatch:
@@ -11,86 +14,25 @@ on:
       - ".all-contributorsrc"
   pull_request:
     branches: [master]
-    types: [opened, reopened]
     paths-ignore:
       - "**.md"
       - ".github/workflows/**.yml"
       - "renovate.json"
       - ".all-contributorsrc"
-
-jobs:       
-  changes:
+jobs:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      services: ${{ steps.build_list.outputs.service_build_list }}
-      service_retag_list: ${{ steps.build_list.outputs.service_retag_list }}
-      packages: ${{ steps.build_list.outputs.package_build_list }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: get changed files (not pr)
-        if: github.event_name != 'pull_request'
-        id: changed-files-not-pr
-        run: |
-          changed_files=$(git diff --name-only `git merge-base origin/master HEAD`)
-          while IFS= read -r changed_file ; do 
-            echo "changed_file: $changed_file"
-            if [[ "$changed_file" == *"packages/"* ]]; then
-              all_changed_files=$all_changed_files",$changed_file"
-            fi
-          done <<< "$changed_files"
-          all_changed_files="${all_changed_files:2}"
-          echo "all_changed_files: $all_changed_files"
-          echo "::set-output name=all_changed_files::$all_changed_files"
-      - name: get changed files (pr)
-        id: changed-files-pr
-        if: github.event_name == 'pull_request'
-        uses: tj-actions/changed-files@v17.3
-        with:
-          separator: ","
-          files_ignore: |
-            .github/**
-          files: |
-            packages/**
-      - name: setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8 #install the python needed
-      - name: create service build list
-        id: build_list
-        env:
-          CHANGED_FILES_PR: ${{ steps.changed-files-pr.outputs.all_changed_files }}
-          CHANGED_FILES_NOT_PR: ${{ steps.changed-files-not-pr.outputs.all_changed_files }}
-        run: |
-          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-          python .github/workflows/scripts/get-service-build-list.py
-          service_build_list=$(cat $GITHUB_WORKSPACE/service_build_list.json | jq -r .)
-          echo "service_build_list: $service_build_list"
-          echo "::set-output name=service_build_list::$service_build_list"
-
-          service_retag_list=$(cat $GITHUB_WORKSPACE/service_retag_list.json | jq -r .)
-          echo "service_retag_list: $service_retag_list"
-          echo "::set-output name=service_retag_list::$service_retag_list"
-
-          package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json | jq -r .)
-          echo "package_build_list: $package_build_list"
-          echo "::set-output name=package_build_list::$package_build_list"
-  tests:
-    runs-on: ubuntu-20.04
-    needs: [changes]
     timeout-minutes: 45
-    strategy:
-      matrix:
-        package: ${{ fromJson(needs.changes.outputs.packages) }}
-        node-version: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v2
-
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Fetch master
+        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/master:refs/remotes/origin/master
+      - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
+      - name: Update npm
+        run: npm i -g npm@7.3.0
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -98,162 +40,102 @@ jobs:
             ~/.npm
             node_modules
             */*/node_modules
-          key: PUSH-${{ runner.os }}-${{matrix.node-version}}-${{matrix.package}}-${{ hashFiles(format('{0}/package-lock.json',matrix.package.path)) }}
+          key: ${{ runner.os }}-node-2-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            PUSH-${{ runner.os }}-${{matrix.node-version}}-${{matrix.package}}-
-            PUSH-${{ runner.os }}-${{matrix.node-version}}-
-            PUSH-${{ runner.os }}-
-
-      - name: Install Node.js dependencies
-        run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
-
-      - name: Install package dependencies
-        id: install
-        run: lerna bootstrap --scope=${{matrix.package}} --include-dependencies
-
-      - name: Build Prisma client
-        id: prisma
-        run: lerna run --scope=${{matrix.package}} prisma:generate
-
-      - name: Build code
-        id: build
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent build --include-dependencies
-
-      - name: Format code
-        id: format
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent check-format
-
-      - name: Lint code
-        id: lint
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent lint
-
+            ${{ runner.os }}-node-2-
+      - run: npm ci
+      - name: Install packages' dependencies
+        run: npm run bootstrap -- --loglevel verbose
+      - name: Update Prisma client
+        run: npm run prisma:generate
+      - name: Define Lerna since parameter
+        run: echo "SINCE=origin/master" >> $GITHUB_ENV
+        if: ${{ github.ref != 'refs/heads/master' }}
+      - name: Check format
+        run: npm run check-format -- --since $SINCE
+      - name: Build packages
+        run: npm run build -- --since $SINCE
+      - name: Lint
+        run: npm run lint -- --since $SINCE
+      - name: Check GraphQL schema
+        run: npm run check-graphql-schema -- --since $SINCE
       - name: Run tests
-        id: test
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent test
-
-      - name: Discord notification
-        if: failure()
-        uses: Ilshidur/action-discord@0.3.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"},{"name":"Install","value":"${{ steps.install.outcome }}","inline":true},{"name":"Build","value":"${{ steps.build.outcome }}","inline":true},{"name":"Test","value":"${{ steps.test.outcome }}","inline":true},{"name":"Format","value":"${{ steps.format.outcome }}","inline":true},{"name":"Lint","value":"${{ steps.lint.outcome }}","inline":true}]}]'
-
-  docker-build:
-    name: docker-build
-    needs: [changes]
-    if: success() #&& (github.event_name == 'push')
+        run: npm test -- --since $SINCE
+      # E2E tests to run on merge to master
+      - name: Generate test data service
+        run: npm run generate-test-data-service
+        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
+      - name: Install test data service's dependencies
+        working-directory: packages/amplication-data-service-generator/generated/server
+        run: npm ci && npm run prisma:generate
+        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
+      - name: Run test data service's tests
+        working-directory: packages/amplication-data-service-generator/generated/server
+        run: npm test
+        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
+      - name: Run Data Service Generator E2E test
+        run: npm run test:e2e -- --scope @amplication/data-service-generator
+        if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
-        service: ${{ fromJSON(needs.changes.outputs.services) }} 
-
+    timeout-minutes: 120
+    if: github.ref == 'refs/heads/master' || contains('ci', github.ref)
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-            
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v2
+      - uses: docker/setup-buildx-action@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-          aws-region: us-east-1
-          
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Set ecr repository
-        run: |
-          sh .github/workflows/scripts/get_ecr_repository.sh
-        env:
-          SERVICE_NAME: ${{ matrix.service }}
-      - name: Set hash
-        env:
-          working-directory: packages/${{ matrix.service }}
-        run: |
-          GITHUB_HASH_MOD=$(find ./packages/${{ matrix.service }} -type f \( -exec sha1sum {} \; \) | awk '{print $1}' | sort | sha1sum)
-          echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
-          echo $GITHUB_HASH
-      - name: Check if repo exist
-        working-directory: packages/${{ matrix.service }}
-        
-        run: |
-          aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
-      - name: Check if tag already exist
-        id: tag-exist
-        run: |
-          set +e
-          cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$GITHUB_HASH)"
-          if [[ ! -z "$cmd" ]]
-          then  
-            echo "tag already exist"
-            echo "::set-output name=tag_exist::true"
-          else
-            echo "tag doesn't exist"
-            echo "::set-output name=tag_exist::false"
-          fi
-      
-      - name: set branch-name
-        run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-          fi
-
-      - name: Build, tag, and push image to Amazon ECR
-        if: ${{ steps.tag-exist.outputs.tag_exist == 'false' }}
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
-          docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
-          docker push $Docker_image
-          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=master --output json | jq --raw-output --join-output '.images[0].imageManifest')
-          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
-          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
-          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"          
-  docker-retag:
-    name: docker-retag
-    needs: [changes]
-    if: success() && ${{ needs.changes.outputs.service_retag_list != '' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
-        service: ${{ fromJSON(needs.changes.outputs.service_retag_list) }} 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+          driver-opts: image=moby/buildkit:master
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-          aws-region: us-east-1
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-      - name: Set ecr repository
-        run: |
-          sh .github/workflows/scripts/get_ecr_repository.sh
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Login to GCR
+        uses: docker/login-action@v1
+        with:
+          registry: gcr.io
+          username: _json_key
+          password: ${{ secrets.GOOGLE_CREDENTIALS }}
+      # cache was removed because it didn't reduce the runtime
+      # - name: Cache Docker layers
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: /tmp/.buildx-cache
+      #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-buildx-
+      - name: "Build and push amplication/amplication Docker image"
+        uses: docker/build-push-action@v2
+        with:
+          pull: true
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          tags: |
+            amplication/amplication:latest
+            amplication/amplication:${{ github.sha }}
+            gcr.io/amplication/amplication:${{ github.sha }}
+      - uses: hashicorp/setup-terraform@v1
+      - run: terraform init
         env:
-          SERVICE_NAME: ${{ matrix.service }}
-      - name: set branch-name
-        run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-          fi
-      - name: Build, tag, and push image to Amazon ECR
-        if: ${{ steps.tag-exist.outputs.tag_exist == 'false' }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        working-directory: terraform/envs/dev
+      - run: terraform apply -auto-approve -lock-timeout=1200s
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=master --output json | jq --raw-output --join-output '.images[0].imageManifest')
-          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_image_id: gcr.io/amplication/amplication:${{ github.sha }}
+          TF_VAR_github_app_private_key: ${{ secrets.STAGING_GITHUB_APP_PRIVATE_KEY }}
+          TF_VAR_github_app_client_secret: ${{ secrets.STAGING_GITHUB_APP_CLIENT_SECRET }}
+        working-directory: terraform/envs/dev
+      - uses: mattes/gce-cloudsql-proxy-action@v1
+        with:
+          creds: ${{ secrets.GOOGLE_CREDENTIALS }}
+          instance: ${{ secrets.STAGING_DB_INSTANCE_NAME }}
+      - run: |
+          set -e;
+          docker run \
+            --network host \
+            --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@127.0.0.1:5432/${{ secrets.STAGING_DB_NAME }}" \
+            amplication/amplication:${{ github.sha }} \
+            npm run migrate:up
