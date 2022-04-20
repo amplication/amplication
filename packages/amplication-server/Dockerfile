@@ -22,7 +22,11 @@ COPY packages/amplication-container-builder packages/amplication-container-build
 COPY packages/amplication-data packages/amplication-data
 COPY packages/amplication-data-service-generator packages/amplication-data-service-generator
 COPY packages/amplication-deployer packages/amplication-deployer
+<<<<<<< HEAD
 COPY packages/amplication-prisma-db packages/amplication-prisma-db
+=======
+COPY packages/amplication-git-service packages/amplication-git-service
+>>>>>>> origin/release/0.13.0
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/server --include-dependencies
@@ -43,6 +47,7 @@ COPY --from=build /app/packages/amplication-server/package.json /app/packages/am
 COPY --from=build /app/packages/amplication-server/node_modules /app/packages/amplication-server/node_modules
 COPY --from=build /app/packages/amplication-server/dist /app/packages/amplication-server/dist
 
+COPY --from=build /app/packages/amplication-server/prisma /app/packages/amplication-server/prisma
 COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
 
 
@@ -62,9 +67,15 @@ COPY --from=build /app/packages/amplication-deployer/package.json /app/packages/
 COPY --from=build /app/packages/amplication-deployer/node_modules /app/packages/amplication-deployer/node_modules
 COPY --from=build /app/packages/amplication-deployer/dist /app/packages/amplication-deployer/dist
 
+<<<<<<< HEAD
 COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
 COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
 COPY --from=build /app/packages/amplication-prisma-db/dist /app/packages/amplication-prisma-db/dist
+=======
+COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
+COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
+COPY --from=build /app/packages/amplication-git-service/dist /app/packages/amplication-git-service/dist
+>>>>>>> origin/release/0.13.0
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]
