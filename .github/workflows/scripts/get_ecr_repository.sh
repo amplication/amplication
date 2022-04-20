@@ -2,14 +2,18 @@ REPO_NAME=${GITHUB_REPOSITORY##*/}
 echo "REPO_NAME: $REPO_NAME"
 if [ "$REPO_NAME" = "amplication" ]; then
     if [ "$GITHUB_REF" != 'refs/heads/master' ]; then
-        ECR_REPOSITORY_PREFIX="dev-staging-os"
+        ECR_REPOSITORY_PREFIX="-dev-os"
     else
         ECR_REPOSITORY_PREFIX="-staging-os"
     fi
 else
     if [ "$GITHUB_REF" != 'refs/heads/master' ]; then
-        ECR_REPOSITORY_PREFIX="dev"
+        ECR_REPOSITORY_PREFIX="-dev"
+    else
+        ECR_REPOSITORY_PREFIX="-prod"
     fi  
 fi
-echo "ECR_REPOSITORY=${SERVICE_NAME}${ECR_REPOSITORY_PREFIX}" >> $GITHUB_ENV
+ECR_REPOSITORY="${SERVICE_NAME}$ECR_REPOSITORY_PREFIX"
+echo "ECR_REPOSITORY_PREFIX: $ECR_REPOSITORY_PREFIX"
 echo "ECR_REPOSITORY: $ECR_REPOSITORY"
+echo "ECR_REPOSITORY=$ECR_REPOSITORY" >> $GITHUB_ENV
