@@ -1,7 +1,7 @@
 ARG ALPINE_VERSION=alpine3.14
 ARG NODE_VERSION=16.13.1
 
-FROM node:$NODE_VERSION-$ALPINE_VERSION AS base
+FROM node:$NODE_VERSION AS base
 ARG NPM_VERSION=8.1.2
 ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
@@ -22,14 +22,12 @@ COPY packages/amplication-container-builder packages/amplication-container-build
 COPY packages/amplication-data packages/amplication-data
 COPY packages/amplication-data-service-generator packages/amplication-data-service-generator
 COPY packages/amplication-deployer packages/amplication-deployer
-<<<<<<< HEAD
-COPY packages/amplication-prisma-db packages/amplication-prisma-db
-=======
 COPY packages/amplication-git-service packages/amplication-git-service
->>>>>>> origin/release/0.13.0
+COPY packages/amplication-prisma-db packages/amplication-prisma-db
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/server --include-dependencies
+RUN npm run prisma:generate -- --scope @amplication/server --include-dependencies
 
 # Build all distributions needed for amplicaiton/server
 RUN npm run build -- --scope @amplication/server --include-dependencies
@@ -47,7 +45,6 @@ COPY --from=build /app/packages/amplication-server/package.json /app/packages/am
 COPY --from=build /app/packages/amplication-server/node_modules /app/packages/amplication-server/node_modules
 COPY --from=build /app/packages/amplication-server/dist /app/packages/amplication-server/dist
 
-COPY --from=build /app/packages/amplication-server/prisma /app/packages/amplication-server/prisma
 COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
 
 
@@ -67,15 +64,14 @@ COPY --from=build /app/packages/amplication-deployer/package.json /app/packages/
 COPY --from=build /app/packages/amplication-deployer/node_modules /app/packages/amplication-deployer/node_modules
 COPY --from=build /app/packages/amplication-deployer/dist /app/packages/amplication-deployer/dist
 
-<<<<<<< HEAD
-COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
-COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
-COPY --from=build /app/packages/amplication-prisma-db/dist /app/packages/amplication-prisma-db/dist
-=======
 COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
 COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
 COPY --from=build /app/packages/amplication-git-service/dist /app/packages/amplication-git-service/dist
->>>>>>> origin/release/0.13.0
+
+
+COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
+COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
+COPY --from=build /app/packages/amplication-prisma-db/lib /app/packages/amplication-prisma-db/lib
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]
