@@ -5,6 +5,7 @@ from typing import List
 root_folder=os.getenv('GITHUB_WORKSPACE',Path(__file__).parents[3])
 services_output_file=os.getenv('SERVICES_OUPTUT_PATH',os.path.join(root_folder,'service_build_list.json'))
 packages_output_file=os.getenv('PACKAGES_OUPTUT_PATH',os.path.join(root_folder,'package_build_list.json'))
+services_retag_output_file=os.getenv('SERVICES_RETAG_OUPTUT_PATH',os.path.join(root_folder,'service_retag_list.json'))
 helm_services_folder=os.getenv('HELM_SERVICES_FOLDER',os.path.join(root_folder,'helm/charts/services'))
 packages_folder=os.getenv('PACKAGES_FOLDER',os.path.join(root_folder,'packages'))
 changed_folders=[]
@@ -49,6 +50,7 @@ def get_package_name(raw_package) -> str:
 
 package_build_list=[]
 service_build_list=[]
+service_retag_list=[]
 get_changed_folders()
 all_services=os.listdir(helm_services_folder)
 for changed_folder in changed_folders:
@@ -63,6 +65,9 @@ for changed_folder in changed_folders:
                 package_build_list.append(get_package_name(service))
     if get_package_name(changed_folder) not in package_build_list:
         package_build_list.append(get_package_name(changed_folder))
+for service_name in all_services:
+    if service_name not in service_build_list:
+        service_retag_list.append(service_name)
 
 
 print(f"Will build the follwoing services: {service_build_list}")
@@ -73,3 +78,7 @@ print(f"Will build the follwoing pcakges: {package_build_list}")
 with open(packages_output_file, 'w', encoding='utf-8') as outfile:
     package_build_list_fixed = json.dumps(package_build_list)
     json.dump(package_build_list_fixed, outfile, ensure_ascii=False, indent=4)
+print(f"Will retag the follwoing pcakges: {service_retag_list}")
+with open(services_retag_output_file, 'w', encoding='utf-8') as outfile:
+    services_retag_list_fixed = json.dumps(service_retag_list)
+    json.dump(services_retag_list_fixed, outfile, ensure_ascii=False, indent=4)    
