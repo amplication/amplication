@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { PrismaService } from 'nestjs-prisma';
 import { Build } from '@prisma/client';
 import { DeployerService } from '@amplication/deployer/dist/nestjs';

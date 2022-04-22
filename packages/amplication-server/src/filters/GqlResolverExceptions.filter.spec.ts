@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { TestingModule, Test } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
 import { ApolloError } from 'apollo-server-express';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { AmplicationError } from '../errors/AmplicationError';
 import {
   createRequestData,

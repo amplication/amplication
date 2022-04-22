@@ -7,7 +7,7 @@ import {
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { ConfigService } from '@nestjs/config';
 import { CommitService } from './commit.service';
 import { Commit, User } from 'src/models';

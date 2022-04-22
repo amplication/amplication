@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { subSeconds, differenceInSeconds, subDays } from 'date-fns';
 
 import { isEmpty } from 'lodash';

@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { orderBy } from 'lodash';
 import { Prisma } from '@prisma/client';
 import {

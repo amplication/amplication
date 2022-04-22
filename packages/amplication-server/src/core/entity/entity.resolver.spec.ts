@@ -11,7 +11,7 @@ import { EntityService } from './entity.service';
 import { INestApplication } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { GraphQLModule } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { ConfigService } from '@nestjs/config';
 import { Entity } from 'src/models/Entity';
 import { User } from 'src/models/User';

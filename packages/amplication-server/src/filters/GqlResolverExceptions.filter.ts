@@ -8,7 +8,7 @@
 import { Catch, ArgumentsHost, Inject, HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GqlExceptionFilter, GqlArgumentsHost } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { Logger } from 'winston';
 import { Prisma } from '@prisma/client';
 import { ApolloError } from 'apollo-server-express';

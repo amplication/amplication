@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { Logger } from 'winston';
 
 import { ConfigService } from '@nestjs/config';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 
 @Catch(Error)
 export class GithubAuthExceptionFilter implements ExceptionFilter {

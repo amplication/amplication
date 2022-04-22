@@ -6,7 +6,7 @@ import { ActionStep } from './dto/ActionStep';
 import { EnumActionStepStatus } from './dto/EnumActionStepStatus';
 import { FindOneActionArgs } from './dto/FindOneActionArgs';
 import { EnumActionLogLevel } from './dto';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 
 const EXAMPLE_ACTION_ID = 'exampleActionId';
 const EXAMPLE_ACTION_STEP_ID = 'exampleActionStepId';

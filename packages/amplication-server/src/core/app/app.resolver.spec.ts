@@ -14,7 +14,7 @@ import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AppService } from './app.service';
 import { App } from 'src/models/App';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { ConfigService } from '@nestjs/config';
 import { Entity } from 'src/models/Entity';
 import { Build } from '../build/dto/Build';

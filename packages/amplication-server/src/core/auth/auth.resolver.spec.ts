@@ -7,7 +7,7 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Account, Auth, User } from 'src/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';

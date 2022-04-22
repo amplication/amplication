@@ -7,7 +7,7 @@ import { subSeconds } from 'date-fns';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import assert from 'assert';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { groupBy, omit, orderBy } from 'lodash';
