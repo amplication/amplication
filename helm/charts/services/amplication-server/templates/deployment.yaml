@@ -23,32 +23,38 @@ spec:
             - name: GCP
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: amplication-server
                   key: GCP
                   optional: false
             - name: GITHUB_APP_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: amplication-server
                   key: GITHUB_APP_CLIENT_SECRET
                   optional: false 
             - name: GITHUB_APP_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: amplication-server
                   key: GITHUB_APP_PRIVATE_KEY
                   optional: false 
             - name: GITHUB_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: amplication-server
                   key: GITHUB_CLIENT_SECRET
                   optional: false
             - name: POSTGRESQL_URL
               valueFrom:
                 secretKeyRef:
-                  name: secrets
+                  name: amplication-server
                   key: POSTGRESQL_URL
+                  optional: false
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: amplication-server
+                  key: POSTGRESQL_PASSWORD
                   optional: false       
             - name: ENVIRONMENT
               valueFrom:
@@ -71,5 +77,8 @@ spec:
         - name: {{ .Values.deployment.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.deployment.volume.name }}
+        - name: gcp-secret
+          secret:
+            secretName: gcp-secret
 {{- end }}
 {{- end }}
