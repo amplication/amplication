@@ -3248,30 +3248,27 @@ export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
 ",
   "server/src/auth/defaultAuth.guard.ts": "import { Reflector } from \\"@nestjs/core\\";
-import { ExecutionContext } from \\"@nestjs/common\\";
+import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
 import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
 import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
 
+@Injectable()
 export class DefaultAuthGuard extends BasicAuthGuard {
   constructor(private readonly reflector: Reflector) {
     super();
   }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    let parentCanActivate = false;
-
-    try {
-      parentCanActivate = (await super.canActivate(context)) as boolean;
-    } catch (err) {
-      parentCanActivate = false;
-    }
-
-    const isPublic = this.reflector?.get<boolean>(
+  canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.get<boolean>(
       IS_PUBLIC_KEY,
       context.getHandler()
     );
 
-    return isPublic || parentCanActivate;
+    if (isPublic) {
+      return true;
+    }
+
+    return super.canActivate(context);
   }
 }
 ",
