@@ -101,11 +101,12 @@ const NewApiToken = ({ onCompleted }: Props) => {
       </div>
       <Formik
         initialValues={INITIAL_VALUES}
+        validateOnBlur={false}
         validate={(values: models.ApiTokenCreateInput) =>
           validate(values, FORM_SCHEMA)
         }
-        onSubmit={handleSubmit}
-        validateOnMount
+        onSubmit={handleSubmit}  
+        
       >
         {(formik) => {
           const handlers = {
