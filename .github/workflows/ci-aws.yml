@@ -277,6 +277,7 @@ jobs:
             docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
             docker push $Docker_image
             export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$fixed_tag --output json | jq --raw-output --join-output '.images[0].imageManifest')
+            echo "FIXED MANIFEST: $MANIFEST"
           fi
           sh .github/workflows/scripts/ecr_retag.sh
       - name: Discord notification
