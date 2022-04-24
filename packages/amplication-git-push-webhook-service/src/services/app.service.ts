@@ -2,7 +2,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { EmitterWebhookEventName, Webhooks } from '@octokit/webhooks';
 import { CreateRepositoryPushRequest } from '../entities/dto/CreateRepositoryPushRequest';
 import { EnumProvider } from '../entities/enums/provider';
-import { QueueService } from '../queue.service';
+import { QueueService } from './queue.service';
 import { ConfigService } from '@nestjs/config';
 import { GitOrganizationRepository } from '../repositories/gitOrganization.repository';
 import { PushEvent } from '@octokit/webhooks-types';
@@ -33,11 +33,7 @@ export class AppService implements AppInterface {
     signature: string,
     provider: EnumProvider,
   ) {
-    this.logger.log(
-      'start createMessage',
-      AppService.name,
-      `message id: ${id}`,
-    );
+    this.logger.log('start createMessage', { class: AppService.name, id });
     switch (eventName.toString().toLowerCase()) {
       case 'push':
         await this.createPushMessage(
@@ -61,40 +57,36 @@ export class AppService implements AppInterface {
     provider: EnumProvider,
   ) {
     const pushEventObj: PushEvent = JSON.parse(JSON.stringify(payload));
-    if (this.isMasterBranch(pushEventObj)) {
-      if (await this.verifyAndReceive(id, eventName, payload, signature)) {
-        const pushRequest = await this.createPushRequestObject(pushEventObj);
-        if (!this.isInstallationIdExist(pushRequest.installationId, provider)) {
-          this.logger.log(
-            `createWebhooksMessage not send, installationId: ${pushRequest.installationId} does not exist`,
-            AppService.name,
-            `message id: ${id}`,
-          );
-
-          return;
-        }
-        await this.queueService.createPushRequest(pushRequest);
-      }
-    } else {
-      this.logger.log(
-        `createWebhooksMessage not send, event name: ${eventName}`,
-        AppService.name,
-        `message id: ${id}`,
-      );
+    if (!this.isMasterBranch(pushEventObj, id)) {
+      return;
     }
+    if (await !this.verifyAndReceive(id, eventName, payload, signature)) {
+      return;
+    }
+
+    const pushRequest = await this.createPushRequestObject(pushEventObj);
+    if (!this.isInstallationIdExist(pushRequest.installationId, provider, id)) {
+      return;
+    }
+    await this.queueService.createPushRequest(pushRequest);
   }
 
   async isInstallationIdExist(
     installationId: string,
     provider: EnumProvider,
+    id: string,
   ): Promise<boolean> {
-    const gitInstallationId =
+    const { installationId: gitInstallationId } =
       await this.gitOrganizationRepository.getOrganizationByInstallationId(
         installationId,
         provider,
       );
     if (gitInstallationId) return true;
-    else return false;
+    this.logger.log(
+      `createWebhooksMessage not send, installationId: ${installationId} does not exist`,
+      { class: AppService.name, id },
+    );
+    return false;
   }
 
   async verifyAndReceive(
@@ -126,10 +118,15 @@ export class AppService implements AppInterface {
     return splitName[2];
   }
 
-  isMasterBranch(payload: PushEvent): boolean {
+  isMasterBranch(payload: PushEvent, id: string): boolean {
     const currentBranch = this.getBranchName(payload.ref);
     const masterBranch = payload.repository.master_branch;
-    return currentBranch === masterBranch;
+    if (currentBranch === masterBranch) return true;
+    this.logger.log(
+      `createWebhooksMessage not send, not master branch, branch name: ${payload.ref}`,
+      { class: AppService.name, id },
+    );
+    return false;
   }
 
   async createPushRequestObject(

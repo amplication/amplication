@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { QueueInterface } from './contracts/queue.interface';
-import { CreateRepositoryPushRequest } from './entities/dto/CreateRepositoryPushRequest';
-import { RepositoryPushCreateEvent } from './entities/dto/RepositoryPushCreateEvent';
+import { QueueInterface } from '../contracts/queue.interface';
+import { CreateRepositoryPushRequest } from '../entities/dto/CreateRepositoryPushRequest';
+import { RepositoryPushCreateEvent } from '../entities/dto/RepositoryPushCreateEvent';
 import { ConfigService } from '@nestjs/config';
 
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
@@ -29,17 +29,19 @@ export class QueueService implements QueueInterface {
     pushedAt,
     installationId,
   }: CreateRepositoryPushRequest) {
-    await this.RepositoryClient.emit(
-      this.kafkaRepositoryPushQueue,
-      new RepositoryPushCreateEvent(
-        provider,
-        repositoryOwner,
-        repositoryName,
-        branch,
-        commit,
-        pushedAt,
-        installationId.toString(),
-      ),
-    );
+    try {
+      await this.RepositoryClient.emit(
+        this.kafkaRepositoryPushQueue,
+        new RepositoryPushCreateEvent(
+          provider,
+          repositoryOwner,
+          repositoryName,
+          branch,
+          commit,
+          pushedAt,
+          installationId.toString(),
+        ),
+      );
+    } catch (error) {}
   }
 }

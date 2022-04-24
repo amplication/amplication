@@ -1,4 +1,4 @@
-import { PrismaService } from '@amplication/prisma-db';
+import { GitOrganization, PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { GitOrganizationInterface } from 'src/contracts/gitOrganization.interface';
 import { EnumProvider } from '../entities/enums/provider';
@@ -10,16 +10,14 @@ export class GitOrganizationRepository implements GitOrganizationInterface {
   async getOrganizationByInstallationId(
     installationId: string,
     provider: EnumProvider,
-  ): Promise<string> {
-    return (
-      await this.prisma.gitOrganization.findUnique({
-        where: {
-          provider_installationId: {
-            installationId,
-            provider,
-          },
+  ): Promise<GitOrganization> {
+    return await this.prisma.gitOrganization.findUnique({
+      where: {
+        provider_installationId: {
+          installationId,
+          provider,
         },
-      })
-    ).installationId;
+      },
+    });
   }
 }

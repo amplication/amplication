@@ -21,11 +21,10 @@ export class AppController {
     @Headers() headers: Headers,
     @Body() payload: string,
   ) {
-    this.logger.log(
-      'start createWebhooksMessage',
-      AppController.name,
-      `data: ${payload}`,
-    );
+    this.logger.log('start createWebhooksMessage', {
+      class: AppController.name,
+      payload,
+    });
     await this.appService.createMessage(
       headers['x-github-delivery'],
       headers['x-github-event'],
@@ -33,9 +32,8 @@ export class AppController {
       headers['x-hub-signature-256'],
       EnumProvider.Github,
     );
-    this.logger.log(
-      'successfully ended createWebhooksMessage',
-      AppController.name,
-    );
+    this.logger.log('successfully ended createWebhooksMessage', {
+      class: AppController.name,
+    });
   }
 }
