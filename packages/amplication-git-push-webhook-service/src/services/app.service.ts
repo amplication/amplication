@@ -64,7 +64,7 @@ export class AppService implements AppInterface {
       return;
     }
 
-    const pushRequest = await this.createPushRequestObject(pushEventObj);
+    const pushRequest = await this.createPushRequestObject(pushEventObj, id);
     if (!this.isInstallationIdExist(pushRequest.installationId, provider, id)) {
       return;
     }
@@ -130,6 +130,7 @@ export class AppService implements AppInterface {
 
   async createPushRequestObject(
     payload: PushEvent,
+    id: string,
   ): Promise<CreateRepositoryPushRequest> {
     const req: CreateRepositoryPushRequest = {
       provider: EnumProvider.Github,
@@ -141,6 +142,7 @@ export class AppService implements AppInterface {
         this.intTryParse(payload.repository.pushed_at.toString()) * 1000,
       ),
       installationId: payload.installation.id.toString(),
+      messageId: id,
     };
     return req;
   }

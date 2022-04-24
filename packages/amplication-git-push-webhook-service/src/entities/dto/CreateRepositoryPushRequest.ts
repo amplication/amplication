@@ -8,4 +8,5 @@ export class CreateRepositoryPushRequest {
   commit: string;
   pushedAt: Date;
   installationId: string;
+  messageId: string;
 }
