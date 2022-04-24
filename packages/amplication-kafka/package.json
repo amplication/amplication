@@ -1,0 +1,16 @@
+{
+  "name": "amplication-kafka",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "keywords": [],
+  "author": "tupe12334",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "4.6.3"
+  }
+}
