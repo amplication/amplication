@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from '../controllers/app.controller';
-import { AppService } from '../services/app.service';
-import { QueueModule } from './queue.module';
-import { GitOrganizationModule } from '../repositories/gitOrganization.module';
-import { RootWinstonModule } from './root-winston.module';
-import { HealthModule } from 'src/health/health.module';
+import { AppController } from './controllers/app.controller';
+import { AppService } from './services/app.service';
+import { QueueModule } from './modules/queue.module';
+import { GitOrganizationModule } from './repositories/gitOrganization.module';
+import { RootWinstonModule } from './modules/root-winston.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
