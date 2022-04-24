@@ -85,7 +85,7 @@ jobs:
   tests:
     runs-on: ubuntu-20.04
     needs: [changes]
-    if: success() && ${{ needs.changes.outputs.packages != '' }}
+    if: success() && ${{ needs.changes.outputs.packages != '' }} && ${{ needs.changes.outputs.packages != '[]' }}
     timeout-minutes: 45
     strategy:
       matrix:
@@ -147,7 +147,7 @@ jobs:
   docker-build:
     name: docker-build
     needs: [changes]
-    if: success() && ${{ needs.changes.outputs.services != '' }}
+    if: success() && ${{ needs.changes.outputs.services != '' }} && ${{ needs.changes.outputs.services != '[]' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -229,7 +229,7 @@ jobs:
   docker-retag:
     name: docker-retag
     needs: [changes]
-    if: success() && ${{ needs.changes.outputs.service_retag_list != '' }} && ${{ github.ref != 'refs/heads/master' }}
+    if: success() && ${{ needs.changes.outputs.service_retag_list != '' }} && ${{ needs.changes.outputs.service_retag_list != '[]' }} && ${{ github.ref != 'refs/heads/master' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
