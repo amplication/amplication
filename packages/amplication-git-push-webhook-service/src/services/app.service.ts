@@ -105,8 +105,7 @@ export class AppService implements AppInterface {
     } catch (error) {
       this.logger.error(
         `failed to createWebhooksMessage: verifyAndReceive, error: ${error}`,
-        AppService.name,
-        `message id: ${id}`,
+        { class: AppService.name, id },
       );
       return false;
     }

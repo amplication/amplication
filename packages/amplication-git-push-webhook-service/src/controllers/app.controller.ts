@@ -6,8 +6,8 @@ import {
   LoggerService,
   Inject,
 } from '@nestjs/common';
-import { AppService } from './services/app.service';
-import { EnumProvider } from './entities/enums/provider';
+import { AppService } from '../services/app.service';
+import { EnumProvider } from '../entities/enums/provider';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 @Controller()
 export class AppController {
