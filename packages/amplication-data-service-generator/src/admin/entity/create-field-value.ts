@@ -21,7 +21,7 @@ export function createFieldValue(
       const { relatedEntity } = field.properties as LookupResolvedProperties;
       return jsxElement`<ReferenceField label="${
         field.displayName
-      }" source="${relatedEntity.name.toLowerCase()}.id" reference="${
+      }" source="${field.name}.id" reference="${
         relatedEntity.name
       }">
             <TextField source={${relatedEntity.name.toUpperCase()}_TITLE_FIELD} /> 

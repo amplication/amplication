@@ -55,7 +55,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
         <SelectArrayInput optionText={${relatedEntity.name}Title} />
       </ReferenceArrayInput>`;
     }
-    return jsxElement`<ReferenceInput source="${relatedEntity.name.toLowerCase()}.id" reference="${
+    return jsxElement`<ReferenceInput source="${field.name}.id" reference="${
       relatedEntity.name
     }" label="${field.displayName}">
       <SelectInput optionText={${relatedEntity.name}Title} />

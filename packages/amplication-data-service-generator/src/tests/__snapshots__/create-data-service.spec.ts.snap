@@ -1203,7 +1203,7 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <ReferenceInput
-          source=\\"organization.id\\"
+          source=\\"vipOrganization.id\\"
           reference=\\"Organization\\"
           label=\\"VIP Organization\\"
         >
@@ -1298,7 +1298,7 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <ReferenceInput
-          source=\\"organization.id\\"
+          source=\\"vipOrganization.id\\"
           reference=\\"Organization\\"
           label=\\"VIP Organization\\"
         >
@@ -1371,7 +1371,7 @@ export const CustomerList = (props: ListProps): React.ReactElement => {
         </ReferenceField>
         <ReferenceField
           label=\\"VIP Organization\\"
-          source=\\"organization.id\\"
+          source=\\"vipOrganization.id\\"
           reference=\\"Organization\\"
         >
           <TextField source={ORGANIZATION_TITLE_FIELD} />
@@ -1431,14 +1431,14 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
         </ReferenceField>
         <ReferenceField
           label=\\"VIP Organization\\"
-          source=\\"organization.id\\"
+          source=\\"vipOrganization.id\\"
           reference=\\"Organization\\"
         >
           <TextField source={ORGANIZATION_TITLE_FIELD} />
         </ReferenceField>
         <ReferenceManyField
           reference=\\"Order\\"
-          target=\\"CustomerId\\"
+          target=\\"customerId\\"
           label=\\"Orders\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -1907,8 +1907,8 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         <TextField label=\\"Name\\" source=\\"name\\" />
         <ReferenceManyField
           reference=\\"Customer\\"
-          target=\\"OrganizationId\\"
-          label=\\"The Customers\\"
+          target=\\"organizationId\\"
+          label=\\"Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
             <TextField label=\\"Id\\" source=\\"id\\" />
@@ -1946,7 +1946,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
             </ReferenceField>
             <ReferenceField
               label=\\"VIP Organization\\"
-              source=\\"organization.id\\"
+              source=\\"vipOrganization.id\\"
               reference=\\"Organization\\"
             >
               <TextField source={ORGANIZATION_TITLE_FIELD} />
@@ -1955,8 +1955,8 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         </ReferenceManyField>
         <ReferenceManyField
           reference=\\"Customer\\"
-          target=\\"OrganizationId\\"
-          label=\\"The Customers\\"
+          target=\\"vipOrganizationId\\"
+          label=\\"VIP Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
             <TextField label=\\"Id\\" source=\\"id\\" />
@@ -1994,7 +1994,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
             </ReferenceField>
             <ReferenceField
               label=\\"VIP Organization\\"
-              source=\\"organization.id\\"
+              source=\\"vipOrganization.id\\"
               reference=\\"Organization\\"
             >
               <TextField source={ORGANIZATION_TITLE_FIELD} />
@@ -2155,7 +2155,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
         <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
         <NumberInput label=\\"Score\\" source=\\"score\\" />
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+        <ReferenceInput source=\\"manager.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
         <ReferenceArrayInput
@@ -2242,7 +2242,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
         <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
         <NumberInput label=\\"Score\\" source=\\"score\\" />
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+        <ReferenceInput source=\\"manager.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
         <ReferenceArrayInput
@@ -2321,7 +2321,7 @@ export const UserList = (props: ListProps): React.ReactElement => {
         <TextField label=\\"Age\\" source=\\"age\\" />
         <TextField label=\\"Birth Date\\" source=\\"birthDate\\" />
         <TextField label=\\"Score\\" source=\\"score\\" />
-        <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
+        <ReferenceField label=\\"Manager\\" source=\\"manager.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
         </ReferenceField>
         <TextField label=\\"Interests\\" source=\\"interests\\" />
@@ -2358,7 +2358,7 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
         <TextField label=\\"Age\\" source=\\"age\\" />
         <TextField label=\\"Birth Date\\" source=\\"birthDate\\" />
         <TextField label=\\"Score\\" source=\\"score\\" />
-        <ReferenceField label=\\"Manager\\" source=\\"user.id\\" reference=\\"User\\">
+        <ReferenceField label=\\"Manager\\" source=\\"manager.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
         </ReferenceField>
         <TextField label=\\"Interests\\" source=\\"interests\\" />

@@ -140,8 +140,8 @@ function createToManyReferenceField(
   const element = jsxElement` 
   <ReferenceManyField
     reference="${field.properties.relatedEntity.name}"
-    target="${entity.name}Id"
-    label="${field.properties.relatedEntity.pluralDisplayName}"
+    target="${field.properties.relatedField.name}Id"
+    label="${field.displayName}"
   >
     <Datagrid rowClick="show">
       ${fields.map((field) => jsxElement`${createFieldValue(field)}`)}
