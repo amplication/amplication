@@ -213,14 +213,13 @@ jobs:
         if: ${{ steps.tag-exist.outputs.tag_exist == 'false' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAGS: ${{ github.ref_name }},${{ github.run_id }},${{ github.sha }}
         run: |
           Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
           docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
           docker push $Docker_image
           MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.sha }} --image-manifest "$MANIFEST"
-          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
-          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.run_id }} --image-manifest "$MANIFEST"
+          sh .github/workflows/scripts/ecr_retag.sh
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
@@ -268,9 +267,10 @@ jobs:
       - name: Retag images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAGS: ${{ github.ref_name }}
         run: |
           MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=master --output json | jq --raw-output --join-output '.images[0].imageManifest')
-          aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag ${{ github.ref_name }} --image-manifest "$MANIFEST"
+          sh .github/workflows/scripts/ecr_retag.sh
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
