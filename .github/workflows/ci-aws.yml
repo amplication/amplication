@@ -270,6 +270,14 @@ jobs:
           TAG_LIST: ${{ github.ref_name }}
         run: |
           MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=master --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          if [ -z "$MANIFEST" ]
+          then
+            fixed_tag=$(echo ${{ github.ref_name }} | sed 's/[^a-zA-Z0-9]/-/g')
+            Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$fixed_tag
+            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
+            docker push $Docker_image
+            MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$fixed_tag --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          fi
           sh .github/workflows/scripts/ecr_retag.sh
       - name: Discord notification
         if: failure()
