@@ -1,16 +1,18 @@
 {
-  "name": "amplication-kafka",
+  "name": "@amplication/kafka",
   "version": "1.0.0",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
     "build": "tsc",
+    "prebuild": "rimraf lib",
     "prepare": "npm run build"
   },
   "keywords": [],
   "author": "tupe12334",
   "license": "ISC",
   "devDependencies": {
+    "rimraf": "3.0.2",
     "typescript": "4.6.3"
   }
 }
