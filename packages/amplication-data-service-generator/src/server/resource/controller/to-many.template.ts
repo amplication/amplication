@@ -16,6 +16,7 @@ import * as errors from "../../errors";
 declare interface WHERE_UNIQUE_INPUT {
   id: string;
 }
+declare interface RELATED_ENTITY_CREATED_NESTED {}
 declare interface RELATED_ENTITY_WHERE_UNIQUE_INPUT {}
 declare class RELATED_ENTITY_WHERE_INPUT {}
 declare interface Select {}
@@ -106,13 +107,11 @@ export class Mixin {
   })
   async CREATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: WHERE_UNIQUE_INPUT[],
+    @common.Body() body: RELATED_ENTITY_CREATED_NESTED,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      PROPERTY: {
-        connect: body,
-      },
+      PROPERTY: body,
     };
     const permission = this.rolesBuilder.permission({
       role: userRoles,

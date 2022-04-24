@@ -29,6 +29,7 @@ import {
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
+import { createCreateNestedManyWithoutInputID } from "../dto/nested-input-dto/create-nested";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
@@ -155,7 +156,8 @@ async function createControllerModule(
             entityType,
             entityDTOs.whereUniqueInput,
             dtos,
-            serviceId
+            serviceId,
+            entity.pluralName
           )
         )
       )
@@ -211,7 +213,8 @@ async function createToManyRelationMethods(
   entityType: string,
   whereUniqueInput: NamedClassDeclaration,
   dtos: DTOs,
-  serviceId: namedTypes.Identifier
+  serviceId: namedTypes.Identifier,
+  mainEntityPluralName: string
 ) {
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
@@ -237,6 +240,10 @@ async function createToManyRelationMethods(
     UPDATE: builders.identifier(camelCase(`update ${field.name}`)),
     UPDATE_PATH: builders.stringLiteral(`/:id/${field.name}`),
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
+    RELATED_ENTITY_CREATED_NESTED: createCreateNestedManyWithoutInputID(
+      mainEntityPluralName,
+      relatedEntity.name
+    ),
   });
 
   return getMethods(getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID));

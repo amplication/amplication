@@ -5072,6 +5072,7 @@ import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
 import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
+import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
 export class CustomerControllerBase {
@@ -5501,13 +5502,11 @@ export class CustomerControllerBase {
   })
   async createOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
+    @common.Body() body: OrderCreateNestedManyWithoutCustomersInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      orders: {
-        connect: body,
-      },
+      orders: body,
     };
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -9727,9 +9726,11 @@ import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
 import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
 import { User } from \\"../../user/base/User\\";
+import { UserCreateNestedManyWithoutOrganizationsInput } from \\"./UserCreateNestedManyWithoutOrganizationsInput\\";
 import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
 import { Customer } from \\"../../customer/base/Customer\\";
+import { CustomerCreateNestedManyWithoutOrganizationsInput } from \\"./CustomerCreateNestedManyWithoutOrganizationsInput\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
 export class OrganizationControllerBase {
@@ -10030,13 +10031,11 @@ export class OrganizationControllerBase {
   })
   async createUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: UserCreateNestedManyWithoutOrganizationsInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      users: {
-        connect: body,
-      },
+      users: body,
     };
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -10228,13 +10227,11 @@ export class OrganizationControllerBase {
   })
   async createCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerCreateNestedManyWithoutOrganizationsInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      customers: {
-        connect: body,
-      },
+      customers: body,
     };
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -10426,13 +10423,11 @@ export class OrganizationControllerBase {
   })
   async createVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerCreateNestedManyWithoutOrganizationsInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      vipCustomers: {
-        connect: body,
-      },
+      vipCustomers: body,
     };
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -12913,8 +12908,10 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
+import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
 import { Organization } from \\"../../organization/base/Organization\\";
+import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
 export class UserControllerBase {
@@ -13316,13 +13313,11 @@ export class UserControllerBase {
   })
   async createEmployees(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
+    @common.Body() body: UserCreateNestedManyWithoutUsersInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      employees: {
-        connect: body,
-      },
+      employees: body,
     };
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -13492,13 +13487,11 @@ export class UserControllerBase {
   })
   async createOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
+    @common.Body() body: OrganizationCreateNestedManyWithoutUsersInput,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
-      organizations: {
-        connect: body,
-      },
+      organizations: body,
     };
     const permission = this.rolesBuilder.permission({
       role: userRoles,
