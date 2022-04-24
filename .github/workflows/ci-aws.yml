@@ -149,7 +149,7 @@ jobs:
     name: docker-build
     needs: [changes]
     
-    if: success() && ${{ needs.changes.outputs.services != [] && needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
+    if: success() && ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
