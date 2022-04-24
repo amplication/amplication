@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './controllers/app.controller';
-import { AppService } from './services/app.service';
+import { AppController } from '../controllers/app.controller';
+import { AppService } from '../services/app.service';
 import { QueueModule } from './queue.module';
-import { GitOrganizationModule } from './repositories/gitOrganization.module';
-import { RootWinstonModule } from './services/root-winston.module';
+import { GitOrganizationModule } from '../repositories/gitOrganization.module';
+import { RootWinstonModule } from './root-winston.module';
 
 @Module({
   imports: [
