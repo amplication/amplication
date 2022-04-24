@@ -186,7 +186,6 @@ jobs:
           echo $GITHUB_HASH
       - name: Check if repo exist
         working-directory: packages/${{ matrix.service }}
-        
         run: |
           aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
       - name: Check if tag already exist
@@ -262,6 +261,10 @@ jobs:
           then 
             echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
           fi
+      - name: Check if repo exist
+        working-directory: packages/${{ matrix.service }}
+        run: |
+          aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
       - name: Retag images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
