@@ -98,11 +98,11 @@ const Commit = ({ applicationId, noChanges }: Props) => {
                 rows={3}
                 textarea
                 name="message"
-                label={noChanges ? "Build message" : "Commit message"}
+                label={noChanges ? "Build message" : "Commit message..."}
                 disabled={loading}
                 autoFocus
                 hideLabel
-                placeholder={noChanges ? "Build message" : "Commit message"}
+                placeholder={noChanges ? "Build message" : "Commit message..."}
                 autoComplete="off"
               />
               <Button

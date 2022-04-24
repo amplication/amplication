@@ -7,15 +7,13 @@
   justify-content: flex-start;
   align-items: stretch;
 
-  h2 {
-    @include title1;
-    margin: var(--default-spacing);
-    display: inline-block;
-  }
-
   &__heading {
-    display: flex;
-    align-items: center;
+    h2 {
+      @include title1;
+      font-size: 14px;
+      font-weight: 700;
+      margin: var(--default-spacing);
+    }
   }
 
   .last-commit {
