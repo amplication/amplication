@@ -62,7 +62,7 @@ export class QueueService implements QueueInterface {
       );
     } catch (error) {
       this.logger.error(
-        `failed to createWebhooksMessage: verifyAndReceive, error: ${error}`,
+        `failed to push message to kafka: method: createPushRequest, error: ${error}`,
         { class: QueueService.name, messageId },
       );
     }
