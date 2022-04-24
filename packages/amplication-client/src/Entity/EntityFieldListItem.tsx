@@ -65,6 +65,12 @@ export const EntityFieldListItem = ({
         </Link>
         <span className={`${CLASS_NAME}__description`}>{entityField.name}</span>
         <span className="spacer" />
+        <DeleteEntityField
+          entityId={entity.id}
+          entityField={entityField}
+          onDelete={onDelete}
+          onError={onError}
+        />
       </div>
       {!isEmpty(entityField.description) && (
         <div className={`${CLASS_NAME}__row`}>
@@ -113,12 +119,6 @@ export const EntityFieldListItem = ({
           </span>
         )}
         <span className="spacer" />
-        <DeleteEntityField
-          entityId={entity.id}
-          entityField={entityField}
-          onDelete={onDelete}
-          onError={onError}
-        />
       </div>
     </Panel>
   );

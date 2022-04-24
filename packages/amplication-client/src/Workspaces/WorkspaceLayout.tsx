@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import React from "react";
 import { Switch, match } from "react-router-dom";
 import MainLayout from "../Layout/MainLayout";
@@ -106,12 +105,3 @@ function WorkspaceLayout({ match }: Props) {
 }
 
 export default WorkspaceLayout;
-
-export const GET_PENDING_CHANGES_STATUS = gql`
-  query pendingChangesStatus($applicationId: String!) {
-    pendingChanges(where: { app: { id: $applicationId } }) {
-      resourceId
-      resourceType
-    }
-  }
-`;

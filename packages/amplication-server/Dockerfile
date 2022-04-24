@@ -11,7 +11,7 @@ RUN npm config set fund false
 
 WORKDIR /app
 COPY lerna.json /app
-COPY package*.json /app
+COPY package*.json /app/
 RUN npm ci --production
 
 FROM base AS build
@@ -22,10 +22,12 @@ COPY packages/amplication-container-builder packages/amplication-container-build
 COPY packages/amplication-data packages/amplication-data
 COPY packages/amplication-data-service-generator packages/amplication-data-service-generator
 COPY packages/amplication-deployer packages/amplication-deployer
+COPY packages/amplication-git-service packages/amplication-git-service
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/server --include-dependencies
-RUN npm run prisma:generate
+RUN npm run prisma:generate -- --scope @amplication/server --include-dependencies
+
 # Build all distributions needed for amplicaiton/server
 RUN npm run build -- --scope @amplication/server --include-dependencies
 
@@ -42,6 +44,10 @@ COPY --from=build /app/packages/amplication-server/package.json /app/packages/am
 COPY --from=build /app/packages/amplication-server/node_modules /app/packages/amplication-server/node_modules
 COPY --from=build /app/packages/amplication-server/dist /app/packages/amplication-server/dist
 
+COPY --from=build /app/packages/amplication-server/prisma /app/packages/amplication-server/prisma
+COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
+
+
 COPY --from=build /app/packages/amplication-container-builder/package.json /app/packages/amplication-container-builder/package.json
 COPY --from=build /app/packages/amplication-container-builder/node_modules /app/packages/amplication-container-builder/node_modules
 COPY --from=build /app/packages/amplication-container-builder/dist /app/packages/amplication-container-builder/dist
@@ -57,6 +63,10 @@ COPY --from=build /app/packages/amplication-data-service-generator/dist /app/pac
 COPY --from=build /app/packages/amplication-deployer/package.json /app/packages/amplication-deployer/package.json
 COPY --from=build /app/packages/amplication-deployer/node_modules /app/packages/amplication-deployer/node_modules
 COPY --from=build /app/packages/amplication-deployer/dist /app/packages/amplication-deployer/dist
+
+COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
+COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
+COPY --from=build /app/packages/amplication-git-service/dist /app/packages/amplication-git-service/dist
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]

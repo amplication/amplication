@@ -525,6 +525,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "jnfrati",
+      "name": "Nicolas Frati",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23369263?v=4",
+      "profile": "http://jnfrati.github.io",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,

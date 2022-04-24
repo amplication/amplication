@@ -7,6 +7,8 @@
     border-bottom: none;
     color: var(--black80);
     background-color: var(--black2);
+    flex-direction: row-reverse;
+    justify-content: space-between;
 
     &--selected,
     &[aria-checked="true"] {
@@ -15,6 +17,10 @@
     &:hover {
       background-color: var(--black5);
     }
+  }
+
+  &__summary {
+    margin-left: var(--large-spacing);
   }
 
   & &__modal {
@@ -30,4 +36,8 @@
       border-bottom: $border-black10;
     }
   }
+}
+
+.SelectMenu-icon {
+  margin-right: var(--double-spacing) !important;
 }
