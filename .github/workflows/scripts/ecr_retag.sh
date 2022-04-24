@@ -1,7 +1,7 @@
 TAGS="${TAG_LIST:=latest}"
 echo "TAGS=$TAGS"
 echo "ECR_REPOSITORY=$ECR_REPOSITORY"
-MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=master --output json | jq --raw-output --join-output '.images[0].imageManifest')
+echo "$MANIFEST"
 
 for tag in $(echo $TAGS | sed "s/,/ /g")
 do
