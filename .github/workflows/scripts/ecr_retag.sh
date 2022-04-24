@@ -1,7 +1,7 @@
 TAGS="${TAG_LIST:=latest}"
 echo "TAGS=$TAGS"
 echo "ECR_REPOSITORY=$ECR_REPOSITORY"
-echo "$MANIFEST"
+echo "MANIFEST: $MANIFEST"
 
 for tag in $(echo $TAGS | sed "s/,/ /g")
 do
