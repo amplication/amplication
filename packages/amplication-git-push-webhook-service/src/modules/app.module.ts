@@ -5,6 +5,7 @@ import { AppService } from '../services/app.service';
 import { QueueModule } from './queue.module';
 import { GitOrganizationModule } from '../repositories/gitOrganization.module';
 import { RootWinstonModule } from './root-winston.module';
+import { HealthModule } from 'src/health/health.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { RootWinstonModule } from './root-winston.module';
     QueueModule,
     GitOrganizationModule,
     RootWinstonModule,
+    HealthModule,
   ],
   providers: [AppService],
   exports: [AppService],
