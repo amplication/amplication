@@ -6,7 +6,16 @@ echo "MANIFEST: $MANIFEST"
 for tag in $(echo $TAGS | sed "s/,/ /g")
 do
     fixed_tag=$(echo $tag | sed 's/[^a-zA-Z0-9]/-/g')
-    aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag $fixed_tag --image-manifest "$MANIFEST"
+    (aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag $fixed_tag --image-manifest "$MANIFEST")&>tag_result
+    retag_response=$(cat tag_result)
+    if [[ $retag_response == *"already exists in the repository with name"* ]]; then
+        echo "Already exists in the repository with name: $fixed_tag"
+    else
+        if [[ $retag_response == *"error"* ]] || [[ $retag_response == *"ERROR"* ]]; then
+            echo "Failed to re tag docker $fixed_tag \n $retag_response"
+            exit -1
+        fi
+    fi
 done
 
 
