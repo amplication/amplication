@@ -38,5 +38,8 @@
     "moduleNameMapper": {
       "^src/(.*)": "<rootDir>/src/$1"
     }
+  },
+  "dependencies": {
+    "dotenv": "16.0.0"
   }
 }
