@@ -19,11 +19,9 @@ export function createFieldValue(
       return jsxElement`<DateField source="${field.name}" label="${field.displayName}" />`;
     case EnumDataType.Lookup:
       const { relatedEntity } = field.properties as LookupResolvedProperties;
-      return jsxElement`<ReferenceField label="${
-        field.displayName
-      }" source="${field.name}.id" reference="${
-        relatedEntity.name
-      }">
+      return jsxElement`<ReferenceField label="${field.displayName}" source="${
+        field.name
+      }.id" reference="${relatedEntity.name}">
             <TextField source={${relatedEntity.name.toUpperCase()}_TITLE_FIELD} /> 
         </ReferenceField>`;
     case EnumDataType.Boolean:
