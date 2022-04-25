@@ -5499,9 +5499,9 @@ export class CustomerControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async createOrders(
+  async connectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
+    @common.Body() body: OrderWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -5589,9 +5589,9 @@ export class CustomerControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async deleteOrders(
+  async disconnectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
+    @common.Body() body: OrderWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -10028,9 +10028,9 @@ export class OrganizationControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async createUsers(
+  async connectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -10118,9 +10118,9 @@ export class OrganizationControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async deleteUsers(
+  async disconnectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -10226,9 +10226,9 @@ export class OrganizationControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async createCustomers(
+  async connectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -10316,9 +10316,9 @@ export class OrganizationControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async deleteCustomers(
+  async disconnectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -10424,9 +10424,9 @@ export class OrganizationControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async createVipCustomers(
+  async connectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -10514,9 +10514,9 @@ export class OrganizationControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async deleteVipCustomers(
+  async disconnectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
+    @common.Body() body: CustomerWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -13314,7 +13314,7 @@ export class UserControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async createEmployees(
+  async connectEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -13404,7 +13404,7 @@ export class UserControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async deleteEmployees(
+  async disconnectEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -13490,9 +13490,9 @@ export class UserControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async createOrganizations(
+  async connectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
+    @common.Body() body: OrganizationWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -13580,9 +13580,9 @@ export class UserControllerBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async deleteOrganizations(
+  async disconnectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
+    @common.Body() body: OrganizationWhereUniqueInput[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
