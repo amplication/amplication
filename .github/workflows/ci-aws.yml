@@ -91,7 +91,7 @@ jobs:
       run: |
         echo "packages: $packages"
         echo "services: $services"
-      with:
+      env:
         packages: ${{ needs.changes.outputs.packages }}
         services: ${{ needs.changes.outputs.services }}
   tests:
