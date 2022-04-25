@@ -45,6 +45,9 @@ module "env" {
   apps_domain                      = var.apps_domain
   apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
+  kafka_broker_ip                  = var.kafka_broker_ip
+  webhooks_secret_key              = var.webhooks_secret_key
+  kafka_repository_push_queue      = var.kafka_repository_push_queue
 }
 
 module "deploy" {

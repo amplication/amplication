@@ -149,3 +149,14 @@ variable "apps_domain" {
 variable "apps_dns_zone" {
   type = string
 }
+variable "kafka_broker_ip" {
+  type = string
+}
+
+variable "webhooks_secret_key" {
+  type = string
+}
+
+variable "kafka_repository_push_queue" {
+  type = string
+}

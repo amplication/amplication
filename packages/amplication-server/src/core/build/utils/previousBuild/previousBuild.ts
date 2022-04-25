@@ -1,5 +1,4 @@
-import { Build } from '@prisma/client';
-import { PrismaService } from 'nestjs-prisma';
+import { Build, PrismaService } from '@amplication/prisma-db';
 
 export const previousBuild = async (
   prisma: PrismaService,
