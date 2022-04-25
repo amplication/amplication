@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [changes]
     
-    if: ${{ needs.changes.outputs.packages != '[]' && needs.changes.outputs.packages != '' }}
+    if: success() && ${{ needs.changes.outputs.packages != '[]' && needs.changes.outputs.packages != '' }}
     timeout-minutes: 45
     strategy:
       matrix:
