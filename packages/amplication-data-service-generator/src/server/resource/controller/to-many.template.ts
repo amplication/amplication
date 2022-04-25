@@ -64,7 +64,7 @@ export class Mixin {
   )
   @common.Get(FIND_MANY_PATH)
   @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
+    resource: RELATED_ENTITY_NAME,
     action: "read",
     possession: "any",
   })

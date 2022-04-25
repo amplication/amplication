@@ -23,7 +23,7 @@ export class Mixin {
 
   @graphql.ResolveField(() => RELATED_ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
+    resource: RELATED_ENTITY_NAME,
     action: "read",
     possession: "any",
   })
