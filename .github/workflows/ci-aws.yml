@@ -82,6 +82,18 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
           DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!"}]'
+  dummy:
+    runs-on: ubuntu-20.04
+    needs: [changes]
+    steps:
+    - name: Prints
+      id: primts
+      run: |
+        echo "packages: $packages"
+        echo "services: $services"
+      with:
+        packages: ${{ needs.changes.outputs.packages }}
+        services: ${{ needs.changes.outputs.services }}
   tests:
     runs-on: ubuntu-20.04
     needs: [changes]
