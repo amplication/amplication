@@ -6,13 +6,37 @@
   "scripts": {
     "build": "tsc",
     "prebuild": "rimraf lib",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test": "jest"
   },
   "keywords": [],
   "author": "tupe12334",
   "license": "ISC",
   "devDependencies": {
+    "@nestjs/microservices": "8.4.4",
+    "@types/jest": "27.4.1",
+    "@types/node": "17.0.26",
+    "jest": "27.5.1",
     "rimraf": "3.0.2",
+    "ts-jest": "27.1.4",
     "typescript": "4.6.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": ".spec.ts$",
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)": "<rootDir>/src/$1"
+    }
   }
 }
