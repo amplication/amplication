@@ -12,7 +12,7 @@ export class KafkaEnvironmentVariables extends EnvironmentVariables {
     return EnvironmentVariables.getJson(`KAFKA_BROKERS${this.envSuffix}`, true);
   }
   getGroupId() {
-    return EnvironmentVariables.get(`KAFKA_GROUP_ID${this.envSuffix}`, true);
+    return EnvironmentVariables.get(`KAFKA_GROUP_ID${this.envSuffix}`, false);
   }
   getClientId() {
     return EnvironmentVariables.get(`KAFKA_CLIENT_ID${this.envSuffix}`, true);
