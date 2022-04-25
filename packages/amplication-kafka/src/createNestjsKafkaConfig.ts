@@ -3,7 +3,7 @@ import { ConsumerConfig } from "@nestjs/microservices/external/kafka.interface";
 import { KafkaEnvironmentVariables } from "./";
 
 export function createNestjsKafkaConfig(envSuffix: string = ""): KafkaOptions {
-  const kafkaEnv = new KafkaEnvironmentVariables();
+  const kafkaEnv = new KafkaEnvironmentVariables(envSuffix);
   const groupId = kafkaEnv.getGroupId();
   let consumer: ConsumerConfig | undefined;
   if (groupId) {
