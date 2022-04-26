@@ -15,7 +15,7 @@ import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 // @ts-ignore
-import { AccessControlPermissionsInterceptor } from "src/interceptors/restPermissions.interceptor";
+import { AccessControlPermissionsInterceptor } from "../../interceptors/accessControlPermissions.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}

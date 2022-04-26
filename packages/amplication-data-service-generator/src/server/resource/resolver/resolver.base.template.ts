@@ -15,7 +15,7 @@ import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 // @ts-ignore
-import { AccessControlPermissionsInterceptor } from "src/interceptors/gqlPermissions.interceptor";
+import { AccessControlPermissionsInterceptor } from "../../interceptors/accessControlPermissions.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}

@@ -5063,7 +5063,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { CustomerService } from \\"../customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
@@ -5664,7 +5664,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
@@ -6687,7 +6687,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { EmptyService } from \\"../empty.service\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
@@ -6958,7 +6958,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyFindUniqueArgs } from \\"./EmptyFindUniqueArgs\\";
@@ -7246,7 +7246,7 @@ export class HealthService extends HealthServiceBase {
   }
 }
 ",
-  "server/src/interceptors/accessControlPermisssion.interceptor.ts": "import {
+  "server/src/interceptors/accessControlPermissions.interceptor.ts": "import {
   CallHandler,
   ExecutionContext,
   Injectable,
@@ -8129,7 +8129,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { OrderService } from \\"../order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
@@ -8457,7 +8457,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
@@ -9705,7 +9705,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { OrganizationService } from \\"../organization.service\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
@@ -10576,7 +10576,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
@@ -12872,7 +12872,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { UserService } from \\"../user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -13621,7 +13621,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
+import { AccessControlPermissionsInterceptor } from \\"../../interceptors/accessControlPermissions.interceptor\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
