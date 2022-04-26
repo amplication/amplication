@@ -5863,6 +5863,7 @@ export class CustomerResolverBase {
     }
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => [Order])
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -5871,22 +5872,15 @@ export class CustomerResolverBase {
   })
   async orders(
     @graphql.Parent() parent: Customer,
-    @graphql.Args() args: OrderFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: OrderFindManyArgs
   ): Promise<Order[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Order\\",
-    });
     const results = await this.service.findOrders(parent.id, args);
 
     if (!results) {
       return [];
     }
 
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @graphql.ResolveField(() => Organization, { nullable: true })
@@ -10730,6 +10724,7 @@ export class OrganizationResolverBase {
     }
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => [User])
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -10738,24 +10733,18 @@ export class OrganizationResolverBase {
   })
   async users(
     @graphql.Parent() parent: Organization,
-    @graphql.Args() args: UserFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
     const results = await this.service.findUsers(parent.id, args);
 
     if (!results) {
       return [];
     }
 
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => [Customer])
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -10764,24 +10753,18 @@ export class OrganizationResolverBase {
   })
   async customers(
     @graphql.Parent() parent: Organization,
-    @graphql.Args() args: CustomerFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
     const results = await this.service.findCustomers(parent.id, args);
 
     if (!results) {
       return [];
     }
 
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => [Customer])
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -10790,22 +10773,15 @@ export class OrganizationResolverBase {
   })
   async vipCustomers(
     @graphql.Parent() parent: Organization,
-    @graphql.Args() args: CustomerFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
     const results = await this.service.findVipCustomers(parent.id, args);
 
     if (!results) {
       return [];
     }
 
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 }
 ",
@@ -13777,6 +13753,7 @@ export class UserResolverBase {
     }
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => [User])
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13785,24 +13762,18 @@ export class UserResolverBase {
   })
   async employees(
     @graphql.Parent() parent: User,
-    @graphql.Args() args: UserFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
     const results = await this.service.findEmployees(parent.id, args);
 
     if (!results) {
       return [];
     }
 
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => [Organization])
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -13811,22 +13782,15 @@ export class UserResolverBase {
   })
   async organizations(
     @graphql.Parent() parent: User,
-    @graphql.Args() args: OrganizationFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
     const results = await this.service.findOrganizations(parent.id, args);
 
     if (!results) {
       return [];
     }
 
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @graphql.ResolveField(() => User, { nullable: true })
