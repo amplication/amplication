@@ -95,7 +95,7 @@ export class RESOLVER_BASE {
     possession: "any",
   })
   async ENTITIES_QUERY(
-    @graphql.Args() args: FIND_MANY_ARGS,
+    @graphql.Args() args: FIND_MANY_ARGS
   ): Promise<ENTITY[]> {
     const results = await this.service.findMany(args);
     return results;
@@ -109,7 +109,7 @@ export class RESOLVER_BASE {
     possession: "own",
   })
   async ENTITY_QUERY(
-    @graphql.Args() args: FIND_ONE_ARGS,
+    @graphql.Args() args: FIND_ONE_ARGS
   ): Promise<ENTITY | null> {
     const result = await this.service.findOne(args);
     if (result === null) {

@@ -146,7 +146,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: WHERE_UNIQUE_INPUT,
+    @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     const result = await this.service.findOne({
       where: params,
