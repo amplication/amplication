@@ -5063,6 +5063,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
 import { CustomerService } from \\"../customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
@@ -5162,7 +5163,10 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -5176,18 +5180,8 @@ export class CustomerControllerBase {
   @swagger.ApiOkResponse({ type: [Customer] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Customer[]> {
+  async findMany(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
-
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
     const results = await this.service.findMany({
       ...args,
       select: {
@@ -5219,10 +5213,13 @@ export class CustomerControllerBase {
         },
       },
     });
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -5237,15 +5234,8 @@ export class CustomerControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: CustomerWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Customer\\",
-    });
     const result = await this.service.findOne({
       where: params,
       select: {
@@ -5282,7 +5272,7 @@ export class CustomerControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return permission.filter(result);
+    return result;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -5674,6 +5664,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
@@ -5712,6 +5703,7 @@ export class CustomerResolverBase {
     };
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => [Customer])
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5719,19 +5711,13 @@ export class CustomerResolverBase {
     possession: \\"any\\",
   })
   async customers(
-    @graphql.Args() args: CustomerFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
     const results = await this.service.findMany(args);
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => Customer, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5739,20 +5725,13 @@ export class CustomerResolverBase {
     possession: \\"own\\",
   })
   async customer(
-    @graphql.Args() args: CustomerFindUniqueArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: CustomerFindUniqueArgs
   ): Promise<Customer | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Customer\\",
-    });
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 
   @graphql.Mutation(() => Customer)
@@ -6708,6 +6687,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
 import { EmptyService } from \\"../empty.service\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
@@ -6767,7 +6747,10 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -6781,18 +6764,8 @@ export class EmptyControllerBase {
   @swagger.ApiOkResponse({ type: [Empty] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EmptyFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Empty[]> {
+  async findMany(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
-
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Empty\\",
-    });
     const results = await this.service.findMany({
       ...args,
       select: {
@@ -6801,10 +6774,13 @@ export class EmptyControllerBase {
         updatedAt: true,
       },
     });
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -6819,15 +6795,8 @@ export class EmptyControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: EmptyWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Empty\\",
-    });
     const result = await this.service.findOne({
       where: params,
       select: {
@@ -6841,7 +6810,7 @@ export class EmptyControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return permission.filter(result);
+    return result;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -6989,6 +6958,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyFindUniqueArgs } from \\"./EmptyFindUniqueArgs\\";
@@ -7022,26 +6992,19 @@ export class EmptyResolverBase {
     };
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => [Empty])
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async empties(
-    @graphql.Args() args: EmptyFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<Empty[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Empty\\",
-    });
+  async empties(@graphql.Args() args: EmptyFindManyArgs): Promise<Empty[]> {
     const results = await this.service.findMany(args);
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => Empty, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -7049,20 +7012,13 @@ export class EmptyResolverBase {
     possession: \\"own\\",
   })
   async empty(
-    @graphql.Args() args: EmptyFindUniqueArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: EmptyFindUniqueArgs
   ): Promise<Empty | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Empty\\",
-    });
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 
   @graphql.Mutation(() => Empty)
@@ -7289,6 +7245,55 @@ export class HealthService extends HealthServiceBase {
     super(prisma);
   }
 }
+",
+  "server/src/interceptors/accessControlPermisssion.interceptor.ts": "import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from \\"@nestjs/common\\";
+import { Observable } from \\"rxjs\\";
+import { map } from 'rxjs/operators';
+import { InjectRolesBuilder, Permission, RolesBuilder } from 'nest-access-control';
+import { Reflector } from '@nestjs/core';
+
+@Injectable()
+export class AccessControlPermissionsInterceptor implements NestInterceptor {
+    constructor(
+        @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder, 
+        private readonly reflector: Reflector
+    ) {}
+
+    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+        const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>('roles', [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+
+        const permission = this.rolesBuilder.permission({
+            role: permissionsRoles.role,
+            action: permissionsRoles.action,
+            possession: permissionsRoles.possession,
+            resource: permissionsRoles.resource,
+        });       
+        
+        return next.handle().pipe(
+            map((data) => {
+                return this.mapPermissionsByAction(
+                    permission,
+                    data
+                )
+            })
+        )      
+    }
+
+
+    private mapPermissionsByAction(
+        permission: Permission, 
+        resourceResults: any): any[] | any | void  {
+            if (Array.isArray(resourceResults)) {
+                return resourceResults.map((results: any) => permission.filter(results))    
+            } else {
+               return permission.filter(resourceResults);
+            }
+    }
+    
+  }
 ",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
@@ -8119,6 +8124,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
 import { OrderService } from \\"../order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
@@ -8193,7 +8199,10 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -8207,18 +8216,8 @@ export class OrderControllerBase {
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrderFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Order[]> {
+  async findMany(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
-
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Order\\",
-    });
     const results = await this.service.findMany({
       ...args,
       select: {
@@ -8236,10 +8235,13 @@ export class OrderControllerBase {
         label: true,
       },
     });
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -8254,15 +8256,8 @@ export class OrderControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: OrderWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Order\\",
-    });
     const result = await this.service.findOne({
       where: params,
       select: {
@@ -8285,7 +8280,7 @@ export class OrderControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return permission.filter(result);
+    return result;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -8457,6 +8452,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
@@ -8493,26 +8489,19 @@ export class OrderResolverBase {
     };
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => [Order])
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async orders(
-    @graphql.Args() args: OrderFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<Order[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Order\\",
-    });
+  async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
     const results = await this.service.findMany(args);
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => Order, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -8520,20 +8509,13 @@ export class OrderResolverBase {
     possession: \\"own\\",
   })
   async order(
-    @graphql.Args() args: OrderFindUniqueArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Order\\",
-    });
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 
   @graphql.Mutation(() => Order)
@@ -9718,6 +9700,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
 import { OrganizationService } from \\"../organization.service\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
@@ -9784,7 +9767,10 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -9798,18 +9784,8 @@ export class OrganizationControllerBase {
   @swagger.ApiOkResponse({ type: [Organization] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrganizationFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Organization[]> {
+  async findMany(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
-
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
     const results = await this.service.findMany({
       ...args,
       select: {
@@ -9819,10 +9795,13 @@ export class OrganizationControllerBase {
         name: true,
       },
     });
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -9837,15 +9816,8 @@ export class OrganizationControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Organization\\",
-    });
     const result = await this.service.findOne({
       where: params,
       select: {
@@ -9860,7 +9832,7 @@ export class OrganizationControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return permission.filter(result);
+    return result;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -10599,6 +10571,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
@@ -10638,6 +10611,7 @@ export class OrganizationResolverBase {
     };
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => [Organization])
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10645,19 +10619,13 @@ export class OrganizationResolverBase {
     possession: \\"any\\",
   })
   async organizations(
-    @graphql.Args() args: OrganizationFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
     const results = await this.service.findMany(args);
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => Organization, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10665,20 +10633,13 @@ export class OrganizationResolverBase {
     possession: \\"own\\",
   })
   async organization(
-    @graphql.Args() args: OrganizationFindUniqueArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: OrganizationFindUniqueArgs
   ): Promise<Organization | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Organization\\",
-    });
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 
   @graphql.Mutation(() => Organization)
@@ -12906,6 +12867,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/restPermissions.interceptor\\";
 import { UserService } from \\"../user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -12994,7 +12956,10 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -13008,18 +12973,8 @@ export class UserControllerBase {
   @swagger.ApiOkResponse({ type: [User] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(UserFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<User[]> {
+  async findMany(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
-
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
     const results = await this.service.findMany({
       ...args,
       select: {
@@ -13046,10 +13001,13 @@ export class UserControllerBase {
         extendedProperties: true,
       },
     });
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor(\\"combined\\"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -13064,15 +13022,8 @@ export class UserControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: UserWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"User\\",
-    });
     const result = await this.service.findOne({
       where: params,
       select: {
@@ -13104,7 +13055,7 @@ export class UserControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return permission.filter(result);
+    return result;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -13665,6 +13616,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { AccessControlPermissionsInterceptor } from \\"src/interceptors/gqlPermissions.interceptor\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
@@ -13702,47 +13654,31 @@ export class UserResolverBase {
     };
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => [User])
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async users(
-    @graphql.Args() args: UserFindManyArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<User[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
+  async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
     const results = await this.service.findMany(args);
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => User, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
-  async user(
-    @graphql.Args() args: UserFindUniqueArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<User | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"User\\",
-    });
+  async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 
   @graphql.Mutation(() => User)

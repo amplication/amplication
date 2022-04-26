@@ -14,6 +14,8 @@ import * as abacUtil from "../../auth/abac.util";
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+// @ts-ignore
+import { AccessControlPermissionsInterceptor } from "src/interceptors/gqlPermissions.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -85,6 +87,7 @@ export class RESOLVER_BASE {
     };
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => [ENTITY])
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -93,18 +96,12 @@ export class RESOLVER_BASE {
   })
   async ENTITIES_QUERY(
     @graphql.Args() args: FIND_MANY_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
     const results = await this.service.findMany(args);
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
+  @common.UseInterceptors(AccessControlPermissionsInterceptor)
   @graphql.Query(() => ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -113,19 +110,12 @@ export class RESOLVER_BASE {
   })
   async ENTITY_QUERY(
     @graphql.Args() args: FIND_ONE_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "own",
-      resource: ENTITY_NAME,
-    });
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 
   @graphql.Mutation(() => ENTITY)

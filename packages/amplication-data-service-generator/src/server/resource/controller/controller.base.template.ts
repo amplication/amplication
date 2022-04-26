@@ -14,6 +14,8 @@ import { Request } from "express";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+// @ts-ignore
+import { AccessControlPermissionsInterceptor } from "src/interceptors/restPermissions.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -100,7 +102,10 @@ export class CONTROLLER_BASE {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor("combined"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -114,26 +119,19 @@ export class CONTROLLER_BASE {
   @swagger.ApiOkResponse({ type: [ENTITY] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(FIND_MANY_ARGS)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<ENTITY[]> {
+  async findMany(@common.Req() request: Request): Promise<ENTITY[]> {
     const args = plainToClass(FIND_MANY_ARGS, request.query);
-
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
     const results = await this.service.findMany({
       ...args,
       select: SELECT,
     });
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseInterceptors(
+    nestMorgan.MorganInterceptor("combined"),
+    AccessControlPermissionsInterceptor
+  )
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -149,14 +147,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "own",
-      resource: ENTITY_NAME,
-    });
     const result = await this.service.findOne({
       where: params,
       select: SELECT,
@@ -166,7 +157,7 @@ export class CONTROLLER_BASE {
         `No resource was found for ${JSON.stringify(params)}`
       );
     }
-    return permission.filter(result);
+    return result;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
