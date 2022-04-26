@@ -228,7 +228,7 @@ jobs:
   docker-retag:
     name: docker-retag
     needs: [changes]
-    if: ${{ needs.changes.outputs.service_retag_list != '' }} && ${{ needs.changes.outputs.service_retag_list != '[]' }} && ${{ github.ref != 'refs/heads/master' }}
+    if: ${{ needs.changes.outputs.service_retag_list != '[]' && needs.changes.outputs.service_retag_list != '' && github.ref != 'refs/heads/master' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
