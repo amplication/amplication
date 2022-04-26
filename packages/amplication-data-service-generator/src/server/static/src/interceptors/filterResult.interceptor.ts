@@ -35,12 +35,12 @@ export class FilterResultInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map((data) => {
-        return this.mapPermissionsByAction(permission, data);
+        return this.filterResultByPermissions(permission, data);
       })
     );
   }
 
-  private mapPermissionsByAction(
+  private filterResultByPermissions(
     permission: Permission,
     resourceResults: any
   ): any[] | any | void {
