@@ -5436,7 +5436,7 @@ export class CustomerControllerBase {
   )
   @common.Get(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
+    resource: \\"Order\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -5871,7 +5871,7 @@ export class CustomerResolverBase {
 
   @graphql.ResolveField(() => [Order])
   @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
+    resource: \\"Order\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -5897,7 +5897,7 @@ export class CustomerResolverBase {
 
   @graphql.ResolveField(() => Organization, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
+    resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -5921,7 +5921,7 @@ export class CustomerResolverBase {
 
   @graphql.ResolveField(() => Organization, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
+    resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -8644,7 +8644,7 @@ export class OrderResolverBase {
 
   @graphql.ResolveField(() => Customer, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
+    resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -9943,7 +9943,7 @@ export class OrganizationControllerBase {
   )
   @common.Get(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
+    resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -10136,7 +10136,7 @@ export class OrganizationControllerBase {
   )
   @common.Get(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
+    resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -10334,7 +10334,7 @@ export class OrganizationControllerBase {
   )
   @common.Get(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
+    resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -10756,7 +10756,7 @@ export class OrganizationResolverBase {
 
   @graphql.ResolveField(() => [User])
   @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
+    resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -10782,7 +10782,7 @@ export class OrganizationResolverBase {
 
   @graphql.ResolveField(() => [Customer])
   @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
+    resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -10808,7 +10808,7 @@ export class OrganizationResolverBase {
 
   @graphql.ResolveField(() => [Customer])
   @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
+    resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -13401,7 +13401,7 @@ export class UserControllerBase {
   )
   @common.Get(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
-    resource: \\"User\\",
+    resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
@@ -13835,7 +13835,7 @@ export class UserResolverBase {
 
   @graphql.ResolveField(() => [Organization])
   @nestAccessControl.UseRoles({
-    resource: \\"User\\",
+    resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
