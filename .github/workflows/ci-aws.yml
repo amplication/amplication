@@ -89,8 +89,11 @@ jobs:
     - name: Prints
       id: primts
       run: |
-        echo "packages: $packages"
-        echo "services: $services"
+        echo "packages: -$packages-"
+        echo "services: -$services-"
+        if [$"services" = "[]"]; then
+         echo "here"
+        fi
       env:
         packages: ${{ needs.changes.outputs.packages }}
         services: ${{ needs.changes.outputs.services }}
