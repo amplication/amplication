@@ -5501,31 +5501,13 @@ export class CustomerControllerBase {
   })
   async createOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: CustomerWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       orders: {
         connect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -5546,31 +5528,13 @@ export class CustomerControllerBase {
   })
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: OrderWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrderWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       orders: {
         set: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -5591,31 +5555,13 @@ export class CustomerControllerBase {
   })
   async deleteOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: CustomerWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       orders: {
         disconnect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -10003,31 +9949,13 @@ export class OrganizationControllerBase {
   })
   async createUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrganizationWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       users: {
         connect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -10048,31 +9976,13 @@ export class OrganizationControllerBase {
   })
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       users: {
         set: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -10093,31 +10003,13 @@ export class OrganizationControllerBase {
   })
   async deleteUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrganizationWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       users: {
         disconnect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -10201,31 +10093,13 @@ export class OrganizationControllerBase {
   })
   async createCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrganizationWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       customers: {
         connect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -10246,31 +10120,13 @@ export class OrganizationControllerBase {
   })
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: CustomerWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       customers: {
         set: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -10291,31 +10147,13 @@ export class OrganizationControllerBase {
   })
   async deleteCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrganizationWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       customers: {
         disconnect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -10399,31 +10237,13 @@ export class OrganizationControllerBase {
   })
   async createVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrganizationWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       vipCustomers: {
         connect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -10444,31 +10264,13 @@ export class OrganizationControllerBase {
   })
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: CustomerWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       vipCustomers: {
         set: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -10489,31 +10291,13 @@ export class OrganizationControllerBase {
   })
   async deleteVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrganizationWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       vipCustomers: {
         disconnect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -13249,31 +13033,13 @@ export class UserControllerBase {
   })
   async createEmployees(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       employees: {
         connect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -13294,31 +13060,13 @@ export class UserControllerBase {
   })
   async updateEmployees(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       employees: {
         set: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -13339,31 +13087,13 @@ export class UserControllerBase {
   })
   async deleteEmployees(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       employees: {
         disconnect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -13425,31 +13155,13 @@ export class UserControllerBase {
   })
   async createOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       organizations: {
         connect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -13470,31 +13182,13 @@ export class UserControllerBase {
   })
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrganizationWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       organizations: {
         set: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -13515,31 +13209,13 @@ export class UserControllerBase {
   })
   async deleteOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       organizations: {
         disconnect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new common.ForbiddenException(
-        \`Updating the relationship: \${
-          invalidAttributes[0]
-        } of \${\\"User\\"} is forbidden for roles: \${roles}\`
-      );
-    }
     await this.service.update({
       where: params,
       data,
