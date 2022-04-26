@@ -19,6 +19,7 @@ const appInfo: AppInfo = {
     generateAdminUI: true,
     generateGraphQL: true,
     generateRestApi: true,
+    generateRootFiles: true,
   },
 };
 

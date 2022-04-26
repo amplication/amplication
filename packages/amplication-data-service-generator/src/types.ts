@@ -41,6 +41,7 @@ export type GenerationSettings = {
   generateAdminUI?: boolean;
   generateGraphQL?: boolean;
   generateRestApi?: boolean;
+  generateRootFiles?: boolean;
 };
 
 export type AppInfo = {
