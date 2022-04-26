@@ -15,7 +15,7 @@ import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 // @ts-ignore
-import { AccessControlPermissionsInterceptor } from "../../interceptors/accessControlPermissions.interceptor";
+import { FilterResultInterceptor } from "../../interceptors/filterResult.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -87,7 +87,7 @@ export class RESOLVER_BASE {
     };
   }
 
-  @common.UseInterceptors(AccessControlPermissionsInterceptor)
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.Query(() => [ENTITY])
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -97,11 +97,10 @@ export class RESOLVER_BASE {
   async ENTITIES_QUERY(
     @graphql.Args() args: FIND_MANY_ARGS
   ): Promise<ENTITY[]> {
-    const results = await this.service.findMany(args);
-    return results;
+    return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AccessControlPermissionsInterceptor)
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.Query(() => ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,

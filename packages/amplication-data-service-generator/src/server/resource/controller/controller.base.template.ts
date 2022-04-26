@@ -15,7 +15,7 @@ import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 // @ts-ignore
-import { AccessControlPermissionsInterceptor } from "../../interceptors/accessControlPermissions.interceptor";
+import { FilterResultInterceptor } from "../../interceptors/filterResult.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -102,10 +102,8 @@ export class CONTROLLER_BASE {
     });
   }
 
-  @common.UseInterceptors(
-    nestMorgan.MorganInterceptor("combined"),
-    AccessControlPermissionsInterceptor
-  )
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseInterceptors(FilterResultInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -121,17 +119,14 @@ export class CONTROLLER_BASE {
   @ApiNestedQuery(FIND_MANY_ARGS)
   async findMany(@common.Req() request: Request): Promise<ENTITY[]> {
     const args = plainToClass(FIND_MANY_ARGS, request.query);
-    const results = await this.service.findMany({
+    return this.service.findMany({
       ...args,
       select: SELECT,
     });
-    return results;
   }
 
-  @common.UseInterceptors(
-    nestMorgan.MorganInterceptor("combined"),
-    AccessControlPermissionsInterceptor
-  )
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseInterceptors(FilterResultInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard

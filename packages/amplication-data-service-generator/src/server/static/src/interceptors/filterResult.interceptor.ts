@@ -14,7 +14,7 @@ import {
 import { Reflector } from "@nestjs/core";
 
 @Injectable()
-export class AccessControlPermissionsInterceptor implements NestInterceptor {
+export class FilterResultInterceptor implements NestInterceptor {
   constructor(
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
     private readonly reflector: Reflector
