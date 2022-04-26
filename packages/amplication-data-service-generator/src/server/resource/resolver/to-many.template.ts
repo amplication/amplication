@@ -25,10 +25,7 @@ declare const ENTITY_NAME: string;
 declare const RELATED_ENTITY_NAME: string;
 
 export class Mixin {
-  constructor(
-    private readonly service: SERVICE,
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(private readonly service: SERVICE) {}
 
   @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => [RELATED_ENTITY])

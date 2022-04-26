@@ -5877,6 +5877,7 @@ export class CustomerResolverBase {
     return results;
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => Organization, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -5884,23 +5885,17 @@ export class CustomerResolverBase {
     possession: \\"any\\",
   })
   async organization(
-    @graphql.Parent() parent: Customer,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
     const result = await this.service.getOrganization(parent.id);
 
     if (!result) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => Organization, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -5908,21 +5903,14 @@ export class CustomerResolverBase {
     possession: \\"any\\",
   })
   async vipOrganization(
-    @graphql.Parent() parent: Customer,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
     const result = await this.service.getVipOrganization(parent.id);
 
     if (!result) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 }
 ",
@@ -8612,28 +8600,20 @@ export class OrderResolverBase {
     }
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => Customer, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async customer(
-    @graphql.Parent() parent: Order,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<Customer | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
+  async customer(@graphql.Parent() parent: Order): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 }
 ",
@@ -13757,28 +13737,20 @@ export class UserResolverBase {
     return results;
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.ResolveField(() => User, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async manager(
-    @graphql.Parent() parent: User,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<User | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
+  async manager(@graphql.Parent() parent: User): Promise<User | null> {
     const result = await this.service.getManager(parent.id);
 
     if (!result) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 }
 ",
