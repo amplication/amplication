@@ -5425,6 +5425,7 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(FilterResultInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -5438,16 +5439,9 @@ export class CustomerControllerBase {
   @ApiNestedQuery(OrderFindManyArgs)
   async findManyOrders(
     @common.Req() request: Request,
-    @common.Param() params: CustomerWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Order[]> {
     const query = plainToClass(OrderFindManyArgs, request.query);
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Order\\",
-    });
     const results = await this.service.findOrders(params.id, {
       ...query,
       select: {
@@ -5470,7 +5464,7 @@ export class CustomerControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -9908,6 +9902,7 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(FilterResultInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -9921,16 +9916,9 @@ export class OrganizationControllerBase {
   @ApiNestedQuery(UserFindManyArgs)
   async findManyUsers(
     @common.Req() request: Request,
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<User[]> {
     const query = plainToClass(UserFindManyArgs, request.query);
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
     const results = await this.service.findUsers(params.id, {
       ...query,
       select: {
@@ -9962,7 +9950,7 @@ export class OrganizationControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -10101,6 +10089,7 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(FilterResultInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -10114,16 +10103,9 @@ export class OrganizationControllerBase {
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyCustomers(
     @common.Req() request: Request,
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Customer[]> {
     const query = plainToClass(CustomerFindManyArgs, request.query);
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
     const results = await this.service.findCustomers(params.id, {
       ...query,
       select: {
@@ -10160,7 +10142,7 @@ export class OrganizationControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -10299,6 +10281,7 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(FilterResultInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -10312,16 +10295,9 @@ export class OrganizationControllerBase {
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyVipCustomers(
     @common.Req() request: Request,
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Customer[]> {
     const query = plainToClass(CustomerFindManyArgs, request.query);
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
     const results = await this.service.findVipCustomers(params.id, {
       ...query,
       select: {
@@ -10358,7 +10334,7 @@ export class OrganizationControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -13149,6 +13125,7 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(FilterResultInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -13162,16 +13139,9 @@ export class UserControllerBase {
   @ApiNestedQuery(UserFindManyArgs)
   async findManyEmployees(
     @common.Req() request: Request,
-    @common.Param() params: UserWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: UserWhereUniqueInput
   ): Promise<User[]> {
     const query = plainToClass(UserFindManyArgs, request.query);
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
     const results = await this.service.findEmployees(params.id, {
       ...query,
       select: {
@@ -13203,7 +13173,7 @@ export class UserControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
@@ -13342,6 +13312,7 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(FilterResultInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -13355,16 +13326,9 @@ export class UserControllerBase {
   @ApiNestedQuery(OrganizationFindManyArgs)
   async findManyOrganizations(
     @common.Req() request: Request,
-    @common.Param() params: UserWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: UserWhereUniqueInput
   ): Promise<Organization[]> {
     const query = plainToClass(OrganizationFindManyArgs, request.query);
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
     const results = await this.service.findOrganizations(params.id, {
       ...query,
       select: {
@@ -13379,7 +13343,7 @@ export class UserControllerBase {
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
