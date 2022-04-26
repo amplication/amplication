@@ -5,7 +5,10 @@ echo "MANIFEST: $MANIFEST"
 
 for tag in $(echo $TAGS | sed "s/,/ /g")
 do
+    echo "fixing tag: $tag"
     fixed_tag=$(echo $tag | sed 's/[^a-zA-Z0-9]/-/g')
+    echo "fixed_tag: $fixed_tag"
+    echo "aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag $fixed_tag --image-manifest $MANIFEST"
     (aws ecr put-image --repository-name $ECR_REPOSITORY --image-tag $fixed_tag --image-manifest "$MANIFEST")&>tag_result
     retag_response=$(cat tag_result)
     if [[ $retag_response == *"already exists in the repository with name"* ]]; then
