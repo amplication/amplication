@@ -91,7 +91,7 @@ jobs:
       run: |
         echo "packages: -$packages-"
         echo "services: -$services-"
-        if [$"services" = "[]"]; then
+        if [ "$services" = "[]" ]; then
          echo "here"
         fi
       env:
