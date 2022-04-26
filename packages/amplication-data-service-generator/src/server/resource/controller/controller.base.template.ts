@@ -14,6 +14,8 @@ import { Request } from "express";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+// @ts-ignore
+import { ValidateInputInterceptor } from "../../interceptors/validateInput.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -60,6 +62,7 @@ export class CONTROLLER_BASE {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseInterceptors(ValidateInputInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -72,28 +75,7 @@ export class CONTROLLER_BASE {
   })
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(
-    @common.Body() data: CREATE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<ENTITY> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "create",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(", ");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new errors.ForbiddenException(
-        `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
-      );
-    }
+  async create(@common.Body() data: CREATE_INPUT): Promise<ENTITY> {
     return await this.service.create({
       data: CREATE_DATA_MAPPING,
       select: SELECT,
