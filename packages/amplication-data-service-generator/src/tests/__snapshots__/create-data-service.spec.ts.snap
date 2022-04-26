@@ -5674,6 +5674,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
@@ -5755,6 +5756,7 @@ export class CustomerResolverBase {
     return permission.filter(result);
   }
 
+  @common.UseInterceptors(ValidateInputInterceptor)
   @graphql.Mutation(() => Customer)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5762,30 +5764,8 @@ export class CustomerResolverBase {
     possession: \\"any\\",
   })
   async createCustomer(
-    @graphql.Args() args: CreateCustomerArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: CreateCustomerArgs
   ): Promise<Customer> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"create\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new apollo.ApolloError(
-        \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
-      );
-    }
     // @ts-ignore
     return await this.service.create({
       ...args,
@@ -5807,6 +5787,7 @@ export class CustomerResolverBase {
     });
   }
 
+  @common.UseInterceptors(ValidateInputInterceptor)
   @graphql.Mutation(() => Customer)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5817,27 +5798,6 @@ export class CustomerResolverBase {
     @graphql.Args() args: UpdateCustomerArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new apollo.ApolloError(
-        \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
-      );
-    }
     try {
       // @ts-ignore
       return await this.service.update({
@@ -6989,6 +6949,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyFindUniqueArgs } from \\"./EmptyFindUniqueArgs\\";
@@ -7287,6 +7248,60 @@ import { HealthServiceBase } from \\"./base/health.service.base\\";
 export class HealthService extends HealthServiceBase {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
+  }
+}
+",
+  "server/src/interceptors/validateInput.interceptor.ts": "import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from \\"@nestjs/common\\";
+import { Observable } from \\"rxjs\\";
+import { InjectRolesBuilder, RolesBuilder } from \\"nest-access-control\\";
+import { Reflector } from \\"@nestjs/core\\";
+import * as abacUtil from \\"../auth/abac.util\\";
+import { ForbiddenException } from \\"../errors\\";
+
+@Injectable()
+export class ValidateInputInterceptor implements NestInterceptor {
+  constructor(
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
+    private readonly reflector: Reflector
+  ) {}
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
+      \\"roles\\",
+      [context.getHandler(), context.getClass()]
+    );
+
+    const type = context.getType();
+
+    const inputDataToValidate =
+      type === \\"http\\"
+        ? context.switchToHttp().getRequest().body
+        : context.getArgByIndex(1).data;
+
+    const permission = this.rolesBuilder.permission({
+      role: permissionsRoles.role,
+      action: permissionsRoles.action,
+      possession: permissionsRoles.possession,
+      resource: permissionsRoles.resource,
+    });
+
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      inputDataToValidate
+    );
+
+    if (invalidAttributes.length) {
+      throw new ForbiddenException(
+        \\"You are not allowed to perform this action\\"
+      );
+    }
+
+    return next.handle();
   }
 }
 ",
@@ -8457,6 +8472,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
@@ -8536,37 +8552,14 @@ export class OrderResolverBase {
     return permission.filter(result);
   }
 
+  @common.UseInterceptors(ValidateInputInterceptor)
   @graphql.Mutation(() => Order)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async createOrder(
-    @graphql.Args() args: CreateOrderArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<Order> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"create\\",
-      possession: \\"any\\",
-      resource: \\"Order\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new apollo.ApolloError(
-        \`providing the properties: \${properties} on \${\\"Order\\"} creation is forbidden for roles: \${roles}\`
-      );
-    }
+  async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
     // @ts-ignore
     return await this.service.create({
       ...args,
@@ -8580,6 +8573,7 @@ export class OrderResolverBase {
     });
   }
 
+  @common.UseInterceptors(ValidateInputInterceptor)
   @graphql.Mutation(() => Order)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -8590,27 +8584,6 @@ export class OrderResolverBase {
     @graphql.Args() args: UpdateOrderArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Order\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new apollo.ApolloError(
-        \`providing the properties: \${properties} on \${\\"Order\\"} update is forbidden for roles: \${roles}\`
-      );
-    }
     try {
       // @ts-ignore
       return await this.service.update({
@@ -10599,6 +10572,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
@@ -10681,6 +10655,7 @@ export class OrganizationResolverBase {
     return permission.filter(result);
   }
 
+  @common.UseInterceptors(ValidateInputInterceptor)
   @graphql.Mutation(() => Organization)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10688,30 +10663,8 @@ export class OrganizationResolverBase {
     possession: \\"any\\",
   })
   async createOrganization(
-    @graphql.Args() args: CreateOrganizationArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: CreateOrganizationArgs
   ): Promise<Organization> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"create\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new apollo.ApolloError(
-        \`providing the properties: \${properties} on \${\\"Organization\\"} creation is forbidden for roles: \${roles}\`
-      );
-    }
     // @ts-ignore
     return await this.service.create({
       ...args,
@@ -10719,6 +10672,7 @@ export class OrganizationResolverBase {
     });
   }
 
+  @common.UseInterceptors(ValidateInputInterceptor)
   @graphql.Mutation(() => Organization)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10729,27 +10683,6 @@ export class OrganizationResolverBase {
     @graphql.Args() args: UpdateOrganizationArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new apollo.ApolloError(
-        \`providing the properties: \${properties} on \${\\"Organization\\"} update is forbidden for roles: \${roles}\`
-      );
-    }
     try {
       // @ts-ignore
       return await this.service.update({
@@ -13665,6 +13598,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
@@ -13745,37 +13679,14 @@ export class UserResolverBase {
     return permission.filter(result);
   }
 
+  @common.UseInterceptors(ValidateInputInterceptor)
   @graphql.Mutation(() => User)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async createUser(
-    @graphql.Args() args: CreateUserArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<User> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"create\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new apollo.ApolloError(
-        \`providing the properties: \${properties} on \${\\"User\\"} creation is forbidden for roles: \${roles}\`
-      );
-    }
+  async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
     // @ts-ignore
     return await this.service.create({
       ...args,
@@ -13791,6 +13702,7 @@ export class UserResolverBase {
     });
   }
 
+  @common.UseInterceptors(ValidateInputInterceptor)
   @graphql.Mutation(() => User)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13801,27 +13713,6 @@ export class UserResolverBase {
     @graphql.Args() args: UpdateUserArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new apollo.ApolloError(
-        \`providing the properties: \${properties} on \${\\"User\\"} update is forbidden for roles: \${roles}\`
-      );
-    }
     try {
       // @ts-ignore
       return await this.service.update({
