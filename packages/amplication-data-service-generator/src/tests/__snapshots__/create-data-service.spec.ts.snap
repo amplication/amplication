@@ -7167,7 +7167,7 @@ export class ValidateInputInterceptor implements NestInterceptor {
 
     if (invalidAttributes.length) {
       throw new ForbiddenException(
-        \\"You are not allowed to perform this action\\"
+        \\"Insufficient privileges to complete the operation\\"
       );
     }
 
