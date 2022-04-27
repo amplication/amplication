@@ -7,7 +7,7 @@ export function createNestjsKafkaConfig(envSuffix: string = ""): KafkaOptions {
   const groupId = kafkaEnv.getGroupId();
   let consumer: ConsumerConfig | undefined;
   if (groupId) {
-    consumer = { ...consumer, groupId };
+    consumer = { groupId };
   }
   return {
     transport: Transport.KAFKA,
