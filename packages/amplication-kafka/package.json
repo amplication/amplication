@@ -7,7 +7,8 @@
     "build": "tsc",
     "prebuild": "rimraf lib",
     "prepare": "npm run build",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "tupe12334",
