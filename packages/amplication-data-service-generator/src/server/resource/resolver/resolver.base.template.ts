@@ -16,6 +16,8 @@ import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 // @ts-ignore
 import { ValidateInputInterceptor } from "../../interceptors/validateInput.interceptor";
+// @ts-ignore
+import { FilterResultInterceptor } from "../../interceptors/filterResult.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -87,6 +89,7 @@ export class RESOLVER_BASE {
     };
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.Query(() => [ENTITY])
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -94,19 +97,12 @@ export class RESOLVER_BASE {
     possession: "any",
   })
   async ENTITIES_QUERY(
-    @graphql.Args() args: FIND_MANY_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: FIND_MANY_ARGS
   ): Promise<ENTITY[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const results = await this.service.findMany(args);
-    return results.map((result) => permission.filter(result));
+    return this.service.findMany(args);
   }
 
+  @common.UseInterceptors(FilterResultInterceptor)
   @graphql.Query(() => ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -114,20 +110,13 @@ export class RESOLVER_BASE {
     possession: "own",
   })
   async ENTITY_QUERY(
-    @graphql.Args() args: FIND_ONE_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: FIND_ONE_ARGS
   ): Promise<ENTITY | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "own",
-      resource: ENTITY_NAME,
-    });
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 
   @common.UseInterceptors(ValidateInputInterceptor)
