@@ -28,6 +28,8 @@ describe("Testing the environmental variables class ", () => {
     process.env[ARRAY_ENV_KEY] = `["localhost:9092","localhost:3000"]`;
     const array = EnvironmentVariables.getJson(ARRAY_ENV_KEY, true);
     expect(Array.isArray(array)).toBe(true);
+    expect(array.find((data) => data === "localhost:9092")).toBeTruthy();
+    expect(array.find((data) => data === "localhost:3000")).toBeTruthy();
   });
 
   describe("Testing the strict mode and errors", () => {
