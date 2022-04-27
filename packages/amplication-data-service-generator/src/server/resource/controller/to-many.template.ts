@@ -100,9 +100,9 @@ export class Mixin {
     action: "update",
     possession: "any",
   })
-  async CREATE(
+  async CONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: WHERE_UNIQUE_INPUT[],
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
@@ -186,9 +186,9 @@ export class Mixin {
     action: "update",
     possession: "any",
   })
-  async DELETE(
+  async DISCONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: WHERE_UNIQUE_INPUT[],
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
