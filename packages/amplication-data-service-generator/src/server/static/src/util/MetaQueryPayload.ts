@@ -5,8 +5,9 @@ import { ApiProperty } from "@nestjs/swagger";
 class MetaQueryPayload {
   @ApiProperty({
     required: true,
+    type: [Number],
   })
-  @Field(() => String)
+  @Field(() => Number)
   count!: number;
 }
 export { MetaQueryPayload };
