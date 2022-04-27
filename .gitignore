@@ -5,3 +5,5 @@ lerna-debug.log
 .DS_Store
 .idea/
 lib/
+*.tgz
+values-secret*
