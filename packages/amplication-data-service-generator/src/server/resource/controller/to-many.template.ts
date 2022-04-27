@@ -12,6 +12,8 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
 import * as errors from "../../errors";
+// @ts-ignore
+import { FilterResultInterceptor } from "../../interceptors/filterResult.interceptor";
 
 declare interface WHERE_UNIQUE_INPUT {
   id: string;
@@ -58,6 +60,7 @@ export class Mixin {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseInterceptors(FilterResultInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -71,16 +74,9 @@ export class Mixin {
   @ApiNestedQuery(RELATED_ENTITY_FIND_MANY_ARGS)
   async FIND_MANY(
     @common.Req() request: Request,
-    @common.Param() params: WHERE_UNIQUE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<RELATED_ENTITY[]> {
     const query = plainToClass(RELATED_ENTITY_FIND_MANY_ARGS, request.query);
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "any",
-      resource: RELATED_ENTITY_NAME,
-    });
     const results = await this.service.FIND_PROPERTY(params.id, {
       ...query,
       select: SELECT,
@@ -90,7 +86,7 @@ export class Mixin {
         `No resource was found for ${JSON.stringify(params)}`
       );
     }
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
