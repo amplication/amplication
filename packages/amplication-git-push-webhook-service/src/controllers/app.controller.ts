@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { AppService } from '../services/app.service';
 import { EnumProvider } from '../entities/enums/provider';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_NEST_PROVIDER } from '@amplication/logger';
 @Controller()
 export class AppController {
   constructor(

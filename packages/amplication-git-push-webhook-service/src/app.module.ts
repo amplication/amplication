@@ -4,7 +4,7 @@ import { AppController } from './controllers/app.controller';
 import { AppService } from './services/app.service';
 import { QueueModule } from './modules/queue.module';
 import { GitOrganizationModule } from './repositories/gitOrganization.module';
-import { RootWinstonModule } from './modules/root-winston.module';
+import { RootWinstonModule } from '@amplication/logger/';
 import { HealthModule } from './health/health.module';
 
 @Module({

@@ -4,7 +4,7 @@ import { QueueInterface } from '../contracts/queue.interface';
 import { CreateRepositoryPushRequest } from '../entities/dto/CreateRepositoryPushRequest';
 import { RepositoryPushCreateEvent } from '../entities/dto/RepositoryPushCreateEvent';
 import { ConfigService } from '@nestjs/config';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_NEST_PROVIDER } from '@amplication/logger';
 
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
 const KAFKA_REPOSITORY_PUSH_QUEUE_VAR = 'KAFKA_REPOSITORY_PUSH_QUEUE';

@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { GitOrganizationRepository } from '../repositories/gitOrganization.repository';
 import { PushEvent } from '@octokit/webhooks-types';
 import { AppInterface } from '../contracts/app.interface';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_NEST_PROVIDER } from '@amplication/logger';
 
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 
