@@ -9,6 +9,8 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { match } from "react-router-dom";
+import "./ApplicationDatabaseSettingsForms.scss";
+
 type Props = {
   match: match<{ application: string }>;
 };
@@ -42,6 +44,8 @@ const FORM_SCHEMA = {
     },
   },
 };
+
+const CLASS_NAME = "application-database-settings-form";
 
 function ApplicationDatabaseSettingsForms({ match }: Props) {
   const applicationId = match.params.application;
@@ -91,7 +95,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
 
   const errorMessage = formatError(error || updateError);
   return (
-    <div>
+    <div className={CLASS_NAME}>
       {data?.appSettings && (
         <Formik
           initialValues={data.appSettings}
