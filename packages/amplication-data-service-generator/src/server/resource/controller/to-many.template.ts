@@ -102,7 +102,7 @@ export class Mixin {
   })
   async CONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
@@ -156,7 +156,7 @@ export class Mixin {
   })
   async DISCONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {

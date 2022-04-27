@@ -5442,7 +5442,7 @@ export class CustomerControllerBase {
   })
   async connectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: OrderWhereUniqueInput[],
+    @common.Body() body: OrderWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       orders: {
@@ -5496,7 +5496,7 @@ export class CustomerControllerBase {
   })
   async disconnectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: OrderWhereUniqueInput[],
+    @common.Body() body: OrderWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       orders: {
@@ -7084,6 +7084,60 @@ export class FilterResultInterceptor implements NestInterceptor {
   }
 }
 ",
+  "server/src/interceptors/validateInput.interceptor.ts": "import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from \\"@nestjs/common\\";
+import { Observable } from \\"rxjs\\";
+import { InjectRolesBuilder, RolesBuilder } from \\"nest-access-control\\";
+import { Reflector } from \\"@nestjs/core\\";
+import * as abacUtil from \\"../auth/abac.util\\";
+import { ForbiddenException } from \\"../errors\\";
+
+@Injectable()
+export class ValidateInputInterceptor implements NestInterceptor {
+  constructor(
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
+    private readonly reflector: Reflector
+  ) {}
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
+      \\"roles\\",
+      [context.getHandler(), context.getClass()]
+    );
+
+    const type = context.getType();
+
+    const inputDataToValidate =
+      type === \\"http\\"
+        ? context.switchToHttp().getRequest().body
+        : context.getArgByIndex(1).data;
+
+    const permission = this.rolesBuilder.permission({
+      role: permissionsRoles.role,
+      action: permissionsRoles.action,
+      possession: permissionsRoles.possession,
+      resource: permissionsRoles.resource,
+    });
+
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      inputDataToValidate
+    );
+
+    if (invalidAttributes.length) {
+      throw new ForbiddenException(
+        \\"Insufficient privileges to complete the operation\\"
+      );
+    }
+
+    return next.handle();
+  }
+}
+",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
 import { SwaggerModule } from \\"@nestjs/swagger\\";
@@ -7913,6 +7967,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { FilterResultInterceptor } from \\"../../interceptors/filterResult.interceptor\\";
 import { OrderService } from \\"../order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
@@ -8197,6 +8252,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { FilterResultInterceptor } from \\"../../interceptors/filterResult.interceptor\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
@@ -9393,6 +9449,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { FilterResultInterceptor } from \\"../../interceptors/filterResult.interceptor\\";
 import { OrganizationService } from \\"../organization.service\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
@@ -9647,8 +9704,7 @@ export class OrganizationControllerBase {
   })
   async connectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       users: {
@@ -9702,8 +9758,7 @@ export class OrganizationControllerBase {
   })
   async disconnectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: UserWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       users: {
@@ -9787,8 +9842,7 @@ export class OrganizationControllerBase {
   })
   async connectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: CustomerWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       customers: {
@@ -9842,8 +9896,7 @@ export class OrganizationControllerBase {
   })
   async disconnectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: CustomerWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       customers: {
@@ -9927,8 +9980,7 @@ export class OrganizationControllerBase {
   })
   async connectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: CustomerWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       vipCustomers: {
@@ -9982,8 +10034,7 @@ export class OrganizationControllerBase {
   })
   async disconnectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: CustomerWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       vipCustomers: {
@@ -10048,6 +10099,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { FilterResultInterceptor } from \\"../../interceptors/filterResult.interceptor\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
@@ -12284,6 +12336,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { FilterResultInterceptor } from \\"../../interceptors/filterResult.interceptor\\";
 import { UserService } from \\"../user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
@@ -12750,8 +12803,7 @@ export class UserControllerBase {
   })
   async connectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrganizationWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       organizations: {
@@ -12805,8 +12857,7 @@ export class UserControllerBase {
   })
   async disconnectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: OrganizationWhereUniqueInput[]
   ): Promise<void> {
     const data = {
       organizations: {
@@ -12871,6 +12922,7 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { ValidateInputInterceptor } from \\"../../interceptors/validateInput.interceptor\\";
 import { FilterResultInterceptor } from \\"../../interceptors/filterResult.interceptor\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
