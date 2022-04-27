@@ -6,11 +6,7 @@ import {
 } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import {
-  InjectRolesBuilder,
-  Permission,
-  RolesBuilder,
-} from "nest-access-control";
+import { InjectRolesBuilder, RolesBuilder } from "nest-access-control";
 import { Reflector } from "@nestjs/core";
 
 @Injectable()
@@ -35,19 +31,12 @@ export class FilterResultInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map((data) => {
-        return this.filterResultByPermissions(permission, data);
+        if (Array.isArray(data)) {
+          return data.map((results: any) => permission.filter(results));
+        } else {
+          return permission.filter(data);
+        }
       })
     );
-  }
-
-  private filterResultByPermissions(
-    permission: Permission,
-    resourceResults: any
-  ): any[] | any | void {
-    if (Array.isArray(resourceResults)) {
-      return resourceResults.map((results: any) => permission.filter(results));
-    } else {
-      return permission.filter(resourceResults);
-    }
   }
 }
