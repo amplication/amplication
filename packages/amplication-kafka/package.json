@@ -40,6 +40,7 @@
     }
   },
   "dependencies": {
+    "@nestjs/common": "8.4.4",
     "dotenv": "16.0.0"
   }
 }
