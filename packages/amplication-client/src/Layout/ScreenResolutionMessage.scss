@@ -24,13 +24,13 @@ $background-color: rgba(12, 11, 14, 0.9);
     width: $content-width;
     text-align: center;
     margin-top: $title-margin-top;
-    color: var(--white);
+    color: var(--screenResolutionMessageColor);
   }
 
   &__message {
     @include body1;
     width: $content-width;
     text-align: center;
-    color: var(--black20);
+    color: var(--screenResolutionMessageColor);
   }
 }
