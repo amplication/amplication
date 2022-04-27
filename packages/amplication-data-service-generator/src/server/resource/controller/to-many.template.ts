@@ -102,29 +102,13 @@ export class Mixin {
   })
   async CONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
         connect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "update",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new common.ForbiddenException(
-        `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -145,29 +129,13 @@ export class Mixin {
   })
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
         set: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "update",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new common.ForbiddenException(
-        `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -188,29 +156,13 @@ export class Mixin {
   })
   async DISCONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
         disconnect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "update",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new common.ForbiddenException(
-        `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
-      );
-    }
     await this.service.update({
       where: params,
       data,
