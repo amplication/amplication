@@ -5267,6 +5267,7 @@ export class CustomerControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(ValidateInputInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -5282,28 +5283,8 @@ export class CustomerControllerBase {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body()
-    data: CustomerUpdateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() data: CustomerUpdateInput
   ): Promise<Customer | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new errors.ForbiddenException(
-        \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
-      );
-    }
     try {
       return await this.service.update({
         where: params,
@@ -6713,6 +6694,7 @@ export class EmptyControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(ValidateInputInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -6728,28 +6710,8 @@ export class EmptyControllerBase {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: EmptyWhereUniqueInput,
-    @common.Body()
-    data: EmptyUpdateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() data: EmptyUpdateInput
   ): Promise<Empty | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Empty\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new errors.ForbiddenException(
-        \`providing the properties: \${properties} on \${\\"Empty\\"} update is forbidden for roles: \${roles}\`
-      );
-    }
     try {
       return await this.service.update({
         where: params,
@@ -8193,6 +8155,7 @@ export class OrderControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(ValidateInputInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -8208,28 +8171,8 @@ export class OrderControllerBase {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: OrderWhereUniqueInput,
-    @common.Body()
-    data: OrderUpdateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() data: OrderUpdateInput
   ): Promise<Order | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Order\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new errors.ForbiddenException(
-        \`providing the properties: \${properties} on \${\\"Order\\"} update is forbidden for roles: \${roles}\`
-      );
-    }
     try {
       return await this.service.update({
         where: params,
@@ -9709,6 +9652,7 @@ export class OrganizationControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(ValidateInputInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -9724,28 +9668,8 @@ export class OrganizationControllerBase {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body()
-    data: OrganizationUpdateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() data: OrganizationUpdateInput
   ): Promise<Organization | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new errors.ForbiddenException(
-        \`providing the properties: \${properties} on \${\\"Organization\\"} update is forbidden for roles: \${roles}\`
-      );
-    }
     try {
       return await this.service.update({
         where: params,
@@ -12732,6 +12656,7 @@ export class UserControllerBase {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseInterceptors(ValidateInputInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -12747,28 +12672,8 @@ export class UserControllerBase {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: UserWhereUniqueInput,
-    @common.Body()
-    data: UserUpdateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() data: UserUpdateInput
   ): Promise<User | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"update\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(\\", \\");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(\\",\\");
-      throw new errors.ForbiddenException(
-        \`providing the properties: \${properties} on \${\\"User\\"} update is forbidden for roles: \${roles}\`
-      );
-    }
     try {
       return await this.service.update({
         where: params,
