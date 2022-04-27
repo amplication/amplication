@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { User } from 'src/models';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 

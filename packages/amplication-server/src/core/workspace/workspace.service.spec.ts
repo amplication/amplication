@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { WorkspaceService } from './workspace.service';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AccountService } from '../account/account.service';

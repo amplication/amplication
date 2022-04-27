@@ -8,7 +8,7 @@ import {
   INVALID_APP_ID
 } from './app.service';
 
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService, GitRepository } from '@amplication/prisma-db';
 import { EntityService } from '../entity/entity.service';
 import {
   EnvironmentService,
@@ -38,7 +38,6 @@ import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { QueryMode } from 'src/enums/QueryMode';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { GitRepository } from '@prisma/client';
 import { GitService } from '@amplication/git-service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
