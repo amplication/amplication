@@ -13,7 +13,6 @@
   "author": "tupe12334",
   "license": "ISC",
   "devDependencies": {
-    "@nestjs/microservices": "8.4.4",
     "@types/jest": "27.4.1",
     "@types/node": "17.0.26",
     "jest": "27.5.1",
@@ -41,6 +40,7 @@
   },
   "dependencies": {
     "@nestjs/common": "8.4.4",
+    "@nestjs/microservices": "8.4.4",
     "dotenv": "16.0.0"
   }
 }
