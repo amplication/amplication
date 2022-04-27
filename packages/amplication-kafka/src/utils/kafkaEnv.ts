@@ -1,10 +1,9 @@
 import { EnvironmentVariables } from "./";
 import { KAFKA_BROKERS, KAFKA_CLIENT_ID, KAFKA_GROUP_ID } from "./constants";
 
-export class KafkaEnvironmentVariables extends EnvironmentVariables {
+export class KafkaEnvironmentVariables {
   private envSuffix = "";
   constructor(envSuffix?: string) {
-    super();
     if (envSuffix) {
       this.envSuffix = `_${envSuffix}`;
     }
