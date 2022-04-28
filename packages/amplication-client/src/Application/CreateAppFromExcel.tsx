@@ -418,7 +418,9 @@ export function CreateAppFromExcel() {
                         {startFromScratch()}
                         {startFromSampleApp()}
                       </div>
-                      <div className={`${CLASS_NAME}__divider`}>or</div>
+                      <div className={`${CLASS_NAME}__divider`}>
+                        <span>or</span>
+                      </div>
                       {excelOption()}
                     </>
                   ) : (

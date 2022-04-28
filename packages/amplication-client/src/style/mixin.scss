@@ -167,6 +167,7 @@ $bullet-size: 6px;
   &:hover {
     border: 1px solid var(--black30);
     box-shadow: var(--floating-box-shadow);
+    transition: all 650ms ease-in-out;
   }
 }
 
