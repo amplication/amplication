@@ -15,9 +15,9 @@ import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 // @ts-ignore
-import { ValidateInputInterceptor } from "../../interceptors/validateInput.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 // @ts-ignore
-import { FilterResultInterceptor } from "../../interceptors/filterResult.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -89,7 +89,7 @@ export class RESOLVER_BASE {
     };
   }
 
-  @common.UseInterceptors(FilterResultInterceptor)
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [ENTITY])
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -102,7 +102,7 @@ export class RESOLVER_BASE {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(FilterResultInterceptor)
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -119,7 +119,7 @@ export class RESOLVER_BASE {
     return result;
   }
 
-  @common.UseInterceptors(ValidateInputInterceptor)
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ENTITY)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -134,7 +134,7 @@ export class RESOLVER_BASE {
     });
   }
 
-  @common.UseInterceptors(ValidateInputInterceptor)
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ENTITY)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,

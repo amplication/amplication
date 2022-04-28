@@ -4,7 +4,7 @@ import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as gqlUserRoles from "../auth/gqlUserRoles.decorator";
 // @ts-ignore
-import { FilterResultInterceptor } from "../../interceptors/filterResult.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 
 declare interface ENTITY {
   id: string;
@@ -21,7 +21,7 @@ declare const RELATED_ENTITY_NAME: string;
 export class Mixin {
   constructor(private readonly service: SERVICE) {}
 
-  @common.UseInterceptors(FilterResultInterceptor)
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => RELATED_ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: RELATED_ENTITY_NAME,

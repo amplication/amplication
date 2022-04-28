@@ -13,7 +13,7 @@ import { plainToClass } from "class-transformer";
 // @ts-ignore
 import * as errors from "../../errors";
 // @ts-ignore
-import { FilterResultInterceptor } from "../../interceptors/filterResult.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 
 declare interface WHERE_UNIQUE_INPUT {
   id: string;
@@ -60,7 +60,7 @@ export class Mixin {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseInterceptors(FilterResultInterceptor)
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard

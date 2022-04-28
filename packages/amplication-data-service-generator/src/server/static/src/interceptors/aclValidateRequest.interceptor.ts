@@ -5,12 +5,13 @@ import {
   NestInterceptor,
 } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
 import { InjectRolesBuilder, RolesBuilder } from "nest-access-control";
 import { Reflector } from "@nestjs/core";
+import * as abacUtil from "../auth/abac.util";
+import { ForbiddenException } from "../errors";
 
 @Injectable()
-export class FilterResultInterceptor implements NestInterceptor {
+export class AclValidateRequestInterceptor implements NestInterceptor {
   constructor(
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
     private readonly reflector: Reflector
@@ -22,6 +23,13 @@ export class FilterResultInterceptor implements NestInterceptor {
       [context.getHandler(), context.getClass()]
     );
 
+    const type = context.getType();
+
+    const inputDataToValidate =
+      type === "http"
+        ? context.switchToHttp().getRequest().body
+        : context.getArgByIndex(1).data;
+
     const permission = this.rolesBuilder.permission({
       role: permissionsRoles.role,
       action: permissionsRoles.action,
@@ -29,14 +37,17 @@ export class FilterResultInterceptor implements NestInterceptor {
       resource: permissionsRoles.resource,
     });
 
-    return next.handle().pipe(
-      map((data) => {
-        if (Array.isArray(data)) {
-          return data.map((results: any) => permission.filter(results));
-        } else {
-          return permission.filter(data);
-        }
-      })
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      inputDataToValidate
     );
+
+    if (invalidAttributes.length) {
+      throw new ForbiddenException(
+        "Insufficient privileges to complete the operation"
+      );
+    }
+
+    return next.handle();
   }
 }
