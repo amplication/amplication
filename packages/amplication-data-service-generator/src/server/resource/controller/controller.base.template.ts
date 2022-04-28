@@ -53,6 +53,7 @@ declare const SELECT: Select;
 
 //@ts-ignore
 @swagger.SWAGGER_API_AUTH_FUNCTION()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class CONTROLLER_BASE {
   constructor(
     protected readonly service: SERVICE,
@@ -60,10 +61,6 @@ export class CONTROLLER_BASE {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -101,10 +98,6 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -134,10 +127,6 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(FINE_ONE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -170,10 +159,6 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -224,10 +209,6 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
