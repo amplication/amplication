@@ -255,10 +255,7 @@ jobs:
           SERVICE_NAME: ${{ matrix.service }}
       - name: set branch-name
         run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
-            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-          fi
+          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
       - name: Check if repo exist
         working-directory: packages/${{ matrix.service }}
         run: |
@@ -266,7 +263,7 @@ jobs:
       - name: Retag images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG_LIST: ${{ github.ref_name }}
+          TAG_LIST: ${{ github.ref_name }},$BRANCH_NAME
         run: |
           MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=master --output json | jq --raw-output --join-output '.images[0].imageManifest')
           if [ "$MANIFEST" = "null" ]
