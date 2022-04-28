@@ -11,7 +11,6 @@
   },
   "keywords": [],
   "author": "tupe12334",
-  "license": "ISC",
   "devDependencies": {
     "@types/jest": "27.4.1",
     "@types/node": "17.0.25",
