@@ -10,7 +10,12 @@ import {
   COMMON_FIELDS,
   EntitiesDiagramFormData,
 } from "../EntitiesDiagram/EntitiesDiagram";
-import { Snackbar, Icon } from "@amplication/design-system";
+import {
+  Snackbar,
+  Icon,
+  CSSTransition,
+  SwitchTransition,
+} from "@amplication/design-system";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
@@ -39,11 +44,17 @@ type TData = {
   createAppWithEntities: models.App;
 };
 
+enum Steps {
+  startScreen,
+  startWithExcel,
+}
+
 export const CLASS_NAME = "create-app-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
 export function CreateAppFromExcel() {
   const [importList, setImportList] = useState<ImportField[]>([]);
+  const [step, setStep] = useState<Steps>(Steps.startScreen);
   const [fileName, setFileName] = useState<string | null>(null);
   const { data: appsData } = useQuery<{
     apps: Array<models.App>;
@@ -262,6 +273,106 @@ export function CreateAppFromExcel() {
     setImportList(fields);
   };
 
+  const dropExcel = () => (
+    <div
+      {...getRootProps()}
+      className={classNames(`${CLASS_NAME}__dropzone`, {
+        [`${CLASS_NAME}__dropzone--active`]: isDragActive,
+      })}
+    >
+      <input {...getInputProps()} />
+      {isDragActive ? (
+        <div className={`${CLASS_NAME}__dropzone__active_content`}>
+          <p>Drop it like it's hot</p>
+          <SvgThemeImage image={EnumImages.DropExcel} />
+        </div>
+      ) : (
+        <>
+          <SvgThemeImage image={EnumImages.ImportExcel} />
+          <p>Drag and drop a file here, or click to select a file</p>
+        </>
+      )}
+    </div>
+  );
+
+  const excelOption = () => (
+    <div
+      className={`${CLASS_NAME}__header ${CLASS_NAME}__excel_option`}
+      onClick={() => setStep(Steps.startWithExcel)}
+    >
+      <SvgThemeImage image={EnumImages.ImportExcel} />
+      <div className={`${CLASS_NAME}__message`}>
+        Just upload an Excel or CSV file to import its schema and then generate
+        your node.js application source code.
+      </div>
+    </div>
+  );
+
+  const startWithExcel = () => (
+    <>
+      <div className={`${CLASS_NAME}__header`}>
+        <h1 className={`${CLASS_NAME}__excel_start_title`}>
+          Start with schema from excel
+        </h1>
+        <div className={`${CLASS_NAME}__message`}>
+          Just upload an Excel or CSV file to import its schema and then
+          generate your node.js application source code.
+        </div>
+      </div>
+      {dropExcel()}
+    </>
+  );
+
+  const startFromScratch = () => (
+    <div
+      onClick={handleStartFromScratch}
+      className={`${CLASS_NAME}__other-options__scratch_option`}
+    >
+      <div className={`${CLASS_NAME}__other-options__option_text`}>
+        Start from
+      </div>
+      <div className={`${CLASS_NAME}__other-options__option_code_text`}>
+        &lt;Scratch&gt;
+      </div>
+    </div>
+  );
+
+  const startFromSampleApp = () => (
+    <div
+      onClick={handleStartFromSample}
+      className={`${CLASS_NAME}__other-options__sample_option`}
+    >
+      <div className={`${CLASS_NAME}__other-options__option_text`}>
+        Start from
+      </div>
+      <div className={`${CLASS_NAME}__other-options__option_code_text`}>
+        &lt;Sample App&gt;
+      </div>
+    </div>
+  );
+
+  const getBackButton = () => {
+    if (step === Steps.startWithExcel) {
+      return (
+        <div
+          className={`${CLASS_NAME}__back`}
+          onClick={() => setStep(Steps.startScreen)}
+        >
+          <Icon icon="arrow_left" />
+          Back
+        </div>
+      );
+    }
+    if (appsExist) {
+      return (
+        <Link to="/" className={`${CLASS_NAME}__back`}>
+          <Icon icon="arrow_left" />
+          Back
+        </Link>
+      );
+    }
+  };
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__layout`}>
@@ -284,54 +395,39 @@ export function CreateAppFromExcel() {
             </div>
           </div>
         ) : isEmpty(fileName) ? (
-          <div className={`${CLASS_NAME}__select-file`}>
-            {appsExist && (
-              <Link to="/" className={`${CLASS_NAME}__back`}>
-                <Icon icon="arrow_left" />
-                Back
-              </Link>
-            )}
-            <div className={`${CLASS_NAME}__header`}>
-              <SvgThemeImage image={EnumImages.ImportExcel} />
-              <h2>Start with schema from excel</h2>
-              <div className={`${CLASS_NAME}__message`}>
-                Start building your application from an existing schema. Just
-                upload an excel or CSV file to import its schema, and generate
-                your node.JS application source code
-              </div>
-            </div>
-
-            <div
-              {...getRootProps()}
-              className={classNames(`${CLASS_NAME}__dropzone`, {
-                [`${CLASS_NAME}__dropzone--active`]: isDragActive,
-              })}
+          <SwitchTransition mode="out-in">
+            <CSSTransition
+              key={step}
+              timeout={500}
+              classNames={`${CLASS_NAME}__options_screen_fade`}
             >
-              <input {...getInputProps()} />
-              {isDragActive ? (
-                <p>Drop the file here ...</p>
-              ) : (
-                <p>Drag and drop a file here, or click to select a file</p>
-              )}
-            </div>
-            <div className={`${CLASS_NAME}__divider`}>or</div>
-            <div className={`${CLASS_NAME}__other-options`}>
-              <Link
-                onClick={handleStartFromScratch}
-                className={`${CLASS_NAME}__other-options__option`}
-              >
-                <SvgThemeImage image={EnumImages.AddApp} />
-                <div>Start from scratch</div>
-              </Link>
-              <Link
-                onClick={handleStartFromSample}
-                className={`${CLASS_NAME}__other-options__option`}
-              >
-                <SvgThemeImage image={EnumImages.SampleApp} />
-                <div>Start from a sample app</div>
-              </Link>
-            </div>
-          </div>
+              <div className={`${CLASS_NAME}__option_container`}>
+                {getBackButton()}
+
+                <div className={`${CLASS_NAME}__option_content`}>
+                  {step === Steps.startScreen ? (
+                    <>
+                      <h1 className={`${CLASS_NAME}__welcome_text`}>
+                        Welcome to Amplication
+                      </h1>
+                      <h2 className={`${CLASS_NAME}__start_text`}>
+                        Let's start building your app
+                      </h2>
+
+                      <div className={`${CLASS_NAME}__other-options`}>
+                        {startFromScratch()}
+                        {startFromSampleApp()}
+                      </div>
+                      <div className={`${CLASS_NAME}__divider`}>or</div>
+                      {excelOption()}
+                    </>
+                  ) : (
+                    startWithExcel()
+                  )}
+                </div>
+              </div>
+            </CSSTransition>
+          </SwitchTransition>
         ) : (
           <CreateAppFromExcelForm
             fileName={fileName}

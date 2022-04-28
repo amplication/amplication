@@ -24,4 +24,8 @@
     background-color: var(--theme-turquoise-transparent);
     border: 1px solid var(--theme-turquoise);
   }
+  
+  &__new-token-message {
+    margin-bottom: var(--default-spacing);
+  }
 }

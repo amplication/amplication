@@ -37,8 +37,8 @@
   --image-add-app: url("../assets/images/mono/add-app-dark.svg");
   --image-relations: url("../assets/images/mono/relations-dark.svg");
   --image-import-excel: url("../assets/images/mono/import-excel-dark.svg");
+  --image-drop-excel: url("../assets/images/mono/drop-excel-dark.svg");
   --image-my-apps: url("../assets/images/mono/my-apps-dark.svg");
-  --image-sample-app: url("../assets/images/mono/sample-app-dark.svg");
   --image-generating: url("../assets/images/mono/generating-dark.svg");
 
   --diffViewerBackground: var(--white);
@@ -65,4 +65,7 @@
   --diffViewerTitleBackground: var(--white);
   --diffViewerTitleColor: var(--black100);
   --diffViewerTitleBorderColor: var(--white);
+  --screenResolutionMessageColor: var(--black100);
+
+  --floating-box-shadow: 0px 44px 40px -24px rgba(9, 11, 20, 0.3);
 }

@@ -3,7 +3,7 @@ dist/
 prisma/dal/
 prisma/*.db
 coverage/
-
+ 
 .DS_Store
 
 prisma/migrations/dev/
