@@ -6,7 +6,6 @@ on:
     branches: ['*']
     paths-ignore:
       - "**.md"
-      - ".github/workflows/**.yml"
       - "renovate.json"
       - ".all-contributorsrc"
   pull_request:
@@ -14,7 +13,6 @@ on:
     types: [opened, reopened]
     paths-ignore:
       - "**.md"
-      - ".github/workflows/**.yml"
       - "renovate.json"
       - ".all-contributorsrc"
 
@@ -203,16 +201,12 @@ jobs:
       
       - name: set branch-name
         run: |
-          if [[ $GITHUB_REF != 'refs/heads/master' ]]
-          then 
             echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-          fi
-
       - name: Build, tag, and push image to Amazon ECR
         if: ${{ steps.tag-exist.outputs.tag_exist == 'false' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG_LIST: "${{ github.ref_name }},${{ github.run_id }},${{ github.sha }}"
+          TAG_LIST: "${{ github.ref_name }},${{ github.run_id }},${{ github.sha }},$BRANCH_NAME"
         run: |
           Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
           docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
@@ -253,6 +247,13 @@ jobs:
           sh .github/workflows/scripts/get_ecr_repository.sh
         env:
           SERVICE_NAME: ${{ matrix.service }}
+      - name: Set hash
+        env:
+          working-directory: packages/${{ matrix.service }}
+        run: |
+          GITHUB_HASH_MOD=$(find ./packages/${{ matrix.service }} -type f \( -exec sha1sum {} \; \) | awk '{print $1}' | sort | sha1sum)
+          echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
+          echo $GITHUB_HASH    
       - name: set branch-name
         run: |
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
@@ -263,12 +264,12 @@ jobs:
       - name: Retag images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG_LIST: ${{ github.ref_name }},$BRANCH_NAME
+          TAG_LIST: "${{ github.ref_name }},${{ github.run_id }},${{ github.sha }},$BRANCH_NAME"
         run: |
-          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=master --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           if [ "$MANIFEST" = "null" ]
           then
-            fixed_tag=$(echo ${{ github.ref_name }} | sed 's/[^a-zA-Z0-9]/-/g')
+            fixed_tag=$(echo $BRANCH_NAME | sed 's/[^a-zA-Z0-9]/-/g')
             Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$fixed_tag
             docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
             docker push $Docker_image
