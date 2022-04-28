@@ -15,9 +15,9 @@ import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 // @ts-ignore
-import { ValidateInputInterceptor } from "../../interceptors/validateInput.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 // @ts-ignore
-import { FilterResultInterceptor } from "../../interceptors/filterResult.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -64,7 +64,7 @@ export class CONTROLLER_BASE {
   ) {}
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseInterceptors(ValidateInputInterceptor)
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -85,7 +85,7 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseInterceptors(FilterResultInterceptor)
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -108,7 +108,7 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseInterceptors(FilterResultInterceptor)
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
@@ -138,7 +138,7 @@ export class CONTROLLER_BASE {
   }
 
   @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseInterceptors(ValidateInputInterceptor)
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.UseGuards(
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
