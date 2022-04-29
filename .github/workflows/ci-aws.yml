@@ -264,7 +264,7 @@ jobs:
       - name: Retag images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG_LIST: "${{ env.BRANCH_NAME }}"
+          TAG_LIST: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }}"
         run: |
           echo "GITHUB_HASH: $GITHUB_HASH"
           echo "ECR_REPOSITORY: $ECR_REPOSITORY"
