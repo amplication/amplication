@@ -211,7 +211,7 @@ jobs:
           Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
           docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
           docker push $Docker_image
-          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           sh .github/workflows/scripts/ecr_retag.sh
       - name: Discord notification
         if: failure()
@@ -266,12 +266,14 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           TAG_LIST: "${{ env.BRANCH_NAME }}"
         run: |
-          MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          echo "GITHUB_HASH: $GITHUB_HASH"
+          echo "ECR_REPOSITORY: $ECR_REPOSITORY"
+          export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           if [ "$MANIFEST" = "null" ]
           then
             fixed_tag=$(echo $BRANCH_NAME | sed 's/[^a-zA-Z0-9]/-/g')
             Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$fixed_tag
-            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
+            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $GITHUB_HASH
             docker push $Docker_image
             export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$fixed_tag --output json | jq --raw-output --join-output '.images[0].imageManifest')
             echo "FIXED MANIFEST: $MANIFEST"
