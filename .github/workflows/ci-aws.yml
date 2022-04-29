@@ -264,7 +264,8 @@ jobs:
       - name: Retag images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG_LIST: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }}"
+          TAG_LIST_SHORT: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }}"
+          TAG_LIST_FULL: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }},${{ github.run_id }}"
         run: |
           echo "GITHUB_HASH: $GITHUB_HASH"
           echo "ECR_REPOSITORY: $ECR_REPOSITORY"
@@ -275,10 +276,12 @@ jobs:
             docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
             docker push $Docker_image
             export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$fixed_tag --output json | jq --raw-output --join-output '.images[0].imageManifest')
-            export TAG_LIST+=",${{ github.run_id }}"
+            export TAG_LIST=$TAG_LIST_FULL
             echo "FIXED MANIFEST: $MANIFEST"
-            echo "TAG_LIST: $TAG_LIST"
+          else
+            export TAG_LIST=$TAG_LIST_SHORT
           fi
+          echo "TAG_LIST: $TAG_LIST"
           sh .github/workflows/scripts/ecr_retag.sh
       - name: Discord notification
         if: failure()
