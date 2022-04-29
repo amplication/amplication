@@ -68,8 +68,6 @@ export class Mixin {
     possession: "any",
   })
   @common.Get(FIND_MANY_PATH)
-  //@ts-ignore
-  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @ApiNestedQuery(RELATED_ENTITY_FIND_MANY_ARGS)
   async FIND_MANY(
     @common.Req() request: Request,
@@ -106,8 +104,6 @@ export class Mixin {
     possession: "any",
   })
   @common.Post(CREATE_PATH)
-  //@ts-ignore
-  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async CREATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: WHERE_UNIQUE_INPUT[],
@@ -151,8 +147,6 @@ export class Mixin {
     possession: "any",
   })
   @common.Patch(UPDATE_PATH)
-  //@ts-ignore
-  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
@@ -196,8 +190,6 @@ export class Mixin {
     possession: "any",
   })
   @common.Delete(DELETE_PATH)
-  //@ts-ignore
-  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async DELETE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: WHERE_UNIQUE_INPUT[],
