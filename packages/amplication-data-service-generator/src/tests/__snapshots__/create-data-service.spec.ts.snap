@@ -5073,7 +5073,7 @@ import { Customer } from \\"./Customer\\";
 import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
-@swagger.ApiBasicAuth()
+
 export class CustomerControllerBase {
   constructor(
     protected readonly service: CustomerService,
@@ -5085,12 +5085,13 @@ export class CustomerControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @common.Post()
+  @swagger.ApiBasicAuth()
   @swagger.ApiCreatedResponse({ type: Customer })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
@@ -5167,12 +5168,13 @@ export class CustomerControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get()
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: [Customer] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(CustomerFindManyArgs)
@@ -5227,12 +5229,13 @@ export class CustomerControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @common.Get(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -5290,12 +5293,13 @@ export class CustomerControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -5385,12 +5389,13 @@ export class CustomerControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -5444,12 +5449,13 @@ export class CustomerControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/orders\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @ApiNestedQuery(OrderFindManyArgs)
   async findManyOrders(
     @common.Req() request: Request,
@@ -5493,12 +5499,13 @@ export class CustomerControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/orders\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async createOrders(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[],
@@ -5538,12 +5545,13 @@ export class CustomerControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/orders\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() body: OrderWhereUniqueInput[],
@@ -5583,12 +5591,13 @@ export class CustomerControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/orders\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async deleteOrders(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[],
@@ -6715,7 +6724,7 @@ import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
-@swagger.ApiBasicAuth()
+
 export class EmptyControllerBase {
   constructor(
     protected readonly service: EmptyService,
@@ -6727,12 +6736,13 @@ export class EmptyControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @common.Post()
+  @swagger.ApiBasicAuth()
   @swagger.ApiCreatedResponse({ type: Empty })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
@@ -6772,12 +6782,13 @@ export class EmptyControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get()
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: [Empty] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EmptyFindManyArgs)
@@ -6809,12 +6820,13 @@ export class EmptyControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @common.Get(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -6849,12 +6861,13 @@ export class EmptyControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -6907,12 +6920,13 @@ export class EmptyControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -8126,7 +8140,7 @@ import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
-@swagger.ApiBasicAuth()
+
 export class OrderControllerBase {
   constructor(
     protected readonly service: OrderService,
@@ -8138,12 +8152,13 @@ export class OrderControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @common.Post()
+  @swagger.ApiBasicAuth()
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
@@ -8198,12 +8213,13 @@ export class OrderControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get()
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrderFindManyArgs)
@@ -8244,12 +8260,13 @@ export class OrderControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @common.Get(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -8293,12 +8310,13 @@ export class OrderControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -8366,12 +8384,13 @@ export class OrderControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -9731,7 +9750,7 @@ import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
-@swagger.ApiBasicAuth()
+
 export class OrganizationControllerBase {
   constructor(
     protected readonly service: OrganizationService,
@@ -9743,12 +9762,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @common.Post()
+  @swagger.ApiBasicAuth()
   @swagger.ApiCreatedResponse({ type: Organization })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
@@ -9789,12 +9809,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get()
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: [Organization] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrganizationFindManyArgs)
@@ -9827,12 +9848,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @common.Get(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -9868,12 +9890,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -9927,12 +9950,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -9964,12 +9988,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/users\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @ApiNestedQuery(UserFindManyArgs)
   async findManyUsers(
     @common.Req() request: Request,
@@ -10022,12 +10047,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/users\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async createUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
@@ -10067,12 +10093,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/users\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
@@ -10112,12 +10139,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/users\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async deleteUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
@@ -10157,12 +10185,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/customers\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyCustomers(
     @common.Req() request: Request,
@@ -10220,12 +10249,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/customers\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async createCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
@@ -10265,12 +10295,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/customers\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[],
@@ -10310,12 +10341,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/customers\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async deleteCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
@@ -10355,12 +10387,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/vipCustomers\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyVipCustomers(
     @common.Req() request: Request,
@@ -10418,12 +10451,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/vipCustomers\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async createVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
@@ -10463,12 +10497,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/vipCustomers\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[],
@@ -10508,12 +10543,13 @@ export class OrganizationControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/vipCustomers\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async deleteVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
@@ -12916,7 +12952,7 @@ import { User } from \\"./User\\";
 import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
-@swagger.ApiBasicAuth()
+
 export class UserControllerBase {
   constructor(
     protected readonly service: UserService,
@@ -12928,12 +12964,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @common.Post()
+  @swagger.ApiBasicAuth()
   @swagger.ApiCreatedResponse({ type: User })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
@@ -12999,12 +13036,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get()
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: [User] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(UserFindManyArgs)
@@ -13054,12 +13092,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @common.Get(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -13112,12 +13151,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -13196,12 +13236,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id\\")
+  @swagger.ApiBasicAuth()
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -13250,12 +13291,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/employees\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @ApiNestedQuery(UserFindManyArgs)
   async findManyEmployees(
     @common.Req() request: Request,
@@ -13308,12 +13350,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/employees\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async createEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
@@ -13353,12 +13396,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/employees\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async updateEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
@@ -13398,12 +13442,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/employees\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async deleteEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
@@ -13443,12 +13488,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/organizations\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @ApiNestedQuery(OrganizationFindManyArgs)
   async findManyOrganizations(
     @common.Req() request: Request,
@@ -13484,12 +13530,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/organizations\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async createOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],
@@ -13529,12 +13576,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/organizations\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[],
@@ -13574,12 +13622,13 @@ export class UserControllerBase {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/organizations\\")
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async deleteOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[],

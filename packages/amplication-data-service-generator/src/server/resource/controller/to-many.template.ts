@@ -62,12 +62,14 @@ export class Mixin {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(FIND_MANY_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
+  @common.Get(FIND_MANY_PATH)
+  //@ts-ignore
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @ApiNestedQuery(RELATED_ENTITY_FIND_MANY_ARGS)
   async FIND_MANY(
     @common.Req() request: Request,
@@ -98,12 +100,14 @@ export class Mixin {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post(CREATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
+  @common.Post(CREATE_PATH)
+  //@ts-ignore
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async CREATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: WHERE_UNIQUE_INPUT[],
@@ -141,12 +145,14 @@ export class Mixin {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
+  @common.Patch(UPDATE_PATH)
+  //@ts-ignore
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
@@ -184,12 +190,14 @@ export class Mixin {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
+  @common.Delete(DELETE_PATH)
+  //@ts-ignore
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   async DELETE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: WHERE_UNIQUE_INPUT[],

@@ -51,8 +51,6 @@ declare const CREATE_DATA_MAPPING: CREATE_INPUT;
 declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 declare const SELECT: Select;
 
-//@ts-ignore
-@swagger.SWAGGER_API_AUTH_FUNCTION()
 export class CONTROLLER_BASE {
   constructor(
     protected readonly service: SERVICE,
@@ -64,12 +62,14 @@ export class CONTROLLER_BASE {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "create",
     possession: "any",
   })
+  @common.Post()
+  //@ts-ignore
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
@@ -105,12 +105,14 @@ export class CONTROLLER_BASE {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
+  @common.Get()
+  //@ts-ignore
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @swagger.ApiOkResponse({ type: [ENTITY] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(FIND_MANY_ARGS)
@@ -138,12 +140,14 @@ export class CONTROLLER_BASE {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Get(FINE_ONE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "own",
   })
+  @common.Get(FINE_ONE_PATH)
+  //@ts-ignore
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -174,12 +178,14 @@ export class CONTROLLER_BASE {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
+  @common.Patch(UPDATE_PATH)
+  //@ts-ignore
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -228,12 +234,14 @@ export class CONTROLLER_BASE {
     defaultAuthGuard.DefaultAuthGuard,
     nestAccessControl.ACGuard
   )
-  @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "delete",
     possession: "any",
   })
+  @common.Delete(DELETE_PATH)
+  //@ts-ignore
+  @swagger.SWAGGER_API_AUTH_FUNCTION()
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
