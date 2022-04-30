@@ -108,6 +108,5 @@ jobs:
           $COMMAND
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
-        with:
           ARGO_CD_PASSWORD: ${{ secrets.ARGO_CD_PASSWORD }}
       
