@@ -38,7 +38,7 @@ jobs:
       - name: calculate docker tags
         id: calculate-docker-tags
         run: |
-          sh ./.github/workflows/scripts/build-values-command.sh
+          bash ./.github/workflows/scripts/build-values-command.sh
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
       - name: set name space
