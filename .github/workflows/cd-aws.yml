@@ -36,7 +36,7 @@ jobs:
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
       - name: set name space
-        id: set name space
+        id: set-namespace
         run: |
           NAMESPACE=$TARGET_ENV
           if [ "$TARGET_ENV" = "temp" ]; then
