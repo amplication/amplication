@@ -1,0 +1,5 @@
+amplication-server:
+  config:
+    env:
+      GITHUB_APP_AUTH_SCOPE: user:email,repo,read:org
+      GITHUB_SCOPE: user:email
