@@ -10,6 +10,8 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
 import * as errors from "../../errors";
+// @ts-ignore
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 
 declare interface WHERE_UNIQUE_INPUT {
   id: string;
@@ -55,8 +57,9 @@ export class Mixin {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
+    resource: RELATED_ENTITY_NAME,
     action: "read",
     possession: "any",
   })
@@ -64,16 +67,9 @@ export class Mixin {
   @ApiNestedQuery(RELATED_ENTITY_FIND_MANY_ARGS)
   async FIND_MANY(
     @common.Req() request: Request,
-    @common.Param() params: WHERE_UNIQUE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<RELATED_ENTITY[]> {
     const query = plainToClass(RELATED_ENTITY_FIND_MANY_ARGS, request.query);
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "any",
-      resource: RELATED_ENTITY_NAME,
-    });
     const results = await this.service.FIND_PROPERTY(params.id, {
       ...query,
       select: SELECT,
@@ -83,7 +79,7 @@ export class Mixin {
         `No resource was found for ${JSON.stringify(params)}`
       );
     }
-    return results.map((result) => permission.filter(result));
+    return results;
   }
 
   @nestAccessControl.UseRoles({
@@ -92,31 +88,15 @@ export class Mixin {
     possession: "any",
   })
   @common.Post(CREATE_PATH)
-  async CREATE(
+  async CONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: WHERE_UNIQUE_INPUT[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
         connect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "update",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new common.ForbiddenException(
-        `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -132,29 +112,13 @@ export class Mixin {
   @common.Patch(UPDATE_PATH)
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
         set: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "update",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new common.ForbiddenException(
-        `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
-      );
-    }
     await this.service.update({
       where: params,
       data,
@@ -168,31 +132,15 @@ export class Mixin {
     possession: "any",
   })
   @common.Delete(DELETE_PATH)
-  async DELETE(
+  async DISCONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body() body: WHERE_UNIQUE_INPUT[],
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
         disconnect: body,
       },
     };
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "update",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new common.ForbiddenException(
-        `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
-      );
-    }
     await this.service.update({
       where: params,
       data,

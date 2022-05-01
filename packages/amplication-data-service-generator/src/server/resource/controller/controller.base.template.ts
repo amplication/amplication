@@ -13,6 +13,10 @@ import { Request } from "express";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+// @ts-ignore
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+// @ts-ignore
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -58,6 +62,8 @@ export class CONTROLLER_BASE {
     protected readonly service: SERVICE,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "create",
@@ -70,30 +76,13 @@ export class CONTROLLER_BASE {
     @common.Body() data: CREATE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "create",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(", ");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new errors.ForbiddenException(
-        `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
-      );
-    }
     return await this.service.create({
       data: CREATE_DATA_MAPPING,
       select: SELECT,
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
@@ -108,20 +97,13 @@ export class CONTROLLER_BASE {
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
     const args = plainToClass(FIND_MANY_ARGS, request.query);
-
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const results = await this.service.findMany({
+    return this.service.findMany({
       ...args,
       select: SELECT,
     });
-    return results.map((result) => permission.filter(result));
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
@@ -135,12 +117,6 @@ export class CONTROLLER_BASE {
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "own",
-      resource: ENTITY_NAME,
-    });
     const result = await this.service.findOne({
       where: params,
       select: SELECT,
@@ -150,9 +126,10 @@ export class CONTROLLER_BASE {
         `No resource was found for ${JSON.stringify(params)}`
       );
     }
-    return permission.filter(result);
+    return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
@@ -164,28 +141,8 @@ export class CONTROLLER_BASE {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async UPDATE_ENTITY_FUNCTION(
     @common.Param() params: WHERE_UNIQUE_INPUT,
-    @common.Body()
-    data: UPDATE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() data: UPDATE_INPUT
   ): Promise<ENTITY | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "update",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(", ");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new errors.ForbiddenException(
-        `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
-      );
-    }
     try {
       return await this.service.update({
         where: params,

@@ -6,7 +6,7 @@
     margin-bottom: var(--large-spacing);
 
     .search-field {
-      flex: 1;
+      width: var(--form-field-long);
     }
   }
   &__title {
