@@ -41,7 +41,7 @@ jobs:
           bash ./.github/workflows/scripts/build-values-command.sh
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
-      - name: set name space
+      - name: set namespace
         id: set-namespace
         run: |
           NAMESPACE=$TARGET_ENV
@@ -78,7 +78,7 @@ jobs:
       - name: create app yaml
         id: create-app-yaml
         run: |
-          cp ./argocd/app.yaml app.yaml
+          cp $GITHUB_WORKSPACE/.github/workflows/argocd/app.yaml app.yaml
           sed -i "s|APP_NAME_PLACE_HOLER|$APP_NAME|g" app.yaml
           sed -i "s|REPO_URL_PLACE_HOLER|$REPO_URL|g" app.yaml
           sed -i "s|BRANCH_NAME_PLACE_HOLER|$GITHUB_REF_NAME|g" app.yaml

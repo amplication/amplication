@@ -8,6 +8,7 @@ IMAGE_TAG_ANCHOR=${SOURCE_BRANCH_NAME:=master}
 touch $OUTPUT_PATH
 for dir in /$HELM_SERVICES_FOLDER/*/
 do
+    echo "cleaning up $dir"
     SERVICE_NAME="${${dir%*/}##*/}"
     REPO_NAME="$SERVICE_NAME-$TARGET_ENV"
     echo "SERVICE_NAME: $SERVICE_NAME"
