@@ -2783,7 +2783,9 @@ async function seed(bcryptSalt: Salt) {
   console.info(\\"Seeded database successfully\\");
 }
 ",
-  "server/src/app.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "server/src/app.module.ts": "import { Module, Scope } from \\"@nestjs/common\\";
+import { APP_INTERCEPTOR } from \\"@nestjs/core\\";
+import { MorganInterceptor, MorganModule } from \\"nest-morgan\\";
 import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
@@ -2793,7 +2795,6 @@ import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { HealthModule } from \\"./health/health.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import { ServeStaticOptionsService } from \\"./serveStaticOptions.service\\";
@@ -2831,7 +2832,13 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
       imports: [ConfigModule],
     }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      scope: Scope.REQUEST,
+      useClass: MorganInterceptor(\\"combined\\"),
+    },
+  ],
 })
 export class AppModule {}
 ",
@@ -5054,7 +5061,6 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -5074,17 +5080,14 @@ import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class CustomerControllerBase {
   constructor(
     protected readonly service: CustomerService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"create\\",
@@ -5162,11 +5165,7 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -5222,11 +5221,7 @@ export class CustomerControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -5285,11 +5280,7 @@ export class CustomerControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
@@ -5380,11 +5371,7 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"delete\\",
@@ -5439,11 +5426,7 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -5488,11 +5471,7 @@ export class CustomerControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
@@ -5533,11 +5512,7 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
@@ -5578,11 +5553,7 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
@@ -6710,7 +6681,6 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -6727,17 +6697,14 @@ import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class EmptyControllerBase {
   constructor(
     protected readonly service: EmptyService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"create\\",
@@ -6778,11 +6745,7 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"read\\",
@@ -6815,11 +6778,7 @@ export class EmptyControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"read\\",
@@ -6855,11 +6814,7 @@ export class EmptyControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"update\\",
@@ -6913,11 +6868,7 @@ export class EmptyControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"delete\\",
@@ -8133,7 +8084,6 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -8150,17 +8100,14 @@ import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class OrderControllerBase {
   constructor(
     protected readonly service: OrderService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"create\\",
@@ -8216,11 +8163,7 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
@@ -8262,11 +8205,7 @@ export class OrderControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
@@ -8311,11 +8250,7 @@ export class OrderControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"update\\",
@@ -8384,11 +8319,7 @@ export class OrderControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"delete\\",
@@ -9732,7 +9663,6 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -9755,17 +9685,14 @@ import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs
 import { Customer } from \\"../../customer/base/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class OrganizationControllerBase {
   constructor(
     protected readonly service: OrganizationService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"create\\",
@@ -9807,11 +9734,7 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -9845,11 +9768,7 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -9886,11 +9805,7 @@ export class OrganizationControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -9945,11 +9860,7 @@ export class OrganizationControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"delete\\",
@@ -9982,11 +9893,7 @@ export class OrganizationControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -10040,11 +9947,7 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10085,11 +9988,7 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10130,11 +10029,7 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10175,11 +10070,7 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -10238,11 +10129,7 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10283,11 +10170,7 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10328,11 +10211,7 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10373,11 +10252,7 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -10436,11 +10311,7 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10481,11 +10352,7 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10526,11 +10393,7 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -12920,7 +12783,6 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
@@ -12940,17 +12802,14 @@ import { OrganizationFindManyArgs } from \\"../../organization/base/Organization
 import { Organization } from \\"../../organization/base/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class UserControllerBase {
   constructor(
     protected readonly service: UserService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"create\\",
@@ -13017,11 +12876,7 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -13072,11 +12927,7 @@ export class UserControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -13130,11 +12981,7 @@ export class UserControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13214,11 +13061,7 @@ export class UserControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"delete\\",
@@ -13268,11 +13111,7 @@ export class UserControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -13326,11 +13165,7 @@ export class UserControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13371,11 +13206,7 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13416,11 +13247,7 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13461,11 +13288,7 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Get(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -13502,11 +13325,7 @@ export class UserControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Post(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13547,11 +13366,7 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Patch(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13592,11 +13407,7 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @common.Delete(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
