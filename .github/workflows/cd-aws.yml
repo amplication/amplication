@@ -5,14 +5,13 @@ on:
       target-env:
         type: choice
         description: To which environment to deploy
-        default: dev
+        default: staging-os
         required: true
         options: 
         - dev
         - staging-os
         - staging
         - prod
-        - temp
       source-branch:
         type: string
         description: Which branch to use for deployment
@@ -45,7 +44,7 @@ jobs:
         id: set-namespace
         run: |
           NAMESPACE=$TARGET_ENV
-          if [ "$TARGET_ENV" = "temp" ]; then
+          if [ "$TARGET_ENV" = "dev" ]; then
             NAMESPACE+="-$SOURCE_BRANCH_NAME"
           fi
           echo "Will deploy to $NAMESPACE"
@@ -56,8 +55,8 @@ jobs:
         id: set-cluster-name
         run: |
           CLUSTER_NAME="useast1-$TARGET_ENV"
-          if [ "$TARGET_ENV" = "temp" ]; then
-            CLUSTER_NAME="useast1-dev"
+          if [ "$TARGET_ENV" = "dev" ]; then
+            CLUSTER_NAME="useast1-staging-os"
           fi
           echo "Will deploy to $CLUSTER_NAME eks cluster"
           echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
@@ -98,10 +97,10 @@ jobs:
           COMMONM_VALUES_FILE="$GITHUB_WORKSPACE/helm/charts/amplication/values-common.yaml"
           ENV_VALUES_FILE="$GITHUB_WORKSPACE/helm/charts/amplication/values-$TARGET_ENV.yaml"
           ARGO_CD_URL="argocd.amplication-$TARGET_ENV.com"
-          if [ "$TARGET_ENV" = "temp" ]; then
-            ENV_VALUES_FILE="$GITHUB_WORKSPACE/helm/charts/amplication/values-dev.yaml"
-            ARGO_CD_URL="argocd.amplication-dev.com"
-          fi
+          # if [ "$TARGET_ENV" = "temp" ]; then
+          #   ENV_VALUES_FILE="$GITHUB_WORKSPACE/helm/charts/amplication/values-dev.yaml"
+          #   ARGO_CD_URL="argocd.amplication-dev.com"
+          # fi
           
           kubectl apply -f app.yaml
 
