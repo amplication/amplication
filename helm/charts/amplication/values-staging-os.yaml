@@ -1,60 +1,23 @@
 amplication-server:
   config:
     env:
-      GITHUB_CLIENT_ID: c53d9f4819a1ebc92e25
-      GITHUB_CLIENT_SECRET: 227a87fa8279335c4506f72675937a60d6cede59
-      GITHUB_APP_APP_ID: " 176700"
-      GITHUB_APP_CLIENT_ID: Iv1.456e1de6aa909177
-      GITHUB_APP_CLIENT_SECRET: a492056484d9fa90f72f49d97915e006e52ee588
-      GITHUB_APP_INSTALLATION_URL: https://staging-oc.amplication.com
-      GITHUB_APP_PRIVATE_KEY: -----BEGIN RSA PRIVATE KEY-----
-      MIIEpQIBAAKCAQEA6+hcKj5KpyGfrB0WvfZqCScG+/+K+4ZsxMbDHnb1CiS3spVs
-      OoWuuYy5YN0GAfse7dp/ScKZ4cGj4/Pxdv2r4yaUAycgyDDZjCo3m3G99HaaKYc2
-      bgJ8U9yE6DSTRTFdJKY0GGrl5Fp58NwxLMYxAhHpcPDS9UpM1NxsLBhJxT9n+let
-      +UccfA/ClcFo8+zAh332SUUQDEAFKtEQvT6c2OJpHsGMqP//zvmw05m46wPok97B
-      vMPifBtia6+WmX3dt5tFj45uOZZ+++llnZxtrdxZZ5sSDIIHLujdnWqJe/EbmjRw
-      BwHW/Po8MjuQrnQZf/MijcRtElIXu9ReMs7RjQIDAQABAoIBACqiP6XSxCMYTIcK
-      asXB9r/YscZxFGkIjjexxCmJThebMyevIXQiHMWjzQzYZPGOtLQ/vKlT5gOKv1e/
-      CnB6v8m5ex5mv+HuEiLmrk4FbFL17D59FTUkdduiCtL8TXE/zpmE//05tHpkb407
-      /hcdalX5brreiwGRf/koLNR7PznKNt+5oiOGttSy/Wi/na8q6DmnREBgiQS0NkX5
-      4Dz/800fuq2ruaQAkm5fUiJgIX1UVFejrb36ZL0hxJNFMg7pGzYMuywuUb6vM2as
-      bdSN4oNjkzy5zzNuP2iEw8XFeFlpXI1fuBrdl4q62Gt31G6GRp3mqdTVkE9RQSOq
-      cllDuAECgYEA/NrntAqpLOpO3KgA57zj/iqYgCPsQaLhfQF/N+lzTwbeiXdMlwG2
-      lLDVej2RfYhScoIplc4l7M4uTN0zmbIY7g1PIGxOvoz/92/DjtH+5rN7XE8CkUdQ
-      X69OzEOc0kGLj95fjdpUs5FPuaTSygNlvX2+OBppbesLMBhtauUP5oECgYEA7td+
-      dfklcyuFivs3lx1uGawwStanXaT/iZV5e6aSqv+DOr/1czIAveFS+cUaN88oY+nv
-      2KNPT7ESIzHDi7qgod815i1U/+KEVBCaocabYs+11TuWmj+WDmjF+1X4/CiizTWO
-      vBPTj0/yuF2BrYtwz0CZ51lYSrKy4U6YtM0jnQ0CgYEAtFYXzMORttQBnMRBqQWC
-      AeM1UqbMOF/HvFUV+7WHJMS8cIRiXoy9QD0CdCV3H3Xbf4mvyQT27XZ7dRyKUcLA
-      nv9lALXeT27WnA3dBn5k8vrtL3+2UBDxlNy+MVbDgP14YQpzUgN2R3+Kwdd48tUL
-      eeM1iGPl75wkJZA2cXefKIECgYEAjZwVLctn6e4vAqVKY32ejvgpteWpW/t9S0zl
-      t2ue4GYYn5e65u8Jw4s6UD8N+XMJBpxoibDiUGSzVUynHUys+uzGH1BXalQak2E4
-      3ZxM+vweWmw3MgNra+WxJQDnXFKXnEYZ9+dlcz46shc20PexDiDGX4X4tGlZZ/7a
-      ybArYm0CgYEAtkSuOjLzrcF/m+pwgxkCjaKT9Mr29nu4BPuu7Zz60a56bOod/azl
-      TThhayxjlTISnrcth8/bCNbTh2FHqIGyfzA9IHIocO2Mb41TkLynpf69oosX3gJS
-      NjzHD5O56wmoRXYEYPUaammvMYTdmxqS9htH+MOSmjRNSpCNF/UGkr0=
-      -----END RSA PRIVATE KEY-----
-
-      GCS_BUCKET: amplication-apps-state-bucket
-      CONTAINER_BUILDER_DEFAULT: cloud-build
-      DEPLOYER_DEFAULT: gcp
-      GCP_APPS_PROJECT_ID: amplication-apps
-      GCP_APPS_REGION: us-east1
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
-      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
-      GCP_APPS_DOMAIN: staging.amplication.app
-      POSTGRESQL_URL: postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432
       BCRYPT_SALT_OR_ROUNDS: "10"
+      CONTAINER_BUILDER_DEFAULT: docker
       CORS_ENABLE: "1"
+      DEFAULT_DISK: local
       DOCKER_HOST: tcp://docker:2375
-      GITHUB_REDIRECT_URI: https://staging.amplication.com/github/callback
+      GITHUB_APP_APP_ID: "189214"
+      GITHUB_APP_AUTH_SCOPE: user:email,repo,read:org
+      GITHUB_APP_CLIENT_ID: Iv1.7eb319d8e3c170d7
+      GITHUB_APP_INSTALLATION_URL: https://github.com/apps/amplication-aws/installations/new?state={state}
+      GITHUB_REDIRECT_URI: https://server.staging-os.amplication-dev.com/github/callback
+      GITHUB_SCOPE: user:email
       GITHUB_SECRET_SECRET_NAME: projects/948093699220/secrets/github-secret-amplication-aws/versions/1
       GOOGLE_APPLICATION_CREDENTIALS: /app/packages/amplication-server/amplication-production-8234651f2ee4.json
-      HOST: https://staging.amplication.com
+      HOST: https://server.staging-os.amplication-dev.com
       JWT_SECRET: jwt-secret
       LOCAL_DISK_ROOT: /artifacts
       NODE_ENV: production
       PORT: "3000"
+      GITHUB_CLIENT_ID: a4e9055e5f21448d6de7
       SERVICE_JWT_SECRET: service-jwt-secret
-      AMPLITUDE_API_KEY: aVqxCAcXOdCx5DPI41s6EmwsSCB8Kjz6
-      DEFAULT_DISK: gcp
