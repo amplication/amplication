@@ -86,6 +86,11 @@ jobs:
           cat app.yaml
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
+      - name: install argocd
+        id: install-argocd
+        run: |
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
       - name: deploy app
         id: deploy-app
         run: |
