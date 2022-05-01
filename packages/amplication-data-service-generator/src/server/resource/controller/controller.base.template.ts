@@ -202,7 +202,6 @@ export class CONTROLLER_BASE {
     }
   }
 
-  
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "delete",

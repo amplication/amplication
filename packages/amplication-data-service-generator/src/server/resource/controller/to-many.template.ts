@@ -124,7 +124,6 @@ export class Mixin {
     });
   }
 
-
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",

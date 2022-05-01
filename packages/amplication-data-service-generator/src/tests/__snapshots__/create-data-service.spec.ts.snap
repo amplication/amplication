@@ -5086,8 +5086,6 @@ export class CustomerControllerBase {
     protected readonly service: CustomerService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
-
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"create\\",
@@ -5165,7 +5163,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -5221,7 +5218,6 @@ export class CustomerControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -5280,7 +5276,6 @@ export class CustomerControllerBase {
     return permission.filter(result);
   }
 
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
@@ -5371,7 +5366,6 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"delete\\",
@@ -5426,7 +5420,6 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.Get(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -5471,7 +5464,6 @@ export class CustomerControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Post(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
@@ -5512,7 +5504,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.Patch(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
@@ -5553,7 +5544,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.Delete(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
@@ -6703,8 +6693,6 @@ export class EmptyControllerBase {
     protected readonly service: EmptyService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
-
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"create\\",
@@ -6745,7 +6733,6 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"read\\",
@@ -6778,7 +6765,6 @@ export class EmptyControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"read\\",
@@ -6814,7 +6800,6 @@ export class EmptyControllerBase {
     return permission.filter(result);
   }
 
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"update\\",
@@ -6868,7 +6853,6 @@ export class EmptyControllerBase {
     }
   }
 
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"delete\\",
@@ -8106,8 +8090,6 @@ export class OrderControllerBase {
     protected readonly service: OrderService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
-
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"create\\",
@@ -8163,7 +8145,6 @@ export class OrderControllerBase {
     });
   }
 
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
@@ -8205,7 +8186,6 @@ export class OrderControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
@@ -8250,7 +8230,6 @@ export class OrderControllerBase {
     return permission.filter(result);
   }
 
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"update\\",
@@ -8319,7 +8298,6 @@ export class OrderControllerBase {
     }
   }
 
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"delete\\",
@@ -9691,8 +9669,6 @@ export class OrganizationControllerBase {
     protected readonly service: OrganizationService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
-
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"create\\",
@@ -9734,7 +9710,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -9768,7 +9743,6 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -9805,7 +9779,6 @@ export class OrganizationControllerBase {
     return permission.filter(result);
   }
 
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -9860,7 +9833,6 @@ export class OrganizationControllerBase {
     }
   }
 
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"delete\\",
@@ -9893,7 +9865,6 @@ export class OrganizationControllerBase {
     }
   }
 
-  @common.Get(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -9947,7 +9918,6 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Post(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -9988,7 +9958,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.Patch(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10029,7 +9998,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.Delete(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10070,7 +10038,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.Get(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -10129,7 +10096,6 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Post(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10170,7 +10136,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.Patch(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10211,7 +10176,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.Delete(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10252,7 +10216,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.Get(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -10311,7 +10274,6 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Post(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10352,7 +10314,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.Patch(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -10393,7 +10354,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.Delete(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -12808,8 +12768,6 @@ export class UserControllerBase {
     protected readonly service: UserService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
-
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"create\\",
@@ -12876,7 +12834,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -12927,7 +12884,6 @@ export class UserControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -12981,7 +12937,6 @@ export class UserControllerBase {
     return permission.filter(result);
   }
 
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13061,7 +13016,6 @@ export class UserControllerBase {
     }
   }
 
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"delete\\",
@@ -13111,7 +13065,6 @@ export class UserControllerBase {
     }
   }
 
-  @common.Get(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -13165,7 +13118,6 @@ export class UserControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Post(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13206,7 +13158,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.Patch(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13247,7 +13198,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.Delete(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13288,7 +13238,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.Get(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -13325,7 +13274,6 @@ export class UserControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.Post(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13366,7 +13314,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.Patch(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -13407,7 +13354,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.Delete(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
