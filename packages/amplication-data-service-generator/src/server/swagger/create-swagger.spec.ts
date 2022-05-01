@@ -13,6 +13,12 @@ const EXAMPLE_APP_INFO: AppInfo = {
   description: EXAMPLE_DESCRIPTION,
   id: "EXAMPLE_ID",
   url: "EXAMPLE_URL",
+  generationSettings: {
+    generateAdminUI: true,
+    generateGraphQL: true,
+    generateRestApi: true,
+    generateRootFiles: true,
+  },
   settings: {
     dbHost: "localhost",
     dbName: "",
