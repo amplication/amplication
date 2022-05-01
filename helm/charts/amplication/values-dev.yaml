@@ -1,20 +1,10 @@
 amplication-server:
   config:
     env:
-      BCRYPT_SALT_OR_ROUNDS: "10"
-      CONTAINER_BUILDER_DEFAULT: docker
-      CORS_ENABLE: "1"
-      DEFAULT_DISK: local
-      DOCKER_HOST: tcp://docker:2375
       GITHUB_APP_APP_ID: "189214"
-      GITHUB_APP_AUTH_SCOPE: user:email,repo,read:org
       GITHUB_APP_CLIENT_ID: Iv1.7eb319d8e3c170d7
       GITHUB_APP_INSTALLATION_URL: https://github.com/apps/amplication-aws/installations/new?state={state}
       GITHUB_REDIRECT_URI: https://server.amplication-dev.com/github/callback
-      GITHUB_SCOPE: user:email
       GITHUB_SECRET_SECRET_NAME: projects/948093699220/secrets/github-secret-amplication-aws/versions/1
       HOST: https://server.amplication-dev.com
-      LOCAL_DISK_ROOT: /artifacts
-      NODE_ENV: production
-      PORT: "3000"
       GITHUB_CLIENT_ID: a4e9055e5f21448d6de7
