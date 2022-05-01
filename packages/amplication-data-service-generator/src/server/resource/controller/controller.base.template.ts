@@ -73,8 +73,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async CREATE_ENTITY_FUNCTION(
-    @common.Body() data: CREATE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() data: CREATE_INPUT
   ): Promise<ENTITY> {
     return await this.service.create({
       data: CREATE_DATA_MAPPING,
@@ -93,8 +92,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(FIND_MANY_ARGS)
   async FIND_MANY_ENTITY_FUNCTION(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Req() request: Request
   ): Promise<ENTITY[]> {
     const args = plainToClass(FIND_MANY_ARGS, request.query);
     return this.service.findMany({
@@ -114,8 +112,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async FIND_ONE_ENTITY_FUNCTION(
-    @common.Param() params: WHERE_UNIQUE_INPUT,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     const result = await this.service.findOne({
       where: params,

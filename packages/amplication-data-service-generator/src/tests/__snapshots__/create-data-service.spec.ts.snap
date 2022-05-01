@@ -5098,10 +5098,7 @@ export class CustomerControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(
-    @common.Body() data: CustomerCreateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Customer> {
+  async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
     return await this.service.create({
       data: {
         ...data,
@@ -5159,10 +5156,7 @@ export class CustomerControllerBase {
   @swagger.ApiOkResponse({ type: [Customer] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Customer[]> {
+  async findMany(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -5208,8 +5202,7 @@ export class CustomerControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: CustomerWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     const result = await this.service.findOne({
       where: params,
@@ -6530,10 +6523,7 @@ export class EmptyControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(
-    @common.Body() data: EmptyCreateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Empty> {
+  async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
     return await this.service.create({
       data: data,
       select: {
@@ -6554,10 +6544,7 @@ export class EmptyControllerBase {
   @swagger.ApiOkResponse({ type: [Empty] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EmptyFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Empty[]> {
+  async findMany(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -6580,8 +6567,7 @@ export class EmptyControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: EmptyWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     const result = await this.service.findOne({
       where: params,
@@ -7966,10 +7952,7 @@ export class OrderControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(
-    @common.Body() data: OrderCreateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Order> {
+  async create(@common.Body() data: OrderCreateInput): Promise<Order> {
     return await this.service.create({
       data: {
         ...data,
@@ -8005,10 +7988,7 @@ export class OrderControllerBase {
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrderFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Order[]> {
+  async findMany(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -8040,8 +8020,7 @@ export class OrderControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: OrderWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     const result = await this.service.findOne({
       where: params,
@@ -9437,8 +9416,7 @@ export class OrganizationControllerBase {
   @swagger.ApiCreatedResponse({ type: Organization })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
-    @common.Body() data: OrganizationCreateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
     return await this.service.create({
       data: data,
@@ -9461,10 +9439,7 @@ export class OrganizationControllerBase {
   @swagger.ApiOkResponse({ type: [Organization] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrganizationFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Organization[]> {
+  async findMany(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -9488,8 +9463,7 @@ export class OrganizationControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     const result = await this.service.findOne({
       where: params,
@@ -12240,10 +12214,7 @@ export class UserControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(
-    @common.Body() data: UserCreateInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<User> {
+  async create(@common.Body() data: UserCreateInput): Promise<User> {
     return await this.service.create({
       data: {
         ...data,
@@ -12290,10 +12261,7 @@ export class UserControllerBase {
   @swagger.ApiOkResponse({ type: [User] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(UserFindManyArgs)
-  async findMany(
-    @common.Req() request: Request,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<User[]> {
+  async findMany(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -12334,8 +12302,7 @@ export class UserControllerBase {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @common.Param() params: UserWhereUniqueInput,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     const result = await this.service.findOne({
       where: params,
