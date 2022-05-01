@@ -1,6 +1,5 @@
 import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
-import * as nestMorgan from "nest-morgan";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
@@ -60,7 +59,6 @@ export class CONTROLLER_BASE {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -97,7 +95,6 @@ export class CONTROLLER_BASE {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -126,7 +123,6 @@ export class CONTROLLER_BASE {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.Get(FINE_ONE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -158,7 +154,6 @@ export class CONTROLLER_BASE {
     return permission.filter(result);
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -208,7 +203,6 @@ export class CONTROLLER_BASE {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,

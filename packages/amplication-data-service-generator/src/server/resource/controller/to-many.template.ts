@@ -1,6 +1,4 @@
 import * as common from "@nestjs/common";
-import * as swagger from "@nestjs/swagger";
-import * as nestMorgan from "nest-morgan";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as defaultAuthGuard from "../auth/defaultAuth.guard";
@@ -57,7 +55,6 @@ export class Mixin {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.Get(FIND_MANY_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -89,7 +86,6 @@ export class Mixin {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.Post(CREATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -128,7 +124,6 @@ export class Mixin {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -167,7 +162,6 @@ export class Mixin {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
