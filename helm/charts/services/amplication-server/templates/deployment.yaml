@@ -20,12 +20,6 @@ spec:
               name: '{{ .Values.name }}'
           {{- end }}
           env: 
-            - name: GCP
-              valueFrom:
-                secretKeyRef:
-                  name: amplication-server
-                  key: GCP
-                  optional: false
             - name: GITHUB_APP_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
