@@ -69,7 +69,7 @@ export class CONTROLLER_BASE {
   })
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(
+  async CREATE_ENTITY_FUNCTION(
     @common.Body() data: CREATE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
@@ -107,7 +107,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiOkResponse({ type: [ENTITY] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(FIND_MANY_ARGS)
-  async findMany(
+  async FIND_MANY_ENTITY_FUNCTION(
     @common.Req() request: Request,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
@@ -136,7 +136,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async findOne(
+  async FIND_ONE_ENTITY_FUNCTION(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
@@ -168,7 +168,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async update(
+  async UPDATE_ENTITY_FUNCTION(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body()
     data: UPDATE_INPUT,
@@ -218,7 +218,7 @@ export class CONTROLLER_BASE {
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async delete(
+  async DELETE_ENTITY_FUNCTION(
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     try {
