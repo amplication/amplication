@@ -9,7 +9,7 @@ touch $OUTPUT_PATH
 for dir in /$HELM_SERVICES_FOLDER/*/
 do
     echo "cleaning up $dir"
-    SERVICE_NAME="${${dir%*/}##*/}"
+    SERVICE_NAME="$(basename $dir)"
     REPO_NAME="$SERVICE_NAME-$TARGET_ENV"
     echo "SERVICE_NAME: $SERVICE_NAME"
     tag_list=$(aws ecr describe-images --repository-name $REPO_NAME --image-ids imageTag=$IMAGE_TAG_ANCHOR --region us-east-1 2>&1 | jq -r '.imageDetails[0].imageTags' | jq -r '.[]')
