@@ -3,3 +3,6 @@ amplication-server:
     env:
       GITHUB_APP_AUTH_SCOPE: user:email,repo,read:org
       GITHUB_SCOPE: user:email
+      GOOGLE_APPLICATION_CREDENTIALS: /var/gcp-secret
+      JWT_SECRET: jwt-secret
+      SERVICE_JWT_SECRET: service-jwt-secret

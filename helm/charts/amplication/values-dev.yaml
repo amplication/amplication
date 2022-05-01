@@ -13,11 +13,8 @@ amplication-server:
       GITHUB_REDIRECT_URI: https://server.amplication-dev.com/github/callback
       GITHUB_SCOPE: user:email
       GITHUB_SECRET_SECRET_NAME: projects/948093699220/secrets/github-secret-amplication-aws/versions/1
-      GOOGLE_APPLICATION_CREDENTIALS: /app/packages/amplication-server/amplication-production-8234651f2ee4.json
       HOST: https://server.amplication-dev.com
-      JWT_SECRET: jwt-secret
       LOCAL_DISK_ROOT: /artifacts
       NODE_ENV: production
       PORT: "3000"
       GITHUB_CLIENT_ID: a4e9055e5f21448d6de7
-      SERVICE_JWT_SECRET: service-jwt-secret
