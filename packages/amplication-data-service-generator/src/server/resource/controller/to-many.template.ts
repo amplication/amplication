@@ -52,10 +52,7 @@ declare const UPDATE_PATH: string;
 declare const SELECT: Select;
 
 export class Mixin {
-  constructor(
-    private readonly service: SERVICE,
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(private readonly service: SERVICE) {}
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
   @nestAccessControl.UseRoles({
