@@ -55,10 +55,6 @@ export class Mixin {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(FIND_MANY_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -90,10 +86,6 @@ export class Mixin {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post(CREATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -132,10 +124,6 @@ export class Mixin {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -174,10 +162,6 @@ export class Mixin {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,

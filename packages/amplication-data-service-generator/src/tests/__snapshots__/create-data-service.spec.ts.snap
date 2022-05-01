@@ -5080,16 +5080,13 @@ import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class CustomerControllerBase {
   constructor(
     protected readonly service: CustomerService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5167,10 +5164,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5226,10 +5219,6 @@ export class CustomerControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5288,10 +5277,6 @@ export class CustomerControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5382,10 +5367,6 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5440,10 +5421,6 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5488,10 +5465,6 @@ export class CustomerControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5532,10 +5505,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -5576,10 +5545,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
@@ -6712,16 +6677,13 @@ import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class EmptyControllerBase {
   constructor(
     protected readonly service: EmptyService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -6762,10 +6724,6 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -6798,10 +6756,6 @@ export class EmptyControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -6837,10 +6791,6 @@ export class EmptyControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -6894,10 +6844,6 @@ export class EmptyControllerBase {
     }
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
@@ -8117,16 +8063,13 @@ import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class OrderControllerBase {
   constructor(
     protected readonly service: OrderService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -8182,10 +8125,6 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -8227,10 +8166,6 @@ export class OrderControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -8275,10 +8210,6 @@ export class OrderControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -8347,10 +8278,6 @@ export class OrderControllerBase {
     }
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
@@ -9716,16 +9643,13 @@ import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs
 import { Customer } from \\"../../customer/base/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class OrganizationControllerBase {
   constructor(
     protected readonly service: OrganizationService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -9767,10 +9691,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -9804,10 +9724,6 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -9844,10 +9760,6 @@ export class OrganizationControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -9902,10 +9814,6 @@ export class OrganizationControllerBase {
     }
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -9938,10 +9846,6 @@ export class OrganizationControllerBase {
     }
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -9995,10 +9899,6 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10039,10 +9939,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10083,10 +9979,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10127,10 +10019,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10189,10 +10077,6 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10233,10 +10117,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10277,10 +10157,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10321,10 +10197,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10383,10 +10255,6 @@ export class OrganizationControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10427,10 +10295,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -10471,10 +10335,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
@@ -12883,16 +12743,13 @@ import { OrganizationFindManyArgs } from \\"../../organization/base/Organization
 import { Organization } from \\"../../organization/base/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class UserControllerBase {
   constructor(
     protected readonly service: UserService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -12959,10 +12816,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13013,10 +12866,6 @@ export class UserControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13070,10 +12919,6 @@ export class UserControllerBase {
     return permission.filter(result);
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13153,10 +12998,6 @@ export class UserControllerBase {
     }
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13206,10 +13047,6 @@ export class UserControllerBase {
     }
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13263,10 +13100,6 @@ export class UserControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13307,10 +13140,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13351,10 +13180,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13395,10 +13220,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13435,10 +13256,6 @@ export class UserControllerBase {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13479,10 +13296,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
@@ -13523,10 +13336,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",

@@ -52,16 +52,13 @@ declare const SELECT: Select;
 
 //@ts-ignore
 @swagger.SWAGGER_API_AUTH_FUNCTION()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class CONTROLLER_BASE {
   constructor(
     protected readonly service: SERVICE,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Post()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -98,10 +95,6 @@ export class CONTROLLER_BASE {
     });
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -130,10 +123,6 @@ export class CONTROLLER_BASE {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Get(FINE_ONE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -165,10 +154,6 @@ export class CONTROLLER_BASE {
     return permission.filter(result);
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -218,10 +203,6 @@ export class CONTROLLER_BASE {
     }
   }
 
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
   @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
