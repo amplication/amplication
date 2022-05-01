@@ -6,7 +6,7 @@ deployment:
     name: amplication-server-artifacts-data
     path: /artifacts
   autoscaling:
-    enabled: false
+    enabled: enabled
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
