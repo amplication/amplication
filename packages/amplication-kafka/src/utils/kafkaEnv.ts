@@ -9,19 +9,19 @@ export class KafkaEnvironmentVariables {
     }
   }
   getBrokers() {
-    return EnvironmentVariables.getJson(
+    return EnvironmentVariables.instance.getJson(
       `${KAFKA_BROKERS}${this.envSuffix}`,
       true
     );
   }
   getGroupId() {
-    return EnvironmentVariables.get(
+    return EnvironmentVariables.instance.get(
       `${KAFKA_GROUP_ID}${this.envSuffix}`,
       false
     );
   }
   getClientId() {
-    return EnvironmentVariables.get(
+    return EnvironmentVariables.instance.get(
       `${KAFKA_CLIENT_ID}${this.envSuffix}`,
       true
     );

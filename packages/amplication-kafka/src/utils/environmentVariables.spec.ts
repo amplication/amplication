@@ -21,12 +21,12 @@ describe("Testing the environmental variables class ", () => {
 
   it("should return a string", () => {
     process.env[STRING_ENV_KEY] = STATIC_STRING;
-    const value = EnvironmentVariables.get(STRING_ENV_KEY, true);
+    const value = EnvironmentVariables.instance.get(STRING_ENV_KEY, true);
     expect(value).toBe(STATIC_STRING);
   });
   it("should return an array", () => {
     process.env[ARRAY_ENV_KEY] = `["localhost:9092","localhost:3000"]`;
-    const array = EnvironmentVariables.getJson(ARRAY_ENV_KEY, true);
+    const array = EnvironmentVariables.instance.getJson(ARRAY_ENV_KEY, true);
     expect(Array.isArray(array)).toBe(true);
     expect(array.find((data) => data === "localhost:9092")).toBeTruthy();
     expect(array.find((data) => data === "localhost:3000")).toBeTruthy();
@@ -35,7 +35,7 @@ describe("Testing the environmental variables class ", () => {
   describe("Testing the strict mode and errors", () => {
     it("should throw an error for an string that missing", () => {
       try {
-        EnvironmentVariables.get(EMPTY_ENV_KEY, true);
+        EnvironmentVariables.instance.get(EMPTY_ENV_KEY, true);
       } catch (error) {
         expect(error instanceof AssertionError).toBeTruthy();
       }
@@ -43,7 +43,7 @@ describe("Testing the environmental variables class ", () => {
     it("should throw an error if the value is not json parsed", () => {
       process.env[ARRAY_ENV_KEY] = `[localhost:9092,localhost:3000]`;
       try {
-        EnvironmentVariables.getJson(ARRAY_ENV_KEY, true);
+        EnvironmentVariables.instance.getJson(ARRAY_ENV_KEY, true);
       } catch (error) {
         expect(error instanceof SyntaxError).toBeTruthy();
       }
