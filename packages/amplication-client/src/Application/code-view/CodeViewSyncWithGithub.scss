@@ -1,0 +1,22 @@
+@import "../../style/index.scss";
+.code-view-sync-with-github {
+  position: static;
+  width: 268px;
+  height: 36px;
+  left: 0px;
+  top: 8px;
+
+  /* Main Font/Tag - 12px Regular */
+
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+
+  /* Product Colors/Warning Default */
+
+  color: #f7aa50;
+}

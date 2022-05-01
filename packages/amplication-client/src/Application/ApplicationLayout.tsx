@@ -10,7 +10,7 @@ import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
 import PendingChangesPage from "../VersionControl/PendingChangesPage";
-import { AsidePanel } from "../util/teleporter";
+import { AsidePanel, FilesPanel } from "../util/teleporter";
 
 import "./ApplicationLayout.scss";
 import * as models from "../models";
@@ -28,6 +28,7 @@ import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import Commits from "../VersionControl/Commits";
 import NavigationTabs from "../Layout/NavigationTabs";
 import SyncWithGithubPage from "./git/SyncWithGithubPage";
+import CodeViewPage from "./code-view/CodeViewPage";
 
 export type ApplicationData = {
   app: models.App;
@@ -196,7 +197,15 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}/github`}
             icon="github"
           />
+          <MenuItem
+            title="Code View"
+            to={`/${application}/code-view`}
+            icon="code1"
+          />
         </MainLayout.Menu>
+        <MainLayout.Aside>
+          <FilesPanel.Target className="main-layout__aside__expandable" />
+        </MainLayout.Aside>
         <MainLayout.Content>
           <div className={`${CLASS_NAME}__app-container`}>
             <NavigationTabs defaultTabUrl={`/${application}/`} />
@@ -226,6 +235,10 @@ function ApplicationLayout({ match }: Props) {
               <RouteWithAnalytics
                 path="/:application/github"
                 component={SyncWithGithubPage}
+              />
+              <RouteWithAnalytics
+                path="/:application/code-view"
+                component={CodeViewPage}
               />
               <Route path="/:application/" component={ApplicationHome} />
             </Switch>
