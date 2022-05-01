@@ -1,6 +1,6 @@
 {
   "name": "@amplication/deployer",
-  "version": "0.12.4",
+  "version": "0.12.6",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
