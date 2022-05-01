@@ -6,3 +6,5 @@ amplication-server:
       GOOGLE_APPLICATION_CREDENTIALS: /var/gcp-secret
       JWT_SECRET: jwt-secret
       SERVICE_JWT_SECRET: service-jwt-secret
+  postgres:
+    install: true

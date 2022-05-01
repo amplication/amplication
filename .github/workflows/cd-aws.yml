@@ -103,10 +103,22 @@ jobs:
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
           $COMMAND
-          COMMAND="argocd app set $APP_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS"
+          SECRETS="-p amplication-server.secrets.GCP=${{ secrets[format('AWS_{0}_GCP', env.TARGET_ENV)] }}"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=${{ secrets[format('AWS_{0}_APP_CLIENT_SECRET', env.TARGET_ENV)] }}"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=${{ secrets[format('AWS_{0}_APP_PRIVATE_KEY', env.TARGET_ENV)] }}"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=${{ secrets[format('AWS_{0}_GITHUB_CLIENT_SECRET', env.TARGET_ENV)] }}"
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=${{ secrets[format('AWS_{0}_POSTGRESQL_PASSWORD', env.TARGET_ENV)] }}"
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=${{ secrets[format('AWS_{0}_POSTGRESQL_URL', env.TARGET_ENV)] }}"
+          COMMAND="argocd app set $APP_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS"
           echo "$COMMAND"
           $COMMAND
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
           ARGO_CD_PASSWORD: ${{ secrets.ARGO_CD_PASSWORD }}
+          GCP: ${{ secrets.AWS_DEV_GCP }}
+          GITHUB_APP_CLIENT_SECRET: ${{ secrets.AWS_DEV_GITHUB_APP_CLIENT_SECRET }}
+          GITHUB_APP_PRIVATE_KEY: ${{ secrets.AWS_DEV_GITHUB_APP_PRIVATE_KEY }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.AWS_DEV_GITHUB_CLIENT_SECRET }}
+          POSTGRESQL_PASSWORD: ${{ secrets.AWS_DEV_POSTGRESQL_PASSWORD }}
+          POSTGRESQL_URL: ${{ secrets.AWS_DEV_POSTGRESQL_URL }}
       
