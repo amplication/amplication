@@ -117,6 +117,9 @@ jobs:
           COMMAND="argocd app set $APP_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS"
           echo "$COMMAND"
           $COMMAND
+          COMMAND="argocd app sync $APP_NAME"
+          echo "$COMMAND"
+          $COMMAND
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
           ARGO_CD_PASSWORD: ${{ secrets.ARGO_CD_PASSWORD }}
