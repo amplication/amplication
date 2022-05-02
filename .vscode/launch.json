@@ -44,6 +44,16 @@
       "console": "internalConsole"
     },
     {
+      "name": "Debug Generate Test Data Service",
+      "request": "launch",
+      "runtimeArgs": ["run-script", "generate-test-data-service", "--", "--debug"],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "pwa-node",
+      "cwd": "${workspaceFolder}/packages/amplication-data-service-generator",
+      "console": "internalConsole"
+    },
+    {
       "name": "Debug Test Data Service",
       "request": "launch",
       "runtimeArgs": ["run-script", "start", "--", "--debug"],

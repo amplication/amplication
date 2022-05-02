@@ -39,25 +39,20 @@ export async function createDefaultGuard(
   removeTSClassDeclares(templateGuardFile);
   return { path: modulePath, code: print(templateGuardFile).code };
 }
+
 function getMetaDataForAuthGuard(
-  setAuthGuard: EnumAuthProviderType
+  authGuard: string
 ): AuthGuardMetaData {
-  const data: AuthGuardMetaData = { fileName: "", path: "", className: "" };
-  switch (setAuthGuard) {
-    case EnumAuthProviderType.Http:
-      data.fileName = "basicAuth";
-      data.className = "BasicAuthGuard";
-      data.path = `${AUTH_PATH}/basic/${data.fileName}.guard.ts`;
-      break;
-    case EnumAuthProviderType.Jwt:
-      data.fileName = "jwtAuth";
-      data.className = "JwtAuthGuard";
-      data.path = `${AUTH_PATH}/jwt/${data.fileName}.guard.ts`;
-      break;
-    default:
-      throw new Error(
-        `Not found any meta data for auth guard - ${setAuthGuard}`
-      );
-  }
+  const lowCaseAG = authGuard.toLowerCase()
+  const fileName = lowCaseAG + "Auth";
+  const data: AuthGuardMetaData = {
+    fileName, 
+    path: `${AUTH_PATH}/${lowCaseAG}/${fileName}.guard.ts`, 
+    className: capitalizeFirstLetter(lowCaseAG) + "AuthGuard"
+  };
   return data;
+}
+
+function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

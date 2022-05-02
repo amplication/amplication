@@ -13,7 +13,7 @@ const appInfo: AppInfo = {
     dbPort: 5433,
     dbPassword: "1234",
     dbUser: "testUsername",
-    authProvider: EnumAuthProviderType.Http,
+    authProvider: EnumAuthProviderType.Basic,
   },
 };
 

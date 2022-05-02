@@ -11,9 +11,9 @@ import { UserModule } from "../user/user.module";
 import { AuthController } from "./auth.controller";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
-import { BasicStrategy } from "./basic/basic.strategy";
-import { JwtStrategy } from "./jwt/jwt.strategy";
-import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
+// import { BasicStrategy } from "./basic/basic.strategy";
+// import { JwtStrategy } from "./jwt/jwt.strategy";
+// import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
 import { PasswordService } from "./password.service";
 //@ts-ignore
 import { TokenService } from "./token.service";
@@ -47,11 +47,11 @@ import { TokenService } from "./token.service";
   ],
   providers: [
     AuthService,
-    BasicStrategy,
+    // BasicStrategy,
     PasswordService,
     AuthResolver,
-    JwtStrategy,
-    jwtSecretFactory,
+    // JwtStrategy,
+    // jwtSecretFactory,
     TokenService,
   ],
   controllers: [AuthController],

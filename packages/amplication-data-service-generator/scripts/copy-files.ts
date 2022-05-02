@@ -26,6 +26,7 @@ const GLOB_SOURCES: string[] = [
   `${SERVER_SRC_DIRECTORY_GLOB}/static/**`,
   `${ADMIN_SRC_DIRECTORY_GLOB}/**/*.template.(ts|tsx|html|env)`,
   `${ADMIN_SRC_DIRECTORY_GLOB}/static/**`,
+  // `/home/eugene/development/amplication/plugins/**`
 ];
 
 if (require.main === module) {

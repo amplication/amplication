@@ -15,6 +15,8 @@ import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
 import { BASE_DIRECTORY, SRC_DIRECTORY } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
+import fse from "fs-extra";
+
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -45,6 +47,9 @@ export async function createServerModules(
     dtos,
     logger
   );
+
+  logger.info("Running Auth plugin...");
+  fse.copySync(`/home/eugene/development/amplication/plugins`, `/home/eugene/development/amplication/packages/amplication-data-service-generator/dist/server/static/src/auth`); 
 
   logger.info("Creating Auth module...");
   const authModules = await createAuthModules(SRC_DIRECTORY, appInfo);

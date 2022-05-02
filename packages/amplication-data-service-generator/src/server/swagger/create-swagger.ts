@@ -27,7 +27,7 @@ export async function createSwagger(appInfo: AppInfo): Promise<Module> {
     DESCRIPTION: builders.stringLiteral(description),
     VERSION: builders.stringLiteral(appInfo.version),
     AUTH_FUNCTION: builders.identifier(
-      authProvider === EnumAuthProviderType.Http
+      authProvider === EnumAuthProviderType.Basic
         ? "addBasicAuth"
         : "addBearerAuth"
     ),
@@ -52,7 +52,7 @@ function getInstructionsAuthentication(
   authProvider: EnumAuthProviderType
 ): string {
   switch (authProvider) {
-    case EnumAuthProviderType.Http:
+    case EnumAuthProviderType.Basic:
       return "HTTP Basic";
     case EnumAuthProviderType.Jwt:
       return "JWT Bearer";
@@ -73,7 +73,7 @@ export function getSwaggerAuthDecorationIdForClass(
   authProvider: EnumAuthProviderType
 ): namedTypes.Identifier {
   switch (authProvider) {
-    case EnumAuthProviderType.Http:
+    case EnumAuthProviderType.Basic:
       return builders.identifier("ApiBasicAuth");
     case EnumAuthProviderType.Jwt:
       return builders.identifier("ApiBearerAuth");

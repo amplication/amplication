@@ -1,7 +1,7 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum EnumAuthProviderType {
-  Http = 'Http',
+  Basic = 'Basic',
   Jwt = 'Jwt'
 }
 

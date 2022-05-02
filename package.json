@@ -22,6 +22,7 @@
     "setup:dev": "ts-node ./script/setup.ts"
   },
   "dependencies": {
+    "fs-extra": "^10.1.0",
     "lerna": "4.0.0",
     "semver": "7.3.5",
     "winston": "3.3.4"
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "2.3.0",
     "@graphql-codegen/typescript": "2.4.1",
+    "@types/fs-extra": "^9.0.13",
     "@types/jest": "27.0.2",
     "@types/semver": "7.3.9",
     "graphql": "15.3.0",
