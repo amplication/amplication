@@ -110,12 +110,11 @@ jobs:
       - name: create app yaml
         id: create-app-yaml
         run: |
-          cp $GITHUB_WORKSPACE/.github/workflows/argocd/app.yaml app.yaml
-          sed -i "s|APP_NAME_PLACE_HOLER|$APP_NAME|g" app.yaml
-          sed -i "s|REPO_URL_PLACE_HOLER|$REPO_URL|g" app.yaml
-          sed -i "s|BRANCH_NAME_PLACE_HOLER|$GITHUB_REF_NAME|g" app.yaml
-          sed -i "s|NAMESPACE_PLACE_HOLER|$NAMESPACE|g" app.yaml
-          cat app.yaml
+          cp $GITHUB_WORKSPACE/.github/workflows/argocd/namespace.yaml namespace.yaml
+          sed -i "s|NAMESPACE_PLACEHOLDER|$NAMESPACE|g" namespace.yaml
+          cat namespace.yaml
+          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+          kubectl apply -f namespace.yaml
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
       - name: install argocd
@@ -126,7 +125,7 @@ jobs:
       - name: deploy app
         id: deploy-app
         run: |
-          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+          
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
           ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
@@ -147,9 +146,6 @@ jobs:
           #kubectl apply -f app.yaml
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
           echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
-          COMMAND="kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -"
-          echo "$COMMAND"
-          $COMMAND
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
           $COMMAND
