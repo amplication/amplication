@@ -56,6 +56,11 @@ export async function createControllerModules(
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
   const serviceId = createServiceId(entityType);
+  const createEntityId = builders.identifier("create");
+  const findManyEntityId = builders.identifier("findMany");
+  const findOneEntityId = builders.identifier("findOne");
+  const updateEntityId = builders.identifier("update");
+  const deleteEntityId = builders.identifier("delete");
 
   const mapping = {
     RESOURCE: builders.stringLiteral(resource),
@@ -80,6 +85,11 @@ export async function createControllerModules(
     ),
     FIND_MANY_ARGS: entityDTOs.findManyArgs.id,
     WHERE_INPUT: entityDTOs.whereInput.id,
+    CREATE_ENTITY_FUNCTION: createEntityId,
+    FIND_MANY_ENTITY_FUNCTION: findManyEntityId,
+    FIND_ONE_ENTITY_FUNCTION: findOneEntityId,
+    UPDATE_ENTITY_FUNCTION: updateEntityId,
+    DELETE_ENTITY_FUNCTION: deleteEntityId,
     /** @todo make dynamic */
     FINE_ONE_PATH: builders.stringLiteral("/:id"),
     UPDATE_PATH: builders.stringLiteral("/:id"),

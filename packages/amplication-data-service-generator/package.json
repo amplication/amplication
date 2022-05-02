@@ -50,7 +50,7 @@
     "@nestjs/core": "7.6.18",
     "@nestjs/graphql": "7.11.0",
     "@nestjs/jwt": "8.0.0",
-    "@nestjs/passport": "7.1.6",
+    "@nestjs/passport": "8.2.1",
     "@nestjs/platform-express": "7.6.18",
     "@nestjs/serve-static": "2.2.2",
     "@nestjs/swagger": "4.8.2",
