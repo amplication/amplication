@@ -127,8 +127,8 @@ jobs:
         id: deploy-app
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-          COMMONM_VALUES_FILE="$GITHUB_WORKSPACE/helm/charts/amplication/values-common.yaml"
-          ENV_VALUES_FILE="$GITHUB_WORKSPACE/helm/charts/amplication/values-$TARGET_ENV.yaml"
+          COMMONM_VALUES_FILE="values-common.yaml"
+          ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
           ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
           if [ "$GITHUB_REPOSITORY" = "amplication-hosted" ]; then
             ARGO_CD_URL="argocd.$TARGET_ENV.amplication.com"
