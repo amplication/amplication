@@ -180,7 +180,6 @@ jobs:
           COMMAND="argocd app sync $APP_NAME"
           echo "$COMMAND"
           $COMMAND
-          AWS_STAGING-_POSTGRESQL_URL
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
           ARGO_CD_PASSWORD: ${{ secrets.ARGO_CD_PASSWORD }}
