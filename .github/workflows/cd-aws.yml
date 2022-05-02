@@ -105,22 +105,25 @@ jobs:
           fi
           
           kubectl apply -f app.yaml
-
+          TARGET_ENV_SECRET=${TARGET_ENV^^}
+          export TARGET_ENV_SECRET=${-/_/"$TARGET_ENV_SECRET"}
+          echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
           $COMMAND
-          SECRETS="-p amplication-server.secrets.GCP=${{ secrets[format('AWS_{0}_GCP', env.TARGET_ENV)] }}"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=${{ secrets[format('AWS_{0}_APP_CLIENT_SECRET', env.TARGET_ENV)] }}"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=${{ secrets[format('AWS_{0}_APP_PRIVATE_KEY', env.TARGET_ENV)] }}"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=${{ secrets[format('AWS_{0}_GITHUB_CLIENT_SECRET', env.TARGET_ENV)] }}"
-          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=${{ secrets[format('AWS_{0}_POSTGRESQL_PASSWORD', env.TARGET_ENV)] }}"
-          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=${{ secrets[format('AWS_{0}_POSTGRESQL_URL', env.TARGET_ENV)] }}"
+          SECRETS="-p amplication-server.secrets.GCP=${{ secrets[format('AWS_{0}_GCP', env.TARGET_ENV_SECRET)] }}"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=${{ secrets[format('AWS_{0}_GITHUB_APP_CLIENT_SECRET', env.TARGET_ENV_SECRET)] }}"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=${{ secrets[format('AWS_{0}_GITHUB_APP_PRIVATE_KEY', env.TARGET_ENV_SECRET)] }}"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=${{ secrets[format('AWS_{0}_GITHUB_CLIENT_SECRET', env.TARGET_ENV_SECRET)] }}"
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=${{ secrets[format('AWS_{0}_POSTGRESQL_PASSWORD', env.TARGET_ENV_SECRET)] }}"
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=${{ secrets[format('AWS_{0}_POSTGRESQL_URL', env.TARGET_ENV_SECRET)] }}"
           COMMAND="argocd app set $APP_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS"
           echo "$COMMAND"
           $COMMAND
           COMMAND="argocd app sync $APP_NAME"
           echo "$COMMAND"
           $COMMAND
+          AWS_STAGING-_POSTGRESQL_URL
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
           ARGO_CD_PASSWORD: ${{ secrets.ARGO_CD_PASSWORD }}
