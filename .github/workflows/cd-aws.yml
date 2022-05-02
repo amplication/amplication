@@ -34,7 +34,7 @@ jobs:
         export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
         echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
       
-        echo "::set-output name=GCP::AWS_$TARGET_ENV_SECRET_GCP"
+        echo "::set-output name=GCP::${TARGET_ENV_SECRET}"
         echo "::set-output name=GITHUB_APP_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_SECRET_GITHUB_APP_CLIENT_SECRET"
         echo "::set-output name=GITHUB_APP_PRIVATE_KEY::AWS_${TARGET_ENV_SECRET}_SECRET_GITHUB_APP_PRIVATE_KEY"
         echo "::set-output name=GITHUB_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_SECRET_GITHUB_CLIENT_SECRET"
