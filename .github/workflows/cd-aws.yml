@@ -151,8 +151,8 @@ jobs:
           echo "$COMMAND"
           $COMMAND
           SECRETS="-p amplication-server.secrets.GCP=$GCP"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
           SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET"
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
