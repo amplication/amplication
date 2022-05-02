@@ -2,8 +2,10 @@ REPO_NAME=${GITHUB_REPOSITORY##*/}
 echo "REPO_NAME: $REPO_NAME"
 ECR_REPOSITORY_PREFIX="-dev"
 if [ "$REPO_NAME" = "amplication" ]; then
+    echo "Will use dev prefix"
     ECR_REPOSITORY_PREFIX="-dev"
 else
+    echo "Will use prod prefix"
     ECR_REPOSITORY_PREFIX="-prod" 
 fi
 ECR_REPOSITORY="${SERVICE_NAME}$ECR_REPOSITORY_PREFIX"
