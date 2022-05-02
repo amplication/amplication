@@ -29,7 +29,6 @@ do
     image_tags=$(echo $tag_list | jq -r '.imageDetails[0].imageTags' 2>&1)
     echo "tag_list: $tag_list"
     echo "image_tags: $image_tags"
-    VERSIONS=""
     
     echo "$IMAGE_TAG_ANCHOR" > found_tag
     while IFS= read -r line; do
