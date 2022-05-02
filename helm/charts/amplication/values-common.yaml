@@ -13,7 +13,6 @@ amplication-server:
       GRAPHQL_DEBUG: "0"
       PLAYGROUND_ENABLE: "0"
       BCRYPT_SALT_OR_ROUNDS: "10"
-      POSTGRESQL_URL: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432"
       CORS_ENABLE: "1"
       DEFAULT_DISK: "gcp"
       DOCKER_HOST: "tcp://docker:2375"
