@@ -168,6 +168,7 @@ jobs:
           echo "POSTGRESQL_URL secret name: $POSTGRESQL_URL"
 
           #kubectl apply -f app.yaml
+          cat helm/charts/amplication/values-secret.yaml
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
           echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
