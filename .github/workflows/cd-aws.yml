@@ -33,18 +33,15 @@ jobs:
       run: |
         export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
         echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
-        GCP="AWS_$TARGET_ENV_SECRET_GCP"
-        GITHUB_APP_CLIENT_SECRET="AWS_$TARGET_ENV_SECRET_GITHUB_APP_CLIENT_SECRET"
-        GITHUB_APP_PRIVATE_KEY="AWS_$TARGET_ENV_SECRET_GITHUB_APP_PRIVATE_KEY"
-        GITHUB_CLIENT_SECRET="AWS_$TARGET_ENV_SECRET_GITHUB_CLIENT_SECRET"
-        POSTGRESQL_PASSWORD="AWS_$TARGET_ENV_SECRET_POSTGRESQL_PASSWORD"
-        POSTGRESQL_URL="AWS_$TARGET_ENV_SECRET_POSTGRESQL_URL"
-        echo "::set-output name=GCP::$GCP"
-        echo "::set-output name=GITHUB_APP_CLIENT_SECRET::$GITHUB_APP_CLIENT_SECRET"
-        echo "::set-output name=GITHUB_APP_PRIVATE_KEY::$GITHUB_APP_PRIVATE_KEY"
-        echo "::set-output name=GITHUB_CLIENT_SECRET::$GITHUB_CLIENT_SECRET"
-        echo "::set-output name=POSTGRESQL_PASSWORD::$POSTGRESQL_PASSWORD"
-        echo "::set-output name=POSTGRESQL_URL::$POSTGRESQL_URL"
+      
+        echo "::set-output name=GCP::AWS_$TARGET_ENV_SECRET_GCP"
+        echo "::set-output name=GITHUB_APP_CLIENT_SECRET::AWS_$TARGET_ENV_SECRET_GITHUB_APP_CLIENT_SECRET"
+        echo "::set-output name=GITHUB_APP_PRIVATE_KEY::AWS_$TARGET_ENV_SECRET_GITHUB_APP_PRIVATE_KEY"
+        echo "::set-output name=GITHUB_CLIENT_SECRET::AWS_$TARGET_ENV_SECRET_GITHUB_CLIENT_SECRET"
+        echo "::set-output name=POSTGRESQL_PASSWORD::AWS_$TARGET_ENV_SECRET_POSTGRESQL_PASSWORD"
+        echo "::set-output name=POSTGRESQL_URL::AWS_$TARGET_ENV_SECRET_POSTGRESQL_URL"
+        echo "GCP: $GCP"
+        echo "GITHUB_APP_CLIENT_SECRET: $GITHUB_APP_CLIENT_SECRET"
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
@@ -142,12 +139,12 @@ jobs:
             fi
           fi
           
-          echo "GCP: $GITHUB_APP_CLIENT_SECRET"
-          echo "GITHUB_APP_CLIENT_SECRET: $GITHUB_APP_CLIENT_SECRET"
-          echo "GITHUB_APP_PRIVATE_KEY: $GITHUB_APP_PRIVATE_KEY"
-          echo "GITHUB_CLIENT_SECRET: $GITHUB_CLIENT_SECRET"
-          echo "POSTGRESQL_PASSWORD: $POSTGRESQL_PASSWORD"
-          echo "POSTGRESQL_URL: $POSTGRESQL_URL"
+          echo "GCP secret name: $GITHUB_APP_CLIENT_SECRET"
+          echo "GITHUB_APP_CLIENT_SECRET secret name: $GITHUB_APP_CLIENT_SECRET"
+          echo "GITHUB_APP_PRIVATE_KEY secret name: $GITHUB_APP_PRIVATE_KEY"
+          echo "GITHUB_CLIENT_SECRET secret name: $GITHUB_CLIENT_SECRET"
+          echo "POSTGRESQL_PASSWORD secret name: $POSTGRESQL_PASSWORD"
+          echo "POSTGRESQL_URL secret name: $POSTGRESQL_URL"
 
           kubectl apply -f app.yaml
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
