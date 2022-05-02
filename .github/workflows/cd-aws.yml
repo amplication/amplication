@@ -34,12 +34,12 @@ jobs:
         export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
         echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
       
-        echo "::set-output name=GCP::$TARGET_ENV_SECRET"
-        echo "::set-output name=GITHUB_APP_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_SECRET_GITHUB_APP_CLIENT_SECRET"
-        echo "::set-output name=GITHUB_APP_PRIVATE_KEY::AWS_${TARGET_ENV_SECRET}_SECRET_GITHUB_APP_PRIVATE_KEY"
-        echo "::set-output name=GITHUB_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_SECRET_GITHUB_CLIENT_SECRET"
-        echo "::set-output name=POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_SECRET_POSTGRESQL_PASSWORD"
-        echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_SECRET_POSTGRESQL_URL"
+        echo "::set-output name=GCP::AWS_${TARGET_ENV_SECRET}_GCP"
+        echo "::set-output name=GITHUB_APP_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_CLIENT_SECRET"
+        echo "::set-output name=GITHUB_APP_PRIVATE_KEY::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_PRIVATE_KEY"
+        echo "::set-output name=GITHUB_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_CLIENT_SECRET"
+        echo "::set-output name=POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_PASSWORD"
+        echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_URL"
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
@@ -137,7 +137,7 @@ jobs:
             fi
           fi
           
-          echo "GCP secret name: $GITHUB_APP_CLIENT_SECRET"
+          echo "GCP secret name: $GCP"
           echo "GITHUB_APP_CLIENT_SECRET secret name: $GITHUB_APP_CLIENT_SECRET"
           echo "GITHUB_APP_PRIVATE_KEY secret name: $GITHUB_APP_PRIVATE_KEY"
           echo "GITHUB_CLIENT_SECRET secret name: $GITHUB_CLIENT_SECRET"
