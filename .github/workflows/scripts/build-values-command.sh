@@ -6,12 +6,24 @@ ROOT_FOLDER=${GITHUB_WORKSPACE:=$SCRIPT_DIR/amplication}
 HELM_SERVICES_FOLDER="$ROOT_FOLDER/helm/charts/services"
 IMAGE_TAG_ANCHOR=${SOURCE_BRANCH_NAME:=master}
 touch $OUTPUT_PATH
+
+
+
 for dir in /$HELM_SERVICES_FOLDER/*/
 do
     echo "cleaning up $dir"
     SERVICE_NAME="$(basename $dir)"
-    REPO_NAME="$SERVICE_NAME-$TARGET_ENV"
+    REPO_NAME=${GITHUB_REPOSITORY##*/}
+    echo "REPO_NAME: $REPO_NAME"
+    REPO_NAME="-dev"
+    if [ "$REPO_NAME" = "amplication" ]; then
+        REPO_SUFFIX="dev"
+    else
+        REPO_SUFFIX="prod" 
+    fi
+    REPO_NAME="$SERVICE_NAME-$REPO_SUFFIX"
     echo "SERVICE_NAME: $SERVICE_NAME"
+    echo "REPO_NAME: $REPO_NAME"
     tag_list="$(aws ecr describe-images --repository-name=$REPO_NAME --region us-east-1 --image-ids=imageTag=$IMAGE_TAG_ANCHOR 2> /dev/null )"
     image_tags=$(echo $tag_list | jq -r '.imageDetails[0].imageTags' 2>&1)
     echo "tag_list: $tag_list"
