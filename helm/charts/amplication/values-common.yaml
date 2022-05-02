@@ -1,21 +1,21 @@
 amplication-server:
   config:
     env:
-      GITHUB_APP_AUTH_SCOPE: user:email,repo,read:org
-      GITHUB_SCOPE: user:email
-      GOOGLE_APPLICATION_CREDENTIALS: /var/gcp-secret
-      JWT_SECRET: jwt-secret
-      SERVICE_JWT_SECRET: service-jwt-secret
-      CONTAINER_BUILDER_DEFAULT: docker
+      GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
+      GITHUB_SCOPE: "user:email"
+      GOOGLE_APPLICATION_CREDENTIALS: "/var/gcp-secret"
+      JWT_SECRET: "jwt-secret"
+      SERVICE_JWT_SECRET: "service-jwt-secret"
+      CONTAINER_BUILDER_DEFAULT: "docker"
       PORT: "3000"
-      NODE_ENV: production
-      GCP_APPS_REGION: us-east1
-      GRAPHQL_DEBUG: 0
-      PLAYGROUND_ENABLE: 0
-      BCRYPT_SALT_OR_ROUNDS: 10
-      POSTGRESQL_URL: postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432
+      NODE_ENV: "production"
+      GCP_APPS_REGION: "us-east1"
+      GRAPHQL_DEBUG: "0"
+      PLAYGROUND_ENABLE: "0"
+      BCRYPT_SALT_OR_ROUNDS: "10"
+      POSTGRESQL_URL: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432"
       CORS_ENABLE: "1"
-      DEFAULT_DISK: gcp
-      DOCKER_HOST: tcp://docker:2375
+      DEFAULT_DISK: "gcp"
+      DOCKER_HOST: "tcp://docker:2375"
   postgres:
-    install: true
+    install: "true"

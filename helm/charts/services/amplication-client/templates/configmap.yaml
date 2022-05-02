@@ -1,3 +1,5 @@
-{{ include "base.configmap" (list . "amplication-client.configmap") -}}
-{{- define "amplication-client.configmap" -}}
-{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: '{{ .Values.name }}'
+data: 
