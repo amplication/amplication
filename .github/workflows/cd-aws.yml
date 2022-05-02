@@ -150,7 +150,7 @@ jobs:
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
           $COMMAND
-          SECRETS="-p amplication-server.secrets.GCP=\"$(echo $GCP | base64)\""
+          SECRETS="-p amplication-server.secrets.GCP=\"$GCP\""
           SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=\"$(echo $GITHUB_APP_CLIENT_SECRET | base64)\""
           SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=\"$(echo $GITHUB_APP_PRIVATE_KEY | base64)\""
           SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=\"$(echo $GITHUB_CLIENT_SECRET | base64)\""
