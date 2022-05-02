@@ -15,10 +15,11 @@ do
     SERVICE_NAME="$(basename $dir)"
     REPO_NAME=${GITHUB_REPOSITORY##*/}
     echo "REPO_NAME: $REPO_NAME"
-    REPO_NAME="-dev"
     if [ "$REPO_NAME" = "amplication" ]; then
+        echo "Will use dev prefix"
         REPO_SUFFIX="dev"
     else
+        echo "Will use prod prefix"
         REPO_SUFFIX="prod" 
     fi
     REPO_NAME="$SERVICE_NAME-$REPO_SUFFIX"
