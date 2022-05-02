@@ -17,9 +17,47 @@ on:
         description: Which branch to use for deployment
         default: main
         required: true
-jobs:       
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      GCP: ${{ steps.create-secret-names.outputs.GCP }}
+      GITHUB_APP_CLIENT_SECRET: ${{ steps.create-secret-names.outputs.GITHUB_APP_CLIENT_SECRET }}
+      GITHUB_APP_PRIVATE_KEY: ${{ steps.create-secret-names.outputs.GITHUB_APP_PRIVATE_KEY }}
+      GITHUB_CLIENT_SECRET: ${{ steps.create-secret-names.outputs.GITHUB_CLIENT_SECRET }}
+      POSTGRESQL_PASSWORD: ${{ steps.create-secret-names.outputs.POSTGRESQL_PASSWORD }}
+      POSTGRESQL_URL: ${{ steps.create-secret-names.outputs.POSTGRESQL_URL }}
+    steps:
+    - name: create secret names
+      id: create-secret-names
+      run: |
+        export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
+        echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
+        GCP="AWS_$TARGET_ENV_SECRET_GCP"
+        GITHUB_APP_CLIENT_SECRET="AWS_$TARGET_ENV_SECRET_GITHUB_APP_CLIENT_SECRET"
+        GITHUB_APP_PRIVATE_KEY="AWS_$TARGET_ENV_SECRET_GITHUB_APP_PRIVATE_KEY"
+        GITHUB_CLIENT_SECRET="AWS_$TARGET_ENV_SECRET_GITHUB_CLIENT_SECRET"
+        POSTGRESQL_PASSWORD="AWS_$TARGET_ENV_SECRET_POSTGRESQL_PASSWORD"
+        POSTGRESQL_URL="AWS_$TARGET_ENV_SECRET_POSTGRESQL_URL"
+        echo "::set-output name=GCP::$GCP"
+        echo "::set-output name=GITHUB_APP_CLIENT_SECRET::$GITHUB_APP_CLIENT_SECRET"
+        echo "::set-output name=GITHUB_APP_PRIVATE_KEY::$GITHUB_APP_PRIVATE_KEY"
+        echo "::set-output name=GITHUB_CLIENT_SECRET::$GITHUB_CLIENT_SECRET"
+        echo "::set-output name=POSTGRESQL_PASSWORD::$POSTGRESQL_PASSWORD"
+        echo "::set-output name=POSTGRESQL_URL::$POSTGRESQL_URL"
+      env:
+        TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
     runs-on: ubuntu-latest
+    needs:
+      - prepare
+    env:
+      GCP: ${{ needs.prepare.outputs.GCP }}
+      GITHUB_APP_CLIENT_SECRET: ${{ needs.prepare.outputs.GITHUB_APP_CLIENT_SECRET }}
+      GITHUB_APP_PRIVATE_KEY: ${{ needs.prepare.outputs.GITHUB_APP_PRIVATE_KEY }}
+      GITHUB_CLIENT_SECRET: ${{ needs.prepare.outputs.GITHUB_CLIENT_SECRET }}
+      POSTGRESQL_PASSWORD: ${{ needs.prepare.outputs.POSTGRESQL_PASSWORD }}
+      POSTGRESQL_URL: ${{ needs.prepare.outputs.POSTGRESQL_URL }}
     steps:
       - uses: actions/checkout@v2
       - name: configure AWS credentials
@@ -110,12 +148,12 @@ jobs:
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
           $COMMAND
-          SECRETS="-p amplication-server.secrets.GCP=${{ secrets[format('AWS_{0}_GCP', env.TARGET_ENV_SECRET)] }}"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=${{ secrets[format('AWS_{0}_GITHUB_APP_CLIENT_SECRET', env.TARGET_ENV_SECRET)] }}"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=${{ secrets[format('AWS_{0}_GITHUB_APP_PRIVATE_KEY', env.TARGET_ENV_SECRET)] }}"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=${{ secrets[format('AWS_{0}_GITHUB_CLIENT_SECRET', env.TARGET_ENV_SECRET)] }}"
-          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=${{ secrets[format('AWS_{0}_POSTGRESQL_PASSWORD', env.TARGET_ENV_SECRET)] }}"
-          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=${{ secrets[format('AWS_{0}_POSTGRESQL_URL', env.TARGET_ENV_SECRET)] }}"
+          SECRETS="-p amplication-server.secrets.GCP=$GCP
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY
+          SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL
           COMMAND="argocd app set $APP_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS"
           echo "$COMMAND"
           $COMMAND
@@ -126,10 +164,10 @@ jobs:
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
           ARGO_CD_PASSWORD: ${{ secrets.ARGO_CD_PASSWORD }}
-          GCP: ${{ secrets.AWS_DEV_GCP }}
-          GITHUB_APP_CLIENT_SECRET: ${{ secrets.AWS_DEV_GITHUB_APP_CLIENT_SECRET }}
-          GITHUB_APP_PRIVATE_KEY: ${{ secrets.AWS_DEV_GITHUB_APP_PRIVATE_KEY }}
-          GITHUB_CLIENT_SECRET: ${{ secrets.AWS_DEV_GITHUB_CLIENT_SECRET }}
-          POSTGRESQL_PASSWORD: ${{ secrets.AWS_DEV_POSTGRESQL_PASSWORD }}
-          POSTGRESQL_URL: ${{ secrets.AWS_DEV_POSTGRESQL_URL }}
+          GCP: ${{ secrets[env.GCP] }}
+          GITHUB_APP_CLIENT_SECRET: ${{ secrets[env.GITHUB_APP_CLIENT_SECRET] }}
+          GITHUB_APP_PRIVATE_KEY: ${{ secrets[env.GITHUB_APP_PRIVATE_KEY] }}
+          GITHUB_CLIENT_SECRET: ${{ secrets[env.GITHUB_CLIENT_SECRET] }}
+          POSTGRESQL_PASSWORD: ${{ secrets[env.POSTGRESQL_PASSWORD] }}
+          POSTGRESQL_URL: ${{ secrets[env.POSTGRESQL_URL] }}
       
