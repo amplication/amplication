@@ -144,7 +144,7 @@ jobs:
           echo "POSTGRESQL_PASSWORD secret name: $POSTGRESQL_PASSWORD"
           echo "POSTGRESQL_URL secret name: $POSTGRESQL_URL"
 
-          kubectl apply -f app.yaml
+          #kubectl apply -f app.yaml
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
           echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
@@ -156,7 +156,7 @@ jobs:
           SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET"
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
-          COMMAND="argocd app set $APP_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS"
+          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS"
           echo "$COMMAND"
           $COMMAND
           COMMAND="argocd app sync $APP_NAME"
