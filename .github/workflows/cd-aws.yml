@@ -126,7 +126,7 @@ jobs:
       - name: create values secrets file
         id: create-values-secrets-file
         run: |
-          cp $GITHUB_WORKSPACE/.github/workflows/argocd/values-secret.yaml $GITHUB_WORKSPACE/helm/charts/amplication/values-secret.yaml
+          cp $GITHUB_WORKSPACE/.github/workflows/argocd/secret.yaml $GITHUB_WORKSPACE/helm/charts/amplication/values-secret.yaml
           sed "s|GCP_PLACE_HOLDER|$GCP|g" helm/charts/amplication/values-secret.yaml
           sed "s|GITHUB_APP_CLIENT_SECRET_PLACE_HOLDER|$(echo $GITHUB_APP_CLIENT_SECRET | base64)|g" helm/charts/amplication/values-secret.yaml
           sed "s|GITHUB_APP_PRIVATE_KEY_PLACE_HOLDER|$(echo $GITHUB_APP_PRIVATE_KEY | base64)|g" helm/charts/amplication/values-secret.yaml
