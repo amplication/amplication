@@ -47,7 +47,7 @@ do
     else
       echo "FOUND_TAG: $FOUND_TAG"
     fi
-    if ! [ -z "$var" ]
+    if ! [ -z "$VERSIONS" ]
     then
       VERSIONS+=" "
     fi
