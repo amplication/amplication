@@ -142,6 +142,13 @@ jobs:
             fi
           fi
           
+          echo "GCP: $GITHUB_APP_CLIENT_SECRET"
+          echo "GITHUB_APP_CLIENT_SECRET: $GITHUB_APP_CLIENT_SECRET"
+          echo "GITHUB_APP_PRIVATE_KEY: $GITHUB_APP_PRIVATE_KEY"
+          echo "GITHUB_CLIENT_SECRET: $GITHUB_CLIENT_SECRET"
+          echo "POSTGRESQL_PASSWORD: $POSTGRESQL_PASSWORD"
+          echo "POSTGRESQL_URL: $POSTGRESQL_URL"
+
           kubectl apply -f app.yaml
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
           echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
