@@ -123,29 +123,6 @@ jobs:
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /usr/local/bin/argocd
-      - name: create values secrets file
-        id: create-values-secrets-file
-        run: |
-          cp $GITHUB_WORKSPACE/.github/workflows/argocd/secret.yaml $GITHUB_WORKSPACE/helm/charts/amplication/values-secret.yaml
-          sed "s|GCP_PLACE_HOLDER|$GCP|g" helm/charts/amplication/values-secret.yaml
-          sed "s|GITHUB_APP_CLIENT_SECRET_PLACE_HOLDER|$(echo $GITHUB_APP_CLIENT_SECRET | base64)|g" helm/charts/amplication/values-secret.yaml
-          sed "s|GITHUB_APP_PRIVATE_KEY_PLACE_HOLDER|$(echo $GITHUB_APP_PRIVATE_KEY | base64)|g" helm/charts/amplication/values-secret.yaml
-          sed "s|GITHUB_CLIENT_SECRET_PLACE_HOLDER|$(echo $GITHUB_CLIENT_SECRET | base64)|g" helm/charts/amplication/values-secret.yaml
-          sed "s|POSTGRESQL_PASSWORD_PLACE_HOLDER|$(echo $POSTGRESQL_PASSWORD | base64)|g" helm/charts/amplication/values-secret.yaml
-          sed "s|POSTGRESQL_URL_PLACE_HOLDER|$(echo $POSTGRESQL_URL | base64)|g" helm/charts/amplication/values-secret.yaml
-          # SECRETS="-p amplication-server.secrets.GCP='$GCP'"
-          # SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET='$(echo $GITHUB_APP_CLIENT_SECRET | base64)'"
-          # SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY='$(echo $GITHUB_APP_PRIVATE_KEY | base64)'"
-          # SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET='$(echo $GITHUB_CLIENT_SECRET | base64)'"
-          # SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD='$(echo $POSTGRESQL_PASSWORD | base64)'"
-          # SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL='$(echo $POSTGRESQL_URL | base64)'"
-        env:
-          GCP: ${{ secrets[env.GCP] }}
-          GITHUB_APP_CLIENT_SECRET: ${{ secrets[env.GITHUB_APP_CLIENT_SECRET] }}
-          GITHUB_APP_PRIVATE_KEY: ${{ secrets[env.GITHUB_APP_PRIVATE_KEY] }}
-          GITHUB_CLIENT_SECRET: ${{ secrets[env.GITHUB_CLIENT_SECRET] }}
-          POSTGRESQL_PASSWORD: ${{ secrets[env.POSTGRESQL_PASSWORD] }}
-          POSTGRESQL_URL: ${{ secrets[env.POSTGRESQL_URL] }}
       - name: deploy app
         id: deploy-app
         run: |
@@ -168,21 +145,32 @@ jobs:
           echo "POSTGRESQL_URL secret name: $POSTGRESQL_URL"
 
           #kubectl apply -f app.yaml
-          cat helm/charts/amplication/values-secret.yaml
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
           echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
           $COMMAND
-          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE --values values-secret.yaml $VERSIONS --upsert"
+          SECRETS="-p amplication-server.secrets.GCP='$GCP'"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET='$(echo $GITHUB_APP_CLIENT_SECRET | base64)'"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY='$(echo $GITHUB_APP_PRIVATE_KEY | base64)'"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET='$(echo $GITHUB_CLIENT_SECRET | base64)'"
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD='$(echo $POSTGRESQL_PASSWORD | base64)'"
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL='$(echo $POSTGRESQL_URL | base64)'"
+          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
           COMMAND=$(echo $COMMAND|tr -d '\n')
           echo "$COMMAND"
           $COMMAND
           COMMAND="argocd app sync $APP_NAME"
           echo "$COMMAND"
           $COMMAND
+          AWS_STAGING-_POSTGRESQL_URL
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
           ARGO_CD_PASSWORD: ${{ secrets.ARGO_CD_PASSWORD }}
-          
+          GCP: ${{ secrets[env.GCP] }}
+          GITHUB_APP_CLIENT_SECRET: ${{ secrets[env.GITHUB_APP_CLIENT_SECRET] }}
+          GITHUB_APP_PRIVATE_KEY: ${{ secrets[env.GITHUB_APP_PRIVATE_KEY] }}
+          GITHUB_CLIENT_SECRET: ${{ secrets[env.GITHUB_CLIENT_SECRET] }}
+          POSTGRESQL_PASSWORD: ${{ secrets[env.POSTGRESQL_PASSWORD] }}
+          POSTGRESQL_URL: ${{ secrets[env.POSTGRESQL_URL] }}
       
