@@ -47,6 +47,11 @@ do
     else
       echo "FOUND_TAG: $FOUND_TAG"
     fi
+    if ! [ -z "$var" ]
+    then
+      VERSIONS+=" "
+    fi
+
     VERSIONS+="-p $SERVICE_NAME.deployment.image.tag=$FOUND_TAG"
 done
 echo "$VERSIONS" >> $OUTPUT_PATH
