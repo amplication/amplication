@@ -34,6 +34,9 @@ ingress:
   enabled: true
   hostname: server.amplication-dev.com
 
+secrets:
+  GPC: ""
+
 pvc:
   storageLimit: 5Gi
   storageRequest: 1Gi
