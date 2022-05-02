@@ -148,12 +148,12 @@ jobs:
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
           $COMMAND
-          SECRETS="-p amplication-server.secrets.GCP=$GCP
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY
-          SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET
-          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD
-          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL
+          SECRETS="-p amplication-server.secrets.GCP=$GCP"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
+          SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET"
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
           COMMAND="argocd app set $APP_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS"
           echo "$COMMAND"
           $COMMAND
