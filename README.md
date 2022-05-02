@@ -1,7 +1,7 @@
 <p align="center">
 
   <a href="https://amplication.com" target="_blank">
-    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
+    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/_next/static/media/logo_desktop.83f8e039.svg"/>
   </a>
 </p>
 <p align="center">
