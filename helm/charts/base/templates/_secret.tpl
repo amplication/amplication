@@ -1,7 +1,3 @@
-{{- define "base.secret.tpl" -}}
-apiVersion: v1
-kind: Secret
-type: Opaque
 metadata:
   name: '{{ .Values.name }}'
 data: 
@@ -11,4 +7,4 @@ data:
 {{- end }}
 {{- define "base.secret" -}}
 {{- include "base.util.merge" (append . "base.secret.tpl") -}}
-{{- end -}}
+	
