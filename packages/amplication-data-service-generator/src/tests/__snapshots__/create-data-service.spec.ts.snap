@@ -3254,9 +3254,30 @@ export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
   "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
 export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
 ",
-  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
+  "server/src/auth/defaultAuth.guard.ts": "import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
+import { Reflector } from \\"@nestjs/core\\";
+import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
+import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
 
-export class DefaultAuthGuard extends BasicAuthGuard {}
+@Injectable()
+export class DefaultAuthGuard extends BasicAuthGuard {
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
+
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
+    const isPublic = this.reflector.get<boolean>(
+      IS_PUBLIC_KEY,
+      context.getHandler()
+    );
+
+    if (isPublic) {
+      return true;
+    }
+
+    return super.canActivate(context);
+  }
+}
 ",
   "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";

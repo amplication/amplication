@@ -671,6 +671,16 @@ export function getMethods(
       namedTypes.ClassMethod.check(member) && !isConstructor(member)
   );
 }
+export function getClassMethodById(
+  classDeclaration: namedTypes.ClassDeclaration,
+  methodId: namedTypes.Identifier
+): namedTypes.ClassMethod | null {
+  const allMethodWithoutConstructor = getMethods(classDeclaration);
+  return (
+    allMethodWithoutConstructor.find((method) => method.key === methodId) ||
+    null
+  );
+}
 
 export function getNamedProperties(
   declaration: namedTypes.ClassDeclaration
@@ -768,4 +778,33 @@ export function createGenericArray(
     ARRAY_ID,
     builders.tsTypeParameterInstantiation([itemType])
   );
+}
+
+/**
+ * Returns the first decorator with a specific name from the given AST
+ * @param ast the AST to return the decorator from
+ */
+export function deleteDecoratorByName(
+  node: ASTNode,
+  decoratorName: string
+): namedTypes.Decorator {
+  let decorator: namedTypes.ClassDeclaration | null = null;
+  recast.visit(node, {
+    visitDecorator(path) {
+      const callee = path.get("expression", "callee");
+      if (callee.value && callee.value.name === decoratorName) {
+        decorator = path.value;
+        path.prune();
+      }
+      return this.traverse(path);
+    },
+  });
+
+  if (!decorator) {
+    throw new Error(
+      `Could not find class decorator with the name ${decoratorName} in provided AST node`
+    );
+  }
+
+  return decorator;
 }

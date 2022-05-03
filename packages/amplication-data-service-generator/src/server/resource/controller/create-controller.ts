@@ -1,3 +1,4 @@
+import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -29,6 +30,7 @@ import {
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
+import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
@@ -172,6 +174,37 @@ async function createControllerModule(
     ).flat();
 
     classDeclaration.body.body.push(...toManyRelationMethods);
+
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["CREATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Create,
+      entity
+    );
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["FIND_MANY_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Search,
+      entity
+    );
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["FIND_ONE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.View,
+      entity
+    );
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["UPDATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Update,
+      entity
+    );
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["DELETE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Delete,
+      entity
+    );
 
     const dtoNameToPath = getDTONameToPath(dtos);
     const dtoImports = importContainedIdentifiers(
