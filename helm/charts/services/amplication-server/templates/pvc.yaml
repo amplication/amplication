@@ -1,3 +1,10 @@
 {{ include "base.pvc" (list . "amplication-server.pvc") -}}
 {{- define "amplication-server.pvc" -}}
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.pvc.storageRequest }}
 {{- end }}
