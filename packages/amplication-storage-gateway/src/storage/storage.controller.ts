@@ -25,4 +25,12 @@ export class StorageController {
   ): FileMeta[] {
     return this.service.getBuildFilesList(appId, buildId, query.path);
   }
+  @Get(`/:${APP_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/content`)
+  fileContent(
+    @Param(APP_ID_PARAM_KEY) appId: string,
+    @Param(BUILD_ID_PARAM_KEY) buildId: string,
+    @Query("path") path: string
+  ): string {
+    return this.service.fileContent(appId, buildId, path);
+  }
 }

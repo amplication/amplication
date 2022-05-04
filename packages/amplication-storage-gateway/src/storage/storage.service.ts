@@ -5,6 +5,7 @@ import { BASE_BUILDS_FOLDER } from "src/constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 import assert from "assert";
+import { readFileSync } from "fs";
 
 @Injectable()
 export class StorageService {
@@ -14,11 +15,14 @@ export class StorageService {
     assert(this.buildsFolder);
   }
 
+  private buildFolder(appId: string, buildId: string) {
+    return `${this.buildsFolder}/${appId}/${buildId}`;
+  }
+
   getBuildFilesList(appId: string, buildId: string, relativePath: string) {
     const results: { [name: string]: FileMeta } = {};
-    const cwd = `/${this.buildsFolder}/${appId}/${buildId}/${
-      relativePath || ""
-    }`;
+
+    const cwd = `${this.buildFolder(appId, buildId)}/${relativePath || ""}`;
     const files = sync(`*`, {
       nodir: true,
       cwd,
@@ -33,5 +37,10 @@ export class StorageService {
       }
     });
     return Object.values(results);
+  }
+
+  fileContent(appId: string, buildId: string, path: string): string {
+    const filePath = `${this.buildFolder(appId, buildId)}/${path}`;
+    return readFileSync(filePath).toString();
   }
 }
