@@ -3254,7 +3254,8 @@ export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
   "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
 export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
 ",
-  "server/src/auth/defaultAuth.guard.ts": "import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
+  "server/src/auth/defaultAuth.guard.ts": "import { Observable } from \\"rxjs\\";
+import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
 import { Reflector } from \\"@nestjs/core\\";
 import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
 import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
@@ -3265,7 +3266,9 @@ export class DefaultAuthGuard extends BasicAuthGuard {
     super();
   }
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
+  canActivate(
+    context: ExecutionContext
+  ): boolean | Promise<boolean> | Observable<any> {
     const isPublic = this.reflector.get<boolean>(
       IS_PUBLIC_KEY,
       context.getHandler()
@@ -5090,6 +5093,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { CustomerService } from \\"../customer.service\\";
@@ -6518,6 +6522,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { EmptyService } from \\"../empty.service\\";
@@ -7947,6 +7952,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { OrderService } from \\"../order.service\\";
@@ -9404,6 +9410,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { OrganizationService } from \\"../organization.service\\";
@@ -12206,6 +12213,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { UserService } from \\"../user.service\\";

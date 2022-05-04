@@ -14,6 +14,8 @@ import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 // @ts-ignore
+import { Public } from "../../decorators/public.decorator";
+// @ts-ignore
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 // @ts-ignore
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";

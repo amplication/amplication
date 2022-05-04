@@ -780,11 +780,7 @@ export function createGenericArray(
   );
 }
 
-/**
- * Returns the first decorator with a specific name from the given AST
- * @param ast the AST to return the decorator from
- */
-export function deleteDecoratorByName(
+export function deleteDecoratorPropertyByName(
   node: ASTNode,
   decoratorName: string
 ): namedTypes.Decorator {
@@ -792,9 +788,42 @@ export function deleteDecoratorByName(
   recast.visit(node, {
     visitDecorator(path) {
       const callee = path.get("expression", "callee");
-      if (callee.value && callee.value.name === decoratorName) {
+      if (callee.value && callee.value.property?.name === decoratorName) {
         decorator = path.value;
         path.prune();
+      }
+      return this.traverse(path);
+    },
+  });
+
+  if (!decorator) {
+    throw new Error(
+      `Could not find class decorator with the name ${decoratorName} in provided AST node`
+    );
+  }
+
+  return decorator;
+}
+
+export function setDecoratorState(
+  node: ASTNode,
+  decoratorName: string,
+  argToDelete: string /** @todo: change to string[] */
+): namedTypes.Decorator | null {
+  let decorator: namedTypes.ClassDeclaration | null = null;
+  recast.visit(node, {
+    visitDecorator(path) {
+      const callee = path.get("expression", "callee");
+      if (callee.value && callee.value.property?.name === decoratorName) {
+        decorator = path.value;
+        const parentArgs = callee.parentPath.node.arguments;
+        const argToDeleteIndex = parentArgs.findIndex(
+          (arg: any) => arg.name === argToDelete
+        );
+        parentArgs.splice(argToDeleteIndex, 1);
+        if (!parentArgs.length) {
+          path.prune();
+        }
       }
       return this.traverse(path);
     },
