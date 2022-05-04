@@ -206,6 +206,21 @@ async function createControllerModule(
       entity
     );
 
+    toManyRelationFields.map((field) => {
+      const toManyFunctionMapping = {
+        FIND_MANY: builders.identifier(camelCase(`findMany ${field.name}`)),
+        CONNECT: builders.identifier(camelCase(`connect ${field.name}`)),
+        DISCONNECT: builders.identifier(camelCase(`disconnect ${field.name}`)),
+        UPDATE: builders.identifier(camelCase(`update ${field.name}`)),
+      };
+
+      return setToManyEndpointPermission(
+        classDeclaration,
+        toManyFunctionMapping,
+        entity
+      );
+    });
+
     const dtoNameToPath = getDTONameToPath(dtos);
     const dtoImports = importContainedIdentifiers(
       file,
@@ -249,6 +264,37 @@ export function createControllerBaseId(
   return builders.identifier(`${entityType}ControllerBase`);
 }
 
+function setToManyEndpointPermission(
+  classDeclaration: namedTypes.ClassDeclaration,
+  toManyMapping: { [key: string]: ASTNode | undefined },
+  entity: Entity
+) {
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["FIND_MANY"] as namedTypes.Identifier,
+    EnumEntityAction.Search,
+    entity
+  );
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["UPDATE"] as namedTypes.Identifier,
+    EnumEntityAction.Update,
+    entity
+  );
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["CONNECT"] as namedTypes.Identifier,
+    EnumEntityAction.Update,
+    entity
+  );
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["DISCONNECT"] as namedTypes.Identifier,
+    EnumEntityAction.Delete,
+    entity
+  );
+}
+
 async function createToManyRelationMethods(
   field: EntityLookupField,
   entityType: string,
@@ -260,7 +306,7 @@ async function createToManyRelationMethods(
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
-  interpolate(toManyFile, {
+  const toManyMapping = {
     RELATED_ENTITY_WHERE_UNIQUE_INPUT: relatedEntityDTOs.whereUniqueInput.id,
     RELATED_ENTITY_WHERE_INPUT: relatedEntityDTOs.whereInput.id,
     RELATED_ENTITY_FIND_MANY_ARGS: relatedEntityDTOs.findManyArgs.id,
@@ -280,7 +326,9 @@ async function createToManyRelationMethods(
     UPDATE: builders.identifier(camelCase(`update ${field.name}`)),
     UPDATE_PATH: builders.stringLiteral(`/:id/${field.name}`),
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
-  });
+  };
+
+  interpolate(toManyFile, toManyMapping);
 
   return getMethods(getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID));
 }
