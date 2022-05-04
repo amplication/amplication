@@ -1,0 +1,53 @@
+@import "../../style/index.scss";
+
+.overview-tile {
+    padding: var(--large-spacing);
+    position: relative;
+    min-height: 231px;
+    background-color: var(--black2);
+
+    &__header{
+       @include flexVerticalCenter;
+       margin-bottom: var(--default-spacing);
+
+        &__title{
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 22px;
+            margin-bottom: 0;
+            margin-left: var(--default-spacing-small);
+        }
+    }
+
+    &__message {
+        @include body3;
+        margin-bottom: 25px;
+      }
+
+    &__content{
+        display: flex;
+        flex-wrap: wrap;
+
+        &__item{
+            flex: 1;
+            min-width: 170px;
+
+
+            &__text{
+                
+                font-weight: 400;
+                font-size: 12px;
+                line-height: 18px;
+                margin-bottom: 10px;
+
+                &--blue{
+                    color: var(--dark-secondary-turquoise);
+                    margin-left: 6px;
+                }
+            }
+
+            
+        }
+    }
+}
+  

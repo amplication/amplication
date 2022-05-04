@@ -15,8 +15,9 @@ import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import { COLOR_TO_NAME } from "./constants";
-import EntitiesTile from "./EntitiesTile";
+// import EntitiesTile from "./EntitiesTile";
 import NewVersionTile from "./NewVersionTile";
+import OverviewTile from "./OverviewTile";
 import RolesTile from "./RolesTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 
@@ -109,7 +110,8 @@ function ApplicationHome({ match }: Props) {
                   component={() => (
                     <div className={`${CLASS_NAME}__tiles`}>
                       <NewVersionTile applicationId={applicationId} />
-                      <EntitiesTile applicationId={applicationId} />
+                      {/* <EntitiesTile applicationId={applicationId} /> */}
+                      <OverviewTile/>
                       <RolesTile applicationId={applicationId} />
                       <SyncWithGithubTile applicationId={applicationId} />
                     </div>

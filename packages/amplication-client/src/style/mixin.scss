@@ -55,6 +55,14 @@
   color: var(--black80);
 }
 
+@mixin body3 {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  font-style: normal;
+  font-weight: normal;
+  color: var(--black80);
+}
 @mixin errorMessage {
   color: var(--negative);
   font-size: 10px;
@@ -101,6 +109,11 @@ $bullet-size: 6px;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+
+@mixin flexVerticalCenter {
+  display: flex;
+  align-items: center
 }
 
 @mixin flexFullRowWithSpacing {
