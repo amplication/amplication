@@ -2,16 +2,16 @@ import assert from "assert";
 import { EnumEntityAction, EnumEntityPermissionType } from "../models";
 import { namedTypes } from "ast-types";
 import { Entity } from "../types";
-import {
-  deleteDecoratorPropertyByName,
-  getClassMethodById,
-  setDecoratorState,
-} from "./ast";
+import { removeDecoratorByName, getClassMethodById } from "./ast";
 import { createPublicDecorator } from "./create-public-decorator";
+import { removeIdentifierFromUseInterceptorDecorator } from "./nestjs-code-generation";
 
 export const USE_ROLES_DECORATOR_NAME = "UseRoles";
 export const USE_INTERCEPTORS_DECORATOR_NAME = "UseInterceptors";
 export const PUBLIC_DECORATOR_NAME = "Public";
+
+const ACL_FILTER_RESPONSE_INTERCEPTOR_NAME = "AclFilterResponseInterceptor";
+const ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME = "AclValidateRequestInterceptor";
 
 export function setEndpointPermissions(
   classDeclaration: namedTypes.ClassDeclaration,
@@ -29,10 +29,10 @@ export function setEndpointPermissions(
           action === EnumEntityAction.Search ||
           action === EnumEntityAction.View
         ) {
-          setDecoratorState(
+          removeIdentifierFromUseInterceptorDecorator(
             classMethod,
             USE_INTERCEPTORS_DECORATOR_NAME,
-            "AclFilterResponseInterceptor"
+            ACL_FILTER_RESPONSE_INTERCEPTOR_NAME
           );
         }
 
@@ -40,14 +40,14 @@ export function setEndpointPermissions(
           action === EnumEntityAction.Create ||
           action === EnumEntityAction.Update
         ) {
-          setDecoratorState(
+          removeIdentifierFromUseInterceptorDecorator(
             classMethod,
             USE_INTERCEPTORS_DECORATOR_NAME,
-            "AclValidateRequestInterceptor"
+            ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME
           );
         }
 
-        deleteDecoratorPropertyByName(classMethod, USE_ROLES_DECORATOR_NAME);
+        removeDecoratorByName(classMethod, USE_ROLES_DECORATOR_NAME);
 
         const publicDecorator = createPublicDecorator();
         classMethod.decorators?.push(publicDecorator);

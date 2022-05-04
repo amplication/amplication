@@ -2,8 +2,9 @@
  * Utilities for generating Nest.js source code
  */
 
-import { builders, namedTypes } from "ast-types";
+import { builders, namedTypes, ASTNode } from "ast-types";
 import { findConstructor } from "./ast";
+import * as recast from "recast";
 
 /**
  * Adds a Nest.js injectable dependency to given classDeclaration
@@ -35,4 +36,38 @@ export function addInjectableDependency(
       }),
     })
   );
+}
+
+export function removeIdentifierFromUseInterceptorDecorator(
+  node: ASTNode,
+  decoratorName: string,
+  argToDelete: string /** @todo: change to string[] */
+): namedTypes.Decorator {
+  let decorator: namedTypes.ClassDeclaration | null = null;
+  recast.visit(node, {
+    visitDecorator(path) {
+      const callee = path.get("expression", "callee");
+      if (callee.value && callee.value.property?.name === decoratorName) {
+        decorator = path.value;
+        const parentArgs: namedTypes.Identifier[] =
+          callee.parentPath.node.arguments;
+        const argToDeleteIndex = parentArgs.findIndex(
+          (arg) => arg.name === argToDelete
+        );
+        parentArgs.splice(argToDeleteIndex, 1);
+        if (!parentArgs.length) {
+          path.prune();
+        }
+      }
+      return this.traverse(path);
+    },
+  });
+
+  if (!decorator) {
+    throw new Error(
+      `Could not find class decorator with the name ${decoratorName} in provided AST node`
+    );
+  }
+
+  return decorator;
 }

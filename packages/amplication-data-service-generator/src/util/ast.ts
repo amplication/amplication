@@ -780,10 +780,10 @@ export function createGenericArray(
   );
 }
 
-export function deleteDecoratorPropertyByName(
+export function removeDecoratorByName(
   node: ASTNode,
   decoratorName: string
-): namedTypes.Decorator {
+): boolean {
   let decorator: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
     visitDecorator(path) {
@@ -794,31 +794,48 @@ export function deleteDecoratorPropertyByName(
       }
       return this.traverse(path);
     },
+    // Recast has a bug of traversing class decorators
+    // This method fixes it
+    visitClassDeclaration(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class property decorators
+    // This method fixes it
+    visitClassProperty(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
   });
 
   if (!decorator) {
-    throw new Error(
-      `Could not find class decorator with the name ${decoratorName} in provided AST node`
-    );
+    return false;
   }
 
-  return decorator;
+  return true;
 }
 
 export function setDecoratorState(
   node: ASTNode,
   decoratorName: string,
   argToDelete: string /** @todo: change to string[] */
-): namedTypes.Decorator | null {
+): namedTypes.Decorator {
   let decorator: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
     visitDecorator(path) {
       const callee = path.get("expression", "callee");
-      if (callee.value && callee.value.property?.name === decoratorName) {
+      if (callee.value && callee.value.name === decoratorName) {
         decorator = path.value;
-        const parentArgs = callee.parentPath.node.arguments;
+        const parentArgs: namedTypes.Identifier[] =
+          callee.parentPath.node.arguments;
         const argToDeleteIndex = parentArgs.findIndex(
-          (arg: any) => arg.name === argToDelete
+          (arg) => arg.name === argToDelete
         );
         parentArgs.splice(argToDeleteIndex, 1);
         if (!parentArgs.length) {
