@@ -1,19 +1,13 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { PaginateQuery } from "nestjs-paginate";
+import { DefaultAuthGuard } from "src/auth/defaultAuth.guard";
 import { FileMeta } from "./dto/FileMeta";
-import {
-  FilterOperator,
-  Paginate,
-  PaginateQuery,
-  paginate,
-  Paginated,
-} from "nestjs-paginate";
-import { sync, GlobSync } from "glob";
-import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 import { StorageService } from "./storage.service";
 
 const APP_ID_PARAM_KEY = "appId";
 const BUILD_ID_PARAM_KEY = "buildId";
 
+@UseGuards(DefaultAuthGuard)
 @Controller("storage")
 export class StorageController {
   constructor(protected readonly service: StorageService) {}

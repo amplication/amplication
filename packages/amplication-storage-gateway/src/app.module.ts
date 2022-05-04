@@ -8,6 +8,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { GraphQLModule } from "@nestjs/graphql";
 import { StorageModule } from "./storage/storage.module";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   controllers: [],
@@ -16,6 +17,7 @@ import { StorageModule } from "./storage/storage.module";
     StorageModule,
     SecretsManagerModule,
     MorganModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [".env", ".env.local"],
