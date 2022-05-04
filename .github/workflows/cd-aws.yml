@@ -1,22 +1,8 @@
-name: CI-AWS
+name: CD-AWS
 
 on:
   workflow_dispatch:
-  push:
-    branches: ['*']
-    paths-ignore:
-      - "**.md"
-      - ".github/workflows/**.yml"
-      - "renovate.json"
-      - ".all-contributorsrc"
-  pull_request:
-    branches: ['master','release/*']
-    types: [opened, reopened]
-    paths-ignore:
-      - "**.md"
-      - ".github/workflows/**.yml"
-      - "renovate.json"
-      - ".all-contributorsrc"
+ 
 
 jobs:       
   changes:

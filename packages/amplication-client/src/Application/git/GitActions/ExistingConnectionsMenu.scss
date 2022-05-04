@@ -14,9 +14,13 @@ hr {
     margin-left: 0 !important;
   }
   &__hr {
-    background-color: var(--menu-background-color);
+    background-color: var(--black2);
     border-bottom: none;
     width: 100%;
     display: flex;
+  }
+  &__add-icon {
+    position: absolute;
+    margin-right: var(--double-spacing);
   }
 }
