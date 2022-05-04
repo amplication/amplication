@@ -135,7 +135,7 @@ jobs:
               ARGO_CD_URL="argocd.amplication.com"
             fi
           fi
-          
+          ARGO_CD_URL="http://argocd-server.argocd"
           echo "GCP secret name: $GCP"
           echo "GITHUB_APP_CLIENT_SECRET secret name: $GITHUB_APP_CLIENT_SECRET"
           echo "GITHUB_APP_PRIVATE_KEY secret name: $GITHUB_APP_PRIVATE_KEY"
