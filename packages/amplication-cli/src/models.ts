@@ -993,7 +993,7 @@ export enum EnumActionStepStatus {
 }
 
 export enum EnumAuthProviderType {
-  Http = 'Http',
+  Basic = 'Basic',
   Jwt = 'Jwt',
 }
 

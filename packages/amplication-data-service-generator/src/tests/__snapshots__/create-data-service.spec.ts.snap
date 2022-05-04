@@ -38,7 +38,7 @@ import { EmptyList } from \\"./empty/EmptyList\\";
 import { EmptyCreate } from \\"./empty/EmptyCreate\\";
 import { EmptyEdit } from \\"./empty/EmptyEdit\\";
 import { EmptyShow } from \\"./empty/EmptyShow\\";
-import { httpAuthProvider } from \\"./auth-provider/ra-auth-http\\";
+import { basicAuthProvider } from \\"./auth-provider/ra-auth-basic\\";
 
 const App = (): React.ReactElement => {
   const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
@@ -59,7 +59,7 @@ const App = (): React.ReactElement => {
       <Admin
         title={\\"Sample Application\\"}
         dataProvider={dataProvider}
-        authProvider={httpAuthProvider}
+        authProvider={basicAuthProvider}
         theme={theme}
         dashboard={Dashboard}
         loginPage={Login}
@@ -2790,7 +2790,14 @@ import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
-import { AuthModule } from \\"./auth/auth.module\\";
+
+import {
+  // BasicStrategy,
+  // JwtStrategy,
+  // jwtSecretFactory,
+  AuthModule,
+} from \\"./auth/auth.module\\";
+
 import { HealthModule } from \\"./health/health.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { MorganModule } from \\"nest-morgan\\";
@@ -2808,6 +2815,9 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     CustomerModule,
     EmptyModule,
     ACLModule,
+    // BasicStrategy,
+    // JwtStrategy,
+    // jwtSecretFactory,
     AuthModule,
     HealthModule,
     SecretsManagerModule,
@@ -2943,9 +2953,9 @@ import { UserModule } from \\"../user/user.module\\";
 import { AuthController } from \\"./auth.controller\\";
 import { AuthResolver } from \\"./auth.resolver\\";
 import { AuthService } from \\"./auth.service\\";
-import { BasicStrategy } from \\"./basic/basic.strategy\\";
-import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
-import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
+// import { BasicStrategy } from \\"./basic/basic.strategy\\";
+// import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
+// import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
 import { PasswordService } from \\"./password.service\\";
 //@ts-ignore
 import { TokenService } from \\"./token.service\\";
@@ -2979,11 +2989,11 @@ import { TokenService } from \\"./token.service\\";
   ],
   providers: [
     AuthService,
-    BasicStrategy,
+    // BasicStrategy,
     PasswordService,
     AuthResolver,
-    JwtStrategy,
-    jwtSecretFactory,
+    // JwtStrategy,
+    // jwtSecretFactory,
     TokenService,
   ],
   controllers: [AuthController],
@@ -3297,78 +3307,6 @@ export const UserRoles = createParamDecorator(
     return data ? request.user[data] : request.user.roles;
   }
 );
-",
-  "server/src/auth/jwt/base/jwt.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { ExtractJwt, Strategy } from \\"passport-jwt\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../../user/user.service\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class JwtStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
-  constructor(
-    protected readonly userService: UserService,
-    protected readonly secretOrKey: string
-  ) {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey,
-    });
-  }
-
-  async validate(payload: UserInfo): Promise<UserInfo> {
-    const { username } = payload;
-    const user = await this.userService.findOne({
-      where: { username },
-    });
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
-}
-",
-  "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
-import { JWT_SECRET_KEY } from \\"../../constants\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../../user/user.service\\";
-import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
-@Injectable()
-export class JwtStrategy extends JwtStrategyBase {
-  constructor(
-    protected readonly userService: UserService,
-    @Inject(JWT_SECRET_KEY) secretOrKey: string
-  ) {
-    super(userService, secretOrKey);
-  }
-}
-",
-  "server/src/auth/jwt/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
-",
-  "server/src/auth/jwt/jwtSecretFactory.ts": "import { JWT_SECRET_KEY } from \\"../../constants\\";
-import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
-
-export const jwtSecretFactory = {
-  provide: JWT_SECRET_KEY,
-  useFactory: async (
-    secretsService: SecretsManagerService
-  ): Promise<string> => {
-    const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
-    if (secret) {
-      return secret;
-    }
-    throw new Error(\\"jwtSecretFactory missing secret\\");
-  },
-  inject: [SecretsManagerService],
-};
 ",
   "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
 import { Test, TestingModule } from \\"@nestjs/testing\\";
@@ -10640,43 +10578,43 @@ export const swaggerSetupOptions = {
   customSiteTitle: \\"Sample Application\\",
 };
 ",
-  "server/src/tests/auth/basic/basic.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { mock } from \\"jest-mock-extended\\";
-import { AuthService } from \\"../../../auth/auth.service\\";
-import { BasicStrategyBase } from \\"../../../auth/basic/base/basic.strategy.base\\";
-import { TEST_USER } from \\"../constants\\";
+  "server/src/tests/auth/basic/basic.strategy.spec.ts": "// import { UnauthorizedException } from \\"@nestjs/common\\";
+// import { mock } from \\"jest-mock-extended\\";
+// import { AuthService } from \\"../../../auth/auth.service\\";
+// import { BasicStrategyBase } from \\"../../../auth/basic/base/basic.strategy.base\\";
+// import { TEST_USER } from \\"../constants\\";
 
-describe(\\"Testing the basicStrategyBase.validate()\\", () => {
-  const TEST_PASSWORD = \\"gabay\\";
-  const authService = mock<AuthService>();
-  const basicStrategy = new BasicStrategyBase(authService);
-  beforeEach(() => {
-    authService.validateUser.mockClear();
-  });
-  beforeAll(() => {
-    //ARRANGE
-    authService.validateUser
-      .calledWith(TEST_USER.username, TEST_PASSWORD)
-      .mockReturnValue(Promise.resolve(TEST_USER));
-  });
-  it(\\"should return the user\\", async () => {
-    //ACT
-    const result = await basicStrategy.validate(
-      TEST_USER.username,
-      TEST_PASSWORD
-    );
-    //ASSERT
-    expect(result).toBe(TEST_USER);
-  });
-  it(\\"should throw error if there is not valid user\\", async () => {
-    //ARRANGE
-    authService.validateUser.mockReturnValue(Promise.resolve(null));
-    //ACT
-    const result = basicStrategy.validate(\\"noUsername\\", TEST_PASSWORD);
-    //ASSERT
-    return expect(result).rejects.toThrowError(UnauthorizedException);
-  });
-});
+// describe(\\"Testing the basicStrategyBase.validate()\\", () => {
+//   const TEST_PASSWORD = \\"gabay\\";
+//   const authService = mock<AuthService>();
+//   const basicStrategy = new BasicStrategyBase(authService);
+//   beforeEach(() => {
+//     authService.validateUser.mockClear();
+//   });
+//   beforeAll(() => {
+//     //ARRANGE
+//     authService.validateUser
+//       .calledWith(TEST_USER.username, TEST_PASSWORD)
+//       .mockReturnValue(Promise.resolve(TEST_USER));
+//   });
+//   it(\\"should return the user\\", async () => {
+//     //ACT
+//     const result = await basicStrategy.validate(
+//       TEST_USER.username,
+//       TEST_PASSWORD
+//     );
+//     //ASSERT
+//     expect(result).toBe(TEST_USER);
+//   });
+//   it(\\"should throw error if there is not valid user\\", async () => {
+//     //ARRANGE
+//     authService.validateUser.mockReturnValue(Promise.resolve(null));
+//     //ACT
+//     const result = basicStrategy.validate(\\"noUsername\\", TEST_PASSWORD);
+//     //ASSERT
+//     return expect(result).rejects.toThrowError(UnauthorizedException);
+//   });
+// });
 ",
   "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
 import { UserInfo } from \\"../../auth/UserInfo\\";
@@ -10692,34 +10630,34 @@ export const INVALID_CREDENTIALS: Credentials = {
   password: \\"Invalid User Password\\",
 };
 ",
-  "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { mock } from \\"jest-mock-extended\\";
-import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.strategy.base\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../../../user/user.service\\";
-import { TEST_USER } from \\"../constants\\";
+  "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "// import { UnauthorizedException } from \\"@nestjs/common\\";
+// import { mock } from \\"jest-mock-extended\\";
+// import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.strategy.base\\";
+// // @ts-ignore
+// // eslint-disable-next-line
+// import { UserService } from \\"../../../user/user.service\\";
+// import { TEST_USER } from \\"../constants\\";
 
-describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
-  const userService = mock<UserService>();
-  const jwtStrategy = new JwtStrategyBase(userService, \\"Secrete\\");
-  beforeEach(() => {
-    userService.findOne.mockClear();
-  });
-  it(\\"should throw UnauthorizedException where there is no user\\", async () => {
-    //ARRANGE
-    userService.findOne
-      .calledWith({ where: { username: TEST_USER.username } })
-      .mockReturnValue(Promise.resolve(null));
-    //ACT
-    const result = jwtStrategy.validate({
-      username: TEST_USER.username,
-      roles: TEST_USER.roles,
-    });
-    //ASSERT
-    return expect(result).rejects.toThrowError(UnauthorizedException);
-  });
-});
+// describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
+//   const userService = mock<UserService>();
+//   const jwtStrategy = new JwtStrategyBase(userService, \\"Secrete\\");
+//   beforeEach(() => {
+//     userService.findOne.mockClear();
+//   });
+//   it(\\"should throw UnauthorizedException where there is no user\\", async () => {
+//     //ARRANGE
+//     userService.findOne
+//       .calledWith({ where: { username: TEST_USER.username } })
+//       .mockReturnValue(Promise.resolve(null));
+//     //ACT
+//     const result = jwtStrategy.validate({
+//       username: TEST_USER.username,
+//       roles: TEST_USER.roles,
+//     });
+//     //ASSERT
+//     return expect(result).rejects.toThrowError(UnauthorizedException);
+//   });
+// });
 ",
   "server/src/tests/auth/token.service.spec.ts": "/* eslint-disable import/no-unresolved */
 //@ts-ignore

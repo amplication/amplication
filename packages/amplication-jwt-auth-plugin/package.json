@@ -1,0 +1,18 @@
+{
+    "name": "@amplication/jwt-auth-plugin",
+    "version": "0.12.6",
+    "private": true,
+    "main": "./index.js",
+    "scripts": {
+
+    },
+    "dependencies": {
+        "recast": "0.20.5",
+        "lodash": "4.17.20",
+        "ast-types": "0.14.2",
+        "fs-extra": "10.1.0"
+    },
+    "devDependencies": {
+    }
+  }
+  

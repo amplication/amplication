@@ -1,7 +1,7 @@
 import { AppInfo, Module } from "../../types";
-import { createDefaultGuard } from "./guards/createDefaultGuard";
 import { createTokenServiceTests } from "./token/createTokenSerivceTests";
 import { createTokenService } from "./token/createTokenService";
+import { createPluginModule } from "@amplication/basic-auth-plugin";
 
 export async function createAuthModules(
   srcDir: string,
@@ -11,9 +11,10 @@ export async function createAuthModules(
   const authTestsDir = `${srcDir}/tests/auth`;
   const { settings } = appInfo;
   const { authProvider } = settings;
-  const defaultGuardFile = await createDefaultGuard(authProvider);
+  const modules = await createPluginModule(authDir);
   return Promise.all([
-    defaultGuardFile,
+    // defaultGuardFile,
+    ...modules,
     createTokenService(authDir, authProvider),
     createTokenServiceTests(authTestsDir, authProvider),
   ]);

@@ -769,7 +769,7 @@ type PropertySelector {
 }
 
 enum EnumAuthProviderType {
-  Http
+  Basic
   Jwt
 }
 
