@@ -1,8 +1,10 @@
+import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import { Entity, EntityLookupField, Module } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
+import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import {
   interpolate,
   importNames,
@@ -261,7 +263,7 @@ async function createToOneRelationMethods(
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
-  interpolate(toOneFile, {
+  const toOneMapping = {
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
@@ -270,9 +272,20 @@ async function createToOneRelationMethods(
     GET_PROPERTY: createFieldFindOneFunctionId(field.name),
     FIND_ONE: builders.identifier(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findOneArgs.id,
-  });
+  };
 
-  return getMethods(getClassDeclarationById(toOneFile, MIXIN_ID));
+  interpolate(toOneFile, toOneMapping);
+
+  const classDeclaration = getClassDeclarationById(toOneFile, MIXIN_ID);
+
+  setEndpointPermissions(
+    classDeclaration,
+    toOneMapping["FIND_ONE"] as namedTypes.Identifier,
+    EnumEntityAction.Search,
+    relatedEntity
+  );
+
+  return getMethods(classDeclaration);
 }
 
 async function createToManyRelationMethods(
@@ -286,7 +299,7 @@ async function createToManyRelationMethods(
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
-  interpolate(toManyFile, {
+  const toManyMapping = {
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
@@ -295,7 +308,18 @@ async function createToManyRelationMethods(
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     FIND_MANY: builders.identifier(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findManyArgs.id,
-  });
+  };
 
-  return getMethods(getClassDeclarationById(toManyFile, MIXIN_ID));
+  interpolate(toManyFile, toManyMapping);
+
+  const classDeclaration = getClassDeclarationById(toManyFile, MIXIN_ID);
+
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["FIND_MANY"] as namedTypes.Identifier,
+    EnumEntityAction.Search,
+    relatedEntity
+  );
+
+  return getMethods(classDeclaration);
 }
