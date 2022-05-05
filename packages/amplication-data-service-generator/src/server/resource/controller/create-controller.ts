@@ -173,36 +173,32 @@ async function createControllerModule(
       )
     ).flat();
 
-    setEndpointPermissions(
-      classDeclaration,
-      mapping["CREATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.Create,
-      entity
-    );
-    setEndpointPermissions(
-      classDeclaration,
-      mapping["FIND_MANY_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.Search,
-      entity
-    );
-    setEndpointPermissions(
-      classDeclaration,
-      mapping["FIND_ONE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.View,
-      entity
-    );
-    setEndpointPermissions(
-      classDeclaration,
-      mapping["UPDATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.Update,
-      entity
-    );
-    setEndpointPermissions(
-      classDeclaration,
-      mapping["DELETE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.Delete,
-      entity
-    );
+    const methodsIdsActionPairs = {
+      [EnumEntityAction.Create]: mapping[
+        "CREATE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      [EnumEntityAction.Search]: mapping[
+        "FIND_MANY_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      [EnumEntityAction.View]: mapping[
+        "FIND_ONE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      [EnumEntityAction.Update]: mapping[
+        "UPDATE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      [EnumEntityAction.Delete]: mapping[
+        "DELETE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+    };
+
+    Object.entries(methodsIdsActionPairs).map(([action, methodId]) => {
+      return setEndpointPermissions(
+        classDeclaration,
+        methodId,
+        action as EnumEntityAction,
+        entity
+      );
+    });
 
     classDeclaration.body.body.push(...toManyRelationMethods);
 
@@ -289,30 +285,38 @@ async function createToManyRelationMethods(
     TO_MANY_MIXIN_ID
   );
 
-  setEndpointPermissions(
-    classDeclaration,
+  /** when object has two identical keys, the the first one is override by the latter
+   * on toManyMapping we have 2 methods ids that their action ie 'update' (update and connect)
+   * There is no way to switch between the action and the method id as the key in object
+   * must be a string or symbol, therefore, I used Map
+   **/
+  const toManyMethodsIdsActionPairs = new Map();
+
+  toManyMethodsIdsActionPairs.set(
     toManyMapping["FIND_MANY"] as namedTypes.Identifier,
-    EnumEntityAction.Search,
-    relatedEntity
+    EnumEntityAction.Search
   );
-  setEndpointPermissions(
-    classDeclaration,
+  toManyMethodsIdsActionPairs.set(
     toManyMapping["UPDATE"] as namedTypes.Identifier,
-    EnumEntityAction.Update,
-    relatedEntity
+    EnumEntityAction.Update
   );
-  setEndpointPermissions(
-    classDeclaration,
+  toManyMethodsIdsActionPairs.set(
     toManyMapping["CONNECT"] as namedTypes.Identifier,
-    EnumEntityAction.Update,
-    relatedEntity
+    EnumEntityAction.Update
   );
-  setEndpointPermissions(
-    classDeclaration,
+  toManyMethodsIdsActionPairs.set(
     toManyMapping["DISCONNECT"] as namedTypes.Identifier,
-    EnumEntityAction.Delete,
-    relatedEntity
+    EnumEntityAction.Delete
   );
+
+  toManyMethodsIdsActionPairs.forEach((action, methodId) => {
+    setEndpointPermissions(
+      classDeclaration,
+      methodId,
+      action as EnumEntityAction,
+      relatedEntity
+    );
+  });
 
   return getMethods(classDeclaration);
 }
