@@ -1,3 +1,4 @@
+import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -33,6 +34,7 @@ import {
   createFieldFindOneFunctionId,
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
+import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -187,6 +189,43 @@ async function createResolverModule(
         )
       )
     ).flat();
+
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["CREATE_MUTATION"] as namedTypes.Identifier,
+      EnumEntityAction.Create,
+      entity
+    );
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["ENTITIES_QUERY"] as namedTypes.Identifier,
+      EnumEntityAction.Search,
+      entity
+    );
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["META_QUERY"] as namedTypes.Identifier,
+      EnumEntityAction.Search,
+      entity
+    );
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["ENTITY_QUERY"] as namedTypes.Identifier,
+      EnumEntityAction.View,
+      entity
+    );
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["UPDATE_MUTATION"] as namedTypes.Identifier,
+      EnumEntityAction.Update,
+      entity
+    );
+    setEndpointPermissions(
+      classDeclaration,
+      mapping["DELETE_MUTATION"] as namedTypes.Identifier,
+      EnumEntityAction.Delete,
+      entity
+    );
 
     classDeclaration.body.body.push(
       ...toManyRelationMethods,
