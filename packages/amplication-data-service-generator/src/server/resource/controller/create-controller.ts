@@ -284,7 +284,10 @@ async function createToManyRelationMethods(
 
   interpolate(toManyFile, toManyMapping);
 
-  const classDeclaration = getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID)
+  const classDeclaration = getClassDeclarationById(
+    toManyFile,
+    TO_MANY_MIXIN_ID
+  );
 
   setEndpointPermissions(
     classDeclaration,
