@@ -190,42 +190,41 @@ async function createResolverModule(
       )
     ).flat();
 
-    setEndpointPermissions(
-      classDeclaration,
+    const methodsIdsActionPairs = new Map();
+
+    methodsIdsActionPairs.set(
       mapping["CREATE_MUTATION"] as namedTypes.Identifier,
-      EnumEntityAction.Create,
-      entity
+      EnumEntityAction.Create
     );
-    setEndpointPermissions(
-      classDeclaration,
+    methodsIdsActionPairs.set(
       mapping["ENTITIES_QUERY"] as namedTypes.Identifier,
-      EnumEntityAction.Search,
-      entity
+      EnumEntityAction.Search
     );
-    setEndpointPermissions(
-      classDeclaration,
+    methodsIdsActionPairs.set(
       mapping["META_QUERY"] as namedTypes.Identifier,
-      EnumEntityAction.Search,
-      entity
+      EnumEntityAction.Search
     );
-    setEndpointPermissions(
-      classDeclaration,
+    methodsIdsActionPairs.set(
       mapping["ENTITY_QUERY"] as namedTypes.Identifier,
-      EnumEntityAction.View,
-      entity
+      EnumEntityAction.View
     );
-    setEndpointPermissions(
-      classDeclaration,
+    methodsIdsActionPairs.set(
       mapping["UPDATE_MUTATION"] as namedTypes.Identifier,
-      EnumEntityAction.Update,
-      entity
+      EnumEntityAction.Update
     );
-    setEndpointPermissions(
-      classDeclaration,
+    methodsIdsActionPairs.set(
       mapping["DELETE_MUTATION"] as namedTypes.Identifier,
-      EnumEntityAction.Delete,
-      entity
+      EnumEntityAction.Delete
     );
+
+    methodsIdsActionPairs.forEach((action, methodId) => {
+      setEndpointPermissions(
+        classDeclaration,
+        methodId,
+        action as EnumEntityAction,
+        entity
+      );
+    });
 
     classDeclaration.body.body.push(
       ...toManyRelationMethods,
