@@ -42,7 +42,7 @@ export function removeIdentifierFromUseInterceptorDecorator(
   node: ASTNode,
   decoratorName: string,
   argToDelete: string /** @todo: change to string[] */
-): namedTypes.Decorator {
+): namedTypes.Decorator | boolean {
   let decorator: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
     visitDecorator(path) {
@@ -61,12 +61,28 @@ export function removeIdentifierFromUseInterceptorDecorator(
       }
       return this.traverse(path);
     },
+    // Recast has a bug of traversing class decorators
+    // This method fixes it
+    visitClassDeclaration(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class property decorators
+    // This method fixes it
+    visitClassProperty(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
   });
 
   if (!decorator) {
-    throw new Error(
-      `Could not find class decorator with the name ${decoratorName} in provided AST node`
-    );
+    return false;
   }
 
   return decorator;

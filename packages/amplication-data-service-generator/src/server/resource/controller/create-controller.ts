@@ -173,8 +173,6 @@ async function createControllerModule(
       )
     ).flat();
 
-    classDeclaration.body.body.push(...toManyRelationMethods);
-
     setEndpointPermissions(
       classDeclaration,
       mapping["CREATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
@@ -206,20 +204,7 @@ async function createControllerModule(
       entity
     );
 
-    toManyRelationFields.map((field) => {
-      const toManyFunctionMapping = {
-        FIND_MANY: builders.identifier(camelCase(`findMany ${field.name}`)),
-        CONNECT: builders.identifier(camelCase(`connect ${field.name}`)),
-        DISCONNECT: builders.identifier(camelCase(`disconnect ${field.name}`)),
-        UPDATE: builders.identifier(camelCase(`update ${field.name}`)),
-      };
-
-      return setToManyEndpointPermission(
-        classDeclaration,
-        toManyFunctionMapping,
-        entity
-      );
-    });
+    classDeclaration.body.body.push(...toManyRelationMethods);
 
     const dtoNameToPath = getDTONameToPath(dtos);
     const dtoImports = importContainedIdentifiers(
@@ -264,37 +249,6 @@ export function createControllerBaseId(
   return builders.identifier(`${entityType}ControllerBase`);
 }
 
-function setToManyEndpointPermission(
-  classDeclaration: namedTypes.ClassDeclaration,
-  toManyMapping: { [key: string]: ASTNode | undefined },
-  entity: Entity
-) {
-  setEndpointPermissions(
-    classDeclaration,
-    toManyMapping["FIND_MANY"] as namedTypes.Identifier,
-    EnumEntityAction.Search,
-    entity
-  );
-  setEndpointPermissions(
-    classDeclaration,
-    toManyMapping["UPDATE"] as namedTypes.Identifier,
-    EnumEntityAction.Update,
-    entity
-  );
-  setEndpointPermissions(
-    classDeclaration,
-    toManyMapping["CONNECT"] as namedTypes.Identifier,
-    EnumEntityAction.Update,
-    entity
-  );
-  setEndpointPermissions(
-    classDeclaration,
-    toManyMapping["DISCONNECT"] as namedTypes.Identifier,
-    EnumEntityAction.Delete,
-    entity
-  );
-}
-
 async function createToManyRelationMethods(
   field: EntityLookupField,
   entityType: string,
@@ -330,5 +284,32 @@ async function createToManyRelationMethods(
 
   interpolate(toManyFile, toManyMapping);
 
-  return getMethods(getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID));
+  const classDeclaration = getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID)
+
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["FIND_MANY"] as namedTypes.Identifier,
+    EnumEntityAction.Search,
+    relatedEntity
+  );
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["UPDATE"] as namedTypes.Identifier,
+    EnumEntityAction.Update,
+    relatedEntity
+  );
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["CONNECT"] as namedTypes.Identifier,
+    EnumEntityAction.Update,
+    relatedEntity
+  );
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["DISCONNECT"] as namedTypes.Identifier,
+    EnumEntityAction.Delete,
+    relatedEntity
+  );
+
+  return getMethods(classDeclaration);
 }
