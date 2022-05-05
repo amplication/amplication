@@ -285,10 +285,10 @@ async function createToManyRelationMethods(
     TO_MANY_MIXIN_ID
   );
 
-  /** when object has two identical keys, the the first one is override by the latter
+  /** when an object has two identical keys, the first one gets override by the latter
    * on toManyMapping we have 2 methods ids that their action ie 'update' (update and connect)
-   * There is no way to switch between the action and the method id as the key in object
-   * must be a string or symbol, therefore, I used Map
+   * In object the key must be a string or symbol. Therefore,
+   * I used Map because there is no way to use the method id as the key and the action as a value
    **/
   const toManyMethodsIdsActionPairs = new Map();
 
