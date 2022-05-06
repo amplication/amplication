@@ -1,4 +1,9 @@
-import { CircleBadge, Snackbar } from "@amplication/design-system";
+import {
+  Button,
+  CircleBadge,
+  EnumButtonStyle,
+  Snackbar,
+} from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import React from "react";
@@ -15,11 +20,13 @@ import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import { COLOR_TO_NAME } from "./constants";
+import GithubTileFooter from "./GithubTileFooter";
 // import EntitiesTile from "./EntitiesTile";
 import NewVersionTile from "./NewVersionTile";
+import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import OverviewTile from "./OverviewTile";
-import RolesTile from "./RolesTile";
-import SyncWithGithubTile from "./SyncWithGithubTile";
+// import RolesTile from "./RolesTile";
+// import SyncWithGithubTile from "./SyncWithGithubTile";
 
 type Props = {
   match: match<{ application: string }>;
@@ -111,9 +118,83 @@ function ApplicationHome({ match }: Props) {
                     <div className={`${CLASS_NAME}__tiles`}>
                       <NewVersionTile applicationId={applicationId} />
                       {/* <EntitiesTile applicationId={applicationId} /> */}
-                      <OverviewTile/>
-                      <RolesTile applicationId={applicationId} />
-                      <SyncWithGithubTile applicationId={applicationId} />
+                      <OverviewTile />
+                      <OverviewSecondaryTile
+                        icon="github"
+                        title="Sync with GitHub"
+                        message="Push the Amplication-generated app to your GitHub repo. Track changes, track our code. You are in full control of your app."
+                        footer={<GithubTileFooter />}
+                      />
+                      <OverviewSecondaryTile
+                        icon="database"
+                        title="Entities"
+                        headerExtra="3 entities"
+                        message="Define your own data model. Keep using the Amplication Console. It is here to help you out with its simple and intuitive interface."
+                        footer={
+                          <Button
+                            buttonStyle={EnumButtonStyle.Outline}
+                            type="button"
+                          >
+                            Go to entities
+                          </Button>
+                        }
+                      />
+                      <OverviewSecondaryTile
+                        icon="roles_outline"
+                        title="Roles"
+                        headerExtra="2 roles"
+                        message="Create roles and define permissions. Whether at the Entity level or the Field level, granularity is key."
+                        footer={
+                          <Button
+                            buttonStyle={EnumButtonStyle.Outline}
+                            type="button"
+                          >
+                            Go to roles
+                          </Button>
+                        }
+                      />{" "}
+                      <OverviewSecondaryTile
+                        icon="file_text"
+                        title="Read the Docs"
+                        message="When in doubt, read the docs. You’ll become an expert in no time."
+                        footer={
+                          <Button
+                            buttonStyle={EnumButtonStyle.Outline}
+                            type="button"
+                          >
+                            Go to docs
+                          </Button>
+                        }
+                      />
+                      <OverviewSecondaryTile
+                        icon="main_logo"
+                        title="Submit a feature request"
+                        message="If there’s something you’d like to see in Amplication, open a Feature Request on GitHub and tell us about it."
+                        footer={
+                          <Button
+                            buttonStyle={EnumButtonStyle.Outline}
+                            type="button"
+                          >
+                            Share your idea
+                          </Button>
+                        }
+                      />
+                      <OverviewSecondaryTile
+                        icon="code"
+                        title="Code View"
+                        message="We continuously add new features to Amplication. Soon you’ll be able to access the generated code within the Amplication Console."
+                        footer={
+                          <Button
+                            buttonStyle={EnumButtonStyle.Outline}
+                            type="button"
+                          >
+                            View roadmap
+                          </Button>
+                        }
+                        showComingSoon
+                      />
+                      {/* <RolesTile applicationId={applicationId} />
+                      <SyncWithGithubTile applicationId={applicationId} /> */}
                     </div>
                   )}
                 />
