@@ -1,7 +1,12 @@
 import { exec } from "child_process";
 import { satisfies } from "semver";
 import { createLogger, format, Logger, transports } from "winston";
+const ora = require("ora");
+
 const { combine, colorize, simple } = format;
+
+const spinner = ora();
+spinner.color = "green";
 
 class Task {
   constructor(public command: string, public label: string) {}
@@ -40,11 +45,12 @@ function preValidate() {
 }
 async function runFunction(task: Task, logger: Logger): Promise<string> {
   logger.info(`Starting ${task.label}`);
+  spinner.start(`Executing ${task.label}` + "\n");
   return new Promise((resolve, reject) => {
     exec(task.command, (error, stdout, stderr) => {
       error && reject(error);
       if (stdout) {
-        logger.info(`Finish ${task.label}`);
+        spinner.succeed(`Finished ${task.label}`);
         stdout && resolve(task.label);
       }
     });
@@ -63,11 +69,13 @@ const clientStep: Task[] = [
     label: "Client build",
   },
 ];
-const serverBuild: Task[] = [
+const prismaGeneration: Task[] = [
   {
     command: "npm run prisma:generate",
     label: "prisma generation",
   },
+];
+const serverBuild: Task[] = [
   {
     command:
       "npm run build -- --scope @amplication/server --include-dependencies",
@@ -96,6 +104,7 @@ const dockerInit: Task[] = [
 const tasks: Task[][] = [
   bootstrap,
   clientStep,
+  prismaGeneration,
   serverBuild,
   graphqlGeneration,
   docker,
@@ -103,23 +112,28 @@ const tasks: Task[][] = [
 ];
 if (require.main === module) {
   (async () => {
-    preValidate();
-    logger.info(`Welcome to Amplication installer!`);
-    logger.info(
-      "This script will help you easily set up a running amplication server"
-    );
-    console.log("");
-
-    for (let i = 0; i < tasks.length; i++) {
-      const step = tasks[i];
-
-      logger.info(`Starting step ${i + 1}/${tasks.length}`);
-      const tasksPromises = step.map((task) => {
-        return runFunction(task, logger);
-      });
-      await Promise.all(tasksPromises);
+    try {
+      preValidate();
+      logger.info(`Welcome to Amplication installer!`);
+      logger.info(
+        "This script will help you easily set up a running amplication server"
+      );
       console.log("");
+
+      for (let i = 0; i < tasks.length; i++) {
+        const step = tasks[i];
+
+        logger.info(`Starting step ${i + 1}/${tasks.length}`);
+        const tasksPromises = step.map((task) => {
+          return runFunction(task, logger);
+        });
+        await Promise.all(tasksPromises);
+        console.log("");
+      }
+      logger.info("Finish all the process for the setup, have fun hacking");
+    } catch (error) {
+      spinner.fail(error.message);
+      console.error(error.message);
     }
-    logger.info("Finish all the process for the setup, have fun hacking");
   })();
 }
