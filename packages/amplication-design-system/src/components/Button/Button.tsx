@@ -14,6 +14,7 @@ export enum EnumButtonStyle {
   Secondary = "secondary",
   CallToAction = "call-to-action",
   Clear = "clear",
+  Outline = "outline",
 }
 
 export enum EnumIconPosition {
