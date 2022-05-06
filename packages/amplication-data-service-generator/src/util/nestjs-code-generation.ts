@@ -5,6 +5,7 @@
 import { builders, namedTypes, ASTNode } from "ast-types";
 import { findConstructor } from "./ast";
 import * as recast from "recast";
+import { USE_INTERCEPTORS_DECORATOR_NAME } from "./set-endpoint-permission";
 
 /**
  * Adds a Nest.js injectable dependency to given classDeclaration
@@ -40,9 +41,9 @@ export function addInjectableDependency(
 
 export function removeIdentifierFromUseInterceptorDecorator(
   node: ASTNode,
-  decoratorName: string,
-  argToDelete: string /** @todo: change to string[] */
+  identifier: string
 ): namedTypes.Decorator | boolean {
+  const decoratorName = USE_INTERCEPTORS_DECORATOR_NAME;
   let decorator: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
     visitDecorator(path) {
@@ -52,7 +53,7 @@ export function removeIdentifierFromUseInterceptorDecorator(
         const parentArgs: namedTypes.Identifier[] =
           callee.parentPath.node.arguments;
         const argToDeleteIndex = parentArgs.findIndex(
-          (arg) => arg.name === argToDelete
+          (arg) => arg.name === identifier
         );
         parentArgs.splice(argToDeleteIndex, 1);
         if (!parentArgs.length) {

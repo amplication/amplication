@@ -19,42 +19,39 @@ export function setEndpointPermissions(
   action: EnumEntityAction,
   entity: Entity
 ): void {
-  entity.permissions.find((entityPermission) => {
-    if (entityPermission.action === action) {
-      if (entityPermission.type === EnumEntityPermissionType.Public) {
-        const classMethod = getClassMethodById(classDeclaration, methodId);
-        assert(classMethod);
+  const publicAction = entity.permissions.find(
+    (entityPermission) =>
+      entityPermission.action === action &&
+      entityPermission.type === EnumEntityPermissionType.Public
+  );
 
-        if (
-          action === EnumEntityAction.Search ||
-          action === EnumEntityAction.View
-        ) {
-          removeIdentifierFromUseInterceptorDecorator(
-            classMethod,
-            USE_INTERCEPTORS_DECORATOR_NAME,
-            ACL_FILTER_RESPONSE_INTERCEPTOR_NAME
-          );
-        }
+  if (publicAction) {
+    const classMethod = getClassMethodById(classDeclaration, methodId);
+    assert(classMethod);
 
-        if (
-          action === EnumEntityAction.Create ||
-          action === EnumEntityAction.Update
-        ) {
-          removeIdentifierFromUseInterceptorDecorator(
-            classMethod,
-            USE_INTERCEPTORS_DECORATOR_NAME,
-            ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME
-          );
-        }
-
-        removeDecoratorByName(classMethod, USE_ROLES_DECORATOR_NAME);
-
-        const publicDecorator = createPublicDecorator();
-        classMethod.decorators?.push(publicDecorator);
-        /** @todo: add import conditionally */
-      }
-      return entity;
+    if (
+      action === EnumEntityAction.Search ||
+      action === EnumEntityAction.View
+    ) {
+      removeIdentifierFromUseInterceptorDecorator(
+        classMethod,
+        ACL_FILTER_RESPONSE_INTERCEPTOR_NAME
+      );
     }
-    return undefined;
-  });
+
+    if (
+      action === EnumEntityAction.Create ||
+      action === EnumEntityAction.Update
+    ) {
+      removeIdentifierFromUseInterceptorDecorator(
+        classMethod,
+        ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME
+      );
+    }
+
+    removeDecoratorByName(classMethod, USE_ROLES_DECORATOR_NAME);
+
+    const publicDecorator = createPublicDecorator();
+    classMethod.decorators?.unshift(publicDecorator);
+  }
 }

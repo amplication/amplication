@@ -173,31 +173,34 @@ async function createControllerModule(
       )
     ).flat();
 
-    const methodsIdsActionPairs = {
-      [EnumEntityAction.Create]: mapping[
-        "CREATE_ENTITY_FUNCTION"
-      ] as namedTypes.Identifier,
-      [EnumEntityAction.Search]: mapping[
-        "FIND_MANY_ENTITY_FUNCTION"
-      ] as namedTypes.Identifier,
-      [EnumEntityAction.View]: mapping[
-        "FIND_ONE_ENTITY_FUNCTION"
-      ] as namedTypes.Identifier,
-      [EnumEntityAction.Update]: mapping[
-        "UPDATE_ENTITY_FUNCTION"
-      ] as namedTypes.Identifier,
-      [EnumEntityAction.Delete]: mapping[
-        "DELETE_ENTITY_FUNCTION"
-      ] as namedTypes.Identifier,
-    };
+    const methodsIdsActionPairs = new Map<
+      namedTypes.Identifier,
+      EnumEntityAction
+    >();
 
-    Object.entries(methodsIdsActionPairs).map(([action, methodId]) => {
-      return setEndpointPermissions(
-        classDeclaration,
-        methodId,
-        action as EnumEntityAction,
-        entity
-      );
+    methodsIdsActionPairs.set(
+      mapping["CREATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Create
+    );
+    methodsIdsActionPairs.set(
+      mapping["FIND_MANY_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Search
+    );
+    methodsIdsActionPairs.set(
+      mapping["FIND_ONE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.View
+    );
+    methodsIdsActionPairs.set(
+      mapping["UPDATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Update
+    );
+    methodsIdsActionPairs.set(
+      mapping["DELETE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Delete
+    );
+
+    methodsIdsActionPairs.forEach((action, methodId) => {
+      setEndpointPermissions(classDeclaration, methodId, action, entity);
     });
 
     classDeclaration.body.body.push(...toManyRelationMethods);
@@ -285,37 +288,30 @@ async function createToManyRelationMethods(
     TO_MANY_MIXIN_ID
   );
 
-  /** when an object has two identical keys, the first one gets override by the latter
-   * on toManyMapping we have 2 methods ids that their action ie 'update' (update and connect)
-   * In object the key must be a string or symbol. Therefore,
-   * I used Map because there is no way to use the method id as the key and the action as a value
-   **/
-  const toManyMethodsIdsActionPairs = new Map();
+  const toManyMethodsIdsActionPairs = new Map<
+    namedTypes.Identifier,
+    EnumEntityAction
+  >();
 
   toManyMethodsIdsActionPairs.set(
-    toManyMapping["FIND_MANY"] as namedTypes.Identifier,
+    toManyMapping["FIND_MANY"],
     EnumEntityAction.Search
   );
   toManyMethodsIdsActionPairs.set(
-    toManyMapping["UPDATE"] as namedTypes.Identifier,
+    toManyMapping["UPDATE"],
     EnumEntityAction.Update
   );
   toManyMethodsIdsActionPairs.set(
-    toManyMapping["CONNECT"] as namedTypes.Identifier,
+    toManyMapping["CONNECT"],
     EnumEntityAction.Update
   );
   toManyMethodsIdsActionPairs.set(
-    toManyMapping["DISCONNECT"] as namedTypes.Identifier,
+    toManyMapping["DISCONNECT"],
     EnumEntityAction.Delete
   );
 
   toManyMethodsIdsActionPairs.forEach((action, methodId) => {
-    setEndpointPermissions(
-      classDeclaration,
-      methodId,
-      action as EnumEntityAction,
-      relatedEntity
-    );
+    setEndpointPermissions(classDeclaration, methodId, action, relatedEntity);
   });
 
   return getMethods(classDeclaration);

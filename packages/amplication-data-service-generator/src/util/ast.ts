@@ -780,6 +780,8 @@ export function createGenericArray(
   );
 }
 
+// This function removes all instances of a decorator by its name.
+// in case the same decorator exists multiple times, it will be removed from all locations
 export function removeDecoratorByName(
   node: ASTNode,
   decoratorName: string
@@ -819,38 +821,4 @@ export function removeDecoratorByName(
   }
 
   return true;
-}
-
-export function setDecoratorState(
-  node: ASTNode,
-  decoratorName: string,
-  argToDelete: string /** @todo: change to string[] */
-): namedTypes.Decorator {
-  let decorator: namedTypes.ClassDeclaration | null = null;
-  recast.visit(node, {
-    visitDecorator(path) {
-      const callee = path.get("expression", "callee");
-      if (callee.value && callee.value.name === decoratorName) {
-        decorator = path.value;
-        const parentArgs: namedTypes.Identifier[] =
-          callee.parentPath.node.arguments;
-        const argToDeleteIndex = parentArgs.findIndex(
-          (arg) => arg.name === argToDelete
-        );
-        parentArgs.splice(argToDeleteIndex, 1);
-        if (!parentArgs.length) {
-          path.prune();
-        }
-      }
-      return this.traverse(path);
-    },
-  });
-
-  if (!decorator) {
-    throw new Error(
-      `Could not find class decorator with the name ${decoratorName} in provided AST node`
-    );
-  }
-
-  return decorator;
 }
