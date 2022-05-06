@@ -190,7 +190,10 @@ async function createResolverModule(
       )
     ).flat();
 
-    const methodsIdsActionPairs = new Map();
+    const methodsIdsActionPairs = new Map<
+      namedTypes.Identifier,
+      EnumEntityAction
+    >();
 
     methodsIdsActionPairs.set(
       mapping["CREATE_MUTATION"] as namedTypes.Identifier,
@@ -218,12 +221,7 @@ async function createResolverModule(
     );
 
     methodsIdsActionPairs.forEach((action, methodId) => {
-      setEndpointPermissions(
-        classDeclaration,
-        methodId,
-        action as EnumEntityAction,
-        entity
-      );
+      setEndpointPermissions(classDeclaration, methodId, action, entity);
     });
 
     classDeclaration.body.body.push(
