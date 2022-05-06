@@ -1,0 +1,34 @@
+@import "../../style/index.scss";
+
+.github-tile-footer {
+  &__user-details {
+    @include flexVerticalCenter();
+    margin-bottom: 12px;
+
+    &__circle-badge {
+      width: 20px;
+      height: 20px;
+      box-sizing: border-box;
+      color: var(--static-white);
+      border: none;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--secondary-turquoise);
+    }
+
+    &__name {
+      margin-left: 8px;
+      color: var(--black80);
+    }
+  }
+
+  &__sync-details {
+    @include flexVerticalCenter();
+    &__text {
+      margin-left: 8px;
+      color: var(--black100);
+    }
+  }
+}
