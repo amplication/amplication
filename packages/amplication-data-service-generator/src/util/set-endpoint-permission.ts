@@ -8,7 +8,6 @@ import { removeIdentifierFromUseInterceptorDecorator } from "./nestjs-code-gener
 
 export const USE_ROLES_DECORATOR_NAME = "UseRoles";
 export const USE_INTERCEPTORS_DECORATOR_NAME = "UseInterceptors";
-export const PUBLIC_DECORATOR_NAME = "Public";
 
 const ACL_FILTER_RESPONSE_INTERCEPTOR_NAME = "AclFilterResponseInterceptor";
 const ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME = "AclValidateRequestInterceptor";

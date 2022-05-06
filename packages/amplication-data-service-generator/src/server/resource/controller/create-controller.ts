@@ -1,3 +1,4 @@
+import { IMPORTABLE_DECORATORS_NAMES } from "./../../../util/create-decorators-imports";
 import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
@@ -210,7 +211,11 @@ async function createControllerModule(
       file,
       getImportableDTOs(moduleBasePath, dtoNameToPath)
     );
-    addImports(file, [serviceImport, ...dtoImports]);
+    const decoratorImports = importContainedIdentifiers(
+      file,
+      IMPORTABLE_DECORATORS_NAMES
+    );
+    addImports(file, [serviceImport, ...decoratorImports, ...dtoImports]);
   }
 
   if (!isBaseClass) {
