@@ -11,6 +11,7 @@ interface Props {
   footer: React.ReactNode;
   headerExtra?: React.ReactNode;
   showComingSoon?: boolean;
+  onClick?: (e) => void;
 }
 const OverviewSecondaryTile: React.FC<Props> = ({
   title,
@@ -19,12 +20,14 @@ const OverviewSecondaryTile: React.FC<Props> = ({
   footer,
   headerExtra,
   showComingSoon,
+  onClick,
 }) => {
   return (
     <Panel
-      clickable={false}
+      clickable={!!onClick}
       panelStyle={EnumPanelStyle.Bordered}
       className={CLASS_NAME}
+      onClick={onClick}
     >
       <>
         <div className={`${CLASS_NAME}__header`}>

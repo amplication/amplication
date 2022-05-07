@@ -1,24 +1,63 @@
 import React from "react";
-import { Icon } from "@amplication/design-system";
+import { CircularProgress, Icon } from "@amplication/design-system";
 import "./GithubTileFooter.scss";
+import { GitRepository } from "../SyncWithGithubTile";
+import { githubOrganizationImageUrl } from "../../util/github";
+import { format } from "date-fns";
 
 const CLASS_NAME = "github-tile-footer";
 
-const GithubTileFooter: React.FC = () => {
+interface Props {
+  loading: boolean;
+  gitRepository?: GitRepository;
+}
+
+const GithubTileFooter: React.FC<Props> = ({ loading, gitRepository }) => {
+  if (loading) {
+    return <CircularProgress />;
+  }
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__user-details`}>
-        <div className={`${CLASS_NAME}__user-details__circle-badge`}>M</div>
-        <div className={`${CLASS_NAME}__user-details__name`}>
-          alexbass86/alexbass86
-        </div>
+        {!gitRepository ? (
+          <>
+            <Icon
+              className={`${CLASS_NAME}__user-details__info-icon`}
+              icon="info_circle"
+            />{" "}
+            <div>You are not connected to a GitHub repository</div>
+          </>
+        ) : (
+          <>
+            <img
+              className={`${CLASS_NAME}__user-details__dp`}
+              src={githubOrganizationImageUrl(
+                gitRepository?.gitOrganization?.name
+              )}
+              alt="Git organization"
+            />
+            <div className={`${CLASS_NAME}__user-details__name`}>
+              {gitRepository?.gitOrganization?.name}/{gitRepository?.name}
+            </div>
+          </>
+        )}
       </div>
-      <div className={`${CLASS_NAME}__sync-details`}>
-        <Icon icon={"history_commit_outline"} size="medium" />
-        <div className={`${CLASS_NAME}__sync-details__text`}>
-          Last sync: 04/04/2022 3:13 PM
+      {gitRepository && (
+        <div className={`${CLASS_NAME}__sync-details`}>
+          <Icon icon={"history_commit_outline"} size="medium" />
+          <div className={`${CLASS_NAME}__sync-details__text`}>
+            {gitRepository?.githubLastSync ? (
+              <>
+                Last sync:{" "}
+                {format(new Date(gitRepository?.githubLastSync), "Pp")}
+              </>
+            ) : (
+              "Not synced yet"
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

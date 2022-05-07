@@ -5,17 +5,20 @@
     @include flexVerticalCenter();
     margin-bottom: 12px;
 
-    &__circle-badge {
+    &__info-icon {
+      color: var(--negative);
+      margin-right: 8px;
+    }
+
+    &__dp {
       width: 20px;
       height: 20px;
       box-sizing: border-box;
-      color: var(--static-white);
       border: none;
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background-color: var(--secondary-turquoise);
     }
 
     &__name {

@@ -18,15 +18,11 @@ import { COLOR_TO_NAME } from "./constants";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";
-import GithubTileFooter from "./GithubTileFooter";
-// import EntitiesTile from "./EntitiesTile";
 import NewVersionTile from "./NewVersionTile";
-import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import OverviewTile from "./OverviewTile";
 import RolesTile from "./RolesTile";
+import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewRoadmapTile from "./ViewRoadmapTile";
-// import RolesTile from "./RolesTile";
-// import SyncWithGithubTile from "./SyncWithGithubTile";
 
 type Props = {
   match: match<{ application: string }>;
@@ -118,19 +114,12 @@ function ApplicationHome({ match }: Props) {
                     <div className={`${CLASS_NAME}__tiles`}>
                       <NewVersionTile applicationId={applicationId} />
                       <OverviewTile applicationId={applicationId} />
-                      <OverviewSecondaryTile
-                        icon="github"
-                        title="Sync with GitHub"
-                        message="Push the Amplication-generated app to your GitHub repo. Track changes, track our code. You are in full control of your app."
-                        footer={<GithubTileFooter />}
-                      />
+                      <SyncWithGithubTile applicationId={applicationId} />
                       <EntitiesTile applicationId={applicationId} />
                       <RolesTile applicationId={applicationId} />
                       <DocsTile />
                       <FeatureRequestTile />
                       <ViewRoadmapTile />
-                      {/*
-                      <SyncWithGithubTile applicationId={applicationId} /> */}
                     </div>
                   )}
                 />
