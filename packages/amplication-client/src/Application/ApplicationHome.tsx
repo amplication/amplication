@@ -22,6 +22,7 @@ import "./ApplicationHome.scss";
 import { COLOR_TO_NAME } from "./constants";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
+import FeatureRequestTile from "./FeatureRequestTile";
 import GithubTileFooter from "./GithubTileFooter";
 // import EntitiesTile from "./EntitiesTile";
 import NewVersionTile from "./NewVersionTile";
@@ -130,19 +131,7 @@ function ApplicationHome({ match }: Props) {
                       <EntitiesTile applicationId={applicationId} />
                       <RolesTile applicationId={applicationId} />
                       <DocsTile />
-                      <OverviewSecondaryTile
-                        icon="main_logo"
-                        title="Submit a feature request"
-                        message="If there’s something you’d like to see in Amplication, open a Feature Request on GitHub and tell us about it."
-                        footer={
-                          <Button
-                            buttonStyle={EnumButtonStyle.Outline}
-                            type="button"
-                          >
-                            Share your idea
-                          </Button>
-                        }
-                      />
+                      <FeatureRequestTile />
                       <OverviewSecondaryTile
                         icon="code"
                         title="Code View"
