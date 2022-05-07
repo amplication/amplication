@@ -35,7 +35,8 @@ import {
   createFieldFindOneFunctionId,
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
-import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
+
+import { IMPORTABLE_DECORATORS_NAMES } from "../../../util/create-decorators-imports";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -252,7 +253,11 @@ async function createResolverModule(
     file,
     getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)
   );
-  addImports(file, [...dtoImports]);
+  const decoratorImports = importContainedIdentifiers(
+    file,
+    IMPORTABLE_DECORATORS_NAMES
+  );
+  addImports(file, [...decoratorImports, ...dtoImports]);
 
   const serviceImport = importNames(
     [serviceId],
