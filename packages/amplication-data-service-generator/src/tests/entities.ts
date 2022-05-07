@@ -362,7 +362,7 @@ const ORDER: Entity = {
       action: EnumEntityAction.Search,
       permissionFields: [],
       permissionRoles: [],
-      type: EnumEntityPermissionType.AllRoles,
+      type: EnumEntityPermissionType.Public,
     },
     {
       action: EnumEntityAction.Update,
@@ -374,7 +374,7 @@ const ORDER: Entity = {
       action: EnumEntityAction.View,
       permissionFields: [],
       permissionRoles: [],
-      type: EnumEntityPermissionType.AllRoles,
+      type: EnumEntityPermissionType.Public,
     },
   ],
 };

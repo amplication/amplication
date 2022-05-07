@@ -5096,6 +5096,7 @@ import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\"
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { CustomerService } from \\"../customer.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -5392,12 +5393,7 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Get(\\"/:id/orders\\")
   @ApiNestedQuery(OrderFindManyArgs)
   async findManyOrders(
@@ -5549,6 +5545,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
@@ -5711,13 +5708,8 @@ export class CustomerResolverBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.ResolveField(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async orders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
@@ -7953,6 +7945,7 @@ import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\"
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { OrderService } from \\"../order.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
@@ -8002,12 +7995,7 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
@@ -8033,12 +8021,7 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8213,6 +8196,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
@@ -8230,12 +8214,8 @@ export class OrderResolverBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @Public()
   @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _ordersMeta(
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -8249,24 +8229,14 @@ export class OrderResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => Order, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
