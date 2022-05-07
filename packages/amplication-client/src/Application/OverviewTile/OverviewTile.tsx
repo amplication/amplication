@@ -1,10 +1,25 @@
 import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import "./OverviewTile.scss";
+import { useQuery } from "@apollo/client";
+import { GET_APP_SETTINGS } from "../ApplicationAuthSettingForm";
+import * as models from "../../models";
+
+type Props = {
+  applicationId: string;
+};
 
 const CLASS_NAME = "overview-tile";
 
-const OverviewTile: React.FC = () => {
+const OverviewTile: React.FC<Props> = ({ applicationId }: Props) => {
+  const { data } = useQuery<{
+    appSettings: models.AppSettings;
+  }>(GET_APP_SETTINGS, {
+    variables: {
+      id: applicationId,
+    },
+  });
+
   return (
     <Panel
       clickable={false}
@@ -61,7 +76,7 @@ const OverviewTile: React.FC = () => {
             <div className={`${CLASS_NAME}__content__item__text`}>
               Authentication
               <span className={`${CLASS_NAME}__content__item__text--blue`}>
-                Passport JWT
+                {models.AuthProviderLabels[data?.appSettings.authProvider]}
               </span>
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>Jest</div>

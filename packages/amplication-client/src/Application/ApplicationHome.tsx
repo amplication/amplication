@@ -117,7 +117,7 @@ function ApplicationHome({ match }: Props) {
                   component={() => (
                     <div className={`${CLASS_NAME}__tiles`}>
                       <NewVersionTile applicationId={applicationId} />
-                      <OverviewTile />
+                      <OverviewTile applicationId={applicationId} />
                       <OverviewSecondaryTile
                         icon="github"
                         title="Sync with GitHub"

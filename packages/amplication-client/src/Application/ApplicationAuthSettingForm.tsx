@@ -139,7 +139,7 @@ const UPDATE_APP_SETTINGS = gql`
   }
 `;
 
-const GET_APP_SETTINGS = gql`
+export const GET_APP_SETTINGS = gql`
   query appSettings($id: String!) {
     appSettings(where: { id: $id }) {
       id
