@@ -1,9 +1,4 @@
-import {
-  Button,
-  CircleBadge,
-  EnumButtonStyle,
-  Snackbar,
-} from "@amplication/design-system";
+import { CircleBadge, Snackbar } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import React from "react";
@@ -29,6 +24,7 @@ import NewVersionTile from "./NewVersionTile";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import OverviewTile from "./OverviewTile";
 import RolesTile from "./RolesTile";
+import ViewRoadmapTile from "./ViewRoadmapTile";
 // import RolesTile from "./RolesTile";
 // import SyncWithGithubTile from "./SyncWithGithubTile";
 
@@ -132,20 +128,7 @@ function ApplicationHome({ match }: Props) {
                       <RolesTile applicationId={applicationId} />
                       <DocsTile />
                       <FeatureRequestTile />
-                      <OverviewSecondaryTile
-                        icon="code"
-                        title="Code View"
-                        message="We continuously add new features to Amplication. Soon you’ll be able to access the generated code within the Amplication Console."
-                        footer={
-                          <Button
-                            buttonStyle={EnumButtonStyle.Outline}
-                            type="button"
-                          >
-                            View roadmap
-                          </Button>
-                        }
-                        showComingSoon
-                      />
+                      <ViewRoadmapTile />
                       {/*
                       <SyncWithGithubTile applicationId={applicationId} /> */}
                     </div>
