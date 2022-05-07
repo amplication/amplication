@@ -26,6 +26,7 @@ import GithubTileFooter from "./GithubTileFooter";
 import NewVersionTile from "./NewVersionTile";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import OverviewTile from "./OverviewTile";
+import RolesTile from "./RolesTile";
 // import RolesTile from "./RolesTile";
 // import SyncWithGithubTile from "./SyncWithGithubTile";
 
@@ -118,7 +119,6 @@ function ApplicationHome({ match }: Props) {
                   component={() => (
                     <div className={`${CLASS_NAME}__tiles`}>
                       <NewVersionTile applicationId={applicationId} />
-                      {/* <EntitiesTile applicationId={applicationId} /> */}
                       <OverviewTile />
                       <OverviewSecondaryTile
                         icon="github"
@@ -127,20 +127,7 @@ function ApplicationHome({ match }: Props) {
                         footer={<GithubTileFooter />}
                       />
                       <EntitiesTile applicationId={applicationId} />
-                      <OverviewSecondaryTile
-                        icon="roles_outline"
-                        title="Roles"
-                        headerExtra="2 roles"
-                        message="Create roles and define permissions. Whether at the Entity level or the Field level, granularity is key."
-                        footer={
-                          <Button
-                            buttonStyle={EnumButtonStyle.Outline}
-                            type="button"
-                          >
-                            Go to roles
-                          </Button>
-                        }
-                      />{" "}
+                      <RolesTile applicationId={applicationId} />
                       <OverviewSecondaryTile
                         icon="file_text"
                         title="Read the Docs"
@@ -181,7 +168,7 @@ function ApplicationHome({ match }: Props) {
                         }
                         showComingSoon
                       />
-                      {/* <RolesTile applicationId={applicationId} />
+                      {/*
                       <SyncWithGithubTile applicationId={applicationId} /> */}
                     </div>
                   )}
