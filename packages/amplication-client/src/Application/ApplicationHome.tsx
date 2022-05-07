@@ -20,6 +20,7 @@ import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import { COLOR_TO_NAME } from "./constants";
+import EntitiesTile from "./EntitiesTile";
 import GithubTileFooter from "./GithubTileFooter";
 // import EntitiesTile from "./EntitiesTile";
 import NewVersionTile from "./NewVersionTile";
@@ -125,20 +126,7 @@ function ApplicationHome({ match }: Props) {
                         message="Push the Amplication-generated app to your GitHub repo. Track changes, track our code. You are in full control of your app."
                         footer={<GithubTileFooter />}
                       />
-                      <OverviewSecondaryTile
-                        icon="database"
-                        title="Entities"
-                        headerExtra="3 entities"
-                        message="Define your own data model. Keep using the Amplication Console. It is here to help you out with its simple and intuitive interface."
-                        footer={
-                          <Button
-                            buttonStyle={EnumButtonStyle.Outline}
-                            type="button"
-                          >
-                            Go to entities
-                          </Button>
-                        }
-                      />
+                      <EntitiesTile applicationId={applicationId} />
                       <OverviewSecondaryTile
                         icon="roles_outline"
                         title="Roles"
