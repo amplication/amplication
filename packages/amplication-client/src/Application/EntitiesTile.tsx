@@ -11,7 +11,6 @@ import {
 
 import { GET_ENTITIES } from "../Entity/EntityList";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
-import "./EntitiesTile.scss";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 
 type Props = {

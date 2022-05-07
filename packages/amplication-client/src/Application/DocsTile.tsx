@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 
-import "./DocsTile.scss";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 

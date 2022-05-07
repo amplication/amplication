@@ -10,7 +10,6 @@ import {
 } from "@amplication/design-system";
 
 import { GET_ROLES } from "../Roles/RoleList";
-import "./RolesTile.scss";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 
