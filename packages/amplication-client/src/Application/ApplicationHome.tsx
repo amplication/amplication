@@ -20,6 +20,7 @@ import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import { COLOR_TO_NAME } from "./constants";
+import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import GithubTileFooter from "./GithubTileFooter";
 // import EntitiesTile from "./EntitiesTile";
@@ -128,19 +129,7 @@ function ApplicationHome({ match }: Props) {
                       />
                       <EntitiesTile applicationId={applicationId} />
                       <RolesTile applicationId={applicationId} />
-                      <OverviewSecondaryTile
-                        icon="file_text"
-                        title="Read the Docs"
-                        message="When in doubt, read the docs. You’ll become an expert in no time."
-                        footer={
-                          <Button
-                            buttonStyle={EnumButtonStyle.Outline}
-                            type="button"
-                          >
-                            Go to docs
-                          </Button>
-                        }
-                      />
+                      <DocsTile />
                       <OverviewSecondaryTile
                         icon="main_logo"
                         title="Submit a feature request"
