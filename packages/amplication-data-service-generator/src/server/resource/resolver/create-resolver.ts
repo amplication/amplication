@@ -35,6 +35,7 @@ import {
   createFieldFindOneFunctionId,
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
+import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -189,6 +190,40 @@ async function createResolverModule(
         )
       )
     ).flat();
+
+    const methodsIdsActionPairs = new Map<
+      namedTypes.Identifier,
+      EnumEntityAction
+    >();
+
+    methodsIdsActionPairs.set(
+      mapping["CREATE_MUTATION"] as namedTypes.Identifier,
+      EnumEntityAction.Create
+    );
+    methodsIdsActionPairs.set(
+      mapping["ENTITIES_QUERY"] as namedTypes.Identifier,
+      EnumEntityAction.Search
+    );
+    methodsIdsActionPairs.set(
+      mapping["META_QUERY"] as namedTypes.Identifier,
+      EnumEntityAction.Search
+    );
+    methodsIdsActionPairs.set(
+      mapping["ENTITY_QUERY"] as namedTypes.Identifier,
+      EnumEntityAction.View
+    );
+    methodsIdsActionPairs.set(
+      mapping["UPDATE_MUTATION"] as namedTypes.Identifier,
+      EnumEntityAction.Update
+    );
+    methodsIdsActionPairs.set(
+      mapping["DELETE_MUTATION"] as namedTypes.Identifier,
+      EnumEntityAction.Delete
+    );
+
+    methodsIdsActionPairs.forEach((action, methodId) => {
+      setEndpointPermissions(classDeclaration, methodId, action, entity);
+    });
 
     classDeclaration.body.body.push(
       ...toManyRelationMethods,
