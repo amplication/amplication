@@ -2,6 +2,8 @@ amplication-client:
   deployment:
     image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client-dev
+  service:
+    hostname: app.staging-os.amplication-dev.com	    
 amplication-server:
   deployment:
     image:
@@ -10,7 +12,7 @@ amplication-server:
     install: false
   ingress:
     enabled: true
-    hostname: server.staging.amplication-dev.com
+    hostname: server.staging-os.amplication-dev.com
   config:
     env:
       GITHUB_APP_APP_ID: "189214"
