@@ -8,6 +8,7 @@ import {
   GET_APP_GIT_REPOSITORY,
 } from "../git/SyncWithGithubPage";
 import CodeViewBar from "./CodeViewBar";
+import CodeViewEditor from "./CodeViewEditor";
 import "./CodeViewPage.scss";
 
 type Props = {
@@ -46,7 +47,7 @@ function CodeViewPage({ match }: Props) {
         {data?.app && <CodeViewBar app={data.app} />}
       </FilesPanel.Source>
       <Switch>
-        <Route path="/:appId/:buildId/:fileName" component={CodeViewPage} />
+        <Route path="/:appId/:buildId/:fileName" component={CodeViewEditor} />
       </Switch>
     </div>
   );

@@ -1,4 +1,5 @@
 import React from "react";
+import { RichObjectTreeView } from "@amplication/design-system";
 //import * as models from "../../models";
 
 // type TData = {
@@ -10,7 +11,11 @@ type Props = {
 };
 
 const CommitFilesMenu = ({ applicationId }: Props) => {
-  return <div>test</div>;
+  return (
+    <div>
+      <RichObjectTreeView />
+    </div>
+  );
 };
 
 export default CommitFilesMenu;

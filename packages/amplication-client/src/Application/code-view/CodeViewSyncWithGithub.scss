@@ -15,8 +15,33 @@
   line-height: 18px;
   display: flex;
   align-items: center;
-
-  /* Product Colors/Warning Default */
-
   color: #f7aa50;
+  margin: auto;
+}
+
+.browser-sync {
+  @include scrollbars($default-scroll-width, var(--black60), transparent);
+  background-color: var(--menu-fixed-panel-background);
+  // height: 100%;
+  width: var(--fixed-menu-panel-width);
+  max-width: var(--fixed-menu-panel-max-width);
+  overflow: auto;
+  transition: width var(--menu-expand-animation-duration) ease-in;
+
+  // display: flex;
+  // flex-direction: column;
+  // align-items: flex-start;
+  // padding: 8px 0px 0px;
+
+  // position: static;
+  // width: 268px;
+  // height: 110px;
+  // left: 16px;
+  // top: 56px;
+
+  // /* Inside auto layout */
+
+  // flex: none;
+  // flex-grow: 0;
+  // margin: 16px 0px;
 }

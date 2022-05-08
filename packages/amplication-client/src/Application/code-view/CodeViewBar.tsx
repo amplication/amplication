@@ -13,18 +13,60 @@ type Props = {
   app: AppWithGitRepository;
 };
 
+// type File = {
+//   type: string;
+//   name: string;
+// };
+
+// type Files = {
+//   files: File[];
+// };
+
+class FileObject {
+  type!: string;
+  name!: string;
+}
+
+class Files {
+  files!: FileObject[];
+}
+
 const CodeViewBar = ({ app }: Props) => {
   const { workspace } = app;
   const { gitOrganizations } = workspace;
 
   const [commit, setCommit] = useState<models.Commit | null>(null);
-
+  const [files, setFilesTree] = useState<Files>();
   const handleAuthWithGitClick = () => {
     window.open(`/${app.id}/github`);
   };
 
-  const handleOnSearchChange = () => {
-    console.log("handleOnSearchChange"); //todo: mh filter files
+  const body = {
+    files: [
+      {
+        type: "folder",
+        name: "src",
+      },
+      {
+        type: "file",
+        name: "package.json",
+      },
+    ],
+  };
+
+  const handleOnSearchChange = (searchParse: string) => {
+    let file: FileObject = new FileObject();
+    let filesTree: Files = new Files();
+    filesTree.files = new Array(4);
+    body.files
+      .filter((file) => file.name.includes(searchParse))
+      .map(
+        (resFile) => ((file.name = resFile.name), (file.type = resFile.type)),
+        filesTree.files.push(file)
+      );
+    console.log(filesTree.files);
+    setFilesTree(filesTree);
+    console.log(files);
   };
 
   const handleSetCommit = (commit: models.Commit) => {
