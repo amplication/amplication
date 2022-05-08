@@ -5,6 +5,13 @@ spec:
     spec:
       containers:
         - name: '{{ .Values.name }}'
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command:
+          #         - /bin/sh
+          #         - -c
+          #         - cd /var && ls && cd /var/gcp-secert && ls
           imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
           image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
           {{- if hasKey .Values "config" }}
