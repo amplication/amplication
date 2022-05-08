@@ -321,7 +321,7 @@ async function createToOneRelationMethods(
   setEndpointPermissions(
     classDeclaration,
     toOneMapping["FIND_ONE"] as namedTypes.Identifier,
-    EnumEntityAction.Search,
+    EnumEntityAction.View,
     relatedEntity
   );
 
