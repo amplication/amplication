@@ -5531,9 +5531,9 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { Public } from \\"../../decorators/public.decorator\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
@@ -5612,7 +5612,6 @@ export class CustomerResolverBase {
   async createCustomer(
     @graphql.Args() args: CreateCustomerArgs
   ): Promise<Customer> {
-    // @ts-ignore
     return await this.service.create({
       ...args,
       data: {
@@ -5645,7 +5644,6 @@ export class CustomerResolverBase {
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
     try {
-      // @ts-ignore
       return await this.service.update({
         ...args,
         data: {
@@ -5684,7 +5682,6 @@ export class CustomerResolverBase {
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -6705,7 +6702,6 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
@@ -6778,7 +6774,6 @@ export class EmptyResolverBase {
     @graphql.Args() args: DeleteEmptyArgs
   ): Promise<Empty | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -8166,9 +8161,8 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { Public } from \\"../../decorators/public.decorator\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
@@ -8222,7 +8216,6 @@ export class OrderResolverBase {
   @Public()
   @graphql.Mutation(() => Order)
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
-    // @ts-ignore
     return await this.service.create({
       ...args,
       data: {
@@ -8242,7 +8235,6 @@ export class OrderResolverBase {
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
     try {
-      // @ts-ignore
       return await this.service.update({
         ...args,
         data: {
@@ -8269,7 +8261,6 @@ export class OrderResolverBase {
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -9901,8 +9892,8 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
@@ -9982,7 +9973,6 @@ export class OrganizationResolverBase {
   async createOrganization(
     @graphql.Args() args: CreateOrganizationArgs
   ): Promise<Organization> {
-    // @ts-ignore
     return await this.service.create({
       ...args,
       data: args.data,
@@ -10001,7 +9991,6 @@ export class OrganizationResolverBase {
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
     try {
-      // @ts-ignore
       return await this.service.update({
         ...args,
         data: args.data,
@@ -10026,7 +10015,6 @@ export class OrganizationResolverBase {
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -12659,8 +12647,8 @@ import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
@@ -12732,7 +12720,6 @@ export class UserResolverBase {
     possession: \\"any\\",
   })
   async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
-    // @ts-ignore
     return await this.service.create({
       ...args,
       data: {
@@ -12759,7 +12746,6 @@ export class UserResolverBase {
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User | null> {
     try {
-      // @ts-ignore
       return await this.service.update({
         ...args,
         data: {
@@ -12790,7 +12776,6 @@ export class UserResolverBase {
   })
   async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
