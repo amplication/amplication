@@ -49,6 +49,12 @@ spec:
                 secretKeyRef:
                   name: amplication-server
                   key: POSTGRESQL_PASSWORD
+                  optional: false
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: amplication-server
+                  key: JWT_SECRET
                   optional: false       
             - name: ENVIRONMENT
               valueFrom:

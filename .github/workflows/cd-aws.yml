@@ -27,6 +27,7 @@ jobs:
       GITHUB_CLIENT_SECRET: ${{ steps.create-secret-names.outputs.GITHUB_CLIENT_SECRET }}
       POSTGRESQL_PASSWORD: ${{ steps.create-secret-names.outputs.POSTGRESQL_PASSWORD }}
       POSTGRESQL_URL: ${{ steps.create-secret-names.outputs.POSTGRESQL_URL }}
+      JWT_SECRET: ${{ steps.create-secret-names.outputs.JWT_SECRET }}
     steps:
     - name: create secret names
       id: create-secret-names
@@ -40,6 +41,7 @@ jobs:
         echo "::set-output name=GITHUB_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_CLIENT_SECRET"
         echo "::set-output name=POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_PASSWORD"
         echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_URL"
+        echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}JWT_SECRET"
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
@@ -144,6 +146,7 @@ jobs:
           echo "GITHUB_CLIENT_SECRET secret name: $GITHUB_CLIENT_SECRET"
           echo "POSTGRESQL_PASSWORD secret name: $POSTGRESQL_PASSWORD"
           echo "POSTGRESQL_URL secret name: $POSTGRESQL_URL"
+          echo "JWT_SECRET secret name: $JWT_SECRET"
 
           #kubectl apply -f app.yaml
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
@@ -157,6 +160,7 @@ jobs:
           SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET"
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
+          SECRETS+=" -p amplication-server.secrets.JWT_SECRET=$JWT_SECRET"
           COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
           COMMAND=$(echo $COMMAND|tr -d '\n')
           echo "$COMMAND"
@@ -173,4 +177,5 @@ jobs:
           GITHUB_CLIENT_SECRET: ${{ secrets[env.GITHUB_CLIENT_SECRET] }}
           POSTGRESQL_PASSWORD: ${{ secrets[env.POSTGRESQL_PASSWORD] }}
           POSTGRESQL_URL: ${{ secrets[env.POSTGRESQL_URL] }}
+          JWT_SECRET: ${{ secrets[env.JWT_SECRET] }}
       
