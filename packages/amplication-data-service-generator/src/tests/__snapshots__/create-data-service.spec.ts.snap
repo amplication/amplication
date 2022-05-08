@@ -5426,7 +5426,11 @@ export class CustomerControllerBase {
     return results;
   }
 
-  @Public()
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
   @common.Post(\\"/:id/orders\\")
   async connectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5444,7 +5448,11 @@ export class CustomerControllerBase {
     });
   }
 
-  @Public()
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
   @common.Patch(\\"/:id/orders\\")
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5462,7 +5470,11 @@ export class CustomerControllerBase {
     });
   }
 
-  @Public()
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
   @common.Delete(\\"/:id/orders\\")
   async disconnectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
