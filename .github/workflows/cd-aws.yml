@@ -57,7 +57,7 @@ jobs:
       GITHUB_CLIENT_SECRET: ${{ needs.prepare.outputs.GITHUB_CLIENT_SECRET }}
       POSTGRESQL_PASSWORD: ${{ needs.prepare.outputs.POSTGRESQL_PASSWORD }}
       POSTGRESQL_URL: ${{ needs.prepare.outputs.POSTGRESQL_URL }}
-      JWT_SECRET: ${{ steps.create-secret-names.outputs.JWT_SECRET }}
+      JWT_SECRET: ${{ needs.prepare.outputs.JWT_SECRET }}
       SERVICE_JWT_SECRET: ${{ needs.prepare.outputs.SERVICE_JWT_SECRET }}
     steps:
       - uses: actions/checkout@v2
