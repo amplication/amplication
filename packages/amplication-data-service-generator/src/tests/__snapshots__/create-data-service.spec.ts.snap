@@ -3254,9 +3254,33 @@ export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
   "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
 export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
 ",
-  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
+  "server/src/auth/defaultAuth.guard.ts": "import { Observable } from \\"rxjs\\";
+import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
+import { Reflector } from \\"@nestjs/core\\";
+import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
+import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
 
-export class DefaultAuthGuard extends BasicAuthGuard {}
+@Injectable()
+export class DefaultAuthGuard extends BasicAuthGuard {
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
+
+  canActivate(
+    context: ExecutionContext
+  ): boolean | Promise<boolean> | Observable<any> {
+    const isPublic = this.reflector.get<boolean>(
+      IS_PUBLIC_KEY,
+      context.getHandler()
+    );
+
+    if (isPublic) {
+      return true;
+    }
+
+    return super.canActivate(context);
+  }
+}
 ",
   "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
@@ -5072,6 +5096,7 @@ import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\"
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { CustomerService } from \\"../customer.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -5368,12 +5393,7 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Get(\\"/:id/orders\\")
   @ApiNestedQuery(OrderFindManyArgs)
   async findManyOrders(
@@ -5406,11 +5426,7 @@ export class CustomerControllerBase {
     return results;
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Post(\\"/:id/orders\\")
   async connectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5428,11 +5444,7 @@ export class CustomerControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Patch(\\"/:id/orders\\")
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5450,11 +5462,7 @@ export class CustomerControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Delete(\\"/:id/orders\\")
   async disconnectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5525,6 +5533,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
@@ -5687,13 +5696,8 @@ export class CustomerResolverBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.ResolveField(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async orders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
@@ -7929,6 +7933,7 @@ import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\"
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { OrderService } from \\"../order.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
@@ -7943,12 +7948,7 @@ export class OrderControllerBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -7978,12 +7978,7 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
@@ -8009,12 +8004,7 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8047,12 +8037,7 @@ export class OrderControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8096,11 +8081,7 @@ export class OrderControllerBase {
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8189,6 +8170,7 @@ import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
@@ -8206,12 +8188,8 @@ export class OrderResolverBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @Public()
   @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _ordersMeta(
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -8225,24 +8203,14 @@ export class OrderResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => Order, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
@@ -8253,13 +8221,8 @@ export class OrderResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
     // @ts-ignore
     return await this.service.create({
@@ -8274,13 +8237,8 @@ export class OrderResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   async updateOrder(
     @graphql.Args() args: UpdateOrderArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
@@ -8307,12 +8265,8 @@ export class OrderResolverBase {
     }
   }
 
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteOrder(
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {

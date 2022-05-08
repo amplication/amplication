@@ -1,3 +1,5 @@
+import { IMPORTABLE_DECORATORS_NAMES } from "./../../../util/create-decorators-imports";
+import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -29,6 +31,7 @@ import {
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
+import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
@@ -171,6 +174,36 @@ async function createControllerModule(
       )
     ).flat();
 
+    const methodsIdsActionPairs = new Map<
+      namedTypes.Identifier,
+      EnumEntityAction
+    >();
+
+    methodsIdsActionPairs.set(
+      mapping["CREATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Create
+    );
+    methodsIdsActionPairs.set(
+      mapping["FIND_MANY_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Search
+    );
+    methodsIdsActionPairs.set(
+      mapping["FIND_ONE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.View
+    );
+    methodsIdsActionPairs.set(
+      mapping["UPDATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Update
+    );
+    methodsIdsActionPairs.set(
+      mapping["DELETE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+      EnumEntityAction.Delete
+    );
+
+    methodsIdsActionPairs.forEach((action, methodId) => {
+      setEndpointPermissions(classDeclaration, methodId, action, entity);
+    });
+
     classDeclaration.body.body.push(...toManyRelationMethods);
 
     const dtoNameToPath = getDTONameToPath(dtos);
@@ -178,7 +211,11 @@ async function createControllerModule(
       file,
       getImportableDTOs(moduleBasePath, dtoNameToPath)
     );
-    addImports(file, [serviceImport, ...dtoImports]);
+    const decoratorImports = importContainedIdentifiers(
+      file,
+      IMPORTABLE_DECORATORS_NAMES
+    );
+    addImports(file, [serviceImport, ...decoratorImports, ...dtoImports]);
   }
 
   if (!isBaseClass) {
@@ -227,7 +264,7 @@ async function createToManyRelationMethods(
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
-  interpolate(toManyFile, {
+  const toManyMapping = {
     RELATED_ENTITY_WHERE_UNIQUE_INPUT: relatedEntityDTOs.whereUniqueInput.id,
     RELATED_ENTITY_WHERE_INPUT: relatedEntityDTOs.whereInput.id,
     RELATED_ENTITY_FIND_MANY_ARGS: relatedEntityDTOs.findManyArgs.id,
@@ -247,7 +284,40 @@ async function createToManyRelationMethods(
     UPDATE: builders.identifier(camelCase(`update ${field.name}`)),
     UPDATE_PATH: builders.stringLiteral(`/:id/${field.name}`),
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
+  };
+
+  interpolate(toManyFile, toManyMapping);
+
+  const classDeclaration = getClassDeclarationById(
+    toManyFile,
+    TO_MANY_MIXIN_ID
+  );
+
+  const toManyMethodsIdsActionPairs = new Map<
+    namedTypes.Identifier,
+    EnumEntityAction
+  >();
+
+  toManyMethodsIdsActionPairs.set(
+    toManyMapping["FIND_MANY"],
+    EnumEntityAction.Search
+  );
+  toManyMethodsIdsActionPairs.set(
+    toManyMapping["UPDATE"],
+    EnumEntityAction.Update
+  );
+  toManyMethodsIdsActionPairs.set(
+    toManyMapping["CONNECT"],
+    EnumEntityAction.Update
+  );
+  toManyMethodsIdsActionPairs.set(
+    toManyMapping["DISCONNECT"],
+    EnumEntityAction.Delete
+  );
+
+  toManyMethodsIdsActionPairs.forEach((action, methodId) => {
+    setEndpointPermissions(classDeclaration, methodId, action, relatedEntity);
   });
 
-  return getMethods(getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID));
+  return getMethods(classDeclaration);
 }
