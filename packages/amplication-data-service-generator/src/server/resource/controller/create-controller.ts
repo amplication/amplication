@@ -33,7 +33,7 @@ import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 
-type MethodsIdsActionEntityTriplet = {
+export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
   action: EnumEntityAction;
   entity: Entity;

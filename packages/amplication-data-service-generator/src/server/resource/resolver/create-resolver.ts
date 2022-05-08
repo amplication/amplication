@@ -37,6 +37,7 @@ import {
 import { createDataMapping } from "../controller/create-data-mapping";
 
 import { IMPORTABLE_DECORATORS_NAMES } from "../../../util/create-decorators-imports";
+import { MethodsIdsActionEntityTriplet } from "../controller/create-controller";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -192,37 +193,40 @@ async function createResolverModule(
       )
     ).flat();
 
-    const methodsIdsActionPairs = new Map<
-      namedTypes.Identifier,
-      EnumEntityAction
-    >();
+    const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+      {
+        methodId: mapping["CREATE_MUTATION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Create,
+        entity: entity,
+      },
+      {
+        methodId: mapping["ENTITIES_QUERY"] as namedTypes.Identifier,
+        action: EnumEntityAction.Search,
+        entity: entity,
+      },
+      {
+        methodId: mapping["META_QUERY"] as namedTypes.Identifier,
+        action: EnumEntityAction.Search,
+        entity: entity,
+      },
+      {
+        methodId: mapping["ENTITY_QUERY"] as namedTypes.Identifier,
+        action: EnumEntityAction.View,
+        entity: entity,
+      },
+      {
+        methodId: mapping["UPDATE_MUTATION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Update,
+        entity: entity,
+      },
+      {
+        methodId: mapping["DELETE_MUTATION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Delete,
+        entity: entity,
+      },
+    ];
 
-    methodsIdsActionPairs.set(
-      mapping["CREATE_MUTATION"] as namedTypes.Identifier,
-      EnumEntityAction.Create
-    );
-    methodsIdsActionPairs.set(
-      mapping["ENTITIES_QUERY"] as namedTypes.Identifier,
-      EnumEntityAction.Search
-    );
-    methodsIdsActionPairs.set(
-      mapping["META_QUERY"] as namedTypes.Identifier,
-      EnumEntityAction.Search
-    );
-    methodsIdsActionPairs.set(
-      mapping["ENTITY_QUERY"] as namedTypes.Identifier,
-      EnumEntityAction.View
-    );
-    methodsIdsActionPairs.set(
-      mapping["UPDATE_MUTATION"] as namedTypes.Identifier,
-      EnumEntityAction.Update
-    );
-    methodsIdsActionPairs.set(
-      mapping["DELETE_MUTATION"] as namedTypes.Identifier,
-      EnumEntityAction.Delete
-    );
-
-    methodsIdsActionPairs.forEach((action, methodId) => {
+    methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
       setEndpointPermissions(classDeclaration, methodId, action, entity);
     });
 
