@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import { satisfies } from "semver";
 import { createLogger, format, Logger, transports } from "winston";
-const ora = require("ora");
+import * as ora from "ora";
 
 const { combine, colorize, simple } = format;
 
@@ -11,10 +11,12 @@ spinner.color = "green";
 class Task {
   constructor(public command: string, public label: string) {}
 }
+
 const logger = createLogger({
   transports: [new transports.Console()],
   format: combine(colorize(), simple()),
 });
+
 function preValidate() {
   const { engines } = require("../package.json");
   const { node: nodeRange, npm } = engines;
@@ -43,8 +45,8 @@ function preValidate() {
     process.exit(1);
   }
 }
-async function runFunction(task: Task, logger: Logger): Promise<string> {
-  logger.info(`Starting ${task.label}`);
+
+async function runFunction(task: Task): Promise<string> {
   spinner.start(`Executing ${task.label}` + "\n");
   return new Promise((resolve, reject) => {
     exec(task.command, (error, stdout, stderr) => {
@@ -56,6 +58,7 @@ async function runFunction(task: Task, logger: Logger): Promise<string> {
     });
   });
 }
+
 const bootstrap: Task[] = [
   {
     command: "npm run bootstrap",
@@ -94,13 +97,13 @@ const docker: Task[] = [
     label: "running docker compose up",
   },
 ];
-
 const dockerInit: Task[] = [
   {
     command: "cd packages/amplication-server && npm run start:db",
     label: "db seeding",
   },
 ];
+
 const tasks: Task[][] = [
   bootstrap,
   clientStep,
@@ -110,6 +113,7 @@ const tasks: Task[][] = [
   docker,
   dockerInit,
 ];
+
 if (require.main === module) {
   (async () => {
     try {
@@ -125,7 +129,7 @@ if (require.main === module) {
 
         logger.info(`Starting step ${i + 1}/${tasks.length}`);
         const tasksPromises = step.map((task) => {
-          return runFunction(task, logger);
+          return runFunction(task);
         });
         await Promise.all(tasksPromises);
         console.log("");
@@ -133,7 +137,6 @@ if (require.main === module) {
       logger.info("Finish all the process for the setup, have fun hacking");
     } catch (error) {
       spinner.fail(error.message);
-      console.error(error.message);
     }
   })();
 }
