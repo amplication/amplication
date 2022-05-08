@@ -27,5 +27,5 @@ spec:
         averageUtilization: {{ .Values.deployment.autoscaling.targetMemoryUtilizationPercentage }}
 {{- end -}}
 {{- define "base.deployment-autoscaling" -}}
-{{- include "base.util.merge" (append . "base.deployment-autoscaling.tpl") -}}
+{{- include "base.util.merge" (append . "base.deployment.tpl") -}}
 {{- end -}}

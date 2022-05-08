@@ -12,7 +12,8 @@ amplication-server:
       PLAYGROUND_ENABLE: "0"
       BCRYPT_SALT_OR_ROUNDS: "10"
       CORS_ENABLE: "1"
-      DEFAULT_DISK: "gcp"
+      DEFAULT_DISK: "gcs"
+      GCS_BUCKET: bucket
       DOCKER_HOST: "tcp://docker:2375"
   postgres:
     install: "true"
