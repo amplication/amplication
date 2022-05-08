@@ -1,5 +1,4 @@
-import { IMPORTABLE_INTERCEPTORS_NAMES } from "./../../../util/create-interceptors-imports";
-import { IMPORTABLE_DECORATORS_NAMES } from "./../../../util/create-decorators-imports";
+
 import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
@@ -33,6 +32,7 @@ import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
+import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
@@ -212,18 +212,13 @@ async function createControllerModule(
       file,
       getImportableDTOs(moduleBasePath, dtoNameToPath)
     );
-    const decoratorImports = importContainedIdentifiers(
+    const identifiersImports = importContainedIdentifiers(
       file,
-      IMPORTABLE_DECORATORS_NAMES
-    );
-    const interceptorsImports = importContainedIdentifiers(
-      file,
-      IMPORTABLE_INTERCEPTORS_NAMES
+      IMPORTABLE_IDENTIFIERS_NAMES
     );
     addImports(file, [
       serviceImport,
-      ...decoratorImports,
-      ...interceptorsImports,
+      ...identifiersImports,
       ...dtoImports,
     ]);
   }

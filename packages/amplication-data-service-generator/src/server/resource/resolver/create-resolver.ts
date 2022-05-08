@@ -37,8 +37,7 @@ import {
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
 
-import { IMPORTABLE_DECORATORS_NAMES } from "../../../util/create-decorators-imports";
-import { IMPORTABLE_INTERCEPTORS_NAMES } from "../../../util/create-interceptors-imports";
+import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -255,17 +254,12 @@ async function createResolverModule(
     file,
     getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)
   );
-  const decoratorImports = importContainedIdentifiers(
+  const identifiersImports = importContainedIdentifiers(
     file,
-    IMPORTABLE_DECORATORS_NAMES
-  );
-  const interceptorsImports = importContainedIdentifiers(
-    file,
-    IMPORTABLE_INTERCEPTORS_NAMES
+    IMPORTABLE_IDENTIFIERS_NAMES
   );
   addImports(file, [
-    ...decoratorImports,
-    ...interceptorsImports,
+    ...identifiersImports,
     ...dtoImports,
   ]);
 
