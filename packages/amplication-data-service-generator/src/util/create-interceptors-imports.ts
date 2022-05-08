@@ -1,0 +1,17 @@
+import {
+  ACL_FILTER_RESPONSE_INTERCEPTOR_NAME,
+  ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME,
+} from "./set-endpoint-permission";
+import { namedTypes, builders } from "ast-types";
+
+export const IMPORTABLE_INTERCEPTORS_NAMES: Record<
+  string,
+  namedTypes.Identifier[]
+> = {
+  "../../interceptors/aclFilterResponse.interceptor": [
+    builders.identifier(ACL_FILTER_RESPONSE_INTERCEPTOR_NAME),
+  ],
+  "../../interceptors/aclValidateRequest.interceptor": [
+    builders.identifier(ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME),
+  ],
+};

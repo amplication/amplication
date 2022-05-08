@@ -1,3 +1,4 @@
+import { IMPORTABLE_INTERCEPTORS_NAMES } from "./../../../util/create-interceptors-imports";
 import { IMPORTABLE_DECORATORS_NAMES } from "./../../../util/create-decorators-imports";
 import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
@@ -215,7 +216,16 @@ async function createControllerModule(
       file,
       IMPORTABLE_DECORATORS_NAMES
     );
-    addImports(file, [serviceImport, ...decoratorImports, ...dtoImports]);
+    const interceptorsImports = importContainedIdentifiers(
+      file,
+      IMPORTABLE_INTERCEPTORS_NAMES
+    );
+    addImports(file, [
+      serviceImport,
+      ...decoratorImports,
+      ...interceptorsImports,
+      ...dtoImports,
+    ]);
   }
 
   if (!isBaseClass) {

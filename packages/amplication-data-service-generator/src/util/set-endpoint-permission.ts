@@ -9,8 +9,10 @@ import { removeIdentifierFromUseInterceptorDecorator } from "./nestjs-code-gener
 export const USE_ROLES_DECORATOR_NAME = "UseRoles";
 export const USE_INTERCEPTORS_DECORATOR_NAME = "UseInterceptors";
 
-const ACL_FILTER_RESPONSE_INTERCEPTOR_NAME = "AclFilterResponseInterceptor";
-const ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME = "AclValidateRequestInterceptor";
+export const ACL_FILTER_RESPONSE_INTERCEPTOR_NAME =
+  "AclFilterResponseInterceptor";
+export const ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME =
+  "AclValidateRequestInterceptor";
 
 export function setEndpointPermissions(
   classDeclaration: namedTypes.ClassDeclaration,
