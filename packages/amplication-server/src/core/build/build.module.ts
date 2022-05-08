@@ -19,6 +19,7 @@ import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilder
 import { StorageOptionsModule } from '../storage/storage-options.module';
 import { BuildFilesSaver } from './utils';
 import { QueueModule } from '../queue/queue.module';
+import { CommitModule } from '../commit/commit.module';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { QueueModule } from '../queue/queue.module';
     DeploymentModule,
     forwardRef(() => AppModule),
     AppSettingsModule,
-    QueueModule
+    QueueModule,
+    forwardRef(() => CommitModule),
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],
