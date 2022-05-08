@@ -28,6 +28,7 @@ jobs:
       POSTGRESQL_PASSWORD: ${{ steps.create-secret-names.outputs.POSTGRESQL_PASSWORD }}
       POSTGRESQL_URL: ${{ steps.create-secret-names.outputs.POSTGRESQL_URL }}
       JWT_SECRET: ${{ steps.create-secret-names.outputs.JWT_SECRET }}
+      SERVICE_JWT_SECRET: ${{ steps.create-secret-names.outputs.SERVICE_JWT_SECRET }}
     steps:
     - name: create secret names
       id: create-secret-names
@@ -42,6 +43,7 @@ jobs:
         echo "::set-output name=POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_PASSWORD"
         echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_URL"
         echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}JWT_SECRET"
+        echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}SERVICE_JWT_SECRET"
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
@@ -55,6 +57,8 @@ jobs:
       GITHUB_CLIENT_SECRET: ${{ needs.prepare.outputs.GITHUB_CLIENT_SECRET }}
       POSTGRESQL_PASSWORD: ${{ needs.prepare.outputs.POSTGRESQL_PASSWORD }}
       POSTGRESQL_URL: ${{ needs.prepare.outputs.POSTGRESQL_URL }}
+      JWT_SECRET: ${{ steps.create-secret-names.outputs.JWT_SECRET }}
+      SERVICE_JWT_SECRET: ${{ needs.prepare.outputs.SERVICE_JWT_SECRET }}
     steps:
       - uses: actions/checkout@v2
       - name: configure AWS credentials
@@ -147,6 +151,7 @@ jobs:
           echo "POSTGRESQL_PASSWORD secret name: $POSTGRESQL_PASSWORD"
           echo "POSTGRESQL_URL secret name: $POSTGRESQL_URL"
           echo "JWT_SECRET secret name: $JWT_SECRET"
+          echo "SERVICE_JWT_SECRET secret name: $SERVICE_JWT_SECRET"
 
           #kubectl apply -f app.yaml
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
@@ -161,6 +166,7 @@ jobs:
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
           SECRETS+=" -p amplication-server.secrets.JWT_SECRET=$JWT_SECRET"
+          SECRETS+=" -p amplication-server.secrets.SERVICE_JWT_SECRET=$SERVICE_JWT_SECRET"
           COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
           COMMAND=$(echo $COMMAND|tr -d '\n')
           echo "$COMMAND"
@@ -178,4 +184,5 @@ jobs:
           POSTGRESQL_PASSWORD: ${{ secrets[env.POSTGRESQL_PASSWORD] }}
           POSTGRESQL_URL: ${{ secrets[env.POSTGRESQL_URL] }}
           JWT_SECRET: ${{ secrets[env.JWT_SECRET] }}
+          SERVICE_JWT_SECRET: ${{ secrets[env.SERVICE_JWT_SECRET] }}
       
