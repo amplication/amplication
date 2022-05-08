@@ -350,13 +350,13 @@ const ORDER: Entity = {
       action: EnumEntityAction.Create,
       permissionFields: [],
       permissionRoles: [],
-      type: EnumEntityPermissionType.AllRoles,
+      type: EnumEntityPermissionType.Public,
     },
     {
       action: EnumEntityAction.Delete,
       permissionFields: [],
       permissionRoles: [],
-      type: EnumEntityPermissionType.AllRoles,
+      type: EnumEntityPermissionType.Public,
     },
     {
       action: EnumEntityAction.Search,
@@ -368,7 +368,7 @@ const ORDER: Entity = {
       action: EnumEntityAction.Update,
       permissionFields: [],
       permissionRoles: [],
-      type: EnumEntityPermissionType.AllRoles,
+      type: EnumEntityPermissionType.Public,
     },
     {
       action: EnumEntityAction.View,

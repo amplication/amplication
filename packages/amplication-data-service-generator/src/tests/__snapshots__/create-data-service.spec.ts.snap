@@ -5426,11 +5426,7 @@ export class CustomerControllerBase {
     return results;
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Post(\\"/:id/orders\\")
   async connectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5448,11 +5444,7 @@ export class CustomerControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Patch(\\"/:id/orders\\")
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5470,11 +5462,7 @@ export class CustomerControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Delete(\\"/:id/orders\\")
   async disconnectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -7960,12 +7948,7 @@ export class OrderControllerBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -8054,12 +8037,7 @@ export class OrderControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8103,11 +8081,7 @@ export class OrderControllerBase {
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8247,13 +8221,8 @@ export class OrderResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
     // @ts-ignore
     return await this.service.create({
@@ -8268,13 +8237,8 @@ export class OrderResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   async updateOrder(
     @graphql.Args() args: UpdateOrderArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
@@ -8301,12 +8265,8 @@ export class OrderResolverBase {
     }
   }
 
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteOrder(
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
