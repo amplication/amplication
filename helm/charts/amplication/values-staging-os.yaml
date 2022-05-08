@@ -8,6 +8,9 @@ amplication-server:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server-dev
   postgres:
     install: false
+  ingress:
+    enabled: true
+    hostname: server.staging.amplication-dev.com
   config:
     env:
       GITHUB_APP_APP_ID: "189214"
