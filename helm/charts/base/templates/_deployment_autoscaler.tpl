@@ -1,5 +1,5 @@
 {{- define "base.deployment-autoscaling.tpl" -}}
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: '{{ .Values.name }}'
