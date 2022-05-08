@@ -5,7 +5,8 @@ import {
   Controller,
   UseInterceptors,
   NotFoundException,
-  BadRequestException
+  BadRequestException,
+  Query
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
@@ -14,6 +15,8 @@ import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { StepNotFoundError } from './errors/StepNotFoundError';
+import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
+import { plainToInstance } from 'class-transformer';
 
 const ZIP_MIME = 'application/zip';
 
@@ -47,5 +50,11 @@ export class BuildController {
       'Content-Disposition': `attachment; filename="${id}.zip"`
     });
     stream.pipe(res);
+  }
+
+  @Get('canUserAccess')
+  async canUserAccess(@Query() args: CanUserAccessArgs): Promise<boolean> {
+    const validArgs = plainToInstance(CanUserAccessArgs, args);
+    return this.buildService.canUserAccess(validArgs);
   }
 }
