@@ -25,6 +25,7 @@ export class StorageService {
     const cwd = `${this.buildFolder(appId, buildId)}/${relativePath || ""}`;
     const files = sync(`*`, {
       nodir: true,
+      dot: true,
       cwd,
     });
     files.forEach((file) => {
