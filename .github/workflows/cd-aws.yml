@@ -42,8 +42,8 @@ jobs:
         echo "::set-output name=GITHUB_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_CLIENT_SECRET"
         echo "::set-output name=POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_PASSWORD"
         echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_URL"
-        echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}JWT_SECRET"
-        echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}SERVICE_JWT_SECRET"
+        echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}_JWT_SECRET"
+        echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}_SERVICE_JWT_SECRET"
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
