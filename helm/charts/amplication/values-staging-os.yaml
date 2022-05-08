@@ -6,6 +6,8 @@ amplication-server:
   deployment:
     image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server-dev
+  postgres:
+    install: "false"    
   config:
     env:
       GITHUB_APP_APP_ID: "189214"
