@@ -19,7 +19,7 @@ on:
         required: true
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     outputs:
       GCP: ${{ steps.create-secret-names.outputs.GCP }}
       GITHUB_APP_CLIENT_SECRET: ${{ steps.create-secret-names.outputs.GITHUB_APP_CLIENT_SECRET }}
@@ -43,7 +43,7 @@ jobs:
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     needs:
       - prepare
     env:

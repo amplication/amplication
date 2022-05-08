@@ -18,7 +18,7 @@ on:
 
 jobs:       
   changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     outputs:
       services: ${{ steps.build_list.outputs.service_build_list }}
       service_retag_list: ${{ steps.build_list.outputs.service_retag_list }}
@@ -145,7 +145,7 @@ jobs:
     name: docker-build
     needs: [changes]
     if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         node-version: [16.x]
@@ -223,7 +223,7 @@ jobs:
     name: docker-retag
     needs: [changes]
     if: ${{ needs.changes.outputs.service_retag_list != '[]' && needs.changes.outputs.service_retag_list != '' && github.ref != 'refs/heads/master' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         node-version: [16.x]
