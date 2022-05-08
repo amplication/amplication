@@ -258,10 +258,7 @@ async function createResolverModule(
     file,
     IMPORTABLE_IDENTIFIERS_NAMES
   );
-  addImports(file, [
-    ...identifiersImports,
-    ...dtoImports,
-  ]);
+  addImports(file, [...identifiersImports, ...dtoImports]);
 
   const serviceImport = importNames(
     [serviceId],

@@ -1,4 +1,3 @@
-
 import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
@@ -216,11 +215,7 @@ async function createControllerModule(
       file,
       IMPORTABLE_IDENTIFIERS_NAMES
     );
-    addImports(file, [
-      serviceImport,
-      ...identifiersImports,
-      ...dtoImports,
-    ]);
+    addImports(file, [serviceImport, ...identifiersImports, ...dtoImports]);
   }
 
   if (!isBaseClass) {
