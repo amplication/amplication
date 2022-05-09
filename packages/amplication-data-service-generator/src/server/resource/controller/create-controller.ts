@@ -33,6 +33,12 @@ import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 
+export type MethodsIdsActionEntityTriplet = {
+  methodId: namedTypes.Identifier;
+  action: EnumEntityAction;
+  entity: Entity;
+};
+
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
 
@@ -165,6 +171,7 @@ async function createControllerModule(
         toManyRelationFields.map((field) =>
           createToManyRelationMethods(
             field,
+            entity,
             entityType,
             entityDTOs.whereUniqueInput,
             dtos,
@@ -174,33 +181,35 @@ async function createControllerModule(
       )
     ).flat();
 
-    const methodsIdsActionPairs = new Map<
-      namedTypes.Identifier,
-      EnumEntityAction
-    >();
+    const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+      {
+        methodId: mapping["CREATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Create,
+        entity: entity,
+      },
+      {
+        methodId: mapping["FIND_MANY_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Search,
+        entity: entity,
+      },
+      {
+        methodId: mapping["FIND_ONE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.View,
+        entity: entity,
+      },
+      {
+        methodId: mapping["UPDATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Update,
+        entity: entity,
+      },
+      {
+        methodId: mapping["DELETE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Delete,
+        entity: entity,
+      },
+    ];
 
-    methodsIdsActionPairs.set(
-      mapping["CREATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.Create
-    );
-    methodsIdsActionPairs.set(
-      mapping["FIND_MANY_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.Search
-    );
-    methodsIdsActionPairs.set(
-      mapping["FIND_ONE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.View
-    );
-    methodsIdsActionPairs.set(
-      mapping["UPDATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.Update
-    );
-    methodsIdsActionPairs.set(
-      mapping["DELETE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-      EnumEntityAction.Delete
-    );
-
-    methodsIdsActionPairs.forEach((action, methodId) => {
+    methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
       setEndpointPermissions(classDeclaration, methodId, action, entity);
     });
 
@@ -255,6 +264,7 @@ export function createControllerBaseId(
 
 async function createToManyRelationMethods(
   field: EntityLookupField,
+  entity: Entity,
   entityType: string,
   whereUniqueInput: NamedClassDeclaration,
   dtos: DTOs,
@@ -293,30 +303,31 @@ async function createToManyRelationMethods(
     TO_MANY_MIXIN_ID
   );
 
-  const toManyMethodsIdsActionPairs = new Map<
-    namedTypes.Identifier,
-    EnumEntityAction
-  >();
+  const toManyMethodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+    {
+      methodId: toManyMapping["FIND_MANY"],
+      action: EnumEntityAction.Search,
+      entity: relatedEntity,
+    },
+    {
+      methodId: toManyMapping["UPDATE"],
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: toManyMapping["CONNECT"],
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: toManyMapping["DISCONNECT"],
+      action: EnumEntityAction.Delete,
+      entity: entity,
+    },
+  ];
 
-  toManyMethodsIdsActionPairs.set(
-    toManyMapping["FIND_MANY"],
-    EnumEntityAction.Search
-  );
-  toManyMethodsIdsActionPairs.set(
-    toManyMapping["UPDATE"],
-    EnumEntityAction.Update
-  );
-  toManyMethodsIdsActionPairs.set(
-    toManyMapping["CONNECT"],
-    EnumEntityAction.Update
-  );
-  toManyMethodsIdsActionPairs.set(
-    toManyMapping["DISCONNECT"],
-    EnumEntityAction.Delete
-  );
-
-  toManyMethodsIdsActionPairs.forEach((action, methodId) => {
-    setEndpointPermissions(classDeclaration, methodId, action, relatedEntity);
+  toManyMethodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+    setEndpointPermissions(classDeclaration, methodId, action, entity);
   });
 
   return getMethods(classDeclaration);
