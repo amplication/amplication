@@ -1,23 +1,31 @@
 import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
-import { PaginateQuery } from "nestjs-paginate";
+import { CodeAccessGuard } from "src/auth/codeAccessGuard.guard";
 import { DefaultAuthGuard } from "src/auth/defaultAuth.guard";
+import { PaginationQuery, PaginationResult } from "src/pagination";
+import { PaginationService } from "src/pagination/pagination.service";
 import { FileMeta } from "./dto/FileMeta";
 import { StorageService } from "./storage.service";
 
 const APP_ID_PARAM_KEY = "appId";
 const BUILD_ID_PARAM_KEY = "buildId";
+const PATH_PARAM_KEY = "path";
 
-@UseGuards(DefaultAuthGuard)
+@UseGuards(DefaultAuthGuard, CodeAccessGuard)
 @Controller("storage")
 export class StorageController {
-  constructor(protected readonly service: StorageService) {}
+  constructor(
+    protected readonly service: StorageService,
+    protected readonly paginationService: PaginationService
+  ) {}
   @Get(`/:${APP_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/list`)
   getBuildFilesList(
     @Param(APP_ID_PARAM_KEY) appId: string,
     @Param(BUILD_ID_PARAM_KEY) buildId: string,
-    @Query() query: PaginateQuery
-  ): FileMeta[] {
-    return this.service.getBuildFilesList(appId, buildId, query.path);
+    @Query(PATH_PARAM_KEY) path: string,
+    @Query() query: PaginationQuery
+  ): PaginationResult<FileMeta> {
+    const results = this.service.getBuildFilesList(appId, buildId, path);
+    return this.paginationService.paginate(results, query);
   }
   @Get(`/:${APP_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/content`)
   fileContent(
