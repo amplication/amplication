@@ -32,6 +32,7 @@
     "graphql": "15.7.2",
     "graphql-type-json": "0.3.2",
     "jsonwebtoken": "8.5.1",
+    "kafkajs": "2.0.0",
     "nest-access-control": "2.0.3",
     "nest-morgan": "1.0.1",
     "nestjs-paginate": "2.5.4",
