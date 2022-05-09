@@ -19,6 +19,7 @@ WORKDIR /app
 # Copy amplication-git-push-webhook-service  and the its dependent packages
 COPY packages/amplication-git-push-webhook-service packages/amplication-git-push-webhook-service
 COPY packages/amplication-prisma-db packages/amplication-prisma-db
+COPY packages/amplication-kafka packages/amplication-kafka
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/git-push-webhook-service --include-dependencies
 
@@ -42,6 +43,10 @@ COPY --from=build /app/packages/amplication-git-push-webhook-service/dist /app/p
 COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
 COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
 COPY --from=build /app/packages/amplication-prisma-db/lib /app/packages/amplication-prisma-db/lib
+
+COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
+COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
+COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
 
 EXPOSE 4567
 CMD [ "node", "dist/src/main"]
