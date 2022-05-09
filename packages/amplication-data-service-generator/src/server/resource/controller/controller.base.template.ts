@@ -4,8 +4,6 @@ import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 // @ts-ignore
-import * as abacUtil from "../../auth/abac.util";
-// @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import * as errors from "../../errors";

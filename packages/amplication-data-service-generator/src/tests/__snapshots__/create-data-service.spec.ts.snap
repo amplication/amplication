@@ -5087,7 +5087,6 @@ import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
@@ -5527,8 +5526,6 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
@@ -5640,8 +5637,7 @@ export class CustomerResolverBase {
     possession: \\"any\\",
   })
   async updateCustomer(
-    @graphql.Args() args: UpdateCustomerArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UpdateCustomerArgs
   ): Promise<Customer | null> {
     try {
       return await this.service.update({
@@ -6492,7 +6488,6 @@ import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
@@ -6698,8 +6693,6 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
@@ -7919,7 +7912,6 @@ import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
@@ -8157,8 +8149,6 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { Public } from \\"../../decorators/public.decorator\\";
@@ -8231,8 +8221,7 @@ export class OrderResolverBase {
   @Public()
   @graphql.Mutation(() => Order)
   async updateOrder(
-    @graphql.Args() args: UpdateOrderArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
     try {
       return await this.service.update({
@@ -9320,7 +9309,6 @@ import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
@@ -9888,8 +9876,6 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
@@ -9987,8 +9973,7 @@ export class OrganizationResolverBase {
     possession: \\"any\\",
   })
   async updateOrganization(
-    @graphql.Args() args: UpdateOrganizationArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UpdateOrganizationArgs
   ): Promise<Organization | null> {
     try {
       return await this.service.update({
@@ -12119,7 +12104,6 @@ import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
@@ -12643,8 +12627,6 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
@@ -12741,10 +12723,7 @@ export class UserResolverBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async updateUser(
-    @graphql.Args() args: UpdateUserArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<User | null> {
+  async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
     try {
       return await this.service.update({
         ...args,
