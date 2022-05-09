@@ -17,7 +17,7 @@ const CodeViewBar = ({ app }: Props) => {
   const { workspace } = app;
   const { gitOrganizations } = workspace;
 
-  const [commit, setCommit] = useState<models.Commit | null>(null);
+  const [build, setBuild] = useState<models.Build | null>(null);
   const handleAuthWithGitClick = () => {
     window.open(`/${app.id}/github`);
   };
@@ -41,8 +41,8 @@ const CodeViewBar = ({ app }: Props) => {
     // console.log(files);
   };
 
-  const handleSetCommit = (commit: models.Commit) => {
-    setCommit(commit);
+  const handleSetBuild = (build: models.Build) => {
+    setBuild(build);
   };
 
   return (
@@ -50,21 +50,26 @@ const CodeViewBar = ({ app }: Props) => {
       <div className={`${CLASS_NAME}__heading`}>
         <h2>File Browser</h2>
       </div>
-      {isEmpty(gitOrganizations) ? (
+      {isEmpty(gitOrganizations) && (
         <CodeViewSyncWithGithub
           onSyncNewGitOrganizationClick={handleAuthWithGitClick}
         />
-      ) : (
-        <div>connection exist</div>
       )}
+      {app.gitRepository && (
+        <div>
+          <p>connected to: </p>
+          {app.gitRepository?.gitOrganization.name}
+        </div>
+      )}
+      {!app.gitRepository && <div> not connected to git repository</div>}
 
       <br />
       <div>
         <CodeViewCommits
           application={app.id}
-          selectedCommit={commit}
-          onSelectCommit={(commit) => {
-            handleSetCommit(commit);
+          selectedBuild={build}
+          onSelectBuild={(build) => {
+            handleSetBuild(build);
           }}
         />
       </div>
@@ -77,11 +82,7 @@ const CodeViewBar = ({ app }: Props) => {
       </div>
       <br />
       <div>
-        <CommitFilesMenu
-          applicationId={app.id}
-          buildId={commit?.builds?.[0].id}
-          path=""
-        />
+        <CommitFilesMenu applicationId={app.id} buildId={build?.id} path="" />
       </div>
     </div>
   );

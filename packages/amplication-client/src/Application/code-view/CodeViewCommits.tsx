@@ -19,14 +19,14 @@ type TData = {
 
 type Props = {
   application: string;
-  selectedCommit: models.Build | null;
-  onSelectCommit: (commit: models.Build) => void;
+  selectedBuild: models.Build | null;
+  onSelectBuild: (commit: models.Build) => void;
 };
 
 const CodeViewCommits = ({
   application,
-  selectedCommit,
-  onSelectCommit,
+  selectedBuild,
+  onSelectBuild,
 }: Props) => {
   const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
     variables: {
@@ -37,15 +37,13 @@ const CodeViewCommits = ({
     },
   });
 
-  console.log(data);
-
   return (
     <div className={CLASS_NAME}>
       <div>
         <SelectMenu
           title={
-            selectedCommit?.message ? (
-              <CommitMenuItemContent commit={selectedCommit} />
+            selectedBuild?.message ? (
+              <CommitMenuItemContent commit={selectedBuild} />
             ) : (
               "select commit"
             )
@@ -57,17 +55,17 @@ const CodeViewCommits = ({
           <SelectMenuModal>
             <SelectMenuList>
               <>
-                {data?.builds.map((commit) => (
+                {data?.builds.map((build) => (
                   <SelectMenuItem
                     closeAfterSelectionChange
-                    selected={commit.id === selectedCommit?.id}
-                    key={commit.id}
+                    selected={build.id === selectedBuild?.id}
+                    key={build.id}
                     onSelectionChange={() => {
-                      onSelectCommit(commit);
+                      onSelectBuild(build);
                     }}
                     css={undefined}
                   >
-                    <CommitMenuItemContent commit={commit} />
+                    <CommitMenuItemContent commit={build} />
                   </SelectMenuItem>
                 ))}
                 <div className={`select-menu_item ${CLASS_NAME}__hr`}>
@@ -97,44 +95,6 @@ export const GET_BUILDS_COMMIT = gql`
       id
       message
       createdAt
-      # builds(orderBy: { createdAt: Desc }, take: 1) {
-      #   id
-      #   createdAt
-      #   appId
-      #   version
-      #   message
-      #   createdAt
-      #   commitId
-      #   actionId
-      #   action {
-      #     id
-      #     createdAt
-      #     steps {
-      #       id
-      #       name
-      #       createdAt
-      #       message
-      #       status
-      #       completedAt
-      #       logs {
-      #         id
-      #         createdAt
-      #         message
-      #         meta
-      #         level
-      #       }
-      #     }
-      #   }
-      #   createdBy {
-      #     id
-      #     account {
-      #       firstName
-      #       lastName
-      #     }
-      #   }
-      #   status
-      #   archiveURI
-      # }
     }
   }
 `;
