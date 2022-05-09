@@ -37,7 +37,13 @@ export class StorageService {
         results[file] = { name: file, type: NodeTypeEnum.Folder };
       }
     });
-    return Object.values(results);
+    const resultsArray = Object.values(results).sort((a, b) => {
+      if (a.type === NodeTypeEnum.Folder && b.type !== NodeTypeEnum.Folder) {
+        return -1;
+      }
+      return a.name.localeCompare(b.name);
+    });
+    return resultsArray;
   }
 
   fileContent(appId: string, buildId: string, path: string): string {
