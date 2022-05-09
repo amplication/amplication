@@ -21,6 +21,7 @@ import {
   getMethods,
   deleteClassMemberByKey,
   memberExpression,
+  removeTSIgnoreComments,
 } from "../../../util/ast";
 import {
   isOneToOneRelationField,
@@ -36,7 +37,7 @@ import {
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
 
-import { IMPORTABLE_DECORATORS_NAMES } from "../../../util/create-decorators-imports";
+import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -253,11 +254,11 @@ async function createResolverModule(
     file,
     getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)
   );
-  const decoratorImports = importContainedIdentifiers(
+  const identifiersImports = importContainedIdentifiers(
     file,
-    IMPORTABLE_DECORATORS_NAMES
+    IMPORTABLE_IDENTIFIERS_NAMES
   );
-  addImports(file, [...decoratorImports, ...dtoImports]);
+  addImports(file, [...identifiersImports, ...dtoImports]);
 
   const serviceImport = importNames(
     [serviceId],
@@ -268,6 +269,7 @@ async function createResolverModule(
   );
 
   addImports(file, [serviceImport]);
+  removeTSIgnoreComments(file);
   removeImportsTSIgnoreComments(file);
   removeESLintComments(file);
   removeTSVariableDeclares(file);
