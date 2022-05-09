@@ -5,23 +5,22 @@ import {
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/design-system";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import "./CodeViewBar.scss";
 import * as models from "../../models";
-import { GET_COMMITS } from "../../VersionControl/CommitList";
 import { CommitMenuItemContent } from "./CommitMenuItemContent";
 
 const CLASS_NAME = "code-view-bar";
 const CREATED_AT_FIELD = "createdAt";
 type TData = {
-  commits: models.Commit[];
+  builds: models.Build[];
 };
 
 type Props = {
   application: string;
-  selectedCommit: models.Commit | null;
-  onSelectCommit: (commit: models.Commit) => void;
+  selectedCommit: models.Build | null;
+  onSelectCommit: (commit: models.Build) => void;
 };
 
 const CodeViewCommits = ({
@@ -29,7 +28,7 @@ const CodeViewCommits = ({
   selectedCommit,
   onSelectCommit,
 }: Props) => {
-  const { data } = useQuery<TData>(GET_COMMITS, {
+  const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
     variables: {
       appId: application,
       orderBy: {
@@ -37,6 +36,8 @@ const CodeViewCommits = ({
       },
     },
   });
+
+  console.log(data);
 
   return (
     <div className={CLASS_NAME}>
@@ -56,7 +57,7 @@ const CodeViewCommits = ({
           <SelectMenuModal>
             <SelectMenuList>
               <>
-                {data?.commits.map((commit) => (
+                {data?.builds.map((commit) => (
                   <SelectMenuItem
                     closeAfterSelectionChange
                     selected={commit.id === selectedCommit?.id}
@@ -82,3 +83,58 @@ const CodeViewCommits = ({
 };
 
 export default CodeViewCommits;
+
+export const GET_BUILDS_COMMIT = gql`
+  query builds(
+    $appId: String!
+    $orderBy: BuildOrderByInput
+    $whereMessage: StringFilter
+  ) {
+    builds(
+      where: { app: { id: $appId }, message: $whereMessage }
+      orderBy: $orderBy
+    ) {
+      id
+      message
+      createdAt
+      # builds(orderBy: { createdAt: Desc }, take: 1) {
+      #   id
+      #   createdAt
+      #   appId
+      #   version
+      #   message
+      #   createdAt
+      #   commitId
+      #   actionId
+      #   action {
+      #     id
+      #     createdAt
+      #     steps {
+      #       id
+      #       name
+      #       createdAt
+      #       message
+      #       status
+      #       completedAt
+      #       logs {
+      #         id
+      #         createdAt
+      #         message
+      #         meta
+      #         level
+      #       }
+      #     }
+      #   }
+      #   createdBy {
+      #     id
+      #     account {
+      #       firstName
+      #       lastName
+      #     }
+      #   }
+      #   status
+      #   archiveURI
+      # }
+    }
+  }
+`;

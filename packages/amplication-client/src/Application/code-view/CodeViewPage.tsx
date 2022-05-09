@@ -47,7 +47,7 @@ function CodeViewPage({ match }: Props) {
         {data?.app && <CodeViewBar app={data.app} />}
       </FilesPanel.Source>
       <Switch>
-        <Route path="/:appId/:buildId/:fileName" component={CodeViewEditor} />
+        <Route path="/:appId/:buildId/:filePath" component={CodeViewEditor} />
       </Switch>
     </div>
   );

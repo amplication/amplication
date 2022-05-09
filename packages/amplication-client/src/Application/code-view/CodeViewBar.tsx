@@ -13,60 +13,32 @@ type Props = {
   app: AppWithGitRepository;
 };
 
-// type File = {
-//   type: string;
-//   name: string;
-// };
-
-// type Files = {
-//   files: File[];
-// };
-
-class FileObject {
-  type!: string;
-  name!: string;
-}
-
-class Files {
-  files!: FileObject[];
-}
-
 const CodeViewBar = ({ app }: Props) => {
   const { workspace } = app;
   const { gitOrganizations } = workspace;
 
   const [commit, setCommit] = useState<models.Commit | null>(null);
-  const [files, setFilesTree] = useState<Files>();
   const handleAuthWithGitClick = () => {
     window.open(`/${app.id}/github`);
   };
 
-  const body = {
-    files: [
-      {
-        type: "folder",
-        name: "src",
-      },
-      {
-        type: "file",
-        name: "package.json",
-      },
-    ],
-  };
+  //check type file/folder
+  // => if file => route
+  //route :/:appId/:buildId/:filePath query-string : navigate react
 
   const handleOnSearchChange = (searchParse: string) => {
-    let file: FileObject = new FileObject();
-    let filesTree: Files = new Files();
-    filesTree.files = new Array(4);
-    body.files
-      .filter((file) => file.name.includes(searchParse))
-      .map(
-        (resFile) => ((file.name = resFile.name), (file.type = resFile.type)),
-        filesTree.files.push(file)
-      );
-    console.log(filesTree.files);
-    setFilesTree(filesTree);
-    console.log(files);
+    // let file: FileObject = new FileObject();
+    // let filesTree: Files = new Files();
+    // filesTree.files = new Array(4);
+    // body.files
+    //   .filter((file) => file.name.includes(searchParse))
+    //   .map(
+    //     (resFile) => ((file.name = resFile.name), (file.type = resFile.type)),
+    //     filesTree.files.push(file)
+    //   );
+    // console.log(filesTree.files);
+    // setFilesTree(filesTree);
+    // console.log(files);
   };
 
   const handleSetCommit = (commit: models.Commit) => {
@@ -105,7 +77,11 @@ const CodeViewBar = ({ app }: Props) => {
       </div>
       <br />
       <div>
-        <CommitFilesMenu applicationId={app.id} />
+        <CommitFilesMenu
+          applicationId={app.id}
+          buildId={commit?.builds?.[0].id}
+          path=""
+        />
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import * as models from "../../models";
 //const CLASS_NAME = "menu-item-content";
 
 type Props = {
-  commit: models.Commit;
+  commit: models.Build;
   isMenuTitle?: Boolean;
 };
 export const CommitMenuItemContent = ({

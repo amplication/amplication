@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import "./CodeViewSyncWithGithub.scss";
+
 type Props = {
   onSyncNewGitOrganizationClick: (data: any) => any;
 };
