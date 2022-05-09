@@ -16,7 +16,7 @@ export class StorageService {
   }
 
   private buildFolder(appId: string, buildId: string) {
-    return `${this.buildsFolder}/${appId}/${buildId}`;
+    return `${this.buildsFolder}/builds/${appId}/${buildId}`;
   }
 
   getBuildFilesList(appId: string, buildId: string, relativePath: string) {
