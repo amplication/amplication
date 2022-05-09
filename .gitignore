@@ -4,6 +4,7 @@ terraform/envs/dev/.terraform.lock.hcl
 lerna-debug.log
 .DS_Store
 .idea/
+lib/
 *.tgz
 values-secret*
 dist/
