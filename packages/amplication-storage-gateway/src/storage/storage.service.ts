@@ -38,6 +38,7 @@ export class StorageService {
       }
     });
     const resultsArray = Object.values(results).sort((a, b) => {
+      // return the array with all the folders on to like vscode
       if (a.type === NodeTypeEnum.Folder && b.type !== NodeTypeEnum.Folder) {
         return -1;
       }
