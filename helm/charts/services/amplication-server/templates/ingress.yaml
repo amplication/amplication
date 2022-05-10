@@ -1,5 +1,3 @@
-{{- define "amplication-server.ingress" -}}
-{{- end }}
-{{- if .Values.ingress.enabled }}
 {{ include "base.ingress" (list . "amplication-server.ingress") -}}
+{{- define "amplication-server.ingress" -}}
 {{- end }}

@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "0.12.6",
+  "version": "0.12.7",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "update-test-data-service-snapshot": "jest -u src/tests/create-data-service.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
-    "@amplication/data": "^0.12.6",
+    "@amplication/data": "^0.12.7",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
     "camel-case": "4.1.2",
@@ -50,7 +50,7 @@
     "@nestjs/core": "7.6.18",
     "@nestjs/graphql": "7.11.0",
     "@nestjs/jwt": "8.0.0",
-    "@nestjs/passport": "7.1.6",
+    "@nestjs/passport": "8.2.1",
     "@nestjs/platform-express": "7.6.18",
     "@nestjs/serve-static": "2.2.2",
     "@nestjs/swagger": "4.8.2",
