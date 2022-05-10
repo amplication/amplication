@@ -18,13 +18,18 @@ const CodeViewBar = ({ app }: Props) => {
   const { gitOrganizations } = workspace;
 
   const [build, setBuild] = useState<models.Build | null>(null);
+  const [file, setSelectedFile] = useState<string | null>(null);
+
   const handleAuthWithGitClick = () => {
     window.open(`/${app.id}/github`);
   };
 
-  //check type file/folder
-  // => if file => route
-  //route :/:appId/:buildId/:filePath query-string : navigate react
+  const handleFileSelected = (filePath: string) => {
+    setSelectedFile(filePath);
+    console.log(file);
+
+    //route :/:appId/:buildId/:filePath query-string : navigate react
+  };
 
   const handleOnSearchChange = (searchParse: string) => {
     // let file: FileObject = new FileObject();
@@ -82,7 +87,12 @@ const CodeViewBar = ({ app }: Props) => {
       </div>
       <br />
       <div>
-        <CommitFilesMenu applicationId={app.id} buildId={build?.id} path="" />
+        <CommitFilesMenu
+          applicationId={app.id}
+          buildId={build?.id}
+          path=""
+          onFileSelected={(file) => handleFileSelected(file)}
+        />
       </div>
     </div>
   );
