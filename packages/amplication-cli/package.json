@@ -1,7 +1,7 @@
 {
   "name": "@amplication/cli",
   "description": "Amplication CLI",
-  "version": "0.12.6",
+  "version": "0.12.7",
   "repository": {
     "type": "git",
     "url": "https://github.com/amplication/amplication.git"
@@ -62,7 +62,6 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "1.26.0",
-    "@oclif/test": "1.2.9",
     "@types/node": "10.17.60",
     "@types/pluralize": "0.0.29",
     "@types/url-join": "4.0.1",

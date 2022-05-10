@@ -7,3 +7,4 @@ terraform/envs/*/.terraform.lock.hcl
 .idea/
 *.tgz
 values-secret*
+packages/.server-id
