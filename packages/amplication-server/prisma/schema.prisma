@@ -404,6 +404,7 @@ enum EnumEntityPermissionType {
   AllRoles
   Granular
   Disabled
+  Public
 }
 
 enum EnumDataType {
