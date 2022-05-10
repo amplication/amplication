@@ -8,5 +8,5 @@ dependencies:
 - name: base
   repository: file://../../base
   version: 0.1.0
-digest: sha256:b60b103f18a0d9354fb6e99ec2c3b2a4fda353c62b0de3b8c7bcc0c1c73d5c75
-generated: "2022-04-28T16:05:52.559179+03:00"
+digest: sha256:3872897399e476b893056272254c8e2a697592abe7a8f1c2f0523cb17a6c26ca
+generated: "2022-05-10T11:20:54.787112+03:00"
