@@ -1,0 +1,40 @@
+name: amplication-git-push-webhook-service
+
+config:
+  env:
+    KAFKA_BROKERS: []
+    KAFKA_CLIENT_ID: 
+    KAFKA_GROUP_ID:
+    # KAFKA_BROKER_IP_ENV_KEY: localhost:9092,localhost:9090
+    # WEBHOOKS_SECRET_KEY: [your webhooks secret key]
+    # KAFKA_REPOSITORY_PUSH_QUEUE: repositoryPush_created
+    
+deployment:
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  resources: {}
+  image:
+    pullPolicy: Always
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service-dev
+    tag: 0.0.1
+    imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 
+    target: 3000
+  protocol: TCP
+
+ingress:
+  enabled: false
+
+pvc:
+  name: efs-claim
+  storageRequest: 1Gi
+  storageName: efs-sc

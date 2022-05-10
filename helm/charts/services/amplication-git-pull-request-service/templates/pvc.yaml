@@ -1,0 +1,3 @@
+{{ include "base.pvc" (list . "amplication-git-pull-request-service.pvc") -}}
+{{- define "amplication-git-pull-request-service.pvc" -}}
+{{- end }}

@@ -1,0 +1,41 @@
+name: amplication-git-pull-request-service
+
+config:
+  env:
+    KAFKA_BROKERS: []
+    KAFKA_CLIENT_ID: 
+    KAFKA_GROUP_ID:
+    # KAFKA_BROKER_URL_VAR: "localhost:9092"
+    # BASE_BUILDS_FOLDER: "/Users/ofekgabay/Documents/"
+    # GENERATE_PULL_REQUEST_TOPIC: "git.pr.generate.message"
+
+deployment:
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  resources: {}
+  image:
+    pullPolicy: Always
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service-dev
+    tag: 0.0.1
+    imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 
+    target: 3000
+  protocol: TCP
+
+ingress:
+  enabled: false
+
+pvc:
+  name: efs-claim
+  storageRequest: 1Gi
+  storageName: efs-sc
+

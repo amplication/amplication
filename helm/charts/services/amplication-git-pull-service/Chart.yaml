@@ -1,6 +1,6 @@
 apiVersion: v2
-name: amplication-server
-description: A Helm chart for the amplication-server component of Amplication.
+name: amplication-git-pull-service
+description: A Helm chart for the amplication-git-pull-service component of Amplication.
 
 dependencies:
 
@@ -9,11 +9,6 @@ dependencies:
   version: "10.5.2"
   repository: "https://charts.bitnami.com/bitnami"
   condition: postgres.install
-
-- name: cp-helm-charts
-  version: "0.6.1"
-  repository: "https://confluentinc.github.io/cp-helm-charts/"
-  condition: cp-helm-charts.cp-kafka.enabled
 
 - name: base
   version: "0.1.0"

@@ -2,8 +2,11 @@ dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 10.5.2
+- name: cp-helm-charts
+  repository: https://confluentinc.github.io/cp-helm-charts/
+  version: 0.6.1
 - name: base
   repository: file://../../base
   version: 0.1.0
-digest: sha256:595b9fbff2696de6b0bddde2a0dfa29c1218d7213a60f3025591e19c9cf74618
-generated: "2022-04-07T10:05:28.077661+03:00"
+digest: sha256:b60b103f18a0d9354fb6e99ec2c3b2a4fda353c62b0de3b8c7bcc0c1c73d5c75
+generated: "2022-04-28T16:05:52.559179+03:00"
