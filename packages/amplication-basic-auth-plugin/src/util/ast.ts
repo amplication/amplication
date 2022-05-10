@@ -759,7 +759,7 @@ function codeTemplate(
     .join("");
 }
 
-export function findFirstDecoratorByName(
+export function  findFirstDecoratorByName(
   node: ASTNode,
   decoratorName: string
 ): namedTypes.Decorator {
@@ -809,4 +809,24 @@ export function createGenericArray(
     ARRAY_ID,
     builders.tsTypeParameterInstantiation([itemType])
   );
+}
+
+export function pushIdentifierToModuleSection(file: namedTypes.File, section: string, identifier: namedTypes.Identifier) {
+  const moduleDecorator = findFirstDecoratorByName(file, "Module")
+  //Add imported name to provider
+  recast.visit(moduleDecorator, {
+    visitCallExpression(path) {
+      // @ts-ignore
+      if (path.node.callee.name === "Module") {
+        const args = path.get("arguments");
+        const firstModuleArg = args.value[0];
+        
+        // @ts-ignore
+        const providers: namedTypes.ObjectProperty = firstModuleArg.properties.find((node: nt.ObjectProperty) => node.key.name === section)
+        // @ts-ignore
+        providers.value.elements.push(identifier)
+      }
+      this.traverse(path)
+    },
+  })
 }

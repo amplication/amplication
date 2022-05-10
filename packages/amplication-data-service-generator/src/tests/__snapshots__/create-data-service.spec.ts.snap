@@ -2796,6 +2796,7 @@ import {
   // JwtStrategy,
   // jwtSecretFactory,
   AuthModule,
+  BasicStrategy,
 } from \\"./auth/auth.module\\";
 
 import { HealthModule } from \\"./health/health.module\\";
@@ -2815,9 +2816,6 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     CustomerModule,
     EmptyModule,
     ACLModule,
-    // BasicStrategy,
-    // JwtStrategy,
-    // jwtSecretFactory,
     AuthModule,
     HealthModule,
     SecretsManagerModule,
@@ -2840,6 +2838,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
       inject: [ConfigService],
       imports: [ConfigModule],
     }),
+    BasicStrategy,
   ],
   providers: [],
 })
@@ -2953,7 +2952,7 @@ import { AuthResolver } from \\"./auth.resolver\\";
 import { AuthService } from \\"./auth.service\\";
 import { PasswordService } from \\"./password.service\\";
 import { TokenService } from \\"./token.service\\";
-import { BasicStrategy } from \\"./basic/basic.strategy.ts\\";
+import { BasicStrategy } from \\"./basic/basic.strategy\\";
 
 @Module({
   imports: [
@@ -2982,15 +2981,7 @@ import { BasicStrategy } from \\"./basic/basic.strategy.ts\\";
       },
     }),
   ],
-  providers: [
-    AuthService,
-    // BasicStrategy,
-    PasswordService,
-    AuthResolver,
-    // JwtStrategy,
-    // jwtSecretFactory,
-    TokenService,
-  ],
+  providers: [AuthService, PasswordService, AuthResolver, TokenService, BasicStrategy],
   controllers: [AuthController],
   exports: [AuthService, PasswordService],
 })

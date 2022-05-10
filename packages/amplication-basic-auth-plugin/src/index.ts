@@ -1,11 +1,12 @@
 import path from "path";
 import { Module } from "./types/module";
 import { readStaticModules } from './read-static-modules';
-import { addImports, importNames, findFirstDecoratorByName, parse } from "./util/ast";
-import { builders } from "ast-types";
+import { addImports, importNames, parse, pushIdentifierToModuleSection } from "./util/ast";
+import { builders, namedTypes } from "ast-types";
 import { relativeImportPath } from "./util/module";
-import * as recast from "recast";
+import { types, visit, print } from "recast";
 
+const nt = types.namedTypes;
 
 export async function createPluginModule(authPath: string): Promise<Module[]> {
 
@@ -14,8 +15,8 @@ export async function createPluginModule(authPath: string): Promise<Module[]> {
   return modules;
 }
 
-export function updateStaticModules(staticModules: Module[], authPath: string) {
-  const authModulePath = path.join(authPath, 'auth.module.ts');
+export function updateStaticModules(staticModules: Module[], appModule: Module, srcDir: string, authDir: string) {
+  const authModulePath = path.join(authDir, 'auth.module.ts');
   const authModule = staticModules.find(module => module.path === authModulePath);
   if (authModule === undefined) {
     throw new TypeError('AuthModule does not exist.');
@@ -23,19 +24,37 @@ export function updateStaticModules(staticModules: Module[], authPath: string) {
   const basicStrategyIdentifier = builders.identifier(
     `BasicStrategy`
   );
-  const authProviderImport = importNames(
+  const basicStrategyImport = importNames(
     [basicStrategyIdentifier],
-      `./basic/basic.strategy.ts`
+      `./basic/basic.strategy`
   );
   const imports = [
-    authProviderImport
+    basicStrategyImport
   ]
   const authModuleFile = parse(authModule?.code)
   addImports(authModuleFile, imports)
   
-  const moduleDecorator = findFirstDecoratorByName(authModuleFile, "Module")
-  // recast.get(moduleDecorator)
-  
+  pushIdentifierToModuleSection(authModuleFile, "providers", basicStrategyIdentifier)
 
-  authModule.code = recast.print(authModuleFile).code
+  authModule.code = print(authModuleFile).code
+
+  // const appModulePath = path.join(srcDir, 'app.module.ts');
+  // const appModule = staticModules.find(module => module.path === appModulePath);
+  if (appModule === undefined) {
+    throw new TypeError('AppModule does not exist.');
+  }
+  const appModuleFile = parse(appModule?.code);
+
+  const basicStrategyImportFromAuthModule = importNames(
+    [basicStrategyIdentifier],
+    `./auth/auth.module`
+  );
+  const appModuleImports = [
+    basicStrategyImportFromAuthModule
+  ]
+  addImports(appModuleFile, appModuleImports);
+
+  pushIdentifierToModuleSection(appModuleFile, "imports", basicStrategyIdentifier)
+
+  appModule.code = print(appModuleFile).code
 }

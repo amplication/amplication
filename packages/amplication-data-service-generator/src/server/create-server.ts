@@ -46,12 +46,12 @@ export async function createServerModules(
     dtos,
     logger
   );
-
-  logger.info("Creating Auth module...");
-  const authModules = await createAuthModules(SRC_DIRECTORY, appInfo, staticModules);
-
+  
   logger.info("Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
+  
+  logger.info("Creating Auth module...");
+  const authModules = await createAuthModules(SRC_DIRECTORY, appInfo, staticModules, appModule);
 
   logger.info("Creating swagger...");
   const swaggerModule = await createSwagger(appInfo);
