@@ -4,11 +4,13 @@ import { JwtModule } from "@nestjs/jwt";
 import { JWT_EXPIRATION, JWT_SECRET_KEY } from "src/constants";
 import { SecretsManagerModule } from "src/providers/secrets/secretsManager.module";
 import { SecretsManagerService } from "src/providers/secrets/secretsManager.service";
+import { QueueModule } from "src/queue/queue.module";
 import { JwtStrategy } from "./jwt/jwt.strategy";
 import { jwtSecretFactory } from "./jwt/jwtSecretFactory";
 
 @Module({
   imports: [
+    QueueModule,
     SecretsManagerModule,
     JwtModule.registerAsync({
       imports: [SecretsManagerModule],

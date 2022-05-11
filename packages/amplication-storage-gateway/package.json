@@ -1,6 +1,7 @@
 {
   "name": "@amplication/storage-gateway",
   "private": true,
+  "main": "./dist/index.js",
   "scripts": {
     "start": "nest start",
     "start:watch": "nest start --watch",
