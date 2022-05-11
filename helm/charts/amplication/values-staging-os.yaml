@@ -3,7 +3,11 @@ amplication-client:
     image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client-dev
   service:
-    hostname: app.staging-os.amplication-dev.com	    
+    hostname: app.staging-os.amplication-dev.com
+  config:
+    env:
+      REACT_APP_DATA_SOURCE: "https://server.staging-os.amplication-dev.com/graphql"
+      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.staging-os.amplication-dev.com/github"
 amplication-server:
   deployment:
     image:
