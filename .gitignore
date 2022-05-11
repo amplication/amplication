@@ -6,3 +6,4 @@ lerna-debug.log
 .idea/
 *.tgz
 values-secret*
+packages/.server-id

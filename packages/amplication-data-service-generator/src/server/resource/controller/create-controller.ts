@@ -1,3 +1,4 @@
+import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -29,6 +30,14 @@ import {
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
+import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
+import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
+
+export type MethodsIdsActionEntityTriplet = {
+  methodId: namedTypes.Identifier;
+  action: EnumEntityAction;
+  entity: Entity;
+};
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
@@ -56,6 +65,11 @@ export async function createControllerModules(
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
   const serviceId = createServiceId(entityType);
+  const createEntityId = builders.identifier("create");
+  const findManyEntityId = builders.identifier("findMany");
+  const findOneEntityId = builders.identifier("findOne");
+  const updateEntityId = builders.identifier("update");
+  const deleteEntityId = builders.identifier("delete");
 
   const mapping = {
     RESOURCE: builders.stringLiteral(resource),
@@ -80,6 +94,11 @@ export async function createControllerModules(
     ),
     FIND_MANY_ARGS: entityDTOs.findManyArgs.id,
     WHERE_INPUT: entityDTOs.whereInput.id,
+    CREATE_ENTITY_FUNCTION: createEntityId,
+    FIND_MANY_ENTITY_FUNCTION: findManyEntityId,
+    FIND_ONE_ENTITY_FUNCTION: findOneEntityId,
+    UPDATE_ENTITY_FUNCTION: updateEntityId,
+    DELETE_ENTITY_FUNCTION: deleteEntityId,
     /** @todo make dynamic */
     FINE_ONE_PATH: builders.stringLiteral("/:id"),
     UPDATE_PATH: builders.stringLiteral("/:id"),
@@ -152,6 +171,7 @@ async function createControllerModule(
         toManyRelationFields.map((field) =>
           createToManyRelationMethods(
             field,
+            entity,
             entityType,
             entityDTOs.whereUniqueInput,
             dtos,
@@ -161,6 +181,38 @@ async function createControllerModule(
       )
     ).flat();
 
+    const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+      {
+        methodId: mapping["CREATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Create,
+        entity: entity,
+      },
+      {
+        methodId: mapping["FIND_MANY_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Search,
+        entity: entity,
+      },
+      {
+        methodId: mapping["FIND_ONE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.View,
+        entity: entity,
+      },
+      {
+        methodId: mapping["UPDATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Update,
+        entity: entity,
+      },
+      {
+        methodId: mapping["DELETE_ENTITY_FUNCTION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Delete,
+        entity: entity,
+      },
+    ];
+
+    methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+      setEndpointPermissions(classDeclaration, methodId, action, entity);
+    });
+
     classDeclaration.body.body.push(...toManyRelationMethods);
 
     const dtoNameToPath = getDTONameToPath(dtos);
@@ -168,7 +220,11 @@ async function createControllerModule(
       file,
       getImportableDTOs(moduleBasePath, dtoNameToPath)
     );
-    addImports(file, [serviceImport, ...dtoImports]);
+    const identifiersImports = importContainedIdentifiers(
+      file,
+      IMPORTABLE_IDENTIFIERS_NAMES
+    );
+    addImports(file, [serviceImport, ...identifiersImports, ...dtoImports]);
   }
 
   if (!isBaseClass) {
@@ -208,6 +264,7 @@ export function createControllerBaseId(
 
 async function createToManyRelationMethods(
   field: EntityLookupField,
+  entity: Entity,
   entityType: string,
   whereUniqueInput: NamedClassDeclaration,
   dtos: DTOs,
@@ -217,7 +274,7 @@ async function createToManyRelationMethods(
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
-  interpolate(toManyFile, {
+  const toManyMapping = {
     RELATED_ENTITY_WHERE_UNIQUE_INPUT: relatedEntityDTOs.whereUniqueInput.id,
     RELATED_ENTITY_WHERE_INPUT: relatedEntityDTOs.whereInput.id,
     RELATED_ENTITY_FIND_MANY_ARGS: relatedEntityDTOs.findManyArgs.id,
@@ -237,7 +294,41 @@ async function createToManyRelationMethods(
     UPDATE: builders.identifier(camelCase(`update ${field.name}`)),
     UPDATE_PATH: builders.stringLiteral(`/:id/${field.name}`),
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
+  };
+
+  interpolate(toManyFile, toManyMapping);
+
+  const classDeclaration = getClassDeclarationById(
+    toManyFile,
+    TO_MANY_MIXIN_ID
+  );
+
+  const toManyMethodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+    {
+      methodId: toManyMapping["FIND_MANY"],
+      action: EnumEntityAction.Search,
+      entity: relatedEntity,
+    },
+    {
+      methodId: toManyMapping["UPDATE"],
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: toManyMapping["CONNECT"],
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: toManyMapping["DISCONNECT"],
+      action: EnumEntityAction.Delete,
+      entity: entity,
+    },
+  ];
+
+  toManyMethodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+    setEndpointPermissions(classDeclaration, methodId, action, entity);
   });
 
-  return getMethods(getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID));
+  return getMethods(classDeclaration);
 }

@@ -7,6 +7,7 @@ $dropzone-height: 250px;
 $options-max-width: 1000px;
 $import-image-size: 40px;
 $option-image-size: 70px;
+$divider-or-font-size: 14px;
 
 .create-app-from-excel {
   height: 100%;
@@ -69,7 +70,6 @@ $option-image-size: 70px;
     margin: auto;
   }
   &__divider {
-    @include body2;
     max-width: $options-max-width;
     width: 100%;
     margin: var(--default-spacing) auto;
@@ -87,8 +87,11 @@ $option-image-size: 70px;
     }
 
     &:after {
-      right: aut;
+      right: auto;
       left: 0;
+    }
+    span {
+      font-size: $divider-or-font-size;
     }
   }
 
@@ -112,7 +115,7 @@ $option-image-size: 70px;
     display: flex;
     flex-direction: row;
     justify-content: stretch;
-    padding: 4% 0 2% 0;
+    padding: 51px 0 43px 0;
 
     %__option {
       @include optionCard;
