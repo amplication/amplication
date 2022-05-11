@@ -29,3 +29,10 @@ amplication-server:
       HOST: "https://server.staging-os.amplication-dev.com"
       GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
       CLIENT_HOST: 'https://app.staging-os.amplication-dev.com'
+      #GCP Environments
+      GCP_APPS_PROJECT_ID: amplication-apps
+      GCP_APPS_DOMAIN: staging.amplication.app
+      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
+      GCP_APPS_REGION: us-east1
+      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
+      GCS_BUCKET: amplication-artifacts
