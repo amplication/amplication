@@ -37,6 +37,9 @@ export class AuthController {
       message: `receive login callback from github account_id=${user.account.id}`,
     })
     const token = await this.authService.prepareToken(user);
+    console.dir(
+      request.headers
+    );
     response.redirect(301, `${request.headers.referer}?token=${token}`);
   }
 }
