@@ -21,7 +21,7 @@ on:
       - ".all-contributorsrc"
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
@@ -78,7 +78,7 @@ jobs:
         if: github.ref == 'refs/heads/master' || contains(github.head_ref, 'ci') || github.actor == 'renovate[bot]'
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     timeout-minutes: 120
     if: github.ref == 'refs/heads/master' || contains('ci', github.ref)
     steps:

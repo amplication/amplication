@@ -6,6 +6,8 @@
 
 body {
   color: var(--black100);
+  -moz-osx-font-smoothing: auto;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 #root {
