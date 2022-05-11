@@ -16,8 +16,11 @@ import {WINSTON_MODULE_PROVIDER} from "nest-winston";
 
 @Controller('/')
 export class AuthController {
+  private host: string;
   constructor(private readonly authService: AuthService,
-              @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger) {}
+              @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger) {
+    this.host = process.env.CLIENT_HOST || 'http://localhost:3001'
+  }
 
   @UseInterceptors(MorganInterceptor('combined'))
   @Get('/github')
@@ -37,9 +40,6 @@ export class AuthController {
       message: `receive login callback from github account_id=${user.account.id}`,
     })
     const token = await this.authService.prepareToken(user);
-    console.dir(
-      request.headers
-    );
-    response.redirect(301, `${request.headers.referer}?token=${token}`);
+    response.redirect(301, `${this.host}?token=${token}`);
   }
 }
