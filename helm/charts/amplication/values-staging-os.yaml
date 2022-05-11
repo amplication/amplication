@@ -22,4 +22,4 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server.staging-os.amplication-dev.com/github/callback"
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
       HOST: "https://server.staging-os.amplication-dev.com"
-      GITHUB_CLIENT_ID: "a4e9055e5f21448d6de7"
+      GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
