@@ -29,10 +29,6 @@ service:
   protocol: TCP
   hostname: app.amplication-dev.com	
   certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/5c7e86d0-5a8f-41d0-a0b5-db6a13dea090
-
-ingress:
-  enabled: false
-  hostname: app.amplication-dev.com	
   
 config:
   env:
