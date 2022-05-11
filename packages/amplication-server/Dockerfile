@@ -39,44 +39,20 @@ RUN npm run clean -- --yes
 # Rebuild production node_modules
 RUN npm run bootstrap -- -- --production --scope @amplication/server --include-dependencies
 
+RUN ls /app/packages/amplication-prisma-db/lib/
+
+RUN find ./packages/amplication-*/* -type d ! -path "*node_modules*" ! -path "*dist*" ! -path "*lib*" -exec rm -rf {} +
+RUN find ./packages/amplication-*/* -type f ! -path "*lib*" ! -path "*node_modules*" ! -path "*dist*" ! -name package.json ! -path "*amplication-server/index.html" -exec rm -rf {} +
+RUN mkdir -p /app/packages/amplication-client/build/ && mv /app/packages/amplication-server/index.html /app/packages/amplication-client/build/
+
+
+
 FROM base as server
 WORKDIR /app/packages/amplication-server
 # Copy all distributions and node_modules for amplication/server and its dependencies
-COPY --from=build /app/packages/amplication-server/package.json /app/packages/amplication-server/package.json
-COPY --from=build /app/packages/amplication-server/node_modules /app/packages/amplication-server/node_modules
-COPY --from=build /app/packages/amplication-server/dist /app/packages/amplication-server/dist
+COPY --from=build /app/packages/ /app/packages/
 
-COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
-
-
-COPY --from=build /app/packages/amplication-container-builder/package.json /app/packages/amplication-container-builder/package.json
-COPY --from=build /app/packages/amplication-container-builder/node_modules /app/packages/amplication-container-builder/node_modules
-COPY --from=build /app/packages/amplication-container-builder/dist /app/packages/amplication-container-builder/dist
-
-COPY --from=build /app/packages/amplication-data/package.json /app/packages/amplication-data/package.json
-COPY --from=build /app/packages/amplication-data/node_modules /app/packages/amplication-data/node_modules
-COPY --from=build /app/packages/amplication-data/dist /app/packages/amplication-data/dist
-
-COPY --from=build /app/packages/amplication-data-service-generator/package.json /app/packages/amplication-data-service-generator/package.json
-COPY --from=build /app/packages/amplication-data-service-generator/node_modules /app/packages/amplication-data-service-generator/node_modules
-COPY --from=build /app/packages/amplication-data-service-generator/dist /app/packages/amplication-data-service-generator/dist
-
-COPY --from=build /app/packages/amplication-deployer/package.json /app/packages/amplication-deployer/package.json
-COPY --from=build /app/packages/amplication-deployer/node_modules /app/packages/amplication-deployer/node_modules
-COPY --from=build /app/packages/amplication-deployer/dist /app/packages/amplication-deployer/dist
-
-COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
-COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
-COPY --from=build /app/packages/amplication-git-service/dist /app/packages/amplication-git-service/dist
-
-
-COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
-COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
-COPY --from=build /app/packages/amplication-prisma-db/lib /app/packages/amplication-prisma-db/lib
-
-COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
-COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
-COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
+RUN ls /app/packages/amplication-prisma-db/lib/
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]

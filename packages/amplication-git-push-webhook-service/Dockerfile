@@ -11,7 +11,7 @@ RUN npm config set fund false
 
 WORKDIR /app
 COPY lerna.json /app
-COPY package*.json /app
+COPY package*.json /app/
 RUN npm ci --production
 
 FROM base AS build
@@ -32,21 +32,13 @@ RUN npm run clean -- --yes
 # Rebuild production node_modules
 RUN npm run bootstrap -- -- --production --scope @amplication/git-push-webhook-service --include-dependencies
 
+RUN find ./packages/amplication-*/* -type d ! -path "*node_modules*" ! -path "*dist*" ! -path "*lib*" -exec rm -rf {} +
+RUN find ./packages/amplication-*/* -type f ! -path "*lib*" ! -path "*node_modules*" ! -path "*dist*" ! -name package.json -exec rm -rf {} +
+
 FROM base as server
 WORKDIR /app/packages/amplication-git-push-webhook-service
 # Copy all distributions and node_modules for amplication-git-push-webhook-service  and its dependencies
-COPY --from=build /app/packages/amplication-git-push-webhook-service/package.json /app/packages/amplication-git-push-webhook-service/package.json
-COPY --from=build /app/packages/amplication-git-push-webhook-service/node_modules /app/packages/amplication-git-push-webhook-service/node_modules
-COPY --from=build /app/packages/amplication-git-push-webhook-service/dist /app/packages/amplication-git-push-webhook-service/dist
-
-
-COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
-COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
-COPY --from=build /app/packages/amplication-prisma-db/lib /app/packages/amplication-prisma-db/lib
-
-COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
-COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
-COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
+COPY --from=build /app/packages/ /app/packages/
 
 EXPOSE 4567
 CMD [ "node", "dist/src/main"]
