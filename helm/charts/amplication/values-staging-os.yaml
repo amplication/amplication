@@ -3,7 +3,8 @@ amplication-client:
     image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client-dev
   service:
-    hostname: app.staging-os.amplication-dev.com	    
+    hostname: app.staging-os.amplication-dev.com
+    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/a9adf002-719c-45e0-9dd5-4965bd5ec585
 amplication-server:
   deployment:
     image:
