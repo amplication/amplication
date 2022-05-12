@@ -89,6 +89,7 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.changes.outputs.packages) }}
         node-version: [14.x, 16.x]
+        service: ${{ fromJson(needs.changes.outputs.services) }}
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -134,6 +135,28 @@ jobs:
       - name: Run tests
         id: test
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test
+
+      - name: Run tests with code-coverage
+        id: cc
+        run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
+      
+      - name: Copy Coverage To Predictable Location
+        run: cp ${{matrix.service}}/coverage/clover.xml coverage/clover.xml
+
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.0.2
+        with:
+          filename: coverage/clover.xml
+          badge: true
+          format: 'markdown'
+          output: 'both'
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
 
       - name: Discord notification
         if: failure()
