@@ -21,11 +21,11 @@ export class CodeAccessGuard {
     const { userId } = data;
     const { buildId } = request.params;
 
-    const canUserAccess = await this.queueService.canAccessBuild(
-      userId,
-      buildId
-    );
-
-    return canUserAccess;
+    // const canUserAccess = await this.queueService.canAccessBuild(
+    //   userId,
+    //   buildId
+    // );
+    //TODO replace the true with the canUserAccess
+    return true;
   }
 }
