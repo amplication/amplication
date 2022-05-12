@@ -8,7 +8,7 @@ on:
         description: Which branch to use for deployment
         default: main
         required: true
-      contributor_name:
+      contributor-name:
         type: string
         description: write your github-user name
         required: true
@@ -17,11 +17,38 @@ on:
     types: [opened, reopened]
 
 jobs:
-  Check_branch:
+  create_branch:
     runs-on: ubuntu-latest
   steps:
-    - name:
-      run: 
+    - uses: actions/checkout@v2
+    - name: Check branch exist
+      run: |
+        cmd="$(git rev-parse --verify --quiet  feature/${{ github.event.inputs.source-branch }})"
+        if [[ ! -z "$cmd" ]]
+        then
+          git branch -d feature/${{ github.event.inputs.source-branch }}
+        fi 
+
+    - name: Git clone forked pipeline
+      run: git clone https://github.com/${{ github.event.inputs.contributor-name }}/amplication.git
+    
+    - name: Git checkout origin branch
+      run: git checkout origin ${{ github.event.inputs.source-branch }}
+    
+    - name: Git remote add upstream
+      run: git remote add upstream https://github.com/amplication/amplication.git
+    
+    - name: Git create new branch
+      run: git checkout -b feature/${{ github.event.inputs.source-branch }}
+    
+    - name: Git push new branch
+      run: git push
+
+
+
+
+
+
 
 
 
