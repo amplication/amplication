@@ -1,10 +1,10 @@
 name: Generated App Tests
 on:
   workflow_dispatch:
-  # pull_request:
-  #   types: [ opened, synchronize, reopened ]
-  #   paths:
-  #     - "packages/**"
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - "packages/**"
 
 jobs:
 
