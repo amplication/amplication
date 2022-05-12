@@ -10,7 +10,7 @@ on:
       - ".all-contributorsrc"
   pull_request:
     branches: ['master','release/*']
-    types: [opened, reopened]
+    types: [opened, synchronize, reopened]
     paths-ignore:
       - "**.md"
       - "renovate.json"
@@ -136,31 +136,34 @@ jobs:
         id: test
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test
 
-      - name: Run tests with code-coverage
-        id: cc
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
-      
-      - name: Copy Coverage To Predictable Location
-        run: |
-          cat packages/${{matrix.service}}/coverage/clover.xml
-          pwd
-          cp packages/${{matrix.service}}/coverage/clover.xml clover.xml
-          ls -l
+      - uses: ArtiomTr/jest-coverage-report-action@v2
+        with: 
+          test-script: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
+      # - name: Run tests with code-coverage
+      #   id: cc
+      #   run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
+    
+      # - name: Copy Coverage To Predictable Location
+      #   run: |
+      #     cat packages/${{matrix.service}}/report.json
+      #     pwd
+      #     cp packages/${{matrix.service}}/report.json report.json
+      #     ls -l
 
-      - name: Code Coverage Summary Report
-        uses: irongut/CodeCoverageSummary@v1.0.2
-        with:
-          filename: clover.xml
-          badge: true
-          format: 'markdown'
-          output: 'both'
+      # - name: Code Coverage Summary Report
+      #   uses: irongut/CodeCoverageSummary@v1.0.2
+      #   with:
+      #     filename: report.json
+      #     badge: true
+      #     format: 'markdown'
+      #     output: 'both'
 
-      - name: Add Coverage PR Comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        if: github.event_name == 'pull_request'
-        with:
-          recreate: true
-          path: code-coverage-results.md
+      # - name: Add Coverage PR Comment
+      #   uses: marocchino/sticky-pull-request-comment@v2
+      #   if: github.event_name == 'pull_request'
+      #   with:
+      #     recreate: true
+      #     path: code-coverage-results.md
 
       - name: Discord notification
         if: failure()

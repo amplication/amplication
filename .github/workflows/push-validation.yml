@@ -2,10 +2,10 @@ name: validate push
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "packages/**"
-      - ".github/workflows/push-validation.yml"
+  # push:
+  #   paths:
+  #     - "packages/**"
+  #     - ".github/workflows/push-validation.yml"
 
 jobs:
   changed-packages:
