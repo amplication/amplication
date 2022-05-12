@@ -76,10 +76,9 @@ jobs:
           echo "package_build_list: $package_build_list"
           echo "::set-output name=package_build_list::$package_build_list"
 
-          shopt -s lastpipe
-          cat $GITHUB_WORKSPACE/hashes.json | base64 --decode | read hashes
-          echo "hashes: $hashes"
-          echo "::set-output name=hashes::$hashes"
+          GITHUB_HASH=$(cat $GITHUB_WORKSPACE/hashes.json | base64 --decode)
+          echo "hashes: $GITHUB_HASH"
+          echo "::set-output name=hashes::$GITHUB_HASH"
 
       - name: Discord notification
         if: failure()
@@ -186,9 +185,8 @@ jobs:
           working-directory: packages/${{ matrix.service }}
           hashes: ${{ needs.changes.outputs.service_retag_list }}
         run: |
-          shopt -s lastpipe
-          echo $hashes | jq -r '."${{ matrix.service }}"' | read GITHUB_HASH
-          echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
+          GITHUB_HASH=$(echo $hashes | jq -r '."${{ matrix.service }}"')
+          echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
           echo $GITHUB_HASH
       - name: Check if repo exist
         working-directory: packages/${{ matrix.service }}
