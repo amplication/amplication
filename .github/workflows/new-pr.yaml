@@ -1,0 +1,47 @@
+name: New PR Automation
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - closed
+
+env:
+  PR_PROJECT_ID: 2
+  ORG: amplication
+  OPENED_REOPEND_STATUS: New
+  CLOSED_STATUS: Closed
+
+jobs:
+  pr_opened_and_reopened:
+    name: pr_opened_and_reopened
+    runs-on: ubuntu-18.04
+    if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'reopened'
+    steps:
+      - name: 'Move pr to "New"'
+        uses: leonsteinhaeuser/project-beta-automations@v1.0.2
+        with:
+          gh_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          organization: ${{ env.ORG }}
+          project_id: ${{ env.PR_PROJECT_ID }}
+          resource_node_id: ${{ github.event.pull_request.node_id }}
+          status_value: ${{ env.OPENED_REOPEND_STATUS }}
+      - name: 'Discord notification'
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_GITHUB_NOTIFICATIONS_CHANNEL_WEBHOOK }}
+          DISCORD_EMBEDS: '[{"color":3447003,"title":"${{ github.event.pull_request.title}} #${{github.event.pull_request.number}}","url":"${{ github.event.pull_request.html_url }}","author":{"name":"${{ github.event.pull_request.user.login }}","icon_url":"${{ github.event.pull_request.user.avatar_url }}","url":"${{ github.event.pull_request.user.html_url }}"},"description":"Pull-Request - ${{ github.event.action }}"}]'
+
+  pull_request_closed:
+    name: pull_request_closed
+    runs-on: ubuntu-18.04
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    steps:
+      - name: 'Moved PR to "Closed"'
+        uses: leonsteinhaeuser/project-beta-automations@v1.0.2
+        with:
+          gh_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          organization: ${{ env.ORG }}
+          project_id: ${{ env.PR_PROJECT_ID }}
+          resource_node_id: ${{ github.event.pull_request.node_id }}
+          status_value: ${{ env.CLOSED_STATUS }}
