@@ -137,8 +137,10 @@ jobs:
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test
 
       - uses: ArtiomTr/jest-coverage-report-action@v2
-        with: 
-          test-script: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
+        with:
+          working-directory: packages/${{matrix.service}}
+        # with: 
+        #   test-script: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
       # - name: Run tests with code-coverage
       #   id: cc
       #   run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
