@@ -9,7 +9,7 @@ on:
       - "renovate.json"
       - ".all-contributorsrc"
   pull_request:
-    branches: ['master','release/*','feature/*']
+    branches: ['master','release/*']
     types: [opened, reopened]
     paths-ignore:
       - "**.md"
@@ -141,7 +141,7 @@ jobs:
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
       
       - name: Copy Coverage To Predictable Location
-        run: cp ${{matrix.service}}/coverage/clover.xml coverage/clover.xml
+        run: cp packages/${{matrix.service}}/coverage/clover.xml coverage/clover.xml
 
       - name: Code Coverage Summary Report
         uses: irongut/CodeCoverageSummary@v1.0.2
