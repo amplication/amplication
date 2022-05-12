@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-18.04
     outputs:
       services: ${{ steps.build_list.outputs.service_build_list }}
+      hashes: ${{ steps.build_list.outputs.hashes }}
       service_retag_list: ${{ steps.build_list.outputs.service_retag_list }}
       packages: ${{ steps.build_list.outputs.package_build_list }}
     steps:
@@ -74,6 +75,12 @@ jobs:
           package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json | jq -r .)
           echo "package_build_list: $package_build_list"
           echo "::set-output name=package_build_list::$package_build_list"
+
+          shopt -s lastpipe
+          cat $GITHUB_WORKSPACE/hashes.json | base64 --decode | read hashes
+          echo "hashes: $hashes"
+          echo "::set-output name=hashes::$hashes"
+
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
@@ -177,8 +184,10 @@ jobs:
       - name: Set hash
         env:
           working-directory: packages/${{ matrix.service }}
+          hashes: ${{ needs.changes.outputs.service_retag_list }}
         run: |
-          GITHUB_HASH_MOD=$(find ./packages/${{ matrix.service }} -type f \( -exec sha1sum {} \; \) | awk '{print $1}' | sort | sha1sum)
+          shopt -s lastpipe
+          echo $hashes | jq -r '."${{ matrix.service }}"' | read GITHUB_HASH
           echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
           echo $GITHUB_HASH
       - name: Check if repo exist
