@@ -1,6 +1,4 @@
 import * as common from "@nestjs/common";
-import * as swagger from "@nestjs/swagger";
-import * as nestMorgan from "nest-morgan";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as defaultAuthGuard from "../auth/defaultAuth.guard";
@@ -54,23 +52,15 @@ declare const UPDATE_PATH: string;
 declare const SELECT: Select;
 
 export class Mixin {
-  constructor(
-    private readonly service: SERVICE,
-    private readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(private readonly service: SERVICE) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(FIND_MANY_PATH)
   @nestAccessControl.UseRoles({
     resource: RELATED_ENTITY_NAME,
     action: "read",
     possession: "any",
   })
+  @common.Get(FIND_MANY_PATH)
   @ApiNestedQuery(RELATED_ENTITY_FIND_MANY_ARGS)
   async FIND_MANY(
     @common.Req() request: Request,
@@ -89,17 +79,12 @@ export class Mixin {
     return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post(CREATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
+  @common.Post(CREATE_PATH)
   async CONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
@@ -116,17 +101,12 @@ export class Mixin {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
+  @common.Patch(UPDATE_PATH)
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
@@ -143,17 +123,12 @@ export class Mixin {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
+  @common.Delete(DELETE_PATH)
   async DISCONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() body: RELATED_ENTITY_WHERE_UNIQUE_INPUT[]
