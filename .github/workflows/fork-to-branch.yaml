@@ -14,7 +14,7 @@ on:
         required: true
   pull_request:
     branches: ['master','release/*']
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
 
 jobs:
   create_branch:
