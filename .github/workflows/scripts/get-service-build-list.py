@@ -4,11 +4,14 @@ from pathlib import Path
 from typing import List
 import glob
 import hashlib
+import base64
+
 
 
 root_folder=os.getenv('GITHUB_WORKSPACE',Path(__file__).parents[3])
 services_output_file=os.getenv('SERVICES_OUPTUT_PATH',os.path.join(root_folder,'service_build_list.json'))
 packages_output_file=os.getenv('PACKAGES_OUPTUT_PATH',os.path.join(root_folder,'package_build_list.json'))
+hashes_output_file=os.getenv('HASHES_OUPTUT_PATH',os.path.join(root_folder,'hashes.json'))
 services_retag_output_file=os.getenv('SERVICES_RETAG_OUPTUT_PATH',os.path.join(root_folder,'service_retag_list.json'))
 helm_services_folder=os.getenv('HELM_SERVICES_FOLDER',os.path.join(root_folder,'helm/charts/services'))
 packages_folder=os.getenv('PACKAGES_FOLDER',os.path.join(root_folder,'packages'))
@@ -73,9 +76,10 @@ for service_name in all_services:
     if service_name not in service_build_list:
         service_retag_list.append(service_name)
 
+hashes=dict()
 for folders_to_hash in service_build_list.keys():
-    filenames=[]
     hash_=""
+    filenames=[]
     for folder_to_hash in service_build_list[folders_to_hash]:
         path=os.path.join(packages_folder,folders_to_hash,'**/*')
         filenames.append(glob.glob(path))
@@ -83,9 +87,15 @@ for folders_to_hash in service_build_list.keys():
         with open(filename[0], 'rb') as inputfile:
             data = inputfile.read()
             hash_+=hashlib.md5(data).hexdigest()
-    with open(os.path.join(os.path.dirname(services_output_file),f'{folders_to_hash}.md5'), 'w') as f:
-        hashlib.sha256(hash_.encode('utf-8')).hexdigest()
-        f.write(str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16)))
+    hashes[folders_to_hash]=str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
+
+
+
+print(f"Will create the hashes file: {hashes}")
+hashes_b64 = base64.b64encode(json.dumps(hashes).encode('ascii'))
+f = open(hashes_output_file, "w")
+f.write(str(hashes_b64).replace("b\'","").replace("\'",""))
+f.close()
 
 
 
