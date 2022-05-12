@@ -52,7 +52,6 @@ def get_changed_folders():
     else:
         for changed_file in changed_files.split(','):
             changed_folders.append(changed_file.split('/')[1])
-    changed_folders=["amplication-server", "amplication-cli","amplication-data","amplication-scheduler","amplication-container-builder"]
     print(f"changed_folders: {changed_folders}")
     return changed_folders
 
