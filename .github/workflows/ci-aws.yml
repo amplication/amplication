@@ -3,7 +3,7 @@ name: CI-AWS
 on:
   workflow_dispatch:
   push:
-    branches: ['*']
+    branches: ['**']
     paths-ignore:
       - "**.md"
       - "renovate.json"
