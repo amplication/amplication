@@ -9,7 +9,7 @@ on:
       - "renovate.json"
       - ".all-contributorsrc"
   pull_request:
-    branches: ['master','release/*']
+    branches: ['master','release/*','feature/*']
     types: [opened, reopened]
     paths-ignore:
       - "**.md"
