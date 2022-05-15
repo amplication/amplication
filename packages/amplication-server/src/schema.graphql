@@ -565,6 +565,7 @@ enum EnumEntityPermissionType {
   AllRoles
   Granular
   Disabled
+  Public
 }
 
 type EntityPermissionRole {
