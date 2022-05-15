@@ -5,7 +5,7 @@ on:
     inputs:
       source-branch:
         type: string
-        description: Which branch to use for deployment
+        description: The name of the branch from forked-repo.
         required: true
       contributor-name:
         type: string
