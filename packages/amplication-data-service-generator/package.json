@@ -94,7 +94,7 @@
     "bcrypt": "5.0.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
-    "cross-fetch": "3.1.4",
+    "cross-fetch": "3.1.5",
     "docker-compose": "0.23.14",
     "eslint": "7.17.0",
     "eslint-config-react-app": "6.0.0",
