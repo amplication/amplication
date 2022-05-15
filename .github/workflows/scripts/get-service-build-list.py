@@ -86,10 +86,10 @@ for changed_folder in changed_folders:
         dependet_services(changed_folder,service_build_list)
     if get_package_name(changed_folder) not in package_build_list:
         package_build_list.append(get_package_name(changed_folder))
-for service_name in all_services:
-    if service_name not in service_build_list:
-        service_retag_list[changed_folder] = [changed_folder]
-        dependet_services(changed_folder,service_retag_list)
+    for service_name in all_services:
+        if service_name not in service_build_list:
+            service_retag_list[changed_folder] = [changed_folder]
+            dependet_services(changed_folder,service_retag_list)
 
 final_services_list=dict()
 
