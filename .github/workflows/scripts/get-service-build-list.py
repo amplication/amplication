@@ -91,7 +91,12 @@ for service_name in all_services:
         service_retag_list[changed_folder] = [changed_folder]
         dependet_services(changed_folder,service_retag_list)
 
+final_services_list=dict()
+
 hashes=get_hashes(service_build_list.update(service_retag_list))
+final_services_list.update(service_build_list)
+final_services_list.update(service_retag_list)
+get_hashes(final_services_list)
 # for folders_to_hash in service_build_list.keys():
 #     hash_=""
 #     filenames=[]
