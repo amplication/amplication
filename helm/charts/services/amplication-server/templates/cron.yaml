@@ -1,0 +1,24 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: server-cronjob
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: curlimage
+            image: curlimages/curl
+            imagePullPolicy: IfNotPresent
+            command:
+            - sh
+            - -c
+            args:
+            - curl -X POST $SERVICE_URL
+            env:
+            - name: SERVICE_URL
+              value: "http://amplication-server/system/update-statuses"
+          restartPolicy: OnFailure
