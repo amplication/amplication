@@ -60,6 +60,21 @@ def get_package_name(raw_package) -> str:
     print(f"package name was fixed from {raw_package} to {fixed_package}")
     return fixed_package
 
+def get_hashes(folders_list) -> dict():
+    hashes=dict()
+    for folders_to_hash in folders_list.keys():
+        hash_=""
+        filenames=[]
+        for folder_to_hash in folders_list[folders_to_hash]:
+            path=os.path.join(packages_folder,folder_to_hash,'**/*')
+            filenames.append(glob.glob(path))
+        for filename in filenames:
+            with open(filename[0], 'rb') as inputfile:
+                data = inputfile.read()
+                hash_+=hashlib.md5(data).hexdigest()
+        hashes[folder_to_hash]=str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
+    return hashes
+
 changed_folders = get_changed_folders()
 service_build_list=dict()
 all_services=os.listdir(helm_services_folder)
@@ -75,18 +90,18 @@ for service_name in all_services:
     if service_name not in service_build_list:
         service_retag_list.append(service_name)
 
-hashes=dict()
-for folders_to_hash in service_build_list.keys():
-    hash_=""
-    filenames=[]
-    for folder_to_hash in service_build_list[folders_to_hash]:
-        path=os.path.join(packages_folder,folders_to_hash,'**/*')
-        filenames.append(glob.glob(path))
-    for filename in filenames:
-        with open(filename[0], 'rb') as inputfile:
-            data = inputfile.read()
-            hash_+=hashlib.md5(data).hexdigest()
-    hashes[folders_to_hash]=str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
+hashes=get_hashes(service_build_list+service_retag_list)
+# for folders_to_hash in service_build_list.keys():
+#     hash_=""
+#     filenames=[]
+#     for folder_to_hash in service_build_list[folders_to_hash]:
+#         path=os.path.join(packages_folder,folder_to_hash,'**/*')
+#         filenames.append(glob.glob(path))
+#     for filename in filenames:
+#         with open(filename[0], 'rb') as inputfile:
+#             data = inputfile.read()
+#             hash_+=hashlib.md5(data).hexdigest()
+#     hashes[folders_to_hash]=str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
 
 
 
