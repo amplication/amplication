@@ -21,7 +21,7 @@ changed_files=os.getenv('CHANGED_FILES_PR') or os.getenv('CHANGED_FILES_NOT_PR')
 
 package_build_list=[]
 service_build_list=dict()
-service_retag_list=[]
+service_retag_list=dict()
 
 print(f"root_folder: {root_folder}")
 print(f"services_output_file: {services_output_file}")
@@ -33,7 +33,7 @@ print(f"changed_files: {changed_files}")
 def is_service(service_list,service_name) -> bool:
   return service_name in service_list
 
-def dependet_services(package_name) -> List[str]:
+def dependet_services(package_name,dict) -> List[str]:
     npm_package_name=package_name.replace("-","/",1)
     for service in all_services:
         package_json=f"{packages_folder}/{service}/package.json"
@@ -41,10 +41,10 @@ def dependet_services(package_name) -> List[str]:
             depencies = file.read().replace('\n', '')
         if f"\"@{npm_package_name}\":" in depencies:
             print(f"The service {service} depends on package {npm_package_name}, will build")
-            if service not in service_build_list:
-                service_build_list[service]=[service,package_name]
+            if service not in dict:
+                dict[service]=[service,package_name]
             else: 
-                service_build_list[service]+=[package_name]
+                dict[service]+=[package_name]
 
 def get_changed_folders():
     if not changed_files:
@@ -83,14 +83,15 @@ for changed_folder in changed_folders:
         if changed_folder not in service_build_list:
             service_build_list[changed_folder] = [changed_folder]
     else:
-        dependet_services(changed_folder)
+        dependet_services(changed_folder,service_build_list)
     if get_package_name(changed_folder) not in package_build_list:
         package_build_list.append(get_package_name(changed_folder))
 for service_name in all_services:
     if service_name not in service_build_list:
-        service_retag_list.append(service_name)
+        service_retag_list[changed_folder] = [changed_folder]
+        dependet_services(changed_folder,service_retag_list)
 
-hashes=get_hashes(service_build_list+service_retag_list)
+hashes=get_hashes(service_build_list.update(service_retag_list))
 # for folders_to_hash in service_build_list.keys():
 #     hash_=""
 #     filenames=[]
