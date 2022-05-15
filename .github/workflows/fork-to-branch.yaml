@@ -17,30 +17,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Check branch exist
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # need to add PAT
+
+      - name: Check if branch exists
         run: |
-          cmd="$(git rev-parse --verify --quiet  feature/${{ github.event.inputs.source-branch }})"
-          if [[ ! -z "$cmd" ]]
+          existed_in_repo=$(git ls-remote --heads origin feature/${{ github.event.inputs.source-branch }})
+          if [[ -z ${existed_in_repo} ]]
           then
-            git branch -d feature/${{ github.event.inputs.source-branch }}
-          fi 
-
-      - name: Git clone forked pipeline
-        run: git clone https://github.com/${{ github.event.inputs.contributor-name }}/amplication.git
-      
-      - name: Git checkout origin branch
-        run: git checkout origin ${{ github.event.inputs.source-branch }}
-      
-      - name: Git remote add upstream
-        run: git remote add upstream https://github.com/amplication/amplication.git
-      
-      - name: Git create new branch
-        run: git checkout -b feature/${{ github.event.inputs.source-branch }}
-      
-      - name: Git push new branch
-        run: git push
-
-
+            echo "branch feature/${{ github.event.inputs.source-branch }} is not exists"
+          else
+            git push origin --delete feature/${{ github.event.inputs.source-branch }}
+            echo "branch feature/${{ github.event.inputs.source-branch }} deleted" 
+          fi
+  
+      - name: Git remote add forked repo
+        run: |
+          git remote add upstream https://github.com/${{ github.event.inputs.contributor-name }}/amplication.git
+          git fetch --all
+          git checkout upstream/${{ github.event.inputs.source-branch }}
+          git checkout -b feature/${{ github.event.inputs.source-branch }}
+          git push --set-upstream origin feature/${{ github.event.inputs.source-branch }}
+          
+          echo "Forked branch ${{ github.event.inputs.contributor-name }}:${{ github.event.inputs.source-branch }} has been pushed to amplication repo in feature/${{ github.event.inputs.source-branch }}"
 
 
 
