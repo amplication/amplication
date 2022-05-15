@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Header,
+  Param,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
 import { CodeAccessGuard } from "src/auth/codeAccessGuard.guard";
 import { DefaultAuthGuard } from "src/auth/defaultAuth.guard";
 import { PaginationQuery, PaginationResult } from "src/pagination";
@@ -28,6 +35,7 @@ export class StorageController {
     return this.paginationService.paginate(results, query);
   }
   @Get(`/:${APP_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/content`)
+  @Header("content-type", "text/html")
   fileContent(
     @Param(APP_ID_PARAM_KEY) appId: string,
     @Param(BUILD_ID_PARAM_KEY) buildId: string,
