@@ -9,7 +9,7 @@ on:
         required: true
       contributor-name:
         type: string
-        description: write your github-user name
+        description: write the contributor github username
         required: true
 
 jobs:
