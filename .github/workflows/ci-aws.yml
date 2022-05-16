@@ -184,7 +184,7 @@ jobs:
       - name: Set hash
         env:
           working-directory: packages/${{ matrix.service }}
-          hashes: ${{ needs.changes.outputs.service_retag_list }}
+          hashes: ${{ needs.changes.outputs.hashes }}
         run: |
           echo "hashes: $hashes"
           echo "$hashes" | base64 --decode >> hashes.json
@@ -264,7 +264,7 @@ jobs:
       - name: Set hash
         env:
           working-directory: packages/${{ matrix.service }}
-          hashes: ${{ needs.changes.outputs.service_retag_list }}
+          hashes: ${{ needs.changes.outputs.hashes }}
         run: |
           echo "hashes: $hashes"
           echo "$hashes" | base64 --decode >> hashes.json
