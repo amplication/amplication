@@ -140,12 +140,11 @@ jobs:
         id: cc
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
       
-      - name: Run Code coverage test
-        uses: danhunsaker/clover-reporter-action@v0.2.17-clover
+      - name: Coverage Report
+        uses: lucassabreu/comment-coverage-clover@main
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          clover-file: packages/${{matrix.service}}/coverage/clover.xml
-      
+          file: packages/${{matrix.service}}/coverage/clover.xml
+          
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
