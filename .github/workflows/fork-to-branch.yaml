@@ -69,17 +69,16 @@ jobs:
           
           echo "Forked branch ${{ env.OWNER }}:${{ env.REF }} has been pushed to fork-to-branch repo pr/${{ env.REF }}-${{ env.PR_NUMBER }}"
 
-      - name: Edit PR comment
-        uses: thollander/actions-comment-pull-request@v1
-        env: 
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v2
+        env:
           REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
           PR_NUMBER: ${{ github.event.issue.number }}
         with:
-          message: 'The branch pr/${{ env.REF }}-${{ env.PR_NUMBER }} was created!'
-          pr_number: ${{ env.PR_NUMBER }}
-          comment_includes: "run branch"
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
+          issue-number: ${{ env.PR_NUMBER }}
+          body: |
+            The branch 'pr/${{ env.REF }}-${{ env.PR_NUMBER }}' was created!
+          reactions: '+1'
 
 
 
