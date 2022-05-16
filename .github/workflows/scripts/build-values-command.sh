@@ -13,16 +13,7 @@ for dir in /$HELM_SERVICES_FOLDER/*/
 do
     echo "cleaning up $dir"
     SERVICE_NAME="$(basename $dir)"
-    REPO_NAME=${GITHUB_REPOSITORY##*/}
-    echo "REPO_NAME: $REPO_NAME"
-    if [ "$REPO_NAME" = "amplication" ]; then
-        echo "Will use dev prefix"
-        REPO_SUFFIX="dev"
-    else
-        echo "Will use prod prefix"
-        REPO_SUFFIX="prod" 
-    fi
-    REPO_NAME="$SERVICE_NAME-$REPO_SUFFIX"
+    REPO_NAME="$SERVICE_NAME"
     echo "SERVICE_NAME: $SERVICE_NAME"
     echo "REPO_NAME: $REPO_NAME"
     tag_list="$(aws ecr describe-images --repository-name=$REPO_NAME --region us-east-1 --image-ids=imageTag=$IMAGE_TAG_ANCHOR 2> /dev/null )"
