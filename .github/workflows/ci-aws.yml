@@ -3,7 +3,7 @@ name: CI-AWS
 on:
   workflow_dispatch:
   push:
-    branches: ['*']
+    branches: ['**']
     paths-ignore:
       - "**.md"
       - "renovate.json"
@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-18.04
     outputs:
       services: ${{ steps.build_list.outputs.service_build_list }}
+      hashes: ${{ steps.build_list.outputs.hashes }}
       service_retag_list: ${{ steps.build_list.outputs.service_retag_list }}
       packages: ${{ steps.build_list.outputs.package_build_list }}
     steps:
@@ -74,6 +75,12 @@ jobs:
           package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json | jq -r .)
           echo "package_build_list: $package_build_list"
           echo "::set-output name=package_build_list::$package_build_list"
+
+          GITHUB_HASH=$(cat $GITHUB_WORKSPACE/hashes.json | base64 --decode)
+          echo "hashes: $GITHUB_HASH"
+          GITHUB_HASH=$(cat $GITHUB_WORKSPACE/hashes.json)
+          echo "::set-output name=hashes::$GITHUB_HASH"
+
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
@@ -177,9 +184,16 @@ jobs:
       - name: Set hash
         env:
           working-directory: packages/${{ matrix.service }}
+          hashes: ${{ needs.changes.outputs.hashes }}
         run: |
-          GITHUB_HASH_MOD=$(find ./packages/${{ matrix.service }} -type f \( -exec sha1sum {} \; \) | awk '{print $1}' | sort | sha1sum)
-          echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
+          echo "hashes: $hashes"
+          echo "$hashes" | base64 --decode > hashes.json
+          echo "matrix.service: ${{ matrix.service }}"
+          echo "----------------------"
+          cat hashes.json
+          echo "----------------------"
+          GITHUB_HASH=$(cat hashes.json | jq -r '."${{ matrix.service }}"')
+          echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
           echo $GITHUB_HASH
       - name: Check if repo exist
         working-directory: packages/${{ matrix.service }}
@@ -251,10 +265,17 @@ jobs:
       - name: Set hash
         env:
           working-directory: packages/${{ matrix.service }}
+          hashes: ${{ needs.changes.outputs.hashes }}
         run: |
-          GITHUB_HASH_MOD=$(find ./packages/${{ matrix.service }} -type f \( -exec sha1sum {} \; \) | awk '{print $1}' | sort | sha1sum)
-          echo "GITHUB_HASH=${GITHUB_HASH_MOD%???}" >> $GITHUB_ENV
-          echo $GITHUB_HASH    
+          echo "hashes: $hashes"
+          echo "$hashes" | base64 --decode > hashes.json
+          echo "matrix.service: ${{ matrix.service }}"
+          echo "----------------------"
+          cat hashes.json
+          echo "----------------------"
+          GITHUB_HASH=$(cat hashes.json | jq -r '."${{ matrix.service }}"')
+          echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
+          echo $GITHUB_HASH  
       - name: set branch-name
         run: |
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
@@ -276,7 +297,7 @@ jobs:
             Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
             docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
             docker push $Docker_image
-            export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$fixed_tag --output json | jq --raw-output --join-output '.images[0].imageManifest')
+            export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
             export TAG_LIST=$TAG_LIST_FULL
             echo "FIXED MANIFEST: $MANIFEST"
           else
