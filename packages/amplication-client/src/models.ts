@@ -997,11 +997,6 @@ export enum EnumAuthProviderType {
   Jwt = "Jwt",
 }
 
-export const AuthProviderLabels: { [k in EnumAuthProviderType]: string } = {
-  [EnumAuthProviderType.Http]: "HTTP",
-  [EnumAuthProviderType.Jwt]: "Passport JWT",
-};
-
 export enum EnumBlockType {
   AppSettings = "AppSettings",
   CanvasPage = "CanvasPage",

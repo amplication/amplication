@@ -3,17 +3,22 @@ import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import "./OverviewTile.scss";
 import { useQuery } from "@apollo/client";
 import { GET_APP_SETTINGS } from "../ApplicationAuthSettingForm";
-import * as models from "../../models";
+import { AppSettings, EnumAuthProviderType } from "../../models";
 
 type Props = {
   applicationId: string;
+};
+
+const AuthProviderLabels: { [k in EnumAuthProviderType]: string } = {
+  [EnumAuthProviderType.Http]: "HTTP",
+  [EnumAuthProviderType.Jwt]: "Passport JWT",
 };
 
 const CLASS_NAME = "overview-tile";
 
 const OverviewTile: React.FC<Props> = ({ applicationId }: Props) => {
   const { data } = useQuery<{
-    appSettings: models.AppSettings;
+    appSettings: AppSettings;
   }>(GET_APP_SETTINGS, {
     variables: {
       id: applicationId,
@@ -76,7 +81,7 @@ const OverviewTile: React.FC<Props> = ({ applicationId }: Props) => {
             <div className={`${CLASS_NAME}__content__item__text`}>
               Authentication
               <span className={`${CLASS_NAME}__content__item__text--blue`}>
-                {models.AuthProviderLabels[data?.appSettings.authProvider]}
+                {AuthProviderLabels[data?.appSettings.authProvider]}
               </span>
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>Jest</div>
