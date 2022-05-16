@@ -5,6 +5,11 @@ amplication-client:
   service:
     hostname: app.prod.amplication-dev.com
     hostname_production: app.amplication.com
+  config:
+    env:
+      REACT_APP_DATA_SOURCE: "https://server.prod.amplication-dev.com/graphql"
+      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.prod.amplication-dev.com/github"
+      REACT_APP_GITHUB_CLIENT_ID: value
 amplication-server:
   deployment:
     image:
