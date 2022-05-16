@@ -78,6 +78,7 @@ jobs:
 
           GITHUB_HASH=$(cat $GITHUB_WORKSPACE/hashes.json | base64 --decode)
           echo "hashes: $GITHUB_HASH"
+          GITHUB_HASH=$(cat $GITHUB_WORKSPACE/hashes.json)
           echo "::set-output name=hashes::$GITHUB_HASH"
 
       - name: Discord notification
@@ -185,11 +186,10 @@ jobs:
           working-directory: packages/${{ matrix.service }}
           hashes: ${{ needs.changes.outputs.service_retag_list }}
         run: |
-          echo "$hashes" >> hashes.json
+          echo "$hashes" | base64 --decode >> hashes.json
           echo "matrix.service: ${{ matrix.service }}"
           cat hashes.json
           jq -r '.' hashes.json
-          jq -r '.\"${{ matrix.service }}\"' hashes.json
 
           GITHUB_HASH=$(echo $hashes | jq -r '."hashes.json"')
           echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
@@ -265,12 +265,10 @@ jobs:
           working-directory: packages/${{ matrix.service }}
           hashes: ${{ needs.changes.outputs.service_retag_list }}
         run: |
-          echo "$hashes" >> hashes.json
+          echo "$hashes" | base64 --decode >> hashes.json
           echo "matrix.service: ${{ matrix.service }}"
           cat hashes.json
           jq -r '.' hashes.json
-          jq -r '.\"${{ matrix.service }}\"' hashes.json
-
           GITHUB_HASH=$(echo $hashes | jq -r '."hashes.json"')
           echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
           echo $GITHUB_HASH   
