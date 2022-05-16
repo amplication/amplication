@@ -1,18 +1,20 @@
 @import "../../style/index.scss";
 
+$dp-size: 20px;
+
 .github-tile-footer {
   &__user-details {
     @include flexVerticalCenter();
-    margin-bottom: 12px;
+    margin-bottom: var(--default-spacing);
 
     &__info-icon {
       color: var(--negative);
-      margin-right: 8px;
+      margin-right: var(--default-spacing-small);
     }
 
     &__dp {
-      width: 20px;
-      height: 20px;
+      width: $dp-size;
+      height: $dp-size;
       box-sizing: border-box;
       border: none;
       border-radius: 50%;
@@ -22,7 +24,7 @@
     }
 
     &__name {
-      margin-left: 8px;
+      margin-left: var(--default-spacing-small);
       color: var(--black80);
     }
   }
@@ -30,7 +32,7 @@
   &__sync-details {
     @include flexVerticalCenter();
     &__text {
-      margin-left: 8px;
+      margin-left: var(--default-spacing-small);
       color: var(--black100);
     }
   }

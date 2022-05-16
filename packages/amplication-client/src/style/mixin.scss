@@ -56,13 +56,20 @@
 }
 
 @mixin body3 {
-  font-weight: 400;
   font-size: 12px;
   line-height: 18px;
   font-style: normal;
   font-weight: normal;
   color: var(--black80);
 }
+
+@mixin body4 {
+  font-size: 14px;
+  line-height: 22px;
+  font-style: normal;
+  font-weight: 500;
+}
+
 @mixin errorMessage {
   color: var(--negative);
   font-size: 10px;
@@ -113,7 +120,7 @@ $bullet-size: 6px;
 
 @mixin flexVerticalCenter {
   display: flex;
-  align-items: center
+  align-items: center;
 }
 
 @mixin flexFullRowWithSpacing {

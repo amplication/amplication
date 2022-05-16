@@ -1,9 +1,14 @@
 @import "../../style/index.scss";
 
+$overview-tile-min-height: 231px;
+$overview-tile-item-min-width: 170px;
+$item-info-spacing: 6px;
+$item-text-spacing: 10px;
+
 .overview-tile {
   padding: var(--large-spacing);
   position: relative;
-  min-height: 231px;
+  min-height: $overview-tile-min-height;
   background-color: var(--black2);
   margin: 0;
 
@@ -18,9 +23,7 @@
     margin-bottom: var(--default-spacing);
 
     &__title {
-      font-weight: 500;
-      font-size: 14px;
-      line-height: 22px;
+      @include body4;
       margin-bottom: 0;
       margin-left: var(--default-spacing-small);
     }
@@ -28,7 +31,7 @@
 
   &__message {
     @include body3;
-    margin-bottom: 25px;
+    margin-bottom: var(--double-spacing);
   }
 
   &__content {
@@ -37,17 +40,15 @@
 
     &__item {
       flex: 1;
-      min-width: 170px;
+      min-width: $overview-tile-item-min-width;
 
       &__text {
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 18px;
-        margin-bottom: 10px;
+        @include body3;
+        margin-bottom: $item-text-spacing;
 
         &--blue {
           color: var(--dark-secondary-turquoise);
-          margin-left: 6px;
+          margin-left: $item-info-spacing;
         }
       }
     }
