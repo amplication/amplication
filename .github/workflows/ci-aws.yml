@@ -266,6 +266,7 @@ jobs:
           working-directory: packages/${{ matrix.service }}
           hashes: ${{ needs.changes.outputs.service_retag_list }}
         run: |
+          echo "hashes: $hashes"
           echo "$hashes" | base64 --decode >> hashes.json
           echo "matrix.service: ${{ matrix.service }}"
           cat hashes.json
