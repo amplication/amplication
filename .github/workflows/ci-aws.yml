@@ -124,17 +124,17 @@ jobs:
         id: build
         run: lerna run --scope=${{matrix.package}} --loglevel=silent build --include-dependencies
 
-      - name: Format code
-        id: format
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent check-format
+#       - name: Format code
+#         id: format
+#         run: lerna run --scope=${{matrix.package}} --loglevel=silent check-format
 
-      - name: Lint code
-        id: lint
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent lint
+#       - name: Lint code
+#         id: lint
+#         run: lerna run --scope=${{matrix.package}} --loglevel=silent lint
 
-      - name: Run tests
-        id: test
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent test
+#       - name: Run tests
+#         id: test
+#         run: lerna run --scope=${{matrix.package}} --loglevel=silent test
 
       - name: Run Code coverage 
         id: cc
@@ -144,7 +144,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lcov-file: packages/${{matrix.service}}/coverage/lcov.info
-          title: ${{matrix.service}}
+          title: Back-end test coverage report
           
       - name: Coverage Report
         uses: danhunsaker/clover-reporter-action@v0.2.17-clover
