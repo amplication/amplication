@@ -1,0 +1,26 @@
+amplication-client:
+  deployment:
+    image:
+      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
+  service:
+    hostname: app.amplication.com	    
+amplication-server:
+  deployment:
+    image:
+      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
+  postgres:
+    install: false
+  ingress:
+    enabled: true
+    hostname: server.prod.amplication-dev.com
+    hostname_production: server.amplication.com
+  config:
+    env:
+      GITHUB_APP_APP_ID: "189214"
+      CONTAINER_BUILDER_DEFAULT: docker
+      GITHUB_APP_CLIENT_ID: "Iv1.7eb319d8e3c170d7"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplication-aws/installations/new?state={state}"
+      GITHUB_REDIRECT_URI: "https://server.prod.amplication-dev.com/github/callback"
+      GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
+      HOST: "https://server.prod.amplication-dev.com"
+      GITHUB_CLIENT_ID: "a4e9055e5f21448d6de7"
