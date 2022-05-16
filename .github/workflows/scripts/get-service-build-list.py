@@ -16,12 +16,13 @@ services_retag_output_file=os.getenv('SERVICES_RETAG_OUPTUT_PATH',os.path.join(r
 helm_services_folder=os.getenv('HELM_SERVICES_FOLDER',os.path.join(root_folder,'helm/charts/services'))
 packages_folder=os.getenv('PACKAGES_FOLDER',os.path.join(root_folder,'packages'))
 changed_folders=[]
-#changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
+changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_files=os.getenv('CHANGED_FILES_PR') or os.getenv('CHANGED_FILES_NOT_PR')
 
 package_build_list=[]
-service_build_list=dict()
-service_retag_list=dict()
+service_build_list=[]
+service_retag_list=[]
+dependecies_dict=dict()
 
 print(f"root_folder: {root_folder}")
 print(f"services_output_file: {services_output_file}")
@@ -33,7 +34,7 @@ print(f"changed_files: {changed_files}")
 def is_service(service_list,service_name) -> bool:
   return service_name in service_list
 
-def dependet_services(package_name,dict) -> List[str]:
+def dependet_services(package_name,service_list) -> List[str]:
     npm_package_name=package_name.replace("-","/",1)
     for service in all_services:
         package_json=f"{packages_folder}/{service}/package.json"
@@ -41,10 +42,8 @@ def dependet_services(package_name,dict) -> List[str]:
             depencies = file.read().replace('\n', '')
         if f"\"@{npm_package_name}\":" in depencies:
             print(f"The service {service} depends on package {npm_package_name}, will build")
-            if service not in dict:
-                dict[service]=[service,package_name]
-            else: 
-                dict[service]+=[package_name]
+            if service not in service_list:
+                service_list.append(service)
 
 def get_changed_folders():
     if not changed_files:
@@ -68,35 +67,42 @@ def get_hashes(folders_list) -> dict():
         for folder_to_hash in folders_list[folders_to_hash]:
             path=os.path.join(packages_folder,folder_to_hash,'**/*')
             filenames.append(glob.glob(path))
-        for filename in filenames:
-            with open(filename[0], 'rb') as inputfile:
-                data = inputfile.read()
-                hash_+=hashlib.md5(data).hexdigest()
-        hashes[folder_to_hash]=str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
+            for filename in filenames:
+                if os.path.isfile(filename[0]): 
+                    with open(filename[0], 'rb') as inputfile:
+                        data = inputfile.read()
+                        hash_+=hashlib.md5(data).hexdigest()
+            hashes[folders_to_hash]=str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
     return hashes
 
+def get_dependent_packages(service_name):
+    all_packages = os.listdir(packages_folder)
+    dependent_services=[]
+    for package in all_packages:
+        dependet_services(package,dependent_services)
+        if service_name in dependent_services:
+            dependecies_dict[service_name].append(package)
+
 changed_folders = get_changed_folders()
-service_build_list=dict()
 all_services=os.listdir(helm_services_folder)
 for changed_folder in changed_folders:
     if is_service(all_services,changed_folder):
         if changed_folder not in service_build_list:
-            service_build_list[changed_folder] = [changed_folder]
+            service_build_list.append(changed_folder)
     else:
         dependet_services(changed_folder,service_build_list)
     if get_package_name(changed_folder) not in package_build_list:
         package_build_list.append(get_package_name(changed_folder))
-    for service_name in all_services:
-        if service_name not in service_build_list:
-            service_retag_list[changed_folder] = [changed_folder]
-            dependet_services(changed_folder,service_retag_list)
+for service_name in all_services:
+    if service_name not in service_build_list:
+        service_retag_list.append(service_name)
 
-final_services_list=dict()
+for service in all_services:
+    dependecies_dict[service] = [service]
+    get_dependent_packages(service)
 
-hashes=get_hashes(service_build_list.update(service_retag_list))
-final_services_list.update(service_build_list)
-final_services_list.update(service_retag_list)
-get_hashes(final_services_list)
+hashes=get_hashes(dependecies_dict)
+#get_hashes(final_services_list)
 # for folders_to_hash in service_build_list.keys():
 #     hash_=""
 #     filenames=[]
