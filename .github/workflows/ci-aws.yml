@@ -144,7 +144,7 @@ jobs:
         uses: lucassabreu/comment-coverage-clover@main
         with:
           file: packages/${{matrix.service}}/coverage/clover.xml
-          
+          title: ${{matrix.service}}
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
