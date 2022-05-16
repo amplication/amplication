@@ -5,7 +5,7 @@ from typing import List
 import glob
 import hashlib
 import base64
-
+from checksumdir import dirhash
 
 
 root_folder=os.getenv('GITHUB_WORKSPACE',Path(__file__).parents[3])
@@ -59,20 +59,25 @@ def get_package_name(raw_package) -> str:
     print(f"package name was fixed from {raw_package} to {fixed_package}")
     return fixed_package
 
+
+
 def get_hashes(folders_list) -> dict():
     hashes=dict()
     for folders_to_hash in folders_list.keys():
-        hash_=""
-        filenames=[]
+        hash_=''
         for folder_to_hash in folders_list[folders_to_hash]:
-            path=os.path.join(packages_folder,folder_to_hash,'**/*')
-            filenames.append(glob.glob(path))
-            for filename in filenames:
-                if os.path.isfile(filename[0]): 
-                    with open(filename[0], 'rb') as inputfile:
-                        data = inputfile.read()
-                        hash_+=hashlib.md5(data).hexdigest()
-        hashes[folders_to_hash]=hash_
+            path = os.path.join(packages_folder,folder_to_hash)
+            hash_+=dirhash(path, 'md5')
+            # hash_=""
+            # filenames=[]
+            # path=os.path.join(packages_folder,folder_to_hash,'**/*')
+            # filenames.append(glob.glob(path))
+            # for filename in filenames:
+            #     if os.path.isfile(filename[0]): 
+            #         with open(filename[0], 'rb') as inputfile:
+            #             data = inputfile.read()
+            #             hash_+=hashlib.md5(data).hexdigest()
+        hashes[folders_to_hash]=hash_#str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
     return hashes
 
 def get_dependent_packages(service_name):
@@ -81,7 +86,9 @@ def get_dependent_packages(service_name):
     for package in all_packages:
         dependet_services(package,dependent_services)
         if service_name in dependent_services:
-            dependecies_dict[service_name].append(package)
+            fixed_package=package.replace('-','/')
+            if f'@{fixed_package}' in package_build_list:
+                dependecies_dict[service_name].append(package)
 
 changed_folders = get_changed_folders()
 all_services=os.listdir(helm_services_folder)
