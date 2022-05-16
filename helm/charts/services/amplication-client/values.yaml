@@ -28,7 +28,7 @@ service:
     target: 8080
   protocol: TCP
   hostname: app.amplication-dev.com	
-  certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/5c7e86d0-5a8f-41d0-a0b5-db6a13dea090
+  certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
   
 config:
   env:
