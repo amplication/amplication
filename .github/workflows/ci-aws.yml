@@ -187,12 +187,12 @@ jobs:
           hashes: ${{ needs.changes.outputs.hashes }}
         run: |
           echo "hashes: $hashes"
-          echo "$hashes" | base64 --decode >> hashes.json
+          echo "$hashes" | base64 --decode > hashes.json
           echo "matrix.service: ${{ matrix.service }}"
+          echo "----------------------"
           cat hashes.json
-          jq -r '.' hashes.json
-
-          GITHUB_HASH=$(echo $hashes | jq -r '."hashes.json"')
+          echo "----------------------"
+          GITHUB_HASH=$(cat hashes.json | jq -r '."${{ matrix.service }}"')
           echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
           echo $GITHUB_HASH
       - name: Check if repo exist
@@ -267,13 +267,14 @@ jobs:
           hashes: ${{ needs.changes.outputs.hashes }}
         run: |
           echo "hashes: $hashes"
-          echo "$hashes" | base64 --decode >> hashes.json
+          echo "$hashes" | base64 --decode > hashes.json
           echo "matrix.service: ${{ matrix.service }}"
+          echo "----------------------"
           cat hashes.json
-          jq -r '.' hashes.json
-          GITHUB_HASH=$(echo $hashes | jq -r '."hashes.json"')
+          echo "----------------------"
+          GITHUB_HASH=$(cat hashes.json | jq -r '."${{ matrix.service }}"')
           echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
-          echo $GITHUB_HASH   
+          echo $GITHUB_HASH  
       - name: set branch-name
         run: |
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
