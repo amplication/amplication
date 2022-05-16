@@ -72,7 +72,7 @@ def get_hashes(folders_list) -> dict():
                     with open(filename[0], 'rb') as inputfile:
                         data = inputfile.read()
                         hash_+=hashlib.md5(data).hexdigest()
-        hashes[folders_to_hash]=str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
+        hashes[folders_to_hash]=hash_
     return hashes
 
 def get_dependent_packages(service_name):
