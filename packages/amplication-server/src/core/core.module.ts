@@ -42,7 +42,8 @@ import { GitProviderModule } from './git/git.provider.module';
     SystemModule,
     AppSettingsModule,
     GitModule,
-    GitProviderModule
+    GitProviderModule,
+    CommitModule
   ],
   exports: [
     AccountModule,
@@ -63,7 +64,8 @@ import { GitProviderModule } from './git/git.provider.module';
     CommitModule,
     AppSettingsModule,
     GitProviderModule,
-    GitModule
+    GitModule,
+    CommitModule
   ]
 })
 export class CoreModule {}
