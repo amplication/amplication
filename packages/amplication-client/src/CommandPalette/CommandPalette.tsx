@@ -31,7 +31,7 @@ export interface Command {
   command(): void;
 }
 
-const HOT_KEYS = ["command+shift+p", "ctrl+shift+p"];
+const HOT_KEYS = ["command+shift+k", "ctrl+shift+k"];
 /**
  * Wrapping with a class for testing purposes
  * @see https://github.com/asabaylus/react-command-palette/issues/520

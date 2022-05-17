@@ -82,7 +82,7 @@ const Menu = ({ children }: MenuProps) => {
                 <MenuItem
                   title="Search"
                   icon="search_outline"
-                  overrideTooltip={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+P)`}
+                  overrideTooltip={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
                 />
               }
             />
@@ -107,7 +107,8 @@ const Menu = ({ children }: MenuProps) => {
               title="Profile"
               icon="plus"
               hideTooltip
-              onClick={handleProfileClick}>
+              onClick={handleProfileClick}
+            >
               <UserBadge />
             </MenuItem>
             <MenuItem
