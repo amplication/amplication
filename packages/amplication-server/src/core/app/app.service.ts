@@ -88,6 +88,12 @@ export class AppService {
         },
         roles: {
           create: USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${args.data.name}`,
+            workspaceId: user.workspace?.id
+          }
         }
       }
     });
