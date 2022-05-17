@@ -33,6 +33,12 @@ model Workspace {
   gitOrganizations GitOrganization[]
 }
 
+model Project {
+  id          String @id(map: "Workspace_pkey") @default(cuid())
+  name        String @unique(map: "Project.name_unique")
+  workspaceId String
+}
+
 model GitOrganization {
   id              String                   @id @default(cuid())
   provider        EnumGitProvider
@@ -125,6 +131,7 @@ model App {
   entities          Entity[]
   environments      Environment[]
   gitRepository     GitRepository?
+  projectId         String
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
 }
