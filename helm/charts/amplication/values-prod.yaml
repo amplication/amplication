@@ -55,3 +55,4 @@ amplication-server:
 
       #SENDGRID
       SENDGRID_API_KEY_SECRET_NAME: projects/948093699220/secrets/sendgrid_api_key_secret/versions/1
+      SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
