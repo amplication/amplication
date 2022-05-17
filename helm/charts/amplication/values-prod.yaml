@@ -10,6 +10,7 @@ amplication-client:
       REACT_APP_DATA_SOURCE: "https://server.prod.amplication-dev.com/graphql"
       REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.prod.amplication-dev.com/github"
       REACT_APP_GITHUB_CLIENT_ID: value
+
 amplication-server:
   deployment:
     image:
@@ -51,3 +52,6 @@ amplication-server:
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "a4e9055e5f21448d6de7"
       GITHUB_REDIRECT_URI: "https://server.prod.amplication-dev.com/github/callback"
+
+      #SENDGRID
+      SENDGRID_API_KEY_SECRET_NAME: projects/948093699220/secrets/sendgrid_api_key_secret/versions/1
