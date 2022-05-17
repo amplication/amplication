@@ -92,6 +92,9 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
           }
           break;
         }
+        case EnumEntityPermissionType.Public: {
+          break;
+        }
         case EnumEntityPermissionType.Granular: {
           if (!permission.permissionRoles) {
             throw new Error(

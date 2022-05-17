@@ -12,6 +12,7 @@ import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
+import { init as initPaddle } from "./util/paddle";
 import RouteWithAnalytics from "./Layout/RouteWithAnalytics";
 import AuthAppWithGitCallback from "./Application/git/AuthAppWithGitCallback";
 
@@ -31,6 +32,7 @@ export const enhance = track<keyof typeof context>(
 function App() {
   useEffect(() => {
     initAnalytics();
+    initPaddle();
   }, []);
 
   //The default behavior across all <HotKeys> components

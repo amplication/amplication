@@ -669,6 +669,16 @@ export function getMethods(
       namedTypes.ClassMethod.check(member) && !isConstructor(member)
   );
 }
+export function getClassMethodById(
+  classDeclaration: namedTypes.ClassDeclaration,
+  methodId: namedTypes.Identifier
+): namedTypes.ClassMethod | null {
+  const allMethodWithoutConstructor = getMethods(classDeclaration);
+  return (
+    allMethodWithoutConstructor.find((method) => method.key === methodId) ||
+    null
+  );
+}
 
 export function getNamedProperties(
   declaration: namedTypes.ClassDeclaration
@@ -766,4 +776,47 @@ export function createGenericArray(
     ARRAY_ID,
     builders.tsTypeParameterInstantiation([itemType])
   );
+}
+
+// This function removes all instances of a decorator by its name.
+// in case the same decorator exists multiple times, it will be removed from all locations
+export function removeDecoratorByName(
+  node: ASTNode,
+  decoratorName: string
+): boolean {
+  let decorator: namedTypes.ClassDeclaration | null = null;
+  recast.visit(node, {
+    visitDecorator(path) {
+      const callee = path.get("expression", "callee");
+      if (callee.value && callee.value.property?.name === decoratorName) {
+        decorator = path.value;
+        path.prune();
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class decorators
+    // This method fixes it
+    visitClassDeclaration(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class property decorators
+    // This method fixes it
+    visitClassProperty(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
+  });
+
+  if (!decorator) {
+    return false;
+  }
+
+  return true;
 }

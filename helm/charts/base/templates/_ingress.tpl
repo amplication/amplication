@@ -18,6 +18,19 @@ spec:
           serviceName: {{ .Values.name }}
           servicePort: https
         path: /
+  {{- if hasKey .Values.ingress "hostname_production" }}
+  - host: {{ .Values.ingress.hostname_production }}  
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .Values.name }}
+          servicePort: http
+        path: /
+      - backend:
+          serviceName: {{ .Values.name }}
+          servicePort: https
+        path: /
+  {{- end }}
 {{- end }}
 {{- define "base.ingress" -}}
 {{- include "base.util.merge" (append . "base.ingress.tpl") -}}

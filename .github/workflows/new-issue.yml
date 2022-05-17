@@ -15,7 +15,7 @@ env:
 jobs:
   issue_opened_and_reopened:
     name: issue_opened_and_reopened
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     if: github.event_name == 'issues' && github.event.action == 'opened' || github.event.action == 'reopened'
     steps:
       - name: 'Move issue to "New"'
@@ -34,7 +34,7 @@ jobs:
 
   issue_closed:
     name: issue_closed
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     if: github.event_name == 'issues' && github.event.action == 'closed'
     steps:
       - name: 'Moved issue to "Closed"'

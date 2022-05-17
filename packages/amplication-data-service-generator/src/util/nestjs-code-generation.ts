@@ -2,8 +2,10 @@
  * Utilities for generating Nest.js source code
  */
 
-import { builders, namedTypes } from "ast-types";
+import { builders, namedTypes, ASTNode } from "ast-types";
 import { findConstructor } from "./ast";
+import * as recast from "recast";
+import { USE_INTERCEPTORS_DECORATOR_NAME } from "./set-endpoint-permission";
 
 /**
  * Adds a Nest.js injectable dependency to given classDeclaration
@@ -35,4 +37,54 @@ export function addInjectableDependency(
       }),
     })
   );
+}
+
+export function removeIdentifierFromUseInterceptorDecorator(
+  node: ASTNode,
+  identifier: string
+): namedTypes.Decorator | boolean {
+  const decoratorName = USE_INTERCEPTORS_DECORATOR_NAME;
+  let decorator: namedTypes.ClassDeclaration | null = null;
+  recast.visit(node, {
+    visitDecorator(path) {
+      const callee = path.get("expression", "callee");
+      if (callee.value && callee.value.property?.name === decoratorName) {
+        decorator = path.value;
+        const parentArgs: namedTypes.Identifier[] =
+          callee.parentPath.node.arguments;
+        const argToDeleteIndex = parentArgs.findIndex(
+          (arg) => arg.name === identifier
+        );
+        parentArgs.splice(argToDeleteIndex, 1);
+        if (!parentArgs.length) {
+          path.prune();
+        }
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class decorators
+    // This method fixes it
+    visitClassDeclaration(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class property decorators
+    // This method fixes it
+    visitClassProperty(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
+  });
+
+  if (!decorator) {
+    return false;
+  }
+
+  return decorator;
 }
