@@ -1,0 +1,36 @@
+{
+  "plans": [
+    {
+      "name": "Community",
+      "price": "Free!",
+      "action": "free",
+      "productId": 0,
+      "description": "Great for open-source projects, and free for lifetime",
+      "buttonText": "Select plan"
+    },
+    {
+      "name": "Pro",
+      "price": "$40 a month",
+      "action": "checkout",
+      "productId": 13780,
+      "description": "Awesome for individuals and small teams",
+      "buttonText": "Select plan"
+    },
+    {
+      "name": "Business",
+      "price": "$199 a month",
+      "action": "checkout",
+      "productId": 13781,
+      "description": "Perfect for larger teams",
+      "buttonText": "Select plan"
+    },
+    {
+      "name": "Enterprise",
+      "price": "Let's talk",
+      "action": "contact",
+      "productId": 0,
+      "description": "Price customized based on your needs",
+      "buttonText": "Contact us"
+    }
+  ]
+}

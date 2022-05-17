@@ -43,7 +43,8 @@ const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  account: EXAMPLE_ACCOUNT
+  account: EXAMPLE_ACCOUNT,
+  isOwner: true
 };
 
 const UPDATE_ACCOUNT_MUTATION = gql`
