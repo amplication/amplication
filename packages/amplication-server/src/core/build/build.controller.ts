@@ -64,12 +64,6 @@ export class BuildController {
   ): Promise<{ value: ResultMessage<boolean> }> {
     const validArgs = plainToInstance(CanUserAccessArgs, message.value);
     const isUserCanAccess = await this.buildService.canUserAccess(validArgs);
-    // this.logger.info(`Got a new generate pull request item from queue.`, {
-    //   topic: context.getTopic(),
-    //   partition: context.getPartition(),
-    //   offset: message.offset,
-    //   class: this.constructor.name
-    // });
     return {
       value: { error: null, status: StatusEnum.Success, value: isUserCanAccess }
     };
