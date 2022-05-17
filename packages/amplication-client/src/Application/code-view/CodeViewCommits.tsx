@@ -5,45 +5,34 @@ import {
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/design-system";
-import { gql, useQuery } from "@apollo/client";
 import React from "react";
+import { Build } from "../../models";
 import "./CodeViewBar.scss";
-import * as models from "../../models";
 import { CommitMenuItemContent } from "./CommitMenuItemContent";
 
 const CLASS_NAME = "code-view-bar";
-const CREATED_AT_FIELD = "createdAt";
-type TData = {
-  builds: models.Build[];
-};
 
 type Props = {
-  application: string;
-  selectedBuild: models.Build | null;
-  onSelectBuild: (commit: models.Build) => void;
+  builds: Build[];
+  onSelectBuild: (commit: Build) => void;
+  buildId: string;
+  buildTitle: string;
 };
 
 const CodeViewCommits = ({
-  application,
-  selectedBuild,
+  builds,
   onSelectBuild,
+  buildId,
+  buildTitle,
 }: Props) => {
-  const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
-    variables: {
-      appId: application,
-      orderBy: {
-        [CREATED_AT_FIELD]: models.SortOrder.Desc,
-      },
-    },
-  });
-
   return (
     <div className={CLASS_NAME}>
       <div>
+        {/*@ts-ignore*/}
         <SelectMenu
           title={
-            selectedBuild?.message ? (
-              <CommitMenuItemContent commit={selectedBuild} />
+            buildId ? (
+              <CommitMenuItemContent title={buildTitle} />
             ) : (
               "select commit"
             )
@@ -55,17 +44,17 @@ const CodeViewCommits = ({
           <SelectMenuModal>
             <SelectMenuList>
               <>
-                {data?.builds.map((build) => (
+                {builds.map((build) => (
                   <SelectMenuItem
                     closeAfterSelectionChange
-                    selected={build.id === selectedBuild?.id}
+                    selected={build.id === buildId}
                     key={build.id}
                     onSelectionChange={() => {
                       onSelectBuild(build);
                     }}
                     css={undefined}
                   >
-                    <CommitMenuItemContent commit={build} />
+                    <CommitMenuItemContent title={buildTitle} />
                   </SelectMenuItem>
                 ))}
                 <div className={`select-menu_item ${CLASS_NAME}__hr`}>
@@ -81,20 +70,3 @@ const CodeViewCommits = ({
 };
 
 export default CodeViewCommits;
-
-export const GET_BUILDS_COMMIT = gql`
-  query builds(
-    $appId: String!
-    $orderBy: BuildOrderByInput
-    $whereMessage: StringFilter
-  ) {
-    builds(
-      where: { app: { id: $appId }, message: $whereMessage }
-      orderBy: $orderBy
-    ) {
-      id
-      message
-      createdAt
-    }
-  }
-`;

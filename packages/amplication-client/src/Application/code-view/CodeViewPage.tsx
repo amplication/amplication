@@ -1,12 +1,9 @@
 import { useQuery } from "@apollo/client";
 import React from "react";
-import { match, Route, Switch, useLocation } from "react-router-dom";
-import useNavigationTabs from "../../Layout/UseNavigationTabs";
+import { match, Route, Switch } from "react-router-dom";
+import { App } from "../../models";
 import { FilesPanel } from "../../util/teleporter";
-import {
-  AppWithGitRepository,
-  GET_APP_GIT_REPOSITORY,
-} from "../git/SyncWithGithubPage";
+import { GET_APP_GIT_REPOSITORY } from "../git/SyncWithGithubPage";
 import CodeViewBar from "./CodeViewBar";
 import CodeViewEditor from "./CodeViewEditor";
 import "./CodeViewPage.scss";
@@ -19,37 +16,30 @@ export type CommitListItem = {
   id: string;
   name: string;
 };
-const NAVIGATION_KEY = "CODE_VIEW";
 
 function CodeViewPage({ match }: Props) {
   const applicationId = match.params.application;
-  const { data } = useQuery<{ app: AppWithGitRepository }>(
-    GET_APP_GIT_REPOSITORY,
-    {
-      variables: {
-        appId: applicationId,
-      },
-    }
-  );
-
-  const location = useLocation();
-
-  useNavigationTabs(
-    applicationId,
-    NAVIGATION_KEY,
-    location.pathname,
-    "CodeView"
-  );
+  const { data } = useQuery<{ app: App }>(GET_APP_GIT_REPOSITORY, {
+    variables: {
+      appId: applicationId,
+    },
+  });
+  if (!data) {
+    return <div />;
+  }
 
   return (
-    <div>
+    <>
       <FilesPanel.Source>
-        {data?.app && <CodeViewBar app={data.app} />}
+        {data.app && <CodeViewBar app={data.app} />}
       </FilesPanel.Source>
       <Switch>
-        <Route path="/:appId/:buildId/:filePath" component={CodeViewEditor} />
+        <Route
+          path="/:application/code-view/:appId/:buildId"
+          component={CodeViewEditor}
+        />
       </Switch>
-    </div>
+    </>
   );
 }
 

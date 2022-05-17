@@ -1,15 +1,11 @@
 import React from "react";
-//import { CommitListItem } from "./CodeViewPage";
-import * as models from "../../models";
-
-//const CLASS_NAME = "menu-item-content";
 
 type Props = {
-  commit: models.Build;
+  title: string;
   isMenuTitle?: Boolean;
 };
 export const CommitMenuItemContent = ({
-  commit: { message },
+  title,
   isMenuTitle = false,
 }: Props) => {
   return (
@@ -19,7 +15,7 @@ export const CommitMenuItemContent = ({
         src={githubOrganizationImageUrl(name)}
         alt="Git organization"
       /> */}
-      {isMenuTitle ? `${message} connected` : message}
+      {isMenuTitle ? `${title} connected` : title}
     </span>
   );
 };

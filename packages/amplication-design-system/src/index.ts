@@ -150,4 +150,9 @@ export { SkeletonWrapper } from "./components/SkeletonWrapper/SkeletonWrapper";
 // exports from installed design packages
 export { CSSTransition, SwitchTransition } from "react-transition-group";
 
-export { RichObjectTreeView } from "./components/TreeView/TreeView";
+export {
+  TreeView,
+  TreeItem,
+  TreeViewProps,
+  TreeItemProps,
+} from "./components/TreeView/TreeView";

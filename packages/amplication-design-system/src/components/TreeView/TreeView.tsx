@@ -1,70 +1,61 @@
-import React from "react";
-import TreeView from "@mui/lab/TreeView";
-import TreeItem from "@mui/lab/TreeItem";
+import React, { useCallback } from "react";
+import MuiTreeView from "@mui/lab/TreeView";
+import MuiTreeItem from "@mui/lab/TreeItem";
 import { Icon } from "../..";
 
-type Props = {
-  onNodeSelect: (event: React.SyntheticEvent, nodeId: string) => void;
+export type TreeViewProps = {
+  children?: React.ReactNode;
+  onNodeSelected?: (event: React.SyntheticEvent, nodeIds: string) => void;
+  onNodeToggle?: (event: React.SyntheticEvent, nodeIds: string[]) => void;
+  expanded?: string[];
 };
-interface RenderTree {
-  id: string;
-  type: string;
-  name: string;
-  children?: readonly RenderTree[];
+
+export function TreeView({
+  children,
+  onNodeSelected,
+  expanded,
+  onNodeToggle,
+}: TreeViewProps) {
+  return (
+    <MuiTreeView
+      onNodeSelect={onNodeSelected}
+      expanded={expanded || undefined}
+      onNodeToggle={onNodeToggle}
+    >
+      {children}
+    </MuiTreeView>
+  );
 }
 
-const data: RenderTree = {
-  id: "root",
-  type: "",
-  name: "Parent",
-  children: [
-    {
-      id: "1",
-      type: "file",
-      name: "src",
-    },
-    {
-      id: "2",
-      type: "file",
-      name: "src2",
-    },
-    {
-      id: "3",
-      type: "folder",
-      name: "package.json",
-    },
-  ],
+export type TreeItemProps = {
+  label: string;
+  id: string;
+  icon: string;
+  data?: any;
+  children?: React.ReactNode;
+  onSelect: (id: string, data?: any) => void;
 };
 
-export function RichObjectTreeView({ onNodeSelect }: Props) {
-  //{ files }: Props
-  //const [expanded, setExpanded] = useState<string[]>([]);
-  //const [selected, setSelected] = useState<string[]>([]);
-
-  const renderTree = (nodes: RenderTree) => (
-    <TreeItem
-      key={nodes.name}
-      nodeId={nodes.id + nodes.type}
-      label={nodes.name}
-    >
-      {Array.isArray(nodes.children)
-        ? nodes.children.map((node) => renderTree(node))
-        : null}
-    </TreeItem>
-  );
+export function TreeItem({
+  label,
+  id,
+  icon,
+  data,
+  children,
+  onSelect,
+}: TreeItemProps) {
+  const onClick = useCallback(() => {
+    onSelect && onSelect(id, data);
+  }, [onSelect, data, id]);
 
   return (
-    <TreeView
-      aria-label="rich object"
-      defaultCollapseIcon={<Icon icon="folder" size="small" />}
-      defaultExpanded={["root"]}
-      defaultExpandIcon={<Icon icon="file" size="small" />}
-      onNodeSelect={(event: React.SyntheticEvent, nodeId: string) =>
-        onNodeSelect(event, nodeId)
-      }
-      sx={{ height: 110, flexGrow: 1, maxWidth: 400, overflowY: "auto" }}
+    <MuiTreeItem
+      onClick={onClick}
+      nodeId={id}
+      label={label}
+      icon={<Icon icon={icon} size="small" />}
     >
-      {renderTree(data)}
-    </TreeView>
+      {children}
+    </MuiTreeItem>
   );
 }
