@@ -28,18 +28,18 @@ export class StorageController {
   getBuildFilesList(
     @Param(APP_ID_PARAM_KEY) appId: string,
     @Param(BUILD_ID_PARAM_KEY) buildId: string,
-    @Query(PATH_PARAM_KEY) path: string,
+    @Query(PATH_PARAM_KEY) path: string | undefined,
     @Query() query: PaginationQuery
   ): PaginationResult<FileMeta> {
     const results = this.service.getBuildFilesList(appId, buildId, path);
     return this.paginationService.paginate(results, query);
   }
   @Get(`/:${APP_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/content`)
-  @Header("content-type", "text/html")
+  @Header("Content-Type", "text/plain")
   fileContent(
     @Param(APP_ID_PARAM_KEY) appId: string,
     @Param(BUILD_ID_PARAM_KEY) buildId: string,
-    @Query("path") path: string
+    @Query("path") path: string | undefined
   ): string {
     return this.service.fileContent(appId, buildId, path);
   }

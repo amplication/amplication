@@ -6,6 +6,7 @@ import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 import assert from "assert";
 import { readFileSync } from "fs";
+import { join } from "path";
 
 @Injectable()
 export class StorageService {
@@ -19,7 +20,7 @@ export class StorageService {
     return `${this.buildsFolder}/builds/${appId}/${buildId}`;
   }
 
-  getBuildFilesList(appId: string, buildId: string, relativePath: string) {
+  getBuildFilesList(appId: string, buildId: string, relativePath: string = "") {
     const results: { [name: string]: FileMeta } = {};
 
     const cwd = `${this.buildFolder(appId, buildId)}/${relativePath || ""}`;
@@ -29,12 +30,21 @@ export class StorageService {
       cwd,
     });
     files.forEach((file) => {
-      results[file] = { name: file, type: NodeTypeEnum.File };
+      const path = join(relativePath, file);
+      results[file] = {
+        name: file,
+        type: NodeTypeEnum.File,
+        path: path,
+      };
     });
     const foldersWithFiles = sync(`*`, { nodir: false, cwd });
     foldersWithFiles.forEach((file) => {
       if (!results[file]) {
-        results[file] = { name: file, type: NodeTypeEnum.Folder };
+        results[file] = {
+          name: file,
+          type: NodeTypeEnum.Folder,
+          path: join(relativePath, file),
+        };
       }
     });
     const resultsArray = Object.values(results).sort((a, b) => {
@@ -47,7 +57,7 @@ export class StorageService {
     return resultsArray;
   }
 
-  fileContent(appId: string, buildId: string, path: string): string {
+  fileContent(appId: string, buildId: string, path: string = ""): string {
     const filePath = `${this.buildFolder(appId, buildId)}/${path}`;
     return readFileSync(filePath).toString();
   }
