@@ -2,7 +2,18 @@
   "cSpell.words": [
     "Amplication",
     "Authorizable",
+    "Datagrid",
     "automerge",
+    "Dropzone",
+    "Formik",
+    "IBLOCK",
+    "Octokit",
+    "Queryable",
+    "Repos",
+    "SENDGRID",
+    "Signup",
+    "UNREQUIRED",
+    "Xarrow",
     "camelcase",
     "checkmark",
     "clonedeep",
@@ -69,6 +80,6 @@
     "editor.defaultFormatter": null
   },
   "[terraform]": {
-    "editor.defaultFormatter": null
+    "editor.defaultFormatter": "hashicorp.terraform"
   }
 }
