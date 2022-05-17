@@ -15,10 +15,9 @@ export async function createAuthModules(
   const { settings } = appInfo;
   const { authProvider } = settings;
 
-  child_process.execSync('npm install https://github.com/amplication/basic-auth-plugin.git', {stdio:[0,1,2]});
-  const pluginLink = "@amplication/basic-auth-plugin";
-  const authPlugin = await import(pluginLink);
-  // authPlugin.default();
+  const pluginName = "amplication-basic-auth-plugin";
+  child_process.execSync(`npm install ${pluginName}`, {stdio:[0,1,2]});
+  const authPlugin = await import(pluginName);
 
   const modules = await authPlugin.createPluginModule(authDir);
   authPlugin.updateStaticModules(staticModules, appModule, srcDir, authDir);

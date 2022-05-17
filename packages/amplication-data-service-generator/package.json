@@ -19,10 +19,10 @@
     "update-test-data-service-snapshot": "jest -u src/tests/create-data-service.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
-    "@amplication/basic-auth-plugin": "github:amplication/basic-auth-plugin",
     "@amplication/data": "^0.12.6",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
+    "amplication-basic-auth-plugin": "^0.0.4",
     "camel-case": "4.1.2",
     "fast-glob": "3.2.10",
     "lodash": "4.6.0",
