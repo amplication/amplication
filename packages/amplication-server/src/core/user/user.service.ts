@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService, Prisma } from '@amplication/prisma-db';
-import { User, UserRole, Account } from 'src/models';
+import { Prisma, PrismaService } from '@amplication/prisma-db';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { Account, User, UserRole } from 'src/models';
 import { UserRoleArgs } from './dto';
 
 @Injectable()
@@ -8,11 +8,23 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   findUser(args: Prisma.UserFindUniqueArgs): Promise<User> {
-    return this.prisma.user.findUnique(args);
+    return this.prisma.user.findFirst({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null
+      }
+    });
   }
 
   findUsers(args: Prisma.UserFindManyArgs): Promise<User[]> {
-    return this.prisma.user.findMany(args);
+    return this.prisma.user.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null
+      }
+    });
   }
 
   async assignRole(args: UserRoleArgs): Promise<User> {
@@ -37,7 +49,7 @@ export class UserService {
       await this.prisma.userRole.create(roleData);
     }
 
-    return this.prisma.user.findUnique({
+    return this.findUser({
       where: {
         id: args.where.id
       }
@@ -63,7 +75,7 @@ export class UserService {
       });
     }
 
-    return this.prisma.user.findUnique({
+    return this.findUser({
       where: {
         id: args.where.id
       }
@@ -88,5 +100,26 @@ export class UserService {
         }
       })
       .account();
+  }
+
+  async delete(userId: string): Promise<User> {
+    const user = this.findUser({
+      where: {
+        id: userId
+      }
+    });
+
+    if (!user) {
+      throw new ConflictException(`Can't find user with ID ${userId}`);
+    }
+
+    return this.prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        deletedAt: new Date()
+      }
+    });
   }
 }

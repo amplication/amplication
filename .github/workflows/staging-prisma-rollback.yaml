@@ -11,7 +11,7 @@ on:
         required: true
 jobs:
   rollback:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     timeout-minutes: 120
     steps:
       - name: Login to GCR

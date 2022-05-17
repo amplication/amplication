@@ -1,6 +1,6 @@
 @import "../style/index.scss";
 
-.application-form {
+.workspace-form {
   h1 {
     margin-top: var(--double-spacing);
     margin-bottom: var(--double-spacing);
@@ -12,5 +12,9 @@
     border-top: $border-black10;
     margin-top: var(--double-spacing);
     margin-bottom: var(--double-spacing);
+  }
+
+  &__label {
+    @include label;
   }
 }
