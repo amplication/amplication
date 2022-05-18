@@ -35,6 +35,7 @@
     "recast": "0.20.5",
     "replace-ext": "2.0.0",
     "semver": "7.3.5",
+    "tsyringe": "^4.6.0",
     "winston": "3.3.4"
   },
   "devDependencies": {

@@ -3,6 +3,10 @@ import path from "path";
 import normalize from "normalize-path";
 import winston from "winston";
 
+import "reflect-metadata";
+import {container} from "tsyringe";
+import {AppData, DsgContext} from "./dsg-context";
+
 import { createDTOs } from "./server/resource/create-dtos";
 import {
   Entity,
@@ -33,6 +37,16 @@ export async function createDataServiceImpl(
 ): Promise<Module[]> {
   logger.info("Creating application...");
   const timer = logger.startTimer();
+
+  const appData = new AppData("id", "url", "name", "description", "version");
+  container.register<AppData>("appData", { useValue: appData });
+
+  container.register<AppInfo>("appInfo",  { useValue: appInfo })
+
+  const instance = container.resolve(DsgContext);
+  console.log(instance);
+
+  // instance
 
   // make sure that the user table is existed if not it will crate one
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
