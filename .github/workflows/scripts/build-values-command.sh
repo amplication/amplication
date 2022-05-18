@@ -21,9 +21,10 @@ do
     echo "tag_list: $tag_list"
     echo "image_tags: $image_tags"
     
-    echo "$IMAGE_TAG_ANCHOR" > found_tag
+    echo "$IMAGE_TAG_ANCHOR"  > found_tag
     while IFS= read -r line; do
         re='^[0-9]+$'
+        line=$(echo "$line" | tr -d '"')
         echo "checking tag: $line" 
         echo "$line" > fallback_tag
         if [[ $line =~ $re ]] ; then
