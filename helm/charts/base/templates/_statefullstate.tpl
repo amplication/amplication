@@ -67,10 +67,15 @@ spec:
           volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.path }}
-      volumes:
-        - name: {{ .Values.volume.name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.volume.name }}
+      volumeClaimTemplates:
+      - metadata:
+          name: {{ .Values.volume.name }}
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: gp2
+          resources:
+            requests:
+              storage: 1Gi
       {{- end }}
 {{- end -}}
 {{- define "base.statefulset" -}}
