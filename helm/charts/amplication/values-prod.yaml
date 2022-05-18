@@ -3,9 +3,8 @@ amplication-client:
     image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
   service:
-    hostname: app.prod.amplication-dev.com #TODO:Ilia
-    hostname_production: app.amplication.com #TODO:Ilia
-    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
+    hostname: app.amplication.com
+    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/7cf536df-6c61-4f76-bf3c-fd8f4e021721
   config:
     env:
       REACT_APP_DATA_SOURCE: "https://server.amplication.com/graphql"
@@ -22,8 +21,8 @@ amplication-server:
     install: false
   ingress:
     enabled: true
-    hostname: server.prod.amplication-dev.com #TODO:Ilia
-    hostname_production: server.amplication.com #TODO:Ilia
+    hostname: server.prod.amplication-dev.com
+    hostname_production: server.amplication.com
   config:
     env:
       HOST: "https://server.amplication.com"
