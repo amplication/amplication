@@ -137,19 +137,19 @@ jobs:
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test
 
       - name: Run Code coverage 
-        if: ${{ github.event_name == "pull_request" }}
+        if: github.event_name == 'pull_request'
         id: cc
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
       
       - name: Coverage Report
-        if: ${{ github.event_name == "pull_request" }}
+        if: github.event_name == 'pull_request'
         uses: danhunsaker/clover-reporter-action@v0.2.17-clover
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           clover-file: packages/${{matrix.service}}/coverage/clover.xml
       
       - name: Find Comment Coverage Report
-        if: ${{ github.event_name == "pull_request" }}
+        if: github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v2
         id: fc
         with:
@@ -158,7 +158,7 @@ jobs:
           direction: last
       
       - name: Find Comment Coverage Report
-        if: ${{ github.event_name == "pull_request" }}
+        if: github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v2
         id: find
         with:
@@ -167,7 +167,7 @@ jobs:
           direction: last
 
       - name: Update comment
-        if: ${{ github.event_name == "pull_request" }}
+        if: github.event_name == 'pull_request'
         uses: peter-evans/create-or-update-comment@v2
         env:
           SERVICE: ${{matrix.service}}
@@ -178,7 +178,7 @@ jobs:
           reactions: eyes
       
       - name: Update comment
-        if: ${{ github.event_name == "pull_request" }}
+        if: github.event_name == 'pull_request'
         uses: peter-evans/create-or-update-comment@v2
         env:
           SERVICE: ${{matrix.service}}
