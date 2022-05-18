@@ -24,9 +24,12 @@ do
     echo "$IMAGE_TAG_ANCHOR" > found_tag
     while IFS= read -r line; do
         re='^[0-9]+$'
+        echo "checking tag: $line" 
         echo "$line" > fallback_tag
         if [[ $line =~ $re ]] ; then
           echo "$line" > found_tag
+          echo "using: $line"
+          break;
         fi
     done <<< "$image_tags"
     
