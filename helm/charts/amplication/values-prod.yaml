@@ -15,6 +15,13 @@ amplication-client:
 
 amplication-server:
   deployment:
+    resources: 
+      limits:
+        cpu: 3
+        memory: 6
+      requests:
+        cpu: 3
+        memory: 6
     image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
   postgres:
