@@ -15,7 +15,7 @@ const CLASS_NAME = "code-view-bar";
 type Props = {
   builds: Build[];
   onSelectBuild: (commit: Build) => void;
-  buildId: string;
+  buildId: string | undefined;
   buildTitle: string;
 };
 
@@ -54,7 +54,9 @@ const CodeViewCommits = ({
                     }}
                     css={undefined}
                   >
-                    <CommitMenuItemContent title={buildTitle} />
+                    <CommitMenuItemContent
+                      title={build.message ? build.message : build.createdAt}
+                    />
                   </SelectMenuItem>
                 ))}
                 <div className={`select-menu_item ${CLASS_NAME}__hr`}>
