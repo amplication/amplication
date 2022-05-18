@@ -24,7 +24,7 @@ do
     echo ""  > found_tag
     while IFS= read -r line; do
         re='^[0-9]+$'
-        line=$(echo "$line" | tr -d '"' | sed 's/,*$//')
+        line=$(echo "$line" | tr -d '"' | sed 's/,*$//' | xargs)
         echo "checking tag: $line" 
         if [[ $line =~ $re ]] ; then
           echo "$line" > found_tag
