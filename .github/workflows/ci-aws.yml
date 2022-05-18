@@ -137,14 +137,57 @@ jobs:
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test
 
       - name: Run Code coverage 
+        if: ${{ github.event.name == "pull_request" }}
         id: cc
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
       
       - name: Coverage Report
-        uses: lucassabreu/comment-coverage-clover@main
+        if: ${{ github.event.name == "pull_request" }}
+        uses: danhunsaker/clover-reporter-action@v0.2.17-clover
         with:
-          file: packages/${{matrix.service}}/coverage/clover.xml
-          
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          clover-file: packages/${{matrix.service}}/coverage/clover.xml
+      
+      - name: Find Comment Coverage Report
+        if: ${{ github.event.name == "pull_request" }}
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: ${{ github.event.number }}
+          body-includes: "Total Coverage:"
+          direction: last
+      
+      - name: Find Comment Coverage Report
+        if: ${{ github.event.name == "pull_request" }}
+        uses: peter-evans/find-comment@v2
+        id: find
+        with:
+          issue-number: ${{ github.event.number }}
+          body-includes: "Coverage after merging"
+          direction: last
+
+      - name: Update comment
+        if: ${{ github.event.name == "pull_request" }}
+        uses: peter-evans/create-or-update-comment@v2
+        env:
+          SERVICE: ${{matrix.service}}
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: |
+            **Edit:** This code-coverage is for $SERVICE service
+          reactions: eyes
+      
+      - name: Update comment
+        if: ${{ github.event.name == "pull_request" }}
+        uses: peter-evans/create-or-update-comment@v2
+        env:
+          SERVICE: ${{matrix.service}}
+        with:
+          comment-id: ${{ steps.find.outputs.comment-id }}
+          body: |
+            **Edit:** This code-coverage is for $SERVICE service
+          reactions: eyes
+
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
