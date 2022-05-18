@@ -6,24 +6,15 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
-statefulset:
-  replicaCount: 2
-  volume:
-    name: amplication-server-artifacts-data
-    path: /artifacts
-  podAnnotations: {}
-  resources: {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-  image:
-    pullPolicy: Always
-    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-prod-server
-    tag: 0.0.7
-    imagePullSecrets: []
+replicaCount: 2
+volume:
+  name: amplication-server-artifacts-data
+  path: /artifacts
+image:
+  pullPolicy: Always
+  repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-prod-server
+  tag: 0.0.7
+  imagePullSecrets: []
 
 service:
   type: ClusterIP

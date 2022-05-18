@@ -10,20 +10,20 @@ spec:
     matchLabels:
       app: {{ .Values.name }} # has to match .spec.template.metadata.labels
   serviceName: "{{ .Values.name }}"
-  replicas: {{ .Values.statefulset.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: '{{ .Values.name }}'
   template:
     metadata:
-      {{- with .Values.statefulset.podAnnotations }}
+      {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         app: '{{ .Values.name }}'
     spec:
-      {{- with .Values.statefulset.image.imagePullSecrets }}
+      {{- with .Values.image.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -37,8 +37,8 @@ spec:
                   - /bin/sh
                   - -c
                   - echo "$GCP" >> /var/gcp-secret
-          imagePullPolicy: {{ .Values.statefulset.image.pullPolicy }}
-          image: "{{ .Values.statefulset.image.repository }}:{{ .Values.statefulset.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if hasKey .Values "config" }}
           envFrom:
           - configMapRef:
@@ -51,26 +51,26 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          {{- if hasKey .Values.statefulset "securityContext" }}
+          {{- if hasKey .Values "securityContext" }}
           securityContext:
-          {{- with .Values.statefulset.securityContext -}}
+          {{- with .Values.securityContext -}}
           {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
           resources:
-            {{- toYaml .Values.statefulset.resources | nindent 12 }}
+            {{- toYaml .Values.resources | nindent 12 }}
           {{- if  hasKey .Values "service" }}
           ports:
             - containerPort: {{ .Values.service.port.target }}
           {{- end }}
-      {{- if hasKey .Values.statefulset "volume" }}
+      {{- if hasKey .Values "volume" }}
           volumeMounts:
-            - name: {{ .Values.statefulset.volume.name }}
-              mountPath: {{ .Values.statefulset.volume.path }}
+            - name: {{ .Values.volume.name }}
+              mountPath: {{ .Values.volume.path }}
       volumes:
-        - name: {{ .Values.statefulset.volume.name }}
+        - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.statefulset.volume.name }}
+            claimName: {{ .Values.volume.name }}
       {{- end }}
 {{- end -}}
 {{- define "base.statefulset" -}}

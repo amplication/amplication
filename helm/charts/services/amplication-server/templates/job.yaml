@@ -19,7 +19,7 @@ spec:
       {{ end }}
       containers:
       - name: "{{ .Values.name }}-migrate"
-        image: "{{ .Values.statefulset.image.repository }}:{{ .Values.statefulset.image.tag | default .Chart.AppVersion }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         command: ["/bin/sh"]
         args: ["-c", "npm run migrate:up"]
         env:

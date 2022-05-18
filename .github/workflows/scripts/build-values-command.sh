@@ -45,7 +45,7 @@ do
       VERSIONS+=" "
     fi
 
-    VERSIONS+="-p $SERVICE_NAME.deployment.image.tag=$FOUND_TAG"
+    VERSIONS+="-p $SERVICE_NAME.image.tag=$FOUND_TAG"
 done
 echo "$VERSIONS" >> $OUTPUT_PATH
 echo "VERSIONS=$VERSIONS" >> $GITHUB_ENV

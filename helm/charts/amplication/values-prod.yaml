@@ -1,7 +1,6 @@
 amplication-client:
-  deployment:
-    image:
-      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
   service:
     hostname: app.prod.amplication.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/7cf536df-6c61-4f76-bf3c-fd8f4e021721
@@ -14,16 +13,15 @@ amplication-client:
       REACT_APP_FEATURE_FLAGS: "{\"SHOW_DEPLOYER\":true}"
 
 amplication-server:
-  statefulset:
-    resources: 
-      limits:
-        cpu: 3
-        memory: 6Gi
-      requests:
-        cpu: 3
-        memory: 6Gi
-    image:
-      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
+  resources: 
+    limits:
+      cpu: 3
+      memory: 6Gi
+    requests:
+      cpu: 3
+      memory: 6Gi
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
   postgres:
     install: false
   ingress:

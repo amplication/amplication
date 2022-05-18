@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.statefulset.volume.name }}
+  name: {{ .Values.volume.name }}
 spec:
   volumeMode: Filesystem
   accessModes:
