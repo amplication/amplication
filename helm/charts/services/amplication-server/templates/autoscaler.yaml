@@ -1,5 +1,5 @@
 {{- define "amplication-server.autoscaling" -}}
 {{- end }}
-{{- if .Values.statefulset.autoscaling.enabled }}
+{{- if .Values.autoscaling.enabled }}
 {{ include "base.autoscaling" (list . "amplication-server.autoscaling") -}}
 {{- end }}
