@@ -1,6 +1,6 @@
 name: amplication-server
 
-deployment:
+statefulset:
   replicaCount: 2
   volume:
     name: amplication-server-artifacts-data

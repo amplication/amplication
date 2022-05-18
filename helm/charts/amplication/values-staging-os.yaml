@@ -12,7 +12,7 @@ amplication-client:
       REACT_APP_GITHUB_CLIENT_ID: value
 
 amplication-server:
-  deployment:
+  statefulset:
     image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server-dev
   postgres:

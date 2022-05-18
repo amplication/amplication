@@ -14,14 +14,14 @@ amplication-client:
       REACT_APP_FEATURE_FLAGS: "{\"SHOW_DEPLOYER\":true}"
 
 amplication-server:
-  deployment:
+  statefulset:
     resources: 
       limits:
         cpu: 3
-        memory: 6
+        memory: 6Gi
       requests:
         cpu: 3
-        memory: 6
+        memory: 6Gi
     image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
   postgres:
