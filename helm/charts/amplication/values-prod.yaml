@@ -3,13 +3,13 @@ amplication-client:
     image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
   service:
-    hostname: app.prod.amplication-dev.com
-    hostname_production: app.amplication.com
+    hostname: app.prod.amplication-dev.com #TODO:Ilia
+    hostname_production: app.amplication.com #TODO:Ilia
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
   config:
     env:
-      REACT_APP_DATA_SOURCE: "https://server.prod.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.prod.amplication-dev.com/github"
+      REACT_APP_DATA_SOURCE: "https://server.amplication.com/graphql"
+      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.amplication.com/github"
       REACT_APP_GITHUB_CLIENT_ID: value
       REACT_APP_PADDLE_VENDOR_ID: "131992"
       REACT_APP_FEATURE_FLAGS: "{\"SHOW_DEPLOYER\":true}"
@@ -22,12 +22,12 @@ amplication-server:
     install: false
   ingress:
     enabled: true
-    hostname: server.prod.amplication-dev.com
-    hostname_production: server.amplication.com
+    hostname: server.prod.amplication-dev.com #TODO:Ilia
+    hostname_production: server.amplication.com #TODO:Ilia
   config:
     env:
-      HOST: "https://server.prod.amplication-dev.com"
-      CLIENT_HOST: 'https://app.prod.amplication-dev.com'
+      HOST: "https://server.amplication.com"
+      CLIENT_HOST: 'https://app.amplication.com'
 
       ENABLE_SHUTDOWN_HOOKS: "1"
       DISABLE_EVENT_TRACKING: "1"
@@ -51,13 +51,13 @@ amplication-server:
       DOCKER_HOST: tcp://docker:2375
 
       #GitHub App
-      GITHUB_APP_APP_ID: "189214"
-      GITHUB_APP_CLIENT_ID: "Iv1.7eb319d8e3c170d7"
-      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplication-aws/installations/new?state={state}"
+      GITHUB_APP_APP_ID: "176701"
+      GITHUB_APP_CLIENT_ID: "Iv1.3f1573355389c9e5"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplication/installations/new?state={state}"
 
       #GitHub OAuth App
-      GITHUB_CLIENT_ID: "a4e9055e5f21448d6de7"
-      GITHUB_REDIRECT_URI: "https://server.prod.amplication-dev.com/github/callback"
+      GITHUB_CLIENT_ID: "cc622ae6020e92fa1442"
+      GITHUB_REDIRECT_URI: "https://server.amplication.com/github/callback" #TODO:UPDATE GH
 
       #SENDGRID
       SENDGRID_FROM_ADDRESS: team@amplication.com
