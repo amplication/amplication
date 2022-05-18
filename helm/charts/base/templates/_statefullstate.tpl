@@ -67,16 +67,16 @@ spec:
           volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.path }}
-      volumeClaimTemplates:
-      - metadata:
-          name: {{ .Values.volume.name }}
-        spec:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: gp2
-          resources:
-            requests:
-              storage: 1Gi
       {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.volume.name }}
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: 1Gi  
 {{- end -}}
 {{- define "base.statefulset" -}}
 {{- include "base.util.merge" (append . "base.statefulset.tpl") -}}
