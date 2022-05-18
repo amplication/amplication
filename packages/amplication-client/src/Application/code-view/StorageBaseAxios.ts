@@ -45,8 +45,16 @@ export class StorageBaseAxios {
     assert(this.axios);
 
     const data = (
-      await this.axios.get(`${appId}/${buildId}/content?path=${path}`)
+      await this.axios.get(`${appId}/${buildId}/content?path=${path}`, {
+        // overwrite the parsing of json object by axios to prevent returning a object instead of string
+        transformResponse: (res) => {
+          return res;
+        },
+      })
     ).data;
+
+    assert(typeof data === "string");
+
     return data;
   }
 
