@@ -6,6 +6,10 @@ metadata:
   labels:
     app: '{{ .Values.name }}'
 spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }} # has to match .spec.template.metadata.labels
+  serviceName: "{{ .Values.name }}"
   replicas: {{ .Values.statefulset.replicaCount }}
   selector:
     matchLabels:
