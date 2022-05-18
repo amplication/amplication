@@ -1,9 +1,11 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: server-cronjob
+  name: {{ .Values.name }}-cronjob
 spec:
   concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 10
   schedule: "* * * * *"
   jobTemplate:
     spec:
