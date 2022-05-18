@@ -2783,7 +2783,9 @@ async function seed(bcryptSalt: Salt) {
   console.info(\\"Seeded database successfully\\");
 }
 ",
-  "server/src/app.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "server/src/app.module.ts": "import { Module, Scope } from \\"@nestjs/common\\";
+import { APP_INTERCEPTOR } from \\"@nestjs/core\\";
+import { MorganInterceptor, MorganModule } from \\"nest-morgan\\";
 import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
@@ -2793,7 +2795,6 @@ import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { HealthModule } from \\"./health/health.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import { ServeStaticOptionsService } from \\"./serveStaticOptions.service\\";
@@ -2831,7 +2832,13 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
       imports: [ConfigModule],
     }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      scope: Scope.REQUEST,
+      useClass: MorganInterceptor(\\"combined\\"),
+    },
+  ],
 })
 export class AppModule {}
 ",
@@ -3247,9 +3254,33 @@ export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
   "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
 export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
 ",
-  "server/src/auth/defaultAuth.guard.ts": "import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
+  "server/src/auth/defaultAuth.guard.ts": "import { Observable } from \\"rxjs\\";
+import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
+import { Reflector } from \\"@nestjs/core\\";
+import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
+import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
 
-export class DefaultAuthGuard extends BasicAuthGuard {}
+@Injectable()
+export class DefaultAuthGuard extends BasicAuthGuard {
+  constructor(private readonly reflector: Reflector) {
+    super();
+  }
+
+  canActivate(
+    context: ExecutionContext
+  ): boolean | Promise<boolean> | Observable<any> {
+    const isPublic = this.reflector.get<boolean>(
+      IS_PUBLIC_KEY,
+      context.getHandler()
+    );
+
+    if (isPublic) {
+      return true;
+    }
+
+    return super.canActivate(context);
+  }
+}
 ",
   "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";
@@ -5054,18 +5085,17 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { CustomerService } from \\"../customer.service\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
-import { CustomerService } from \\"../customer.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -5076,24 +5106,20 @@ import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class CustomerControllerBase {
   constructor(
     protected readonly service: CustomerService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
@@ -5144,18 +5170,13 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(CustomerFindManyArgs)
@@ -5194,18 +5215,13 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -5251,18 +5267,13 @@ export class CustomerControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -5327,17 +5338,12 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -5386,18 +5392,8 @@ export class CustomerControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @Public()
   @common.Get(\\"/:id/orders\\")
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @ApiNestedQuery(OrderFindManyArgs)
   async findManyOrders(
     @common.Req() request: Request,
@@ -5429,17 +5425,12 @@ export class CustomerControllerBase {
     return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/orders\\")
   async connectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() body: OrderWhereUniqueInput[]
@@ -5456,17 +5447,12 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/orders\\")
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() body: OrderWhereUniqueInput[]
@@ -5483,17 +5469,12 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id/orders\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/orders\\")
   async disconnectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() body: OrderWhereUniqueInput[]
@@ -5557,12 +5538,11 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
@@ -5641,7 +5621,6 @@ export class CustomerResolverBase {
   async createCustomer(
     @graphql.Args() args: CreateCustomerArgs
   ): Promise<Customer> {
-    // @ts-ignore
     return await this.service.create({
       ...args,
       data: {
@@ -5670,11 +5649,9 @@ export class CustomerResolverBase {
     possession: \\"any\\",
   })
   async updateCustomer(
-    @graphql.Args() args: UpdateCustomerArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UpdateCustomerArgs
   ): Promise<Customer | null> {
     try {
-      // @ts-ignore
       return await this.service.update({
         ...args,
         data: {
@@ -5713,7 +5690,6 @@ export class CustomerResolverBase {
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -5725,13 +5701,8 @@ export class CustomerResolverBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.ResolveField(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async orders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
@@ -6003,6 +5974,17 @@ export function ApiNestedQuery(query: Function) {
 
   return applyDecorators(...decorators);
 }
+",
+  "server/src/decorators/public.decorator.ts": "import { applyDecorators, SetMetadata } from \\"@nestjs/common\\";
+
+export const IS_PUBLIC_KEY = \\"isPublic\\";
+
+const PublicAuthMiddleware = SetMetadata(IS_PUBLIC_KEY, true);
+const PublicAuthSwagger = SetMetadata(\\"swagger/apiSecurity\\", [\\"isPublic\\"]);
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const Public = () =>
+  applyDecorators(PublicAuthMiddleware, PublicAuthSwagger);
 ",
   "server/src/empty/base/DeleteEmptyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6516,18 +6498,16 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { EmptyService } from \\"../empty.service\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
-import { EmptyService } from \\"../empty.service\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
@@ -6535,24 +6515,20 @@ import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class EmptyControllerBase {
   constructor(
     protected readonly service: EmptyService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
@@ -6566,18 +6542,13 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EmptyFindManyArgs)
@@ -6593,18 +6564,13 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -6627,18 +6593,13 @@ export class EmptyControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -6666,17 +6627,12 @@ export class EmptyControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Empty\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -6749,11 +6705,8 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
@@ -6826,7 +6779,6 @@ export class EmptyResolverBase {
     @graphql.Args() args: DeleteEmptyArgs
   ): Promise<Empty | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -7140,7 +7092,7 @@ export class AclValidateRequestInterceptor implements NestInterceptor {
 ",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
-import { SwaggerModule } from \\"@nestjs/swagger\\";
+import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
@@ -7165,6 +7117,18 @@ async function main() {
   );
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
+
+  /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
+  Object.values((document as OpenAPIObject).paths).forEach((path: any) => {
+    Object.values(path).forEach((method: any) => {
+      if (
+        Array.isArray(method.security) &&
+        method.security.includes(\\"isPublic\\")
+      ) {
+        method.security = [];
+      }
+    });
+  });
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
@@ -7958,18 +7922,15 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { OrderService } from \\"../order.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
@@ -7977,24 +7938,15 @@ import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class OrderControllerBase {
   constructor(
     protected readonly service: OrderService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @Public()
   @common.Post()
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: OrderCreateInput): Promise<Order> {
@@ -8023,18 +7975,8 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @Public()
   @common.Get()
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrderFindManyArgs)
@@ -8059,18 +8001,8 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @Public()
   @common.Get(\\"/:id\\")
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -8102,18 +8034,8 @@ export class OrderControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @Public()
   @common.Patch(\\"/:id\\")
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -8156,17 +8078,8 @@ export class OrderControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
+  @Public()
   @common.Delete(\\"/:id\\")
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -8248,11 +8161,9 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
@@ -8271,12 +8182,8 @@ export class OrderResolverBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @Public()
   @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _ordersMeta(
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -8290,24 +8197,14 @@ export class OrderResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => Order, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
@@ -8318,15 +8215,9 @@ export class OrderResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
-    // @ts-ignore
     return await this.service.create({
       ...args,
       data: {
@@ -8339,19 +8230,12 @@ export class OrderResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   async updateOrder(
-    @graphql.Args() args: UpdateOrderArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
     try {
-      // @ts-ignore
       return await this.service.update({
         ...args,
         data: {
@@ -8372,17 +8256,12 @@ export class OrderResolverBase {
     }
   }
 
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteOrder(
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -9440,18 +9319,16 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { OrganizationService } from \\"../organization.service\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
-import { OrganizationService } from \\"../organization.service\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
@@ -9465,24 +9342,20 @@ import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs
 import { Customer } from \\"../../customer/base/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class OrganizationControllerBase {
   constructor(
     protected readonly service: OrganizationService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
@@ -9499,18 +9372,13 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrganizationFindManyArgs)
@@ -9527,18 +9395,13 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -9562,18 +9425,13 @@ export class OrganizationControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -9602,17 +9460,12 @@ export class OrganizationControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -9639,18 +9492,13 @@ export class OrganizationControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/users\\")
   @ApiNestedQuery(UserFindManyArgs)
   async findManyUsers(
     @common.Req() request: Request,
@@ -9691,17 +9539,12 @@ export class OrganizationControllerBase {
     return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/users\\")
   async connectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[]
@@ -9718,17 +9561,12 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/users\\")
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[]
@@ -9745,17 +9583,12 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id/users\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/users\\")
   async disconnectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[]
@@ -9772,18 +9605,13 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/customers\\")
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyCustomers(
     @common.Req() request: Request,
@@ -9829,17 +9657,12 @@ export class OrganizationControllerBase {
     return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/customers\\")
   async connectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -9856,17 +9679,12 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/customers\\")
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -9883,17 +9701,12 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id/customers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/customers\\")
   async disconnectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -9910,18 +9723,13 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/vipCustomers\\")
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyVipCustomers(
     @common.Req() request: Request,
@@ -9967,17 +9775,12 @@ export class OrganizationControllerBase {
     return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/vipCustomers\\")
   async connectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -9994,17 +9797,12 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/vipCustomers\\")
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -10021,17 +9819,12 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id/vipCustomers\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/vipCustomers\\")
   async disconnectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -10095,12 +9888,10 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
@@ -10180,7 +9971,6 @@ export class OrganizationResolverBase {
   async createOrganization(
     @graphql.Args() args: CreateOrganizationArgs
   ): Promise<Organization> {
-    // @ts-ignore
     return await this.service.create({
       ...args,
       data: args.data,
@@ -10195,11 +9985,9 @@ export class OrganizationResolverBase {
     possession: \\"any\\",
   })
   async updateOrganization(
-    @graphql.Args() args: UpdateOrganizationArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UpdateOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      // @ts-ignore
       return await this.service.update({
         ...args,
         data: args.data,
@@ -10224,7 +10012,6 @@ export class OrganizationResolverBase {
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -12327,18 +12114,16 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestMorgan from \\"nest-morgan\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
+import { UserService } from \\"../user.service\\";
 import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
-import { UserService } from \\"../user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -12349,24 +12134,20 @@ import { OrganizationFindManyArgs } from \\"../../organization/base/Organization
 import { Organization } from \\"../../organization/base/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 @swagger.ApiBasicAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class UserControllerBase {
   constructor(
     protected readonly service: UserService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: UserCreateInput): Promise<User> {
@@ -12406,18 +12187,13 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(UserFindManyArgs)
@@ -12451,18 +12227,13 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -12503,18 +12274,13 @@ export class UserControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -12568,17 +12334,12 @@ export class UserControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -12622,18 +12383,13 @@ export class UserControllerBase {
     }
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/employees\\")
   @ApiNestedQuery(UserFindManyArgs)
   async findManyEmployees(
     @common.Req() request: Request,
@@ -12674,17 +12430,12 @@ export class UserControllerBase {
     return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/employees\\")
   async connectEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[]
@@ -12701,17 +12452,12 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/employees\\")
   async updateEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[]
@@ -12728,17 +12474,12 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id/employees\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/employees\\")
   async disconnectEmployees(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: UserWhereUniqueInput[]
@@ -12755,18 +12496,13 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Get(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @common.Get(\\"/:id/organizations\\")
   @ApiNestedQuery(OrganizationFindManyArgs)
   async findManyOrganizations(
     @common.Req() request: Request,
@@ -12790,17 +12526,12 @@ export class UserControllerBase {
     return results;
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Post(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Post(\\"/:id/organizations\\")
   async connectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[]
@@ -12817,17 +12548,12 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Patch(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Patch(\\"/:id/organizations\\")
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[]
@@ -12844,17 +12570,12 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
-  @common.UseGuards(
-    defaultAuthGuard.DefaultAuthGuard,
-    nestAccessControl.ACGuard
-  )
-  @common.Delete(\\"/:id/organizations\\")
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @common.Delete(\\"/:id/organizations\\")
   async disconnectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: OrganizationWhereUniqueInput[]
@@ -12918,12 +12639,10 @@ import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
 import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import * as gqlUserRoles from \\"../../auth/gqlUserRoles.decorator\\";
-import * as abacUtil from \\"../../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
@@ -12995,7 +12714,6 @@ export class UserResolverBase {
     possession: \\"any\\",
   })
   async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
-    // @ts-ignore
     return await this.service.create({
       ...args,
       data: {
@@ -13017,12 +12735,8 @@ export class UserResolverBase {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async updateUser(
-    @graphql.Args() args: UpdateUserArgs,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<User | null> {
+  async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
     try {
-      // @ts-ignore
       return await this.service.update({
         ...args,
         data: {
@@ -13053,7 +12767,6 @@ export class UserResolverBase {
   })
   async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {

@@ -1,23 +1,26 @@
+amplication-client:
+  deployment:
+    image:
+      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client-dev
+  service:
+    hostname: app.staging-os.amplication-dev.com
+    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/a9adf002-719c-45e0-9dd5-4965bd5ec585
 amplication-server:
+  deployment:
+    image:
+      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server-dev
+  postgres:
+    install: false
+  ingress:
+    enabled: true
+    hostname: server.staging-os.amplication-dev.com
   config:
     env:
-      BCRYPT_SALT_OR_ROUNDS: "10"
-      CONTAINER_BUILDER_DEFAULT: docker
-      CORS_ENABLE: "1"
-      DEFAULT_DISK: local
-      DOCKER_HOST: tcp://docker:2375
       GITHUB_APP_APP_ID: "189214"
-      GITHUB_APP_AUTH_SCOPE: user:email,repo,read:org
-      GITHUB_APP_CLIENT_ID: Iv1.7eb319d8e3c170d7
-      GITHUB_APP_INSTALLATION_URL: https://github.com/apps/amplication-aws/installations/new?state={state}
-      GITHUB_REDIRECT_URI: https://server.amplication-dev.com/github/callback
-      GITHUB_SCOPE: user:email
-      GITHUB_SECRET_SECRET_NAME: projects/948093699220/secrets/github-secret-amplication-aws/versions/1
-      GOOGLE_APPLICATION_CREDENTIALS: /app/packages/amplication-server/amplication-production-8234651f2ee4.json
-      HOST: https://server.amplication-dev.com
-      JWT_SECRET: jwt-secret
-      LOCAL_DISK_ROOT: /artifacts
-      NODE_ENV: production
-      PORT: "3000"
-      GITHUB_CLIENT_ID: a4e9055e5f21448d6de7
-      SERVICE_JWT_SECRET: service-jwt-secret
+      CONTAINER_BUILDER_DEFAULT: docker
+      GITHUB_APP_CLIENT_ID: "Iv1.7eb319d8e3c170d7"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplication-aws/installations/new?state={state}"
+      GITHUB_REDIRECT_URI: "https://server.staging-os.amplication-dev.com/github/callback"
+      GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
+      HOST: "https://server.staging-os.amplication-dev.com"
+      GITHUB_CLIENT_ID: "a4e9055e5f21448d6de7"

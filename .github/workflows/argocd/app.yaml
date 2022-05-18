@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: APP_NAME_PLACE_HOLER
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'REPO_URL_PLACE_HOLER'
+    path: helm/charts/amplication
+    targetRevision: BRANCH_NAME_PLACE_HOLER
+    helm:
+      releaseName: APP_NAME_PLACE_HOLER
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: NAMESPACE_PLACE_HOLER
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

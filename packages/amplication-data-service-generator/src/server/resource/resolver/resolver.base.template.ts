@@ -7,17 +7,9 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 // @ts-ignore
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 // @ts-ignore
-import * as gqlUserRoles from "../../auth/gqlUserRoles.decorator";
-// @ts-ignore
-import * as abacUtil from "../../auth/abac.util";
-// @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-// @ts-ignore
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-// @ts-ignore
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -89,6 +81,7 @@ export class RESOLVER_BASE {
     };
   }
 
+  // @ts-ignore
   @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [ENTITY])
   @nestAccessControl.UseRoles({
@@ -102,6 +95,7 @@ export class RESOLVER_BASE {
     return this.service.findMany(args);
   }
 
+  // @ts-ignore
   @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
@@ -119,6 +113,7 @@ export class RESOLVER_BASE {
     return result;
   }
 
+  // @ts-ignore
   @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ENTITY)
   @nestAccessControl.UseRoles({
@@ -134,6 +129,7 @@ export class RESOLVER_BASE {
     });
   }
 
+  // @ts-ignore
   @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ENTITY)
   @nestAccessControl.UseRoles({
@@ -142,8 +138,7 @@ export class RESOLVER_BASE {
     possession: "any",
   })
   async UPDATE_MUTATION(
-    @graphql.Args() args: UPDATE_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UPDATE_ARGS
   ): Promise<ENTITY | null> {
     try {
       // @ts-ignore

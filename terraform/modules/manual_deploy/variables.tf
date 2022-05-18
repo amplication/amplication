@@ -47,3 +47,11 @@ variable "github_tag" {
 variable "github_client_secret_id" {
   type = string
 }
+variable "segment_write_key_secret_id" {
+  type = string
+}
+
+variable "sendgrid_api_key_secret_id" {
+  type = string
+}
+
