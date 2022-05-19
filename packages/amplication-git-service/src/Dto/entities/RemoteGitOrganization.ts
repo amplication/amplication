@@ -3,7 +3,7 @@ import { EnumGitOrganizationType } from '../enums/EnumGitOrganizationType';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class RemoteGitOrganization {
   @Field(() => String)

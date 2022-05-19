@@ -10,10 +10,10 @@ import { GithubService } from './providers/github.service';
     ConfigModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.local', '.env'],
-    }),
+      envFilePath: ['.env.local', '.env']
+    })
   ],
   providers: [GitService, GithubService, GitServiceFactory],
-  exports: [GitService, GitServiceFactory, GithubService],
+  exports: [GitService, GitServiceFactory, GithubService]
 })
 export class GitModule {}
