@@ -4,8 +4,8 @@ import { createTokenService } from "./token/createTokenService";
 // import { createPluginModule, updateStaticModules } from "@amplication/basic-auth-plugin";
 import child_process from "child_process";
 import "reflect-metadata";
-import {container} from "tsyringe";
 import {DsgContext} from "../../dsg-context";
+// import {  }
 
 export async function createAuthModules(
   srcDir: string,
@@ -14,10 +14,7 @@ export async function createAuthModules(
   appModule: Module
 ): Promise<Module[]> {
 
-  const dsgContext = container.resolve(DsgContext);
-  const appInfoDI = container.resolve<AppInfo>("appInfo");
-  console.log(dsgContext);
-  console.log(appInfoDI);
+  const ctx = DsgContext.getInstance;
 
   const authDir = `${srcDir}/auth`;
   const authTestsDir = `${srcDir}/tests/auth`;

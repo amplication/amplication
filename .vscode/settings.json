@@ -81,5 +81,8 @@
   },
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   }
 }
