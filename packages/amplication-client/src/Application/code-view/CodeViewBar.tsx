@@ -15,6 +15,10 @@ const CLASS_NAME = "code-view-bar";
 type Props = {
   app: App;
 };
+type BuildWithFiles = {
+  build: Build | null;
+  rootFile: FileMeta;
+};
 
 export class FileMeta {
   type!: NodeTypeEnum;
@@ -38,7 +42,11 @@ const initialRootNode = {
 const CodeViewBar = ({ app }: Props) => {
   const { gitRepository } = app;
   const history = useHistory();
-  const [rootFile, setRootFile] = useState<FileMeta>(initialRootNode);
+  const [selectedBuild, setSelectedBuild] = useState<BuildWithFiles>({
+    build: null,
+    rootFile: initialRootNode,
+  });
+
   const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
     variables: {
       appId: app.id,
@@ -47,74 +55,78 @@ const CodeViewBar = ({ app }: Props) => {
       },
     },
     onCompleted: async (data) => {
-      setBuild(data.builds[0]);
-      await handleNodeClick(rootFile);
+      setSelectedBuild({ build: data.builds[0], rootFile: initialRootNode });
+      await handleNodeClick(selectedBuild.rootFile);
     },
   });
-
-  const [build, setBuild] = useState<Build | null>(null);
 
   const handleAuthWithGitClick = () => {
     window.open(`/${app.id}/github`);
   };
 
   const handleOnSearchChange = (searchParse: string) => {
-    // let file: FileObject = new FileObject();
-    // let filesTree: Files = new Files();
-    // filesTree.files = new Array(4);
-    // body.files
-    //   .filter((file) => file.name.includes(searchParse))
-    //   .map(
-    //     (resFile) => ((file.name = resFile.name), (file.type = resFile.type)),
-    //     filesTree.files.push(file)
-    //   );
-    // console.log(filesTree.files);
-    // setFilesTree(filesTree);
-    // console.log(files);
+    // console.log(rootFile.children);
+    // const filterList = rootFile.children?.filter((file) =>
+    //   file.name.includes(searchParse)
+    // );
+    // rootFile2.children = filterList;
+    // setRootFile2({ ...rootFile });
+    // setRootFile({ ...rootFile2 });
   };
 
   useEffect(() => {
-    if (!build) {
+    if (!selectedBuild.build) {
       return;
     }
-    getFolderContent(app.id, build.id, initialRootNode);
-  }, [build]);
+    getFolderContent(app.id, selectedBuild.build.id, initialRootNode);
+  }, [selectedBuild.build, app.id]);
 
   const handleSetBuild = (build: Build) => {
-    history.push(`/${app.id}/code-view/${app.id}/${build.id}/`);
-    setBuild(build);
+    setSelectedBuild({ build: build, rootFile: initialRootNode });
+    history.push(`/${app.id}/code-view/`);
   };
+  // const getFolderContent = useCallback(
+  //   async (appId: string, buildId: string, file: FileMeta) => {
+  //     file.children = await loadFolderContent(appId, buildId, file.path);
+
+  //     setSelectedBuild({ ...selectedBuild });
+  //   },
+  //   [selectedBuild]
+  // );
+
   const getFolderContent = useCallback(
     async (appId: string, buildId: string, file: FileMeta) => {
       file.children = await loadFolderContent(appId, buildId, file.path);
-      setRootFile({ ...rootFile });
+
+      setSelectedBuild({ ...selectedBuild });
     },
-    [rootFile]
+    [selectedBuild]
   );
   const handleNodeClick = useCallback(
     async (file: FileMeta) => {
-      if (!build) {
+      if (!selectedBuild || !selectedBuild.build) {
         return;
       }
       if (file.children && file.children.length > 0) {
         return;
       }
-
       switch (file.type) {
         case NodeTypeEnum.File:
           history.push(
-            `/${app.id}/code-view/${app.id}/${build.id}?path=${file.path}`
+            `/${app.id}/code-view/${app.id}/${selectedBuild.build.id}?path=${file.path}`
           );
           break;
         case NodeTypeEnum.Folder:
-          getFolderContent(app.id, build.id, file);
+          await getFolderContent(app.id, selectedBuild.build.id, file);
           break;
       }
-
-      setRootFile({ ...rootFile });
+      setSelectedBuild({ ...selectedBuild });
+      //console.log({ selectedBuild });
+      //setRootFile({ ...rootFile });
     },
-    [build, rootFile, history, app.id, getFolderContent]
+    [selectedBuild, history, app.id, getFolderContent]
   );
+
   const loadFolderContent = async (
     appId: string,
     buildId: string,
@@ -152,8 +164,10 @@ const CodeViewBar = ({ app }: Props) => {
       <div>
         <CodeViewCommits
           builds={data.builds}
-          buildId={build?.id}
-          buildTitle={build?.message || build?.createdAt}
+          buildId={selectedBuild.build?.id}
+          buildTitle={
+            selectedBuild.build?.message || selectedBuild.build?.createdAt
+          }
           onSelectBuild={handleSetBuild}
         />
       </div>
@@ -164,10 +178,10 @@ const CodeViewBar = ({ app }: Props) => {
           onChange={handleOnSearchChange}
         />
       </div>
-      {build && (
+      {selectedBuild && (
         <div>
           <TreeView>
-            {rootFile.children?.map((child) => {
+            {selectedBuild.rootFile.children?.map((child) => {
               return (
                 <FileExplorerNode
                   file={child}
