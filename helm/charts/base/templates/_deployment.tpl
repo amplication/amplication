@@ -6,9 +6,7 @@ metadata:
   labels:
     app: '{{ .Values.name }}'
 spec:
-  {{- if not .Values.deployment.autoscaling.enabled }}
   replicas: {{ .Values.deployment.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       app: '{{ .Values.name }}'
@@ -28,11 +26,20 @@ spec:
       serviceAccountName: default
       containers:
         - name: '{{ .Values.name }}'
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - echo "$GCP" >> /var/gcp-secret
           imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
           image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
           {{- if hasKey .Values "config" }}
           envFrom:
           - configMapRef:
+              name: '{{ .Values.name }}'
+          - secretRef:
               name: '{{ .Values.name }}'
           {{- end }}
           env: 

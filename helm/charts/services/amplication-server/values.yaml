@@ -6,7 +6,7 @@ deployment:
     name: amplication-server-artifacts-data
     path: /artifacts
   autoscaling:
-    enabled: false
+    enabled: enabled
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
@@ -34,6 +34,9 @@ ingress:
   enabled: true
   hostname: server.amplication-dev.com
 
+secrets:
+  GPC: ""
+
 pvc:
   storageLimit: 5Gi
   storageRequest: 1Gi
@@ -42,6 +45,7 @@ pvc:
 postgres:
   install: false
   postgresqlUsername: postgres
+  postgresPassword: postgres
   db: amplication
   fullnameOverride: postgresql
   postgresql:
