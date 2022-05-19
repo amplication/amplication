@@ -9,7 +9,7 @@ export class StorageService implements IStorage {
   async copyDir(srcDir: string, destDir: string): Promise<void> {
     try {
       await fse.copy(srcDir, destDir);
-    } catch (err: any) {
+    } catch (err) {
       throw new CustomError("failed to copy files from srcDir to destDir", err);
     }
   }
@@ -21,7 +21,7 @@ export class StorageService implements IStorage {
           console.log("succeeded");
         }
       });
-    } catch (err: any) {
+    } catch (err) {
       throw new CustomError("failed to delete directory", err);
     }
   }
