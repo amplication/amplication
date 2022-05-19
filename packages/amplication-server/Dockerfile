@@ -22,7 +22,7 @@ COPY packages/amplication-container-builder packages/amplication-container-build
 COPY packages/amplication-data packages/amplication-data
 COPY packages/amplication-data-service-generator packages/amplication-data-service-generator
 COPY packages/amplication-deployer packages/amplication-deployer
-COPY packages/amplication-git-service packages/amplication-git-service
+COPY ee/packages/amplication-git-service ee/packages/amplication-git-service
 COPY packages/amplication-prisma-db packages/amplication-prisma-db
 COPY packages/amplication-kafka packages/amplication-kafka
 
@@ -65,9 +65,9 @@ COPY --from=build /app/packages/amplication-deployer/package.json /app/packages/
 COPY --from=build /app/packages/amplication-deployer/node_modules /app/packages/amplication-deployer/node_modules
 COPY --from=build /app/packages/amplication-deployer/dist /app/packages/amplication-deployer/dist
 
-COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
-COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
-COPY --from=build /app/packages/amplication-git-service/dist /app/packages/amplication-git-service/dist
+COPY --from=build /app/ee/packages/amplication-git-service/package.json /app/ee/packages/amplication-git-service/package.json
+COPY --from=build /app/ee/packages/amplication-git-service/node_modules /app/ee/packages/amplication-git-service/node_modules
+COPY --from=build /app/ee/packages/amplication-git-service/dist /app/ee/packages/amplication-git-service/dist
 
 
 COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json

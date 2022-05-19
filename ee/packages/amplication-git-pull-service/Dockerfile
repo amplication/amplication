@@ -17,7 +17,7 @@ RUN npm ci --production
 FROM base AS build
 WORKDIR /app
 # Copy amplication/git-pull-service and the its dependent packages
-COPY packages/amplication-git-pull-service packages/amplication-git-pull-service
+COPY ee/packages/amplication-git-pull-service ee/packages/amplication-git-pull-service
 COPY packages/amplication-kafka packages/amplication-kafka
 
 # Installs all copied package node_modules ; Preparation for build
@@ -33,10 +33,10 @@ RUN npm run clean -- --yes
 RUN npm run bootstrap -- -- --production --scope @amplication/git-pull-service --include-dependencies
 
 FROM base as git-pull-service
-WORKDIR /app/packages/amplication-git-pull-service
-COPY --from=build /app/packages/amplication-git-pull-service/package.json /app/packages/amplication-git-pull-service/package.json
-COPY --from=build /app/packages/amplication-git-pull-service/node_modules /app/packages/amplication-git-pull-service/node_modules
-COPY --from=build /app/packages/amplication-git-pull-service/dist /app/packages/amplication-git-pull-service/dist
+WORKDIR /app/ee/packages/amplication-git-pull-service
+COPY --from=build /app/ee/packages/amplication-git-pull-service/package.json /app/ee/packages/amplication-git-pull-service/package.json
+COPY --from=build /app/ee/packages/amplication-git-pull-service/node_modules /app/ee/packages/amplication-git-pull-service/node_modules
+COPY --from=build /app/ee/packages/amplication-git-pull-service/dist /app/ee/packages/amplication-git-pull-service/dist
 
 COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules

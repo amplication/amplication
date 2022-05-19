@@ -17,7 +17,7 @@ RUN npm ci --production
 FROM base AS build
 WORKDIR /app
 # Copy amplication-git-push-webhook-service  and the its dependent packages
-COPY packages/amplication-git-push-webhook-service packages/amplication-git-push-webhook-service
+COPY ee/packages/amplication-git-push-webhook-service ee/packages/amplication-git-push-webhook-service
 COPY packages/amplication-prisma-db packages/amplication-prisma-db
 COPY packages/amplication-kafka packages/amplication-kafka
 # Installs all copied package node_modules ; Preparation for build
@@ -33,11 +33,11 @@ RUN npm run clean -- --yes
 RUN npm run bootstrap -- -- --production --scope @amplication/git-push-webhook-service --include-dependencies
 
 FROM base as server
-WORKDIR /app/packages/amplication-git-push-webhook-service
+WORKDIR /app/ee/packages/amplication-git-push-webhook-service
 # Copy all distributions and node_modules for amplication-git-push-webhook-service  and its dependencies
-COPY --from=build /app/packages/amplication-git-push-webhook-service/package.json /app/packages/amplication-git-push-webhook-service/package.json
-COPY --from=build /app/packages/amplication-git-push-webhook-service/node_modules /app/packages/amplication-git-push-webhook-service/node_modules
-COPY --from=build /app/packages/amplication-git-push-webhook-service/dist /app/packages/amplication-git-push-webhook-service/dist
+COPY --from=build /app/ee/packages/amplication-git-push-webhook-service/package.json /app/ee/packages/amplication-git-push-webhook-service/package.json
+COPY --from=build /app/ee/packages/amplication-git-push-webhook-service/node_modules /app/ee/packages/amplication-git-push-webhook-service/node_modules
+COPY --from=build /app/ee/packages/amplication-git-push-webhook-service/dist /app/ee/packages/amplication-git-push-webhook-service/dist
 
 
 COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
