@@ -31,7 +31,7 @@ model Workspace {
   invitations      Invitation[]
   subscriptions    Subscription[]
   gitOrganizations GitOrganization[]
-  Project          Project[]
+  projects         Project[]
 }
 
 model Project {
@@ -39,7 +39,9 @@ model Project {
   name        String    @unique
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
-  App         App[]
+  apps        App[]
+
+  @@unique([workspaceId, name])
 }
 
 model GitOrganization {
@@ -136,8 +138,8 @@ model App {
   entities          Entity[]
   environments      Environment[]
   gitRepository     GitRepository?
-  projectId         String
-  project           Project        @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  projectId         String?
+  project           Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([workspaceId, name], map: "App.workspaceId_name_unique")
 }
