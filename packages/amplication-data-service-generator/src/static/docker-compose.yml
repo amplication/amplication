@@ -25,7 +25,8 @@ services:
       POSTGRESQL_URL: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432"
       BCRYPT_SALT: "${BCRYPT_SALT}"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
     image: postgres:12
     environment:
@@ -33,5 +34,19 @@ services:
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "${POSTGRESQL_DB_NAME}",
+          "-U",
+          "${POSTGRESQL_USER}",
+        ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
 volumes:
   postgres: ~
