@@ -1,0 +1,19 @@
+@import "../style/index.scss";
+$empty-state-image-size: 120px;
+
+.subscription-status {
+  .amp-icon {
+    margin-right: var(--default-spacing-small);
+  }
+
+  &--positive {
+    color: var(--positive-default);
+  }
+
+  &--negative {
+    color: var(--negative);
+  }
+  &--warning {
+    color: var(warning-default);
+  }
+}

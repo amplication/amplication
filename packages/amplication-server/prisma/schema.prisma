@@ -28,6 +28,8 @@ model Workspace {
   name             String            @unique(map: "Workspace.name_unique")
   apps             App[]
   users            User[]
+  invitations      Invitation[]
+  subscriptions    Subscription[]
   gitOrganizations GitOrganization[]
 }
 
@@ -56,22 +58,25 @@ model GitRepository {
 }
 
 model User {
-  id                String       @id @default(cuid())
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  accountId         String
-  workspaceId       String
-  isOwner           Boolean      @default(false)
-  account           Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  workspace         Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  assignedCurrentTo Account?
-  apiTokens         ApiToken[]
-  lockedBlocks      Block[]
-  builds            Build[]
-  commits           Commit[]
-  deployments       Deployment[]
-  lockedEntitis     Entity[]
-  userRoles         UserRole[]
+  id                    String       @id @default(cuid())
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  accountId             String
+  workspaceId           String
+  isOwner               Boolean      @default(false)
+  account               Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace             Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assignedCurrentTo     Account?
+  apiTokens             ApiToken[]
+  lockedBlocks          Block[]
+  builds                Build[]
+  commits               Commit[]
+  deployments           Deployment[]
+  lockedEntitis         Entity[]
+  userRoles             UserRole[]
+  sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
+  createdFromInvitation Invitation?
+  deletedAt             DateTime?
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
@@ -404,6 +409,7 @@ enum EnumEntityPermissionType {
   AllRoles
   Granular
   Disabled
+  Public
 }
 
 enum EnumDataType {
@@ -462,6 +468,51 @@ enum EnumDeploymentStatus {
   Waiting
   Failed
   Removed
+}
+
+model Invitation {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  email           String
+  invitedByUserId String
+  invitedByUser   User      @relation("InvitedByUserOnInvitation", fields: [invitedByUserId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  newUserId       String?   @unique(map: "Invitation_newUserId_unique")
+  newUser         User?     @relation(fields: [newUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  token           String
+  tokenExpiration DateTime
+
+
+  @@unique([workspaceId, email], map: "Invitation.workspaceId_email_unique")
+}
+
+enum EnumSubscriptionPlan {
+  Pro
+  Business
+  Enterprise
+}
+
+enum EnumSubscriptionStatus {
+  Active
+  Trailing
+  PastDue
+  Paused
+  Deleted
+}
+
+model Subscription {
+  id                        String                 @id @default(cuid())
+  createdAt                 DateTime               @default(now())
+  updatedAt                 DateTime               @updatedAt
+  workspaceId               String
+  workspace                 Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subscriptionPlan          EnumSubscriptionPlan
+  status                    EnumSubscriptionStatus
+  subscriptionData          Json
+  cancellationEffectiveDate DateTime?
+
 }
 
 enum EnumGitProvider {

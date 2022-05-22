@@ -21,6 +21,7 @@ jobs:
   prepare:
     runs-on: ubuntu-18.04
     outputs:
+      ARGOCD: ${{ steps.create-secret-names.outputs.ARGOCD }}
       GCP: ${{ steps.create-secret-names.outputs.GCP }}
       GITHUB_APP_CLIENT_SECRET: ${{ steps.create-secret-names.outputs.GITHUB_APP_CLIENT_SECRET }}
       GITHUB_APP_PRIVATE_KEY: ${{ steps.create-secret-names.outputs.GITHUB_APP_PRIVATE_KEY }}
@@ -36,6 +37,7 @@ jobs:
         export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
         echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
       
+        echo "::set-output name=ARGOCD::AWS_${TARGET_ENV_SECRET}_ARGOCD"
         echo "::set-output name=GCP::AWS_${TARGET_ENV_SECRET}_GCP"
         echo "::set-output name=GITHUB_APP_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_CLIENT_SECRET"
         echo "::set-output name=GITHUB_APP_PRIVATE_KEY::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_PRIVATE_KEY"
@@ -51,6 +53,7 @@ jobs:
     needs:
       - prepare
     env:
+      ARGOCD: ${{ needs.prepare.outputs.ARGOCD }}
       GCP: ${{ needs.prepare.outputs.GCP }}
       GITHUB_APP_CLIENT_SECRET: ${{ needs.prepare.outputs.GITHUB_APP_CLIENT_SECRET }}
       GITHUB_APP_PRIVATE_KEY: ${{ needs.prepare.outputs.GITHUB_APP_PRIVATE_KEY }}
@@ -117,7 +120,7 @@ jobs:
           echo "APP_NAME = $APP_NAME"
           echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
       - name: create app yaml
-        id: create-app-yaml
+        id: create-namespace-yaml
         run: |
           cp $GITHUB_WORKSPACE/.github/workflows/argocd/namespace.yaml namespace.yaml
           sed -i "s|NAMESPACE_PLACEHOLDER|$NAMESPACE|g" namespace.yaml
@@ -134,26 +137,9 @@ jobs:
       - name: deploy app
         id: deploy-app
         run: |
-          
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
           ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
-          if [ "$GITHUB_REPOSITORY" = "amplication-hosted" ]; then
-            ARGO_CD_URL="argocd.$TARGET_ENV.amplication.com"
-            if [ "$TARGET_ENV" = "prod" ]; then
-              ARGO_CD_URL="argocd.amplication.com"
-            fi
-          fi
-          echo "GCP secret name: $GCP"
-          echo "GITHUB_APP_CLIENT_SECRET secret name: $GITHUB_APP_CLIENT_SECRET"
-          echo "GITHUB_APP_PRIVATE_KEY secret name: $GITHUB_APP_PRIVATE_KEY"
-          echo "GITHUB_CLIENT_SECRET secret name: $GITHUB_CLIENT_SECRET"
-          echo "POSTGRESQL_PASSWORD secret name: $POSTGRESQL_PASSWORD"
-          echo "POSTGRESQL_URL secret name: $POSTGRESQL_URL"
-          echo "JWT_SECRET secret name: $JWT_SECRET"
-          echo "SERVICE_JWT_SECRET secret name: $SERVICE_JWT_SECRET"
-
-          #kubectl apply -f app.yaml
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
           echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
@@ -176,7 +162,7 @@ jobs:
           $COMMAND
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
-          ARGO_CD_PASSWORD: ${{ secrets.ARGO_CD_PASSWORD }}
+          ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
           GCP: ${{ secrets[env.GCP] }}
           GITHUB_APP_CLIENT_SECRET: ${{ secrets[env.GITHUB_APP_CLIENT_SECRET] }}
           GITHUB_APP_PRIVATE_KEY: ${{ secrets[env.GITHUB_APP_PRIVATE_KEY] }}

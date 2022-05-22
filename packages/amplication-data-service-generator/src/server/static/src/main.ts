@@ -1,6 +1,6 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { SwaggerModule } from "@nestjs/swagger";
+import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from "./app.module";
@@ -25,6 +25,18 @@ async function main() {
   );
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
+
+  /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
+  Object.values((document as OpenAPIObject).paths).forEach((path: any) => {
+    Object.values(path).forEach((method: any) => {
+      if (
+        Array.isArray(method.security) &&
+        method.security.includes("isPublic")
+      ) {
+        method.security = [];
+      }
+    });
+  });
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
