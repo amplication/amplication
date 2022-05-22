@@ -1,4 +1,4 @@
-import { SearchField, TreeView } from "@amplication/design-system";
+import { TreeView } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
@@ -6,6 +6,7 @@ import { useHistory } from "react-router-dom";
 import { App, Build, SortOrder } from "../../models";
 import "./CodeViewBar.scss";
 import CodeViewCommits from "./CodeViewCommits";
+import { FileDetails } from "./CodeViewPage";
 import CodeViewSyncWithGithub from "./CodeViewSyncWithGithub";
 import { FileExplorerNode } from "./FileExplorerNode";
 import { NodeTypeEnum } from "./NodeTypeEnum";
@@ -14,6 +15,7 @@ import { StorageBaseAxios } from "./StorageBaseAxios";
 const CLASS_NAME = "code-view-bar";
 type Props = {
   app: App;
+  setFileDetails: (fileDetails: FileDetails) => void;
 };
 type BuildWithFiles = {
   build: Build | null;
@@ -39,7 +41,7 @@ const initialRootNode = {
   children: [],
 };
 
-const CodeViewBar = ({ app }: Props) => {
+const CodeViewBar = ({ app, setFileDetails }: Props) => {
   const { gitRepository } = app;
   const history = useHistory();
   const [selectedBuild, setSelectedBuild] = useState<BuildWithFiles>({
@@ -64,44 +66,27 @@ const CodeViewBar = ({ app }: Props) => {
     window.open(`/${app.id}/github`);
   };
 
-  const handleOnSearchChange = (searchParse: string) => {
-    // console.log(rootFile.children);
-    // const filterList = rootFile.children?.filter((file) =>
-    //   file.name.includes(searchParse)
-    // );
-    // rootFile2.children = filterList;
-    // setRootFile2({ ...rootFile });
-    // setRootFile({ ...rootFile2 });
-  };
+  const getFolderContent = useCallback(
+    async (appId: string, buildId: string, file: FileMeta) => {
+      file.children = await loadFolderContent(appId, buildId, file.path);
+      setSelectedBuild({ ...selectedBuild });
+    },
+    [selectedBuild]
+  );
 
   useEffect(() => {
     if (!selectedBuild.build) {
       return;
     }
     getFolderContent(app.id, selectedBuild.build.id, initialRootNode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBuild.build, app.id]);
 
   const handleSetBuild = (build: Build) => {
     setSelectedBuild({ build: build, rootFile: initialRootNode });
     history.push(`/${app.id}/code-view/`);
   };
-  // const getFolderContent = useCallback(
-  //   async (appId: string, buildId: string, file: FileMeta) => {
-  //     file.children = await loadFolderContent(appId, buildId, file.path);
 
-  //     setSelectedBuild({ ...selectedBuild });
-  //   },
-  //   [selectedBuild]
-  // );
-
-  const getFolderContent = useCallback(
-    async (appId: string, buildId: string, file: FileMeta) => {
-      file.children = await loadFolderContent(appId, buildId, file.path);
-
-      setSelectedBuild({ ...selectedBuild });
-    },
-    [selectedBuild]
-  );
   const handleNodeClick = useCallback(
     async (file: FileMeta) => {
       if (!selectedBuild || !selectedBuild.build) {
@@ -112,19 +97,19 @@ const CodeViewBar = ({ app }: Props) => {
       }
       switch (file.type) {
         case NodeTypeEnum.File:
-          history.push(
-            `/${app.id}/code-view/${app.id}/${selectedBuild.build.id}?path=${file.path}`
-          );
+          setFileDetails({
+            buildId: selectedBuild.build.id,
+            filePath: file.path,
+            isFile: true,
+          });
           break;
         case NodeTypeEnum.Folder:
           await getFolderContent(app.id, selectedBuild.build.id, file);
+          setSelectedBuild({ ...selectedBuild });
           break;
       }
-      setSelectedBuild({ ...selectedBuild });
-      //console.log({ selectedBuild });
-      //setRootFile({ ...rootFile });
     },
-    [selectedBuild, history, app.id, getFolderContent]
+    [selectedBuild, setFileDetails, app.id, getFolderContent]
   );
 
   const loadFolderContent = async (
@@ -169,13 +154,6 @@ const CodeViewBar = ({ app }: Props) => {
             selectedBuild.build?.message || selectedBuild.build?.createdAt
           }
           onSelectBuild={handleSetBuild}
-        />
-      </div>
-      <div>
-        <SearchField
-          label={"search files"}
-          placeholder={"search files"}
-          onChange={handleOnSearchChange}
         />
       </div>
       {selectedBuild && (

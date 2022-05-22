@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
-import React from "react";
-import { match, Route, Switch } from "react-router-dom";
+import React, { useState } from "react";
+import { match } from "react-router-dom";
 import { App } from "../../models";
 import { FilesPanel } from "../../util/teleporter";
 import { GET_APP_GIT_REPOSITORY } from "../git/SyncWithGithubPage";
@@ -17,8 +17,18 @@ export type CommitListItem = {
   name: string;
 };
 
+export type FileDetails = {
+  buildId: string;
+  filePath: string;
+  isFile: boolean;
+};
+
 function CodeViewPage({ match }: Props) {
   const applicationId = match.params.application;
+  const [fileDetails, setFileDetails] = useState<FileDetails | null>(null);
+
+  console.log({ fileDetails });
+
   const { data } = useQuery<{ app: App }>(GET_APP_GIT_REPOSITORY, {
     variables: {
       appId: applicationId,
@@ -27,18 +37,20 @@ function CodeViewPage({ match }: Props) {
   if (!data) {
     return <div />;
   }
-
   return (
     <>
       <FilesPanel.Source>
-        {data.app && <CodeViewBar app={data.app} />}
+        {data.app && (
+          <CodeViewBar app={data.app} setFileDetails={setFileDetails} />
+        )}
       </FilesPanel.Source>
-      <Switch>
-        <Route
-          path="/:application/code-view/:appId/:buildId"
-          component={CodeViewEditor}
+      {fileDetails?.isFile && (
+        <CodeViewEditor
+          appId={applicationId}
+          buildId={fileDetails.buildId}
+          filePath={fileDetails.filePath}
         />
-      </Switch>
+      )}
     </>
   );
 }
