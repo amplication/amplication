@@ -32,9 +32,22 @@ service:
   protocol: TCP
 
 ingress:
-  enabled: false
+  enabled: true
+  hostname: https://webhook.amplication.com
 
 pvc:
   name: efs-claim
   storageRequest: 1Gi
   storageName: efs-sc
+
+postgres:
+  install: false
+  postgresqlUsername: postgres
+  postgresPassword: postgres
+  db: amplication
+  fullnameOverride: postgresql
+  postgresql:
+    image: groundnuty/k8s-wait-for:v1.3
+    imagePullPolicy: Always
+    primary:
+      podLabels: { name: "postgres" }

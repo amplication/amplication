@@ -5,6 +5,7 @@ amplication-client:
   service:
     hostname: app.staging-os.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/a9adf002-719c-45e0-9dd5-4965bd5ec585
+
 amplication-server:
   deployment:
     image:
@@ -24,3 +25,14 @@ amplication-server:
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
       HOST: "https://server.staging-os.amplication-dev.com"
       GITHUB_CLIENT_ID: "a4e9055e5f21448d6de7"
+
+amplication-git-push-webhook-service:
+  postgres:
+    install: false
+  ingress:
+    enabled: true
+    hostname: https://webhook.staging-os.amplication-dev.com
+
+amplication-git-pull-service:
+  postgres:
+  install: false

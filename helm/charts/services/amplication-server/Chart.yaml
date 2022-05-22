@@ -10,10 +10,10 @@ dependencies:
   repository: "https://charts.bitnami.com/bitnami"
   condition: postgres.install
 
-- name: cp-helm-charts
-  version: "0.6.1"
-  repository: "https://confluentinc.github.io/cp-helm-charts/"
-  condition: cp-helm-charts.cp-kafka.enabled
+# - name: cp-helm-charts
+#   version: "0.6.1"
+#   repository: "https://confluentinc.github.io/cp-helm-charts/"
+#   condition: cp-helm-charts.cp-kafka.enabled
 
 - name: base
   version: "0.1.0"

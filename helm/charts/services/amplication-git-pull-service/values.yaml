@@ -13,7 +13,6 @@ config:
     KAFKA_BROKERS: ["localhost:9092"]
     KAFKA_CLIENT_ID: repository-pull
     KAFKA_GROUP_ID: git-pull-event
-    # KAFKA_TOPIC: "pull.event"
 
     ## configurations
     NODE_ENV: "developement"
@@ -63,7 +62,7 @@ postgres:
   install: false
   postgresqlUsername: admin
   postgresPassword: admin
-  db: amplication-pull
+  db: git-pull-service-db
   fullnameOverride: postgresql
   postgresql:
     image: groundnuty/k8s-wait-for:v1.3
