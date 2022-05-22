@@ -15,6 +15,7 @@ import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
 import { BASE_DIRECTORY, SRC_DIRECTORY } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
+import { DsgContext } from "../dsg-context";
 
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
@@ -46,7 +47,10 @@ export async function createServerModules(
     dtos,
     logger
   );
+
+  DsgContext.getInstance.modules.concat(staticModules, dtoModules, resourcesModules);
   
+  //TODO: No need to transfer modules any more
   logger.info("Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
   

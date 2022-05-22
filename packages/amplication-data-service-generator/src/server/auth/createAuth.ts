@@ -4,8 +4,8 @@ import { createTokenService } from "./token/createTokenService";
 // import { createPluginModule, updateStaticModules } from "@amplication/basic-auth-plugin";
 import child_process from "child_process";
 import "reflect-metadata";
-import {DsgContext} from "../../dsg-context";
-// import {  }
+import { DsgContext } from "../../dsg-context";
+import { CreateAuthHook, HookService } from "@amplication/generation-core/util/hooks";
 
 export async function createAuthModules(
   srcDir: string,
@@ -14,22 +14,25 @@ export async function createAuthModules(
   appModule: Module
 ): Promise<Module[]> {
 
-  const ctx = DsgContext.getInstance;
-
   const authDir = `${srcDir}/auth`;
   const authTestsDir = `${srcDir}/tests/auth`;
   const { settings } = appInfo;
   const { authProvider } = settings;
 
-  const pluginName = "amplication-basic-auth-plugin";
-  child_process.execSync(`npm install ${pluginName}`, {stdio:[0,1,2]});
+  //TODO: Move it to some other place
+  const pluginName = "@amplication/basic-auth-plugin";
+  // child_process.execSync(`npm install ${pluginName}`, {stdio:[0,1,2]});
   const authPlugin = await import(pluginName);
+  authPlugin.register(HookService.getInstance);
 
-  const modules = await authPlugin.createPluginModule(authDir);
-  authPlugin.updateStaticModules(staticModules, appModule, srcDir, authDir);
+  const ctx = DsgContext.getInstance;
+  const createAuthHook = new CreateAuthHook(ctx, appModule, authDir);
+  HookService.getInstance.runHook(createAuthHook);
+  // const modules = await authPlugin.createPluginModule(authDir);
+  // authPlugin.updateStaticModules(staticModules, appModule, srcDir, authDir);
   return Promise.all([
     // defaultGuardFile,
-    ...modules,
+    // ...modules,
     createTokenService(authDir, authProvider),
     createTokenServiceTests(authTestsDir, authProvider),
   ]);
