@@ -94,7 +94,7 @@ ALTER TABLE "App" ALTER COLUMN "projectId" DROP NOT NULL;
 CREATE UNIQUE INDEX "Project_workspaceId_name_key" ON "Project"("workspaceId", "name");
 
 INSERT INTO "Project"("id", "workspaceId", "name") 
-SELECT "id", "workspaceId", CONCAT('project-', "id") FROM "App"
+SELECT "id", "workspaceId", CONCAT('project-', "id") FROM "App";
 
-UPDATE "App"
+UPDATE public."App"
 SET "projectId" = id
