@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { Formik, FormikErrors } from "formik";
-import omit from "lodash.omit";
-import { isEmpty } from "lodash";
+import { omit, isEmpty } from "lodash";
 import { getSchemaForDataType } from "@amplication/data";
 import { ToggleField } from "@amplication/design-system";
 import * as models from "../models";
@@ -81,7 +80,7 @@ const EntityFieldForm = ({
     };
   }, [defaultValues]);
 
-  function onKeyDown(keyEvent:any) {
+  function onKeyDown(keyEvent: any) {
     if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
       keyEvent.preventDefault();
     }
