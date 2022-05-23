@@ -6,19 +6,19 @@ export type CreateAuthModules = (authDir: string) => Module[]
 export type UpdateAuthModules = (staticModules: Module[], appModule: Module, authDir: string) => void
 
 export interface IHook {
-    name: string;
+    hookName: string;
 }
 
 export class CreateAuthHook implements IHook {
-    name = "createAuth";
+    hookName = "createAuth";
     context: DsgContext;
     appModule: Module;
-    authDir: string;
+    authModulePath: string;
 
-    constructor(context: DsgContext, appModule: Module, authDir: string) {
+    constructor(context: DsgContext, appModule: Module, authModulePath: string) {
         this.context = context;
-        this.authDir = authDir;
         this.appModule = appModule;
+        this.authModulePath = authModulePath;
     }
 }
 
@@ -41,18 +41,18 @@ export class HookService {
 
     createAuthHandlers: HookHandler<CreateAuthHook>[] = [];
 
-        // constructor() { 
-        // this.registry.set(CreateAuthHook.name, []);
-        // }
-        // private register<T extends IHook>(hook: T, action: HookHandler<T>) {
-        //     if (this.registry.get(hook.name)) {
-        //         this.registry.set(hook.name, [])
-        //     }
-        //     this.registry.get(hook.name)?.push(action);
-        // }
+    // constructor() { 
+    // this.registry.set(CreateAuthHook.name, []);
+    // }
+    // private register<T extends IHook>(hook: T, action: HookHandler<T>) {
+    //     if (this.registry.get(hook.name)) {
+    //         this.registry.set(hook.name, [])
+    //     }
+    //     this.registry.get(hook.name)?.push(action);
+    // }
 
     // constructor() { 
-        // this.registry.set(CreateAuthHook.name, []);
+    // this.registry.set(CreateAuthHook.name, []);
     // }
 
     // private register<T extends IHook>(hook: T, action: HookHandler<T>) {
@@ -75,8 +75,8 @@ export class HookService {
 
     runHook<T extends IHook>(hook: T) {
         // this.registry.get(hook.name)?.forEach(action => action(hook));
-        switch (hook.name) {
-            case CreateAuthHook.name:
+        switch (hook.hookName) {
+            case 'createAuth':
                 const createAuthHook = hook as unknown as CreateAuthHook
                 this.createAuthHandlers.forEach(action => action(createAuthHook))
         }
@@ -102,7 +102,7 @@ class Plugin {
     }
 
     createAuthHookHandler = (hook: CreateAuthHook) => {
-        console.log(hook.name)
+        console.log(hook.hookName)
     }
 }
 

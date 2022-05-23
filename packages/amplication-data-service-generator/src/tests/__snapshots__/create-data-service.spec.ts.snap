@@ -3209,74 +3209,8 @@ export class TokenServiceBase implements ITokenService {
   }
 }
 ",
-  "server/src/auth/basic/base/basic.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { BasicStrategy as Strategy } from \\"passport-http\\";
-import { AuthService } from \\"../../auth.service\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class BasicStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
-  constructor(protected readonly authService: AuthService) {
-    super();
-  }
-
-  async validate(username: string, password: string): Promise<UserInfo> {
-    const user = await this.authService.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
-}
-",
-  "server/src/auth/basic/basic.strategy.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { AuthService } from \\"../auth.service\\";
-import { BasicStrategyBase } from \\"./base/basic.strategy.base\\";
-
-@Injectable()
-export class BasicStrategy extends BasicStrategyBase {
-  constructor(protected readonly authService: AuthService) {
-    super(authService);
-  }
-}
-",
-  "server/src/auth/basic/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
-",
   "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
 export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
-",
-  "server/src/auth/defaultAuth.guard.ts": "import { Observable } from \\"rxjs\\";
-import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
-import { Reflector } from \\"@nestjs/core\\";
-import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
-import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
-
-@Injectable()
-export class DefaultAuthGuard extends BasicAuthGuard {
-  constructor(private readonly reflector: Reflector) {
-    super();
-  }
-
-  canActivate(
-    context: ExecutionContext
-  ): boolean | Promise<boolean> | Observable<any> {
-    const isPublic = this.reflector.get<boolean>(
-      IS_PUBLIC_KEY,
-      context.getHandler()
-    );
-
-    if (isPublic) {
-      return true;
-    }
-
-    return super.canActivate(context);
-  }
-}
 ",
   "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
 import { GqlExecutionContext } from \\"@nestjs/graphql\\";

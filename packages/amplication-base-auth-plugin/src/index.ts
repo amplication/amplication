@@ -14,23 +14,23 @@ export function register(hookService: HookService) {
 }
 
 function createAuthHookHandler(createAuthHook: CreateAuthHook) {
-  const basicAuthModules = createPluginModule(createAuthHook.authDir)
+  const basicAuthModules = createPluginModule(createAuthHook.authModulePath)
   Promise.resolve(basicAuthModules)
     .then(result => createAuthHook.context.modules.push(...result))
-    .catch(err => console.log(err))
+    .catch(err => console.log(err));
 
-  updateModules(createAuthHook.context.modules, createAuthHook.appModule, createAuthHook.authDir)
+  updateModules(createAuthHook.context.modules, createAuthHook.appModule, createAuthHook.authModulePath)
 }
 
 export function createPluginModule(authPath: string): Promise<Module[]> {
 
   const modules = readStaticModules(path.join(__dirname, 'static'), authPath)
-  
+
   return modules;
 }
 
-export function updateModules(staticModules: Module[], appModule: Module, authDir: string) {
-  const authModulePath = path.join(authDir, 'auth.module.ts');
+export function updateModules(staticModules: Module[], appModule: Module, authModulePath: string) {
+  // const authModulePath = ;
   const authModule = staticModules.find(module => module.path === authModulePath);
   if (authModule === undefined) {
     throw new TypeError('AuthModule does not exist.');
@@ -40,14 +40,14 @@ export function updateModules(staticModules: Module[], appModule: Module, authDi
   );
   const basicStrategyImport = importNames(
     [basicStrategyIdentifier],
-      `./basic/basic.strategy`
+    `./basic/basic.strategy`
   );
   const imports = [
     basicStrategyImport
   ]
   const authModuleFile = parse(authModule?.code)
   addImports(authModuleFile, imports)
-  
+
   pushIdentifierToModuleSection(authModuleFile, "providers", basicStrategyIdentifier)
 
   authModule.code = print(authModuleFile).code

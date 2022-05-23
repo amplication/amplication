@@ -4,6 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+
     {
       "type": "node",
       "request": "attach",
@@ -47,6 +48,16 @@
       "name": "Debug Generate Test Data Service",
       "request": "launch",
       "runtimeArgs": ["run-script", "generate-test-data-service", "--", "--debug"],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "pwa-node",
+      "cwd": "${workspaceFolder}/packages/amplication-data-service-generator",
+      "console": "internalConsole"
+    },
+    {
+      "name": "Debug Generate Snapshot",
+      "request": "launch",
+      "runtimeArgs": ["run-script", "update-test-data-service-snapshot", "--", "--debug"],
       "runtimeExecutable": "npm",
       "skipFiles": ["<node_internals>/**"],
       "type": "pwa-node",

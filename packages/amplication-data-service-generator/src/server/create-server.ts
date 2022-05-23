@@ -48,7 +48,8 @@ export async function createServerModules(
     logger
   );
 
-  DsgContext.getInstance.modules.concat(staticModules, dtoModules, resourcesModules);
+  const ctx = DsgContext.getInstance;
+  ctx.modules = ctx.modules.concat(staticModules, dtoModules, resourcesModules);
   
   //TODO: No need to transfer modules any more
   logger.info("Creating application module...");

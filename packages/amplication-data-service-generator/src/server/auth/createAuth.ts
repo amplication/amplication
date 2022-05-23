@@ -1,11 +1,13 @@
 import { AppInfo, Module } from "../../types";
 import { createTokenServiceTests } from "./token/createTokenSerivceTests";
 import { createTokenService } from "./token/createTokenService";
-// import { createPluginModule, updateStaticModules } from "@amplication/basic-auth-plugin";
-import child_process from "child_process";
+import { register } from "@amplication/basic-auth-plugin";
+// import child_process from "child_process";
 import "reflect-metadata";
 import { DsgContext } from "../../dsg-context";
 import { CreateAuthHook, HookService } from "@amplication/generation-core/util/hooks";
+import path from "path";
+
 
 export async function createAuthModules(
   srcDir: string,
@@ -20,13 +22,15 @@ export async function createAuthModules(
   const { authProvider } = settings;
 
   //TODO: Move it to some other place
-  const pluginName = "@amplication/basic-auth-plugin";
+  // const pluginName = "@amplication/basic-auth-plugin";
   // child_process.execSync(`npm install ${pluginName}`, {stdio:[0,1,2]});
-  const authPlugin = await import(pluginName);
-  authPlugin.register(HookService.getInstance);
+  // const authPlugin = await import(pluginName);
+  // authPlugin.register(HookService.getInstance);
+
+  register(HookService.getInstance);
 
   const ctx = DsgContext.getInstance;
-  const createAuthHook = new CreateAuthHook(ctx, appModule, authDir);
+  const createAuthHook = new CreateAuthHook(ctx, appModule, path.join(authDir, 'auth.module.ts'));
   HookService.getInstance.runHook(createAuthHook);
   // const modules = await authPlugin.createPluginModule(authDir);
   // authPlugin.updateStaticModules(staticModules, appModule, srcDir, authDir);
