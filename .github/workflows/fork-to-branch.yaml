@@ -5,19 +5,25 @@ on:
     types: [created]
 
 jobs:
-  create_branch:
+  check-comment:
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
-    steps:
+    outputs:
+      trigger-comment: ${{ steps.check.outputs.triggered }}
+    steps: 
       - uses: khan/pull-request-comment-trigger@v1.1.0
         id: check
         with:
           trigger: "run branch"
           prefix_only: 'true'
 
+  create_branch:
+    runs-on: ubuntu-latest
+    needs: [check-comment]
+    if: ${{ needs.check-comment.outputs.trigger-comment == 'true' }}
+    steps:
       - uses: actions/github-script@v3
         id: get-pr
-        if: steps.check.outputs.triggered == 'true'
         with:
           script: |
             const request = {
@@ -34,7 +40,6 @@ jobs:
             }
 
       - uses: actions/checkout@v2
-        if: steps.check.outputs.triggered == 'true'
         with:
           fetch-depth: 0
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -42,7 +47,6 @@ jobs:
           repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
 
       - name: Check if branch exists
-        if: steps.check.outputs.triggered == 'true'
         env: 
           REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
           PR_NUMBER: ${{ github.event.issue.number }}
@@ -57,7 +61,6 @@ jobs:
           fi
   
       - name: Git remote add upstream
-        if: steps.check.outputs.triggered == 'true'
         env:
           OWNER: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.owner.login }}
           REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
@@ -72,7 +75,6 @@ jobs:
           echo "Forked branch ${{ env.OWNER }}:${{ env.REF }} has been pushed to fork-to-branch repo pr/${{ env.REF }}-${{ env.PR_NUMBER }}"
 
       - name: Create comment
-        if: steps.check.outputs.triggered == 'true'
         uses: peter-evans/create-or-update-comment@v2
         env:
           REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
