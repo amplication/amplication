@@ -70,6 +70,7 @@ jobs:
           echo "Forked branch ${{ env.OWNER }}:${{ env.REF }} has been pushed to fork-to-branch repo pr/${{ env.REF }}-${{ env.PR_NUMBER }}"
 
       - name: Create comment
+        if: steps.check.outputs.triggered == 'true'
         uses: peter-evans/create-or-update-comment@v2
         env:
           REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
