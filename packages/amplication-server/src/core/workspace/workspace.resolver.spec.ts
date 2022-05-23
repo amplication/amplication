@@ -176,13 +176,8 @@ describe('WorkspaceResolver', () => {
       variables: { id: EXAMPLE_WORKSPACE_ID }
     });
     expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      workspace: {
-        ...EXAMPLE_WORKSPACE,
-        createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString()
-      }
-    });
+    expect(res.data.id).toBe(EXAMPLE_WORKSPACE.id);
+    expect(res.data.name).toBe(EXAMPLE_WORKSPACE.name);
     expect(workspaceServiceGetWorkspaceMock).toBeCalledTimes(1);
     expect(workspaceServiceGetWorkspaceMock).toBeCalledWith({
       where: { id: EXAMPLE_WORKSPACE_ID }
