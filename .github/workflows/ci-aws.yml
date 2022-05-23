@@ -148,16 +148,16 @@ jobs:
         id: cc
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
       
-      - name: Create comment
-        if: github.event_name == 'pull_request'
-        uses: peter-evans/create-or-update-comment@v2
-        env:
-          SERVICE: ${{matrix.service}}
-        with:
-          issue-number: ${{ github.event.number }}
-          body: |
-            This code-coverage is for ${{ env.SERVICE }} service below
-          reactions: '+1'
+      # - name: Create comment
+      #   if: github.event_name == 'pull_request'
+      #   uses: peter-evans/create-or-update-comment@v2
+      #   env:
+      #     SERVICE: ${{matrix.service}}
+      #   with:
+      #     issue-number: ${{ github.event.number }}
+      #     body: |
+      #       This code-coverage is for ${{ env.SERVICE }} service below
+      #     reactions: '+1'
 
       - name: Coverage Report
         if: github.event_name == 'pull_request'
