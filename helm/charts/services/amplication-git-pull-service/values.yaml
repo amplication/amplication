@@ -1,12 +1,5 @@
 name: amplication-git-pull-service
 
-config:
-  env:
-    ## kafka connection
-    KAFKA_BROKERS: ["localhost:9092"]
-    KAFKA_CLIENT_ID: repository-pull
-    KAFKA_GROUP_ID: git-pull-event
-
 deployment:
   replicaCount: 1
   volume:

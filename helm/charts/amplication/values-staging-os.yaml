@@ -36,6 +36,12 @@ amplication-git-push-webhook-service:
   ingress:
     enabled: true
     hostname: https://webhook.staging-os.amplication-dev.com
+  config:
+    env:
+      KAFKA_BROKERS: [localhost:9092]
+      KAFKA_CLIENT_ID:
+      KAFKA_GROUP_ID: git-pull-event
+
 
 amplication-git-pull-service:
   postgres:
@@ -53,6 +59,15 @@ amplication-git-pull-service:
       GIT_DEFAULT_ORIGIN_NAME: origin
       GITHUB_APP_APP_ID:
       GITHUB_APP_PRIVATE_KEY:
+      KAFKA_BROKERS: [localhost:9092]
+      KAFKA_GROUP_ID: git-pull-event
+
+amplication-git-pull-request-service:
+  config:
+    env:
+      KAFKA_BROKERS:
+      KAFKA_GROUP_ID: 
+
 
 
 
