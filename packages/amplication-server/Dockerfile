@@ -22,7 +22,7 @@ COPY packages/amplication-container-builder packages/amplication-container-build
 COPY packages/amplication-data packages/amplication-data
 COPY packages/amplication-data-service-generator packages/amplication-data-service-generator
 COPY packages/amplication-deployer packages/amplication-deployer
-COPY ee/packages/amplication-git-service ee/packages/amplication-git-service
+COPY packages/amplication-git-service packages/amplication-git-service
 COPY packages/amplication-prisma-db packages/amplication-prisma-db
 COPY packages/amplication-kafka packages/amplication-kafka
 
