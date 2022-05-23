@@ -1,5 +1,3 @@
-## This is the private clone of the public repo amplication/amplication
-
 <p align="center">
 
   <a href="https://amplication.com" target="_blank">
