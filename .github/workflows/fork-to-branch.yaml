@@ -70,7 +70,7 @@ jobs:
           git fetch --all
           git checkout ${{ env.REF }}
           git checkout -b pr/${{ env.REF }}-${{ env.PR_NUMBER }}
-          git push --set-upstream upstream pr/${{ env.REF }}-${{ env.PR_NUMBER }}
+          git push -f --set-upstream upstream pr/${{ env.REF }}-${{ env.PR_NUMBER }}
           
           echo "Forked branch ${{ env.OWNER }}:${{ env.REF }} has been pushed to fork-to-branch repo pr/${{ env.REF }}-${{ env.PR_NUMBER }}"
 
