@@ -7,15 +7,16 @@ type Props = {
   appId: string;
   buildId: string;
   filePath: string;
+  fileName: string;
 };
 const NAVIGATION_KEY = "CODE_VIEW";
 
-const CodeViewEditor = ({ appId, buildId, filePath }: Props) => {
+const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
   const [content, setContent] = useState<string>("");
 
   const path = filePath;
 
-  useNavigationTabs(appId, NAVIGATION_KEY, path || "");
+  useNavigationTabs(appId, NAVIGATION_KEY, path || "", fileName);
 
   useLayoutEffect(() => {
     (async () => {

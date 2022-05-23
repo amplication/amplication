@@ -101,6 +101,7 @@ const CodeViewBar = ({ app, setFileDetails }: Props) => {
             buildId: selectedBuild.build.id,
             filePath: file.path,
             isFile: true,
+            fileName: file.name,
           });
           break;
         case NodeTypeEnum.Folder:

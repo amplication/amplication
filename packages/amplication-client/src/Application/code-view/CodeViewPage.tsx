@@ -21,6 +21,7 @@ export type FileDetails = {
   buildId: string;
   filePath: string;
   isFile: boolean;
+  fileName: string;
 };
 
 function CodeViewPage({ match }: Props) {
@@ -49,6 +50,7 @@ function CodeViewPage({ match }: Props) {
           appId={applicationId}
           buildId={fileDetails.buildId}
           filePath={fileDetails.filePath}
+          fileName={fileDetails.fileName}
         />
       )}
     </>
