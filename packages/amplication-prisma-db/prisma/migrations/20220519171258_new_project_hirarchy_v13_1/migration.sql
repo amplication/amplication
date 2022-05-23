@@ -80,3 +80,21 @@ ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_newUserId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+/*
+  Warnings:
+
+  - A unique constraint covering the columns `[workspaceId,name]` on the table `Project` will be added. If there are existing duplicate values, this will fail.
+
+*/
+-- AlterTable
+ALTER TABLE "App" ALTER COLUMN "projectId" DROP NOT NULL;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Project_workspaceId_name_key" ON "Project"("workspaceId", "name");
+
+INSERT INTO "Project"("id", "workspaceId", "name") 
+SELECT "id", "workspaceId", CONCAT('project-', "id") FROM "App"
+
+UPDATE "App"
+SET "projectId" = id
