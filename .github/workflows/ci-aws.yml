@@ -148,6 +148,25 @@ jobs:
         id: cc
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test:cov
       
+      - name: Create comment
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v2
+        env:
+          SERVICE: ${{matrix.service}}
+        with:
+          issue-number: ${{ github.event.number }}
+          body: |
+            This code-coverage is for ${{ env.SERVICE }} service below
+          reactions: '+1'
+
+      - name: Coverage Report
+        if: github.event_name == 'pull_request'
+        id: cc-report
+        uses: danhunsaker/clover-reporter-action@v0.2.17-clover
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          clover-file: packages/${{matrix.service}}/coverage/clover.xml
+
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
@@ -318,31 +337,3 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
           DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
-  
-  Code-Coverage:
-    runs-on: ubuntu-18.04
-    if: github.event_name == 'pull_request'
-    needs: [changes, tests] 
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.changes.outputs.services) }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
- 
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v2
-        env:
-          SERVICE: ${{matrix.service}}
-        with:
-          issue-number: ${{ github.event.number }}
-          body: |
-            This code-coverage is for ${{ env.SERVICE }} service below
-          reactions: '+1'
-
-      - name: Coverage Report
-        id: cc-report
-        uses: danhunsaker/clover-reporter-action@v0.2.17-clover
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          clover-file: packages/${{matrix.service}}/coverage/clover.xml
