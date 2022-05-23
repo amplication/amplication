@@ -1,9 +1,3 @@
-/*
-  Warnings:
-
-  - Added the required column `projectId` to the `App` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "EnumSubscriptionPlan" AS ENUM ('Pro', 'Business', 'Enterprise');
 
@@ -11,19 +5,7 @@ CREATE TYPE "EnumSubscriptionPlan" AS ENUM ('Pro', 'Business', 'Enterprise');
 CREATE TYPE "EnumSubscriptionStatus" AS ENUM ('Active', 'Trailing', 'PastDue', 'Paused', 'Deleted');
 
 -- AlterTable
-ALTER TABLE "App" ADD COLUMN     "projectId" TEXT NOT NULL;
-
--- AlterTable
 ALTER TABLE "User" ADD COLUMN     "deletedAt" TIMESTAMP(3);
-
--- CreateTable
-CREATE TABLE "Project" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "workspaceId" TEXT NOT NULL,
-
-    CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
-);
 
 -- CreateTable
 CREATE TABLE "Invitation" (
@@ -55,19 +37,10 @@ CREATE TABLE "Subscription" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Project_name_key" ON "Project"("name");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Invitation_newUserId_unique" ON "Invitation"("newUserId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Invitation.workspaceId_email_unique" ON "Invitation"("workspaceId", "email");
-
--- AddForeignKey
-ALTER TABLE "Project" ADD CONSTRAINT "Project_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "App" ADD CONSTRAINT "App_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -80,15 +53,3 @@ ALTER TABLE "Invitation" ADD CONSTRAINT "Invitation_newUserId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
-/*
-  Warnings:
-
-  - A unique constraint covering the columns `[workspaceId,name]` on the table `Project` will be added. If there are existing duplicate values, this will fail.
-
-*/
--- AlterTable
-ALTER TABLE "App" ALTER COLUMN "projectId" DROP NOT NULL;
-
--- CreateIndex
-CREATE UNIQUE INDEX "Project_workspaceId_name_key" ON "Project"("workspaceId", "name");
