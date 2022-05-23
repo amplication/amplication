@@ -25,6 +25,10 @@ amplication-server:
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
       HOST: "https://server.staging-os.amplication-dev.com"
       GITHUB_CLIENT_ID: "a4e9055e5f21448d6de7"
+      KAFKA_BROKERS: []
+      KAFKA_CLIENT_ID: 
+      KAFKA_GROUP_ID:
+
 
 amplication-git-push-webhook-service:
   postgres:
@@ -35,4 +39,20 @@ amplication-git-push-webhook-service:
 
 amplication-git-pull-service:
   postgres:
-  install: false
+    install: false
+  config:
+    env:
+      POSTGRESQL_USER: admin
+      POSTGRESQL_PASSWORD: admin
+      POSTGRESQL_PORT: "5432"
+      POSTGRESQL_URL: postgres://admin:admin@localhost:5432
+      COMPOSE_PROJECT_NAME: amplication-git-pull-service
+      NODE_ENV: "production"
+      STORAGE_PATH: /pull-data
+      MAX_SNAPSHOTS:
+      GIT_DEFAULT_ORIGIN_NAME: origin
+      GITHUB_APP_APP_ID:
+      GITHUB_APP_PRIVATE_KEY:
+
+
+

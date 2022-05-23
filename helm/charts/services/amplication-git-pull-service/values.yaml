@@ -2,27 +2,10 @@ name: amplication-git-pull-service
 
 config:
   env:
-    ## for db connection
-    POSTGRESQL_USER: admin
-    POSTGRESQL_PASSWORD: admin
-    POSTGRESQL_PORT: "5432"
-    POSTGRESQL_URL: postgres://admin:admin@localhost:5432
-    COMPOSE_PROJECT_NAME: amplication-git-pull-service
-
     ## kafka connection
     KAFKA_BROKERS: ["localhost:9092"]
     KAFKA_CLIENT_ID: repository-pull
     KAFKA_GROUP_ID: git-pull-event
-
-    ## configurations
-    NODE_ENV: "developement"
-    STORAGE_PATH: /pull-data
-    MAX_SNAPSHOTS:
-    GIT_DEFAULT_ORIGIN_NAME: origin
-
-    ## github integration
-    GITHUB_APP_APP_ID:
-    GITHUB_APP_PRIVATE_KEY:
 
 deployment:
   replicaCount: 1
