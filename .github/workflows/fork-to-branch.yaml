@@ -9,8 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     steps:
+      - uses: khan/pull-request-comment-trigger@v1.1.0
+        id: check
+        with:
+          trigger: "run branch"
+          prefix_only: 'true'
+
       - uses: actions/github-script@v3
         id: get-pr
+        if: steps.check.outputs.triggered == 'true'
         with:
           script: |
             const request = {
@@ -27,17 +34,12 @@ jobs:
             }
 
       - uses: actions/checkout@v2
+        if: steps.check.outputs.triggered == 'true'
         with:
           fetch-depth: 0
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           ref: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
           repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
-
-      - uses: khan/pull-request-comment-trigger@v1.1.0
-        id: check
-        with:
-          trigger: "run branch"
-          prefix_only: 'true'
 
       - name: Check if branch exists
         if: steps.check.outputs.triggered == 'true'
