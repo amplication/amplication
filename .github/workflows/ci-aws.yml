@@ -329,22 +329,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: output clover-file
-        id: clover-file
-        run: |
-          clover-file=packages/${{matrix.service}}/coverage/clover.xml
-          echo "::set-output name=clover-file::$clover-file"
-      
+ 
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v2
         env:
           SERVICE: ${{matrix.service}}
-          CLOVER-FILE: ${{ steps.clover-file.outputs.clover-file }}
         with:
           issue-number: ${{ github.event.number }}
           body: |
-            This code-coverage is for ${{ env.SERVICE }} service at ${{ env.CLOVER-FILE }} below
+            This code-coverage is for ${{ env.SERVICE }} service below
           reactions: '+1'
 
       - name: Coverage Report
