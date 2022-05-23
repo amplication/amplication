@@ -12,7 +12,7 @@ generates:
   packages/amplication-cli/src/models.ts:
     plugins:
       - "typescript"
-  ee/packages/amplication-pull-request/src/models.ts:
+  packages/amplication-pull-request/src/models.ts:
     plugins:
       - "typescript"
 hooks:
