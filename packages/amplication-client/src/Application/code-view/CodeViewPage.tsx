@@ -6,7 +6,6 @@ import { FilesPanel } from "../../util/teleporter";
 import { GET_APP_GIT_REPOSITORY } from "../git/SyncWithGithubPage";
 import CodeViewBar from "./CodeViewBar";
 import CodeViewEditor from "./CodeViewEditor";
-import "./CodeViewPage.scss";
 
 type Props = {
   match: match<{ application: string }>;
@@ -27,8 +26,6 @@ export type FileDetails = {
 function CodeViewPage({ match }: Props) {
   const applicationId = match.params.application;
   const [fileDetails, setFileDetails] = useState<FileDetails | null>(null);
-
-  console.log({ fileDetails });
 
   const { data } = useQuery<{ app: App }>(GET_APP_GIT_REPOSITORY, {
     variables: {
