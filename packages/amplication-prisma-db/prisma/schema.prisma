@@ -369,7 +369,7 @@ model Build {
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
 
-  @@unique([resourceId, version], map: "Build.appId_version_unique")
+  @@unique([resourceId, version], map: "Build.resourceId_version_unique")
 }
 
 model Release {
@@ -392,7 +392,7 @@ model Environment {
   resource    Resource     @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   deployments Deployment[]
 
-  @@unique([resourceId, name], map: "Environment.appId_name_unique")
+  @@unique([resourceId, name], map: "Environment.resourceId_name_unique")
 }
 
 model Deployment {
