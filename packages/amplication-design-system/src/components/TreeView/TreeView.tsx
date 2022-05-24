@@ -2,6 +2,9 @@ import React, { useCallback } from "react";
 import MuiTreeView from "@mui/lab/TreeView";
 import MuiTreeItem from "@mui/lab/TreeItem";
 import { Icon } from "../..";
+import "./TreeView.scss";
+
+const CLASS_NAME = "amp-tree-view";
 
 export type TreeViewProps = {
   children?: React.ReactNode;
@@ -18,6 +21,7 @@ export function TreeView({
 }: TreeViewProps) {
   return (
     <MuiTreeView
+      className={CLASS_NAME}
       onNodeSelect={onNodeSelected}
       expanded={expanded || undefined}
       onNodeToggle={onNodeToggle}

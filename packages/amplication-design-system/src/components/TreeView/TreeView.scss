@@ -1,0 +1,9 @@
+@import "../../style/index.scss";
+
+.amp-tree-view {
+  &.MuiTreeView-root {
+    .MuiTreeItem-label {
+      @include font-base;
+    }
+  }
+}
