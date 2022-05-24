@@ -16,6 +16,13 @@ ALTER TABLE "Commit"
 RENAME "appId" TO "resourceId";
 ALTER TABLE "Commit" RENAME CONSTRAINT  "Commit_appId_fkey" TO "Commit_resourceId_fkey";
 
+-- Entity work
+ALTER TABLE "Entity"
+RENAME "appId" TO "resourceId";
+ALTER TABLE "Entity" RENAME CONSTRAINT  "Entity_appId_fkey" TO "Entity_resourceId_fkey";
+ALTER INDEX "Entity.appId_displayName_unique" RENAME TO "Entity.resourceId_displayName_unique";
+ALTER INDEX "Entity.appId_name_unique" RENAME TO "Entity.resourceId_name_unique";
+ALTER INDEX "Entity.appId_pluralDisplayName_unique" RENAME TO "Entity.resourceId_pluralDisplayName_unique";
 
 
 

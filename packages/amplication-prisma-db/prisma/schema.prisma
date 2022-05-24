@@ -177,7 +177,7 @@ model Entity {
   id                String          @id @default(cuid())
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-  appId             String
+  resourceId        String
   name              String
   displayName       String
   pluralDisplayName String
@@ -185,13 +185,13 @@ model Entity {
   lockedByUserId    String?
   lockedAt          DateTime?
   deletedAt         DateTime?
-  app               Resource        @relation(fields: [appId], references: [id], onDelete: Cascade)
+  resource          Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
   versions          EntityVersion[]
 
-  @@unique([appId, displayName], map: "Entity.appId_displayName_unique")
-  @@unique([appId, name], map: "Entity.appId_name_unique")
-  @@unique([appId, pluralDisplayName], map: "Entity.appId_pluralDisplayName_unique")
+  @@unique([resourceId, displayName], map: "Entity.resourceId_displayName_unique")
+  @@unique([resourceId, name], map: "Entity.resourceId_name_unique")
+  @@unique([resourceId, pluralDisplayName], map: "Entity.resourceId_pluralDisplayName_unique")
 }
 
 model EntityVersion {
