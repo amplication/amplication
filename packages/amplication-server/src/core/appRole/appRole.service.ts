@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppRole } from 'src/models';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 
 import {
   CreateAppRoleArgs,

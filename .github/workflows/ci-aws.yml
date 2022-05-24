@@ -63,6 +63,7 @@ jobs:
           CHANGED_FILES_NOT_PR: ${{ steps.changed-files-not-pr.outputs.all_changed_files }}
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          pip install checksumdir
           python .github/workflows/scripts/get-service-build-list.py
           service_build_list=$(cat $GITHUB_WORKSPACE/service_build_list.json | jq -r .)
           echo "service_build_list: $service_build_list"
