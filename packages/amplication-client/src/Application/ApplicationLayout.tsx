@@ -16,7 +16,7 @@ import "./ApplicationLayout.scss";
 import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
-import MainLayout from "../Layout/MainLayout";
+import MainLayout, { EnumMainLayoutAsidePosition } from "../Layout/MainLayout";
 import { CircleBadge } from "@amplication/design-system";
 import LastCommit from "../VersionControl/LastCommit";
 
@@ -203,7 +203,7 @@ function ApplicationLayout({ match }: Props) {
             icon="code1"
           />
         </MainLayout.Menu>
-        <MainLayout.Aside>
+        <MainLayout.Aside position={EnumMainLayoutAsidePosition.left}>
           <FilesPanel.Target className="main-layout__aside__expandable" />
         </MainLayout.Aside>
         <MainLayout.Content>
