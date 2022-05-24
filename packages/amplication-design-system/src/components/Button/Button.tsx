@@ -69,10 +69,7 @@ export const Button = ({
       {!isEmpty(icon) && (
         <Icon
           icon={icon as string}
-          size={
-            iconSize ||
-            (buttonStyle === EnumButtonStyle.Clear ? "small" : "xsmall")
-          }
+          size={iconSize || "small"}
           className="amp-button__icon"
         />
       )}
