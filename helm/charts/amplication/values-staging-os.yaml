@@ -1,6 +1,6 @@
 amplication-client:
   image:
-    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client-dev
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
   service:
     hostname: app.staging-os.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
@@ -12,7 +12,7 @@ amplication-client:
 
 amplication-server:
   image:
-      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server-dev
+      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
   postgres:
     install: false
   ingress:
