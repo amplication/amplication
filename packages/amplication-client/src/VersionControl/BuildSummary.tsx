@@ -188,7 +188,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         )}
         <Tooltip aria-label={"Download Code"} direction="nw">
           <Button
-            buttonStyle={EnumButtonStyle.Clear}
+            buttonStyle={EnumButtonStyle.Text}
             disabled={
               stepGenerateCode.status !== models.EnumActionStepStatus.Success ||
               generating
