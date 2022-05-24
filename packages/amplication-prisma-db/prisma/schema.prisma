@@ -352,7 +352,7 @@ model ActionLog {
 model Build {
   id                       String          @id @default(cuid())
   createdAt                DateTime        @default(now())
-  appId                    String
+  resourceId               String
   userId                   String
   version                  String
   message                  String?
@@ -362,14 +362,14 @@ model Build {
   containerStatusUpdatedAt DateTime?
   commitId                 String?
   action                   Action          @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  app                      Resource        @relation(fields: [appId], references: [id], onDelete: Cascade)
+  resource                 Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   commit                   Commit?         @relation(fields: [commitId], references: [id])
   createdBy                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   deployments              Deployment[]
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
 
-  @@unique([appId, version], map: "Build.appId_version_unique")
+  @@unique([resourceId, version], map: "Build.appId_version_unique")
 }
 
 model Release {

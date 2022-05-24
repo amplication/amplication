@@ -29,3 +29,9 @@ ALTER TABLE "Block"
 RENAME "appId" TO "resourceId";
 ALTER TABLE "Block" RENAME CONSTRAINT  "Block_appId_fkey" TO "Block_resourceId_fkey";
 ALTER INDEX "Block.appId_displayName_unique" RENAME TO "Block.resourceId_displayName_unique";
+
+-- Build work
+ALTER TABLE "Build"
+RENAME "appId" TO "resourceId";
+ALTER TABLE "Build" RENAME CONSTRAINT  "Build_appId_fkey" TO "Build_resourceId_fkey";
+ALTER INDEX "Build.appId_version_unique" RENAME TO "Build.resourceId_version_unique";
