@@ -278,7 +278,7 @@ model Block {
   id             String         @id @default(cuid())
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
-  appId          String
+  resourceId     String
   parentBlockId  String?
   blockType      EnumBlockType
   displayName    String
@@ -286,13 +286,13 @@ model Block {
   lockedByUserId String?
   lockedAt       DateTime?
   deletedAt      DateTime?
-  app            Resource       @relation(fields: [appId], references: [id], onDelete: Cascade)
+  resource       Resource       @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   lockedByUser   User?          @relation(fields: [lockedByUserId], references: [id])
   parentBlock    Block?         @relation("BlockToBlock", fields: [parentBlockId], references: [id])
   blocks         Block[]        @relation("BlockToBlock")
   versions       BlockVersion[]
 
-  @@unique([appId, displayName], map: "Block.appId_displayName_unique")
+  @@unique([resourceId, displayName], map: "Block.resourceId_displayName_unique")
 }
 
 model BlockVersion {
