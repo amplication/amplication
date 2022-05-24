@@ -17,7 +17,9 @@ import { DeploymentModule } from './deployment/deployment.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
 import { SystemModule } from './system/system.module';
+import { MailModule } from './mail/mail.module';
 import { AppSettingsModule } from './appSettings/appSettings.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
 @Module({
@@ -43,7 +45,9 @@ import { GitProviderModule } from './git/git.provider.module';
     AppSettingsModule,
     GitModule,
     GitProviderModule,
-    CommitModule
+    CommitModule,
+    MailModule,
+    SubscriptionModule
   ],
   exports: [
     AccountModule,
@@ -65,7 +69,10 @@ import { GitProviderModule } from './git/git.provider.module';
     AppSettingsModule,
     GitProviderModule,
     GitModule,
-    CommitModule
+    CommitModule,
+    GitModule,
+    MailModule,
+    SubscriptionModule
   ]
 })
 export class CoreModule {}

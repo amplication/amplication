@@ -177,7 +177,8 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const RESERVED_NAME = 'class';

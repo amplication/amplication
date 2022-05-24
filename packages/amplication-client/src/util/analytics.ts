@@ -32,6 +32,9 @@ export function init() {
     //@ts-ignore
     const analytics = window.analytics;
     analytics.load(REACT_APP_AMPLITUDE_API_KEY);
+    dispatch({
+      eventName: "startAppSession",
+    });
   }
 }
 
