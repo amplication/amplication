@@ -26,7 +26,7 @@ model Workspace {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   name             String            @unique(map: "Workspace.name_unique")
-  apps             App[]
+  apps             Resource[]
   users            User[]
   invitations      Invitation[]
   subscriptions    Subscription[]
@@ -35,11 +35,11 @@ model Workspace {
 }
 
 model Project {
-  id          String    @id @default(cuid())
-  name        String    @unique
+  id          String     @id @default(cuid())
+  name        String     @unique
   workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
-  apps        App[]
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  apps        Resource[]
 
   @@unique([workspaceId, name])
 }
@@ -66,7 +66,7 @@ model GitRepository {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   gitOrganizationId String
-  app               App             @relation(fields: [appId], references: [id], onDelete: NoAction)
+  app               Resource        @relation(fields: [appId], references: [id], onDelete: NoAction)
   gitOrganization   GitOrganization @relation(fields: [gitOrganizationId], references: [id], onDelete: NoAction)
 }
 
@@ -119,7 +119,7 @@ model ApiToken {
   @@unique([userId, name], map: "ApiToken.userId_name_unique")
 }
 
-model App {
+model Resource {
   id                String         @id @default(cuid())
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
@@ -152,7 +152,7 @@ model AppRole {
   name                  String
   displayName           String
   description           String?
-  app                   App                    @relation(fields: [appId], references: [id], onDelete: Cascade)
+  app                   Resource               @relation(fields: [appId], references: [id], onDelete: Cascade)
   entityPermissionRoles EntityPermissionRole[]
 
   @@unique([appId, displayName], map: "AppRole.appId_displayName_unique")
@@ -165,7 +165,7 @@ model Commit {
   appId          String
   userId         String
   message        String
-  app            App             @relation(fields: [appId], references: [id], onDelete: Cascade)
+  app            Resource        @relation(fields: [appId], references: [id], onDelete: Cascade)
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   blockVersions  BlockVersion[]
   builds         Build[]
@@ -185,7 +185,7 @@ model Entity {
   lockedByUserId    String?
   lockedAt          DateTime?
   deletedAt         DateTime?
-  app               App             @relation(fields: [appId], references: [id], onDelete: Cascade)
+  app               Resource        @relation(fields: [appId], references: [id], onDelete: Cascade)
   lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
   versions          EntityVersion[]
 
@@ -286,7 +286,7 @@ model Block {
   lockedByUserId String?
   lockedAt       DateTime?
   deletedAt      DateTime?
-  app            App            @relation(fields: [appId], references: [id], onDelete: Cascade)
+  app            Resource       @relation(fields: [appId], references: [id], onDelete: Cascade)
   lockedByUser   User?          @relation(fields: [lockedByUserId], references: [id])
   parentBlock    Block?         @relation("BlockToBlock", fields: [parentBlockId], references: [id])
   blocks         Block[]        @relation("BlockToBlock")
@@ -362,7 +362,7 @@ model Build {
   containerStatusUpdatedAt DateTime?
   commitId                 String?
   action                   Action          @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  app                      App             @relation(fields: [appId], references: [id], onDelete: Cascade)
+  app                      Resource        @relation(fields: [appId], references: [id], onDelete: Cascade)
   commit                   Commit?         @relation(fields: [commitId], references: [id])
   createdBy                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   deployments              Deployment[]
@@ -389,7 +389,7 @@ model Environment {
   name        String
   description String?
   address     String
-  app         App          @relation(fields: [appId], references: [id], onDelete: Cascade)
+  app         Resource     @relation(fields: [appId], references: [id], onDelete: Cascade)
   deployments Deployment[]
 
   @@unique([appId, name], map: "Environment.appId_name_unique")
