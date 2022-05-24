@@ -1,11 +1,12 @@
--- App works
+-- App work
 ALTER TABLE "App"
 RENAME TO "Resource";
-
+ALTER TABLE "Resource" RENAME CONSTRAINT  "App_pkey" TO "Resource_pkey";
 ALTER TABLE "Resource" RENAME CONSTRAINT  "App_workspaceId_fkey" TO "Resource_workspaceId_fkey";
-
 ALTER TABLE "Resource" RENAME CONSTRAINT  "App_projectId_fkey" TO "Resource_projectId_fkey";
+ALTER TABLE "Resource" RENAME INDEX  "App.workspaceId_name_unique" TO "Resource.workspaceId_name_unique";
 
+-- GitRepository work
 ALTER TABLE "GitRepository"
 RENAME "appId" TO "resource";
 ALTER TABLE "GitRepository" RENAME CONSTRAINT  "GitRepository_appId_fkey" TO "GitRepository_resource_fkey";
