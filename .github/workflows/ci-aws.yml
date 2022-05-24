@@ -35,7 +35,7 @@ jobs:
           changed_files=$(git diff --name-only `git merge-base origin/master HEAD`)
           while IFS= read -r changed_file ; do 
             echo "changed_file: $changed_file"
-            if [[ "$changed_file" == *"packages/"* || "$changed_file" == *"ee/packages/"*  ]]; then
+            if [[ "$changed_file" == *"packages/"* || "$changed_file" == *"ee/packages/"* ]]; then
               all_changed_files=$all_changed_files",$changed_file"
             fi
           done <<< "$changed_files"

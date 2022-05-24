@@ -44,7 +44,7 @@ def get_packages_folder(service_name) -> str:
 def dependet_services(package_name,service_list) -> List[str]:
     npm_package_name=package_name.replace("-","/",1)
     for service in all_services:
-        package_json=f"{get_packages_folder(service)}/{service}/package.json"
+        package_json=f"{get_packages_folder({service})}/{service}/package.json"
         with open(package_json, 'r') as file:
             depencies = file.read().replace('\n', '')
         if f"\"@{npm_package_name}\":" in depencies:
