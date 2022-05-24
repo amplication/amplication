@@ -26,7 +26,7 @@ model Workspace {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   name             String            @unique(map: "Workspace.name_unique")
-  apps             Resource[]
+  resources        Resource[]
   users            User[]
   invitations      Invitation[]
   subscriptions    Subscription[]

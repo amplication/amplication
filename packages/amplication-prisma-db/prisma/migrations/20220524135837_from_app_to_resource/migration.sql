@@ -1,3 +1,17 @@
+-- App works
+ALTER TABLE "App"
+RENAME TO "Resource";
+
+ALTER TABLE "Resource" RENAME CONSTRAINT  "App_workspaceId_fkey" TO "Resource_workspaceId_fkey"
+-- ALTER TABLE "Entity"
+-- RENAME "app" BID TO "resource";
+
+
+
+-- AppRoles
+
+
+
 -- /*
 --   Warnings:
 
@@ -31,8 +45,7 @@
 -- -- DropForeignKey
 -- ALTER TABLE "GitRepository" DROP CONSTRAINT "GitRepository_appId_fkey";
 
-ALTER TABLE "App"
-RENAME TO "Resource";
+
 
 -- -- CreateTable
 -- CREATE TABLE "Resource" (
