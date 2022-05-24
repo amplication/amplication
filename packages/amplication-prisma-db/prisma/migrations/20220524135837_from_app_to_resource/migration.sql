@@ -6,8 +6,12 @@ ALTER TABLE "Resource" RENAME CONSTRAINT  "App_workspaceId_fkey" TO "Resource_wo
 
 ALTER TABLE "Resource" RENAME CONSTRAINT  "App_projectId_fkey" TO "Resource_projectId_fkey";
 
+ALTER TABLE "GitRepository"
+RENAME "appId" TO "resource";
+ALTER TABLE "GitRepository" RENAME CONSTRAINT  "GitRepository_appId_fkey" TO "GitRepository_resource_fkey";
+
 -- ALTER TABLE "Entity"
--- RENAME "app" BID TO "resource";
+-- RENAME "app" TO "resource";
 
 
 

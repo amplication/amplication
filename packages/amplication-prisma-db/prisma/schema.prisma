@@ -62,11 +62,11 @@ model GitOrganization {
 model GitRepository {
   id                String          @id @default(cuid())
   name              String
-  appId             String          @unique
+  resourceId        String          @unique
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   gitOrganizationId String
-  app               Resource        @relation(fields: [appId], references: [id], onDelete: NoAction)
+  resource          Resource        @relation(fields: [resourceId], references: [id], onDelete: NoAction)
   gitOrganization   GitOrganization @relation(fields: [gitOrganizationId], references: [id], onDelete: NoAction)
 }
 
