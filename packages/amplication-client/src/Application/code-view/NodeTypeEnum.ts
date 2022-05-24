@@ -1,5 +1,4 @@
 export enum NodeTypeEnum {
-    Folder = "Folder",
-    File = "File",
-  }
-  
+  Folder = "Folder",
+  File = "File",
+}

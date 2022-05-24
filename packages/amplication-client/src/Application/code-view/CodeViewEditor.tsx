@@ -1,6 +1,5 @@
 import MonacoEditor from "@monaco-editor/react";
 import React, { useLayoutEffect, useState } from "react";
-import useNavigationTabs from "../../Layout/UseNavigationTabs";
 import { StorageBaseAxios } from "./StorageBaseAxios";
 
 type Props = {
@@ -9,14 +8,15 @@ type Props = {
   filePath: string;
   fileName: string;
 };
-const NAVIGATION_KEY = "CODE_VIEW";
 
 const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
   const [content, setContent] = useState<string>("");
 
   const path = filePath;
 
-  useNavigationTabs(appId, NAVIGATION_KEY, path || "", fileName);
+
+  
+  
 
   useLayoutEffect(() => {
     (async () => {
@@ -40,13 +40,28 @@ const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
 
   return (
     <MonacoEditor
-      height="90vh"
+    beforeMount={setEditorTheme}
+      
+      height="100%"
       value={content}
       options={{ readOnly: true }}
       path={path}
-      theme={"vs-dark"}
+      theme={"vs-dark-amp"}
     />
   );
 };
 
 export default CodeViewEditor;
+
+
+function setEditorTheme(monaco: any) {
+  monaco.editor.defineTheme("vs-dark-amp", {
+    base: "vs-dark",
+    inherit: true,
+    rules: [
+    ],
+    colors: {
+      "editor.background": '#15192c',
+    },
+  });
+}

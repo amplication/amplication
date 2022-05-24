@@ -2,11 +2,16 @@ import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { match } from "react-router-dom";
 import { App } from "../../models";
-import { FilesPanel } from "../../util/teleporter";
 import { GET_APP_GIT_REPOSITORY } from "../git/SyncWithGithubPage";
 import CodeViewBar from "./CodeViewBar";
 import CodeViewEditor from "./CodeViewEditor";
+import useNavigationTabs from "../../Layout/UseNavigationTabs";
+import PageContent from "../../Layout/PageContent";
 
+import "./CodeViewPage.scss";
+
+const CLASS_NAME = "code-view-page";
+const NAVIGATION_KEY = "CODE_VIEW";
 type Props = {
   match: match<{ application: string }>;
 };
@@ -26,6 +31,7 @@ export type FileDetails = {
 function CodeViewPage({ match }: Props) {
   const applicationId = match.params.application;
   const [fileDetails, setFileDetails] = useState<FileDetails | null>(null);
+  useNavigationTabs(applicationId, NAVIGATION_KEY, match.url, "Code View");
 
   const { data } = useQuery<{ app: App }>(GET_APP_GIT_REPOSITORY, {
     variables: {
@@ -36,12 +42,14 @@ function CodeViewPage({ match }: Props) {
     return <div />;
   }
   return (
-    <>
-      <FilesPanel.Source>
-        {data.app && (
-          <CodeViewBar app={data.app} setFileDetails={setFileDetails} />
-        )}
-      </FilesPanel.Source>
+
+    <PageContent  sideContent={
+      <CodeViewBar app={data.app} setFileDetails={setFileDetails} />
+
+    }>
+      <div className={CLASS_NAME}>
+      
+      <div className={`${CLASS_NAME}__code-container`}>
       {fileDetails?.isFile && (
         <CodeViewEditor
           appId={applicationId}
@@ -50,7 +58,9 @@ function CodeViewPage({ match }: Props) {
           fileName={fileDetails.fileName}
         />
       )}
-    </>
+      </div>
+      </div>
+    </PageContent>
   );
 }
 
