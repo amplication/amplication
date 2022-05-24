@@ -87,14 +87,13 @@ export interface IPlugin {
     register(hookService: HookService): void
 }
 
-class Plugin {
+class Plugin implements IPlugin {
     private hookService: HookService
 
     constructor(
         hookService: HookService,
     ) {
         this.hookService = hookService;
-        this.register()
     }
 
     register() {
