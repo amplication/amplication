@@ -4,19 +4,19 @@ RENAME TO "Resource";
 ALTER TABLE "Resource" RENAME CONSTRAINT  "App_pkey" TO "Resource_pkey";
 ALTER TABLE "Resource" RENAME CONSTRAINT  "App_workspaceId_fkey" TO "Resource_workspaceId_fkey";
 ALTER TABLE "Resource" RENAME CONSTRAINT  "App_projectId_fkey" TO "Resource_projectId_fkey";
-ALTER TABLE "Resource" RENAME INDEX  "App.workspaceId_name_unique" TO "Resource.workspaceId_name_unique";
+ALTER INDEX "App.workspaceId_name_unique" RENAME TO "Resource.workspaceId_name_unique";
 
 -- GitRepository work
 ALTER TABLE "GitRepository"
 RENAME "appId" TO "resource";
-ALTER TABLE "GitRepository" RENAME CONSTRAINT  "GitRepository_appId_fkey" TO "GitRepository_resource_fkey";
+ALTER TABLE "GitRepository" RENAME CONSTRAINT  "GitRepository_appId_fkey" TO "GitRepository_resourceId_fkey";
 
--- ALTER TABLE "Entity"
--- RENAME "app" TO "resource";
+-- Commit work
+ALTER TABLE "Commit"
+RENAME "appId" TO "resourceId";
+ALTER TABLE "Commit" RENAME CONSTRAINT  "Commit_appId_fkey" TO "Commit_resourceId_fkey";
 
 
-
--- AppRoles
 
 
 

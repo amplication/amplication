@@ -162,10 +162,10 @@ model AppRole {
 model Commit {
   id             String          @id @default(cuid())
   createdAt      DateTime        @default(now())
-  appId          String
+  resourceId     String
   userId         String
   message        String
-  app            Resource        @relation(fields: [appId], references: [id], onDelete: Cascade)
+  resource       Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   blockVersions  BlockVersion[]
   builds         Build[]
