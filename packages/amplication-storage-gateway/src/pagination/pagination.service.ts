@@ -18,8 +18,6 @@ export class PaginationService {
 
     const count = resultsAfterSkip.length;
 
-    const finalResult = resultsAfterSkip;
-
-    return { result: finalResult, success: true, count };
+    return { result: resultsAfterSkip, success: true, count };
   }
 }
