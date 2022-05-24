@@ -385,14 +385,14 @@ model Environment {
   id          String       @id @default(cuid())
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @default(now())
-  appId       String
+  resourceId  String
   name        String
   description String?
   address     String
-  app         Resource     @relation(fields: [appId], references: [id], onDelete: Cascade)
+  resource    Resource     @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   deployments Deployment[]
 
-  @@unique([appId, name], map: "Environment.appId_name_unique")
+  @@unique([resourceId, name], map: "Environment.appId_name_unique")
 }
 
 model Deployment {

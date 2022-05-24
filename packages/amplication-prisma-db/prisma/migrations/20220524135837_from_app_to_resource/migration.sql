@@ -35,3 +35,9 @@ ALTER TABLE "Build"
 RENAME "appId" TO "resourceId";
 ALTER TABLE "Build" RENAME CONSTRAINT  "Build_appId_fkey" TO "Build_resourceId_fkey";
 ALTER INDEX "Build.appId_version_unique" RENAME TO "Build.resourceId_version_unique";
+
+-- Environment work
+ALTER TABLE "Environment"
+RENAME "appId" TO "resourceId";
+ALTER TABLE "Environment" RENAME CONSTRAINT  "Environment_appId_fkey" TO "Environment_resourceId_fkey";
+ALTER INDEX "Environment.appId_name_unique" RENAME TO "Environment.resourceId_name_unique";
