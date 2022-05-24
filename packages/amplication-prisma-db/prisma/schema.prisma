@@ -39,7 +39,7 @@ model Project {
   name        String     @unique
   workspaceId String
   workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
-  apps        Resource[]
+  resources   Resource[]
 
   @@unique([workspaceId, name])
 }

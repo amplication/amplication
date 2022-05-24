@@ -2,7 +2,10 @@
 ALTER TABLE "App"
 RENAME TO "Resource";
 
-ALTER TABLE "Resource" RENAME CONSTRAINT  "App_workspaceId_fkey" TO "Resource_workspaceId_fkey"
+ALTER TABLE "Resource" RENAME CONSTRAINT  "App_workspaceId_fkey" TO "Resource_workspaceId_fkey";
+
+ALTER TABLE "Resource" RENAME CONSTRAINT  "App_projectId_fkey" TO "Resource_projectId_fkey";
+
 -- ALTER TABLE "Entity"
 -- RENAME "app" BID TO "resource";
 
