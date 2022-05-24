@@ -18,7 +18,6 @@ const CodeViewSyncWithGithub = ({ onSyncNewGitOrganizationClick }: Props) => {
       <Button
         buttonStyle={EnumButtonStyle.Secondary}
         icon="github"
-        iconSize="xlarge"
         onClick={onSyncNewGitOrganizationClick}
       >
         Sync with GitHub
