@@ -1,11 +1,15 @@
-{{- define "base.deployment.tpl" -}}
+{{- define "base.statefulset.tpl" -}}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: '{{ .Values.name }}'
   labels:
     app: '{{ .Values.name }}'
 spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }} # has to match .spec.template.metadata.labels
+  serviceName: "{{ .Values.name }}"
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -63,12 +67,17 @@ spec:
           volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.path }}
-      volumes:
-        - name: {{ .Values.volume.name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.volume.name }}
       {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.volume.name }}
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: 1Gi  
 {{- end -}}
-{{- define "base.deployment" -}}
-{{- include "base.util.merge" (append . "base.deployment.tpl") -}}
+{{- define "base.statefulset" -}}
+{{- include "base.util.merge" (append . "base.statefulset.tpl") -}}
 {{- end -}}
