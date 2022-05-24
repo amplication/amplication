@@ -6,18 +6,15 @@ type Props = {
   onSyncNewGitOrganizationClick: (data: any) => any;
 };
 
-//const CLASS_NAME = "code-view-sync-with-github";
+const CLASS_NAME = "code-view-sync-with-github";
 
 const CodeViewSyncWithGithub = ({ onSyncNewGitOrganizationClick }: Props) => {
   return (
-    <div className="browser-sync">
-      <div className="code-view-sync-with-github">
-        <p>
-          Don't forget to connect to your Github Account to get the full
-          experience
-        </p>
+    <div className={CLASS_NAME}>
+      <div className={`${CLASS_NAME}__message`}>
+        Don't forget to connect to your Github Account to get the full
+        experience
       </div>
-      <br />
       <Button
         buttonStyle={EnumButtonStyle.Secondary}
         icon="github"
@@ -26,6 +23,7 @@ const CodeViewSyncWithGithub = ({ onSyncNewGitOrganizationClick }: Props) => {
       >
         Sync with GitHub
       </Button>
+      <hr />
     </div>
   );
 };
