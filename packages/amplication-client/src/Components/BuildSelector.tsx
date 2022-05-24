@@ -4,13 +4,14 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
+  Label
 } from "@amplication/design-system";
 import React from "react";
-import { Build } from "../../models";
-import "./CodeViewBar.scss";
-import { CommitMenuItemContent } from "./CommitMenuItemContent";
+import { Build } from "../models";
+import { BuildSelectorItem } from "./BuildSelectorItem";
+import "./BuildSelector.scss";
 
-const CLASS_NAME = "code-view-bar";
+const CLASS_NAME = "build-selector";
 
 type Props = {
   builds: Build[];
@@ -19,7 +20,7 @@ type Props = {
   buildTitle: string;
 };
 
-const CodeViewCommits = ({
+const BuildSelector = ({
   builds,
   onSelectBuild,
   buildId,
@@ -28,16 +29,10 @@ const CodeViewCommits = ({
   return (
     <div className={CLASS_NAME}>
       <div>
-        {/*@ts-ignore*/}
+        <Label text="Select build"/>
         <SelectMenu
-          title={
-            buildId ? (
-              <CommitMenuItemContent title={buildTitle} />
-            ) : (
-              "select commit"
-            )
-          }
-          buttonStyle={EnumButtonStyle.Text}
+          title={buildTitle}
+          buttonStyle={EnumButtonStyle.Secondary}
           className={`${CLASS_NAME}__menu`}
           icon="chevron_down"
         >
@@ -54,7 +49,7 @@ const CodeViewCommits = ({
                     }}
                     css={undefined}
                   >
-                    <CommitMenuItemContent
+                    <BuildSelectorItem
                       title={build.message ? build.message : build.createdAt}
                     />
                   </SelectMenuItem>
@@ -71,4 +66,4 @@ const CodeViewCommits = ({
   );
 };
 
-export default CodeViewCommits;
+export default BuildSelector;

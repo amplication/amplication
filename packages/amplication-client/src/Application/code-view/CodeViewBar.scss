@@ -12,4 +12,8 @@
       @include title1;
     }
   }
+
+  .build-selector {
+    padding-bottom: var(--default-spacing);
+  }
 }

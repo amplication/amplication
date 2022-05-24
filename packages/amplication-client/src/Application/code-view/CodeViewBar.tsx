@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { App, Build, SortOrder } from "../../models";
 import "./CodeViewBar.scss";
-import CodeViewCommits from "./CodeViewCommits";
+import BuildSelector from "../../Components/BuildSelector";
 import { FileDetails } from "./CodeViewPage";
 import CodeViewSyncWithGithub from "./CodeViewSyncWithGithub";
 import { FileExplorerNode } from "./FileExplorerNode";
@@ -148,7 +148,7 @@ const CodeViewBar = ({ app, setFileDetails }: Props) => {
         </div>
       )}
       <div>
-        <CodeViewCommits
+        <BuildSelector
           builds={data.builds}
           buildId={selectedBuild.build?.id}
           buildTitle={
