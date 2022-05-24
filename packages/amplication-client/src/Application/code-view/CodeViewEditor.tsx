@@ -1,4 +1,4 @@
-import Editor from "@monaco-editor/react";
+import MonacoEditor from "@monaco-editor/react";
 import React, { useLayoutEffect, useState } from "react";
 import useNavigationTabs from "../../Layout/UseNavigationTabs";
 import { StorageBaseAxios } from "./StorageBaseAxios";
@@ -39,7 +39,7 @@ const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
   }
 
   return (
-    <Editor
+    <MonacoEditor
       height="90vh"
       value={content}
       options={{ readOnly: true }}
