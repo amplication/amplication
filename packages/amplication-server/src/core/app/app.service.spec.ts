@@ -373,6 +373,12 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${cuid()}`,
+            workspaceId: EXAMPLE_USER.workspace?.id
+          }
         }
       }
     };
@@ -499,6 +505,12 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${cuid()}`,
+            workspaceId: EXAMPLE_USER.workspace?.id
+          }
         }
       }
     };
@@ -659,6 +671,12 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${cuid()}`,
+            workspaceId: EXAMPLE_USER.workspace?.id
+          }
         }
       }
     };

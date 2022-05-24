@@ -38,6 +38,7 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_APP_DATA
 } from './sampleApp';
+import cuid from 'cuid';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -87,6 +88,12 @@ export class AppService {
         },
         roles: {
           create: USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${cuid()}`,
+            workspaceId: user.workspace?.id
+          }
         }
       }
     });
