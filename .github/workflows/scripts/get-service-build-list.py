@@ -37,7 +37,7 @@ def is_service(service_list,service_name) -> bool:
   return service_name in service_list
 
 def get_packages_folder(service_name) -> str:
-    if(service_name in os.listdir(packages_folder)):
+    if service_name in os.listdir(packages_folder):
         return packages_folder
     return ee_packages_folder
 
