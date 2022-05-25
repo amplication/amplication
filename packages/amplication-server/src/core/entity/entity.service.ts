@@ -4,7 +4,8 @@ import cuid from 'cuid';
 import {
   Injectable,
   NotFoundException,
-  ConflictException
+  ConflictException,
+  BadRequestException
 } from '@nestjs/common';
 import { DataConflictError } from 'src/errors/DataConflictError';
 import { Prisma } from '@prisma/client';
@@ -2040,6 +2041,20 @@ export class EntityService {
     if (isSystemDataType(field.dataType as EnumDataType)) {
       throw new ConflictException(
         `Cannot update entity field ${field.name} because fields with data type ${field.dataType} cannot be updated`
+      );
+    }
+
+    // JSON schema doesn't support validation against properties.
+    // In order to ensure `minimumValue` is not greater than, or equal to,
+    // `maximumValue` this is checked manually.
+    const { minimumValue, maximumValue } = (args?.data
+      ?.properties as unknown) as {
+      minimumValue: number;
+      maximumValue: number;
+    };
+    if (minimumValue && minimumValue >= maximumValue) {
+      throw new BadRequestException(
+        'Minimum value can not be greater than, or equal to, the Maximum value'
       );
     }
 

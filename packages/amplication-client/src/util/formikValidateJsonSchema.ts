@@ -31,6 +31,21 @@ export function validate<T>(
 
   let isValid = ajv.validate(validationSchema, values);
 
+  // JSON schema doesn't support validation against properties.
+  // In order to ensure `minimumValue` is not greater than, or equal to,
+  // `maximumValue` this is checked manually.
+  const { minimumValue, maximumValue } = (values as unknown) as {
+    minimumValue: number;
+    maximumValue: number;
+  };
+  if (minimumValue && minimumValue >= maximumValue) {
+    set(
+      errors,
+      "minimumValue",
+      "Minimum value can not be greater than, or equal to, the Maximum value"
+    );
+  }
+
   if (!isValid && ajv.errors) {
     for (const error of ajv.errors) {
       //remove the first dot from dataPath
