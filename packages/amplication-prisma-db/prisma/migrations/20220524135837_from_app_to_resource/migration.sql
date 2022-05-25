@@ -42,9 +42,6 @@ RENAME "appId" TO "resourceId";
 ALTER TABLE "Environment" RENAME CONSTRAINT  "Environment_appId_fkey" TO "Environment_resourceId_fkey";
 ALTER INDEX "Environment.appId_name_unique" RENAME TO "Environment.resourceId_name_unique";
 
-
-
-
 -- AppRole work
 ALTER TABLE "AppRole"
 RENAME TO "ResourceRole";
@@ -54,3 +51,9 @@ ALTER TABLE "ResourceRole" RENAME CONSTRAINT  "AppRole_pkey" TO "ResourceRole_pk
 ALTER TABLE "ResourceRole" RENAME CONSTRAINT  "AppRole_appId_fkey" TO "ResourceRole_resourceId_fkey";
 ALTER INDEX "AppRole.appId_displayName_unique" RENAME TO "ResourceRole.resourceId_displayName_unique";
 ALTER INDEX "AppRole.appId_name_unique" RENAME TO "ResourceRole.resourceId_name_unique";
+
+-- EntityPermissionRole work
+ALTER TABLE "EntityPermissionRole"
+RENAME "appRoleId" TO "resourceRoleId";
+ALTER TABLE "EntityPermissionRole" RENAME CONSTRAINT "EntityPermissionRole_appRoleId_fkey" TO "EntityPermissionRole_resourceRoleId_fkey";
+ALTER INDEX "EntityPermissionRole.entityVersionId_action_appRoleId_unique" RENAME TO "EntityPermissionRole.entityVersionId_action_resourceRoleId_uniq"; -- This map is cut in the end because a 63 bytes limit

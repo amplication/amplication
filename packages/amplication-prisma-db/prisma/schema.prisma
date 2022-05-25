@@ -148,15 +148,15 @@ model ResourceRole {
   id                    String                 @id @default(cuid())
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
-  appId                 String
+  resourceId            String
   name                  String
   displayName           String
   description           String?
-  app                   Resource               @relation(fields: [appId], references: [id], onDelete: Cascade)
+  resource              Resource               @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   entityPermissionRoles EntityPermissionRole[]
 
-  @@unique([appId, displayName], map: "ResourceRole.resourceId_displayName_unique")
-  @@unique([appId, name], map: "ResourceRole.resourceId_name_unique")
+  @@unique([resourceId, displayName], map: "ResourceRole.resourceId_displayName_unique")
+  @@unique([resourceId, name], map: "ResourceRole.resourceId_name_unique")
 }
 
 model Commit {
@@ -231,12 +231,12 @@ model EntityPermissionRole {
   id               String                  @id @default(cuid())
   entityVersionId  String
   action           EnumEntityAction
-  appRoleId        String
-  appRole          ResourceRole            @relation(fields: [appRoleId], references: [id], onDelete: Cascade)
+  resourceRoleId   String
+  resourceRole     ResourceRole            @relation(fields: [resourceRoleId], references: [id], onDelete: Cascade)
   permission       EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action], onDelete: Cascade)
   permissionFields EntityPermissionField[]
 
-  @@unique([entityVersionId, action, appRoleId], map: "EntityPermissionRole.entityVersionId_action_appRoleId_unique")
+  @@unique([entityVersionId, action, resourceRoleId], map: "EntityPermissionRole.entityVersionId_action_resourceRoleId_uniq")
 }
 
 model EntityPermissionField {
