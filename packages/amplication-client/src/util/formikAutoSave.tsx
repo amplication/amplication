@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { useFormikContext } from "formik";
-import debounce from "lodash.debounce";
+import { debounce } from "lodash";
 
 type Props = {
   debounceMS: number;
