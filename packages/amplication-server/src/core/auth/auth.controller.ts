@@ -1,3 +1,4 @@
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import {
   Controller,
   UseInterceptors,
@@ -14,7 +15,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 import { AuthService, AuthUser } from './auth.service';
 import { GithubAuthExceptionFilter } from 'src/filters/github-auth-exception.filter';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Controller('/')
 export class AuthController {
