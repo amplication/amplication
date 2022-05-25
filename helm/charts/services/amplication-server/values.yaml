@@ -7,9 +7,6 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 replicaCount: 2
-volume_not_in_use:
-  name: amplication-server-artifacts-data
-  path: /artifacts
 image:
   pullPolicy: Always
   repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-prod-server
