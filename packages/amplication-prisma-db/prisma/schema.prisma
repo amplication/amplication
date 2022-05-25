@@ -131,7 +131,7 @@ model Resource {
   githubLastMessage String?
   deletedAt         DateTime?
   workspace         Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  roles             AppRole[]
+  roles             ResourceRole[]
   blocks            Block[]
   builds            Build[]
   commits           Commit[]
@@ -144,7 +144,7 @@ model Resource {
   @@unique([workspaceId, name], map: "Resource.workspaceId_name_unique")
 }
 
-model AppRole {
+model ResourceRole {
   id                    String                 @id @default(cuid())
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
@@ -155,8 +155,8 @@ model AppRole {
   app                   Resource               @relation(fields: [appId], references: [id], onDelete: Cascade)
   entityPermissionRoles EntityPermissionRole[]
 
-  @@unique([appId, displayName], map: "AppRole.appId_displayName_unique")
-  @@unique([appId, name], map: "AppRole.appId_name_unique")
+  @@unique([appId, displayName], map: "ResourceRole.resourceId_displayName_unique")
+  @@unique([appId, name], map: "ResourceRole.resourceId_name_unique")
 }
 
 model Commit {
@@ -232,7 +232,7 @@ model EntityPermissionRole {
   entityVersionId  String
   action           EnumEntityAction
   appRoleId        String
-  appRole          AppRole                 @relation(fields: [appRoleId], references: [id], onDelete: Cascade)
+  appRole          ResourceRole            @relation(fields: [appRoleId], references: [id], onDelete: Cascade)
   permission       EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action], onDelete: Cascade)
   permissionFields EntityPermissionField[]
 

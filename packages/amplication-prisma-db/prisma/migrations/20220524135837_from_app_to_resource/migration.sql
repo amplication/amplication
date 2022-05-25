@@ -41,3 +41,16 @@ ALTER TABLE "Environment"
 RENAME "appId" TO "resourceId";
 ALTER TABLE "Environment" RENAME CONSTRAINT  "Environment_appId_fkey" TO "Environment_resourceId_fkey";
 ALTER INDEX "Environment.appId_name_unique" RENAME TO "Environment.resourceId_name_unique";
+
+
+
+
+-- AppRole work
+ALTER TABLE "AppRole"
+RENAME TO "ResourceRole";
+ALTER TABLE "ResourceRole"
+RENAME "appId" TO "resourceId";
+ALTER TABLE "ResourceRole" RENAME CONSTRAINT  "AppRole_pkey" TO "ResourceRole_pkey";
+ALTER TABLE "ResourceRole" RENAME CONSTRAINT  "AppRole_appId_fkey" TO "ResourceRole_resourceId_fkey";
+ALTER INDEX "AppRole.appId_displayName_unique" RENAME TO "ResourceRole.resourceId_displayName_unique";
+ALTER INDEX "AppRole.appId_name_unique" RENAME TO "ResourceRole.resourceId_name_unique";
