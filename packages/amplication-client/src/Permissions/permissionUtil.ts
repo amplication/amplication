@@ -1,6 +1,6 @@
 import * as models from "../models";
 import { PermissionByActionName, PermissionAction } from "./types";
-import keyBy from "lodash.keyby";
+import { keyBy } from "lodash";
 
 export function preparePermissionsByAction(
   availableActions: PermissionAction[],
