@@ -59,7 +59,7 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port.target }}
           {{- end }}
-      {{- if .Values.volume.enabled }}
+      {{- if hasKey .Values "volume" }}
           volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.path }}

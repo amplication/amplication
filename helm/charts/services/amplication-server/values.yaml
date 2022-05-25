@@ -7,7 +7,7 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 replicaCount: 2
-volume:
+volume_not_in_use:
   name: amplication-server-artifacts-data
   path: /artifacts
 image:
