@@ -1,0 +1,18 @@
+@import "../../style/index.scss";
+.code-view-sync-with-github {
+  &__message {
+    color: var(--warning-default);
+    padding: var(--default-spacing) 0;
+  }
+
+  .amp-button {
+    width: 100%;
+  }
+
+  hr {
+    border: none;
+    border-top: $border-black10;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+}

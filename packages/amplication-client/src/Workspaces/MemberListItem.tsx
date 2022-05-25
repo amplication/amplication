@@ -148,7 +148,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
               noDelay
             >
               <Button
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 icon="mail"
                 onClick={handleResendInvitation}
               />
@@ -163,7 +163,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
               noDelay
             >
               <Button
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 icon="trash_2"
                 onClick={handleDelete}
               />

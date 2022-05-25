@@ -188,7 +188,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         )}
         <Tooltip aria-label={"Download Code"} direction="nw">
           <Button
-            buttonStyle={EnumButtonStyle.Clear}
+            buttonStyle={EnumButtonStyle.Text}
             disabled={
               stepGenerateCode.status !== models.EnumActionStepStatus.Success ||
               generating
@@ -226,7 +226,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
           stepDeploy?.status === models.EnumActionStepStatus.Running ? (
             <Link to={`/${build.appId}/builds/${build.id}`}>
               <Button
-                buttonStyle={EnumButtonStyle.Secondary}
+                buttonStyle={EnumButtonStyle.Clear}
                 eventData={{
                   eventName: "BuildSandboxViewDetailsClick",
                 }}
@@ -241,7 +241,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             stepDeploy?.status === models.EnumActionStepStatus.Success ? (
             <a href={deployment.environment.address} target="app">
               <Button
-                buttonStyle={EnumButtonStyle.Secondary}
+                buttonStyle={EnumButtonStyle.Clear}
                 icon="link_2"
                 eventData={{
                   eventName: "openPreviewApp",
@@ -256,7 +256,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
               {stepDeploy ? (
                 <Link to={`/${build.appId}/builds/${build.id}`}>
                   <Button
-                    buttonStyle={EnumButtonStyle.Secondary}
+                    buttonStyle={EnumButtonStyle.Clear}
                     eventData={{
                       eventName: "buildFailedViewDetails",
                     }}

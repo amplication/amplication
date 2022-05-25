@@ -5,9 +5,22 @@ on:
     types: [created]
 
 jobs:
-  create_branch:
+  check-comment:
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
+    outputs:
+      trigger-comment: ${{ steps.check.outputs.triggered }}
+    steps: 
+      - uses: khan/pull-request-comment-trigger@v1.1.0
+        id: check
+        with:
+          trigger: "run branch"
+          prefix_only: 'true'
+
+  create_branch:
+    runs-on: ubuntu-latest
+    needs: [check-comment]
+    if: ${{ needs.check-comment.outputs.trigger-comment == 'true' }}
     steps:
       - uses: actions/github-script@v3
         id: get-pr
@@ -33,14 +46,7 @@ jobs:
           ref: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
           repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
 
-      - uses: khan/pull-request-comment-trigger@v1.1.0
-        id: check
-        with:
-          trigger: "run branch"
-          prefix_only: 'true'
-
       - name: Check if branch exists
-        if: steps.check.outputs.triggered == 'true'
         env: 
           REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
           PR_NUMBER: ${{ github.event.issue.number }}
@@ -55,7 +61,6 @@ jobs:
           fi
   
       - name: Git remote add upstream
-        if: steps.check.outputs.triggered == 'true'
         env:
           OWNER: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.owner.login }}
           REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
@@ -65,7 +70,7 @@ jobs:
           git fetch --all
           git checkout ${{ env.REF }}
           git checkout -b pr/${{ env.REF }}-${{ env.PR_NUMBER }}
-          git push --set-upstream upstream pr/${{ env.REF }}-${{ env.PR_NUMBER }}
+          git push -f --set-upstream upstream pr/${{ env.REF }}-${{ env.PR_NUMBER }}
           
           echo "Forked branch ${{ env.OWNER }}:${{ env.REF }} has been pushed to fork-to-branch repo pr/${{ env.REF }}-${{ env.PR_NUMBER }}"
 

@@ -170,7 +170,13 @@ $expand-button-padding: 4px;
   }
 
   &__aside {
-    border-left: $border-black10;
+    &--position-right {
+      border-left: $border-black10;
+    }
+
+    &--position-left {
+      border-right: $border-black10;
+    }
 
     &__expandable {
       @include scrollbars($default-scroll-width, var(--black60), transparent);

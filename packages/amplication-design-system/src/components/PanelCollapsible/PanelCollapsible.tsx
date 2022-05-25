@@ -103,7 +103,7 @@ const PanelCollapsibleHeader = ({
         <Button
           className={`${CLASS_NAME}__header__collapse`}
           type="button"
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           icon="chevron_down"
           onClick={handleCollapseChange}
           disabled={!collapseEnabled}
