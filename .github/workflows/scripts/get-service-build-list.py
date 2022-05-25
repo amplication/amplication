@@ -86,8 +86,7 @@ def get_hashes(folders_list) -> dict():
     return hashes
 
 def get_dependent_packages(service_name):
-    all_packages = os.listdir(packages_folder)
-    all_packages.append(os.listdir(ee_packages_folder))
+    all_packages = os.listdir(packages_folder) + os.listdir(ee_packages_folder)
     dependent_services=[]
     for package in all_packages:
         dependet_services(package,dependent_services)
