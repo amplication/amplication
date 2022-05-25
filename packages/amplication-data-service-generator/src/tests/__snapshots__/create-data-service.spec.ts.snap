@@ -10,7 +10,8 @@ SERVER_PORT=3000
 BCRYPT_SALT=10
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d",
-  "admin-ui/.env": "PORT=3001",
+  "admin-ui/.env": "PORT=3001
+SKIP_PREFLIGHT_CHECK=true",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
 import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
