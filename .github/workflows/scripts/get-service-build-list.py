@@ -37,6 +37,9 @@ def is_service(service_list,service_name) -> bool:
   return service_name in service_list
 
 def get_packages_folder(service_name) -> str:
+    print("---------------------------------------------------------")
+    print(os.listdir(packages_folder))
+    print("---------------------------------------------------------")
     print(f"Looking which folder to use for {service_name}")
     if service_name in os.listdir(packages_folder):
         print(f'will use: {packages_folder}')
