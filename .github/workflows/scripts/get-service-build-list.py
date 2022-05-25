@@ -60,7 +60,11 @@ def get_changed_folders():
         print('no changed files')
     else:
         for changed_file in changed_files.split(','):
-            changed_folders.append(changed_file.split('/')[1])
+            folder_name=changed_file.split('/')[1]
+            if "ee/packages" in changed_file: 
+                folder_name=changed_file.split('/')[2]
+            if (folder_name not in changed_folders):
+                changed_folders.append(folder_name)
     print(f"changed_folders: {changed_folders}")
     return changed_folders
 
