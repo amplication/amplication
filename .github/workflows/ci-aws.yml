@@ -39,7 +39,7 @@ jobs:
               all_changed_files=$all_changed_files",$changed_file"
             fi
           done <<< "$changed_files"
-          all_changed_files="${all_changed_files:2}"
+          all_changed_files="${all_changed_files:1}"
           echo "all_changed_files: $all_changed_files"
           echo "::set-output name=all_changed_files::$all_changed_files"
       - name: get changed files (pr)
