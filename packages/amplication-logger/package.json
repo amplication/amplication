@@ -23,6 +23,7 @@
     "@nestjs/common": "8.4.3",
     "nest-winston": "1.6.2",
     "reflect-metadata": "0.1.13",
+    "winston": "3.7.2",
     "winston-cloud-logging": "1.0.2"
   },
   "jest": {
