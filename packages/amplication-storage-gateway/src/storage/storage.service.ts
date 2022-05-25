@@ -8,6 +8,8 @@ import assert from "assert";
 import { readFileSync } from "fs";
 import { join } from "path";
 
+type FilesDictionary = { [name: string]: FileMeta };
+
 @Injectable()
 export class StorageService {
   private buildsFolder: string | undefined;
@@ -21,7 +23,7 @@ export class StorageService {
   }
 
   getBuildFilesList(appId: string, buildId: string, relativePath: string = "") {
-    const results: { [name: string]: FileMeta } = {};
+    const results: FilesDictionary = {};
 
     const cwd = `${this.buildFolder(appId, buildId)}/${relativePath || ""}`;
     const files = sync(`*`, {
@@ -47,14 +49,19 @@ export class StorageService {
         };
       }
     });
-    const resultsArray = Object.values(results).sort((a, b) => {
-      // return the array with all the folders on to like vscode
+
+    return StorageService.sortFoldersAndFiles(results);
+  }
+
+  private static sortFoldersAndFiles(files: FilesDictionary) {
+    return Object.values(files).sort((a, b) => {
+      // return the array with all the folders on top like vscode
       if (a.type === NodeTypeEnum.Folder && b.type !== NodeTypeEnum.Folder) {
         return -1;
       }
+      // and then alphabetically
       return a.name.localeCompare(b.name);
     });
-    return resultsArray;
   }
 
   fileContent(appId: string, buildId: string, path: string = ""): string {

@@ -7,7 +7,6 @@ export class CodeAccessGuard {
   constructor(protected readonly queueService: QueueService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    // return this.validate(request);
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
 
     if (!token) {
