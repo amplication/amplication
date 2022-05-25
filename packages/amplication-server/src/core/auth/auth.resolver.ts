@@ -10,6 +10,8 @@ import {
   ApiToken
 } from './dto';
 
+import { CompleteInvitationArgs } from '../workspace/dto';
+
 import { AuthService } from './auth.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UserEntity } from 'src/decorators/user.decorator';
@@ -99,6 +101,19 @@ export class AuthResolver {
       user.account.id,
       args.data.id
     );
+    return { token };
+  }
+
+  @Mutation(() => Auth)
+  @UseGuards(GqlAuthGuard)
+  async completeInvitation(
+    @UserEntity() user: User,
+    @Args() args: CompleteInvitationArgs
+  ): Promise<Auth> {
+    if (!user.account) {
+      throw new Error('User has no account');
+    }
+    const token = await this.authService.completeInvitation(user, args);
     return { token };
   }
 }

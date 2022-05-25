@@ -1,6 +1,6 @@
 {
   "name": "@amplication/design-system",
-  "version": "0.12.6",
+  "version": "0.12.8",
   "main": "dist/index.js",
   "scripts": {
     "check-format": "prettier --check .",
@@ -8,7 +8,9 @@
     "lint": "eslint --cache .",
     "build": "npx rollup -c",
     "watch": "npm run build -- --watch",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "storybook": "start-storybook -p 6006 -c .storybook watch-css -s ./src",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "@emotion/react": "11.7.1",
@@ -27,11 +29,23 @@
     "skeleton-screen-css": "1.0.1"
   },
   "devDependencies": {
+    "@babel/core": "7.17.9",
+    "@storybook/addon-actions": "6.4.22",
+    "@storybook/addon-essentials": "6.4.22",
+    "@storybook/addon-interactions": "6.4.22",
+    "@storybook/addon-links": "6.4.22",
+    "@storybook/builder-webpack5": "6.4.22",
+    "@storybook/manager-webpack5": "6.4.22",
+    "@storybook/preset-scss": "1.0.3",
+    "@storybook/react": "6.4.22",
+    "@storybook/testing-library": "0.0.11",
     "@types/classnames": "2.3.1",
     "@types/lodash": "4.14.178",
     "@types/react": "17.0.34",
     "@typescript-eslint/eslint-plugin": "5.9.1",
     "@typescript-eslint/parser": "5.9.1",
+    "babel-loader": "8.2.5",
+    "css-loader": "6.7.1",
     "eslint": "8.6.0",
     "eslint-config-react-app": "7.0.0",
     "eslint-plugin-import": "2.25.4",
@@ -47,6 +61,8 @@
     "rollup-plugin-postcss": "3.1.8",
     "rollup-plugin-typescript2": "0.30.0",
     "sass": "1.35.2",
+    "sass-loader": "12.6.0",
+    "style-loader": "3.3.1",
     "typescript": "3.9.10",
     "webpack": "5.65.0"
   },

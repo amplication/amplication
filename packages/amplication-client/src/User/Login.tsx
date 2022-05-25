@@ -15,6 +15,7 @@ import { Button } from "../Components/Button";
 import { Form } from "../Components/Form";
 import queryString from "query-string";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
+import useLocalStorage from "react-use-localstorage";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
 import { ErrorMessage } from "../Components/ErrorMessage";
@@ -37,10 +38,17 @@ const INITIAL_VALUES: Values = {
   password: "",
 };
 
+export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
+
 const Login = () => {
   const history = useHistory();
   const location = useLocation();
   const [login, { loading, data, error }] = useMutation(DO_LOGIN);
+
+  const [, setInvitationToken] = useLocalStorage(
+    LOCAL_STORAGE_KEY_INVITATION_TOKEN,
+    undefined
+  );
 
   const content = useMemo(() => {
     const s: LocationStateInterface | undefined | null = location.state;
@@ -68,6 +76,16 @@ const Login = () => {
     console.log("params.error", params.error);
     return params.error;
   }, [location.search]);
+
+  useEffect(() => {
+    const params = queryString.parse(location.search);
+    if (params.invitation) {
+      //save the invitation token in local storage to be validated by
+      //<CompleteInvitation/> after signup or sign in
+      //we user local storage since github-passport does not support dynamic callback
+      setInvitationToken(params.invitation);
+    }
+  }, [setInvitationToken, location.search]);
 
   useEffect(() => {
     if (data) {

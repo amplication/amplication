@@ -81,7 +81,7 @@ export class GitPullEventService implements IGitPullEvent {
         newPullEventRecord.id,
         EnumGitPullEventStatus.Ready
       );
-    } catch (err: any) {
+    } catch (err) {
       this.logger.error(
         GitPullEventService.name,
         { err: err.message },

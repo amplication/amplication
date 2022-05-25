@@ -20,10 +20,16 @@ module "env" {
   github_app_auth_scope            = var.github_app_auth_scope
   github_app_auth_redirect_uri     = var.github_app_auth_redirect_uri
   amplitude_api_key                = var.amplitude_api_key
+  paddle_vendor_id                 = var.paddle_vendor_id
+  sendgrid_from_address            = var.sendgrid_from_address
+  sendgrid_invitation_template_id  = var.sendgrid_invitation_template_id
+  paddle_base_64_public_key        = var.paddle_base_64_public_key
   database_tier                    = var.database_tier
   image_id                         = var.image_id
   bcrypt_salt_or_rounds            = var.bcrypt_salt_or_rounds
   github_client_secret_id          = var.github_client_secret_id
+  segment_write_key_secret_id      = var.segment_write_key_secret_id
+  sendgrid_api_key_secret_id       = var.sendgrid_api_key_secret_id
   github_app_private_key           = var.github_app_private_key
   github_app_client_secret         = var.github_app_client_secret
   github_app_client_id             = var.github_app_client_id

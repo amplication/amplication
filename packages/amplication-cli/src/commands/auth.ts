@@ -19,6 +19,9 @@ const AUTH_QUERY = gql`
 `;
 
 export default class Auth extends ConfiguredCommand {
+  static description =
+    'authenticate using token generated on amplication server UI';
+
   static args = [{ name: 'token', required: true }];
 
   async command() {

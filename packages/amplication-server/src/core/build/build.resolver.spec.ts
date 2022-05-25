@@ -33,7 +33,8 @@ const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const EXAMPLE_ACTION: Action = {
@@ -96,6 +97,7 @@ const FIND_USER_QUERY = gql`
         id
         createdAt
         updatedAt
+        isOwner
       }
     }
   }
@@ -279,7 +281,8 @@ describe('BuildResolver', () => {
         createdBy: {
           ...EXAMPLE_USER,
           createdAt: EXAMPLE_USER.createdAt.toISOString(),
-          updatedAt: EXAMPLE_USER.updatedAt.toISOString()
+          updatedAt: EXAMPLE_USER.updatedAt.toISOString(),
+          isOwner: true
         }
       }
     });
