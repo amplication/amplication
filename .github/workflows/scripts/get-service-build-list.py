@@ -7,7 +7,7 @@ import base64
 from checksumdir import dirhash
 
 
-root_folder = os.getenv('GITHUB_WORKSPACE', Path(_file_).parents[3])
+root_folder = os.getenv('GITHUB_WORKSPACE', Path(__file__).parents[3])
 services_output_file = os.getenv('SERVICES_OUPTUT_PATH', os.path.join(
     root_folder, 'service_build_list.json'))
 packages_output_file = os.getenv('PACKAGES_OUPTUT_PATH', os.path.join(
@@ -23,8 +23,7 @@ packages_folder = os.getenv(
 ee_packages_folder = os.getenv(
     'EE_PACKAGES_FOLDER', os.path.join(root_folder, 'ee/packages'))
 changed_folders = []
-changed_folders = ["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data",
-                   "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
+changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_files = os.getenv('CHANGED_FILES_PR') or os.getenv(
     'CHANGED_FILES_NOT_PR')
 
@@ -138,7 +137,7 @@ hashes = get_hashes(dependecies_dict)
 #     hash_=""
 #     filenames=[]
 #     for folder_to_hash in service_build_list[folders_to_hash]:
-#         path=os.path.join(packages_folder,folder_to_hash,'*/')
+#         path=os.path.join(packages_folder,folder_to_hash,'**/*')
 #         filenames.append(glob.glob(path))
 #     for filename in filenames:
 #         with open(filename[0], 'rb') as inputfile:
