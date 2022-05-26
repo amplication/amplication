@@ -1,5 +1,5 @@
 {
-  "name": "@amplication/pull-request",
+  "name": "@amplication/git-pull-request-service",
   "version": "0.12.2",
   "private": true,
   "scripts": {
