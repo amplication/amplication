@@ -106,7 +106,10 @@ for changed_folder in changed_folders:
     else:
         dependet_services(changed_folder,service_build_list)
     if get_package_name(changed_folder) not in package_build_list:
-        package_build_list.append(get_package_name(changed_folder))
+        if os.path.exists(get_package_name(changed_folder)):
+            package_build_list.append(get_package_name(changed_folder))
+        else:
+            print(f"will not add {get_package_name(changed_folder)}, doesn't exist")
 for service_name in all_services:
     if service_name not in service_build_list:
         service_retag_list.append(service_name)
