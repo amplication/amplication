@@ -29,6 +29,8 @@ export class FileMeta {
   children?: FileMeta[] | undefined;
 }
 
+const NO_FILES_MESSAGE = "There are no available files to show for this build"
+
 const CREATED_AT_FIELD = "createdAt";
 type TData = {
   builds: Build[];
@@ -159,17 +161,21 @@ const CodeViewBar = ({ app, setFileDetails }: Props) => {
       </div>
       {selectedBuild && (
         <div>
-          <TreeView>
-            {selectedBuild.rootFile.children?.map((child) => {
-              return (
-                <FileExplorerNode
-                  file={child}
-                  key={child.path + JSON.stringify(child.children)}
-                  onSelect={handleNodeClick}
-                />
-              );
-            })}
-          </TreeView>
+          {selectedBuild.rootFile.children?.length ? (
+            <TreeView>
+              {selectedBuild.rootFile.children?.map((child) => {
+                return (
+                  <FileExplorerNode
+                    file={child}
+                    key={child.path + JSON.stringify(child.children)}
+                    onSelect={handleNodeClick}
+                  />
+                );
+              })}
+            </TreeView>
+          ) : (
+            NO_FILES_MESSAGE
+          )}
         </div>
       )}
     </div>
