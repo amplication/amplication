@@ -225,8 +225,10 @@ jobs:
           TAG_LIST: "${{ github.run_id }},${{ github.sha }},${{ env.BRANCH_NAME }}"
         run: |
           Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
-          docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
-          docker push $Docker_image
+          echo "Docker_image: $Docker_image"
+          command="docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image && docker push $Docker_image"
+          echo "$command"
+          $command
           export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           echo "MANIFEST: $MANIFEST"
           sh .github/workflows/scripts/ecr_retag.sh
