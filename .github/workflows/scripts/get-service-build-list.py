@@ -79,7 +79,7 @@ def get_hashes(folders_list) -> dict():
         for folder_to_hash in folders_list[folders_to_hash]:
             path = os.path.join(get_packages_folder(folder_to_hash),folder_to_hash)
             print(f'hashing path: {path}')
-            hash_+=dirhash(path, 'md5')
+            hash_+=dirhash(path, 'sha1')
         hashes[folders_to_hash]=hash_
     return hashes
 
