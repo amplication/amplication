@@ -188,6 +188,14 @@ jobs:
           working-directory: packages/${{ matrix.service }}
           hashes: ${{ needs.changes.outputs.hashes }}
         run: |
+          if [ -d "packages/${{ matrix.service }}" ] 
+          then
+              echo "Directory packages/${{ matrix.service }} exists." 
+              cd packages/${{ matrix.service }}
+          else
+              echo "Error: Directory packages/${{ matrix.service }} does not exists."
+              cd packages/ee/${{ matrix.service }}
+          fi
           echo "hashes: $hashes"
           echo "$hashes" | base64 --decode > hashes.json
           echo "matrix.service: ${{ matrix.service }}"
@@ -198,8 +206,15 @@ jobs:
           echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
           echo $GITHUB_HASH
       - name: Check if repo exist
-        working-directory: packages/${{ matrix.service }}
         run: |
+          if [ -d "packages/${{ matrix.service }}" ] 
+          then
+              echo "Directory packages/${{ matrix.service }} exists." 
+              cd packages/${{ matrix.service }}
+          else
+              echo "Error: Directory packages/${{ matrix.service }} does not exists."
+              cd packages/ee/${{ matrix.service }}
+          fi
           aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
       - name: Check if tag already exist
         id: tag-exist
@@ -224,9 +239,17 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           TAG_LIST: "${{ github.run_id }},${{ github.sha }},${{ env.BRANCH_NAME }}"
         run: |
+          if [ -d "packages/${{ matrix.service }}" ] 
+          then
+              echo "Directory packages/${{ matrix.service }} exists." 
+              path="./packages/${{ matrix.service }}/Dockerfile"
+          else
+              echo "Error: Directory packages/${{ matrix.service }} does not exists."
+              path="./packages/ee/${{ matrix.service }}/Dockerfile"
+          fi
           Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
           echo "Docker_image: $Docker_image"
-          command="docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image && docker push $Docker_image"
+          command="docker build -f $path . -t $Docker_image && docker push $Docker_image"
           echo "$command"
           $command
           export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
@@ -268,9 +291,16 @@ jobs:
           SERVICE_NAME: ${{ matrix.service }}
       - name: Set hash
         env:
-          working-directory: packages/${{ matrix.service }}
           hashes: ${{ needs.changes.outputs.hashes }}
         run: |
+          if [ -d "packages/${{ matrix.service }}" ] 
+          then
+              echo "Directory packages/${{ matrix.service }} exists." 
+              cd packages/${{ matrix.service }}
+          else
+              echo "Error: Directory packages/${{ matrix.service }} does not exists."
+              cd packages/ee/${{ matrix.service }}
+          fi
           echo "hashes: $hashes"
           echo "$hashes" | base64 --decode > hashes.json
           echo "matrix.service: ${{ matrix.service }}"
@@ -284,8 +314,15 @@ jobs:
         run: |
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
       - name: Check if repo exist
-        working-directory: packages/${{ matrix.service }}
         run: |
+          if [ -d "packages/${{ matrix.service }}" ] 
+          then
+              echo "Directory packages/${{ matrix.service }} exists." 
+              cd packages/${{ matrix.service }}
+          else
+              echo "Error: Directory packages/${{ matrix.service }} does not exists."
+              cd packages/ee/${{ matrix.service }}
+          fi
           aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
       - name: Retag images
         env:
@@ -293,13 +330,21 @@ jobs:
           TAG_LIST_SHORT: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }}"
           TAG_LIST_FULL: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }},${{ github.run_id }}"
         run: |
+          if [ -d "packages/${{ matrix.service }}" ] 
+          then
+              echo "Directory packages/${{ matrix.service }} exists." 
+              path="./packages/${{ matrix.service }}/Dockerfile"
+          else
+              echo "Error: Directory packages/${{ matrix.service }} does not exists."
+              path="./packages/ee/${{ matrix.service }}/Dockerfile"
+          fi
           echo "GITHUB_HASH: $GITHUB_HASH"
           echo "ECR_REPOSITORY: $ECR_REPOSITORY"
           export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           if [ "$MANIFEST" = "null" ]
           then
             Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
-            docker build -f ./packages/${{ matrix.service }}/Dockerfile . -t $Docker_image
+            docker build -f $path . -t $Docker_image
             docker push $Docker_image
             export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
             export TAG_LIST=$TAG_LIST_FULL
