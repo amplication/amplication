@@ -36,9 +36,9 @@ RUN npm run bootstrap -- -- --production --scope @amplication/git-pull-request-s
 FROM base as service
 WORKDIR /app/packages/git-pull-request-service
 # Copy all distributions and node_modules for amplication/server and its dependencies
-COPY --from=build /app/packages/git-pull-request-service/package.json /app/packages/git-pull-request-service/package.json
-COPY --from=build /app/packages/git-pull-request-service/node_modules /app/packages/git-pull-request-service/node_modules
-COPY --from=build /app/packages/git-pull-request-service/dist /app/packages/git-pull-request-service/dist
+COPY --from=build /app/packages/amplication-git-pull-request-service/package.json /app/packages/git-pull-request-service/package.json
+COPY --from=build /app/packages/amplication-git-pull-request-service/node_modules /app/packages/git-pull-request-service/node_modules
+COPY --from=build /app/packages/amplication-git-pull-request-service/dist /app/packages/git-pull-request-service/dist
 
 COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
 COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
