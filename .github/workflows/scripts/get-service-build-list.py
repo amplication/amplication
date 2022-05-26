@@ -2,8 +2,7 @@ import os
 import json
 from pathlib import Path
 from typing import List
-import glob
-import hashlib
+import shutil
 import base64
 from checksumdir import dirhash
 
@@ -78,6 +77,11 @@ def get_hashes(folders_list) -> dict():
             #             data = inputfile.read()
             #             hash_+=hashlib.md5(data).hexdigest()
         hashes[folders_to_hash]=hash_#str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
+        os.mkdir('temp_hash')
+        with open('temp_hash/hash', 'w') as f:
+            f.write(hash_)
+        hashes[folders_to_hash] = dirhash('temp_hash', 'md5')
+        shutil.rmtree("temp_hash")
     return hashes
 
 def get_dependent_packages(service_name):
