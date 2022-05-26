@@ -94,10 +94,11 @@ def get_hashes(folders_list) -> dict():
                 folder_to_hash), folder_to_hash)
             print(f'hashing path: {path}')
             hash_ += dirhash(path, 'md5')
-        with open('temp/hash', 'w') as f:
+        os.mkdir('temp_hash')
+        with open('temp_hash/hash', 'w') as f:
             f.write(hash_)
-        hashes[folders_to_hash] = dirhash('temp/hash', 'md5')
-        os.remove("temp")
+        hashes[folders_to_hash] = dirhash('temp_hash', 'md5')
+        os.remove("temp_hash")
 
     return hashes
 
