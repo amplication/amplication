@@ -231,7 +231,7 @@ export class BuildService {
     });
 
     logger.info(JOB_STARTED_LOG);
-    const tarballURL = await this.generate(build, user, oldBuild.id);
+    const tarballURL = await this.generate(build, user, oldBuild?.id);
     if (!skipPublish) {
       await this.buildDockerImage(build, tarballURL);
     }
