@@ -1,31 +1,40 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import assert from "assert";
+import { readFileSync } from "fs";
 import { sync } from "glob";
+import { join } from "path";
 import { BASE_BUILDS_FOLDER } from "src/constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
-import assert from "assert";
-import { readFileSync } from "fs";
-import { join } from "path";
 
 type FilesDictionary = { [name: string]: FileMeta };
 
 @Injectable()
 export class StorageService {
-  private buildsFolder: string | undefined;
+  private buildsFolder: string;
   constructor(configService: ConfigService) {
-    this.buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
-    assert(this.buildsFolder);
+    const buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
+    assert(buildsFolder);
+    this.buildsFolder = buildsFolder;
   }
 
-  private buildFolder(appId: string, buildId: string) {
-    return `${this.buildsFolder}/builds/${appId}/${buildId}`;
+  private static buildFolder(
+    buildsFolder: string,
+    appId: string,
+    buildId: string
+  ) {
+    return join(buildsFolder, "builds", appId, buildId);
   }
 
   getBuildFilesList(appId: string, buildId: string, relativePath: string = "") {
     const results: FilesDictionary = {};
 
-    const cwd = `${this.buildFolder(appId, buildId)}/${relativePath || ""}`;
+    const cwd = `${StorageService.buildFolder(
+      this.buildsFolder,
+      appId,
+      buildId
+    )}/${relativePath || ""}`;
     const files = sync(`*`, {
       nodir: true,
       dot: true,
@@ -65,7 +74,10 @@ export class StorageService {
   }
 
   fileContent(appId: string, buildId: string, path: string = ""): string {
-    const filePath = `${this.buildFolder(appId, buildId)}/${path}`;
+    const filePath = join(
+      StorageService.buildFolder(this.buildsFolder, appId, buildId),
+      path
+    );
     return readFileSync(filePath).toString();
   }
 }
