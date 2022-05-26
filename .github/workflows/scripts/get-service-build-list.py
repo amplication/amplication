@@ -83,6 +83,10 @@ def get_hashes(folders_list) -> dict():
         hashes[folders_to_hash]=hash_
     return hashes
 
+def add_package_to_list(list,package):
+    if os.path.exists(package):
+        list.append(package)
+
 def get_dependent_packages(service_name):
     all_packages = os.listdir(packages_folder) + os.listdir(ee_packages_folder)
     dependent_services=[]
@@ -98,7 +102,7 @@ all_services=os.listdir(helm_services_folder)
 for changed_folder in changed_folders:
     if is_service(all_services,changed_folder):
         if changed_folder not in service_build_list:
-            service_build_list.append(changed_folder)
+            add_package_to_list(service_build_list,changed_folder)
     else:
         dependet_services(changed_folder,service_build_list)
     if get_package_name(changed_folder) not in package_build_list:
