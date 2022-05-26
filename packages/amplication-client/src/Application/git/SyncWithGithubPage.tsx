@@ -80,6 +80,8 @@ export const GET_APP_GIT_REPOSITORY = gql`
   query getAppGitRepository($appId: String!) {
     app(where: { id: $appId }) {
       id
+      name
+      color
       workspace {
         id
         gitOrganizations {

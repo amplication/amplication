@@ -149,6 +149,7 @@ const CodeViewBar = ({ app, setFileDetails }: Props) => {
       )}
       <div>
         <BuildSelector
+          app={app}
           builds={data.builds}
           buildId={selectedBuild.build?.id}
           buildTitle={
