@@ -150,9 +150,20 @@ jobs:
           SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
           SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET"
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
-          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
+          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=postgres://postgres:$POSTGRESQL_PASSWORD@amplication-useast1-staging-os-primary.csf5nwabym5c.us-east-1.rds.amazonaws.com:5432"
           SECRETS+=" -p amplication-server.secrets.JWT_SECRET=$JWT_SECRET"
           SECRETS+=" -p amplication-server.secrets.SERVICE_JWT_SECRET=$SERVICE_JWT_SECRET"
+
+          SECRETS+=" -p amplication-git-push-webhook-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
+          SECRETS+=" -p amplication-git-push-webhook-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
+          SECRETS+=" -p amplication-git-push-webhook-service.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
+          SECRETS+=" -p amplication-git-push-webhook-service.secrets.POSTGRESQL_URL=postgres://postgres:$POSTGRESQL_PASSWORD@amplication-useast1-staging-os-primary.csf5nwabym5c.us-east-1.rds.amazonaws.com:5432"
+
+          SECRETS+=" -p amplication-git-pull-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
+          SECRETS+=" -p amplication-git-pull-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
+          SECRETS+=" -p amplication-git-pull-service.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
+          SECRETS+=" -p amplication-git-pull-service.secrets.POSTGRESQL_URL=postgres://postgres:$POSTGRESQL_PASSWORD@amplication-useast1-staging-os-pull.csf5nwabym5c.us-east-1.rds.amazonaws.com:5432"
+
           COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
           COMMAND=$(echo $COMMAND|tr -d '\n')
           echo "$COMMAND"
