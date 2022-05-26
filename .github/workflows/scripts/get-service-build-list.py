@@ -99,7 +99,7 @@ all_services=os.listdir(helm_services_folder)
 for changed_folder in changed_folders:
     if is_service(all_services,changed_folder):
         if changed_folder not in service_build_list:
-            service_build_list.append*=(changed_folder)
+            service_build_list.append(changed_folder)
     else:
         dependet_services(changed_folder,service_build_list)
     if get_package_name(changed_folder) not in package_build_list:
