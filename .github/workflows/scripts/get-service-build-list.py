@@ -2,8 +2,7 @@ import os
 import json
 from pathlib import Path
 from typing import List
-import glob
-import hashlib
+import shutil
 import base64
 from checksumdir import dirhash
 
@@ -24,7 +23,7 @@ packages_folder = os.getenv(
 ee_packages_folder = os.getenv(
     'EE_PACKAGES_FOLDER', os.path.join(root_folder, 'ee/packages'))
 changed_folders = []
-#changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
+changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_files = os.getenv('CHANGED_FILES_PR') or os.getenv(
     'CHANGED_FILES_NOT_PR')
 
@@ -98,7 +97,7 @@ def get_hashes(folders_list) -> dict():
         with open('temp_hash/hash', 'w') as f:
             f.write(hash_)
         hashes[folders_to_hash] = dirhash('temp_hash', 'md5')
-        os.remove("temp_hash")
+        shutil.rmtree("temp_hash")
 
     return hashes
 
