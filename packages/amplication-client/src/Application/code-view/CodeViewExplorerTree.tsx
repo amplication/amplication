@@ -1,18 +1,21 @@
 import { TreeView } from "@amplication/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 import { Build } from "../../models";
-import "./CodeViewBar.scss";
 import { FileDetails } from "./CodeViewPage";
 import { FileExplorerNode } from "./FileExplorerNode";
 import { NodeTypeEnum } from "./NodeTypeEnum";
-import { StorageBaseAxios } from "./StorageBaseAxios";
+import { StorageBaseAxios, StorageResponseType } from "./StorageBaseAxios";
+import { useQuery } from "react-query";
+import { AxiosError } from "axios";
+import "./CodeViewBar.scss";
+
 
 const CLASS_NAME = "code-view-bar";
+
 type Props = {
   selectedBuild: Build;
   onFileSelected: (selectedFile: FileDetails) => void;
 };
-
 export class FileMeta {
   type!: NodeTypeEnum;
   name!: string;
@@ -31,22 +34,30 @@ const INITIAL_ROOT_NODE = {
 
 const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
   const [rootFile, setRootFile] = useState<FileMeta>(INITIAL_ROOT_NODE);
+  const [selectedFolder, setSelectedFolder] = useState<FileMeta>(rootFile);
 
-  const getFolderContent = useCallback(
-    async (appId: string, buildId: string, file: FileMeta) => {
-      file.children = await loadFolderContent(appId, buildId, file.path);
-      console.log({ child: file.children });
-      setRootFile({ ...rootFile });
+  const { error, isError } = useQuery<StorageResponseType, AxiosError>(
+    ["storage-folderList", selectedBuild.id, selectedFolder?.path],
+    async () => {
+      return await StorageBaseAxios.instance.folderList(
+        selectedBuild.appId,
+        selectedBuild.id,
+        selectedFolder?.path
+      );
     },
-    [rootFile]
+    {
+      onSuccess: (data) => {
+        selectedFolder.children = data.result;
+        setRootFile({ ...rootFile });
+      },
+    }
   );
 
   useEffect(() => {
-    setRootFile({
-      ...INITIAL_ROOT_NODE,
-    });
-    getFolderContent(selectedBuild.appId, selectedBuild.id, rootFile);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //reset the state when the build changes 
+    const newRootFile = { ...INITIAL_ROOT_NODE };
+    setRootFile(newRootFile);
+    setSelectedFolder(newRootFile);
   }, [selectedBuild]);
 
   const handleNodeClick = useCallback(
@@ -64,31 +75,18 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
           if (file.children && file.children.length > 0) {
             return;
           }
-          await getFolderContent(selectedBuild.appId, selectedBuild.id, file);
+          await setSelectedFolder(file);
           break;
       }
     },
-    [selectedBuild, getFolderContent, onFileSelected]
+    [selectedBuild, onFileSelected]
   );
-
-  const loadFolderContent = async (
-    appId: string,
-    buildId: string,
-    path: string
-  ): Promise<FileMeta[]> => {
-    const data = await StorageBaseAxios.instance.folderList(
-      appId,
-      buildId,
-      path
-    );
-
-    return data.result;
-  };
 
   return (
     <div className={CLASS_NAME}>
       {selectedBuild && (
         <div>
+          {isError && error}
           {rootFile.children?.length ? (
             <TreeView>
               {rootFile.children?.map((child) => {
