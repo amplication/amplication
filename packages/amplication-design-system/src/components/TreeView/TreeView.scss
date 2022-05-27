@@ -6,4 +6,22 @@
       @include font-base;
     }
   }
+
+  .MuiCollapse-wrapperInner {
+    border-left: $border-black30;
+    padding: 0 var(--default-spacing);
+  }
+
+  .MuiTreeItem-content {
+    padding: var(--icon-spacing);
+    border-radius: var(--small-border-radius);
+
+    &.Mui-selected {
+      background: var(--black10);
+    }
+
+    &:hover {
+      background: var(--black5);
+    }
+  }
 }
