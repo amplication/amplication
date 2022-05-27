@@ -42,23 +42,22 @@ function CodeViewPage({ match }: Props) {
     return <div />;
   }
   return (
-
-    <PageContent  sideContent={
-      <CodeViewBar app={data.app} setFileDetails={setFileDetails} />
-
-    }>
+    <PageContent
+      sideContent={
+        <CodeViewBar app={data.app} onFileSelected={setFileDetails} />
+      }
+    >
       <div className={CLASS_NAME}>
-      
-      <div className={`${CLASS_NAME}__code-container`}>
-      {fileDetails?.isFile && (
-        <CodeViewEditor
-          appId={applicationId}
-          buildId={fileDetails.buildId}
-          filePath={fileDetails.filePath}
-          fileName={fileDetails.fileName}
-        />
-      )}
-      </div>
+        <div className={`${CLASS_NAME}__code-container`}>
+          {fileDetails?.isFile && (
+            <CodeViewEditor
+              appId={applicationId}
+              buildId={fileDetails.buildId}
+              filePath={fileDetails.filePath}
+              fileName={fileDetails.fileName}
+            />
+          )}
+        </div>
       </div>
     </PageContent>
   );
