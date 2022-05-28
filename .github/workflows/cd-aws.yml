@@ -119,9 +119,9 @@ jobs:
       - name: deploy app
         id: deploy-app
         run: |
-          ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
           if [ "$TARGET_ENV" = "custom" ]; then
             TARGET_ENV=$TARGET_ENV_CUSTOM
+            ARGO_CD_URL="argocd.$TARGET_ENV_CUSTOM.amplication-dev.com"
           fi
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
           secret_values_file_content=$(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > secret-$TARGET_ENV.yaml
