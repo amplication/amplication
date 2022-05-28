@@ -5,6 +5,17 @@
     padding: var(--default-spacing) 0;
   }
 
+  &__connected{
+
+    &__details{
+      @include flexFullRowWithSpacing;
+    }
+  }
+
+  .amplication-label{
+    color: var(--black90);
+  }
+
   .amp-button {
     width: 100%;
   }

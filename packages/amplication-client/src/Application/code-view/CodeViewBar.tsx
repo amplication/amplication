@@ -1,4 +1,3 @@
-import { isEmpty } from "lodash";
 import React from "react";
 import { App } from "../../models";
 import { FileDetails } from "./CodeViewPage";
@@ -14,24 +13,13 @@ type Props = {
 };
 
 const CodeViewBar = ({ app, onFileSelected }: Props) => {
-  const { gitRepository } = app;
-
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__heading`}>
         <h2>File Browser</h2>
       </div>
-      {isEmpty(gitRepository) && (
-        <CodeViewSyncWithGithub
-          appId={app.id}
-        />
-      )}
-      {app.gitRepository && (
-        <div>
-          <p>connected to: </p>
-          {app.gitRepository?.gitOrganization.name}
-        </div>
-      )}
+      <CodeViewSyncWithGithub app={app} />
+
       <CodeViewExplorer app={app} onFileSelected={onFileSelected} />
     </div>
   );
