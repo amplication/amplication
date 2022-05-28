@@ -4,10 +4,10 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-  Label
+  Label,
 } from "@amplication/design-system";
 import React from "react";
-import { Build } from "../models";
+import { App, Build } from "../models";
 import { BuildSelectorItem } from "./BuildSelectorItem";
 import "./BuildSelector.scss";
 
@@ -15,6 +15,7 @@ const CLASS_NAME = "build-selector";
 
 type Props = {
   builds: Build[];
+  app: App;
   onSelectBuild: (commit: Build) => void;
   buildId: string | undefined;
   buildTitle: string;
@@ -22,6 +23,7 @@ type Props = {
 
 const BuildSelector = ({
   builds,
+  app,
   onSelectBuild,
   buildId,
   buildTitle,
@@ -29,7 +31,7 @@ const BuildSelector = ({
   return (
     <div className={CLASS_NAME}>
       <div>
-        <Label text="Select build"/>
+        <Label text="Select build" />
         <SelectMenu
           title={buildTitle}
           buttonStyle={EnumButtonStyle.Secondary}
@@ -51,6 +53,7 @@ const BuildSelector = ({
                   >
                     <BuildSelectorItem
                       title={build.message ? build.message : build.createdAt}
+                      app={app}
                     />
                   </SelectMenuItem>
                 ))}

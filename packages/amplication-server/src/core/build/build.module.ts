@@ -39,7 +39,7 @@ import { CommitModule } from '../commit/commit.module';
     forwardRef(() => AppModule),
     AppSettingsModule,
     QueueModule,
-    forwardRef(() => CommitModule),
+    forwardRef(() => CommitModule)
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

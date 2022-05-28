@@ -10,7 +10,7 @@ const CLASS_NAME = "code-view-bar";
 
 type Props = {
   app: App;
-  onFileSelected: (selectedFile: FileDetails) => void;
+  onFileSelected: (selectedFile: FileDetails | null) => void;
 };
 
 const CodeViewBar = ({ app, onFileSelected }: Props) => {
