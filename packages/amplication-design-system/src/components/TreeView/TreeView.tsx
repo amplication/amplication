@@ -1,37 +1,28 @@
 import React, { useCallback } from "react";
-import MuiTreeView from "@mui/lab/TreeView";
-import MuiTreeItem from "@mui/lab/TreeItem";
+import MuiTreeView, {
+  TreeViewProps as MuiTreeViewProps,
+} from "@mui/lab/TreeView";
+import MuiTreeItem, {
+  TreeItemProps as MuiTreeItemProps,
+} from "@mui/lab/TreeItem";
 import { Icon } from "../..";
 import "./TreeView.scss";
 
 const CLASS_NAME = "amp-tree-view";
 
-export type TreeViewProps = {
+export type TreeViewProps = MuiTreeViewProps & {
   children?: React.ReactNode;
-  onNodeSelected?: (event: React.SyntheticEvent, nodeIds: string) => void;
-  onNodeToggle?: (event: React.SyntheticEvent, nodeIds: string[]) => void;
-  expanded?: string[];
 };
 
-export function TreeView({
-  children,
-  onNodeSelected,
-  expanded,
-  onNodeToggle,
-}: TreeViewProps) {
+export function TreeView({ children, ...rest }: TreeViewProps) {
   return (
-    <MuiTreeView
-      className={CLASS_NAME}
-      onNodeSelect={onNodeSelected}
-      expanded={expanded || undefined}
-      onNodeToggle={onNodeToggle}
-    >
+    <MuiTreeView {...rest} className={CLASS_NAME}>
       {children}
     </MuiTreeView>
   );
 }
 
-export type TreeItemProps = {
+export type TreeItemProps = MuiTreeItemProps & {
   label: string;
   id: string;
   icon: string;
@@ -47,6 +38,7 @@ export function TreeItem({
   data,
   children,
   onSelect,
+  ...rest
 }: TreeItemProps) {
   const onClick = useCallback(() => {
     onSelect && onSelect(id, data);
@@ -54,6 +46,7 @@ export function TreeItem({
 
   return (
     <MuiTreeItem
+      {...rest}
       onClick={onClick}
       nodeId={id}
       label={label}

@@ -7,8 +7,8 @@ import { NodeTypeEnum } from "./NodeTypeEnum";
 import { StorageBaseAxios, StorageResponseType } from "./StorageBaseAxios";
 import { useQuery } from "react-query";
 import { AxiosError } from "axios";
+import { remove } from "lodash";
 import "./CodeViewBar.scss";
-
 
 const CLASS_NAME = "code-view-bar";
 
@@ -35,6 +35,7 @@ const INITIAL_ROOT_NODE = {
 const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
   const [rootFile, setRootFile] = useState<FileMeta>(INITIAL_ROOT_NODE);
   const [selectedFolder, setSelectedFolder] = useState<FileMeta>(rootFile);
+  const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
 
   const { error, isError } = useQuery<StorageResponseType, AxiosError>(
     ["storage-folderList", selectedBuild.id, selectedFolder?.path],
@@ -54,7 +55,7 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
   );
 
   useEffect(() => {
-    //reset the state when the build changes 
+    //reset the state when the build changes
     const newRootFile = { ...INITIAL_ROOT_NODE };
     setRootFile(newRootFile);
     setSelectedFolder(newRootFile);
@@ -72,14 +73,19 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
           });
           break;
         case NodeTypeEnum.Folder:
-          if (file.children && file.children.length > 0) {
-            return;
+          const expandedNodes = [...expandedFolders];
+          const removed = remove(expandedNodes, (item) => {
+            return item === file.path;
+          });
+          if (!removed.length) {
+            expandedNodes.push(file.path);
           }
-          await setSelectedFolder(file);
+          setExpandedFolders(expandedNodes);
+          setSelectedFolder(file);
           break;
       }
     },
-    [selectedBuild, onFileSelected]
+    [selectedBuild, onFileSelected, expandedFolders]
   );
 
   return (
@@ -88,7 +94,7 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
         <div>
           {isError && error}
           {rootFile.children?.length ? (
-            <TreeView>
+            <TreeView expanded={expandedFolders}>
               {rootFile.children?.map((child) => {
                 return (
                   <FileExplorerNode
