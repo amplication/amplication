@@ -1,7 +1,7 @@
 import React from "react";
 import { App } from "../../models";
 import { FileDetails } from "./CodeViewPage";
-import CodeViewSyncWithGithub from "./CodeViewSyncWithGithub";
+import AppGitStatusPanel from "../git/AppGitStatusPanel";
 import CodeViewExplorer from "./CodeViewExplorer";
 import "./CodeViewBar.scss";
 
@@ -18,7 +18,7 @@ const CodeViewBar = ({ app, onFileSelected }: Props) => {
       <div className={`${CLASS_NAME}__heading`}>
         <h2>File Browser</h2>
       </div>
-      <CodeViewSyncWithGithub app={app} />
+      <AppGitStatusPanel app={app} />
 
       <CodeViewExplorer app={app} onFileSelected={onFileSelected} />
     </div>
