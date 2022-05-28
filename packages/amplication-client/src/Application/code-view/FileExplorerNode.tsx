@@ -1,7 +1,7 @@
 import { TreeItem } from "@amplication/design-system";
 import React, { useCallback, useMemo } from "react";
-import { FileMeta } from "./CodeViewBar";
 import { NodeTypeEnum } from "./NodeTypeEnum";
+import { FileMeta } from "./CodeViewExplorer";
 
 export type FileExplorerNodeProps = {
   file: FileMeta;
@@ -23,11 +23,12 @@ export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
 
   return (
     <TreeItem
-      onSelect={handleNodeClick}
+      onNodeClick={handleNodeClick}
       data={file}
-      id={file?.path}
+      nodeId={file?.path}
       label={file?.name}
       icon={iconName}
+      expandIcon={iconName}
     >
       {file.children?.map((child) => {
         return (

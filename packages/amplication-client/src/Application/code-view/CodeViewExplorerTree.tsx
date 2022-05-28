@@ -8,6 +8,7 @@ import { StorageBaseAxios, StorageResponseType } from "./StorageBaseAxios";
 import { useQuery } from "react-query";
 import { AxiosError } from "axios";
 import { remove } from "lodash";
+import { FileMeta } from "./CodeViewExplorer";
 import "./CodeViewBar.scss";
 
 const CLASS_NAME = "code-view-bar";
@@ -16,12 +17,6 @@ type Props = {
   selectedBuild: Build;
   onFileSelected: (selectedFile: FileDetails) => void;
 };
-export class FileMeta {
-  type!: NodeTypeEnum;
-  name!: string;
-  path!: string;
-  children?: FileMeta[] | undefined;
-}
 
 const NO_FILES_MESSAGE = "There are no available files to show for this build";
 

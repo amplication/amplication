@@ -24,31 +24,30 @@ export function TreeView({ children, ...rest }: TreeViewProps) {
 
 export type TreeItemProps = MuiTreeItemProps & {
   label: string;
-  id: string;
   icon: string;
   data?: any;
   children?: React.ReactNode;
-  onSelect: (id: string, data?: any) => void;
+  onNodeClick: (id: string, data?: any) => void;
 };
 
 export function TreeItem({
+  nodeId,
   label,
-  id,
   icon,
   data,
   children,
-  onSelect,
+  onNodeClick,
   ...rest
 }: TreeItemProps) {
   const onClick = useCallback(() => {
-    onSelect && onSelect(id, data);
-  }, [onSelect, data, id]);
+    onNodeClick && onNodeClick(nodeId, data);
+  }, [onNodeClick, data, nodeId]);
 
   return (
     <MuiTreeItem
       {...rest}
       onClick={onClick}
-      nodeId={id}
+      nodeId={nodeId}
       label={label}
       icon={<Icon icon={icon} size="small" />}
     >
