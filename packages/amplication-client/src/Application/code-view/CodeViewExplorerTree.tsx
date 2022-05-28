@@ -1,4 +1,4 @@
-import { TreeView } from "@amplication/design-system";
+import { Icon, TreeView } from "@amplication/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 import { Build } from "../../models";
 import { FileDetails } from "./CodeViewPage";
@@ -20,11 +20,12 @@ type Props = {
 
 const NO_FILES_MESSAGE = "There are no available files to show for this build";
 
-const INITIAL_ROOT_NODE = {
+const INITIAL_ROOT_NODE: FileMeta = {
   type: NodeTypeEnum.Folder,
   name: "root",
   path: "/",
   children: [],
+  expanded: false,
 };
 
 const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
@@ -74,6 +75,9 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
           });
           if (!removed.length) {
             expandedNodes.push(file.path);
+            file.expanded = true;
+          } else {
+            file.expanded = false;
           }
           setExpandedFolders(expandedNodes);
           setSelectedFolder(file);
@@ -89,7 +93,11 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
         <div>
           {isError && error}
           {rootFile.children?.length ? (
-            <TreeView expanded={expandedFolders}>
+            <TreeView
+              expanded={expandedFolders}
+              defaultExpandIcon={<Icon icon="arrow_left" />}
+              defaultCollapseIcon={<Icon icon="arrow_left" />}
+            >
               {rootFile.children?.map((child) => {
                 return (
                   <FileExplorerNode

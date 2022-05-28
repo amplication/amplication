@@ -19,6 +19,7 @@ export class FileMeta {
   name!: string;
   path!: string;
   children?: FileMeta[] | undefined;
+  expanded?: boolean;
 }
 
 const CREATED_AT_FIELD = "createdAt";
