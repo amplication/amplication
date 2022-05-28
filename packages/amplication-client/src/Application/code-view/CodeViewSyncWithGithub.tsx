@@ -21,7 +21,8 @@ const CodeViewSyncWithGithub = ({ app }: Props) => {
       {isEmpty(app.gitRepository) ? (
         <>
           <div className={`${CLASS_NAME}__message`}>
-            Connect to GitHub to create a Pull Request in your GitHub repository with the generated code
+            Connect to GitHub to create a Pull Request in your GitHub repository
+            with the generated code
           </div>
           <Link title={"Connect to GitHub"} to={`/${app.id}/github`}>
             <Button buttonStyle={EnumButtonStyle.Secondary} icon="github">
