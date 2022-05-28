@@ -77,7 +77,7 @@ export class AppService {
       throw new InvalidColorError(color);
     }
 
-    const app = await this.prisma.app.create({
+    const app = await this.prisma.resource.create({
       data: {
         ...DEFAULT_APP_DATA,
         ...args.data,
@@ -139,7 +139,7 @@ export class AppService {
     );
 
     const userEntity = await this.entityService.findFirst({
-      where: { name: USER_ENTITY_NAME, appId: app.id },
+      where: { name: USER_ENTITY_NAME, resourceId: app.id },
       select: { id: true }
     });
 
@@ -191,7 +191,7 @@ export class AppService {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
 
-    const existingApps = await this.prisma.app.findMany({
+    const existingApps = await this.prisma.resource.findMany({
       where: {
         name: {
           mode: QueryMode.Insensitive,
@@ -325,7 +325,7 @@ export class AppService {
   }
 
   async app(args: FindOneArgs): Promise<App | null> {
-    return this.prisma.app.findFirst({
+    return this.prisma.resource.findFirst({
       where: {
         id: args.where.id,
         deletedAt: null
@@ -334,7 +334,7 @@ export class AppService {
   }
 
   async apps(args: FindManyAppArgs): Promise<App[]> {
-    return this.prisma.app.findMany({
+    return this.prisma.resource.findMany({
       ...args,
       where: {
         ...args.where,
@@ -344,7 +344,7 @@ export class AppService {
   }
 
   async deleteApp(args: FindOneArgs): Promise<App | null> {
-    const app = await this.prisma.app.findUnique({
+    const app = await this.prisma.resource.findUnique({
       where: {
         id: args.where.id
       }
@@ -356,7 +356,7 @@ export class AppService {
 
     const gitRepo = await this.prisma.gitRepository.findUnique({
       where: {
-        appId: app.id
+        resourceId: app.id
       }
     });
 
@@ -368,7 +368,7 @@ export class AppService {
       });
     }
 
-    return this.prisma.app.update({
+    return this.prisma.resource.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(app.name, app.id),
@@ -388,7 +388,7 @@ export class AppService {
       throw new Error(INVALID_APP_ID);
     }
 
-    return this.prisma.app.update(args);
+    return this.prisma.resource.update(args);
   }
 
   /**
@@ -400,7 +400,7 @@ export class AppService {
   ): Promise<PendingChange[]> {
     const appId = args.where.app.id;
 
-    const app = await this.prisma.app.findMany({
+    const app = await this.prisma.resource.findMany({
       where: {
         id: appId,
         deletedAt: null,
@@ -433,7 +433,7 @@ export class AppService {
     const userId = args.data.user.connect.id;
     const appId = args.data.app.connect.id;
 
-    const app = await this.prisma.app.findMany({
+    const app = await this.prisma.resource.findMany({
       where: {
         id: appId,
         deletedAt: null,
@@ -550,7 +550,7 @@ export class AppService {
     const userId = args.data.user.connect.id;
     const appId = args.data.app.connect.id;
 
-    const app = await this.prisma.app.findMany({
+    const app = await this.prisma.resource.findMany({
       where: {
         id: appId,
         deletedAt: null,
@@ -608,7 +608,7 @@ export class AppService {
     const messages = [];
     let isValid = true;
 
-    const app = await this.prisma.app.findUnique({
+    const app = await this.prisma.resource.findUnique({
       where: {
         id: args.where.id
       }
@@ -616,7 +616,7 @@ export class AppService {
 
     const appRepo = await this.prisma.gitRepository.findUnique({
       where: {
-        appId: app.id
+        resourceId: app.id
       }
     });
 
@@ -683,7 +683,7 @@ export class AppService {
 
     const appRepository = await this.prisma.gitRepository.findFirst({
       where: {
-        appId: app.id
+        resourceId: app.id
       },
       include: {
         gitOrganization: true
@@ -737,7 +737,7 @@ export class AppService {
     }
 
     //directly update with prisma since we don't want to expose these fields for regular updates
-    return this.prisma.app.update({
+    return this.prisma.resource.update({
       where: {
         id: appId
       },
@@ -751,7 +751,7 @@ export class AppService {
   async gitRepository(appId: string): Promise<GitRepository | null> {
     return await this.prisma.gitRepository.findUnique({
       where: {
-        appId: appId
+        resourceId: appId
       },
       include: {
         gitOrganization: true
@@ -760,7 +760,7 @@ export class AppService {
   }
 
   async workspace(appId: string): Promise<Workspace> {
-    return await this.prisma.app
+    return await this.prisma.resource
       .findUnique({ where: { id: appId } })
       .workspace();
   }

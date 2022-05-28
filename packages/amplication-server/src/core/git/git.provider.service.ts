@@ -76,8 +76,8 @@ export class GitProviderService {
         id: args.gitRepositoryId
       }
     });
-    return await this.prisma.app.findUnique({
-      where: { id: gitRepository.appId }
+    return await this.prisma.resource.findUnique({
+      where: { id: gitRepository.resourceId }
     });
   }
 
@@ -87,7 +87,7 @@ export class GitProviderService {
     gitOrganizationId
   }: ConnectGitRepositoryInput): Promise<App> {
     const gitRepo = await this.prisma.gitRepository.findUnique({
-      where: { appId }
+      where: { resourceId: appId }
     });
 
     if (gitRepo) {
@@ -97,12 +97,12 @@ export class GitProviderService {
     await this.prisma.gitRepository.create({
       data: {
         name: name,
-        app: { connect: { id: appId } },
+        resource: { connect: { id: appId } },
         gitOrganization: { connect: { id: gitOrganizationId } }
       }
     });
 
-    return await this.prisma.app.findUnique({
+    return await this.prisma.resource.findUnique({
       where: {
         id: appId
       }
