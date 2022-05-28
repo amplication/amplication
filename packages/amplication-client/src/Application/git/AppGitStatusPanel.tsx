@@ -1,20 +1,24 @@
 import React from "react";
 import { Button, EnumButtonStyle } from "../../Components/Button";
-import { Label } from "@amplication/design-system";
-import "./CodeViewSyncWithGithub.scss";
+import { Icon, Label, Tooltip } from "@amplication/design-system";
 import { Link } from "react-router-dom";
 import * as models from "../../models";
 import { isEmpty } from "lodash";
+import "./AppGitStatusPanel.scss";
+import { format } from "date-fns";
 
 type Props = {
   app: models.App;
 };
 
-const CLASS_NAME = "code-view-sync-with-github";
+const CLASS_NAME = "app-git-status-panel";
+const DATE_FORMAT = "P p";
 
-const CodeViewSyncWithGithub = ({ app }: Props) => {
+const AppGitStatusPanel = ({ app }: Props) => {
   const gitRepositoryFullName = `${app.gitRepository?.gitOrganization.name}/${app.gitRepository?.name}`;
   const repoUrl = `https://github.com/${gitRepositoryFullName}`;
+
+  const lastSync = app.githubLastSync;
 
   return (
     <div className={CLASS_NAME}>
@@ -45,6 +49,17 @@ const CodeViewSyncWithGithub = ({ app }: Props) => {
               />
             </a>
           </div>
+          {lastSync && (
+            <div className={`${CLASS_NAME}__last-sync`}>
+              <Icon icon="clock" />
+              <Tooltip
+                aria-label={`Last sync: ${format(lastSync, DATE_FORMAT)}`}
+              >
+                <span>Last sync </span>
+                {format(lastSync, "PP p")}
+              </Tooltip>
+            </div>
+          )}
         </div>
       )}
 
@@ -53,4 +68,4 @@ const CodeViewSyncWithGithub = ({ app }: Props) => {
   );
 };
 
-export default CodeViewSyncWithGithub;
+export default AppGitStatusPanel;
