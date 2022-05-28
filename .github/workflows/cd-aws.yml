@@ -119,6 +119,7 @@ jobs:
       - name: deploy app
         id: deploy-app
         run: |
+          ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
           if [ "$TARGET_ENV" = "custom" ]; then
             TARGET_ENV=$TARGET_ENV_CUSTOM
           fi
@@ -130,7 +131,6 @@ jobs:
           cat secret-$TARGET_ENV.yaml
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
-          ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
           export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
           echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
