@@ -7,9 +7,16 @@
     }
   }
 
+  &__Item__content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   .MuiCollapse-wrapperInner {
     border-left: $border-black30;
-    padding: 0 var(--default-spacing);
+    padding-left: var(--default-spacing);
   }
 
   .MuiTreeItem-content {

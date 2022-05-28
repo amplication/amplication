@@ -27,6 +27,7 @@ export type TreeItemProps = MuiTreeItemProps & {
   icon: string;
   data?: any;
   children?: React.ReactNode;
+  farContent?: React.ReactNode;
   onNodeClick: (id: string, data?: any) => void;
 };
 
@@ -36,6 +37,7 @@ export function TreeItem({
   icon,
   data,
   children,
+  farContent,
   onNodeClick,
   ...rest
 }: TreeItemProps) {
@@ -43,12 +45,18 @@ export function TreeItem({
     onNodeClick && onNodeClick(nodeId, data);
   }, [onNodeClick, data, nodeId]);
 
+  const content = (
+    <div className={`${CLASS_NAME}__Item__content`}>
+      <span>{label} </span> {farContent}
+    </div>
+  );
+
   return (
     <MuiTreeItem
       {...rest}
       onClick={onClick}
       nodeId={nodeId}
-      label={label}
+      label={content}
       icon={<Icon icon={icon} size="small" />}
     >
       {children}
