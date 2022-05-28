@@ -1,4 +1,4 @@
-import { TreeItem } from "@amplication/design-system";
+import { Icon, TreeItem } from "@amplication/design-system";
 import React, { useCallback, useMemo } from "react";
 import { NodeTypeEnum } from "./NodeTypeEnum";
 import { FileMeta } from "./CodeViewExplorer";
@@ -21,6 +21,18 @@ export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
     [file.type]
   );
 
+  const farIcon = useMemo(
+    () =>
+      file.type === NodeTypeEnum.Folder ? (
+        file.expanded ? (
+          <Icon icon="chevron_down" />
+        ) : (
+          <Icon icon="chevron_right" />
+        )
+      ) : null,
+    [file.expanded, file.type]
+  );
+
   return (
     <TreeItem
       onNodeClick={handleNodeClick}
@@ -28,7 +40,7 @@ export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
       nodeId={file?.path}
       label={file?.name}
       icon={iconName}
-      expandIcon={iconName}
+      farContent={farIcon}
     >
       {file.children?.map((child) => {
         return (
