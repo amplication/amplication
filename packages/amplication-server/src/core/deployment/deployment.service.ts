@@ -365,7 +365,7 @@ export class DeploymentService {
         await this.mailService.sendDeploymentNotification({
           to: userInfo.id,
           url: result.url,
-          succes: true
+          succes: false
         });
         return this.updateStatus(deployment.id, EnumDeploymentStatus.Failed);
       default:
