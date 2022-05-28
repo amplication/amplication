@@ -161,18 +161,18 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             placement="top-start"
           >
             <Link
-              to={`/${build.appId}/github`}
-              className={`${CLASS_NAME}__open-github`}
+              to={`/${build.appId}/code-view`}
+              className={`${CLASS_NAME}__view-code`}
             >
               <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                icon="github"
+                buttonStyle={EnumButtonStyle.Secondary}
+                icon="code"
                 disabled={generating}
                 eventData={{
-                  eventName: "buildConnectToGithub",
+                  eventName: "FooterViewCode",
                 }}
               >
-                Push Code to GitHub
+                View Code
               </Button>
             </Link>
           </HelpPopover>

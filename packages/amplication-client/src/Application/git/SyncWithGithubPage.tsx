@@ -82,6 +82,7 @@ export const GET_APP_GIT_REPOSITORY = gql`
       id
       name
       color
+      githubLastSync
       workspace {
         id
         gitOrganizations {
