@@ -16,10 +16,6 @@ type Props = {
 const CodeViewBar = ({ app, onFileSelected }: Props) => {
   const { gitRepository } = app;
 
-  const handleAuthWithGitClick = () => {
-    window.open(`/${app.id}/github`);
-  };
-
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__heading`}>
@@ -27,7 +23,7 @@ const CodeViewBar = ({ app, onFileSelected }: Props) => {
       </div>
       {isEmpty(gitRepository) && (
         <CodeViewSyncWithGithub
-          onSyncNewGitOrganizationClick={handleAuthWithGitClick}
+          appId={app.id}
         />
       )}
       {app.gitRepository && (
