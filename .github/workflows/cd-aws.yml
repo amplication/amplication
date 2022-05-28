@@ -120,14 +120,15 @@ jobs:
         id: deploy-app
         run: |
           if [ "$TARGET_ENV" = "custom" ]; then
-            TARGET_ENV=$TARGET_ENV_CUSTOM
-            ARGO_CD_URL="argocd.$TARGET_ENV_CUSTOM.amplication-dev.com"
+            TARGET_ENV="staging-os"
           fi
+          ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
-          secret_values_file_content=$(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > secret-$TARGET_ENV.yaml
           if [ "$TARGET_ENV" = "custom" ]; then
+            TARGET_ENV=$TARGET_ENV_CUSTOM
             sed -i "s|staging-os|$NAMESPACE|g" secret-$TARGET_ENV.yaml
           fi
+          secret_values_file_content=$(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > secret-$TARGET_ENV.yaml
           cat secret-$TARGET_ENV.yaml
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
