@@ -21,3 +21,9 @@ ALTER TABLE "Project" ADD CONSTRAINT "Project_workspaceId_fkey" FOREIGN KEY ("wo
 
 -- AddForeignKey
 ALTER TABLE "App" ADD CONSTRAINT "App_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+INSERT INTO "Project"("id", "workspaceId", "name") 
+SELECT "id", "workspaceId", CONCAT('project-', "name") FROM "App";
+
+UPDATE public."App"
+SET "projectId" = id;
