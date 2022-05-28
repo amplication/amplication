@@ -30,7 +30,7 @@ jobs:
       id: create-secret-names
       run: |
         if [ "$TARGET_ENV" = "custom" ]; then
-          TARGET_ENV=$target-env-custom
+          TARGET_ENV=$TARGET_ENV_CUSTOM
         fi
         export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
         echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
@@ -71,7 +71,7 @@ jobs:
         id: set-namespace
         run: |
           if [ "$TARGET_ENV" = "custom" ]; then
-            TARGET_ENV=$target-env-custom
+            TARGET_ENV=$TARGET_ENV_CUSTOM
           fi
           NAMESPACE=$TARGET_ENV
           echo "Will deploy to $NAMESPACE"
@@ -120,7 +120,7 @@ jobs:
         id: deploy-app
         run: |
           if [ "$TARGET_ENV" = "custom" ]; then
-            TARGET_ENV=$target-env-custom
+            TARGET_ENV=$TARGET_ENV_CUSTOM
           fi
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
           secret_values_file_content=$(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > secret-$TARGET_ENV.yaml
