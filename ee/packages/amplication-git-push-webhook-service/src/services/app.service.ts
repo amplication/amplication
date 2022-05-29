@@ -76,11 +76,12 @@ export class AppService implements AppInterface {
     provider: EnumProvider,
     id: string,
   ): Promise<boolean> {
-    const { installationId: gitInstallationId } =
-      await this.gitOrganizationRepository.getOrganizationByInstallationId(
-        installationId,
-        provider,
-      );
+    const {
+      installationId: gitInstallationId,
+    } = await this.gitOrganizationRepository.getOrganizationByInstallationId(
+      installationId,
+      provider,
+    );
     if (gitInstallationId) return true;
     this.logger.log(
       `createWebhooksMessage not send, installationId: ${installationId} does not exist`,
