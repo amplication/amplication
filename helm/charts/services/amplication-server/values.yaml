@@ -15,7 +15,7 @@ image:
 
 volume:
   name: volume1
-  path: /
+  path: /etc/amplication-server
 
 service:
   type: ClusterIP
