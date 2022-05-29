@@ -15,25 +15,32 @@ const CLASS_NAME = "build-selector";
 
 type Props = {
   builds: Build[];
+  selectedBuild: Build | null;
   app: App;
   onSelectBuild: (commit: Build) => void;
-  buildId: string | undefined;
-  buildTitle: string;
 };
 
 const BuildSelector = ({
   builds,
   app,
   onSelectBuild,
-  buildId,
-  buildTitle,
+  selectedBuild,
 }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <div>
         <Label text="Select build" />
         <SelectMenu
-          title={buildTitle}
+          title={
+            <BuildSelectorItem
+              title={
+                selectedBuild?.message
+                  ? selectedBuild?.message
+                  : selectedBuild?.createdAt
+              }
+              app={app}
+            />
+          }
           buttonStyle={EnumButtonStyle.Secondary}
           className={`${CLASS_NAME}__menu`}
           icon="chevron_down"
@@ -44,12 +51,11 @@ const BuildSelector = ({
                 {builds.map((build) => (
                   <SelectMenuItem
                     closeAfterSelectionChange
-                    selected={build.id === buildId}
+                    selected={build.id === selectedBuild?.id}
                     key={build.id}
                     onSelectionChange={() => {
                       onSelectBuild(build);
                     }}
-                    css={undefined}
                   >
                     <BuildSelectorItem
                       title={build.message ? build.message : build.createdAt}
@@ -57,9 +63,6 @@ const BuildSelector = ({
                     />
                   </SelectMenuItem>
                 ))}
-                <div className={`select-menu_item ${CLASS_NAME}__hr`}>
-                  <hr />
-                </div>
               </>
             </SelectMenuList>
           </SelectMenuModal>

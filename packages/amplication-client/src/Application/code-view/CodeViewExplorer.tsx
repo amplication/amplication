@@ -61,8 +61,7 @@ const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
         <BuildSelector
           app={app}
           builds={data.builds}
-          buildId={selectedBuild?.id}
-          buildTitle={selectedBuild?.message || selectedBuild?.createdAt}
+          selectedBuild={selectedBuild}
           onSelectBuild={handleSelectBuild}
         />
       </div>
