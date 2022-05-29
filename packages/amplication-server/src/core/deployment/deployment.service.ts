@@ -423,8 +423,9 @@ export class DeploymentService {
           subscriberId: 'cl3r1c72x0090kfp512158a4f'
         },
         payload: {
-          name: 'Sandbox is Ready',
-          description: `Click here to view your app ${deploymentLink}`,
+          title: 'Sandbox is Ready',
+          description: `Click here to view your app`,
+          deploymentLink
         }
       });
     } catch (err) {
