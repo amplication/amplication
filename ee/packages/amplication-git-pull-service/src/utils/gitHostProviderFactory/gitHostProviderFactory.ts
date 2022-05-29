@@ -1,5 +1,5 @@
-import { IGitHostProviderFactory } from "./../../contracts/interfaces/gitHostProviderFactory.interface";
-import { IGitProvider } from "./../../contracts/interfaces/gitProvider.interface";
+import { IGitHostProviderFactory } from "../../contracts/interfaces/gitHostProviderFactory.interface";
+import { IGitProvider } from "../../contracts/interfaces/gitProvider.interface";
 import { Injectable } from "@nestjs/common";
 import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 import { CustomError } from "../../errors/CustomError";

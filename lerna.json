@@ -1,6 +1,7 @@
 {
   "packages": [
     "packages/*",
+    "ee/packages/*",
     "packages/amplication-data-service-generator/src/admin/static/",
     "packages/amplication-data-service-generator/src/server/static/"
   ],
