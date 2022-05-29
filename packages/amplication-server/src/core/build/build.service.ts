@@ -46,7 +46,6 @@ import { GitService } from '@amplication/git-service';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { Storage as GCPStorage } from '@google-cloud/storage';
 
-
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
@@ -372,16 +371,19 @@ export class BuildService {
     //   throw new BuildResultNotFound(build.id);
     // }
     // return disk.getStream(filePath);
-    const storage = new GCPStorage({ 
+    const storage = new GCPStorage({
       //TODO: replace hardcoded value with env variable
-      projectId: 'amplication', 
+      projectId: 'amplication',
       keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
-    }); 
-    
+    });
+
     // const [metaData] = await storage.bucket('amplication-artifacts').file(filePath).getMetadata();
     // return metaData.mediaLink
     //TODO: replace hardcoded value with env variable
-    return storage.bucket('amplication-artifacts').file(filePath).createReadStream();
+    return storage
+      .bucket('amplication-artifacts')
+      .file(filePath)
+      .createReadStream();
   }
 
   /**
