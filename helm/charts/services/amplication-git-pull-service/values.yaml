@@ -3,8 +3,8 @@ name: amplication-git-pull-service
 deployment:
   replicaCount: 1
   volume:
-  name: amplication-git-pull-data
-  path: /pull-data
+    name: amplication-git-pull-data
+    path: /amplication-data
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -21,7 +21,7 @@ deployment:
 
 service:
   type: ClusterIP
-  port: 
+  port:
     target: 3000
   protocol: TCP
 
