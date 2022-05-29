@@ -225,6 +225,16 @@ jobs:
           then  
             echo "tag already exist"
             echo "::set-output name=tag_exist::true"
+            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$BRANCH_NAME)"
+            if [[ ! -z "$cmd" ]]
+            then  
+              echo "tag already exist (branch)"
+            else
+              echo "tag doesn't exist (branch)"
+              export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+              echo "MANIFEST: $MANIFEST"
+              sh .github/workflows/scripts/ecr_retag.sh
+            fi
           else
             echo "tag doesn't exist"
             echo "::set-output name=tag_exist::false"
