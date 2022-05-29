@@ -14,7 +14,7 @@ image:
   imagePullSecrets: []
 
 volume:
-  name: volume1
+  name: efs-claim
   path: /etc/amplication-server
 
 service:
