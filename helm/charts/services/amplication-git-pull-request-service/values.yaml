@@ -2,6 +2,9 @@ name: amplication-git-pull-request-service
 
 deployment:
   replicaCount: 1
+  volume:
+    name: amplication-git-pull-data
+    path: /amplication-data
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -18,7 +21,7 @@ deployment:
 
 service:
   type: ClusterIP
-  port: 
+  port:
     target: 3000
   protocol: TCP
 
@@ -29,4 +32,3 @@ pvc:
   name: efs-claim
   storageRequest: 1Gi
   storageName: efs-sc
-

@@ -15,11 +15,11 @@ image:
 
 volume:
   name: efs-claim
-  path: /etc/amplication-server
+  path: /amplication-data
 
 service:
   type: ClusterIP
-  port: 
+  port:
     target: 3000
   protocol: TCP
 ingress:
@@ -46,7 +46,6 @@ postgres:
     imagePullPolicy: Always
     primary:
       podLabels: { name: "postgres" }
-
 # cp-helm-charts:
 #   cp-kafka:
 #     enabled: true
@@ -70,7 +69,7 @@ postgres:
 #       offsets.topic.replication.factor: "1"
 #     heapOptions: "-Xms2g -Xmx2g"
 #   cp-zookeeper:
-#     enabled: true  
+#     enabled: true
 #   cp-schema-registry:
 #     enabled: false
 #   cp-kafka-rest:
@@ -81,4 +80,3 @@ postgres:
 #     enabled: false
 #   cp-kspl-server:
 #     enabled: false
-    

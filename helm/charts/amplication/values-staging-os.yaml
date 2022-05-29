@@ -12,7 +12,7 @@ amplication-client:
 
 amplication-server:
   image:
-      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
   postgres:
     install: false
   ingress:
@@ -23,8 +23,7 @@ amplication-server:
       HOST: "https://server.staging-os.amplication-dev.com"
       CLIENT_HOST: "https://app.staging-os.amplication-dev.com"
 
-
-      KAFKA_BROKERS: 
+      KAFKA_BROKERS:
         - b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
         - b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
       KAFKA_CLIENT_ID: amplication-server
@@ -65,12 +64,11 @@ amplication-git-push-webhook-service:
     hostname: https://webhook.staging-os.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: 
+      KAFKA_BROKERS:
         - b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
         - b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-      KAFKA_CLIENT_ID: git-push-webhook 
+      KAFKA_CLIENT_ID: git-push-webhook
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
-
 
 amplication-git-pull-service:
   postgres:
@@ -91,7 +89,7 @@ amplication-git-pull-service:
       NODE_ENV: "production"
 
       #EFS
-      STORAGE_PATH: [EFS-MOUNT-PATH]/git-data #ILIA
+      STORAGE_PATH: /amplication-data/git-data
       MAX_SNAPSHOTS: 100
 
       #GitHub App
@@ -99,7 +97,7 @@ amplication-git-pull-service:
       GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
       GIT_DEFAULT_ORIGIN_NAME: origin
       GITHUB_APP_PRIVATE_KEY:
-      KAFKA_BROKERS: 
+      KAFKA_BROKERS:
         - b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
         - b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
       KAFKA_CLIENT_ID: git-pull
@@ -108,12 +106,8 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS: 
+      KAFKA_BROKERS:
         - b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
         - b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
-
-
-
-
