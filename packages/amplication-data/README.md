@@ -1,4 +1,4 @@
-# Amplication Data
+# Amplication Data 
 
 Amplication data is the component that defines the shared data structures used by the amplication packages.
 
