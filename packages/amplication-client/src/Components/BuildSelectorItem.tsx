@@ -7,9 +7,9 @@ type Props = {
   title: string;
   app: App;
 };
-export const BuildSelectorItem = ({ title, app }: Props) => {
-  const CLASS_NAME = "build-selector-item";
+const CLASS_NAME = "build-selector-item";
 
+export const BuildSelectorItem = ({ title, app }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <Icon icon="git_merge" />

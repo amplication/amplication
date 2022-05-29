@@ -1,13 +1,11 @@
 @import "../style/index.scss";
 
 .build-selector-item {
+  @include flexFullRowWithSpacing;
   .circle-badge {
     width: 15px;
     min-width: 15px;
     height: 15px;
     font-size: 10px;
-  }
-  span {
-    margin: 5px;
   }
 }
