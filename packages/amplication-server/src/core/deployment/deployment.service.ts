@@ -23,6 +23,7 @@ import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto';
+import { Novu } from '@novu/node';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
 export const DEPLOY_STEP_NAME = 'DEPLOY_APP';
@@ -309,7 +310,7 @@ export class DeploymentService {
         if (step.name === DESTROY_STEP_NAME) {
           await this.actionService.logInfo(step, DESTROY_STEP_FINISH_LOG);
           await this.actionService.complete(step, EnumActionStepStatus.Success);
-
+          await this.notifyWhenDeployIsReady(deployment.environment.address);
           return this.updateStatus(deployment.id, EnumDeploymentStatus.Removed);
         } else {
           await this.actionService.logInfo(step, DEPLOY_STEP_FINISH_LOG);
@@ -411,6 +412,24 @@ export class DeploymentService {
       backendConfiguration,
       DeployerProvider.GCP
     );
+  }
+
+  private async notifyWhenDeployIsReady(deploymentLink) {
+    const novu = new Novu('b3331a35bdcee750bf35879a6af24d7d');
+
+    try {
+      await novu.trigger('sandbox-is-ready', {
+        to: {
+          subscriberId: 'cl3r1c72x0090kfp512158a4f'
+        },
+        payload: {
+          name: 'Sandbox is Ready',
+          description: `Click here to view your app ${deploymentLink}`,
+        }
+      });
+    } catch (err) {
+      throw new Error('Novu notification failed');
+    }
   }
 
   /**

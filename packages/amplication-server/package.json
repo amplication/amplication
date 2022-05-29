@@ -52,6 +52,7 @@
     "@nestjs/passport": "8.2.1",
     "@nestjs/platform-express": "8.2.3",
     "@nestjs/serve-static": "2.2.2",
+    "@novu/node": "^0.4.1-alpha.0",
     "@ntegral/nestjs-sendgrid": "1.0.0",
     "@octokit/app": "12.0.5",
     "@octokit/auth-app": "3.6.1",
