@@ -1,6 +1,10 @@
+cp-helm-charts:
+  enabled: false
+
+postgres:
+  install: false
+
 amplication-client:
-  image:
-    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
   service:
     hostname: app.staging-os.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
@@ -8,11 +12,8 @@ amplication-client:
     env:
       REACT_APP_DATA_SOURCE: "https://server.staging-os.amplication-dev.com/graphql"
       REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.staging-os.amplication-dev.com/github"
-      REACT_APP_GITHUB_CLIENT_ID: value
 
 amplication-server:
-  image:
-      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
   postgres:
     install: false
   ingress:
@@ -23,30 +24,8 @@ amplication-server:
       HOST: "https://server.staging-os.amplication-dev.com"
       CLIENT_HOST: "https://app.staging-os.amplication-dev.com"
 
-
-      KAFKA_BROKERS: 
-        - b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-        - b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-      KAFKA_CLIENT_ID: amplication-server
-      KAFKA_GROUP_ID: amplication-server
-
-      #GCP - APPS Builder
-      DEFAULT_DISK: gcs
-      LOCAL_DISK_ROOT: /artifacts
-      CONTAINER_BUILDER_DEFAULT: cloud-build
-      GCS_BUCKET: amplication-artifacts
-
-      #GCP - APPS Deployer
-      DEPLOYER_DEFAULT: gcp
-
-      GCP_APPS_PROJECT_ID: amplication-apps
-      GCP_APPS_REGION: us-east1
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
-      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
-      GCP_APPS_DOMAIN: staging.amplication.app
-
-      DOCKER_HOST: tcp://docker:2375
-
+      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
+      
       #GitHub App
       GITHUB_APP_APP_ID: "195638"
       GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
@@ -65,55 +44,25 @@ amplication-git-push-webhook-service:
     hostname: https://webhook.staging-os.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: 
-        - b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-        - b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-      KAFKA_CLIENT_ID: git-push-webhook 
-      KAFKA_GROUP_ID: amplication-git-push-webhook-service
-
+      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
 
 amplication-git-pull-service:
   postgres:
     install: false
   config:
     env:
-      #ILIA
-      #NEW SECRETS
-      #POSTGRESQL_USER: admin
-      #POSTGRESQL_PASSWORD: admin
-      #POSTGRESQL_PORT: "5432"
-      #POSTGRESQL_URL: postgres://admin:admin@localhost:5432
-
-      #EXISTS SECRETS
-      #GITHUB_APP_PRIVATE_KEY:
-      #GITHUB_APP_CLIENT_SECRET:
-
-      NODE_ENV: "production"
-
-      #EFS
-      STORAGE_PATH: [EFS-MOUNT-PATH]/git-data #ILIA
-      MAX_SNAPSHOTS: 100
-
+      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
+      
       #GitHub App
       GITHUB_APP_APP_ID: "195638"
       GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
       GIT_DEFAULT_ORIGIN_NAME: origin
       GITHUB_APP_PRIVATE_KEY:
-      KAFKA_BROKERS: 
-        - b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-        - b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-      KAFKA_CLIENT_ID: git-pull
-      KAFKA_GROUP_ID: amplication-git-pull-service
 
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS: 
-        - b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-        - b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-      KAFKA_CLIENT_ID: git-pull-request
-      KAFKA_GROUP_ID: amplication-git-pull-request-service
-
+      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
 
 
 

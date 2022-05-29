@@ -11,5 +11,8 @@ dependencies:
 - name: amplication-server
   repository: file://../services/amplication-server
   version: 0.1.0
-digest: sha256:261dae75583f7d3b73ad598e75f5046c00d9c02fb8cd2c7e6577c7599621763c
-generated: "2022-04-19T16:16:59.990381+03:00"
+- name: cp-helm-charts
+  repository: https://confluentinc.github.io/cp-helm-charts/
+  version: 0.6.1
+digest: sha256:41c4a3d3dc3a0fb491bf2c71dd597c291b37625038f288cee29d13e9115135fb
+generated: "2022-05-29T12:26:07.557151+03:00"

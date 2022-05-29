@@ -1,6 +1,10 @@
+cp-helm-charts:
+  enabled: false
+
+postgres:
+  install: true
+
 amplication-client:
-  image:
-    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
   service:
     hostname: app.prod.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/7cf536df-6c61-4f76-bf3c-fd8f4e021721
@@ -8,7 +12,6 @@ amplication-client:
     env:
       REACT_APP_DATA_SOURCE: "https://server.amplication.com/graphql"
       REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.amplication.com/github"
-      REACT_APP_GITHUB_CLIENT_ID: value
       REACT_APP_PADDLE_VENDOR_ID: "131992"
       REACT_APP_FEATURE_FLAGS: "{\"SHOW_DEPLOYER\":true}"
 
@@ -20,8 +23,6 @@ amplication-server:
     requests:
       cpu: 3
       memory: 6Gi
-  image:
-    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
   postgres:
     install: false
   ingress:
@@ -37,22 +38,11 @@ amplication-server:
       DISABLE_EVENT_TRACKING: "1"
 
       #GCP - APPS Builder
-
-      DEFAULT_DISK: gcs
-      LOCAL_DISK_ROOT: /artifacts
-      CONTAINER_BUILDER_DEFAULT: cloud-build
       GCS_BUCKET: amplication-production-artifacts
 
-      #GCP - APPS Deployer
-      DEPLOYER_DEFAULT: gcp
-
       GCP_APPS_PROJECT_ID: amplication-production-apps
-      GCP_APPS_REGION: us-east1
       GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-production-apps-state-bucket
-      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
       GCP_APPS_DOMAIN: amplication.app
-
-      DOCKER_HOST: tcp://docker:2375
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
@@ -76,3 +66,27 @@ amplication-server:
 
       #SEGMENT
       SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
+      
+      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
+
+amplication-git-push-webhook-service:
+  postgres:
+    install: false
+  ingress:
+    enabled: true
+    hostname: https://webhook.amplication-dev.com
+  config:
+    env:
+      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
+
+amplication-git-pull-service:  
+  postgres:
+    install: false
+  config:
+    env:
+      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
+
+amplication-git-pull-request-service:
+  config:
+    env:
+      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"

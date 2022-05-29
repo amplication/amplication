@@ -36,7 +36,7 @@ pvc:
 # Postgresql Server
 postgres:
   install: false
-  postgresqlUsername: admin
+  postgresqlUsername: postgres-pull
   postgresPassword: admin
   db: pull
   fullnameOverride: postgresql

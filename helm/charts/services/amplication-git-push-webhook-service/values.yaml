@@ -26,11 +26,6 @@ ingress:
   enabled: true
   hostname: https://webhook.amplication.com
 
-pvc:
-  name: efs-claim
-  storageRequest: 1Gi
-  storageName: efs-sc
-
 postgres:
   install: false
   postgresqlUsername: postgres
