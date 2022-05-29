@@ -67,7 +67,7 @@ amplication-server:
       #SEGMENT
       SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
       
-      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
+      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
 
 amplication-git-push-webhook-service:
   postgres:
@@ -77,16 +77,16 @@ amplication-git-push-webhook-service:
     hostname: https://webhook.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
+      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
 
 amplication-git-pull-service:  
   postgres:
     install: false
   config:
     env:
-      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
+      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
 
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS: "b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094,b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"
+      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
