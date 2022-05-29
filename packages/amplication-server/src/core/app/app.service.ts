@@ -71,7 +71,7 @@ export class AppService {
   /**
    * Create app in the user's workspace, with the built-in "user" role
    */
-  async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
+  async createApp(args: CreateOneAppArgs, user: User): Promise<App> {  
     const { color } = args.data;
     if (color && !validateHTMLColorHex(color)) {
       throw new InvalidColorError(color);
@@ -91,7 +91,7 @@ export class AppService {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${args.data.name}`,
             workspaceId: user.workspace?.id
           }
         }
@@ -364,6 +364,20 @@ export class AppService {
       await this.prisma.gitRepository.delete({
         where: {
           id: gitRepo.id
+        }
+      });
+    }
+
+    const project = await this.prisma.project.findUnique({
+      where: {
+        name: `project-${app.name}`,
+      }
+    });
+
+    if (project) {
+      await this.prisma.project.delete({
+        where: {
+          id: project.id
         }
       });
     }
