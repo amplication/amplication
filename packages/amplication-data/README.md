@@ -1,4 +1,4 @@
-# Amplication Data 
+# Amplication Data
 
 Amplication data is the component that defines the shared data structures used by the amplication packages.
 
@@ -77,9 +77,11 @@ Once you are done making changes, run the following commands:
   npm run lint
   ```
 - Run unit tests
+
   ```
   npm test
   ```
+
 - Rebuild the package
   ```
   npm run build

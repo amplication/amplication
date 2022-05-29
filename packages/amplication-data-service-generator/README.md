@@ -1,4 +1,4 @@
-# Amplication Data Service Generator 
+# Amplication Data Service Generator
 
 Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with Amplication.
 
@@ -25,10 +25,13 @@ The generator can be used as a library or as a CLI.
 :bulb: Before you begin, make sure you have all the below installed:
 
 - [Node.js v14 or above](https://nodejs.org/en/download/)
+
   ```
   node -v
   ```
+
   Should be: `v14.0.0` or newer
+
 - [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
   ```
   npm -v
