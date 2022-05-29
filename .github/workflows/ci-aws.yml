@@ -216,6 +216,9 @@ jobs:
               cd $GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}
           fi
           aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
+      - name: set branch-name
+        run: |
+            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
       - name: Check if tag already exist
         id: tag-exist
         run: |
@@ -232,7 +235,6 @@ jobs:
             else
               echo "tag doesn't exist (branch)"
               export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-              echo "MANIFEST: $MANIFEST"
               sh .github/workflows/scripts/ecr_retag.sh
             fi
           else
@@ -241,9 +243,6 @@ jobs:
           fi
         env:
           TAG_LIST: "${{ env.BRANCH_NAME }}" 
-      - name: set branch-name
-        run: |
-            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
       - name: Build, tag, and push image to Amazon ECR
         if: ${{ steps.tag-exist.outputs.tag_exist == 'false' }}
         env:
