@@ -32,7 +32,6 @@ secrets:
 pvc:
   storageLimit: 5Gi
   storageRequest: 1Gi
-  name: efs-claim
   storageName: efs-sc
 
 # Postgresql Server
