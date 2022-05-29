@@ -44,7 +44,7 @@ postgres:
 amplication-client:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
-    tag: "feature/add-services" # Need to change for dev.
+    tag: "fix-download-app" # Need to change for dev.
   service:
     hostname: app-dev.staging-os.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
@@ -57,7 +57,7 @@ amplication-client:
 amplication-server:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-    tag: "feature/add-services"
+    tag: "fix-download-app"
   postgres:
     install: false
   ingress:
@@ -113,7 +113,7 @@ amplication-server:
 
 amplication-git-push-webhook-service:
   image:
-    tag: "feature/add-services"
+    tag: "feature-add-services"
   postgres:
     install: false
   ingress:
@@ -127,7 +127,7 @@ amplication-git-push-webhook-service:
 
 amplication-git-pull-service:
   image:
-    tag: "feature/add-services"
+    tag: "feature-add-services"
   postgres:
     install: false
   config:
@@ -150,7 +150,7 @@ amplication-git-pull-service:
 
 amplication-git-pull-request-service:
   image:
-    tag: "feature/add-services"
+    tag: "feature-add-services"
   config:
     env:
       KAFKA_BROKERS: amplication-cp-kafka-headless:9092
