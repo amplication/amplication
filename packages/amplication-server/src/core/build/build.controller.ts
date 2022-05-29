@@ -24,7 +24,7 @@ export class BuildController {
   @Get(`/:id.zip`)
   @UseInterceptors(MorganInterceptor('combined'))
   async getGeneratedAppArchive(@Param('id') id: string, @Res() res: Response) {
-    let stream: NodeJS.ReadableStream;
+    let stream;
     try {
       stream = await this.buildService.download({ where: { id } });
     } catch (error) {

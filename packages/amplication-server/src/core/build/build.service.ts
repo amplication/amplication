@@ -45,6 +45,8 @@ import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { GitService } from '@amplication/git-service';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
+import { Storage as GCPStorage } from '@google-cloud/storage';
+
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -347,7 +349,7 @@ export class BuildService {
    * Give the ReadableStream of the build zip file
    * @returns the zip file of the build
    */
-  async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
+  async download(args: FindOneBuildArgs) {
     const build = await this.findOne(args);
     const { id } = args.where;
     if (build === null) {
@@ -365,12 +367,22 @@ export class BuildService {
       );
     }
     const filePath = getBuildZipFilePath(id);
-    const disk = this.storageService.getDisk();
-    const { exists } = await disk.exists(filePath);
-    if (!exists) {
-      throw new BuildResultNotFound(build.id);
-    }
-    return disk.getStream(filePath);
+    // const disk = this.storageService.getDisk();
+    // const { exists } = await disk.exists(filePath);
+    // if (!exists) {
+    //   throw new BuildResultNotFound(build.id);
+    // }
+    // return disk.getStream(filePath);
+    const storage = new GCPStorage({ 
+      //TODO: replace hardcoded value with env variable
+      projectId: 'amplication', 
+      keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
+    }); 
+    
+    // const [metaData] = await storage.bucket('amplication-artifacts').file(filePath).getMetadata();
+    // return metaData.mediaLink
+    //TODO: replace hardcoded value with env variable
+    return storage.bucket('amplication-artifacts').file(filePath).createReadStream();
   }
 
   /**
