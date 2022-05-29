@@ -8,9 +8,9 @@ import {
 export function Notification() {
   return (
     <NovuProvider
-      subscriberId={"cl3r1c72x0090kfp512158a4f"}
       colorScheme={"dark" || "light"}
-      applicationIdentifier={"qBrB-jRV8iOp"}
+      subscriberId={process.env.NOVU_SAMPLE_USE_ID}
+      applicationIdentifier={process.env.NOVU_APP_ID_FROM_ADMIN_PANEL!}
     >
       <PopoverNotificationCenter>
         {({ unseenCount }) => <NotificationBell unseenCount={unseenCount} />}

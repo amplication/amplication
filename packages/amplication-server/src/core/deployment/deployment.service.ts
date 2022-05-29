@@ -415,12 +415,12 @@ export class DeploymentService {
   }
 
   private async notifyWhenDeployIsReady(deploymentLink) {
-    const novu = new Novu('b3331a35bdcee750bf35879a6af24d7d');
+    const novu = new Novu(process.env.NOVU_API_KEY);
 
     try {
       await novu.trigger('sandbox-is-ready', {
         to: {
-          subscriberId: 'cl3r1c72x0090kfp512158a4f'
+          subscriberId: process.env.NOVU_SAMPLE_USE_ID
         },
         payload: {
           title: 'Sandbox is Ready',
