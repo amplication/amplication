@@ -112,9 +112,7 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS:
-        - b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
-        - b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094
+      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
