@@ -38,7 +38,7 @@ postgres:
   install: false
   postgresqlUsername: admin
   postgresPassword: admin
-  db: git-pull-service-db
+  db: pull
   fullnameOverride: postgresql
   postgresql:
     image: groundnuty/k8s-wait-for:v1.3
