@@ -8,7 +8,7 @@ spec:
       name: "{{ .Values.name }}-migrate"
     spec:
       restartPolicy: Never
-      {{ if .Values.postgres.install }}
+      {{- if .Values.postgres.install }}
       initContainers:
       - name: wait-for-postgres-connection
         image: {{ .Values.postgres.postgresql.image }}
@@ -16,10 +16,10 @@ spec:
         args:
           - "pod"
           - "postgresql-0"
-      {{ end }}
+      {{- end }}
       containers:
       - name: "{{ .Values.name }}-migrate"
-        image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         command: ["/bin/sh"]
         args: ["-c", "npm run migrate:up"]
         env:

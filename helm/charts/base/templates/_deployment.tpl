@@ -66,7 +66,7 @@ spec:
       volumes:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.volume.name }}
+            claimName: {{ .Values.pvc.name }}
       {{- end }}
 {{- end -}}
 {{- define "base.deployment" -}}
