@@ -1,3 +1,0 @@
-{{ include "base.pvc" (list . "amplication-git-push-webhook-service.pvc") -}}
-{{- define "amplication-git-push-webhook-service.pvc" -}}
-{{- end }}
