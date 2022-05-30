@@ -34,8 +34,8 @@ pvc:
 # Postgresql Server
 postgres:
   install: false
-  postgresqlUsername: postgres-pull
-  postgresPassword: admin
+  postgresqlUsername: postgrespull
+  postgresPassword: YWRtaW4K
   db: pull
   fullnameOverride: postgresql
   postgresql:
