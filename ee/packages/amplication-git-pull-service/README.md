@@ -1,5 +1,7 @@
 # Amplication git pull service
 
+Link to the issue: ["Git Pull Service: sync changes from remote repositories"]("https://github.com/amplication/amplication/issues/2437)
+
 This is a microservice built upon the NestJS microservice.
 
 This service is listening to a Kafka queue that consists of webhooks push events from GitHub.
