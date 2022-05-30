@@ -11,6 +11,10 @@ cp-helm-charts:
 #     cluster-autoscaler.kubernetes.io/safe-to-evict: 'false'
 #   resources: {}
 #   heapOptions: "-Xms512M -Xmx512M"
+#   tolerations:
+#   - key: "kafka"
+#     operator: "Equal"
+#     value: "true" 
 #   brokers: 1
 #   persistence:
 #     enabled: true
