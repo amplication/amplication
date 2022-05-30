@@ -82,7 +82,7 @@ amplication-server:
       HOST: "https://server-dev.staging-os.amplication-dev.com"
       CLIENT_HOST: "https://app-dev.staging-os.amplication-dev.com"
 
-      KAFKA_BROKERS: "amplication-cp-kafka-headless:9092"
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server
 
@@ -121,7 +121,7 @@ amplication-git-push-webhook-service:
     hostname: https://webhook-dev.staging-os.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: amplication-cp-kafka-headless:9092
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-push-webhook 
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
@@ -144,7 +144,7 @@ amplication-git-pull-service:
       GIT_DEFAULT_ORIGIN_NAME: origin
       GITHUB_APP_PRIVATE_KEY:
 
-      KAFKA_BROKERS: amplication-cp-kafka-headless:9092
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull
       KAFKA_GROUP_ID: amplication-git-pull-service
 
@@ -153,6 +153,6 @@ amplication-git-pull-request-service:
     tag: "feature-add-services"
   config:
     env:
-      KAFKA_BROKERS: amplication-cp-kafka-headless:9092
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
