@@ -81,7 +81,7 @@ amplication-git-pull-service:
 
       #EFS
       STORAGE_PATH: /amplication-data/build-data
-      MAX_SNAPSHOTS: 100
+      MAX_SNAPSHOTS: "100"
 
       #GitHub App
       GITHUB_APP_APP_ID: "195638"
