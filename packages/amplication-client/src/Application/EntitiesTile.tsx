@@ -4,22 +4,18 @@ import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
 import {
-  Panel,
-  EnumPanelStyle,
-  Icon,
   CircularProgress,
+  Button,
+  EnumButtonStyle,
 } from "@amplication/design-system";
 
 import { GET_ENTITIES } from "../Entity/EntityList";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
-import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
-import "./EntitiesTile.scss";
+import OverviewSecondaryTile from "./OverviewSecondaryTile";
 
 type Props = {
   applicationId: string;
 };
-
-const CLASS_NAME = "entities-tile";
 
 const EVENT_DATA: TrackEvent = {
   eventName: "entitiesTileClick",
@@ -46,31 +42,30 @@ function EntitiesTile({ applicationId }: Props) {
   );
 
   return (
-    <Panel
-      className={`${CLASS_NAME}`}
-      clickable
-      onClick={handleClick}
-      panelStyle={EnumPanelStyle.Bordered}
-    >
-      <div className={`${CLASS_NAME}__content`}>
-        <div className={`${CLASS_NAME}__content__details`}>
-          <h2>Entities</h2>
-          Define the data model of you application with data entities and
-          role‑based access.
-          {loading ? (
-            <CircularProgress />
-          ) : (
-            <span className={`${CLASS_NAME}__content__details__summary`}>
-              <Icon icon="database" size="medium" />
-
-              {data?.entities.length}
-              {data?.entities.length > 1 ? " entities" : " entity"}
-            </span>
-          )}
-        </div>
-        <SvgThemeImage image={EnumImages.Entities} />
-      </div>
-    </Panel>
+    <OverviewSecondaryTile
+      icon="database"
+      title="Entities"
+      headerExtra={
+        loading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            {data?.entities.length}
+            {data?.entities.length > 1 ? " entities" : " entity"}
+          </>
+        )
+      }
+      message="Define your own data model. Keep using the Amplication Console. It is here to help you out with its simple and intuitive interface."
+      footer={
+        <Button
+          buttonStyle={EnumButtonStyle.Outline}
+          type="button"
+          onClick={handleClick}
+        >
+          Go to entities
+        </Button>
+      }
+    />
   );
 }
 

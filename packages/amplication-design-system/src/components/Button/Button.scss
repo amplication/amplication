@@ -161,4 +161,27 @@ $split-icon-font-size: 20px;
       }
     }
   }
+
+  &.amp-button--outline {
+    background-color: transparent;
+    color: var(--black100);
+    border: 1px solid var(--black100);
+    border-radius: 20px !important; //overwrite the amp-button radius
+    padding: 4px 12px;
+    transition: all 0.5s;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--dark-purple);
+      border-color: var(--dark-purple);
+      color: var(--static-white);
+    }
+
+    &[disabled] {
+      background-color: var(--black20);
+      color: var(--white);
+      border: none;
+    }
+  }
 }

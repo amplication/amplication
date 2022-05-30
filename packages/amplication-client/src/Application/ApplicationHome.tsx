@@ -15,10 +15,14 @@ import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import { COLOR_TO_NAME } from "./constants";
+import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
+import FeatureRequestTile from "./FeatureRequestTile";
 import NewVersionTile from "./NewVersionTile";
+import OverviewTile from "./OverviewTile";
 import RolesTile from "./RolesTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
+import ViewRoadmapTile from "./ViewRoadmapTile";
 
 type Props = {
   match: match<{ application: string }>;
@@ -109,9 +113,13 @@ function ApplicationHome({ match }: Props) {
                   component={() => (
                     <div className={`${CLASS_NAME}__tiles`}>
                       <NewVersionTile applicationId={applicationId} />
+                      <OverviewTile applicationId={applicationId} />
+                      <SyncWithGithubTile applicationId={applicationId} />
                       <EntitiesTile applicationId={applicationId} />
                       <RolesTile applicationId={applicationId} />
-                      <SyncWithGithubTile applicationId={applicationId} />
+                      <DocsTile />
+                      <FeatureRequestTile />
+                      <ViewRoadmapTile />
                     </div>
                   )}
                 />
