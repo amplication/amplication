@@ -87,7 +87,6 @@ amplication-git-pull-service:
       GITHUB_APP_APP_ID: "195638"
       GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
       GIT_DEFAULT_ORIGIN_NAME: origin
-      KAFKA_TOPIC: git.external.push.event.0
       GITHUB_APP_PRIVATE_KEY: ""
 
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
