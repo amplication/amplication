@@ -7,7 +7,7 @@ import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
-import { downloadArchive } from "./BuildSteps";
+
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import { BuildStepsStatus } from "./BuildStepsStatus";
@@ -16,6 +16,7 @@ import { GET_APPLICATION } from "../Application/ApplicationHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
+import { downloadFile } from "../util/download";
 
 const CLASS_NAME = "build-summary";
 
@@ -63,7 +64,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
   });
 
   const handleDownloadClick = useCallback(() => {
-    downloadArchive(data.build.archiveURI).catch(onError);
+    downloadFile(data.build.archiveURI).catch(onError);
   }, [data.build.archiveURI, onError]);
 
   const handleDismissHelpGitHub = useCallback(() => {

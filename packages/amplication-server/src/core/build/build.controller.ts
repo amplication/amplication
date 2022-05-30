@@ -15,7 +15,10 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 
-const ZIP_MIME = 'application/zip';
+
+interface LinkResponse {
+  uri: string;
+}
 
 @Controller('generated-apps')
 export class BuildController {
@@ -23,10 +26,10 @@ export class BuildController {
 
   @Get(`/:id.zip`)
   @UseInterceptors(MorganInterceptor('combined'))
-  async getGeneratedAppArchive(@Param('id') id: string, @Res() res: Response) {
-    let stream;
+  async getGeneratedAppArchive(@Param('id') id: string): Promise<LinkResponse> {
     try {
-      stream = await this.buildService.download({ where: { id } });
+      const arr = await this.buildService.download({ where: { id } })
+      return { uri: arr[0] };
     } catch (error) {
       if (error instanceof StepNotCompleteError) {
         throw new BadRequestException(error.message);
@@ -40,12 +43,5 @@ export class BuildController {
       }
       throw error;
     }
-    res.set({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      'Content-Type': ZIP_MIME,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      'Content-Disposition': `attachment; filename="${id}.zip"`
-    });
-    stream.pipe(res);
   }
 }
