@@ -14,7 +14,7 @@ image:
   imagePullSecrets: []
 
 volume:
-  name: efs-claim
+  name: amplication-data
   path: /amplication-data
 
 service:
@@ -33,6 +33,7 @@ pvc:
   storageLimit: 5Gi
   storageRequest: 1Gi
   storageName: efs-sc
+  name: efs-claim
 
 # Postgresql Server
 postgres:
