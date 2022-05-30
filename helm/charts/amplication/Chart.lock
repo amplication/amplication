@@ -16,3 +16,14 @@ dependencies:
   version: 0.6.1
 digest: sha256:41c4a3d3dc3a0fb491bf2c71dd597c291b37625038f288cee29d13e9115135fb
 generated: "2022-05-29T12:26:07.557151+03:00"
+- name: amplication-git-pull-request-service
+  repository: file://../services/amplication-git-pull-request-service
+  version: 0.1.0
+- name: amplication-git-pull-service
+  repository: file://../services/amplication-git-pull-service
+  version: 0.1.0
+- name: amplication-git-push-webhook-service
+  repository: file://../services/amplication-git-push-webhook-service
+  version: 0.1.0
+digest: sha256:1c4ab27e8ef7b54b2f8f861152d5b9b596b40c19ac61a08c889cecb18f52e89d
+generated: "2022-05-30T12:23:55.594522+03:00"

@@ -21,6 +21,15 @@ dependencies:
   version: "0.6.1"
   repository: "https://confluentinc.github.io/cp-helm-charts/"
   condition: cp-helm-charts.enabled
+- name: amplication-git-pull-request-service
+  version: "0.1.0"
+  repository: "file://../services/amplication-git-pull-request-service"
+- name: amplication-git-pull-service
+  version: "0.1.0"
+  repository: "file://../services/amplication-git-pull-service"
+- name: amplication-git-push-webhook-service
+  version: "0.1.0"
+  repository: "file://../services/amplication-git-push-webhook-service"
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives

@@ -3,6 +3,7 @@ import { BuildFilesSaver } from './BuildFilesSaver';
 import { ConfigService } from '@nestjs/config';
 import fsExtra from 'fs-extra';
 import { tmpdir } from 'os';
+import { join } from 'path';
 
 const APP_ID_MOCK = 'appId';
 const BUILD_ID_MOCK = 'buildId';
@@ -11,10 +12,12 @@ describe('Testing the BuildFilesSaver service', () => {
 
   let buildFilesSaver: BuildFilesSaver;
   const configService = mock<ConfigService>();
-  const relativePath = `${APP_ID_MOCK}/${BUILD_ID_MOCK}`;
+
+  const relativePath = join(APP_ID_MOCK, BUILD_ID_MOCK);
   beforeEach(() => {
-    buildFilesSaver = new BuildFilesSaver(configService);
     configService.get.mockClear();
+    configService.get.mockReturnValue(tmpdir());
+    buildFilesSaver = new BuildFilesSaver(configService);
   });
   it('should save an app files to a build folder', async () => {
     await buildFilesSaver.saveFiles(relativePath, [
@@ -24,7 +27,7 @@ describe('Testing the BuildFilesSaver service', () => {
       }
     ]);
     expect(outputFileSpy).toBeCalledWith(
-      `${tmpdir()}/builds/${relativePath}/index.ts`,
+      join(tmpdir(), relativePath, 'index.ts'),
       'code'
     );
     expect(outputFileSpy).toBeCalledTimes(1);
