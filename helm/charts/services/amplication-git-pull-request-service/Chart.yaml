@@ -3,7 +3,6 @@ name: amplication-git-pull-request-service
 description: A Helm chart for the amplication-git-pull-request-service component of Amplication.
 
 dependencies:
-
 - name: base
   version: "0.1.0"
   repository: "file://../../base"

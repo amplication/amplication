@@ -11,6 +11,9 @@ dependencies:
 - name: amplication-server
   repository: file://../services/amplication-server
   version: 0.1.0
+- name: cp-helm-charts
+  repository: https://confluentinc.github.io/cp-helm-charts/
+  version: 0.6.1
 - name: amplication-git-pull-request-service
   repository: file://../services/amplication-git-pull-request-service
   version: 0.1.0
@@ -20,5 +23,5 @@ dependencies:
 - name: amplication-git-push-webhook-service
   repository: file://../services/amplication-git-push-webhook-service
   version: 0.1.0
-digest: sha256:1c4ab27e8ef7b54b2f8f861152d5b9b596b40c19ac61a08c889cecb18f52e89d
-generated: "2022-05-30T12:23:55.594522+03:00"
+digest: sha256:e010f88dc7e9a709b3b796c3042143db914c054fd8b6a5208dca44eb749c94b9
+generated: "2022-05-30T12:39:49.3169+03:00"

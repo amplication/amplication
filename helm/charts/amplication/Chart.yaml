@@ -17,6 +17,10 @@ dependencies:
 - name: amplication-server
   version: "0.1.0"
   repository: "file://../services/amplication-server"
+- name: cp-helm-charts
+  version: "0.6.1"
+  repository: "https://confluentinc.github.io/cp-helm-charts/"
+  condition: cp-helm-charts.enabled
 - name: amplication-git-pull-request-service
   version: "0.1.0"
   repository: "file://../services/amplication-git-pull-request-service"

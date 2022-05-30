@@ -1,4 +1,66 @@
+cp-helm-charts:
+  enabled: false
+# cp-kafka:
+#   enabled: true
+#   image: confluentinc/cp-enterprise-kafka
+#   imageTag: 6.1.0
+#   prometheus:
+#     jmx:
+#       enabled: true
+#   podAnnotations:
+#     cluster-autoscaler.kubernetes.io/safe-to-evict: 'false'
+#   resources: {}
+#   heapOptions: "-Xms512M -Xmx512M"
+#   brokers: 1
+#   persistence:
+#     enabled: true
+#     size: 5Gi
+#   configurationOverrides:
+#     offsets.topic.replication.factor: "1"
+# cp-zookeeper:
+#   enabled: true
+#   servers: 1
+#   image: confluentinc/cp-zookeeper
+#   imageTag: 6.1.0
+#   heapOptions: "-Xms512M -Xmx512M"
+#   persistence:
+#     enabled: true
+# cp-schema-registry:
+#   enabled: false
+# cp-kafka-rest:
+#   enabled: false
+# cp-kafka-connect:
+#   enabled: false
+# cp-control-center:
+#   enabled: false
+# cp-ksql-server:
+#   enabled: false
+
+postgres:
+  install: false
+
+amplication-client:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
+    tag: "fix-download-app" # Need to change for dev.
+  service:
+    hostname: app-dev.staging-os.amplication-dev.com
+    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
+  config:
+    env:
+      REACT_APP_DATA_SOURCE: "https://server-dev.staging-os.amplication-dev.com/graphql"
+      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-dev.staging-os.amplication-dev.com/github"
+      REACT_APP_GITHUB_CLIENT_ID: value
+
 amplication-server:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
+    tag: "fix-download-app"
+  postgres:
+    install: false
+  ingress:
+    enabled: true
+    hostname: server-dev.staging-os.amplication-dev.com
   config:
     env:
       GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
@@ -7,7 +69,6 @@ amplication-server:
       CONTAINER_BUILDER_DEFAULT: "docker"
       PORT: "3000"
       NODE_ENV: "production"
-      GCP_APPS_REGION: "us-east1"
       GRAPHQL_DEBUG: "0"
       PLAYGROUND_ENABLE: "0"
       BCRYPT_SALT_OR_ROUNDS: "10"
@@ -15,5 +76,84 @@ amplication-server:
       DEFAULT_DISK: "gcs"
       GCS_BUCKET: bucket
       DOCKER_HOST: "tcp://docker:2375"
+
+      HOST: "https://server-dev.staging-os.amplication-dev.com"
+      CLIENT_HOST: "https://app-dev.staging-os.amplication-dev.com"
+
+      KAFKA_BROKERS: '["confluent-oss-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: amplication-server
+      KAFKA_GROUP_ID: amplication-server
+
+      #GCP - APPS Builder
+      DEFAULT_DISK: gcs
+      LOCAL_DISK_ROOT: /artifacts
+      CONTAINER_BUILDER_DEFAULT: cloud-build
+      GCS_BUCKET: amplication-artifacts
+
+      #GCP - APPS Deployer
+      DEPLOYER_DEFAULT: gcp
+
+      GCP_APPS_PROJECT_ID: amplication-apps
+      GCP_APPS_REGION: us-east1
+      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
+      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
+      GCP_APPS_DOMAIN: staging.amplication.app
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "195638"
+      GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplicaiton-server-staging-os/installations/new?state={state}"
+
+      #GitHub OAuth App
+      GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
+      GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
+      GITHUB_REDIRECT_URI: "https://server-dev.staging-os.amplication-dev.com/github/callback"
+
+amplication-git-push-webhook-service:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
+    tag: "feature-add-services"
   postgres:
-    install: "true"
+    install: false
+  ingress:
+    enabled: true
+    hostname: webhook-dev.staging-os.amplication-dev.com
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: git-push-webhook 
+      KAFKA_GROUP_ID: amplication-git-push-webhook-service
+
+amplication-git-pull-service:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
+    tag: "feature-add-services"
+  postgres:
+    install: false
+  config:
+    env:
+      NODE_ENV: "production"
+
+      #EFS
+      STORAGE_PATH: amplication-data/git-data
+      MAX_SNAPSHOTS: "100"
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "195638"
+      GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
+      GIT_DEFAULT_ORIGIN_NAME: origin
+      GITHUB_APP_PRIVATE_KEY: ""
+
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: git-pull
+      KAFKA_GROUP_ID: amplication-git-pull-service
+
+amplication-git-pull-request-service:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
+    tag: "feature-add-services"
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: git-pull-request
+      KAFKA_GROUP_ID: amplication-git-pull-request-service
