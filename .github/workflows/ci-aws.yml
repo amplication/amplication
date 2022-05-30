@@ -178,16 +178,16 @@ jobs:
           if [ -d "$GITHUB_WORKSPACE/packages/${{ matrix.service }}" ] 
           then
               echo "Directory packages/${{ matrix.service }} exists." 
-              SERVICES_FOLDER=$GITHUB_WORKSPACE/packages/${{ matrix.service }}
+              SERVICE_FOLDER=$GITHUB_WORKSPACE/packages/${{ matrix.service }}
           elif [ -d "$GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}" ] 
           then
               echo "Directory ee/packages/${{ matrix.service }} exists."
-              SERVICES_FOLDER=$GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}
+              SERVICE_FOLDER=$GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}
           else
             echo "Unable to locate service folder: ${{ matrix.service }}"
             exit 1
           fi
-          echo "SERVICES_FOLDER=${SERVICES_FOLDER}" >> $GITHUB_ENV
+          echo "SERVICE_FOLDER=${SERVICE_FOLDER}" >> $GITHUB_ENV
         name: Set services folder
       - name: Login to Amazon ECR
         id: login-ecr
@@ -248,11 +248,11 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           TAG_LIST: "${{ github.run_id }},${{ github.sha }},${{ env.BRANCH_NAME }}"
         run: |
-          echo "Will work from: $SERVICES_FOLDER"
-          cd $SERVICES_FOLDER
+          echo "Will work from: $SERVICE_FOLDER"
+          cd $SERVICE_FOLDER
           Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
           echo "Docker_image: $Docker_image"
-          command="docker build -f $path . -t $Docker_image"
+          command="docker build -f $SERVICE_FOLDER/Dockerfile . -t $Docker_image"
           echo "$command"
           $command
           docker push $Docker_image
@@ -318,14 +318,14 @@ jobs:
           TAG_LIST_SHORT: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }}"
           TAG_LIST_FULL: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }},${{ github.run_id }}"
         run: |
-          echo "Dockerfile path: $SERVICES_FOLDER/Dockerfile"
+          echo "Dockerfile path: $SERVICE_FOLDER/Dockerfile"
           echo "GITHUB_HASH: $GITHUB_HASH"
           echo "ECR_REPOSITORY: $ECR_REPOSITORY"
           export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           if [ "$MANIFEST" = "null" ]
           then
             Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
-            docker build -f $SERVICES_FOLDER/Dockerfile . -t $Docker_image
+            docker build -f $SERVICE_FOLDER/Dockerfile . -t $Docker_image
             docker push $Docker_image
             export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
             export TAG_LIST=$TAG_LIST_FULL
