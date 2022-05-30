@@ -118,7 +118,7 @@ amplication-git-push-webhook-service:
     install: false
   ingress:
     enabled: true
-    hostname: https://webhook-dev.staging-os.amplication-dev.com
+    hostname: webhook-dev.staging-os.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
@@ -136,13 +136,13 @@ amplication-git-pull-service:
 
       #EFS
       STORAGE_PATH: amplication-data/git-data
-      MAX_SNAPSHOTS: 100
+      MAX_SNAPSHOTS: "100"
 
       #GitHub App
       GITHUB_APP_APP_ID: "195638"
       GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
       GIT_DEFAULT_ORIGIN_NAME: origin
-      GITHUB_APP_PRIVATE_KEY:
+      GITHUB_APP_PRIVATE_KEY: ""
 
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull

@@ -2,9 +2,6 @@ name: amplication-git-pull-request-service
 
 deployment:
   replicaCount: 1
-  volume:
-    name: amplication-git-pull-data
-    path: /amplication-data
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -19,6 +16,10 @@ deployment:
     tag: 0.0.1
     imagePullSecrets: []
 
+volume:
+  name: amplication-git-pull-data
+  path: /amplication-data
+
 service:
   type: ClusterIP
   port:
@@ -29,6 +30,5 @@ ingress:
   enabled: false
 
 pvc:
-  name: efs-claim
   storageRequest: 1Gi
   storageName: efs-sc

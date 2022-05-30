@@ -2,9 +2,6 @@ name: amplication-git-pull-service
 
 deployment:
   replicaCount: 1
-  volume:
-    name: amplication-git-pull-data
-    path: /amplication-data
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -18,6 +15,10 @@ deployment:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service-dev
     tag: 0.0.1
     imagePullSecrets: []
+    
+volume:
+  name: amplication-git-pull-data
+  path: /amplication-data
 
 service:
   type: ClusterIP

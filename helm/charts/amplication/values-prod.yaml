@@ -74,7 +74,7 @@ amplication-git-push-webhook-service:
     install: false
   ingress:
     enabled: true
-    hostname: https://webhook.amplication-dev.com
+    hostname: webhook.amplication.com
   config:
     env:
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
