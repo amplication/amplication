@@ -131,8 +131,6 @@ jobs:
           #create values files
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
-          ---------------------"
-
 
           #argocd login
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
