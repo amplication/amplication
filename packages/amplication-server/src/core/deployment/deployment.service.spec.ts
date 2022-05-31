@@ -550,6 +550,9 @@ describe('DeploymentService', () => {
       where: { id: EXAMPLE_DEPLOYMENT_ID },
       data: { status: EnumDeploymentStatus.Completed }
     });
+
+    expect(mailServiceMock).toBeCalledTimes(1);
+    expect(mailServiceMock).toBeCalledWith(EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_SUCCESS);
   });
 
   it('should try to update running deployment status but catch an error', async () => {
