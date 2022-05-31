@@ -1,44 +1,44 @@
 cp-helm-charts:
   enabled: true
   cp-kafka:
-      enabled: true
-      image: confluentinc/cp-enterprise-kafka
-      imageTag: 6.1.0
-      prometheus:
-        jmx:
-          enabled: true
-      podAnnotations:
-        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
-      resources: {}
-      heapOptions: "-Xms512M -Xmx512M"
-      tolerations:
-        - key: "kafka"
-          operator: "Equal"
-          value: "true"
-      brokers: 1
-      persistence:
+    enabled: true
+    image: confluentinc/cp-enterprise-kafka
+    imageTag: 6.1.0
+    prometheus:
+      jmx:
         enabled: true
-        size: 5Gi
-      configurationOverrides:
-        offsets.topic.replication.factor: "1"
-    cp-zookeeper:
+    podAnnotations:
+      cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+    resources: {}
+    heapOptions: "-Xms512M -Xmx512M"
+    tolerations:
+      - key: "kafka"
+        operator: "Equal"
+        value: "true"
+    brokers: 1
+    persistence:
       enabled: true
-      servers: 1
-      image: confluentinc/cp-zookeeper
-      imageTag: 6.1.0
-      heapOptions: "-Xms512M -Xmx512M"
-      persistence:
-        enabled: true
-    cp-schema-registry:
-      enabled: false
-    cp-kafka-rest:
-      enabled: false
-    cp-kafka-connect:
-      enabled: false
-    cp-control-center:
-      enabled: false
-    cp-ksql-server:
-      enabled: false
+      size: 5Gi
+    configurationOverrides:
+      offsets.topic.replication.factor: "1"
+  cp-zookeeper:
+    enabled: true
+    servers: 1
+    image: confluentinc/cp-zookeeper
+    imageTag: 6.1.0
+    heapOptions: "-Xms512M -Xmx512M"
+    persistence:
+      enabled: true
+  cp-schema-registry:
+    enabled: false
+  cp-kafka-rest:
+    enabled: false
+  cp-kafka-connect:
+    enabled: false
+  cp-control-center:
+    enabled: false
+  cp-ksql-server:
+    enabled: false
 
 postgres:
   install: false
