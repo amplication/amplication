@@ -30,6 +30,7 @@ jobs:
       POSTGRESQL_URL: ${{ steps.create-secret-names.outputs.POSTGRESQL_URL }}
       JWT_SECRET: ${{ steps.create-secret-names.outputs.JWT_SECRET }}
       SERVICE_JWT_SECRET: ${{ steps.create-secret-names.outputs.SERVICE_JWT_SECRET }}
+      REACT_APP_AMPLITUDE_API_KEY: ${{ steps.create-secret-names.outputs.REACT_APP_AMPLITUDE_API_KEY }}
     steps:
     - name: create secret names
       id: create-secret-names
@@ -46,6 +47,7 @@ jobs:
         echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_URL"
         echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}_JWT_SECRET"
         echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}_SERVICE_JWT_SECRET"
+        echo "::set-output name=REACT_APP_AMPLITUDE_API_KEY::AWS_${TARGET_ENV_SECRET}_REACT_APP_AMPLITUDE_API_KEY"
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
@@ -62,6 +64,8 @@ jobs:
       POSTGRESQL_URL: ${{ needs.prepare.outputs.POSTGRESQL_URL }}
       JWT_SECRET: ${{ needs.prepare.outputs.JWT_SECRET }}
       SERVICE_JWT_SECRET: ${{ needs.prepare.outputs.SERVICE_JWT_SECRET }}
+      REACT_APP_AMPLITUDE_API_KEY: ${{ needs.prepare.outputs.REACT_APP_AMPLITUDE_API_KEY }}
+
     steps:
       - uses: actions/checkout@v2
       - name: configure AWS credentials
@@ -153,6 +157,9 @@ jobs:
           SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
           SECRETS+=" -p amplication-server.secrets.JWT_SECRET=$JWT_SECRET"
           SECRETS+=" -p amplication-server.secrets.SERVICE_JWT_SECRET=$SERVICE_JWT_SECRET"
+          
+          SECRETS+=" -p amplication-client.secrets.REACT_APP_AMPLITUDE_API_KEY=$REACT_APP_AMPLITUDE_API_KEY"
+          
           COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
           COMMAND=$(echo $COMMAND|tr -d '\n')
           echo "$COMMAND"
@@ -171,4 +178,5 @@ jobs:
           POSTGRESQL_URL: ${{ secrets[env.POSTGRESQL_URL] }}
           JWT_SECRET: ${{ secrets[env.JWT_SECRET] }}
           SERVICE_JWT_SECRET: ${{ secrets[env.SERVICE_JWT_SECRET] }}
+          REACT_APP_AMPLITUDE_API_KEY: ${{ secrets[env.REACT_APP_AMPLITUDE_API_KEY] }}
       
