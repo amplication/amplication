@@ -111,15 +111,16 @@ jobs:
 
           #download secret from AWS
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
-          echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > secret-$TARGET_ENV.yaml
-          echo "---------------------"
-          cat secret-$TARGET_ENV.yaml
-          echo "---------------------"
+          echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > helm/charts/amplication/secret-$TARGET_ENV.yaml
           #create values files
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
           SECRETS="secret-$TARGET_ENV.yaml"
-          
+          echo "---------------------"
+          cat helm/charts/amplication/$SECRETS
+          echo "---------------------"
+
+
           #argocd login
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
