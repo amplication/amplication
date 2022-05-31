@@ -29,15 +29,14 @@ jobs:
     - name: create secret names
       id: create-secret-names
       run: |
-        if [ "$TARGET_ENV" = "custom" ]; then
-          TARGET_ENV=$TARGET_ENV_CUSTOM
+        export TARGET_ENV=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
+        if [ "$TARGET_ENV" != "PROD" ] || [ "$TARGET_ENV" != "STAGING" ]; then
+          echo "::set-output name=ARGOCD::AWS_${TARGET_ENV}_ARGOCD"
+        else
+          echo "::set-output name=ARGOCD::AWS_STAGING_OS_ARGOCD"
         fi
-        export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
-        echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
-        echo "::set-output name=ARGOCD::AWS_${TARGET_ENV_SECRET}_ARGOCD"
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
-        TARGET_ENV_CUSTOM: ${{ github.event.inputs.target-env-custom }}  
   deploy:
     runs-on: ubuntu-18.04
     needs:
@@ -115,31 +114,38 @@ jobs:
       - name: deploy app
         id: deploy-app
         run: |
-          ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
-          if [ "$TARGET_ENV" = "custom" ]; then
-            ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
+          #set argocd URL
+          ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
+          if [ "$TARGET_ENV" != "prod" ] || [ "$TARGET_ENV" != "staging" ]; then
+            ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
           fi
-          
+          echo "ARGO_CD_URL: $ARGO_CD_URL"
+
+          #download secret from AWS
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
           secret_values_file_content=$(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > secret-$TARGET_ENV.yaml
           
+          #create values files
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
           SECRETS="secret-$TARGET_ENV.yaml"
           
-          export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
-          echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
+          #argocd login
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
           $COMMAND
           
+          #argocd create app
           COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
           COMMAND=$(echo $COMMAND|tr -d '\n')
           echo "$COMMAND"
           $COMMAND
+
+          #argocd sync app
           COMMAND="argocd app sync $APP_NAME"
           echo "$COMMAND"
           $COMMAND
+
         env:
           ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
           TARGET_ENV: ${{ github.event.inputs.target-env }}

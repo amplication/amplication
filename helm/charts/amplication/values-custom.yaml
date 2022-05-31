@@ -1,0 +1,53 @@
+amplication-client:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
+  service:
+    hostname: app-custom.amplication-dev.com
+    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/5c7e86d0-5a8f-41d0-a0b5-db6a13dea090
+  config:
+    env:
+      REACT_APP_DATA_SOURCE: "https://server-custom.amplication-dev.com/graphql"
+      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-custom.amplication-dev.com/github"
+      REACT_APP_GITHUB_CLIENT_ID: value
+
+amplication-server:
+  image:
+      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
+  postgres:
+    install: false
+  ingress:
+    enabled: true
+    hostname: server-custom.amplication-dev.com
+  config:
+    env:
+
+      HOST: "https://server-custom.amplication-dev.com"
+      CLIENT_HOST: 'https://app-custom.amplication-dev.com'
+
+      #GCP - APPS Builder
+
+      DEFAULT_DISK: gcs
+      LOCAL_DISK_ROOT: /artifacts
+      CONTAINER_BUILDER_DEFAULT: cloud-build
+      GCS_BUCKET: amplication-artifacts
+
+      #GCP - APPS Deployer
+      DEPLOYER_DEFAULT: gcp
+
+      GCP_APPS_PROJECT_ID: amplication-apps
+      GCP_APPS_REGION: us-east1
+      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
+      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
+      GCP_APPS_DOMAIN: staging.amplication.app
+
+      DOCKER_HOST: tcp://docker:2375
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "195638"
+      GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplicaiton-server-staging-os/installations/new?state={state}"
+
+      #GitHub OAuth App
+      GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
+      GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
+      GITHUB_REDIRECT_URI: "https://server-custom.amplication-dev.com/github/callback"
