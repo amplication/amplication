@@ -43,4 +43,4 @@ COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amp
 COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
 
 EXPOSE 3000
-CMD [ "node", "dist/src/main"]
+CMD [ "node", "dist/main"]
