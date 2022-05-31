@@ -31,6 +31,3 @@ pvc:
   storageRequest: 1Gi
   storageName: efs-sc
   name: efs-claim
-
-secrets:
-  GPC: ""
