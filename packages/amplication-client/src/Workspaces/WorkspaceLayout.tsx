@@ -6,10 +6,13 @@ import * as models from "../models";
 import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import ApplicationList from "./ApplicationList";
+//import Subscription from "../Subscription/Subscription";
+import MemberList from "./MemberList";
 import InnerTabLink from "../Layout/InnerTabLink";
 import WorkspaceSelector from "./WorkspaceSelector";
 import WorkspaceForm from "./WorkspaceForm";
 import PageContent from "../Layout/PageContent";
+import CompleteInvitation from "../User/CompleteInvitation";
 import ProfilePage from "../Profile/ProfilePage";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import { isMobileOnly } from "react-device-detect";
@@ -55,10 +58,17 @@ function WorkspaceLayout({ match }: Props) {
             <InnerTabLink to={`/workspace/settings`} icon="settings">
               Workspace Settings
             </InnerTabLink>
+            <InnerTabLink to={`/workspace/members`} icon="users">
+              Workspace Members
+            </InnerTabLink>
+            {/* <InnerTabLink to={`/workspace/plans`} icon="file_text">
+              Workspace Plan
+            </InnerTabLink> */}
           </div>
         </MenuItemWithFixedPanel>
       </MainLayout.Menu>
       <MainLayout.Content>
+        <CompleteInvitation />
         <div className={`${CLASS_NAME}__app-container`}>
           <PageContent className={CLASS_NAME}>
             <Switch>
@@ -67,6 +77,16 @@ function WorkspaceLayout({ match }: Props) {
               </RouteWithAnalytics>
             </Switch>
             <Switch>
+              <RouteWithAnalytics
+                exact
+                path="/workspace/members"
+                component={MemberList}
+              />
+            </Switch>
+            {/* <Switch>
+              <RouteWithAnalytics exact path="/workspace/plans" component={Subscription} />
+            </Switch> */}
+			<Switch>
               <RouteWithAnalytics exact path="/user/profile">
                 <ProfilePage />
               </RouteWithAnalytics>

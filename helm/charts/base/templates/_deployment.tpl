@@ -6,20 +6,20 @@ metadata:
   labels:
     app: '{{ .Values.name }}'
 spec:
-  replicas: {{ .Values.deployment.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: '{{ .Values.name }}'
   template:
     metadata:
-      {{- with .Values.deployment.podAnnotations }}
+      {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         app: '{{ .Values.name }}'
     spec:
-      {{- with .Values.deployment.image.imagePullSecrets }}
+      {{- with .Values.image.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -32,9 +32,9 @@ spec:
                 command:
                   - /bin/sh
                   - -c
-                  - echo "$GCP" >> /var/gcp-secert
-          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
-          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
+                  - echo "$GCP" >> /var/gcp-secret
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if hasKey .Values "config" }}
           envFrom:
           - configMapRef:
@@ -47,26 +47,26 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          {{- if hasKey .Values.deployment "securityContext" }}
+          {{- if hasKey .Values "securityContext" }}
           securityContext:
-          {{- with .Values.deployment.securityContext -}}
+          {{- with .Values.securityContext -}}
           {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
           resources:
-            {{- toYaml .Values.deployment.resources | nindent 12 }}
+            {{- toYaml .Values.resources | nindent 12 }}
           {{- if  hasKey .Values "service" }}
           ports:
             - containerPort: {{ .Values.service.port.target }}
           {{- end }}
-      {{- if hasKey .Values.deployment "volume" }}
+      {{- if hasKey .Values "volume" }}
           volumeMounts:
-            - name: {{ .Values.deployment.volume.name }}
-              mountPath: {{ .Values.deployment.volume.path }}
+            - name: {{ .Values.volume.name }}
+              mountPath: {{ .Values.volume.path }}
       volumes:
-        - name: {{ .Values.deployment.volume.name }}
+        - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.deployment.volume.name }}
+            claimName: {{ .Values.volume.name }}
       {{- end }}
 {{- end -}}
 {{- define "base.deployment" -}}
