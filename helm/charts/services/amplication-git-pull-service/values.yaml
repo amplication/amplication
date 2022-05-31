@@ -14,8 +14,8 @@ image:
   imagePullSecrets: []
     
 volume:
-  name: amplication-git-pull-data
-  path: /amplication-data
+  name: amplication-data
+  path: /amplication-data/pull
 
 service:
   type: ClusterIP
