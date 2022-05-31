@@ -1,5 +1,9 @@
 cp-helm-charts:
   enabled: false
+  cp-kafka:
+    enabled: false
+  cp-zookeeper:
+    enabled: false
 
 postgres:
   install: false
