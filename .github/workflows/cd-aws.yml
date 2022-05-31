@@ -7,11 +7,11 @@ on:
         description: To which environment to deploy
         default: staging-os
         required: true
-        options: 
-        - dev
-        - staging-os
-        - staging
-        - prod
+        options:
+          - dev
+          - staging-os
+          - staging
+          - prod
       source-branch:
         type: string
         description: Which branch to use for deployment
@@ -33,26 +33,26 @@ jobs:
       SERVICE_JWT_SECRET: ${{ steps.create-secret-names.outputs.SERVICE_JWT_SECRET }}
       WEBHOOKS_SECRET_KEY: ${{ steps.create-secret-names.outputs.WEBHOOKS_SECRET_KEY }}
     steps:
-    - name: create secret names
-      id: create-secret-names
-      run: |
-        export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
-        echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
-      
-        echo "::set-output name=ARGOCD::AWS_${TARGET_ENV_SECRET}_ARGOCD"
-        echo "::set-output name=GCP::AWS_${TARGET_ENV_SECRET}_GCP"
-        echo "::set-output name=GITHUB_APP_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_CLIENT_SECRET"
-        echo "::set-output name=GITHUB_APP_PRIVATE_KEY::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_PRIVATE_KEY"
-        echo "::set-output name=GITHUB_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_CLIENT_SECRET"
-        echo "::set-output name=POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_PASSWORD"
-        echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_URL"
-        echo "::set-output name=PULL_POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_PULL_POSTGRESQL_URL"
-        echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}_JWT_SECRET"
-        echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}_SERVICE_JWT_SECRET"
-        echo "::set-output name=WEBHOOKS_SECRET_KEY::AWS_${TARGET_ENV_SECRET}_WEBHOOKS_SECRET_KEY"
+      - name: create secret names
+        id: create-secret-names
+        run: |
+          export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
+          echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
 
-      env:
-        TARGET_ENV: ${{ github.event.inputs.target-env }}  
+          echo "::set-output name=ARGOCD::AWS_${TARGET_ENV_SECRET}_ARGOCD"
+          echo "::set-output name=GCP::AWS_${TARGET_ENV_SECRET}_GCP"
+          echo "::set-output name=GITHUB_APP_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_CLIENT_SECRET"
+          echo "::set-output name=GITHUB_APP_PRIVATE_KEY::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_PRIVATE_KEY"
+          echo "::set-output name=GITHUB_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_CLIENT_SECRET"
+          echo "::set-output name=POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_PASSWORD"
+          echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_URL"
+          echo "::set-output name=PULL_POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_PULL_POSTGRESQL_URL"
+          echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}_JWT_SECRET"
+          echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}_SERVICE_JWT_SECRET"
+          echo "::set-output name=WEBHOOKS_SECRET_KEY::AWS_${TARGET_ENV_SECRET}_WEBHOOKS_SECRET_KEY"
+
+        env:
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
   deploy:
     runs-on: ubuntu-18.04
     needs:
@@ -75,15 +75,15 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: install kubectl
         run: |
-            sudo apt-get install -y curl awscli && curl -LO https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          sudo apt-get install -y curl awscli && curl -LO https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
       - name: set branch-name
         run: |
-            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-            echo "SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+          echo "SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
         env:
           SOURCE_BRANCH_NAME: ${{ github.event.inputs.source-branch }}
       - name: calculate docker tags
@@ -178,6 +178,7 @@ jobs:
 
           SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
           SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
+          SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_APP_ID=$GITHUB_APP_APP_ID"
 
           COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
           COMMAND=$(echo $COMMAND|tr -d '\n')
@@ -199,4 +200,3 @@ jobs:
           JWT_SECRET: ${{ secrets[env.JWT_SECRET] }}
           SERVICE_JWT_SECRET: ${{ secrets[env.SERVICE_JWT_SECRET] }}
           WEBHOOKS_SECRET_KEY: ${{ secrets[env.WEBHOOKS_SECRET_KEY] }}
-      
