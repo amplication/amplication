@@ -20,31 +20,21 @@ const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
   }, [fileName]);
   useLayoutEffect(() => {
     (async () => {
-      if (!filePath) {
-        return;
-      }
-      if (
-        fileExtension &&
-        UNSUPPORTED_EXTENSIONS.includes(fileExtension.toLocaleLowerCase())
-      ) {
-        setContent(UNSUPPORTED_EXTENSION_MESSAGE);
-        return;
-      }
-      const data = await StorageBaseAxios.instance.fileContent(
-        appId,
-        buildId,
-        filePath
-      );
+      if (!filePath) return;
+
+      const data = fileExtension && UNSUPPORTED_EXTENSIONS.includes(fileExtension.toLocaleLowerCase())
+        ? UNSUPPORTED_EXTENSION_MESSAGE
+        : await StorageBaseAxios.instance.fileContent(
+          appId,
+          buildId,
+          filePath
+        );
 
       setContent(data);
     })();
   }, [appId, buildId, filePath, fileExtension]);
 
-  if (!filePath) {
-    return <div />;
-  }
-
-  return (
+  return !filePath ? (<div />) : (
     <MonacoEditor
       beforeMount={setEditorTheme}
       height="100%"
