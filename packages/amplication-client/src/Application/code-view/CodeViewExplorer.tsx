@@ -47,16 +47,7 @@ const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
     },
   });
 
-  // useEffect(() => {
-  //   onFileSelected(null);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [selectedBuild]);
-
-  if (!data) {
-    return <div />;
-  }
-
-  return (
+  return !data ? (<div />) : (
     <div className={CLASS_NAME}>
       <div>
         <BuildSelector
