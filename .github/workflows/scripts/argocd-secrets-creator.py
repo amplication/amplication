@@ -11,9 +11,10 @@ Path(output_folder).mkdir(parents=True, exist_ok=True)
 
 secrets = json.load(open(secrets_file))
 for secret in secrets:
+    secret_name=secret["name"]
     secret_template = json.load(open(secrets_template))
-    secret_template["metadata"]["name"]=secret["name"]
+    secret_template["metadata"]["name"]=secret_name
     for secret_entry in secret["data"]:
         secret_template["data"][secret_entry]=secret["data"][secret_entry]
-    with open(os.path.join(output_folder,f'{secret["name"]}-secret.json'), 'w') as outfile:
+    with open(os.path.join(output_folder,f'{secret_name}-secret.json'), 'w') as outfile:
         json.dump(secret_template, outfile)
