@@ -1208,6 +1208,10 @@ input AppSettingsUpdateInput {
   dbPassword: String!
   dbPort: Int!
   authProvider: EnumAuthProviderType!
+  generateAdminUI: Boolean
+  generateGraphQL: Boolean
+  generateRestApi: Boolean
+  generateRootFiles: Boolean
 }
 
 input SignupInput {

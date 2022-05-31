@@ -36,6 +36,7 @@ export class AppSettings extends IBlock {
     nullable: false
   })
   authProvider!: EnumAuthProviderType;
+
   @Field(() => Boolean, {
     nullable: true
   })
