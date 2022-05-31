@@ -137,6 +137,10 @@ jobs:
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /usr/local/bin/argocd
+      - name: delete unused job
+        id: delete-job
+        run:
+          kubectl delete job amplication-server-migrate -n $NAMESPACE
       - name: deploy app
         id: deploy-app
         run: |
