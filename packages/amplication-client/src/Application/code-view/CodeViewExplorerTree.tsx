@@ -99,15 +99,13 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
               defaultExpandIcon={<Icon icon="arrow_left" />}
               defaultCollapseIcon={<Icon icon="arrow_left" />}
             >
-              {rootFile.children?.map((child) => {
-                return (
-                  <FileExplorerNode
-                    file={child}
-                    key={child.path + JSON.stringify(child.children)}
-                    onSelect={handleNodeClick}
-                  />
-                );
-              })}
+              {rootFile.children?.map((child) => (
+                <FileExplorerNode
+                  file={child}
+                  key={child.path + JSON.stringify(child.children)}
+                  onSelect={handleNodeClick}
+                />
+              ))}
             </TreeView>
           ) : (
             NO_FILES_MESSAGE
