@@ -356,7 +356,7 @@ describe('AppService', () => {
     const createAppArgs = {
       args: {
         data: {
-          name: EXAMPLE_APP_NAME,
+          name: SAMPLE_APP_DATA.name,
           description: EXAMPLE_APP_DESCRIPTION,
           color: DEFAULT_APP_COLOR
         }
@@ -376,7 +376,7 @@ describe('AppService', () => {
         },
         project: {
           create: {
-            name: `project-${EXAMPLE_APP.name}`,
+            name: `project-${SAMPLE_APP_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -508,7 +508,7 @@ describe('AppService', () => {
         },
         project: {
           create: {
-            name: `project-${EXAMPLE_APP.name}`,
+            name: `project-${SAMPLE_APP_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -674,7 +674,7 @@ describe('AppService', () => {
         },
         project: {
           create: {
-            name: `project-${EXAMPLE_APP.name}`,
+            name: `project-${SAMPLE_APP_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
