@@ -59,16 +59,16 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
 
   const handleNodeClick = useCallback(
     async (file: FileMeta) => {
-      switch (file.type) {
-        case NodeTypeEnum.File:
+      const fileTypeMap = {
+        [NodeTypeEnum.File]: () => {
           onFileSelected({
             buildId: selectedBuild.id,
             filePath: file.path,
             isFile: true,
             fileName: file.name,
           });
-          break;
-        case NodeTypeEnum.Folder:
+        },
+        [NodeTypeEnum.Folder]: () => {
           const expandedNodes = [...expandedFolders];
           const removed = remove(expandedNodes, (item) => {
             return item === file.path;
@@ -81,8 +81,9 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
           }
           setExpandedFolders(expandedNodes);
           setSelectedFolder(file);
-          break;
+        }
       }
+      fileTypeMap[file.type]()
     },
     [selectedBuild, onFileSelected, expandedFolders]
   );
