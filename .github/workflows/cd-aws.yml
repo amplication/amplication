@@ -12,14 +12,6 @@ on:
         - staging
         - prod
         - custom
-      target-env-custom:
-        description: Custom env name
-        required: false
-      source-branch:
-        type: string
-        description: Which branch to use for deployment
-        default: main
-        required: true
 jobs:
   prepare:
     runs-on: ubuntu-18.04
@@ -57,9 +49,6 @@ jobs:
       - name: set branch-name
         run: |
             echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-            echo "SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-        env:
-          SOURCE_BRANCH_NAME: ${{ github.event.inputs.source-branch }}
       - name: calculate docker tags
         id: calculate-docker-tags
         run: |
@@ -149,5 +138,4 @@ jobs:
         env:
           ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
           TARGET_ENV: ${{ github.event.inputs.target-env }}
-          TARGET_ENV_CUSTOM: ${{ github.event.inputs.target-env-custom }}  
       
