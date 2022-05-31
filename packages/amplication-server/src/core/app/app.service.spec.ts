@@ -376,7 +376,7 @@ describe('AppService', () => {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${EXAMPLE_APP_NAME}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -508,7 +508,7 @@ describe('AppService', () => {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${EXAMPLE_APP_NAME}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -674,7 +674,7 @@ describe('AppService', () => {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${EXAMPLE_APP_NAME}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
