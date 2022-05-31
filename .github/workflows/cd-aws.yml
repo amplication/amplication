@@ -141,6 +141,7 @@ jobs:
           echo "$COMMAND"
           $COMMAND
         env:
+          ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
           TARGET_ENV: ${{ github.event.inputs.target-env }}
           TARGET_ENV_CUSTOM: ${{ github.event.inputs.target-env-custom }}  
       
