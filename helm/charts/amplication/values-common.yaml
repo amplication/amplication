@@ -17,3 +17,7 @@ amplication-server:
       DOCKER_HOST: "tcp://docker:2375"
   postgres:
     install: "true"
+amplication-client:
+  config:
+    env:
+      REACT_APP_DEPLOYMENT: "cloud"
