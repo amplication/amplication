@@ -23,7 +23,11 @@ export class AppSettingsService {
       dbPassword,
       dbPort,
       dbUser,
-      authProvider
+      authProvider,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+      generateRootFiles
     } = await this.getAppSettingsBlock(args, user);
 
     return {
@@ -33,7 +37,11 @@ export class AppSettingsService {
       dbPort,
       dbUser,
       appId: args.where.id,
-      authProvider
+      authProvider,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+      generateRootFiles
     };
   }
 
