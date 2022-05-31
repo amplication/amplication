@@ -14,7 +14,7 @@ export const BuildSelectorItem = ({ title, app }: Props) => {
     <div className={CLASS_NAME}>
       <Icon icon="git_merge" />
       <CircleBadge name={app.name} color={app.color} />
-      <span>{title}</span>
+      <div className="title">{title}</div>
     </div>
   );
 };

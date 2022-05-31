@@ -22,14 +22,14 @@ export type FileMeta = {
   expanded?: boolean;
 };
 
-const CREATED_AT_FIELD = "createdAt";
+export const CREATED_AT_FIELD = "createdAt";
 type TData = {
   builds: Build[];
 };
 
 const CodeViewExplorer: React.FC<Props> = ({ app, onFileSelected }) => {
   const [selectedBuild, setSelectedBuild] = useState<Build | null>(null);
-  
+
   const handleSelectedBuild = (build: Build) => {
     setSelectedBuild(build);
     onFileSelected(null);
