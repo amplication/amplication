@@ -15,14 +15,12 @@ const UNSUPPORTED_EXTENSION_MESSAGE = "Preview is not available";
 const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
   const [content, setContent] = useState<string>("");
 
-  const path = filePath;
-
   const fileExtension = useMemo(() => {
     return fileName.split(".").pop();
   }, [fileName]);
   useLayoutEffect(() => {
     (async () => {
-      if (!path) {
+      if (!filePath) {
         return;
       }
       if (
@@ -35,14 +33,14 @@ const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
       const data = await StorageBaseAxios.instance.fileContent(
         appId,
         buildId,
-        path
+        filePath
       );
 
       setContent(data);
     })();
-  }, [appId, buildId, filePath, path, fileExtension]);
+  }, [appId, buildId, filePath, fileExtension]);
 
-  if (!path) {
+  if (!filePath) {
     return <div />;
   }
 
@@ -52,7 +50,7 @@ const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
       height="100%"
       value={content}
       options={{ readOnly: true }}
-      path={path}
+      path={filePath}
       theme={"vs-dark-amp"}
     />
   );
