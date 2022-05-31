@@ -7,8 +7,11 @@ output_folder=os.getenv('OUTPUT_FOLDER',os.path.join(root_folder,'secrets'))
 secrets_file=os.getenv('SECRETS_FILE_PATH',os.path.join("/Users/iliagerman/Work/Sela/Clients/amplication/amplication/helm/charts/amplication/values-secrets-staging-os.json"))
 secrets_template=os.getenv('SECRETS_TEMPLATE_FILE_PATH',os.path.join("/Users/iliagerman/Work/Sela/Clients/amplication/amplication/.github/workflows/scripts/secret_template.yaml"))
 
-Path(output_folder).mkdir(parents=True, exist_ok=True)
+print(f"root_folder: {root_folder}")
+print(f"output_folder: {output_folder}")
+print(f"secrets_template: {secrets_template}")
 
+Path(output_folder).mkdir(parents=True, exist_ok=True)
 secrets = json.load(open(secrets_file))
 for secret in secrets:
     secret_name=secret["name"]
