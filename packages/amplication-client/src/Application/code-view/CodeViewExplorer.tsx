@@ -27,7 +27,7 @@ type TData = {
   builds: Build[];
 };
 
-const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
+const CodeViewExplorer: React.FC<Props> = ({ app, onFileSelected }) => {
   const [selectedBuild, setSelectedBuild] = useState<Build | null>(null);
   
   const handleSelectedBuild = (build: Build) => {
