@@ -106,6 +106,7 @@ jobs:
           SECRETS="secret-$TARGET_ENV.yaml"
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
           echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > $SECRETS_FILE_PATH
+          cat .github/workflows/scripts/argocd-secrets-creator.py
           python .github/workflows/scripts/argocd-secrets-creator.py
           cd secrets
           ls
