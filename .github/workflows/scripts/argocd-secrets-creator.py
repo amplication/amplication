@@ -16,5 +16,6 @@ for secret in secrets:
     secret_template["metadata"]["name"]=secret_name
     for secret_entry in secret["data"]:
         secret_template["data"][secret_entry]=secret["data"][secret_entry]
-    with open(os.path.join(output_folder,f'{secret_name}-secret.json'), 'w') as outfile:
+    output_file=os.path.join(output_folder,f'{secret_name}-secret.json')
+    with open(output_file, 'w') as outfile:
         json.dump(secret_template, outfile)
