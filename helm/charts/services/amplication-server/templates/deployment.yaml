@@ -17,7 +17,7 @@ spec:
                 command:
                   - /bin/sh
                   - -c
-                  - cp /var/secrets/GCP /var/gcp-secret 
+                  - cp /var/secrets/gcp-secret /var/gcp-secret 
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -58,6 +58,6 @@ spec:
             claimName: {{ .Values.pvc.name }}
         - name: {{ .Values.volume.name }}-secret
           secret:
-            secretName: {{ .Values.name }}
+            secretName: gcp-secret
       {{- end }}
 {{- end }}
