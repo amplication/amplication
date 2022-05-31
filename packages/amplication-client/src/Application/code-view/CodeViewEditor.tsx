@@ -12,6 +12,17 @@ type Props = {
 const UNSUPPORTED_EXTENSIONS = ["png", "ico"];
 const UNSUPPORTED_EXTENSION_MESSAGE = "Preview is not available";
 
+function setEditorTheme(monaco: any) {
+  monaco.editor.defineTheme("vs-dark-amp", {
+    base: "vs-dark",
+    inherit: true,
+    rules: [],
+    colors: {
+      "editor.background": "#15192c",
+    },
+  });
+}
+
 const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
   const [content, setContent] = useState<string>("");
 
@@ -47,14 +58,3 @@ const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
 };
 
 export default CodeViewEditor;
-
-function setEditorTheme(monaco: any) {
-  monaco.editor.defineTheme("vs-dark-amp", {
-    base: "vs-dark",
-    inherit: true,
-    rules: [],
-    colors: {
-      "editor.background": "#15192c",
-    },
-  });
-}
