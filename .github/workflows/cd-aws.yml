@@ -102,6 +102,7 @@ jobs:
       - name: create secrets
         id: create-secrets
         run: |
+          python3 -V
           #download secret from AWS
           SECRETS="secret-$TARGET_ENV.yaml"
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
