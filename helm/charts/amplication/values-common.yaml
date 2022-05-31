@@ -8,13 +8,13 @@ cp-helm-charts:
       jmx:
         enabled: true
     podAnnotations:
-      cluster-autoscaler.kubernetes.io/safe-to-evict: 'false'
+      cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     resources: {}
     heapOptions: "-Xms512M -Xmx512M"
     tolerations:
-    - key: "kafka"
-      operator: "Equal"
-      value: "true" 
+      - key: "kafka"
+        operator: "Equal"
+        value: "true"
     brokers: 1
     persistence:
       enabled: true
@@ -70,15 +70,12 @@ amplication-server:
       GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
       GITHUB_SCOPE: "user:email"
       GOOGLE_APPLICATION_CREDENTIALS: "/var/gcp-secret"
-      CONTAINER_BUILDER_DEFAULT: "docker"
       PORT: "3000"
       NODE_ENV: "production"
       GRAPHQL_DEBUG: "0"
       PLAYGROUND_ENABLE: "0"
       BCRYPT_SALT_OR_ROUNDS: "10"
       CORS_ENABLE: "1"
-      DEFAULT_DISK: "gcs"
-      GCS_BUCKET: bucket
       DOCKER_HOST: "tcp://docker:2375"
 
       HOST: "https://server-dev.staging-os.amplication-dev.com"
@@ -125,8 +122,9 @@ amplication-git-push-webhook-service:
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
-      KAFKA_CLIENT_ID: git-push-webhook 
+      KAFKA_CLIENT_ID: git-push-webhook
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
+      PORT: "3000"
 
 amplication-git-pull-service:
   image:
