@@ -71,7 +71,7 @@ export class AppService {
   /**
    * Create app in the user's workspace, with the built-in "user" role
    */
-  async createApp(args: CreateOneAppArgs, user: User): Promise<App> {  
+  async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
     const { color } = args.data;
     if (color && !validateHTMLColorHex(color)) {
       throw new InvalidColorError(color);
@@ -368,19 +368,11 @@ export class AppService {
       });
     }
 
-    const project = await this.prisma.project.findUnique({
-      where: {
-        name: `project-${app.name}`,
-      }
-    });
+    const projectId = (await this.prisma.app.findUnique(args).project()).id;
 
-    if (project) {
-      await this.prisma.project.delete({
-        where: {
-          id: project.id
-        }
-      });
-    }
+    await this.prisma.project.delete({
+      where: { id: projectId }
+    });
 
     return this.prisma.app.update({
       where: args.where,
