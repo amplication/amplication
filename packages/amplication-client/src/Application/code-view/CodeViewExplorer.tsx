@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { App, Build, SortOrder } from "../../models";
 import BuildSelector from "../../Components/BuildSelector";
 import { FileDetails } from "./CodeViewPage";
@@ -29,6 +29,11 @@ type TData = {
 
 const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
   const [selectedBuild, setSelectedBuild] = useState<Build | null>(null);
+  
+  const handleSelectedBuild = (build: Build) => {
+    setSelectedBuild(build);
+    onFileSelected(null);
+  }
 
   const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
     variables: {
@@ -38,14 +43,14 @@ const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
       },
     },
     onCompleted: async (data) => {
-      setSelectedBuild(data.builds[0]);
+      handleSelectedBuild(data.builds[0]);
     },
   });
 
-  useEffect(() => {
-    onFileSelected(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBuild]);
+  // useEffect(() => {
+  //   onFileSelected(null);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selectedBuild]);
 
   if (!data) {
     return <div />;
@@ -58,7 +63,7 @@ const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
           app={app}
           builds={data.builds}
           selectedBuild={selectedBuild}
-          onSelectBuild={setSelectedBuild}
+          onSelectBuild={handleSelectedBuild}
         />
       </div>
       {selectedBuild && (
