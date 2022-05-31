@@ -38,7 +38,6 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_APP_DATA
 } from './sampleApp';
-import cuid from 'cuid';
 
 const USER_APP_ROLE = {
   name: 'user',
