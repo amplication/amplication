@@ -14,13 +14,13 @@ type Props = {
   onFileSelected: (selectedFile: FileDetails | null) => void;
 };
 
-export class FileMeta {
-  type!: NodeTypeEnum;
-  name!: string;
-  path!: string;
+export type FileMeta = {
+  type: NodeTypeEnum;
+  name: string;
+  path: string;
   children?: FileMeta[] | undefined;
   expanded?: boolean;
-}
+};
 
 const CREATED_AT_FIELD = "createdAt";
 type TData = {
