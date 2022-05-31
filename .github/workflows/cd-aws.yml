@@ -134,13 +134,6 @@ jobs:
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /usr/local/bin/argocd
-      - name: delete job-migrate
-        id: delte-job-migrate
-        run: |
-          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-          kubectl delete job amplication-server-migrate --ignore-not-found=true  -n $TARGET_ENV 
-        env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}   
       - name: deploy app
         id: deploy-app
         run: |
