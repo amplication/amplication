@@ -48,7 +48,7 @@ export class MailService {
     return true;
   }
 
-  async sendDeploymentNotification(args: SendDeplomentArgs) {
+  async sendDeploymentNotification(args: SendDeplomentArgs): Promise<boolean> {
     const from = this.configService.get(SENDGRID_FROM_ADDRESS_VAR);
 
     let templateId;
@@ -59,8 +59,6 @@ export class MailService {
     } else {
       templateId = this.configService.get(SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR);
     }
-
-    const host = this.configService.get(HOST_VAR);
 
     console.log({ args });
 

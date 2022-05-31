@@ -43,6 +43,9 @@ import {
   DeployResult,
   EnumDeployStatus
 } from '@amplication/deployer/dist/types';
+import { SendDeplomentArgs } from '../mail/dto/SendDeploymentArgs';
+import { MailService } from '../mail/mail.service';
+import { User } from 'src/models';
 
 jest.mock('winston');
 
@@ -95,6 +98,13 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
   actionId: EXAMPLE_ACTION_ID,
   build: EXAMPLE_BUILD,
   environment: EXAMPLE_ENVIRONMENT
+};
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
@@ -155,10 +165,13 @@ const prismaDeploymentFindManyMock = jest.fn(() => {
   return [EXAMPLE_DEPLOYMENT];
 });
 
+const prismaUserFindOneMack = jest.fn(() => EXAMPLE_USER);
+
 const actionServiceRunMock = jest.fn(
   (actionId, name, message, actionFunction) =>
     actionFunction(EXAMPLE_ACTION_STEP)
 );
+
 const actionServiceLogInfoMock = jest.fn();
 
 const EXAMPLE_GCP_APPS_PROJECT_ID = 'EXAMPLE_GCP_APPS_PROJECT_ID';
@@ -186,6 +199,24 @@ const EXAMPLE_RUNNING_DEPLOY_RESULT: DeployResult = {
 const EXAMPLE_COMPLETED_NO_URL_DEPLOY_RESULT: DeployResult = {
   statusQuery: {},
   status: EnumDeployStatus.Completed
+};
+
+const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_SUCCESS: SendDeplomentArgs = {
+  to: EXAMPLE_USER_ID,
+  succes: true,
+  url: EXAMPLE_URL
+};
+
+const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL: SendDeplomentArgs = {
+  to: EXAMPLE_USER_ID,
+  succes: false,
+  url: EXAMPLE_URL
+};
+
+const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL_URL: SendDeplomentArgs = {
+  to: EXAMPLE_USER_ID,
+  succes: false,
+  url: undefined
 };
 
 const configServiceGetMock = jest.fn(name => {
@@ -218,6 +249,8 @@ const deployerServiceGetStatusMock = jest.fn(
 );
 const environmentServiceUpdateMock = jest.fn(() => ({}));
 
+const mailServiceMock = jest.fn();
+
 const loggerInfoMock = jest.fn(() => ({}));
 
 describe('DeploymentService', () => {
@@ -240,6 +273,9 @@ describe('DeploymentService', () => {
             },
             environment: {
               update: environmentServiceUpdateMock
+            },
+            user: {
+              findUnique: prismaUserFindOneMack
             }
           }
         },
@@ -281,6 +317,12 @@ describe('DeploymentService', () => {
               default: 'EXAMPLE_DEFAULT_PROVIDER'
             },
             getStatus: deployerServiceGetStatusMock
+          }
+        },
+        {
+          provide: MailService,
+          useValue: {
+            sendDeploymentNotification: mailServiceMock
           }
         },
         DeploymentService
@@ -647,6 +689,8 @@ describe('DeploymentService', () => {
       where: { id: EXAMPLE_DEPLOYMENT_ID },
       data: { status: EnumDeploymentStatus.Failed }
     });
+    expect(mailServiceMock).toBeCalledTimes(1);
+    expect(mailServiceMock).toBeCalledWith(EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL);
   });
 
   it('should try to deploy but the Result Status is Running', async () => {
@@ -781,6 +825,11 @@ describe('DeploymentService', () => {
     expect(actionServiceCompleteMock).toBeCalledWith(
       EXAMPLE_ACTION_STEP,
       EnumActionStepStatus.Success
+    );
+
+    expect(mailServiceMock).toBeCalledTimes(1);
+    expect(mailServiceMock).toBeCalledWith(
+      EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL_URL
     );
   });
 

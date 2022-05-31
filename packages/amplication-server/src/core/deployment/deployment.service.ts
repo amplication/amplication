@@ -322,6 +322,11 @@ export class DeploymentService {
           await this.actionService.complete(step, EnumActionStepStatus.Success);
 
           if (isEmpty(result.url)) {
+            await this.mailService.sendDeploymentNotification({
+              to: userInfo.id,
+              url: result.url,
+              succes: false
+            });
             throw new Error(
               `Deployment ${deployment.id} completed without a deployment URL`
             );
