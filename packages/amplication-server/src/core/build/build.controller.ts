@@ -15,7 +15,6 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 
-
 const ZIP_MIME = 'application/zip';
 
 interface LinkResponse {
@@ -30,7 +29,7 @@ export class BuildController {
   @UseInterceptors(MorganInterceptor('combined'))
   async getGeneratedArchiveGCS(@Param('id') id: string): Promise<LinkResponse> {
     try {
-      const arr = await this.buildService.downloadGCS({ where: { id } })
+      const arr = await this.buildService.downloadGCS({ where: { id } });
       return { uri: arr[0] };
     } catch (error) {
       if (error instanceof StepNotCompleteError) {

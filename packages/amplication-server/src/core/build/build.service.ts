@@ -44,7 +44,11 @@ import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { GitService } from '@amplication/git-service';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
-import { GetSignedUrlConfig, GetSignedUrlResponse, Storage as GCPStorage } from '@google-cloud/storage';
+import {
+  GetSignedUrlConfig,
+  GetSignedUrlResponse,
+  Storage as GCPStorage
+} from '@google-cloud/storage';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 
 export const HOST_VAR = 'HOST';
@@ -343,7 +347,7 @@ export class BuildService {
 
     return EnumBuildStatus.Running;
   }
-  
+
   /**
    *
    * Give the ReadableStream of the build zip file
@@ -374,7 +378,7 @@ export class BuildService {
     }
     return disk.getStream(filePath);
   }
-  
+
   async downloadGCS(args: FindOneBuildArgs): Promise<GetSignedUrlResponse> {
     const build = await this.findOne(args);
     const { id } = args.where;
@@ -401,9 +405,8 @@ export class BuildService {
       version: 'v4',
       action: 'read',
       expires: Date.now() + 15 * 60 * 1000,
-      responseDisposition: 'attachment',
+      responseDisposition: 'attachment'
     };
-    
 
     return storage
       .bucket(process.env.GCS_BUCKET)
