@@ -42,10 +42,6 @@ const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
     },
   });
 
-  const handleSelectBuild = (build: Build) => {
-    setSelectedBuild(build);
-  };
-
   useEffect(() => {
     onFileSelected(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,7 +58,7 @@ const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
           app={app}
           builds={data.builds}
           selectedBuild={selectedBuild}
-          onSelectBuild={handleSelectBuild}
+          onSelectBuild={setSelectedBuild}
         />
       </div>
       {selectedBuild && (
