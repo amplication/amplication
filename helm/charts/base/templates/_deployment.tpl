@@ -26,15 +26,6 @@ spec:
       serviceAccountName: default
       containers:
         - name: '{{ .Values.name }}'
-          {{- if hasKey .Values.secrets "GCP" }}
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - /bin/sh
-                  - -c
-                  - cp /var/secrets/GCP /var/gcp-secret 
-          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if hasKey .Values "config" }}
@@ -65,18 +56,10 @@ spec:
           volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.path }}
-            - name: {{ .Values.volume.name }}-secret
-              mountPath: "/var/secrets"
-              readOnly: true
       volumes:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pvc.name }}
-        {{- if hasKey .Values "secrets" }}
-        - name: {{ .Values.volume.name }}-secret
-          secret:
-            secretName: {{ .Values.name }}
-        {{- end }}
       {{- end }}
 {{- end -}}
 {{- define "base.deployment" -}}
