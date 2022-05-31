@@ -31,6 +31,7 @@ jobs:
       PULL_POSTGRESQL_URL: ${{ steps.create-secret-names.outputs.PULL_POSTGRESQL_URL }}
       JWT_SECRET: ${{ steps.create-secret-names.outputs.JWT_SECRET }}
       SERVICE_JWT_SECRET: ${{ steps.create-secret-names.outputs.SERVICE_JWT_SECRET }}
+      WEBHOOKS_SECRET_KEY: ${{ steps.create-secret-names.outputs.WEBHOOKS_SECRET_KEY }}
     steps:
     - name: create secret names
       id: create-secret-names
@@ -48,6 +49,8 @@ jobs:
         echo "::set-output name=PULL_POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_PULL_POSTGRESQL_URL"
         echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}_JWT_SECRET"
         echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}_SERVICE_JWT_SECRET"
+        echo "::set-output name=WEBHOOKS_SECRET_KEY::AWS_${TARGET_ENV_SECRET}_WEBHOOKS_SECRET_KEY"
+
       env:
         TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
@@ -65,6 +68,7 @@ jobs:
       PULL_POSTGRESQL_URL: ${{ needs.prepare.outputs.PULL_POSTGRESQL_URL }}
       JWT_SECRET: ${{ needs.prepare.outputs.JWT_SECRET }}
       SERVICE_JWT_SECRET: ${{ needs.prepare.outputs.SERVICE_JWT_SECRET }}
+      WEBHOOKS_SECRET_KEY: ${{ needs.prepare.outputs.WEBHOOKS_SECRET_KEY }}
     steps:
       - uses: actions/checkout@v2
       - name: configure AWS credentials
@@ -165,6 +169,7 @@ jobs:
           SECRETS+=" -p amplication-git-push-webhook-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
           SECRETS+=" -p amplication-git-push-webhook-service.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
           SECRETS+=" -p amplication-git-push-webhook-service.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
+          SECRETS+=" -p amplication-git-push-webhook-service.secrets.WEBHOOKS_SECRET_KEY=$WEBHOOKS_SECRET_KEY"
 
           SECRETS+=" -p amplication-git-pull-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
           SECRETS+=" -p amplication-git-pull-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
@@ -190,4 +195,5 @@ jobs:
           PULL_POSTGRESQL_URL: ${{ secrets[env.PULL_POSTGRESQL_URL] }}
           JWT_SECRET: ${{ secrets[env.JWT_SECRET] }}
           SERVICE_JWT_SECRET: ${{ secrets[env.SERVICE_JWT_SECRET] }}
+          WEBHOOKS_SECRET_KEY: ${{ secrets[env.WEBHOOKS_SECRET_KEY] }}
       
