@@ -368,10 +368,14 @@ export class AppService {
       });
     }
 
-    const projectId = (await this.prisma.app.findUnique(args).project()).id;
+    const project = await this.prisma.app.findUnique(args).project();
 
-    await this.prisma.project.delete({
-      where: { id: projectId }
+    await this.prisma.project.update({
+      where: { id: project.id },
+      data: {
+        name: prepareDeletedItemName(project.name, project.id),
+        deletedAt: new Date()
+      }
     });
 
     return this.prisma.app.update({
