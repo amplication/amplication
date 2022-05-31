@@ -48,4 +48,4 @@ COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amp
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
 COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
 
-CMD 'npm run start'
+CMD ["npm", "start"]
