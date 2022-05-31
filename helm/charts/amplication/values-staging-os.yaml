@@ -97,6 +97,8 @@ amplication-git-pull-service:
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
 
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
+
 amplication-git-pull-request-service:
   config:
     env:
