@@ -131,9 +131,7 @@ jobs:
           #create values files
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
-          echo "---------------------"
-          cat helm/charts/amplication/$SECRETS
-          echo "---------------------"
+          ---------------------"
 
 
           #argocd login
