@@ -111,7 +111,7 @@ jobs:
 
           #download secret from AWS
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
-          $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > secret-$TARGET_ENV.yaml
+          echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > secret-$TARGET_ENV.yaml
           echo "---------------------"
           cat secret-$TARGET_ENV.yaml
           echo "---------------------"
