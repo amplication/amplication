@@ -36,6 +36,10 @@ jobs:
     env:
       ARGOCD: ${{ needs.prepare.outputs.ARGOCD }}
     steps:
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8 #install the python needed
       - uses: actions/checkout@v2
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -106,7 +110,6 @@ jobs:
           SECRETS="secret-$TARGET_ENV.yaml"
           secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
           echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > $SECRETS_FILE_PATH
-          cat .github/workflows/scripts/argocd-secrets-creator.py
           python .github/workflows/scripts/argocd-secrets-creator.py
           cd secrets
           ls
