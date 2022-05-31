@@ -99,6 +99,21 @@ jobs:
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /usr/local/bin/argocd
+      - name: create secrets
+        id: create-secrets
+        run: |
+          #download secret from AWS
+          SECRETS="secret-$TARGET_ENV.yaml"
+          secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
+          echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > $SECRETS_FILE_PATH
+          python .github/workflows/scripts/argocd-secrets-creator.py
+          cd secrets
+          ls
+          kubectl apply -f . -n $TARGET_ENV
+        env:
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          SECRETS_FILE_PATH: helm/charts/amplication/values-secrets-raw.json
+          SECRETS_TEMPLATE_FILE_PATH: .github/workflows/scripts/secret_template.yaml
       - name: deploy app
         id: deploy-app
         run: |
@@ -109,10 +124,6 @@ jobs:
           fi
           echo "ARGO_CD_URL: $ARGO_CD_URL"
 
-          #download secret from AWS
-          SECRETS="secret-$TARGET_ENV.yaml"
-          secret_arn=$(aws secretsmanager list-secrets --filters Key=tag-key,Values=deployment --filters Key=tag-value,Values=$TARGET_ENV | jq -r '.SecretList[0].ARN')
-          echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > helm/charts/amplication/$SECRETS
           #create values files
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
