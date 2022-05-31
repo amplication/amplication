@@ -139,8 +139,8 @@ jobs:
           chmod +x /usr/local/bin/argocd
       - name: delete unused job
         id: delete-job
-        run:
-          kubectl delete job amplication-server-migrate -n $NAMESPACE
+        run: |
+          kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
       - name: deploy app
         id: deploy-app
         run: |
