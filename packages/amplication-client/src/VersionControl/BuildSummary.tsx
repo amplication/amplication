@@ -16,7 +16,9 @@ import { GET_APPLICATION } from "../Application/ApplicationHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
+import { downloadArchive } from "./BuildSteps";
 import { downloadFile } from "../util/download";
+import { REACT_APP_DEPLOYMENT } from "../env";
 
 const CLASS_NAME = "build-summary";
 
@@ -42,6 +44,16 @@ type Props = {
 const LOCAL_STORAGE_KEY_SHOW_GITHUB_HELP = "ShowGitHubContextHelp";
 const LOCAL_STORAGE_KEY_SHOW_SANDBOX_HELP = "ShowGSandboxContextHelp";
 
+function download(archiveURI: string) {
+  if (REACT_APP_DEPLOYMENT === 'local') {
+    return downloadArchive(archiveURI);
+  } else {
+    const parts = archiveURI.split('/');
+    const uri = [parts[0], parts[1], 'gcs', parts[2]].join('/');
+    return downloadFile(uri);
+  }
+}
+
 const BuildSummary = ({ generating, build, onError }: Props) => {
   const { data } = useBuildWatchStatus(build);
 
@@ -64,7 +76,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
   });
 
   const handleDownloadClick = useCallback(() => {
-    downloadFile(data.build.archiveURI).catch(onError);
+    download(data.build.archiveURI).catch(onError);
   }, [data.build.archiveURI, onError]);
 
   const handleDismissHelpGitHub = useCallback(() => {

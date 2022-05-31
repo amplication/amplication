@@ -45,6 +45,7 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 import { GitService } from '@amplication/git-service';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { GetSignedUrlConfig, GetSignedUrlResponse, Storage as GCPStorage } from '@google-cloud/storage';
+import { BuildResultNotFound } from './errors/BuildResultNotFound';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -343,7 +344,38 @@ export class BuildService {
     return EnumBuildStatus.Running;
   }
   
-  async download(args: FindOneBuildArgs): Promise<GetSignedUrlResponse> {
+  /**
+   *
+   * Give the ReadableStream of the build zip file
+   * @returns the zip file of the build
+   */
+  async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
+    const build = await this.findOne(args);
+    const { id } = args.where;
+    if (build === null) {
+      throw new BuildNotFoundError(id);
+    }
+
+    const generatedCodeStep = await this.getGenerateCodeStepStatus(id);
+    if (!generatedCodeStep) {
+      throw new StepNotFoundError(GENERATE_STEP_NAME);
+    }
+    if (generatedCodeStep.status !== EnumActionStepStatus.Success) {
+      throw new StepNotCompleteError(
+        GENERATE_STEP_NAME,
+        EnumActionStepStatus[generatedCodeStep.status]
+      );
+    }
+    const filePath = getBuildZipFilePath(id);
+    const disk = this.storageService.getDisk();
+    const { exists } = await disk.exists(filePath);
+    if (!exists) {
+      throw new BuildResultNotFound(build.id);
+    }
+    return disk.getStream(filePath);
+  }
+  
+  async downloadGCS(args: FindOneBuildArgs): Promise<GetSignedUrlResponse> {
     const build = await this.findOne(args);
     const { id } = args.where;
     if (build === null) {
