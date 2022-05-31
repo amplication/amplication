@@ -107,4 +107,4 @@ amplication-git-pull-request-service:
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-      GITHUB_APP_APP_ID: "189214"
+      GITHUB_APP_APP_ID: "195638"
