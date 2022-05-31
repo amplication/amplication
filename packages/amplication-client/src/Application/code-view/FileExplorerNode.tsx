@@ -11,7 +11,7 @@ export type FileExplorerNodeProps = {
 export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
   const handleNodeClick = useCallback(
     (id: string, file: FileMeta) => {
-      onSelect && onSelect(file);
+      file && onSelect(file);
     },
     [onSelect]
   );
