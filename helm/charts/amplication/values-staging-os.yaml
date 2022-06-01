@@ -23,8 +23,6 @@ amplication-server:
   ingress:
     enabled: true
     hostname: server.staging-os.amplication-dev.com
-  volume:
-    path: /amplication-data/build-data
   config:
     env:
       HOST: "https://server.staging-os.amplication-dev.com"
@@ -81,8 +79,6 @@ amplication-git-push-webhook-service:
 amplication-git-pull-service:
   postgres:
     install: false
-  volume:
-    path: /amplication-data/build-data
   config:
     env:
       NODE_ENV: "production"
@@ -104,8 +100,6 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
-  volume:
-    path: /amplication-data/build-data
   config:
     env:
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092"]'
