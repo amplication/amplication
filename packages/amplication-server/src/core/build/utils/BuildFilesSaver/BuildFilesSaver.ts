@@ -6,14 +6,15 @@ import { outputFile, remove } from 'fs-extra';
 import { join, normalize } from 'path';
 import { BASE_BUILDS_FOLDER } from 'src/constants';
 import { AmplicationError } from 'src/errors/AmplicationError';
+import { Logger } from 'winston';
 @Injectable()
 export class BuildFilesSaver {
   private baseBuildsPath: string;
-
-  constructor(configService: ConfigService) {
+  constructor(configService: ConfigService, logger: Logger) {
     const envFilePath = configService.get<string>(BASE_BUILDS_FOLDER);
     assert(envFilePath);
     this.baseBuildsPath = normalize(envFilePath);
+    logger.info(`The BASE_BUILDS_FOLDER value is ${envFilePath}`);
   }
   async saveFiles(relativePath: string, modules: Module[]): Promise<void> {
     try {
