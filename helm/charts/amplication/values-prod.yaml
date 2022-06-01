@@ -86,6 +86,8 @@ amplication-git-push-webhook-service:
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
 
 amplication-git-pull-service:  
+  pvc:
+    name: prod-efs-claim
   postgres:
     install: false
   config:
@@ -93,6 +95,8 @@ amplication-git-pull-service:
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
 
 amplication-git-pull-request-service:
+  pvc:
+    name: prod-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
