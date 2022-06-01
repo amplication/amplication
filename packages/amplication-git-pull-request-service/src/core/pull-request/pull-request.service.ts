@@ -30,6 +30,11 @@ export class PullRequestService {
       oldBuildId,
       newBuildId
     );
+    this.logger.info(
+      'The changed files has return from the diff service listOfChangedFiles',
+      { lengthOfFile: changedFiles.length }
+    );
+
     const { base, body, head, title } = commit;
     const prUrl = await this.gitService.createPullRequest(
       gitProvider,
