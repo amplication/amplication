@@ -1,16 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import assert from 'assert';
 import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { join } from 'path';
+import { Logger } from 'winston';
 import { BuildPathFactory } from './utils/BuildPathFactory';
-
-export const SAME_FOLDER_ERROR = 'Cant get the same build id';
 
 @Injectable()
 export class DiffService {
-  constructor(private readonly buildsPathFactory: BuildPathFactory) {}
+  constructor(
+    private readonly buildsPathFactory: BuildPathFactory,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+  ) {}
   async listOfChangedFiles(
     amplicationAppId: string,
     previousAmplicationBuildId: string,
@@ -24,13 +27,23 @@ export class DiffService {
       amplicationAppId,
       newAmplicationBuildId
     );
-
-    assert.notStrictEqual(oldBuildPath, newBuildPath, SAME_FOLDER_ERROR);
+    this.logger.info('List of the paths', {
+      appId: amplicationAppId,
+      previousAmplicationBuildId,
+      newAmplicationBuildId,
+    });
+    assert.notStrictEqual(
+      oldBuildPath,
+      newBuildPath,
+      'Cant get the same build id'
+    );
 
     // return all the new files if an old build folder dont exist
     if (existsSync(oldBuildPath) === false) {
       return this.firstBuild(newBuildPath);
     }
+
+    DiffService.assertBuildExist(newBuildPath);
 
     const res = await compare(oldBuildPath, newBuildPath, {
       compareContent: true,
@@ -47,6 +60,9 @@ export class DiffService {
       }
       return false;
     });
+
+    this.logger.info('The list of the changed files', { changedFiles });
+
     const modules = changedFiles.map(async (diff) => {
       const path = join(diff.relativePath, diff.name2);
       const code = await readFileSync(join(diff.path2, diff.name2)).toString(
@@ -70,5 +86,9 @@ export class DiffService {
       };
     });
     return await Promise.all(files);
+  }
+
+  private static assertBuildExist(buildPath) {
+    assert(existsSync(buildPath));
   }
 }
