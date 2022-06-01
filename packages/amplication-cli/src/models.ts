@@ -192,6 +192,10 @@ export type AppSettings = IBlock & {
   dbUser: Scalars['String'];
   description: Scalars['String'];
   displayName: Scalars['String'];
+  generateAdminUI?: Maybe<Scalars['Boolean']>;
+  generateGraphQL?: Maybe<Scalars['Boolean']>;
+  generateRestApi?: Maybe<Scalars['Boolean']>;
+  generateRootFiles?: Maybe<Scalars['Boolean']>;
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']>;
@@ -211,6 +215,10 @@ export type AppSettingsUpdateInput = {
   dbUser: Scalars['String'];
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
+  generateAdminUI?: InputMaybe<Scalars['Boolean']>;
+  generateGraphQL?: InputMaybe<Scalars['Boolean']>;
+  generateRestApi?: InputMaybe<Scalars['Boolean']>;
+  generateRootFiles?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type AppUpdateInput = {
