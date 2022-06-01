@@ -93,7 +93,7 @@ Now that your server is ready, you can build and run the Admin UI - a React clie
 
 To install all the packages needed for the client, follow these steps:
 
-1. in the command-line tool, move to the Admin folder. In case you are still in the Server folder, execute this command
+1. In the command-line tool, move to the Admin folder. In case you are still in the Server folder, execute this command
 
 ```
 cd ../admin-ui
