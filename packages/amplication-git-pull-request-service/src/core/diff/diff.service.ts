@@ -45,12 +45,17 @@ export class DiffService {
 
     DiffService.assertBuildExist(newBuildPath);
 
+    this.logger.info({ oldBuildPath, newBuildPath });
+
     const res = await compare(oldBuildPath, newBuildPath, {
       compareContent: true,
       compareDate: false,
       compareSize: false,
       compareSymlink: false,
     });
+
+    this.logger.debug('Finish the dir-compare lib process');
+
     const changedFiles = res.diffSet.filter((diff) => {
       if (diff.state !== 'equal' && diff.type2 === 'file') {
         //make sure that only new files enter and ignore old files
