@@ -27,6 +27,8 @@ amplication-server:
     requests:
       cpu: 3
       memory: 6Gi
+  pvc:
+    name: prod-efs-claim
   postgres:
     install: false
   ingress:

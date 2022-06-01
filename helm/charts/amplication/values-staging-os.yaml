@@ -23,6 +23,8 @@ amplication-server:
   ingress:
     enabled: true
     hostname: server.staging-os.amplication-dev.com
+  pvc:
+    name: staging-os-efs-claim
   config:
     env:
       HOST: "https://server.staging-os.amplication-dev.com"
