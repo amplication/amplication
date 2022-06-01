@@ -45,7 +45,7 @@ jobs:
       - name: get changed files (pr)
         id: changed-files-pr
         if: github.event_name == 'pull_request'
-        uses: tj-actions/changed-files@v17.3
+        uses: tj-actions/changed-files@v22.1
         with:
           separator: ","
           files_ignore: |
