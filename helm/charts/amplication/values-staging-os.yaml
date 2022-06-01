@@ -84,7 +84,7 @@ amplication-git-pull-service:
       NODE_ENV: "production"
 
       #EFS
-      STORAGE_PATH: /amplication-data/build-data
+      STORAGE_PATH: /amplication-data/pull/build-data
       MAX_SNAPSHOTS: "100"
 
       #GitHub App
