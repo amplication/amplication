@@ -96,7 +96,7 @@ jobs:
         id: set-namespace
         run: |
           NAMESPACE=$TARGET_ENV
-          if [ "$TARGET_ENV" = "dev" ]; then
+          if [ "$TARGET_ENV" = "staging-os" ]; then
             NAMESPACE+="-$SOURCE_BRANCH_NAME"
           fi
           echo "Will deploy to $NAMESPACE"
