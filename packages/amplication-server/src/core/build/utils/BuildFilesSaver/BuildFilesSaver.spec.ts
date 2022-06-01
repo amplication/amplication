@@ -5,6 +5,14 @@ import fsExtra from 'fs-extra';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
+const logger = {
+  debug: jest.fn(),
+  log: jest.fn(),
+  info: jest.fn(),
+  error: jest.fn(),
+  format: Symbol('EXAMPLE_LOGGER_FORMAT')
+};
+
 const APP_ID_MOCK = 'appId';
 const BUILD_ID_MOCK = 'buildId';
 describe('Testing the BuildFilesSaver service', () => {
@@ -17,7 +25,9 @@ describe('Testing the BuildFilesSaver service', () => {
   beforeEach(() => {
     configService.get.mockClear();
     configService.get.mockReturnValue(tmpdir());
-    buildFilesSaver = new BuildFilesSaver(configService);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    buildFilesSaver = new BuildFilesSaver(configService, logger);
   });
   it('should save an app files to a build folder', async () => {
     await buildFilesSaver.saveFiles(relativePath, [
