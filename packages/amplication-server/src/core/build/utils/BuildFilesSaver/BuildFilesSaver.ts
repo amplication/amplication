@@ -10,13 +10,17 @@ import { Logger } from 'winston';
 @Injectable()
 export class BuildFilesSaver {
   private baseBuildsPath: string;
-  constructor(configService: ConfigService, logger: Logger) {
+  constructor(configService: ConfigService, private readonly logger: Logger) {
     const envFilePath = configService.get<string>(BASE_BUILDS_FOLDER);
     assert(envFilePath);
     this.baseBuildsPath = normalize(envFilePath);
     logger.info(`The BASE_BUILDS_FOLDER value is ${envFilePath}`);
   }
   async saveFiles(relativePath: string, modules: Module[]): Promise<void> {
+    this.logger.info(
+      `Got a request for saving ${modules.length} files in ${relativePath} path`,
+      { modules }
+    );
     try {
       const filesPromises = modules.map(async (module, i) => {
         const filePath = join(this.baseBuildsPath, relativePath, module.path);
