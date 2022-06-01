@@ -15,7 +15,7 @@ image:
     
 volume:
   name: amplication-data
-  path: /amplication-data/pull
+  path: /amplication-data
 
 service:
   type: ClusterIP
