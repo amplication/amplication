@@ -9,6 +9,10 @@ cp-helm-charts:
         enabled: true
     podAnnotations:
       cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+    configurationOverrides:
+      "default.replication.factor": 1
+      "min.insync.replicas": 1
+      "auto.create.topics.enable": true
     resources: {}
     heapOptions: "-Xms512M -Xmx512M"
     tolerations:
