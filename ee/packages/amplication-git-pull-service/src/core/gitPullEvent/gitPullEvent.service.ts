@@ -39,8 +39,13 @@ export class GitPullEventService implements IGitPullEvent {
   }
 
   async handlePushEvent(pushEventMessage: PushEventMessage): Promise<void> {
-    const { provider, repositoryOwner, repositoryName, branch, commit } =
-      pushEventMessage;
+    const {
+      provider,
+      repositoryOwner,
+      repositoryName,
+      branch,
+      commit,
+    } = pushEventMessage;
 
     const repositoryDir = `${this.rootStorageDir}/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}`;
     const currentCommitDir = `${repositoryDir}/${commit}`;
@@ -112,17 +117,21 @@ export class GitPullEventService implements IGitPullEvent {
   private async findPreviousReadyCommit(
     pushEventMessage: PushEventMessage
   ): Promise<EventData | undefined> {
-    const { provider, repositoryOwner, repositoryName, branch, pushedAt } =
-      pushEventMessage;
-    const previousReadyCommit =
-      await this.gitPullEventRepository.findByPreviousReadyCommit(
-        provider,
-        repositoryOwner,
-        repositoryName,
-        branch,
-        pushedAt,
-        this.skipPrismaValue
-      );
+    const {
+      provider,
+      repositoryOwner,
+      repositoryName,
+      branch,
+      pushedAt,
+    } = pushEventMessage;
+    const previousReadyCommit = await this.gitPullEventRepository.findByPreviousReadyCommit(
+      provider,
+      repositoryOwner,
+      repositoryName,
+      branch,
+      pushedAt,
+      this.skipPrismaValue
+    );
 
     this.logger.log(
       LoggerMessages.log.FOUND_PREVIOUS_READY_COMMIT,
