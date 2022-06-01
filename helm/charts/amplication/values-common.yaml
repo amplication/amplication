@@ -11,7 +11,7 @@ cp-helm-charts:
       cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     configurationOverrides:
       "default.replication.factor": 1
-      "min.insync.replicas": 2
+      "min.insync.replicas": 1
       "auto.create.topics.enable": true
     resources: {}
     heapOptions: "-Xms512M -Xmx512M"

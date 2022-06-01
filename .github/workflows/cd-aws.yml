@@ -178,11 +178,15 @@ jobs:
 
           SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
           SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
-
-          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
-          COMMAND=$(echo $COMMAND|tr -d '\n')
-          echo "$COMMAND"
-          $COMMAND
+          set +e
+          Get_app="$(argocd app list)"
+          if [[ -z "$Get_app" ]]
+          then
+            COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
+            COMMAND=$(echo $COMMAND|tr -d '\n')
+            echo "$COMMAND"
+            $COMMAND
+          fi
           COMMAND="argocd app sync $APP_NAME"
           echo "$COMMAND"
           $COMMAND
