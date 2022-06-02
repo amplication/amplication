@@ -81,6 +81,9 @@ export class AppSettingsService {
       },
       user
     );
+    if (!args.data.generateGraphQL) {
+      args.data.generateAdminUI = false;
+    }
 
     return this.blockService.update<AppSettings>(
       {
