@@ -38,7 +38,9 @@ export class GitPullEventController {
   }
 }
 ```
+
 The properties that this microservice is expecting to get in the event message:
+
 ```ts
 provider:GitProviderEnum,
 repositoryOwner: string,

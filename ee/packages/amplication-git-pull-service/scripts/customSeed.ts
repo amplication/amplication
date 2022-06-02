@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
 export async function customSeed() {
   const client = new PrismaClient();
-  const repositoryOwner = "test-organization-name";
+  const repositoryOwner = 'test-organization-name';
   const id = 123;
 
   //replace this sample code to populate your databases
