@@ -1,9 +1,9 @@
-import { EnvironmentVariables } from '../../services/environmentVariables';
-import { Body, Controller } from '@nestjs/common';
-import { GitPullEventService } from './gitPullEvent.service';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { EnvironmentVariables } from "../../services/environmentVariables";
+import { Body, Controller } from "@nestjs/common";
+import { GitPullEventService } from "./gitPullEvent.service";
+import { MessagePattern, Payload } from "@nestjs/microservices";
 
-const KAFKA_TOPIC_NAME_KEY = 'KAFKA_TOPIC';
+const KAFKA_TOPIC_NAME_KEY = "KAFKA_TOPIC";
 
 @Controller()
 export class GitPullEventController {

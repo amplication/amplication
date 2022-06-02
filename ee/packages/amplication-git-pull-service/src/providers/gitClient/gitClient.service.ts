@@ -1,15 +1,15 @@
-import * as fs from 'fs';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git';
-import { IGitClient } from '../../contracts/interfaces/gitClient.interface';
-import { CustomError } from '../../errors/CustomError';
-import { ErrorMessages } from '../../constants/errorMessages';
-import { PushEventMessage } from '../../contracts/interfaces/pushEventMessage';
-import { CONFIG_SCOPE_GLOBAL } from '../../constants/variables';
-import { GitProviderEnum } from '../../contracts/enums/gitProvider.enum';
+import * as fs from "fs";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
+import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
+import { CustomError } from "../../errors/CustomError";
+import { ErrorMessages } from "../../constants/errorMessages";
+import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
+import { CONFIG_SCOPE_GLOBAL } from "../../constants/variables";
+import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 
-const REMOTE_ORIGIN = 'ENV_REMOTE_ORIGIN';
+const REMOTE_ORIGIN = "ENV_REMOTE_ORIGIN";
 
 /*
  * SimpleGit integration
@@ -21,10 +21,10 @@ export class GitClientService implements IGitClient {
   gitHostDomains: Record<GitProviderEnum, string>;
 
   constructor(private configService: ConfigService) {
-    this.remoteOrigin = configService.get<string>(REMOTE_ORIGIN) || 'origin';
+    this.remoteOrigin = configService.get<string>(REMOTE_ORIGIN) || "origin";
 
     this.gitHostDomains = {
-      [GitProviderEnum.Github]: 'github.com',
+      [GitProviderEnum.Github]: "github.com",
     };
 
     /*
@@ -47,7 +47,7 @@ export class GitClientService implements IGitClient {
      * */
 
     const options: Partial<SimpleGitOptions> = {
-      binary: 'git',
+      binary: "git",
       maxConcurrentProcesses: 6,
       timeout: {
         block: 5000,
@@ -67,13 +67,18 @@ export class GitClientService implements IGitClient {
     accessToken: string
   ): Promise<void> {
     try {
-      const { provider, repositoryOwner, repositoryName, branch, commit } =
-        pushEventMessage;
+      const {
+        provider,
+        repositoryOwner,
+        repositoryName,
+        branch,
+        commit,
+      } = pushEventMessage;
       fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
       await this.git
-        .clone(repository, baseDir, ['--branch', branch])
+        .clone(repository, baseDir, ["--branch", branch])
         .cwd(baseDir)
         .checkout(commit);
     } catch (err) {
@@ -88,8 +93,13 @@ export class GitClientService implements IGitClient {
     baseDir: string,
     accessToken: string
   ): Promise<void> {
-    const { provider, repositoryOwner, repositoryName, branch, commit } =
-      pushEventMessage;
+    const {
+      provider,
+      repositoryOwner,
+      repositoryName,
+      branch,
+      commit,
+    } = pushEventMessage;
 
     const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
     try {

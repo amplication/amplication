@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { IStorage } from '../../contracts/interfaces/storage.interface';
-import * as fse from 'fs-extra';
-import fs from 'fs';
-import { CustomError } from '../../errors/CustomError';
+import { Injectable } from "@nestjs/common";
+import { IStorage } from "../../contracts/interfaces/storage.interface";
+import * as fse from "fs-extra";
+import fs from "fs";
+import { CustomError } from "../../errors/CustomError";
 
 @Injectable()
 export class StorageService implements IStorage {
@@ -10,7 +10,7 @@ export class StorageService implements IStorage {
     try {
       await fse.copy(srcDir, destDir);
     } catch (err) {
-      throw new CustomError('failed to copy files from srcDir to destDir', err);
+      throw new CustomError("failed to copy files from srcDir to destDir", err);
     }
   }
 
@@ -18,11 +18,11 @@ export class StorageService implements IStorage {
     try {
       fs.rm(dir, { recursive: true }, (err) => {
         if (!err) {
-          console.log('succeeded');
+          console.log("succeeded");
         }
       });
     } catch (err) {
-      throw new CustomError('failed to delete directory', err);
+      throw new CustomError("failed to delete directory", err);
     }
   }
 }
