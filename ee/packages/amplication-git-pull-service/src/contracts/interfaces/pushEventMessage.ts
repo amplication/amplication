@@ -1,6 +1,6 @@
-import { EventData } from "./eventData";
-import { GitProviderEnum } from "../enums/gitProvider.enum";
-import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus.enum";
+import { EventData } from './eventData';
+import { GitProviderEnum } from '../enums/gitProvider.enum';
+import { EnumGitPullEventStatus } from '../enums/gitPullEventStatus.enum';
 
 export class PushEventMessage extends EventData {
   installationId: string;
