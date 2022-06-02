@@ -1,0 +1,3 @@
+{{ include "base.rolebinding" (list . "amplication-git-pull-service.rolebinding") -}}
+{{- define "amplication-git-pull-service.rolebinding" -}}
+{{- end }}

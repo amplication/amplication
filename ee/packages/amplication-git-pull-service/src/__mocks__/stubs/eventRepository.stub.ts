@@ -1,6 +1,6 @@
-import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
-import { MOCK_EVENT_DATA } from "./gitClient.stub";
-import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
+import { EnumGitPullEventStatus } from '../../contracts/enums/gitPullEventStatus.enum';
+import { MOCK_EVENT_DATA } from './gitClient.stub';
+import { GitProviderEnum } from '../../contracts/enums/gitProvider.enum';
 
 const CREATE_ARGS = {
   data: MOCK_EVENT_DATA,
@@ -17,16 +17,16 @@ const UPDATE_ARGS = {
 const FIND_BY_ARGS = {
   where: {
     provider: GitProviderEnum.Github,
-    repositoryOwner: "amit-amp",
-    repositoryName: "test-repo",
-    branch: "main",
+    repositoryOwner: 'amit-amp',
+    repositoryName: 'test-repo',
+    branch: 'main',
     status: EnumGitPullEventStatus.Ready,
     pushedAt: {
-      lt: new Date("2020-12-12"),
+      lt: new Date('2020-12-12'),
     },
   },
   orderBy: {
-    pushedAt: "desc",
+    pushedAt: 'desc',
   },
   skip: 0,
   take: 1,
@@ -46,12 +46,12 @@ export const eventRepositoryStub = {
   create: {
     id: BigInt(123),
     provider: GitProviderEnum.Github,
-    repositoryOwner: "amit-amp",
-    repositoryName: "test-repo",
-    branch: "main",
-    commit: "initial",
+    repositoryOwner: 'amit-amp',
+    repositoryName: 'test-repo',
+    branch: 'main',
+    commit: 'initial',
     status: EnumGitPullEventStatus.Created,
-    pushedAt: new Date("2020-12-12"),
+    pushedAt: new Date('2020-12-12'),
   },
   update: {
     id: BigInt(123),

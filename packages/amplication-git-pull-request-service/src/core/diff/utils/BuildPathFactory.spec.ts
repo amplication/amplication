@@ -1,6 +1,7 @@
 import { BuildPathFactory } from './BuildPathFactory';
 import { ConfigService } from '@nestjs/config';
 import { mock } from 'jest-mock-extended';
+import { join } from 'path';
 
 const rootEnvPath = '/users';
 const appId = 'appId';
@@ -15,6 +16,6 @@ describe('Testing the BuildPathFactory', () => {
   });
   it('should combine the root folder that get form the env, the folder with appId and the new buildId', () => {
     const path = buildPathFactory.get(appId, buildId);
-    expect(path).toBe(`${rootEnvPath}/builds/${appId}/${buildId}`);
+    expect(path).toBe(join(rootEnvPath, appId, buildId));
   });
 });

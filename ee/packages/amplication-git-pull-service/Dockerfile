@@ -11,7 +11,7 @@ RUN npm config set fund false
 
 WORKDIR /app
 COPY lerna.json /app
-COPY package*.json /app
+COPY package*.json /app/
 RUN npm ci --production
 
 FROM base AS build
@@ -43,4 +43,4 @@ COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amp
 COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
 
 EXPOSE 3000
-CMD [ "node", "dist/src/main"]
+CMD [ "node", "dist/main"]

@@ -1,10 +1,10 @@
-import { ConfigService } from "@nestjs/config";
-import { mock } from "jest-mock-extended";
-import { SecretsManagerServiceBase } from "./secretsManager.service.base";
+import { ConfigService } from '@nestjs/config';
+import { mock } from 'jest-mock-extended';
+import { SecretsManagerServiceBase } from './secretsManager.service.base';
 
-describe("Testing the secrets manager base class", () => {
-  const SECRET_KEY = "SECRET_KEY";
-  const SECRET_VALUE = "SECRET_VALUE";
+describe('Testing the secrets manager base class', () => {
+  const SECRET_KEY = 'SECRET_KEY';
+  const SECRET_VALUE = 'SECRET_VALUE';
   const configService = mock<ConfigService>();
   const secretsManagerServiceBase = new SecretsManagerServiceBase(
     configService
@@ -12,7 +12,7 @@ describe("Testing the secrets manager base class", () => {
   beforeEach(() => {
     configService.get.mockClear();
   });
-  it("should return value from env", async () => {
+  it('should return value from env', async () => {
     //ARRANGE
     configService.get.mockReturnValue(SECRET_VALUE);
     //ACT
@@ -20,7 +20,7 @@ describe("Testing the secrets manager base class", () => {
     //ASSERT
     expect(result).toBe(SECRET_VALUE);
   });
-  it("should return null for unknown keys", async () => {
+  it('should return null for unknown keys', async () => {
     //ARRANGE
     configService.get.mockReturnValue(undefined);
     //ACT
@@ -28,11 +28,11 @@ describe("Testing the secrets manager base class", () => {
     //ASSERT
     expect(result).toBeNull();
   });
-  it("should throw error if dont get key", () => {
+  it('should throw error if dont get key', () => {
     //@ts-ignore
     return expect(secretsManagerServiceBase.getSecret()).rejects.toThrow();
   });
-  it("should throw an exeption if getting null key", () => {
+  it('should throw an exeption if getting null key', () => {
     //@ts-ignore
     return expect(secretsManagerServiceBase.getSecret(null)).rejects.toThrow();
   });

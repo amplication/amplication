@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { tmpdir } from 'os';
-import { join } from 'path';
+import assert from 'assert';
+import { join, normalize } from 'path';
 import { BUILDS_FOLDER_PATH_ENV_KEY } from 'src/constants';
 
 @Injectable()
@@ -12,7 +12,8 @@ export class BuildPathFactory {
     const envFilePath = this.configService.get<string>(
       BUILDS_FOLDER_PATH_ENV_KEY
     );
-    this.buildsFolder = join(envFilePath ? envFilePath : tmpdir(), 'builds');
+    assert(envFilePath);
+    this.buildsFolder = normalize(envFilePath);
   }
   private appPath(amplicationAppId: string) {
     return join(this.buildsFolder, amplicationAppId);

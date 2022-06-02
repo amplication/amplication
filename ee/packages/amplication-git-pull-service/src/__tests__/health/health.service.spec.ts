@@ -1,18 +1,18 @@
-import { mock } from "jest-mock-extended";
-import { PrismaService } from "nestjs-prisma";
-import { HealthServiceBase } from "../../health/base/health.service.base";
+import { mock } from 'jest-mock-extended';
+import { PrismaService } from 'nestjs-prisma';
+import { HealthServiceBase } from '../../health/base/health.service.base';
 
-describe("Testing the HealthServiceBase", () => {
+describe('Testing the HealthServiceBase', () => {
   //ARRANGE
   let prismaService: PrismaService;
   let healthServiceBase: HealthServiceBase;
 
-  describe("Testing the isDbReady function in HealthServiceBase class", () => {
+  describe('Testing the isDbReady function in HealthServiceBase class', () => {
     beforeEach(() => {
       prismaService = mock<PrismaService>();
       healthServiceBase = new HealthServiceBase(prismaService);
     });
-    it("should return true if allow connection to db", async () => {
+    it('should return true if allow connection to db', async () => {
       //ARRANGE
       prismaService.$queryRaw
         //@ts-ignore
@@ -22,7 +22,7 @@ describe("Testing the HealthServiceBase", () => {
       //ASSERT
       expect(response).toBe(true);
     });
-    it("should return false if db is not available", async () => {
+    it('should return false if db is not available', async () => {
       //ARRANGE
       prismaService.$queryRaw
         //@ts-ignore

@@ -1,4 +1,4 @@
-import * as common from "@nestjs/common";
+import * as common from '@nestjs/common';
 
 export class ForbiddenException extends common.ForbiddenException {
   statusCode!: number;

@@ -11,7 +11,7 @@ RUN npm config set fund false
 
 WORKDIR /app
 COPY lerna.json /app
-COPY package*.json /app
+COPY package*.json /app/
 RUN npm ci --production
 
 FROM base AS build
@@ -43,10 +43,11 @@ COPY --from=build /app/ee/packages/amplication-git-push-webhook-service/dist /ap
 COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
 COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
 COPY --from=build /app/packages/amplication-prisma-db/lib /app/packages/amplication-prisma-db/lib
+COPY --from=build /app/packages/amplication-prisma-db/prisma /app/packages/amplication-prisma-db/prisma
 
 COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
 COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
 
 EXPOSE 4567
-CMD [ "node", "dist/src/main"]
+CMD [ "node", "dist/main"]
