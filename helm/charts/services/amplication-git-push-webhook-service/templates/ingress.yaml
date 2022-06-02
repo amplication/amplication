@@ -1,0 +1,5 @@
+{{- define "amplication-git-push-webhook-service.ingress" -}}
+{{- end }}
+{{- if .Values.ingress.enabled }}
+{{ include "base.ingress" (list . "amplication-git-push-webhook-service.ingress") -}}
+{{- end }}

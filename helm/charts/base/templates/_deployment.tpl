@@ -26,13 +26,6 @@ spec:
       serviceAccountName: default
       containers:
         - name: '{{ .Values.name }}'
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - /bin/sh
-                  - -c
-                  - echo "$GCP" >> /var/gcp-secret
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if hasKey .Values "config" }}
@@ -66,7 +59,7 @@ spec:
       volumes:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.volume.name }}
+            claimName: {{ .Values.pvc.name }}
       {{- end }}
 {{- end -}}
 {{- define "base.deployment" -}}

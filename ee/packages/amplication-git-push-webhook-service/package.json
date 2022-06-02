@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@amplication/prisma-db": "^0.12.2",
+    "@amplication/kafka": "^0.12.2",
     "@nestjs/common": "8.2.3",
     "@nestjs/config": "2.0.0",
     "@nestjs/core": "8.4.4",
@@ -28,7 +29,6 @@
     "eventsource": "^2.0.0",
     "kafkajs": "1.16.0",
     "nest-winston": "1.6.2",
-    "nestjs-prisma": "0.15.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "winston": "3.7.2",

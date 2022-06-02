@@ -1,24 +1,25 @@
 name: amplication-server
 
 autoscaling:
-  enabled: enabled
+  enabled: true
   minReplicas: 2
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 replicaCount: 2
-volume:
-  name: amplication-server-artifacts-data
-  path: /artifacts
 image:
   pullPolicy: Always
   repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-prod-server
   tag: 0.0.7
   imagePullSecrets: []
 
+volume:
+  name: amplication-data
+  path: /amplication-data
+
 service:
   type: ClusterIP
-  port: 
+  port:
     target: 3000
   protocol: TCP
 ingress:
@@ -31,6 +32,8 @@ secrets:
 pvc:
   storageLimit: 5Gi
   storageRequest: 1Gi
+  storageName: efs-sc
+  name: efs-claim
 
 # Postgresql Server
 postgres:

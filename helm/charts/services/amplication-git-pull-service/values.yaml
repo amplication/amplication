@@ -1,0 +1,45 @@
+name: amplication-git-pull-service
+
+replicaCount: 1
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+image:
+  pullPolicy: Always
+  repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service-dev
+  tag: 0.0.1
+  imagePullSecrets: []
+    
+volume:
+  name: amplication-data
+  path: /amplication-data
+
+service:
+  type: ClusterIP
+  port:
+    target: 3000
+  protocol: TCP
+
+ingress:
+  enabled: false
+
+pvc:
+  storageRequest: 1Gi
+  name: efs-claim
+  storageName: efs-sc
+
+# Postgresql Server
+postgres:
+  install: false
+  postgresqlUsername: postgrespull
+  postgresPassword: YWRtaW4K
+  db: pull
+  fullnameOverride: postgresql
+  postgresql:
+    image: groundnuty/k8s-wait-for:v1.3
+    imagePullPolicy: Always
+    primary:
+      podLabels: { name: "postgres" }

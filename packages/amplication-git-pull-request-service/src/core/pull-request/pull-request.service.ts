@@ -30,26 +30,25 @@ export class PullRequestService {
       oldBuildId,
       newBuildId
     );
+    this.logger.info(
+      'The changed files has return from the diff service listOfChangedFiles',
+      { lengthOfFile: changedFiles.length }
+    );
+
     const { base, body, head, title } = commit;
-    try {
-      const prUrl = await this.gitService.createPullRequest(
-        gitProvider,
-        gitOrganizationName,
-        gitRepositoryName,
-        PullRequestService.removeFirstSlashFromPath(changedFiles),
-        head,
-        title,
-        body,
-        base,
-        installationId
-      );
-      return { value: { url: prUrl }, status: StatusEnum.Success, error: null };
-    } catch (error) {
-      this.logger.error(`Failed to make a pull request in ${gitProvider}`, {
-        error,
-      });
-      return { value: null, status: StatusEnum.GeneralFail, error };
-    }
+    const prUrl = await this.gitService.createPullRequest(
+      gitProvider,
+      gitOrganizationName,
+      gitRepositoryName,
+      PullRequestService.removeFirstSlashFromPath(changedFiles),
+      head,
+      title,
+      body,
+      base,
+      installationId
+    );
+    this.logger.info('Opened a new pull request', { prUrl });
+    return { value: { url: prUrl }, status: StatusEnum.Success, error: null };
   }
   private static removeFirstSlashFromPath(
     changedFiles: { code: string; path: string }[]
