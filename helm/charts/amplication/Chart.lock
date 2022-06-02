@@ -1,7 +1,7 @@
 dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 10.5.2
+  version: 10.16.2
 - name: amplication-client
   repository: file://../services/amplication-client
   version: 0.1.0
@@ -11,5 +11,5 @@ dependencies:
 - name: amplication-server
   repository: file://../services/amplication-server
   version: 0.1.0
-digest: sha256:261dae75583f7d3b73ad598e75f5046c00d9c02fb8cd2c7e6577c7599621763c
-generated: "2022-04-19T16:16:59.990381+03:00"
+digest: sha256:05c7b296c9c6cc34d8b980c3e21020eeae42b23e01051fb27b21389c79aa54c5
+generated: "2022-06-02T15:27:00.881101+03:00"
