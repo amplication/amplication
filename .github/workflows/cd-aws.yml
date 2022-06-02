@@ -29,6 +29,7 @@ jobs:
       POSTGRESQL_PASSWORD: ${{ steps.create-secret-names.outputs.POSTGRESQL_PASSWORD }}
       POSTGRESQL_URL: ${{ steps.create-secret-names.outputs.POSTGRESQL_URL }}
       PULL_POSTGRESQL_URL: ${{ steps.create-secret-names.outputs.PULL_POSTGRESQL_URL }}
+      PULL_POSTGRESQL_PASSWORD: ${{ steps.create-secret-names.outputs.PULL_POSTGRESQL_PASSWORD }}
       JWT_SECRET: ${{ steps.create-secret-names.outputs.JWT_SECRET }}
       SERVICE_JWT_SECRET: ${{ steps.create-secret-names.outputs.SERVICE_JWT_SECRET }}
       WEBHOOKS_SECRET_KEY: ${{ steps.create-secret-names.outputs.WEBHOOKS_SECRET_KEY }}
@@ -47,6 +48,7 @@ jobs:
           echo "::set-output name=POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_PASSWORD"
           echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_URL"
           echo "::set-output name=PULL_POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_PULL_POSTGRESQL_URL"
+          echo "::set-output name=PULL_POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_PULL_POSTGRESQL_PASSWORD"
           echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}_JWT_SECRET"
           echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}_SERVICE_JWT_SECRET"
           echo "::set-output name=WEBHOOKS_SECRET_KEY::AWS_${TARGET_ENV_SECRET}_WEBHOOKS_SECRET_KEY"
@@ -66,6 +68,7 @@ jobs:
       POSTGRESQL_PASSWORD: ${{ needs.prepare.outputs.POSTGRESQL_PASSWORD }}
       POSTGRESQL_URL: ${{ needs.prepare.outputs.POSTGRESQL_URL }}
       PULL_POSTGRESQL_URL: ${{ needs.prepare.outputs.PULL_POSTGRESQL_URL }}
+      PULL_POSTGRESQL_PASSWORD: ${{ needs.prepare.outputs.PULL_POSTGRESQL_PASSWORD }}
       JWT_SECRET: ${{ needs.prepare.outputs.JWT_SECRET }}
       SERVICE_JWT_SECRET: ${{ needs.prepare.outputs.SERVICE_JWT_SECRET }}
       WEBHOOKS_SECRET_KEY: ${{ needs.prepare.outputs.WEBHOOKS_SECRET_KEY }}
@@ -173,7 +176,7 @@ jobs:
 
           SECRETS+=" -p amplication-git-pull-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
           SECRETS+=" -p amplication-git-pull-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
-          SECRETS+=" -p amplication-git-pull-service.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
+          SECRETS+=" -p amplication-git-pull-service.secrets.POSTGRESQL_PASSWORD=$PULL_POSTGRESQL_PASSWORD"
           SECRETS+=" -p amplication-git-pull-service.secrets.POSTGRESQL_URL=$PULL_POSTGRESQL_URL"
 
           SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
@@ -200,6 +203,7 @@ jobs:
           POSTGRESQL_PASSWORD: ${{ secrets[env.POSTGRESQL_PASSWORD] }}
           POSTGRESQL_URL: ${{ secrets[env.POSTGRESQL_URL] }}
           PULL_POSTGRESQL_URL: ${{ secrets[env.PULL_POSTGRESQL_URL] }}
+          PULL_POSTGRESQL_PASSWORD: ${{ secrets[env.PULL_POSTGRESQL_PASSWORD] }}
           JWT_SECRET: ${{ secrets[env.JWT_SECRET] }}
           SERVICE_JWT_SECRET: ${{ secrets[env.SERVICE_JWT_SECRET] }}
           WEBHOOKS_SECRET_KEY: ${{ secrets[env.WEBHOOKS_SECRET_KEY] }}
