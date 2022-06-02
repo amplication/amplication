@@ -115,6 +115,8 @@ function GenerationSettingsForm({ match }: Props) {
   );
 
   const errorMessage = formatError(error || updateError);
+  const GraphQLEnable = data?.appSettings.generateGraphQL;
+
   return (
     <div className={CLASS_NAME}>
       {data?.appSettings && (
@@ -139,10 +141,7 @@ function GenerationSettingsForm({ match }: Props) {
                 <FormikAutoSave debounceMS={2000} />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
                   <h2>Server</h2>
-                  <ToggleField
-                    name="generateGraphQL"
-                    label="GraphQL API"
-                  />
+                  <ToggleField name="generateGraphQL" label="GraphQL API" />
                   <ToggleField
                     name="generateRestApi"
                     label="REST API & Swagger UI"
@@ -150,7 +149,11 @@ function GenerationSettingsForm({ match }: Props) {
                 </Panel>
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
                   <h2>Admin UI</h2>
-                    <ToggleField name="generateAdminUI" label="Admin UI" />
+                  <ToggleField
+                    disabled={!GraphQLEnable}
+                    name="generateAdminUI"
+                    label="Admin UI"
+                  />
                 </Panel>
               </Form>
             );
