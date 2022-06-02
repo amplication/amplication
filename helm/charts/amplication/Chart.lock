@@ -1,0 +1,27 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 10.16.2
+- name: amplication-client
+  repository: file://../services/amplication-client
+  version: 0.1.0
+- name: base
+  repository: file://../base
+  version: 0.1.0
+- name: amplication-server
+  repository: file://../services/amplication-server
+  version: 0.1.0
+- name: cp-helm-charts
+  repository: https://confluentinc.github.io/cp-helm-charts/
+  version: 0.6.1
+- name: amplication-git-pull-request-service
+  repository: file://../services/amplication-git-pull-request-service
+  version: 0.1.0
+- name: amplication-git-pull-service
+  repository: file://../services/amplication-git-pull-service
+  version: 0.1.0
+- name: amplication-git-push-webhook-service
+  repository: file://../services/amplication-git-push-webhook-service
+  version: 0.1.0
+digest: sha256:c37488f70e8df310f2ce4d3a3ec3c993de83463e46dbce1a17c42b2d9e90f7b7
+generated: "2022-06-02T15:58:25.31275+03:00"
