@@ -1,6 +1,6 @@
-import * as dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
-import { customSeed } from "./customSeed";
+import * as dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
+import { customSeed } from './customSeed';
 
 if (require.main === module) {
   dotenv.config();
@@ -12,16 +12,16 @@ if (require.main === module) {
 }
 
 async function seed() {
-  console.info("Seeding database...");
+  console.info('Seeding database...');
 
   const client = new PrismaClient();
   const data = {
     id: 123,
-    provider: "GitHub",
-    repositoryOwner: "Jon Doe",
-    repositoryName: "test-organization-name",
-    branch: "main",
-    commit: "e3355tt",
+    provider: 'GitHub',
+    repositoryOwner: 'Jon Doe',
+    repositoryName: 'test-organization-name',
+    branch: 'main',
+    commit: 'e3355tt',
     pushedAt: new Date(),
   };
   await client.gitPullEvent.upsert({
@@ -31,8 +31,8 @@ async function seed() {
   });
   void client.$disconnect();
 
-  console.info("Seeding database with custom seed...");
+  console.info('Seeding database with custom seed...');
   customSeed();
 
-  console.info("Seeded database successfully");
+  console.info('Seeded database successfully');
 }

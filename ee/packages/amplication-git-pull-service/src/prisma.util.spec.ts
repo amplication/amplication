@@ -1,10 +1,10 @@
 import {
   isRecordNotFoundError,
   PRISMA_QUERY_INTERPRETATION_ERROR,
-} from "./prisma.util";
+} from './prisma.util';
 
-describe("isRecordNotFoundError", () => {
-  test("returns true for record not found error", () => {
+describe('isRecordNotFoundError', () => {
+  test('returns true for record not found error', () => {
     expect(
       isRecordNotFoundError(
         Object.assign(
@@ -17,7 +17,7 @@ describe("isRecordNotFoundError", () => {
       )
     ).toBe(true);
   });
-  test("returns false for any other error", () => {
+  test('returns false for any other error', () => {
     expect(isRecordNotFoundError(new Error())).toBe(false);
   });
 });

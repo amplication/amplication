@@ -1,5 +1,5 @@
 export enum EnumGitPullEventStatus {
-  Created = "Created",
-  Ready = "Ready",
-  Deleted = "Deleted",
+  Created = 'Created',
+  Ready = 'Ready',
+  Deleted = 'Deleted',
 }
