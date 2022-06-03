@@ -1,6 +1,6 @@
 @import "../style/index.scss";
 
-$select-item-width: 40px;
+$select-item-width: 36px;
 $inverted-border-radius: 6px;
 
 .amp-menu-item {
@@ -45,6 +45,9 @@ $inverted-border-radius: 6px;
     min-width: var(--menu-item-width);
     height: var(--menu-item-height);
     background-size: contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all var(--menu-expand-animation-duration) ease-in;
     box-sizing: border-box;
     color: var(--menu-item-color);
