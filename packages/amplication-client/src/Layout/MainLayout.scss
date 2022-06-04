@@ -76,7 +76,7 @@ $expand-button-padding: 4px;
       }
 
       .logo-container {
-        height: calc(var(--menu-width) + (var(--default-spacing)));
+        min-height: calc(var(--menu-width) + (var(--default-spacing)));
         width: 100%;
         overflow: hidden;
         transition: all var(--menu-expand-animation-duration) ease-in;
@@ -155,16 +155,31 @@ $expand-button-padding: 4px;
       }
       .menu-container {
         flex: 1;
-        @include scrollbars(5px, var(--black60), transparent);
+        @include scrollbars(5px, var(--black10), transparent);
         overflow-y: auto;
         overflow-x: hidden;
-        overflow: visible;
         padding: var(--default-spacing) 0;
+
+        &:hover {
+          @include scrollbars(5px, var(--black60), transparent);
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
       }
       .bottom-menu-container {
         padding-bottom: var(--default-spacing);
         overflow: hidden;
         overflow: visible;
+        position: relative;
+
+        &:before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: var(--default-spacing);
+          right: var(--default-spacing);
+          border-top: $border-white-transparent;
+        }
       }
     }
   }
