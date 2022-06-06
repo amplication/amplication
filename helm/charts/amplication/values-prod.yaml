@@ -89,7 +89,8 @@ amplication-git-push-webhook-service:
     install: false
   ingress:
     enabled: true
-    hostname: webhook.amplication.com
+    hostname: server.prod.amplication-dev.com
+    hostname_production: server.amplication.com
   config:
     env:
       #KAFKA
@@ -103,6 +104,10 @@ amplication-git-pull-service:
     name: prod-efs-claim
   postgres:
     install: false
+  ingress:
+    enabled: true
+    hostname: server.prod.amplication-dev.com
+    hostname_production: server.amplication.com
   config:
     env:
       NODE_ENV: "production"
@@ -127,6 +132,10 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   pvc:
     name: prod-efs-claim
+  ingress:
+    enabled: true
+    hostname: server.prod.amplication-dev.com
+    hostname_production: server.amplication.com
   config:
     env:
       #KAFKA

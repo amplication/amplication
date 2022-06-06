@@ -74,7 +74,7 @@ amplication-git-push-webhook-service:
     install: false
   ingress:
     enabled: true
-    hostname: webhook.staging-os.amplication-dev.com
+    hostname: server.staging-os.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092"]'
@@ -87,6 +87,9 @@ amplication-git-pull-service:
     install: false
   pvc:
     name: staging-os-efs-claim
+  ingress:
+    enabled: true
+    hostname: server.staging-os.amplication-dev.com
   config:
     env:
       NODE_ENV: "production"
@@ -110,6 +113,9 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   pvc:
     name: staging-os-efs-claim
+  ingress:
+    enabled: true
+    hostname: server.staging-os.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092"]'

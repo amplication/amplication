@@ -50,7 +50,7 @@ postgres:
 amplication-client:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
-    tag: "fix-download-app" # Need to change for dev.
+    tag: "2868-merge" # Need to change for dev.
   service:
     hostname: app-dev.staging-os.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
@@ -63,7 +63,7 @@ amplication-client:
 amplication-server:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-    tag: "fix-download-app"
+    tag: "2868-merge"
   postgres:
     install: false
   ingress:
@@ -119,12 +119,12 @@ amplication-server:
 amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
-    tag: "feature-add-services"
+    tag: "fix-2861-null-check"
   postgres:
     install: false
   ingress:
     enabled: true
-    hostname: webhook-dev.staging-os.amplication-dev.com
+    hostname: server-dev.staging-os.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
@@ -135,9 +135,14 @@ amplication-git-push-webhook-service:
 amplication-git-pull-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
-    tag: "feature-add-services"
+    tag: "fix-2861-null-check"
+  ingress:
+    enabled: true
+    hostname: server-dev.staging-os.amplication-dev.com
   postgres:
     install: false
+  pvc:
+    name: common-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -159,7 +164,12 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
-    tag: "feature-add-services"
+    tag: "fix-2861-null-check"
+  pvc:
+    name: common-efs-claim
+  ingress:
+    enabled: true
+    hostname: server-dev.staging-os.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
