@@ -26,6 +26,10 @@ const EXAMPLE_APP_INFO: AppInfo = {
     dbPassword: "admin",
     dbUser: "admin",
     authProvider: EnumAuthProviderType.Http,
+    generateAdminUI: false,
+    generateGraphQL: false,
+    generateRestApi: false,
+    generateRootFiles: false,
   },
 };
 

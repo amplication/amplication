@@ -192,10 +192,10 @@ export type AppSettings = IBlock & {
   dbUser: Scalars["String"];
   description: Scalars["String"];
   displayName: Scalars["String"];
-  generateAdminUI?: Maybe<Scalars["Boolean"]>;
-  generateGraphQL?: Maybe<Scalars["Boolean"]>;
-  generateRestApi?: Maybe<Scalars["Boolean"]>;
-  generateRootFiles?: Maybe<Scalars["Boolean"]>;
+  generateAdminUI: Scalars["Boolean"];
+  generateGraphQL: Scalars["Boolean"];
+  generateRestApi: Scalars["Boolean"];
+  generateRootFiles: Scalars["Boolean"];
   id: Scalars["String"];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars["DateTime"]>;

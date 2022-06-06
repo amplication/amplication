@@ -1,10 +1,8 @@
 import { print } from "recast";
-import { builders, namedTypes } from "ast-types";
+import { builders } from "ast-types";
 import { parse } from "./ast";
 import { removeIdentifierFromModuleDecorator } from "./nestjs-code-generation";
 import * as recast from "recast";
-import * as parser from "./parser";
-import * as partialParser from "./partial-parser";
 
 const actualRecast = jest.requireActual("recast");
 

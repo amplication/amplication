@@ -38,22 +38,22 @@ export class AppSettings extends IBlock {
   authProvider!: EnumAuthProviderType;
 
   @Field(() => Boolean, {
-    nullable: true
+    nullable: false
   })
   generateAdminUI: boolean;
 
   @Field(() => Boolean, {
-    nullable: true
+    nullable: false
   })
   generateGraphQL: boolean;
 
   @Field(() => Boolean, {
-    nullable: true
+    nullable: false
   })
   generateRestApi: boolean;
 
   @Field(() => Boolean, {
-    nullable: true
+    nullable: false
   })
   generateRootFiles: boolean;
 }

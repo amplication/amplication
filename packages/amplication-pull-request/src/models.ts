@@ -3,12 +3,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -194,6 +192,10 @@ export type AppSettings = IBlock & {
   dbUser: Scalars['String'];
   description: Scalars['String'];
   displayName: Scalars['String'];
+  generateAdminUI: Scalars['Boolean'];
+  generateGraphQL: Scalars['Boolean'];
+  generateRestApi: Scalars['Boolean'];
+  generateRootFiles: Scalars['Boolean'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']>;
@@ -213,6 +215,10 @@ export type AppSettingsUpdateInput = {
   dbUser: Scalars['String'];
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
+  generateAdminUI?: InputMaybe<Scalars['Boolean']>;
+  generateGraphQL?: InputMaybe<Scalars['Boolean']>;
+  generateRestApi?: InputMaybe<Scalars['Boolean']>;
+  generateRootFiles?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type AppUpdateInput = {
@@ -535,11 +541,15 @@ export type ConnectorRestApiCreateInput = {
   authenticationType: EnumConnectorRestApiAuthenticationType;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
-  httpBasicAuthenticationSettings?: InputMaybe<HttpBasicAuthenticationSettingsInput>;
+  httpBasicAuthenticationSettings?: InputMaybe<
+    HttpBasicAuthenticationSettingsInput
+  >;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  privateKeyAuthenticationSettings?: InputMaybe<PrivateKeyAuthenticationSettingsInput>;
+  privateKeyAuthenticationSettings?: InputMaybe<
+    PrivateKeyAuthenticationSettingsInput
+  >;
 };
 
 export type ConnectorRestApiOrderByInput = {
