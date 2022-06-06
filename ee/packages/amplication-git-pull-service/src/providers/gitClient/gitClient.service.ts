@@ -73,12 +73,6 @@ export class GitClientService implements IGitClient {
       const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
       // TODO: filter out assets and files > 250KB
       await this.git
-        .addConfig(
-          'safe.directory',
-          `${baseDir}/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}/${commit}`,
-          false,
-          'global'
-        )
         .clone(repository, baseDir, ['--branch', branch])
         .cwd(baseDir)
         .checkout(commit);
