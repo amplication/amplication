@@ -35,7 +35,7 @@ podAnnotations:
 maxMemory: 2
 minMemory: 2
 maxCPU: 1
-maxCPU: 1
+minCPU: 1
 
 pvc:
   storageLimit: 5Gi
