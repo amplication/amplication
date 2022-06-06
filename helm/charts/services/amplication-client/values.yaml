@@ -26,8 +26,8 @@ podAnnotations:
 
 maxMemory: 2
 minMemory: 2
-maxCPU: 2
-minCPU: 2 
+maxCPU: 1
+maxCPU: 1 
 
 config:
   env:
