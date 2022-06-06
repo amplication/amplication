@@ -19,34 +19,14 @@ spec:
           serviceName: amplication-server
           servicePort: https
         path: /
-
       - backend:
-          serviceName: amplication-git-push-webhook-service
+          serviceName: {{ .Values.name }}
           servicePort: http
-        path: /webhook
+        path: {{ .Values.ingress.path }}
       - backend:
-          serviceName: amplication-git-push-webhook-service
+          serviceName: {{ .Values.name }}
           servicePort: https
-        path: /webhook
-
-      - backend:
-          serviceName: amplication-git-pull-service
-          servicePort: http
-        path: /pull
-      - backend:
-          serviceName: amplication-git-pull-service
-          servicePort: https
-        path: /pull
-
-      - backend:
-          serviceName: amplication-git-pull-request-service
-          servicePort: http
-        path: /pull-request
-      - backend:
-          serviceName: amplication-git-pull-request-service
-          servicePort: https
-        path: /pull-request
-
+        path: {{ .Values.ingress.path }}
   {{- if hasKey .Values.ingress "hostname_production" }}
   - host: {{ .Values.ingress.hostname_production }}  
     http:
@@ -59,33 +39,14 @@ spec:
           serviceName: amplication-server
           servicePort: https
         path: /
-
       - backend:
-          serviceName: amplication-git-push-webhook-service
+          serviceName: {{ .Values.name }}
           servicePort: http
-        path: /webhook
+        path: {{ .Values.ingress.path }}
       - backend:
-          serviceName: amplication-git-push-webhook-service
+          serviceName: {{ .Values.name }}
           servicePort: https
-        path: /webhook
-
-      - backend:
-          serviceName: amplication-git-pull-service
-          servicePort: http
-        path: /pull
-      - backend:
-          serviceName: amplication-git-pull-service
-          servicePort: https
-        path: /pull
-
-      - backend:
-          serviceName: amplication-git-pull-request-service
-          servicePort: http
-        path: /pull-request
-      - backend:
-          serviceName: amplication-git-pull-request-service
-          servicePort: https
-        path: /pull-request
+        path: {{ .Values.ingress.path }}
   {{- end }}
 {{- end }}
 {{- define "base.ingress" -}}

@@ -50,7 +50,7 @@ postgres:
 amplication-client:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
-    tag: "2868-merge" # Need to change for dev.
+    tag: "2447954474" # Need to change for dev.
   service:
     hostname: app-dev.staging-os.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
@@ -63,7 +63,7 @@ amplication-client:
 amplication-server:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-    tag: "2868-merge"
+    tag: "2447862327"
   postgres:
     install: false
   ingress:
@@ -119,7 +119,7 @@ amplication-server:
 amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
-    tag: "fix-2861-null-check"
+    tag: "2447954474"
   postgres:
     install: false
   ingress:
@@ -135,7 +135,7 @@ amplication-git-push-webhook-service:
 amplication-git-pull-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
-    tag: "fix-2861-null-check"
+    tag: "2869-merge"
   ingress:
     enabled: true
     hostname: server-dev.staging-os.amplication-dev.com
@@ -164,7 +164,7 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
-    tag: "fix-2861-null-check"
+    tag: "2447954474"
   pvc:
     name: common-efs-claim
   ingress:

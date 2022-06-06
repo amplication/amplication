@@ -34,6 +34,7 @@ service:
 
 ingress:
   enabled: false
+  path: /pull-request
 
 pvc:
   storageRequest: 1Gi

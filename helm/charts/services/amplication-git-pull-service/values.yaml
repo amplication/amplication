@@ -33,6 +33,7 @@ service:
 
 ingress:
   enabled: false
+  path: /pull
 
 pvc:
   storageRequest: 1Gi
