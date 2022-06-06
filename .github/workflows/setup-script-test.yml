@@ -9,7 +9,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest, windows-latest, ubuntu-18.04]
         node: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v2

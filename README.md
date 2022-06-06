@@ -1,7 +1,7 @@
 <p align="center">
 
   <a href="https://amplication.com" target="_blank">
-    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
+    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/images/amplication-logo-purple.svg"/>
   </a>
 </p>
 <p align="center">
@@ -119,7 +119,7 @@ How does it affect you? Well... mostly it doesn't. Every app generated using Amp
 
 You can ask questions, and participate in discussions about Amplication-related topics in the Amplication Discord channel.
 
-<a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/assets/images/discord_banner_purple.svg" /></a>
+<a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
 ## Create a bug report
 

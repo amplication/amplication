@@ -2,8 +2,11 @@ node_modules/
 terraform/envs/production/.terraform.lock.hcl
 terraform/envs/dev/.terraform.lock.hcl
 lerna-debug.log
+terraform/envs/*/.terraform.lock.hcl
 .DS_Store
 .idea/
+lib/
 *.tgz
 values-secret*
+dist/
 packages/.server-id

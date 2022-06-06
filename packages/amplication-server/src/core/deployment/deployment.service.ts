@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService, Prisma } from '@amplication/prisma-db';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { subSeconds, differenceInSeconds, subDays } from 'date-fns';
 
 import { isEmpty } from 'lodash';
 import * as winston from 'winston';
-import { Prisma } from '@prisma/client';
 import { DeployResult, EnumDeployStatus } from '@amplication/deployer';
 import { DeployerService } from '@amplication/deployer/dist/nestjs';
 import { EnvironmentService } from '../environment/environment.service';
@@ -67,7 +66,7 @@ export const ACTION_INCLUDE = {
 };
 
 const MAX_DESTROY_PER_CYCLE = 2;
-const DESTROY_STALED_INTERVAL_DAYS = 30;
+const DESTROY_STALED_INTERVAL_DAYS = 14;
 const DEPLOY_STATUS_FETCH_INTERVAL_SEC = 10;
 const DEPLOY_STATUS_UPDATE_INTERVAL_SEC = 30;
 

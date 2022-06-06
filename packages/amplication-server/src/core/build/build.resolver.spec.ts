@@ -14,11 +14,12 @@ import { BuildService } from './build.service';
 import { ActionService } from '../action/action.service';
 import { UserService } from '../user/user.service';
 import { Build } from './dto/Build';
-import { User } from 'src/models/';
+import { Commit, User } from 'src/models/';
 import { Action } from '../action/dto/Action';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
+import { CommitService } from '../commit/commit.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
@@ -33,12 +34,20 @@ const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const EXAMPLE_ACTION: Action = {
   id: EXAMPLE_ACTION_ID,
   createdAt: new Date()
+};
+
+const EXAMPLE_COMMIT: Commit = {
+  id: EXAMPLE_COMMIT_ID,
+  createdAt: new Date(),
+  userId: EXAMPLE_USER_ID,
+  message: EXAMPLE_MESSAGE
 };
 
 const EXAMPLE_DEPLOYMENT: Deployment = {
@@ -96,6 +105,7 @@ const FIND_USER_QUERY = gql`
         id
         createdAt
         updatedAt
+        isOwner
       }
     }
   }
@@ -169,6 +179,8 @@ const buildServiceFindOneMock = jest.fn(() => EXAMPLE_BUILD);
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
+const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
+
 const buildServiceCalcBuildStatusMock = jest.fn(() => {
   return EnumBuildStatus.Completed;
 });
@@ -205,6 +217,12 @@ describe('BuildResolver', () => {
           provide: ActionService,
           useClass: jest.fn(() => ({
             findOne: actionServiceFindOneMock
+          }))
+        },
+        {
+          provide: CommitService,
+          useClass: jest.fn(() => ({
+            findOne: commitServiceFindOneMock
           }))
         },
         {
@@ -279,7 +297,8 @@ describe('BuildResolver', () => {
         createdBy: {
           ...EXAMPLE_USER,
           createdAt: EXAMPLE_USER.createdAt.toISOString(),
-          updatedAt: EXAMPLE_USER.updatedAt.toISOString()
+          updatedAt: EXAMPLE_USER.updatedAt.toISOString(),
+          isOwner: true
         }
       }
     });

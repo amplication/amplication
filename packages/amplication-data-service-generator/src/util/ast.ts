@@ -671,6 +671,16 @@ export function getMethods(
       namedTypes.ClassMethod.check(member) && !isConstructor(member)
   );
 }
+export function getClassMethodById(
+  classDeclaration: namedTypes.ClassDeclaration,
+  methodId: namedTypes.Identifier
+): namedTypes.ClassMethod | null {
+  const allMethodWithoutConstructor = getMethods(classDeclaration);
+  return (
+    allMethodWithoutConstructor.find((method) => method.key === methodId) ||
+    null
+  );
+}
 
 export function getNamedProperties(
   declaration: namedTypes.ClassDeclaration

@@ -29,7 +29,7 @@ export const WithDismissIcon = (props: any) => {
 export const WithCustomAction = (props: any) => {
   return (
     <Snackbar
-      action={<Button buttonStyle={EnumButtonStyle.Clear}>Click Me</Button>}
+      action={<Button buttonStyle={EnumButtonStyle.Text}>Click Me</Button>}
       open
       message="Message"
       timeout={-1}

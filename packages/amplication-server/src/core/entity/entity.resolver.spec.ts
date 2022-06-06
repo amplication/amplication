@@ -20,7 +20,7 @@ import {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType
-} from '@prisma/client';
+} from '@amplication/prisma-db';
 import { EntityPermission } from 'src/models/EntityPermission';
 import { EntityVersion } from 'src/models/EntityVersion';
 import { Commit, EntityPermissionField } from 'src/models';
@@ -86,7 +86,8 @@ const EXAMPLE_ENTITY_FIELD_WITH_RELATION: EntityField = {
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const EXAMPLE_PERMISSION: EntityPermission = {
@@ -220,6 +221,7 @@ const LOCKED_BY_USER_QUERY = gql`
         id
         createdAt
         updatedAt
+        isOwner
       }
     }
   }
@@ -798,7 +800,8 @@ describe('EntityResolver', () => {
         lockedByUser: {
           ...EXAMPLE_USER,
           createdAt: EXAMPLE_USER.createdAt.toISOString(),
-          updatedAt: EXAMPLE_USER.updatedAt.toISOString()
+          updatedAt: EXAMPLE_USER.updatedAt.toISOString(),
+          isOwner: true
         }
       }
     });

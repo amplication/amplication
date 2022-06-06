@@ -1,0 +1,20 @@
+@import "../../style/index.scss";
+
+.code-view-page {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+
+
+  
+  &__code-container{
+    flex: 1;
+    background: var(--page-content-tab-background);
+    border-radius: var(--default-border-radius);
+    border: $border-black10;
+    box-sizing: border-box;
+    overflow: auto;
+    height: 100%;
+  }
+
+}

@@ -81,6 +81,13 @@
   height: var(--field-height);
 }
 
+@mixin label {
+  display: block;
+  font-size: var(--text-field-label-font-size);
+  margin-bottom: var(--default-spacing-small);
+  color: var(--black60);
+}
+
 @mixin textField--active {
   outline: none;
   box-shadow: none;

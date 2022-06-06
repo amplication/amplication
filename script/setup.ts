@@ -1,15 +1,22 @@
 import { exec } from "child_process";
 import { satisfies } from "semver";
 import { createLogger, format, Logger, transports } from "winston";
+import * as ora from "ora";
+
 const { combine, colorize, simple } = format;
+
+const spinner = ora();
+spinner.color = "green";
 
 class Task {
   constructor(public command: string, public label: string) {}
 }
+
 const logger = createLogger({
   transports: [new transports.Console()],
   format: combine(colorize(), simple()),
 });
+
 function preValidate() {
   const { engines } = require("../package.json");
   const { node: nodeRange, npm } = engines;
@@ -38,18 +45,20 @@ function preValidate() {
     process.exit(1);
   }
 }
-async function runFunction(task: Task, logger: Logger): Promise<string> {
-  logger.info(`Starting ${task.label}`);
+
+async function runFunction(task: Task): Promise<string> {
+  spinner.start(`Executing ${task.label}` + "\n");
   return new Promise((resolve, reject) => {
     exec(task.command, (error, stdout, stderr) => {
       error && reject(error);
       if (stdout) {
-        logger.info(`Finish ${task.label}`);
+        spinner.succeed(`Finished ${task.label}`);
         stdout && resolve(task.label);
       }
     });
   });
 }
+
 const bootstrap: Task[] = [
   {
     command: "npm run bootstrap",
@@ -63,11 +72,13 @@ const clientStep: Task[] = [
     label: "Client build",
   },
 ];
-const serverBuild: Task[] = [
+const prismaGeneration: Task[] = [
   {
     command: "npm run prisma:generate",
     label: "prisma generation",
   },
+];
+const serverBuild: Task[] = [
   {
     command:
       "npm run build -- --scope @amplication/server --include-dependencies",
@@ -86,40 +97,46 @@ const docker: Task[] = [
     label: "running docker compose up",
   },
 ];
-
 const dockerInit: Task[] = [
   {
     command: "cd packages/amplication-prisma-db && npm run start:db",
     label: "db seeding",
   },
 ];
+
 const tasks: Task[][] = [
   bootstrap,
   clientStep,
+  prismaGeneration,
   serverBuild,
   graphqlGeneration,
   docker,
   dockerInit,
 ];
+
 if (require.main === module) {
   (async () => {
-    preValidate();
-    logger.info(`Welcome to Amplication installer!`);
-    logger.info(
-      "This script will help you easily set up a running amplication server"
-    );
-    console.log("");
-
-    for (let i = 0; i < tasks.length; i++) {
-      const step = tasks[i];
-
-      logger.info(`Starting step ${i + 1}/${tasks.length}`);
-      const tasksPromises = step.map((task) => {
-        return runFunction(task, logger);
-      });
-      await Promise.all(tasksPromises);
+    try {
+      preValidate();
+      logger.info(`Welcome to Amplication installer!`);
+      logger.info(
+        "This script will help you easily set up a running amplication server"
+      );
       console.log("");
+
+      for (let i = 0; i < tasks.length; i++) {
+        const step = tasks[i];
+
+        logger.info(`Starting step ${i + 1}/${tasks.length}`);
+        const tasksPromises = step.map((task) => {
+          return runFunction(task);
+        });
+        await Promise.all(tasksPromises);
+        console.log("");
+      }
+      logger.info("Finish all the process for the setup, have fun hacking");
+    } catch (error) {
+      spinner.fail(error.message);
     }
-    logger.info("Finish all the process for the setup, have fun hacking");
   })();
 }

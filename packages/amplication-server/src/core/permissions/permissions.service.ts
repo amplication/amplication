@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { User } from 'src/models';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 
@@ -55,6 +55,17 @@ export class PermissionsService {
       const matching = await this.prisma.app.count({
         where: {
           deletedAt: null,
+          id: resourceId,
+          workspace: {
+            id: workspace.id
+          }
+        }
+      });
+      return matching === 1;
+    }
+    if (resourceType === AuthorizableResourceParameter.InvitationId) {
+      const matching = await this.prisma.invitation.count({
+        where: {
           id: resourceId,
           workspace: {
             id: workspace.id

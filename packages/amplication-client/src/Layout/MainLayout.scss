@@ -53,6 +53,20 @@ $expand-button-padding: 4px;
       display: flex;
       flex-direction: row;
 
+      &__menu-fixed-panel {
+        @include scrollbars($default-scroll-width, var(--black60), transparent);
+        background-color: var(--menu-fixed-panel-background);
+        height: 100%;
+        width: var(--fixed-menu-panel-width);
+        max-width: var(--fixed-menu-panel-max-width);
+        overflow: auto;
+        transition: width var(--menu-expand-animation-duration) ease-in;
+
+        &:empty {
+          width: 0;
+        }
+      }
+
       &__main-menu {
         height: 100%;
         display: flex;
@@ -156,7 +170,13 @@ $expand-button-padding: 4px;
   }
 
   &__aside {
-    border-left: $border-black10;
+    &--position-right {
+      border-left: $border-black10;
+    }
+
+    &--position-left {
+      border-right: $border-black10;
+    }
 
     &__expandable {
       @include scrollbars($default-scroll-width, var(--black60), transparent);

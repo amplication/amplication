@@ -4,8 +4,6 @@ import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 // @ts-ignore
-import * as abacUtil from "../../auth/abac.util";
-// @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import * as errors from "../../errors";
@@ -13,10 +11,6 @@ import { Request } from "express";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
-// @ts-ignore
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-// @ts-ignore
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -63,6 +57,7 @@ export class CONTROLLER_BASE {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  // @ts-ignore
   @common.UseInterceptors(AclValidateRequestInterceptor)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -81,6 +76,7 @@ export class CONTROLLER_BASE {
     });
   }
 
+  // @ts-ignore
   @common.UseInterceptors(AclFilterResponseInterceptor)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -101,6 +97,7 @@ export class CONTROLLER_BASE {
     });
   }
 
+  // @ts-ignore
   @common.UseInterceptors(AclFilterResponseInterceptor)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -126,6 +123,7 @@ export class CONTROLLER_BASE {
     return result;
   }
 
+  // @ts-ignore
   @common.UseInterceptors(AclValidateRequestInterceptor)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,

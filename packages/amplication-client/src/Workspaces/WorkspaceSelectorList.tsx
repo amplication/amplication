@@ -40,7 +40,7 @@ function WorkspaceSelectorList({
           ))}
           <div className={`${CLASS_NAME}__new`}>
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               disabled={loading}
               type="button"
               icon="plus"
@@ -62,6 +62,10 @@ const GET_WORKSPACES = gql`
     workspaces {
       id
       name
+      subscription {
+        id
+        subscriptionPlan
+      }
     }
   }
 `;

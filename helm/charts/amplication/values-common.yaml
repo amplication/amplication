@@ -1,0 +1,19 @@
+amplication-server:
+  config:
+    env:
+      GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
+      GITHUB_SCOPE: "user:email"
+      GOOGLE_APPLICATION_CREDENTIALS: "/var/gcp-secret"
+      CONTAINER_BUILDER_DEFAULT: "docker"
+      PORT: "3000"
+      NODE_ENV: "production"
+      GCP_APPS_REGION: "us-east1"
+      GRAPHQL_DEBUG: "0"
+      PLAYGROUND_ENABLE: "0"
+      BCRYPT_SALT_OR_ROUNDS: "10"
+      CORS_ENABLE: "1"
+      DEFAULT_DISK: "gcs"
+      GCS_BUCKET: bucket
+      DOCKER_HOST: "tcp://docker:2375"
+  postgres:
+    install: "true"

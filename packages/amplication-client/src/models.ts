@@ -461,6 +461,10 @@ export type CommitWhereUniqueInput = {
   id?: InputMaybe<Scalars["String"]>;
 };
 
+export type CompleteInvitationInput = {
+  token: Scalars["String"];
+};
+
 export type ConnectGitRepositoryInput = {
   appId: Scalars["String"];
   gitOrganizationId: Scalars["String"];
@@ -1103,6 +1107,7 @@ export enum EnumEntityPermissionType {
   AllRoles = "AllRoles",
   Disabled = "Disabled",
   Granular = "Granular",
+  Public = "Public",
 }
 
 export enum EnumGitOrganizationType {
@@ -1123,6 +1128,25 @@ export enum EnumPendingChangeAction {
 export enum EnumPendingChangeResourceType {
   Block = "Block",
   Entity = "Entity",
+}
+
+export enum EnumSubscriptionPlan {
+  Business = "Business",
+  Enterprise = "Enterprise",
+  Pro = "Pro",
+}
+
+export enum EnumSubscriptionStatus {
+  Active = "Active",
+  Deleted = "Deleted",
+  PastDue = "PastDue",
+  Paused = "Paused",
+  Trailing = "Trailing",
+}
+
+export enum EnumWorkspaceMemberType {
+  Invitation = "Invitation",
+  User = "User",
 }
 
 export type Environment = {
@@ -1213,6 +1237,16 @@ export type IntFilter = {
   notIn?: InputMaybe<Array<Scalars["Int"]>>;
 };
 
+export type Invitation = {
+  __typename?: "Invitation";
+  createdAt: Scalars["DateTime"];
+  email: Scalars["String"];
+  id: Scalars["String"];
+  invitedByUser?: Maybe<User>;
+  updatedAt: Scalars["DateTime"];
+  workspace?: Maybe<Workspace>;
+};
+
 export type InviteUserInput = {
   email: Scalars["String"];
 };
@@ -1227,6 +1261,7 @@ export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
   changePassword: Account;
   commit?: Maybe<Commit>;
+  completeInvitation: Auth;
   connectAppGitRepository: App;
   createApiToken: ApiToken;
   createApp: App;
@@ -1252,12 +1287,15 @@ export type Mutation = {
   deleteEntityPermissionField: EntityPermissionField;
   deleteGitOrganization: Scalars["Boolean"];
   deleteGitRepository: App;
+  deleteUser?: Maybe<User>;
   deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars["Boolean"]>;
   getGitAppInstallationUrl: AuthorizeAppWithGitResult;
-  inviteUser?: Maybe<User>;
+  inviteUser?: Maybe<Invitation>;
   lockEntity?: Maybe<Entity>;
   login: Auth;
+  resendInvitation?: Maybe<Invitation>;
+  revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
   signup: Auth;
   updateAccount: Account;
@@ -1285,6 +1323,10 @@ export type MutationChangePasswordArgs = {
 
 export type MutationCommitArgs = {
   data: CommitCreateInput;
+};
+
+export type MutationCompleteInvitationArgs = {
+  data: CompleteInvitationInput;
 };
 
 export type MutationConnectAppGitRepositoryArgs = {
@@ -1392,6 +1434,10 @@ export type MutationDeleteGitRepositoryArgs = {
   gitRepositoryId: Scalars["String"];
 };
 
+export type MutationDeleteUserArgs = {
+  where: WhereUniqueInput;
+};
+
 export type MutationDeleteWorkspaceArgs = {
   where: WhereUniqueInput;
 };
@@ -1414,6 +1460,14 @@ export type MutationLockEntityArgs = {
 
 export type MutationLoginArgs = {
   data: LoginInput;
+};
+
+export type MutationResendInvitationArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationRevokeInvitationArgs = {
+  where: WhereUniqueInput;
 };
 
 export type MutationSetCurrentWorkspaceArgs = {
@@ -1565,6 +1619,7 @@ export type Query = {
   remoteGitRepositories: Array<RemoteGitRepository>;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
+  workspaceMembers?: Maybe<Array<WorkspaceMember>>;
   workspaces: Array<Workspace>;
 };
 
@@ -1768,6 +1823,22 @@ export type StringFilter = {
   startsWith?: InputMaybe<Scalars["String"]>;
 };
 
+export type Subscription = {
+  __typename?: "Subscription";
+  cancellationEffectiveDate?: Maybe<Scalars["DateTime"]>;
+  cancelUrl?: Maybe<Scalars["String"]>;
+  createdAt: Scalars["DateTime"];
+  id: Scalars["String"];
+  nextBillDate?: Maybe<Scalars["DateTime"]>;
+  price?: Maybe<Scalars["Float"]>;
+  status: EnumSubscriptionStatus;
+  subscriptionPlan: EnumSubscriptionPlan;
+  updatedAt: Scalars["DateTime"];
+  updateUrl?: Maybe<Scalars["String"]>;
+  workspace?: Maybe<Workspace>;
+  workspaceId: Scalars["String"];
+};
+
 export type UpdateAccountInput = {
   firstName?: InputMaybe<Scalars["String"]>;
   lastName?: InputMaybe<Scalars["String"]>;
@@ -1807,6 +1878,7 @@ export type Workspace = {
   gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars["String"];
   name: Scalars["String"];
+  subscription?: Maybe<Subscription>;
   updatedAt: Scalars["DateTime"];
   users: Array<User>;
 };
@@ -1814,6 +1886,14 @@ export type Workspace = {
 export type WorkspaceCreateInput = {
   name: Scalars["String"];
 };
+
+export type WorkspaceMember = {
+  __typename?: "WorkspaceMember";
+  member: WorkspaceMemberType;
+  type: EnumWorkspaceMemberType;
+};
+
+export type WorkspaceMemberType = Invitation | User;
 
 export type WorkspaceUpdateInput = {
   name?: InputMaybe<Scalars["String"]>;

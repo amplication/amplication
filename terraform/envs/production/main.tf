@@ -20,10 +20,16 @@ module "env" {
   github_app_auth_scope            = var.github_app_auth_scope
   github_app_auth_redirect_uri     = var.github_app_auth_redirect_uri
   amplitude_api_key                = var.amplitude_api_key
+  paddle_vendor_id                 = var.paddle_vendor_id
+  sendgrid_from_address            = var.sendgrid_from_address
+  sendgrid_invitation_template_id  = var.sendgrid_invitation_template_id
+  paddle_base_64_public_key        = var.paddle_base_64_public_key
   database_tier                    = var.database_tier
   image_id                         = var.image_id
   bcrypt_salt_or_rounds            = var.bcrypt_salt_or_rounds
   github_client_secret_id          = var.github_client_secret_id
+  segment_write_key_secret_id      = var.segment_write_key_secret_id
+  sendgrid_api_key_secret_id       = var.sendgrid_api_key_secret_id
   github_app_private_key           = var.github_app_private_key
   github_app_client_secret         = var.github_app_client_secret
   github_app_client_id             = var.github_app_client_id
@@ -45,6 +51,9 @@ module "env" {
   apps_domain                      = var.apps_domain
   apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
+  kafka_broker_ip                  = var.kafka_broker_ip
+  webhooks_secret_key              = var.webhooks_secret_key
+  kafka_repository_push_queue      = var.kafka_repository_push_queue
 }
 
 module "deploy" {
@@ -54,7 +63,8 @@ module "deploy" {
   database_name                      = module.env.database_name
   database_instance                  = module.env.database_instance
   github_client_secret_id            = var.github_client_secret_id
-  github_app_private_key             = var.github_app_private_key
+  segment_write_key_secret_id        = var.segment_write_key_secret_id
+  sendgrid_api_key_secret_id         = var.sendgrid_api_key_secret_id
   image                              = var.image
   google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
   google_cloudbuild_trigger_name     = var.google_cloudbuild_trigger_name

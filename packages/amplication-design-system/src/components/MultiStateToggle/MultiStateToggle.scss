@@ -23,7 +23,7 @@
       height: var(--default-button-height);
       padding: 0;
       background-color: var(--black20);
-      border: $border-black10;
+      border: 0px solid var(--black20);
       outline: none;
       cursor: pointer;
 
@@ -36,13 +36,13 @@
       }
 
       &:first-child {
-        border-radius: var(--form-elements-border-radius) 0 0
-          var(--form-elements-border-radius);
+        border-radius: var(--form-permission-type-radius) 0 0
+          var(--form-permission-type-radius);
       }
 
       &:last-child {
-        border-radius: 0 var(--form-elements-border-radius)
-          var(--form-elements-border-radius) 0;
+        border-radius: 0 var(--form-permission-type-radius)
+          var(--form-permission-type-radius) 0;
       }
 
       &--selected,

@@ -34,6 +34,11 @@ variable "github_app_auth_redirect_uri" {
   type = string
 }
 
+# paddle
+variable "paddle_vendor_id" {
+  type = string
+}
+
 variable "github_app_private_key" {
   type = string
 }
@@ -48,13 +53,27 @@ variable "github_app_client_id" {
 
 variable "github_app_app_id" {
   type = string
-} 
+}
 variable "github_app_installation_url" {
   type = string
 }
 # Amplitude
 
 variable "amplitude_api_key" {
+  type = string
+}
+
+# Sendgrid
+variable "sendgrid_from_address" {
+  type = string
+}
+
+# paddle
+variable "paddle_base_64_public_key" {
+  type = string
+}
+
+variable "sendgrid_invitation_template_id" {
   type = string
 }
 
@@ -98,6 +117,13 @@ variable "server_max_scale" {
 variable "github_client_secret_id" {
   type = string
 }
+variable "segment_write_key_secret_id" {
+  type = string
+}
+
+variable "sendgrid_api_key_secret_id" {
+  type = string
+}
 
 # Storage
 
@@ -138,5 +164,17 @@ variable "apps_terraform_state_bucket" {
 }
 
 variable "apps_domain" {
+  type = string
+}
+
+# Webhooks & kafka 
+
+ variable "kafka_broker_ip" {
+  type = string
+}
+variable "webhooks_secret_key" {
+  type = string
+}
+variable "kafka_repository_push_queue" {
   type = string
 }
