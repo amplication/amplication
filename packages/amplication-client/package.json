@@ -33,6 +33,7 @@
     "react-dropzone": "11.3.4",
     "react-hotkeys": "2.0.0",
     "react-lazylog": "4.5.3",
+    "react-query": "3.39.1",
     "react-router-dom": "5.3.1",
     "react-scripts": "4.0.3",
     "react-teleporter": "2.2.1",
