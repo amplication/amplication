@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { App, Build, SortOrder } from "../../models";
 import BuildSelector from "../../Components/BuildSelector";
 import { FileDetails } from "./CodeViewPage";
@@ -14,21 +14,26 @@ type Props = {
   onFileSelected: (selectedFile: FileDetails | null) => void;
 };
 
-export class FileMeta {
-  type!: NodeTypeEnum;
-  name!: string;
-  path!: string;
+export type FileMeta = {
+  type: NodeTypeEnum;
+  name: string;
+  path: string;
   children?: FileMeta[] | undefined;
   expanded?: boolean;
-}
+};
 
-const CREATED_AT_FIELD = "createdAt";
+export const CREATED_AT_FIELD = "createdAt";
 type TData = {
   builds: Build[];
 };
 
-const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
+const CodeViewExplorer: React.FC<Props> = ({ app, onFileSelected }) => {
   const [selectedBuild, setSelectedBuild] = useState<Build | null>(null);
+
+  const handleSelectedBuild = (build: Build) => {
+    setSelectedBuild(build);
+    onFileSelected(null);
+  }
 
   const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
     variables: {
@@ -38,31 +43,18 @@ const CodeViewExplorer = ({ app, onFileSelected }: Props) => {
       },
     },
     onCompleted: async (data) => {
-      setSelectedBuild(data.builds[0]);
+      handleSelectedBuild(data.builds[0]);
     },
   });
 
-  const handleSelectBuild = (build: Build) => {
-    setSelectedBuild(build);
-  };
-
-  useEffect(() => {
-    onFileSelected(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBuild]);
-
-  if (!data) {
-    return <div />;
-  }
-
-  return (
+  return !data ? (<div />) : (
     <div className={CLASS_NAME}>
       <div>
         <BuildSelector
           app={app}
           builds={data.builds}
           selectedBuild={selectedBuild}
-          onSelectBuild={handleSelectBuild}
+          onSelectBuild={handleSelectedBuild}
         />
       </div>
       {selectedBuild && (

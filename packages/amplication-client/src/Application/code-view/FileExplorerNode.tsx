@@ -11,7 +11,7 @@ export type FileExplorerNodeProps = {
 export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
   const handleNodeClick = useCallback(
     (id: string, file: FileMeta) => {
-      onSelect && onSelect(file);
+      file && onSelect(file);
     },
     [onSelect]
   );
@@ -22,15 +22,15 @@ export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
   );
 
   const farIcon = useMemo(
-    () =>
-      file.type === NodeTypeEnum.Folder ? (
-        file.expanded ? (
-          <Icon icon="chevron_down" />
-        ) : (
-          <Icon icon="chevron_right" />
-        )
-      ) : null,
-    [file.expanded, file.type]
+    () => {
+      if (file.type !== NodeTypeEnum.Folder) return null;
+
+      return file.expanded ? (
+        <Icon icon="chevron_down" />
+      ) : (
+        <Icon icon="chevron_right" />
+      )
+    }, [file.expanded, file.type]
   );
 
   return (

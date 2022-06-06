@@ -8,4 +8,14 @@
     height: 15px;
     font-size: 10px;
   }
+  .title {
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .title-list {
+    max-width: 180px;
+  }
 }

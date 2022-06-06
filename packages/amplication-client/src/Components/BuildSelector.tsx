@@ -60,6 +60,7 @@ const BuildSelector = ({
                     <BuildSelectorItem
                       title={build.message ? build.message : build.createdAt}
                       app={app}
+                      type="list"
                     />
                   </SelectMenuItem>
                 ))}
