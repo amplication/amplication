@@ -24,8 +24,8 @@ service:
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 
-maxMemory: 2
-minMemory: 2
+maxMemory: "2Gi"
+minMemory: "2Gi"
 maxCPU: 1
 minCPU: 1
 
