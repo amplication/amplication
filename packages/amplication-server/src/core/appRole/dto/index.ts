@@ -1,11 +1,11 @@
-export { CreateAppRoleArgs } from './CreateAppRoleArgs';
-export { FindManyAppRoleArgs } from './FindManyAppRoleArgs';
-export { UpdateOneAppRoleArgs } from './UpdateOneAppRoleArgs';
+export { CreateResourceRoleArgs } from './CreateAppRoleArgs';
+export { FindManyResourceRoleArgs } from './FindManyAppRoleArgs';
+export { UpdateOneResourceRoleArgs } from './UpdateOneResourceRoleArgs';
 
-export { AppRoleCreateInput } from './AppRoleCreateInput';
-export { AppRoleFilter } from './AppRoleFilter';
-export { AppRoleOrderByInput } from './AppRoleOrderByInput';
-export { AppRoleWhereInput } from './AppRoleWhereInput';
-export { AppRoleUpdateInput } from './AppRoleUpdateInput';
-export { FindOneAppRoleArgs } from './FindOneAppRoleArgs';
-export { DeleteAppRoleArgs } from './DeleteAppRoleArgs';
+export { ResourceRoleCreateInput } from './ResourceRoleCreateInput';
+export { ResourceRoleFilter } from './ResourceRoleFilter';
+export { ResourceRoleOrderByInput } from './ResourceRoleOrderByInput';
+export { ResourceRoleWhereInput } from './ResourceRoleWhereInput';
+export { ResourceRoleUpdateInput } from './ResourceRoleUpdateInput';
+export { FindOneResourceRoleArgs as FindOneResourceRoleArgs } from './FindOneResourceRoleArgs';
+export { DeleteResourceRoleArgs as DeleteResourceRoleArgs } from './DeleteResourceRoleArgs';

@@ -6,7 +6,7 @@ import {
 } from '@amplication/git-service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@amplication/prisma-db';
-import { App } from 'src/models/App';
+import { Resource } from 'src/models/Resource';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 import { RemoteGitRepositoriesWhereUniqueInput } from '../dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { GitProviderService } from '../git.provider.service';
@@ -38,7 +38,7 @@ const DEFAULT_APP_DATA = {
   color: 'DEFAULT_APP_COLOR'
 };
 
-const EXAMPLE_APP: App = {
+const EXAMPLE_APP: Resource = {
   ...DEFAULT_APP_DATA,
   id: 'EXAMPLE_APP_ID',
   createdAt: new Date(),
@@ -118,7 +118,7 @@ describe('GitService', () => {
       });
     });
     describe('GitService.createRepo()', () => {
-      it('should return App', async () => {
+      it('should return Resource', async () => {
         const createGitRepositoryInput: CreateGitRepositoryInput = {
           name: 'EXAMPLE_APP_NAME',
           appId: 'EXAMPLE_APP_DESCRIPTION',

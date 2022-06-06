@@ -22,7 +22,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   updatedAt: new Date(),
   name: EXAMPLE_ENVIRONMENT_NAME,
   address: EXAMPLE_ENVIRONMENT_ADDRESS,
-  appId: EXAMPLE_APP_ID
+  resourceId: EXAMPLE_APP_ID
 };
 
 const prismaEnvironmentCreateMock = jest.fn(() => {

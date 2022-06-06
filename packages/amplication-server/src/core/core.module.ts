@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 import { AccountModule } from './account/account.module';
 import { WorkspaceModule } from './workspace/workspace.module';
-import { AppModule } from './app/app.module';
+import { ResourceModule } from './resource/resource.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { EntityModule } from './entity/entity.module';
@@ -26,7 +26,7 @@ import { GitProviderModule } from './git/git.provider.module';
   imports: [
     AccountModule,
     WorkspaceModule,
-    AppModule,
+    ResourceModule,
     UserModule,
     AuthModule,
     EntityModule,
@@ -51,7 +51,7 @@ import { GitProviderModule } from './git/git.provider.module';
   exports: [
     AccountModule,
     WorkspaceModule,
-    AppModule,
+    ResourceModule,
     UserModule,
     AuthModule,
     EntityModule,

@@ -1,35 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { AppRole } from 'src/models';
+import { ResourceRole } from 'src/models';
 import { PrismaService } from '@amplication/prisma-db';
 
 import {
-  CreateAppRoleArgs,
-  FindManyAppRoleArgs,
-  UpdateOneAppRoleArgs
+  CreateResourceRoleArgs,
+  FindManyResourceRoleArgs,
+  UpdateOneResourceRoleArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
 @Injectable()
-export class AppRoleService {
+export class ResourceRoleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createAppRole(args: CreateAppRoleArgs): Promise<AppRole> {
+  async createResourceRole(
+    args: CreateResourceRoleArgs
+  ): Promise<ResourceRole> {
     return this.prisma.resourceRole.create(args);
   }
 
-  async getAppRole(args: FindOneArgs): Promise<AppRole | null> {
+  async getResourceRole(args: FindOneArgs): Promise<ResourceRole | null> {
     return this.prisma.resourceRole.findUnique(args);
   }
 
-  async getAppRoles(args: FindManyAppRoleArgs): Promise<AppRole[]> {
+  async getResourceRoles(
+    args: FindManyResourceRoleArgs
+  ): Promise<ResourceRole[]> {
     return this.prisma.resourceRole.findMany(args);
   }
 
-  async deleteAppRole(args: FindOneArgs): Promise<AppRole | null> {
+  async deleteResourceRole(args: FindOneArgs): Promise<ResourceRole | null> {
     return this.prisma.resourceRole.delete(args);
   }
 
-  async updateAppRole(args: UpdateOneAppRoleArgs): Promise<AppRole | null> {
+  async updateAppRole(
+    args: UpdateOneResourceRoleArgs
+  ): Promise<ResourceRole | null> {
     return this.prisma.resourceRole.update(args);
   }
 }

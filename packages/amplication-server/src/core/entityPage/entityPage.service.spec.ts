@@ -94,7 +94,7 @@ const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
   pageType: EnumEntityPageType.SingleRecord,
   showAllFields: true,
   singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
-  app: {
+  resource: {
     connect: {
       id: EXAMPLE_APP_ID
     }
@@ -110,7 +110,7 @@ const LIST_CREATE_INPUT: EntityPageCreateInput = {
   pageType: EnumEntityPageType.List,
   showAllFields: true,
   listSettings: EXAMPLE_LIST_SETTINGS,
-  app: {
+  resource: {
     connect: {
       id: EXAMPLE_APP_ID
     }

@@ -49,7 +49,7 @@ export function BlockTypeResolver<
       nullable: false,
       description: undefined
     })
-    @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+    @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.app.id')
     async findMany(
       @Args({ type: () => findManyArgsRef }) args: FindManyArgs
     ): Promise<T[]> {
@@ -62,7 +62,7 @@ export function BlockTypeResolver<
       description: undefined
     })
     @AuthorizeContext(
-      AuthorizableResourceParameter.AppId,
+      AuthorizableResourceParameter.ResourceId,
       'data.app.connect.id'
     )
     async [createName](

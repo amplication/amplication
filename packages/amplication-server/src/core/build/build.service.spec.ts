@@ -24,8 +24,8 @@ import {
 import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import { EntityService } from '..';
-import { AppRoleService } from '../appRole/appRole.service';
-import { AppService } from '../app/app.service';
+import { ResourceRoleService } from '../appRole/appRole.service';
+import { ResourceService } from '../resource/resource.service';
 import { ActionService } from '../action/action.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
@@ -40,7 +40,7 @@ import {
 } from '@amplication/container-builder/dist/';
 import { QueueService } from '../queue/queue.service';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { App, Commit, Entity } from 'src/models';
+import { Resource, Commit, Entity } from 'src/models';
 import {
   ActionStep,
   EnumActionLogLevel,
@@ -148,7 +148,7 @@ const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   createdAt: EXAMPLE_DATE,
   userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_APP_ID,
   version: '1.0.0',
   message: 'new build',
   actionId: EXAMPLE_ACTION.id,
@@ -208,7 +208,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   updatedAt: new Date(),
   name: EXAMPLE_ENVIRONMENT_NAME,
   address: EXAMPLE_ADDRESS,
-  appId: EXAMPLE_APP_ID
+  resourceId: EXAMPLE_APP_ID
 };
 
 const EXAMPLE_DEPLOYMENT: Deployment = {
@@ -240,7 +240,7 @@ const EXAMPLE_RUNNING_BUILD_RESULT: BuildResult = {
 
 const EXAMPLE_APP_ROLES = [];
 
-const EXAMPLE_APP: App = {
+const EXAMPLE_APP: Resource = {
   id: 'exampleAppId',
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -252,7 +252,7 @@ const EXAMPLE_APP: App = {
 const EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT: Build = {
   ...EXAMPLE_BUILD,
   commit: EXAMPLE_COMMIT,
-  app: EXAMPLE_APP
+  resource: EXAMPLE_APP
 };
 
 const commitId = EXAMPLE_COMMIT_ID;
@@ -472,13 +472,13 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: AppRoleService,
+          provide: ResourceRoleService,
           useValue: {
             getAppRoles: appRoleServiceGetAppRolesMock
           }
         },
         {
-          provide: AppService,
+          provide: ResourceService,
           useValue: {
             app: appServiceGetAppMock
           }
@@ -714,10 +714,10 @@ describe('BuildService', () => {
     expect(containerBuilderServiceBuildMock).toBeCalledTimes(1);
     expect(containerBuilderServiceBuildMock).toBeCalledWith({
       tags: [
-        `${EXAMPLE_BUILD.appId}:${EXAMPLE_BUILD.id}`,
-        `${EXAMPLE_BUILD.appId}:latest`
+        `${EXAMPLE_BUILD.resourceId}:${EXAMPLE_BUILD.id}`,
+        `${EXAMPLE_BUILD.resourceId}:latest`
       ],
-      cacheFrom: [`${EXAMPLE_BUILD.appId}:latest`],
+      cacheFrom: [`${EXAMPLE_BUILD.resourceId}:latest`],
       url: EXAMPLE_URL
     });
     expect(prismaBuildUpdateMock).toBeCalledTimes(1);

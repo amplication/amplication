@@ -1,14 +1,14 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { AppRoleOrderByInput } from './AppRoleOrderByInput';
-import { AppRoleWhereInput } from './AppRoleWhereInput';
+import { ResourceRoleOrderByInput } from './ResourceRoleOrderByInput';
+import { ResourceRoleWhereInput } from './ResourceRoleWhereInput';
 
 @ArgsType()
-export class FindManyAppRoleArgs {
-  @Field(() => AppRoleWhereInput, { nullable: true })
-  where?: AppRoleWhereInput | null;
+export class FindManyResourceRoleArgs {
+  @Field(() => ResourceRoleWhereInput, { nullable: true })
+  where?: ResourceRoleWhereInput | null;
 
-  @Field(() => AppRoleOrderByInput, { nullable: true })
-  orderBy?: AppRoleOrderByInput | null;
+  @Field(() => ResourceRoleOrderByInput, { nullable: true })
+  orderBy?: ResourceRoleOrderByInput | null;
 
   @Field(() => Int, { nullable: true })
   skip?: number | null;

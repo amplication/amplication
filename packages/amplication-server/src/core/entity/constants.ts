@@ -87,7 +87,7 @@ export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
 
 type EntityData = Omit<
   Entity,
-  'id' | 'createdAt' | 'updatedAt' | 'app' | 'appId' | 'fields'
+  'id' | 'createdAt' | 'updatedAt' | 'resource' | 'resourceId' | 'fields'
 > & {
   fields: EntityFieldData[];
 };

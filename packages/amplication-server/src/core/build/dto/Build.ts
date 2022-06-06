@@ -3,7 +3,7 @@ import { BlockVersion } from 'src/models/BlockVersion'; // eslint-disable-line i
 import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line import/no-cycle
 import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { EnumBuildStatus } from './EnumBuildStatus';
-import { App, Commit } from 'src/models'; // eslint-disable-line import/no-cycle
+import { Resource, Commit } from 'src/models'; // eslint-disable-line import/no-cycle
 import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
 import { Deployment } from '../../deployment/dto/Deployment'; // eslint-disable-line import/no-cycle
 import { JsonValue } from 'type-fest';
@@ -25,11 +25,11 @@ export class Build {
   })
   createdAt!: Date;
 
-  @Field(() => App)
-  app?: App;
+  @Field(() => Resource)
+  resource?: Resource;
 
   @Field(() => String)
-  appId!: string;
+  resourceId!: string;
 
   @Field(() => User)
   createdBy?: User;

@@ -12,9 +12,9 @@ import { ConfigService } from '@nestjs/config';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { WorkspaceService } from './workspace.service';
 import { WorkspaceResolver } from './workspace.resolver';
-import { App, Workspace, User } from 'src/models';
+import { Resource, Workspace, User } from 'src/models';
 import { Invitation } from './dto/Invitation';
-import { AppService } from '../app/app.service';
+import { ResourceService } from '../resource/resource.service';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
@@ -48,7 +48,7 @@ const EXAMPLE_INVITATION: Invitation = {
   updatedAt: timeNow
 };
 
-const EXAMPLE_APP: App = {
+const EXAMPLE_APP: Resource = {
   id: EXAMPLE_APP_ID,
   name: EXAMPLE_APP_NAME,
   description: EXAMPLE_APP_DESCRIPTION,
@@ -141,7 +141,7 @@ describe('WorkspaceResolver', () => {
           }))
         },
         {
-          provide: AppService,
+          provide: ResourceService,
           useClass: jest.fn(() => ({
             apps: appServiceAppsMock
           }))

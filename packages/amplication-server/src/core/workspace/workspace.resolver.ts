@@ -18,8 +18,8 @@ import {
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
-import { Workspace, App, User } from 'src/models';
-import { AppService } from 'src/core/app/app.service';
+import { Workspace, Resource, User } from 'src/models';
+import { ResourceService } from 'src/core/resource/resource.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
@@ -35,7 +35,7 @@ import { Subscription } from '../subscription/dto/Subscription';
 export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
-    private readonly appService: AppService
+    private readonly appService: ResourceService
   ) {}
 
   @Query(() => Workspace, {
@@ -57,9 +57,9 @@ export class WorkspaceResolver {
     return currentUser.workspace;
   }
 
-  @ResolveField(() => [App])
-  async apps(@Parent() workspace: Workspace): Promise<App[]> {
-    return this.appService.apps({
+  @ResolveField(() => [Resource])
+  async apps(@Parent() workspace: Workspace): Promise<Resource[]> {
+    return this.appService.resources({
       where: { workspace: { id: workspace.id } }
     });
   }

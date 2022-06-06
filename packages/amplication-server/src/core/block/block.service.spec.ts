@@ -5,7 +5,7 @@ import { PrismaService, Prisma } from '@amplication/prisma-db';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DiffModule } from 'src/services/diff.module';
 import {
-  App,
+  Resource,
   Block,
   BlockVersion,
   IBlock,
@@ -20,12 +20,12 @@ const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 
-const EXAMPLE_APP: App = {
-  id: 'ExampleApp',
+const EXAMPLE_RESOURCE: Resource = {
+  id: 'ExampleResource',
   createdAt: NOW,
   updatedAt: NOW,
-  name: 'Example App',
-  description: 'Example App Description'
+  name: 'Example Resource',
+  description: 'Example Resource Description'
 };
 
 const EXAMPLE_USER: User = {
@@ -45,8 +45,8 @@ const EXAMPLE_BLOCK: Block = {
   id: 'ExampleBlock',
   createdAt: NOW,
   updatedAt: NOW,
-  appId: EXAMPLE_APP.id,
-  app: EXAMPLE_APP,
+  resourceId: EXAMPLE_RESOURCE.id,
+  resource: EXAMPLE_RESOURCE,
   blockType: EnumBlockType.ConnectorRestApi,
   displayName: 'Example Block',
   description: 'Block Description',
@@ -173,7 +173,7 @@ describe('BlockService', () => {
     const result = await service.create<BlockType>(
       {
         data: {
-          app: {
+          resource: {
             connect: {
               id: EXAMPLE_BLOCK.appId
             }
@@ -197,7 +197,7 @@ describe('BlockService', () => {
           create: {
             app: {
               connect: {
-                id: EXAMPLE_APP.id
+                id: EXAMPLE_RESOURCE.id
               }
             },
             blockType: EXAMPLE_BLOCK.blockType,
@@ -227,7 +227,7 @@ describe('BlockService', () => {
       include: {
         block: {
           include: {
-            app: true,
+            resource: true,
             parentBlock: true
           }
         }

@@ -27,10 +27,10 @@ import { prepareDeletedItemName } from 'src/util/softDelete';
 import {
   EnumPendingChangeAction,
   EnumPendingChangeResourceType
-} from '../app/dto';
+} from '../resource/dto';
 import { DiffService } from 'src/services/diff.service';
 import { isReservedName } from './reservedNames';
-import { ReservedNameError } from '../app/ReservedNameError';
+import { ReservedNameError } from '../resource/ReservedNameError';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
@@ -843,9 +843,9 @@ describe('EntityService', () => {
         deletedAt: null
       }
     };
-    expect(await service.isEntityInSameApp(args.entityId, args.appId)).toEqual(
-      true
-    );
+    expect(
+      await service.isEntityInSameResource(args.entityId, args.appId)
+    ).toEqual(true);
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith(findManyArgs);
   });

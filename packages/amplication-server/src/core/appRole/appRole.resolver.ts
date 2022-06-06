@@ -3,66 +3,78 @@ import { UseFilters } from '@nestjs/common';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import {
-  CreateAppRoleArgs,
-  FindManyAppRoleArgs,
-  UpdateOneAppRoleArgs,
-  FindOneAppRoleArgs,
-  DeleteAppRoleArgs
+  CreateResourceRoleArgs,
+  FindManyResourceRoleArgs,
+  UpdateOneResourceRoleArgs,
+  FindOneResourceRoleArgs,
+  DeleteResourceRoleArgs
 } from './dto';
-import { AppRole } from 'src/models';
+import { ResourceRole } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { AppRoleService } from './appRole.service';
+import { ResourceRoleService } from './appRole.service';
 
-@Resolver(() => AppRole)
+@Resolver(() => ResourceRole)
 @UseFilters(GqlResolverExceptionsFilter)
-export class AppRoleResolver {
-  constructor(private readonly appRoleService: AppRoleService) {}
-  @Query(() => AppRole, {
+export class ResourceRoleResolver {
+  constructor(private readonly resourceRoleService: ResourceRoleService) {}
+  @Query(() => ResourceRole, {
     nullable: true,
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
-  async appRole(@Args() args: FindOneAppRoleArgs): Promise<AppRole | null> {
-    return this.appRoleService.getAppRole(args);
+  async resourceRole(
+    @Args() args: FindOneResourceRoleArgs
+  ): Promise<ResourceRole | null> {
+    return this.resourceRoleService.getResourceRole(args);
   }
 
-  @Query(() => [AppRole], {
+  @Query(() => [ResourceRole], {
     nullable: false,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async appRoles(@Args() args: FindManyAppRoleArgs): Promise<AppRole[]> {
-    return this.appRoleService.getAppRoles(args);
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ResourceId,
+    'where.resource.id'
+  )
+  async resourceRoles(
+    @Args() args: FindManyResourceRoleArgs
+  ): Promise<ResourceRole[]> {
+    return this.resourceRoleService.getResourceRoles(args);
   }
 
-  @Mutation(() => AppRole, {
+  @Mutation(() => ResourceRole, {
     nullable: false,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
-  async createAppRole(@Args() args: CreateAppRoleArgs): Promise<AppRole> {
-    return this.appRoleService.createAppRole(args);
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ResourceId,
+    'data.resource.connect.id'
+  )
+  async createAppRole(
+    @Args() args: CreateResourceRoleArgs
+  ): Promise<ResourceRole> {
+    return this.resourceRoleService.createResourceRole(args);
   }
 
-  @Mutation(() => AppRole, {
+  @Mutation(() => ResourceRole, {
     nullable: true,
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
   async deleteAppRole(
-    @Args() args: DeleteAppRoleArgs
-  ): Promise<AppRole | null> {
-    return this.appRoleService.deleteAppRole(args);
+    @Args() args: DeleteResourceRoleArgs
+  ): Promise<ResourceRole | null> {
+    return this.resourceRoleService.deleteResourceRole(args);
   }
 
-  @Mutation(() => AppRole, {
+  @Mutation(() => ResourceRole, {
     nullable: true,
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
   async updateAppRole(
-    @Args() args: UpdateOneAppRoleArgs
-  ): Promise<AppRole | null> {
-    return this.appRoleService.updateAppRole(args);
+    @Args() args: UpdateOneResourceRoleArgs
+  ): Promise<ResourceRole | null> {
+    return this.resourceRoleService.updateAppRole(args);
   }
 }

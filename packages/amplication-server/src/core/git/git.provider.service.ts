@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash';
 import { PrismaService } from '@amplication/prisma-db';
 import { FindOneArgs } from 'src/dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
-import { App } from 'src/models/App';
+import { Resource } from 'src/models/Resource';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
@@ -16,7 +16,7 @@ import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRep
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitService, EnumGitOrganizationType } from '@amplication/git-service';
 
-const GIT_REPOSITORY_EXIST = 'Git Repository already connected to an other App';
+const GIT_REPOSITORY_EXIST = 'Git Repository already connected to an other Resource';
 const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class GitProviderService {
     );
   }
 
-  async createGitRepository(args: CreateGitRepositoryInput): Promise<App> {
+  async createGitRepository(args: CreateGitRepositoryInput): Promise<Resource> {
     const organization = await this.getGitOrganization({
       where: {
         id: args.gitOrganizationId
@@ -62,7 +62,7 @@ export class GitProviderService {
     return await this.connectAppGitRepository({ ...args });
   }
 
-  async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<App> {
+  async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<Resource> {
     const gitRepository = await this.prisma.gitRepository.findUnique({
       where: {
         id: args.gitRepositoryId
@@ -85,7 +85,7 @@ export class GitProviderService {
     appId,
     name,
     gitOrganizationId
-  }: ConnectGitRepositoryInput): Promise<App> {
+  }: ConnectGitRepositoryInput): Promise<Resource> {
     const gitRepo = await this.prisma.gitRepository.findUnique({
       where: { resourceId: appId }
     });

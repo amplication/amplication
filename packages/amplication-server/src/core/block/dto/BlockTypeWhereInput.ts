@@ -28,7 +28,7 @@ export class BlockTypeWhereInput {
     nullable: true,
     description: undefined
   })
-  app?: WhereUniqueInput | null;
+  resource?: WhereUniqueInput | null;
 
   @Field(() => WhereUniqueInput, {
     nullable: true,

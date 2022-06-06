@@ -54,7 +54,7 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
 
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
-  appId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_APP_ID,
   userId: EXAMPLE_USER_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,

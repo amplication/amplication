@@ -106,7 +106,7 @@ describe('ConnectorRestApiCallService', () => {
             outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
             displayName: EXAMPLE_NAME,
             url: EXAMPLE_URL,
-            app: {
+            resource: {
               connect: {
                 id: EXAMPLE_APP_ID
               }

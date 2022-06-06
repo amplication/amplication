@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { EntityPermission } from './EntityPermission'; // eslint-disable-line import/no-cycle
-import { AppRole } from './AppRole'; // eslint-disable-line import/no-cycle
+import { ResourceRole } from './ResourceRole'; // eslint-disable-line import/no-cycle
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 
 /**
@@ -37,8 +37,8 @@ export class EntityPermissionRole {
   })
   appRoleId!: string;
 
-  @Field(() => AppRole, {
+  @Field(() => ResourceRole, {
     nullable: false
   })
-  appRole: AppRole;
+  appRole: ResourceRole;
 }

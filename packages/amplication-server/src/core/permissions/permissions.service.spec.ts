@@ -88,7 +88,7 @@ describe('PermissionsService', () => {
   it('should return true when resourceType is an authorized app id', async () => {
     const args = {
       user: EXAMPLE_USER,
-      resourceType: AuthorizableResourceParameter.AppId,
+      resourceType: AuthorizableResourceParameter.ResourceId,
       resourceId: EXAMPLE_APP_ID
     };
     const countArgs = {

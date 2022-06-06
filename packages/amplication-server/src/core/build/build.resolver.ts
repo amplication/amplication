@@ -37,7 +37,7 @@ export class BuildResolver {
   ) {}
 
   @Query(() => [Build])
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.app.id')
   async builds(@Args() args: FindManyBuildArgs): Promise<Build[]> {
     return this.service.findMany(args);
   }
@@ -81,7 +81,10 @@ export class BuildResolver {
     InjectableResourceParameter.UserId,
     'data.createdBy.connect.id'
   )
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ResourceId,
+    'data.app.connect.id'
+  )
   async createBuild(@Args() args: CreateBuildArgs): Promise<Build> {
     return this.service.create(args);
   }

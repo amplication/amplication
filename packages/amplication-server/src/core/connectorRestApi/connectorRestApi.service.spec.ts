@@ -110,7 +110,7 @@ describe('ConnectorRestApiService', () => {
             authenticationType: EnumConnectorRestApiAuthenticationType.None,
             privateKeyAuthenticationSettings: null,
             httpBasicAuthenticationSettings: null,
-            app: {
+            resource: {
               connect: {
                 id: EXAMPLE_APP_ID
               }

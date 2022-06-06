@@ -137,7 +137,7 @@ describe('BlockTypeService', () => {
     const args: CreateBlockArgs = {
       data: {
         displayName: EXAMPLE_DISPLAY_NAME,
-        app: { connect: { id: EXAMPLE_APP_ID } }
+        resource: { connect: { id: EXAMPLE_APP_ID } }
       }
     };
     const createArgs = {

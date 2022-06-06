@@ -10,9 +10,9 @@ import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-import { AppRoleService } from './appRole.service';
-import { AppRoleResolver } from './appRole.resolver';
-import { AppRole } from 'src/models';
+import { ResourceRoleService } from './appRole.service';
+import { ResourceRoleResolver } from './appRole.resolver';
+import { ResourceRole } from 'src/models';
 
 const EXAMPLE_APP_ROLE_ID = 'EXAMPLE_APP_ROLE_ID';
 const EXAMPLE_NAME = 'EXAMPLE_NAME';
@@ -23,7 +23,7 @@ const EXAMPLE_APP_ID = 'exampleAppId';
 
 const EXAMPLE_VERSION = 1;
 
-const EXAMPLE_APP_ROLE: AppRole = {
+const EXAMPLE_APP_ROLE: ResourceRole = {
   id: EXAMPLE_APP_ROLE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -129,9 +129,9 @@ describe('AppRoleResolver', () => {
     jest.clearAllMocks();
     const moduleFixture: TestingModule = await Test.createTestingModule({
       providers: [
-        AppRoleResolver,
+        ResourceRoleResolver,
         {
-          provide: AppRoleService,
+          provide: ResourceRoleService,
           useClass: jest.fn(() => ({
             getAppRole: getAppRoleMock,
             getAppRoles: getAppRolesMock,

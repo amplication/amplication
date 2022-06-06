@@ -37,7 +37,7 @@ import {
   EnumPendingChangeResourceType,
   EnumPendingChangeAction,
   PendingChange
-} from '../app/dto';
+} from '../resource/dto';
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -135,7 +135,7 @@ export class BlockService {
     const {
       displayName,
       description,
-      app: appConnect,
+      resource: resourceConnect,
       blockType,
       parentBlock: parentBlockConnect,
       inputParameters,
@@ -146,10 +146,10 @@ export class BlockService {
     let parentBlock: Block | null = null;
 
     if (parentBlockConnect?.connect?.id) {
-      // validate that the parent block is from the same app, and that the link between the two types is allowed
+      // validate that the parent block is from the same resource, and that the link between the two types is allowed
       parentBlock = await this.resolveParentBlock(
         parentBlockConnect.connect.id,
-        appConnect.connect.id
+        resourceConnect.connect.id
       );
     }
 
@@ -171,7 +171,7 @@ export class BlockService {
     const blockData = {
       displayName: displayName,
       description: description,
-      app: appConnect,
+      resource: resourceConnect,
       blockType: blockType,
       parentBlock: parentBlockConnect,
       lockedAt: new Date(),
@@ -205,7 +205,7 @@ export class BlockService {
       include: {
         block: {
           include: {
-            app: true,
+            resource: true,
             parentBlock: true
           }
         }
@@ -576,18 +576,18 @@ export class BlockService {
   }
 
   /**
-   * Gets all the blocks changed since the last app commit
-   * @param appId the app ID to find changes to
-   * @param userId the user ID the app ID relates to
+   * Gets all the blocks changed since the last resource commit
+   * @param resourceId the resource ID to find changes to
+   * @param userId the user ID the resource ID relates to
    */
   async getChangedBlocks(
-    appId: string,
+    resourceId: string,
     userId: string
   ): Promise<BlockPendingChange[]> {
     const changedBlocks = await this.prisma.block.findMany({
       where: {
         lockedByUserId: userId,
-        appId
+        resourceId: resourceId
       },
       include: {
         lockedByUser: true,

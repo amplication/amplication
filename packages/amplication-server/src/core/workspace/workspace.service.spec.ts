@@ -5,7 +5,7 @@ import { PrismaService } from '@amplication/prisma-db';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AccountService } from '../account/account.service';
-import { AppService } from '../app/app.service';
+import { ResourceService } from '../resource/resource.service';
 import { MailService } from '../mail/mail.service';
 import { Workspace, Account, User } from 'src/models';
 import { Role } from 'src/enums/Role';
@@ -130,7 +130,7 @@ describe('WorkspaceService', () => {
           }))
         },
         {
-          provide: AppService,
+          provide: ResourceService,
           useClass: jest.fn().mockImplementation(() => ({
             createSampleApp: appCreateSampleAppMock
           }))

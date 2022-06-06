@@ -1,8 +1,8 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { AppRoleCreateInput } from './AppRoleCreateInput';
+import { ResourceRoleCreateInput } from './ResourceRoleCreateInput';
 
 @ArgsType()
-export class CreateAppRoleArgs {
-  @Field(() => AppRoleCreateInput, { nullable: false })
-  data!: AppRoleCreateInput;
+export class CreateResourceRoleArgs {
+  @Field(() => ResourceRoleCreateInput, { nullable: false })
+  data!: ResourceRoleCreateInput;
 }

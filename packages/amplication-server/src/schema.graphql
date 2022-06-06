@@ -18,16 +18,16 @@ type Query {
   workspace(where: WhereUniqueInput!): Workspace
   currentWorkspace: Workspace
   workspaceMembers: [WorkspaceMember!]
-  app(where: WhereUniqueInput!): App
-  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
+  app(where: WhereUniqueInput!): Resource
+  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [Resource!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
-  appRole(where: WhereUniqueInput!, version: Float): AppRole
-  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  resourceRole(where: WhereUniqueInput!, version: Float): ResourceRole
+  resourceRoles(where: ResourceRoleWhereInput, orderBy: ResourceRoleOrderByInput, skip: Int, take: Int): [ResourceRole!]!
   action(where: WhereUniqueInput!): Action!
   deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]!
   deployment(where: WhereUniqueInput!): Deployment!
@@ -70,13 +70,14 @@ type Workspace {
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
-  apps: [App!]!
+  resources: [Resource!]!
   gitOrganizations: [GitOrganization!]
   users: [User!]!
+  apps: [Resource!]!
   subscription: Subscription
 }
 
-type App {
+type Resource {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -125,8 +126,8 @@ type Entity {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  app: App
-  appId: String!
+  resource: Resource
+  resourceId: String!
   name: String!
   displayName: String!
   pluralDisplayName: String!
@@ -192,8 +193,8 @@ enum Role {
 type Build {
   id: String!
   createdAt: DateTime!
-  app: App!
-  appId: String!
+  resource: Resource!
+  resourceId: String!
   createdBy: User!
   userId: String!
   status: EnumBuildStatus
@@ -276,8 +277,8 @@ type Environment {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  app: App!
-  appId: String!
+  resource: Resource!
+  resourceId: String!
   name: String!
   description: String
   address: String!
@@ -358,7 +359,7 @@ enum SortOrder {
 input BuildWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
-  app: WhereUniqueInput!
+  resource: WhereUniqueInput!
   createdBy: WhereUniqueInput
   version: StringFilter
   message: StringFilter
@@ -399,7 +400,7 @@ type Block {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  app: App
+  resource: Resource
   parentBlock: Block
   displayName: String!
   description: String
@@ -576,10 +577,10 @@ type EntityPermissionRole {
   action: EnumEntityAction!
   entityPermission: EntityPermission
   appRoleId: String!
-  appRole: AppRole!
+  appRole: ResourceRole!
 }
 
-type AppRole {
+type ResourceRole {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -632,7 +633,7 @@ input EntityWhereInput {
   pluralDisplayName: StringFilter
   description: StringFilter
   fields: EntityFieldFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
 }
 
 input EntityFieldFilter {
@@ -718,7 +719,7 @@ input AppOrderByInput {
 }
 
 input PendingChangesFindInput {
-  app: WhereUniqueInput!
+  resource: WhereUniqueInput!
 }
 
 type AppValidationResult {
@@ -733,17 +734,17 @@ enum AppValidationErrorTypes {
   DataServiceGeneratorVersionInvalid
 }
 
-input AppRoleWhereInput {
+input ResourceRoleWhereInput {
   id: String
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
   displayName: StringFilter
   description: StringFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
 }
 
-input AppRoleOrderByInput {
+input ResourceRoleOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
@@ -905,7 +906,7 @@ input ConnectorRestApiWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
@@ -940,7 +941,7 @@ input ConnectorRestApiCallWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
@@ -1004,7 +1005,7 @@ input EntityPageWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
@@ -1045,10 +1046,10 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   resendInvitation(where: WhereUniqueInput!): Invitation
   deleteUser(where: WhereUniqueInput!): User
-  createApp(data: AppCreateInput!): App!
-  createAppWithEntities(data: AppCreateWithEntitiesInput!): App!
-  deleteApp(where: WhereUniqueInput!): App
-  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
+  createApp(data: ResourceCreateInput!): Resource!
+  createAppWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
+  deleteApp(where: WhereUniqueInput!): Resource
+  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): Resource
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   createOneEntity(data: EntityCreateInput!): Entity!
@@ -1066,9 +1067,9 @@ type Mutation {
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createBuild(data: BuildCreateInput!): Build!
-  createAppRole(data: AppRoleCreateInput!): AppRole!
-  deleteAppRole(where: WhereUniqueInput!): AppRole
-  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  createAppRole(data: ResourceRoleCreateInput!): ResourceRole!
+  deleteAppRole(where: WhereUniqueInput!): ResourceRole
+  updateAppRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   createDeployment(data: DeploymentCreateInput!): Deployment!
   updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   signup(data: SignupInput!): Auth!
@@ -1084,10 +1085,10 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createGitRepository(data: CreateGitRepositoryInput!): App!
-  connectAppGitRepository(data: ConnectGitRepositoryInput!): App!
+  createGitRepository(data: CreateGitRepositoryInput!): Resource!
+  connectAppGitRepository(data: ConnectGitRepositoryInput!): Resource!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
-  deleteGitRepository(gitRepositoryId: String!): App!
+  deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGitResult!
 }
@@ -1109,14 +1110,14 @@ input InviteUserInput {
   email: String!
 }
 
-input AppCreateInput {
+input ResourceCreateInput {
   name: String!
   description: String!
   color: String
 }
 
-input AppCreateWithEntitiesInput {
-  app: AppCreateInput!
+input ResourceCreateWithEntitiesInput {
+  resource: ResourceCreateInput!
   entities: [AppCreateWithEntitiesEntityInput!]!
   commitMessage: String!
 }
@@ -1140,7 +1141,7 @@ input AppUpdateInput {
 
 input CommitCreateInput {
   message: String!
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
 }
 
 input WhereParentIdInput {
@@ -1148,7 +1149,7 @@ input WhereParentIdInput {
 }
 
 input PendingChangesDiscardInput {
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
 }
 
 input EntityCreateInput {
@@ -1156,7 +1157,7 @@ input EntityCreateInput {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
 }
 
 input EntityUpdateInput {
@@ -1228,19 +1229,19 @@ input EntityFieldUpdateInput {
 }
 
 input BuildCreateInput {
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
   message: String!
   commit: WhereParentIdInput!
 }
 
-input AppRoleCreateInput {
+input ResourceRoleCreateInput {
   name: String!
   description: String!
   displayName: String!
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
 }
 
-input AppRoleUpdateInput {
+input ResourceRoleUpdateInput {
   name: String
   description: String
   displayName: String!
@@ -1292,7 +1293,7 @@ input CompleteInvitationInput {
 input ConnectorRestApiCreateInput {
   displayName: String!
   description: String
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
@@ -1335,7 +1336,7 @@ input BlockUpdateInput {
 input ConnectorRestApiCallCreateInput {
   displayName: String!
   description: String
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
@@ -1345,7 +1346,7 @@ input ConnectorRestApiCallCreateInput {
 input EntityPageCreateInput {
   displayName: String!
   description: String
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]

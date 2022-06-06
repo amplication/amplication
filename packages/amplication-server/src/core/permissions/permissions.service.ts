@@ -51,7 +51,7 @@ export class PermissionsService {
       return matching === 1;
     }
 
-    if (resourceType === AuthorizableResourceParameter.AppId) {
+    if (resourceType === AuthorizableResourceParameter.ResourceId) {
       const matching = await this.prisma.resource.count({
         where: {
           deletedAt: null,

@@ -21,10 +21,10 @@ export type AppSettingsValuesExtended = Omit<
   | 'appId'
 >;
 
-export const DEFAULT_APP_SETTINGS: AppSettingsValuesExtended = {
+export const DEFAULT_RESOURCE_SETTINGS: AppSettingsValuesExtended = {
   blockType: EnumBlockType.AppSettings,
-  description: 'Default app settings',
-  displayName: 'App Settings',
+  description: 'Default resource settings',
+  displayName: 'Resource Settings',
   dbHost: 'localhost',
   dbName: '',
   dbUser: 'admin',

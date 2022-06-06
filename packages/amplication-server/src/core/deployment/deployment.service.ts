@@ -124,7 +124,7 @@ export class DeploymentService {
 
   async autoDeployToSandbox(build: Build): Promise<Deployment> {
     const sandboxEnvironment = await this.environmentService.getDefaultEnvironment(
-      build.appId
+      build.resourceId
     );
 
     const deployment = (await this.prisma.deployment.create({
@@ -273,7 +273,7 @@ export class DeploymentService {
       DEPLOY_STEP_MESSAGE,
       async step => {
         const { build, environment } = deployment;
-        const { appId } = build;
+        const { resourceId: appId } = build;
         const [imageId] = build.images;
         const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
         switch (deployerDefault) {
@@ -463,7 +463,7 @@ export class DeploymentService {
       DESTROY_STEP_MESSAGE,
       async step => {
         const { build, environment } = deployment;
-        const { appId } = build;
+        const { resourceId: appId } = build;
         const [imageId] = build.images;
         const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
         switch (deployerDefault) {
