@@ -77,9 +77,7 @@ export class GitClientService implements IGitClient {
         .cwd(baseDir)
         .checkout(commit);
     } catch (err) {
-      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, {
-        message: err,
-      });
+      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
     }
   }
 
