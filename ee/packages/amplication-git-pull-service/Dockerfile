@@ -37,6 +37,7 @@ WORKDIR /app/ee/packages/amplication-git-pull-service
 COPY --from=build /app/ee/packages/amplication-git-pull-service/package.json /app/ee/packages/amplication-git-pull-service/package.json
 COPY --from=build /app/ee/packages/amplication-git-pull-service/node_modules /app/ee/packages/amplication-git-pull-service/node_modules
 COPY --from=build /app/ee/packages/amplication-git-pull-service/dist /app/ee/packages/amplication-git-pull-service/dist
+COPY --from=build /app/ee/packages/amplication-git-pull-service/prisma /app/ee/packages/amplication-git-pull-service/prisma
 
 COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
