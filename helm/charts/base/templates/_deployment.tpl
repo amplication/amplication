@@ -53,8 +53,6 @@ spec:
           {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           {{- if  hasKey .Values "service" }}
           ports:
             - containerPort: {{ .Values.service.port.target }}
