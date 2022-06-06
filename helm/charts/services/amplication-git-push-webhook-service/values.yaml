@@ -16,8 +16,8 @@ image:
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 
-maxMemory: 2
-minMemory: 2
+maxMemory: "3Gi"
+minMemory: "3Gi"
 maxCPU: 1
 minCPU: 1
 
