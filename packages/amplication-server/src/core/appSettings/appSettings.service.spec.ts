@@ -44,7 +44,11 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   dbPassword: '1234',
   dbPort: 5432,
   dbUser: 'admin',
-  authProvider: EnumAuthProviderType.Http
+  authProvider: EnumAuthProviderType.Http,
+  generateAdminUI: true,
+  generateGraphQL: true,
+  generateRestApi: true,
+  generateRootFiles: true
 };
 
 const createMock = jest.fn(() => {
