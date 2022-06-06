@@ -43,6 +43,7 @@
     "passport": "0.5.2",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.0",
+    "prettier": "2.6.2",
     "reflect-metadata": "0.1.13",
     "swagger-ui-express": "4.3.0",
     "ts-node": "9.1.1"
