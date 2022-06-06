@@ -6,7 +6,7 @@ cp-helm-charts:
     enabled: false
 
 postgres:
-  install: true
+  install: false
 
 amplication-client:
   service:
@@ -39,10 +39,19 @@ amplication-server:
   config:
     env:
       HOST: "https://server.amplication.com"
-      CLIENT_HOST: 'https://app.amplication.com'
+      CLIENT_HOST: "https://app.amplication.com"
 
       ENABLE_SHUTDOWN_HOOKS: "1"
       DISABLE_EVENT_TRACKING: "1"
+
+      #KAFKA
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_CLIENT_ID: amplication-server
+      KAFKA_GROUP_ID: amplication-server-group
+
+      #EFS
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
 
       #GCP - APPS Builder
       GCS_BUCKET: amplication-production-artifacts
@@ -74,7 +83,6 @@ amplication-server:
       #SEGMENT
       SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
       
-      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
 
 amplication-git-push-webhook-service:
   postgres:
@@ -84,7 +92,11 @@ amplication-git-push-webhook-service:
     hostname: webhook.amplication.com
   config:
     env:
-      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
+      #KAFKA
+      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
+      KAFKA_CLIENT_ID: git-push-webhook-service
+      KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:  
   pvc:
@@ -93,11 +105,38 @@ amplication-git-pull-service:
     install: false
   config:
     env:
-      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
+      NODE_ENV: "production"
+
+      #EFS
+      STORAGE_PATH: /amplication-data/git-data
+      MAX_SNAPSHOTS: "100"
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "176701"
+      GITHUB_APP_CLIENT_ID: "Iv1.3f1573355389c9e5"
+      GIT_DEFAULT_ORIGIN_NAME: origin
+      GITHUB_APP_PRIVATE_KEY: ""
+
+      #KAFKA
+      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_CLIENT_ID: git-pull-service
+      KAFKA_GROUP_ID: git-pull-service-group
+
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
   pvc:
     name: prod-efs-claim
   config:
     env:
-      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9094"]'
+      #KAFKA
+      KAFKA_BROKERS: '["b-2.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplication-useast1-s.bqx2i9.c22.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_CLIENT_ID: git-pull-request-service
+      KAFKA_GROUP_ID: git-pull-request-service-group
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+
+      #EFS
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "176701"
