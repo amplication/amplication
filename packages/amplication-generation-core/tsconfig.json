@@ -1,16 +1,23 @@
 {
   "compilerOptions": {
+    "module": "commonjs",
     "declaration": true,
-    "importHelpers": true,
+    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
+    "target": "es2017",
+    "lib": ["es2020"],
+    "sourceMap": true,
+    "baseUrl": "./src",
     "outDir": "dist",
-    "strict": true,
-    "target": "es2020",
+    "incremental": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-  }
+    "strict": true,
+    "jsx": "react"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

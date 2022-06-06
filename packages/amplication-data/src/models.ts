@@ -1099,6 +1099,7 @@ export enum EnumEntityPermissionType {
   AllRoles = "AllRoles",
   Disabled = "Disabled",
   Granular = "Granular",
+  Public = "Public",
 }
 
 export enum EnumGitOrganizationType {

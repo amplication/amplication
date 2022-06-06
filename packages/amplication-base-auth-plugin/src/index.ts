@@ -5,7 +5,7 @@ import { addImports, importNames, parse, pushIdentifierToModuleSection } from ".
 import { builders } from "ast-types";
 import { types, print } from "recast";
 
-import { CreateAuthHook, HookService } from "@amplication/generation-core/util/hooks";
+import { CreateAuthHook, HookService } from "@amplication/generation-core/src/util/hooks";
 
 const nt = types.namedTypes;
 

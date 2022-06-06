@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@amplication/data": "^0.12.7",
-    "@types/lodash": "^4.14.182"
+    "@types/lodash": "^4.14.182",
+    "recast": "0.20.5",
+    "ast-types": "0.14.2"
   }
 }

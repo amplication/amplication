@@ -5,7 +5,7 @@ import { register } from "@amplication/basic-auth-plugin";
 // import child_process from "child_process";
 import "reflect-metadata";
 import { DsgContext } from "../../dsg-context";
-import { CreateAuthHook, HookService } from "@amplication/generation-core/util/hooks";
+import { CreateAuthHook, HookService } from "@amplication/generation-core/src/util/hooks";
 import path from "path";
 
 
