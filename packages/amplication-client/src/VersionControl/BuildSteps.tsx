@@ -11,6 +11,7 @@ import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 
 import "./BuildSteps.scss";
+import { REACT_APP_SERVER_URI } from "../env";
 
 const CLASS_NAME = "build-steps";
 
@@ -204,7 +205,7 @@ const BuildSteps = ({ build, onError }: Props) => {
 export default BuildSteps;
 
 export async function downloadArchive(uri: string): Promise<void> {
-  const res = await fetch(uri);
+  const res = await fetch(REACT_APP_SERVER_URI + uri);
   const url = new URL(res.url);
   switch (res.status) {
     case 200: {
