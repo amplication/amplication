@@ -113,7 +113,7 @@ const BuildSteps = ({ build, onError }: Props) => {
         <BuildStepsStatus status={stepGenerateCode.status} />
         <span className="spacer" />
         <Button
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           icon="download1"
           disabled={
             stepGenerateCode.status !== models.EnumActionStepStatus.Success
@@ -137,7 +137,7 @@ const BuildSteps = ({ build, onError }: Props) => {
           {githubUrl && (
             <a href={githubUrl} target="github">
               <Button
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 icon="external_link"
                 disabled={
                   stepGenerateCode.status !==
@@ -164,7 +164,7 @@ const BuildSteps = ({ build, onError }: Props) => {
         {/*@todo: add missing endpoint to download container and remove className */}
         <Button
           className="hidden"
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           icon="download1"
           disabled={data.build.status !== models.EnumBuildStatus.Completed}
           onClick={handleDownloadClick}
@@ -187,7 +187,7 @@ const BuildSteps = ({ build, onError }: Props) => {
           stepDeploy.status === models.EnumActionStepStatus.Success && (
             <a href={deployment.environment.address} target="app">
               <Button
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 icon="link_2"
                 eventData={{
                   eventName: "openPreviewApp",

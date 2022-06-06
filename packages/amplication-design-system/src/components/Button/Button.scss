@@ -89,7 +89,7 @@ $split-icon-font-size: 20px;
   &.amp-button--secondary {
     background-color: transparent;
     color: var(--black100);
-    border: none;
+    border: $border-black20;
 
     &:hover,
     &:active,
@@ -107,6 +107,26 @@ $split-icon-font-size: 20px;
   }
 
   &.amp-button--clear {
+    background-color: transparent;
+    color: var(--black100);
+    border: none;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--black10);
+      border-color: none !important;
+      color: var(--black100);
+    }
+
+    &[disabled] {
+      color: var(--black20);
+      background-color: transparent;
+      border: none;
+    }
+  }
+
+  &.amp-button--text {
     background-color: transparent;
     color: var(--black100);
     border: none;

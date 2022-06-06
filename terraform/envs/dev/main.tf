@@ -51,4 +51,7 @@ module "env" {
   apps_terraform_state_bucket      = var.apps_terraform_state_bucket
   apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
+  kafka_broker_ip                  = var.kafka_broker_ip
+  webhooks_secret_key              = var.webhooks_secret_key
+  kafka_repository_push_queue      = var.kafka_repository_push_queue
 }
