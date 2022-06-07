@@ -40,6 +40,7 @@ model Project {
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
   apps        App[]
+  deletedAt   DateTime?
 
   @@unique([workspaceId, name])
 }
