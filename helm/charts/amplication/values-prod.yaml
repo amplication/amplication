@@ -6,6 +6,7 @@ amplication-client:
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/7cf536df-6c61-4f76-bf3c-fd8f4e021721
   config:
     env:
+      REACT_APP_SERVER_URI: "https://server.amplication.com"
       REACT_APP_DATA_SOURCE: "https://server.amplication.com/graphql"
       REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.amplication.com/github"
       REACT_APP_GITHUB_CLIENT_ID: value
