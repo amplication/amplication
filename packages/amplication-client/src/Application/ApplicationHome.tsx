@@ -8,11 +8,7 @@ import PageContent from "../Layout/PageContent";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import * as models from "../models";
-import { ApiTokenList } from "../Settings/ApiTokenList";
 import { formatError } from "../util/error";
-import ApplicationAuthSettingForm from "./ApplicationAuthSettingForm";
-import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms";
-import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import { COLOR_TO_NAME } from "./constants";
 import DocsTile from "./DocsTile";
@@ -61,35 +57,10 @@ function ApplicationHome({ match }: Props) {
               Overview
             </InnerTabLink>
           </div>
-          <div>
-            <InnerTabLink to={`/${applicationId}/update`} icon="settings">
-              App Settings
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink to={`/${applicationId}/db/update`} icon="settings">
-              DB Settings
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink to={`/${applicationId}/auth/update`} icon="settings">
-              Auth Settings
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink to={`/${applicationId}/api-tokens`} icon="id">
-              API Tokens
-            </InnerTabLink>
-          </div>
         </div>
       }
     >
       <Switch>
-        <RouteWithAnalytics
-          path="/:application/api-tokens"
-          component={ApiTokenList}
-        />
-
         <Route
           path="/:application/"
           render={() => (
@@ -122,18 +93,6 @@ function ApplicationHome({ match }: Props) {
                       <ViewRoadmapTile />
                     </div>
                   )}
-                />
-                <RouteWithAnalytics
-                  path="/:application/update"
-                  component={ApplicationForm}
-                />
-                <RouteWithAnalytics
-                  path="/:application/db/update"
-                  component={ApplicationDatabaseSettingsForms}
-                />
-                <RouteWithAnalytics
-                  path="/:application/auth/update"
-                  component={ApplicationAuthSettingForm}
                 />
               </Switch>
             </>

@@ -29,6 +29,7 @@ import Commits from "../VersionControl/Commits";
 import NavigationTabs from "../Layout/NavigationTabs";
 import SyncWithGithubPage from "./git/SyncWithGithubPage";
 import CodeViewPage from "./code-view/CodeViewPage";
+import AppSettingsPage from "./appSettings/AppSettingsPage";
 
 export type ApplicationData = {
   app: models.App;
@@ -202,6 +203,11 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}/code-view`}
             icon="code1"
           />
+          <MenuItem
+            title="App settings"
+            to={`/${application}/appSettings`}
+            icon="config-app"
+          />
         </MainLayout.Menu>
         <MainLayout.Aside position={EnumMainLayoutAsidePosition.left}>
           <FilesPanel.Target className="main-layout__aside__expandable" />
@@ -239,6 +245,10 @@ function ApplicationLayout({ match }: Props) {
               <RouteWithAnalytics
                 path="/:application/code-view"
                 component={CodeViewPage}
+              />
+              <Route
+                path="/:application/appSettings"
+                component={AppSettingsPage}
               />
               <Route path="/:application/" component={ApplicationHome} />
             </Switch>
