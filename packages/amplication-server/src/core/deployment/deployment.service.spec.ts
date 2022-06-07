@@ -99,13 +99,7 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
   build: EXAMPLE_BUILD,
   environment: EXAMPLE_ENVIRONMENT
 };
-
-const EXAMPLE_USER: User = {
-  id: EXAMPLE_USER_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  isOwner: true
-};
+const EXAMPLE_EMAIL = "example@example.com";
 
 const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
 
@@ -165,7 +159,9 @@ const prismaDeploymentFindManyMock = jest.fn(() => {
   return [EXAMPLE_DEPLOYMENT];
 });
 
-const prismaUserFindOneMack = jest.fn(() => EXAMPLE_USER);
+const prismaGetEmailFromAccountByUserIdMock = {account: function() {return {email: EXAMPLE_EMAIL}}};
+
+const prismaUserFindUserAccountEmailMock = jest.fn(() => prismaGetEmailFromAccountByUserIdMock);
 
 const actionServiceRunMock = jest.fn(
   (actionId, name, message, actionFunction) =>
@@ -202,19 +198,19 @@ const EXAMPLE_COMPLETED_NO_URL_DEPLOY_RESULT: DeployResult = {
 };
 
 const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_SUCCESS: SendDeploymentArgs = {
-  to: EXAMPLE_USER_ID,
+  to: EXAMPLE_EMAIL,
   success: true,
   url: EXAMPLE_URL
 };
 
 const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL: SendDeploymentArgs = {
-  to: EXAMPLE_USER_ID,
+  to: EXAMPLE_EMAIL,
   success: false,
   url: EXAMPLE_URL
 };
 
 const EXAMPLE_DEPLOYMENT_EXAMPLE_ARGS_FAIL_URL: SendDeploymentArgs = {
-  to: EXAMPLE_USER_ID,
+  to: EXAMPLE_EMAIL,
   success: false,
   url: undefined
 };
@@ -275,7 +271,7 @@ describe('DeploymentService', () => {
               update: environmentServiceUpdateMock
             },
             user: {
-              findUnique: prismaUserFindOneMack
+              findUnique: prismaUserFindUserAccountEmailMock
             }
           }
         },
