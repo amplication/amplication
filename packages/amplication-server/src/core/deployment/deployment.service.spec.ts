@@ -99,7 +99,7 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
   build: EXAMPLE_BUILD,
   environment: EXAMPLE_ENVIRONMENT
 };
-const EXAMPLE_EMAIL = "example@example.com";
+const EXAMPLE_EMAIL = 'example@example.com';
 
 const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
 
@@ -159,9 +159,15 @@ const prismaDeploymentFindManyMock = jest.fn(() => {
   return [EXAMPLE_DEPLOYMENT];
 });
 
-const prismaGetEmailFromAccountByUserIdMock = {account: function() {return {email: EXAMPLE_EMAIL}}};
+const prismaGetEmailFromAccountByUserIdMock = {
+  account: function() {
+    return { email: EXAMPLE_EMAIL };
+  }
+};
 
-const prismaUserFindUserAccountEmailMock = jest.fn(() => prismaGetEmailFromAccountByUserIdMock);
+const prismaUserFindUserAccountEmailMock = jest.fn(
+  () => prismaGetEmailFromAccountByUserIdMock
+);
 
 const actionServiceRunMock = jest.fn(
   (actionId, name, message, actionFunction) =>
