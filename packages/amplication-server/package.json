@@ -21,7 +21,7 @@
     "docker:down": "docker-compose down --volumes",
     "generate-graphql-schema": "ts-node -r tsconfig-paths/register scripts/generate-graphql-schema",
     "check-graphql-schema": "ts-node -r tsconfig-paths/register scripts/check-graphql-schema",
-    "migrate:up": "cd ../amplication-prisma-db & npm run migrate:up"
+    "migrate:up": "cd ../amplication-prisma-db && npm run migrate:up"
   },
   "dependencies": {
     "@amplication/container-builder": "^0.13.0",
