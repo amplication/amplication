@@ -23,7 +23,8 @@ service:
   
 config:
   env:
+    REACT_APP_SERVER_URI: https://server.amplication-dev.com
     REACT_APP_DATA_SOURCE: https://server.amplication-dev.com/graphql
     REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: https://server.amplication-dev.com/github
     REACT_APP_GITHUB_CLIENT_ID: a4e9055e5f21448d6de7
-    REACT_APP_AMPLITUDE_API_KEY: aVqxCAcXOdCx5DPI41s6EmwsSCB8Kjz6
+    REACT_APP_AMPLITUDE_API_KEY: P5sO0VHJJlCrBz9bPYhFgN94VwyTyxPO
