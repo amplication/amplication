@@ -306,9 +306,11 @@ export class DeploymentService {
     step: ActionStep,
     result: DeployResult
   ): Promise<Deployment> {
-    const userInfo = await this.prisma.user.findUnique({
-      where: { id: deployment.userId }
-    });
+    const { email } = await this.prisma.user
+      .findUnique({
+        where: { id: deployment.userId }
+      })
+      .account();
 
     switch (result.status) {
       case EnumDeployStatus.Completed:
@@ -323,9 +325,9 @@ export class DeploymentService {
 
           if (isEmpty(result.url)) {
             await this.mailService.sendDeploymentNotification({
-              to: userInfo.id,
+              to: email,
               url: result.url,
-              succes: false
+              success: false
             });
             throw new Error(
               `Deployment ${deployment.id} completed without a deployment URL`
@@ -333,9 +335,9 @@ export class DeploymentService {
           }
 
           await this.mailService.sendDeploymentNotification({
-            to: userInfo.id,
+            to: email,
             url: result.url,
-            succes: true
+            success: true
           });
 
           await this.prisma.environment.update({
@@ -368,9 +370,9 @@ export class DeploymentService {
         await this.actionService.logInfo(step, DEPLOY_STEP_FAILED_LOG);
         await this.actionService.complete(step, EnumActionStepStatus.Failed);
         await this.mailService.sendDeploymentNotification({
-          to: userInfo.id,
+          to: email,
           url: result.url,
-          succes: false
+          success: false
         });
         return this.updateStatus(deployment.id, EnumDeploymentStatus.Failed);
       default:

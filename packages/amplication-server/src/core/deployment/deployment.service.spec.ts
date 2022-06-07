@@ -43,7 +43,7 @@ import {
   DeployResult,
   EnumDeployStatus
 } from '@amplication/deployer/dist/types';
-import { SendDeplomentArgs } from '../mail/dto/SendDeploymentArgs';
+import { SendDeploymentArgs } from '../mail/dto/SendDeploymentArgs';
 import { MailService } from '../mail/mail.service';
 import { User } from 'src/models';
 
@@ -201,21 +201,21 @@ const EXAMPLE_COMPLETED_NO_URL_DEPLOY_RESULT: DeployResult = {
   status: EnumDeployStatus.Completed
 };
 
-const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_SUCCESS: SendDeplomentArgs = {
+const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_SUCCESS: SendDeploymentArgs = {
   to: EXAMPLE_USER_ID,
-  succes: true,
+  success: true,
   url: EXAMPLE_URL
 };
 
-const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL: SendDeplomentArgs = {
+const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL: SendDeploymentArgs = {
   to: EXAMPLE_USER_ID,
-  succes: false,
+  success: false,
   url: EXAMPLE_URL
 };
 
-const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL_URL: SendDeplomentArgs = {
+const EXAMPLE_DEPLOYMENT_EXAMPLE_ARGS_FAIL_URL: SendDeploymentArgs = {
   to: EXAMPLE_USER_ID,
-  succes: false,
+  success: false,
   url: undefined
 };
 
@@ -834,7 +834,7 @@ describe('DeploymentService', () => {
 
     expect(mailServiceMock).toBeCalledTimes(1);
     expect(mailServiceMock).toBeCalledWith(
-      EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL_URL
+      EXAMPLE_DEPLOYMENT_EXAMPLE_ARGS_FAIL_URL
     );
   });
 

@@ -1,5 +1,5 @@
-export class SendDeplomentArgs {
+export class SendDeploymentArgs {
   to: string;
-  succes: boolean;
+  success: boolean;
   url: string;
 }

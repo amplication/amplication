@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectSendGrid, SendGridService } from '@ntegral/nestjs-sendgrid';
 import { ConfigService } from '@nestjs/config';
 import { SendInvitationArgs } from './dto/SendInvitationArgs';
-import { SendDeplomentArgs } from './dto/SendDeploymentArgs';
+import { SendDeploymentArgs } from './dto/SendDeploymentArgs';
 
 const SENDGRID_FROM_ADDRESS_VAR = 'SENDGRID_FROM_ADDRESS';
 const SENDGRID_INVITATION_TEMPLATE_ID_VAR = 'SENDGRID_INVITATION_TEMPLATE_ID';
 
-const SENDGRID_DEPLOY_SUCCESES_TEMPLATE_ID_VAR =
+const SENDGRID_DEPLOY_SUCCESS_TEMPLATE_ID_VAR =
   'SENDGRID_INVITATION_TEMPLATE_ID';
 
 const SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR = 'SENDGRID_INVITATION_TEMPLATE_ID';
@@ -48,13 +48,13 @@ export class MailService {
     return true;
   }
 
-  async sendDeploymentNotification(args: SendDeplomentArgs): Promise<boolean> {
+  async sendDeploymentNotification(args: SendDeploymentArgs): Promise<void> {
     const from = this.configService.get(SENDGRID_FROM_ADDRESS_VAR);
 
     let templateId;
-    if (args.succes) {
+    if (args.success) {
       templateId = this.configService.get(
-        SENDGRID_DEPLOY_SUCCESES_TEMPLATE_ID_VAR
+        SENDGRID_DEPLOY_SUCCESS_TEMPLATE_ID_VAR
       );
     } else {
       templateId = this.configService.get(SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR);
@@ -67,11 +67,9 @@ export class MailService {
       from,
       templateId,
       dynamicTemplateData: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         url: args.url
       }
     };
     await this.client.send(msg);
-    return true;
   }
 }
