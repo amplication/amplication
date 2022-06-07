@@ -206,7 +206,7 @@ function ApplicationLayout({ match }: Props) {
           <MenuItem
             title="App settings"
             to={`/${application}/appSettings`}
-            icon="config-app"
+            icon="config_app"
           />
         </MainLayout.Menu>
         <MainLayout.Aside position={EnumMainLayoutAsidePosition.left}>
