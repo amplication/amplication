@@ -1,1 +1,0 @@
-# Amplication git pull service
