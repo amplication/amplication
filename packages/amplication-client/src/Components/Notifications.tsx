@@ -21,7 +21,7 @@ export function Notifications() {
 
   return (
     <NovuProvider
-      subscriberId="{process.env.NOVU_SAMPLE_USER_ID}"
+      subscriberId="cl3uaw9rf00385ep5hc0h7dmb"
       applicationIdentifier="{process.env.NOVU_APP_ID_FROM_ADMIN_PANEL}"
     >
       <PopoverNotificationCenter
