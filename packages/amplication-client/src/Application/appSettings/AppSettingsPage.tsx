@@ -31,7 +31,7 @@ function AppSettingsPage({ match }: Props) {
               to={`/${application}/appSettings/update`}
               icon="settings"
             >
-              App Settings
+              General
             </InnerTabLink>
           </div>
           <div>
@@ -39,7 +39,7 @@ function AppSettingsPage({ match }: Props) {
               to={`/${application}/appSettings/db/update`}
               icon="settings"
             >
-              DB Settings
+              Database
             </InnerTabLink>
           </div>
           <div>
@@ -47,7 +47,7 @@ function AppSettingsPage({ match }: Props) {
               to={`/${application}/appSettings/auth/update`}
               icon="settings"
             >
-              Auth Settings
+              Authentication
             </InnerTabLink>
           </div>
           <div>

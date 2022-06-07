@@ -108,7 +108,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
           {(formik) => {
             return (
               <Form>
-                <h3>DB Settings</h3>
+                <h3>Database Settings</h3>
                 <p>
                   All the below settings will appear in clear text in the
                   generated app. <br />
