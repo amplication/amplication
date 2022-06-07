@@ -45,7 +45,6 @@ import {
 } from '@amplication/deployer/dist/types';
 import { SendDeploymentArgs } from '../mail/dto/SendDeploymentArgs';
 import { MailService } from '../mail/mail.service';
-import { User } from 'src/models';
 
 jest.mock('winston');
 
