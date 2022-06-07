@@ -1,0 +1,14 @@
+The Amplication Enterprise Edition license (the "Amplication EE License")
+Copyright (c) 2022 Amplication Ltd.
+
+With regard to the Amplication Enterprise Edition Software:
+
+This software and associated documentation files (the "Software") may only be used if you (and any entity that you represent) have agreed to, and are in compliance with, the Amplication Terms of Service, available at https://amplication.com/terms (the “Enterprise Terms”), or other agreement in writing between you and Amplication governing the use of the Software.
+
+The Source Code for the Software is available for download, but, as more fully specified in the Enterprise Terms, you may not modify the Software or make or publish patches to the Software. Subject to the Enterprise Terms, You agree that Amplication and/or its licensors (as applicable) retain all right, title and interest in and to the Software and any and all such modifications and patches. You are not granted any other rights beyond what is expressly stated herein.
+
+The Amplication EE License applies only to the part of this Software residing under the “ee/” repository. Any other Amplication Source Code is distributed and available as part of the Amplication Community Edition (the "Amplication CE"), including all content residing under the "packages/" directory of this repository. The Amplication CE is licensed under the Apache 2.0 license, at https://www.apache.org/licenses/LICENSE-2.0. The full text of this Amplication EE License shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For all third party components incorporated into the Amplication Software, those components are licensed under the original license provided by the owner of the applicable component.
