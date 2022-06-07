@@ -38,7 +38,6 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_APP_DATA
 } from './sampleApp';
-import cuid from 'cuid';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -91,7 +90,7 @@ export class AppService {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${args.data.name}`,
             workspaceId: user.workspace?.id
           }
         }
@@ -367,6 +366,16 @@ export class AppService {
         }
       });
     }
+
+    const project = await this.prisma.app.findUnique(args).project();
+
+    await this.prisma.project.update({
+      where: { id: project.id },
+      data: {
+        name: prepareDeletedItemName(project.name, project.id),
+        deletedAt: new Date()
+      }
+    });
 
     return this.prisma.app.update({
       where: args.where,
