@@ -3,7 +3,6 @@ import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import React from "react";
 import { match, Route, Switch, useLocation } from "react-router-dom";
-import InnerTabLink from "../Layout/InnerTabLink";
 import PageContent from "../Layout/PageContent";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
@@ -48,18 +47,7 @@ function ApplicationHome({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent
-      className={CLASS_NAME}
-      sideContent={
-        <div>
-          <div>
-            <InnerTabLink to={`/${applicationId}/`} icon="home">
-              Overview
-            </InnerTabLink>
-          </div>
-        </div>
-      }
-    >
+    <PageContent className={CLASS_NAME} sideContent="">
       <Switch>
         <Route
           path="/:application/"
