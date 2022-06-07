@@ -1,4 +1,4 @@
-# @amplication/cli
+# @amplication/cli 
 
 Amplication CLI
 

@@ -1,0 +1,34 @@
+@import "../../style/index.scss";
+
+.amp-tree-view {
+  &.MuiTreeView-root {
+    .MuiTreeItem-label {
+      @include font-base;
+    }
+  }
+
+  &__Item__content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .MuiCollapse-wrapperInner {
+    border-left: $border-black30;
+    padding-left: var(--default-spacing);
+  }
+
+  .MuiTreeItem-content {
+    padding: var(--icon-spacing);
+    border-radius: var(--small-border-radius);
+
+    &.Mui-selected {
+      background: var(--black10);
+    }
+
+    &:hover {
+      background: var(--black5);
+    }
+  }
+}
