@@ -1,0 +1,3 @@
+{{ include "base.configmap" (list . "amplication-git-pull-request-service.configmap") -}}
+{{- define "amplication-git-pull-request-service.configmap" -}}
+{{- end }}
