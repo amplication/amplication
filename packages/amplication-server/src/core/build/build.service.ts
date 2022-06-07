@@ -45,6 +45,7 @@ import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { GitService } from '@amplication/git-service';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
+import { Novu } from '@novu/node';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -373,6 +374,22 @@ export class BuildService {
     return disk.getStream(filePath);
   }
 
+  private async notifyWhenCodeIsReady(buildLink) {
+    const novu = new Novu(process.env.NOVU_API_KEY);
+    try {
+      await novu.trigger('your-code-is-ready', {
+        to: {
+          subscriberId: process.env.NOVU_SAMPLE_USE_ID
+        },
+        payload: {
+          buildLink
+        }
+      });
+    } catch (err) {
+      throw new Error('Novu notification failed');
+    }
+  }
+
   /**
    * Generates code for given build and saves it to storage
    * @DSG The connection between the server and the DSG (Data Service Generator)
@@ -581,7 +598,11 @@ export class BuildService {
         disk.put(tarFilePath, tar)
       )
     ]);
-    return this.getFileURL(disk, tarFilePath);
+    const fileUrl = this.getFileURL(disk, tarFilePath);
+
+    await this.notifyWhenCodeIsReady(fileUrl);
+
+    return fileUrl;
   }
 
   private async saveToGitHub(
