@@ -12,6 +12,8 @@ on:
         - staging
         - prod
         - custom
+        - shimi
+        - mor
 jobs:
   prepare:
     runs-on: ubuntu-18.04
