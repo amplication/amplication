@@ -10,9 +10,21 @@ cp-helm-charts:
     podAnnotations:
       cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     configurationOverrides:
-      "default.replication.factor": 1
-      "min.insync.replicas": 1
-      "auto.create.topics.enable": true
+      default.replication.factor: "1"
+      min.insync.replicas: "1"
+      auto.create.topics.enable: "true"
+      min.insync.replicas: "1"
+      num.io.threads: "8"
+      num.network.threads: "5"
+      num.partitions: "5"
+      num.replica.fetchers: "2"
+      replica.lag.time.max.ms: "30000"
+      socket.receive.buffer.bytes: "102400"
+      socket.request.max.bytes: "104857600"
+      socket.send.buffer.bytes: "102400"
+      unclean.leader.election.enable: "true"
+      zookeeper.session.timeout.ms: "18000"
+      log.retention.hours: "72"
     resources: {}
     heapOptions: "-Xms512M -Xmx512M"
     tolerations:
@@ -23,8 +35,6 @@ cp-helm-charts:
     persistence:
       enabled: true
       size: 5Gi
-    configurationOverrides:
-      offsets.topic.replication.factor: "1"
   cp-zookeeper:
     enabled: true
     servers: 1
@@ -63,7 +73,7 @@ amplication-client:
 amplication-server:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-    tag: "2447862327"
+    tag: "2427438912"
   postgres:
     install: false
   ingress:
@@ -73,6 +83,7 @@ amplication-server:
     name: common-efs-claim
   config:
     env:
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
       GITHUB_SCOPE: "user:email"
       GOOGLE_APPLICATION_CREDENTIALS: "/var/gcp-secret"
@@ -116,10 +127,13 @@ amplication-server:
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
       GITHUB_REDIRECT_URI: "https://server-dev.staging-os.amplication-dev.com/github/callback"
 
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+
 amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
-    tag: "2447954474"
+    tag: "2427438912"
   postgres:
     install: false
   ingress:
@@ -131,11 +145,13 @@ amplication-git-push-webhook-service:
       KAFKA_CLIENT_ID: git-push-webhook
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
       PORT: "3000"
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
+
 
 amplication-git-pull-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
-    tag: "2869-merge"
+    tag: "2448150584"
   ingress:
     enabled: true
     hostname: server-dev.staging-os.amplication-dev.com
@@ -161,10 +177,13 @@ amplication-git-pull-service:
       KAFKA_CLIENT_ID: git-pull
       KAFKA_GROUP_ID: amplication-git-pull-service
 
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
+
+
 amplication-git-pull-request-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
-    tag: "2447954474"
+    tag: "2427438912"
   pvc:
     name: common-efs-claim
   ingress:
@@ -175,3 +194,7 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      GITHUB_APP_APP_ID: "195638"
+
