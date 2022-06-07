@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: "{{ .Values.name }}-migrate"
 spec:
+  ttlSecondsAfterFinished: 5
   template:
     metadata:
       name: "{{ .Values.name }}-migrate"
@@ -19,7 +20,7 @@ spec:
       {{ end }}
       containers:
       - name: "{{ .Values.name }}-migrate"
-        image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         command: ["/bin/sh"]
         args: ["-c", "npm run migrate:up"]
         env:
