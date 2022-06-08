@@ -13,7 +13,6 @@ type Props = {
   match: match<{ application: string }>;
 };
 
-//const CLASS_NAME = "application-home";
 const NAVIGATION_KEY = "APP_SETTINGS";
 
 function AppSettingsPage({ match }: Props) {
@@ -23,7 +22,6 @@ function AppSettingsPage({ match }: Props) {
 
   return (
     <PageContent
-      className={"CLASS_NAME"}
       sideContent={
         <div>
           <div>
