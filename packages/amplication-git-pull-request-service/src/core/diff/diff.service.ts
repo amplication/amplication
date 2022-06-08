@@ -38,6 +38,9 @@ export class DiffService {
       'Cant get the same build id'
     );
 
+    //This line added as a hotfix to https://github.com/amplication/amplication/issues/2878
+    return this.firstBuild(newBuildPath);
+
     // return all the new files if an old build folder dont exist
     if (existsSync(oldBuildPath) === false) {
       return this.firstBuild(newBuildPath);
