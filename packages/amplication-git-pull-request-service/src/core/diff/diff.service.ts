@@ -4,7 +4,7 @@ import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { join } from 'path';
+import { join, normalize } from 'path';
 import { Logger } from 'winston';
 import { BuildPathFactory } from './utils/BuildPathFactory';
 
@@ -86,10 +86,12 @@ export class DiffService {
   }
 
   private async firstBuild(newBuildPath: string) {
-    const files = sync(`${newBuildPath}/**`).map(async (file) => {
-      const code = await readFileSync(file).toString('utf8');
+    const basePathLength = newBuildPath.length;
+    const files = sync(`${newBuildPath}/**`).map(async (fullPath) => {
+      const path = normalize(fullPath.slice(basePathLength));
+      const code = await readFileSync(fullPath).toString('utf8');
       return {
-        path: file,
+        path,
         code,
       };
     });
