@@ -60,25 +60,25 @@ postgres:
 amplication-client:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
-    tag: "2447954474" # Need to change for dev.
+    tag: "release-0-13-0" # Need to change for dev.
   service:
-    hostname: app-dev.staging-os.amplication-dev.com
+    hostname: app-dev.staging.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
   config:
     env:
-      REACT_APP_DATA_SOURCE: "https://server-dev.staging-os.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-dev.staging-os.amplication-dev.com/github"
+      REACT_APP_DATA_SOURCE: "https://server.staging.amplication-dev.com/graphql"
+      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.staging.amplication-dev.com/github"
       REACT_APP_GITHUB_CLIENT_ID: value
 
 amplication-server:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-    tag: "2427438912"
+    tag: "release-0-13-0"
   postgres:
     install: false
   ingress:
     enabled: true
-    hostname: server-dev.staging-os.amplication-dev.com
+    hostname: server.staging.amplication-dev.com
   pvc:
     name: common-efs-claim
   config:
@@ -95,8 +95,8 @@ amplication-server:
       CORS_ENABLE: "1"
       DOCKER_HOST: "tcp://docker:2375"
 
-      HOST: "https://server-dev.staging-os.amplication-dev.com"
-      CLIENT_HOST: "https://app-dev.staging-os.amplication-dev.com"
+      HOST: "https://server.staging.amplication-dev.com"
+      CLIENT_HOST: "https://app-dev.staging.amplication-dev.com"
 
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: amplication-server
@@ -120,12 +120,12 @@ amplication-server:
       #GitHub App
       GITHUB_APP_APP_ID: "195638"
       GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
-      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplicaiton-server-staging-os/installations/new?state={state}"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplicaiton-server-staging/installations/new?state={state}"
 
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
-      GITHUB_REDIRECT_URI: "https://server-dev.staging-os.amplication-dev.com/github/callback"
+      GITHUB_REDIRECT_URI: "https://server.staging.amplication-dev.com/github/callback"
 
       BASE_BUILDS_FOLDER: /amplication-data/build-data
 
@@ -133,12 +133,12 @@ amplication-server:
 amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
-    tag: "2427438912"
+    tag: "release-0-13-0"
   postgres:
     install: false
   ingress:
     enabled: true
-    hostname: server-dev.staging-os.amplication-dev.com
+    hostname: webhook.staging.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
@@ -151,10 +151,7 @@ amplication-git-push-webhook-service:
 amplication-git-pull-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
-    tag: "2448150584"
-  ingress:
-    enabled: true
-    hostname: server-dev.staging-os.amplication-dev.com
+    tag: "release-0-13-0"
   postgres:
     install: false
   pvc:
@@ -183,12 +180,9 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
-    tag: "2427438912"
+    tag: "release-0-13-0"
   pvc:
     name: common-efs-claim
-  ingress:
-    enabled: true
-    hostname: server-dev.staging-os.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
@@ -197,4 +191,3 @@ amplication-git-pull-request-service:
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
-

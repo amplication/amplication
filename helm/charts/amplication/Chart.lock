@@ -24,4 +24,4 @@ dependencies:
   repository: file://../services/amplication-git-push-webhook-service
   version: 0.1.0
 digest: sha256:c37488f70e8df310f2ce4d3a3ec3c993de83463e46dbce1a17c42b2d9e90f7b7
-generated: "2022-06-02T15:58:25.31275+03:00"
+generated: "2022-06-08T15:31:19.236767+03:00"
