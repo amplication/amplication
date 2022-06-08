@@ -1,0 +1,3 @@
+{{ include "base.deployment" (list . "amplication-git-pull-request-service.deployment") -}}
+{{- define "amplication-git-pull-request-service.deployment" -}}
+{{- end }}
