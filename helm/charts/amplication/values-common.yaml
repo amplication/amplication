@@ -115,6 +115,7 @@ amplication-server:
       GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
       GITHUB_REDIRECT_URI: "https://server-dev.staging-os.amplication-dev.com/github/callback"
+      CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
 
 amplication-git-push-webhook-service:
   image:
@@ -175,3 +176,4 @@ amplication-storage-gateway:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: storage-queue-client
       KAFKA_GROUP_ID: storage-server-group
+      CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0

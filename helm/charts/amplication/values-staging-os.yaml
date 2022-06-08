@@ -127,6 +127,5 @@ amplication-storage-gateway:
   config:
     env:
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092"]'
-      GENERATE_PULL_REQUEST_TOPIC: authorization.internal.can-access-build.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
