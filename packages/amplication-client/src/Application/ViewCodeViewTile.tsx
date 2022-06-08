@@ -39,7 +39,6 @@ function ViewCodeViewTile({ applicationId }: Props) {
           Watch code
         </Button>
       }
-      showComingSoon
     />
   );
 }

@@ -9,4 +9,15 @@
       margin: 0;
     }
   }
+
+  &__formWrapper {
+    width: 70%;
+    display: inline-flex;
+    flex-wrap: wrap;
+  }
+  &__formWrapper_field {
+    width: 280px;
+    margin-right: 24px;
+    margin-bottom: 24px;
+  }
 }
