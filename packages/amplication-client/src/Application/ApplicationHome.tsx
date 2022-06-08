@@ -65,24 +65,22 @@ function ApplicationHome({ match }: Props) {
                   color={data?.app.color || "transparent"}
                 />
               </div>
-              <Switch>
-                <RouteWithAnalytics
-                  exact
-                  path="/:application/"
-                  component={() => (
-                    <div className={`${CLASS_NAME}__tiles`}>
-                      <NewVersionTile applicationId={applicationId} />
-                      <OverviewTile applicationId={applicationId} />
-                      <SyncWithGithubTile applicationId={applicationId} />
-                      <EntitiesTile applicationId={applicationId} />
-                      <RolesTile applicationId={applicationId} />
-                      <DocsTile />
-                      <FeatureRequestTile />
-                      <ViewRoadmapTile />
-                    </div>
-                  )}
-                />
-              </Switch>
+              <RouteWithAnalytics
+                exact
+                path="/:application/"
+                component={() => (
+                  <div className={`${CLASS_NAME}__tiles`}>
+                    <NewVersionTile applicationId={applicationId} />
+                    <OverviewTile applicationId={applicationId} />
+                    <SyncWithGithubTile applicationId={applicationId} />
+                    <EntitiesTile applicationId={applicationId} />
+                    <RolesTile applicationId={applicationId} />
+                    <DocsTile />
+                    <FeatureRequestTile />
+                    <ViewRoadmapTile />
+                  </div>
+                )}
+              />
             </>
           )}
         />
