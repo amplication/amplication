@@ -31,7 +31,7 @@ function DocsTile() {
           rel="noopener"
           onClick={handleClick}
         >
-          <Button buttonStyle={EnumButtonStyle.Outline} type="button">
+          <Button buttonStyle={EnumButtonStyle.Secondary} type="button">
             Go to docs
           </Button>
         </a>

@@ -58,7 +58,7 @@ function RolesTile({ applicationId }: Props) {
       message="Create roles and define permissions. Whether at the Entity level or the Field level, granularity is key."
       footer={
         <Button
-          buttonStyle={EnumButtonStyle.Outline}
+          buttonStyle={EnumButtonStyle.Secondary}
           type="button"
           onClick={handleClick}
         >

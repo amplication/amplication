@@ -31,8 +31,8 @@ function ViewRoadmapTile() {
           rel="noopener"
           onClick={handleClick}
         >
-          <Button buttonStyle={EnumButtonStyle.Outline} type="button">
-            View roadmap
+          <Button buttonStyle={EnumButtonStyle.Secondary} type="button">
+            Watch code
           </Button>
         </a>
       }

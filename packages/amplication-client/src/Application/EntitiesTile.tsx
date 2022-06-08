@@ -51,14 +51,14 @@ function EntitiesTile({ applicationId }: Props) {
         ) : (
           <>
             {data?.entities.length}
-            {data?.entities.length > 1 ? " entities" : " entity"}
+            {data && data?.entities.length > 1 ? " entities" : " entity"}
           </>
         )
       }
       message="Define your own data model. Keep using the Amplication Console. It is here to help you out with its simple and intuitive interface."
       footer={
         <Button
-          buttonStyle={EnumButtonStyle.Outline}
+          buttonStyle={EnumButtonStyle.Secondary}
           type="button"
           onClick={handleClick}
         >
