@@ -30,9 +30,9 @@ dependencies:
 - name: amplication-git-push-webhook-service
   version: "0.1.0"
   repository: "file://../services/amplication-git-push-webhook-service"
-- name: amplication-storage-gateway-service
+- name: amplication-storage-gateway
   version: "0.1.0"
-  repository: "file://../services/amplication-storage-gateway-service"
+  repository: "file://../services/amplication-storage-gateway"
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives

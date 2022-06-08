@@ -140,7 +140,7 @@ amplication-git-pull-request-service:
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
 
-amplication-storage-gateway-service:
+amplication-storage-gateway:
   pvc:
     name: prod-efs-claim
   config:

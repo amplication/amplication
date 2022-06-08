@@ -1,3 +1,0 @@
-{{ include "base.configmap" (list . "amplication-storage-gateway-service.configmap") -}}
-{{- define "amplication-storage-gateway-service.configmap" -}}
-{{- end }}

@@ -1,3 +1,0 @@
-{{ include "base.rolebinding" (list . "amplication-storage-gateway-service.rolebinding") -}}
-{{- define "amplication-storage-gateway-service.rolebinding" -}}
-{{- end }}

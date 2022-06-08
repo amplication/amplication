@@ -166,9 +166,9 @@ amplication-git-pull-request-service:
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
 
-amplication-storage-gateway-service:
+amplication-storage-gateway:
   image:
-    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway-service
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
     tag: "feature-add-services"
   config:
     env:

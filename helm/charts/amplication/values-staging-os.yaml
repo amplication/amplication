@@ -119,7 +119,7 @@ amplication-git-pull-request-service:
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
 
-amplication-storage-gateway-service:
+amplication-storage-gateway:
   ingress:
     hostname: server.staging-os.amplication.com
   pvc:
