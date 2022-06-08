@@ -51,7 +51,7 @@ function RolesTile({ applicationId }: Props) {
         ) : (
           <>
             {data?.appRoles.length}
-            {data?.appRoles.length > 1 ? " roles" : " role"}
+            {data && data?.appRoles.length > 1 ? " roles" : " role"}
           </>
         )
       }
