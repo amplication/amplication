@@ -31,7 +31,7 @@ const OverviewSecondaryTile: React.FC<Props> = ({
     >
       <>
         <div className={`${CLASS_NAME}__header`}>
-          <Icon icon={icon} size="medium" />
+          <Icon icon={icon} size="small" />
           <h2 className={`${CLASS_NAME}__header__title`}>{title}</h2>
 
           {headerExtra && (
