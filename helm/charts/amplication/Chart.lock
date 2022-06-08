@@ -23,5 +23,8 @@ dependencies:
 - name: amplication-git-push-webhook-service
   repository: file://../services/amplication-git-push-webhook-service
   version: 0.1.0
-digest: sha256:c37488f70e8df310f2ce4d3a3ec3c993de83463e46dbce1a17c42b2d9e90f7b7
-generated: "2022-06-02T15:58:25.31275+03:00"
+- name: amplication-storage-gateway-service
+  repository: file://../services/amplication-storage-gateway-service
+  version: 0.1.0
+digest: sha256:d813b701a73b96c6151325a4df98ad68c9a0ef064a058b267dd3b5991025d111
+generated: "2022-06-08T14:40:16.888369+03:00"

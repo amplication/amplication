@@ -165,3 +165,13 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
+
+amplication-storage-gateway-service:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway-service
+    tag: "feature-add-services"
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: storage-queue-client
+      KAFKA_GROUP_ID: storage-server-group
