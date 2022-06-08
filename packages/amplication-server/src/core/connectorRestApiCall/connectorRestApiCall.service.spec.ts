@@ -9,7 +9,7 @@ const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
 const EXAMPLE_NAME = 'Example Connector REST API Call';
 const EXAMPLE_URL = 'http://example.com';
-const EXAMPLE_APP_ID = 'ExampleApp';
+const EXAMPLE_RESOURCE_ID = 'ExampleResource';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
@@ -108,7 +108,7 @@ describe('ConnectorRestApiCallService', () => {
             url: EXAMPLE_URL,
             resource: {
               connect: {
-                id: EXAMPLE_APP_ID
+                id: EXAMPLE_RESOURCE_ID
               }
             }
           }

@@ -1,8 +1,8 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { ResourceCreateWithEntitiesInput } from './AppCreateWithEntitiesInput';
+import { ResourceCreateWithEntitiesInput } from './ResourceCreateWithEntitiesInput';
 
 @ArgsType()
-export class CreateAppWithEntitiesArgs {
+export class CreateResourceWithEntitiesArgs {
   @Field(() => ResourceCreateWithEntitiesInput, { nullable: false })
   data!: ResourceCreateWithEntitiesInput;
 }

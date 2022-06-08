@@ -19,12 +19,12 @@ export class EnvironmentService {
     return this.prisma.environment.create(args);
   }
 
-  async createDefaultEnvironment(appId: string): Promise<Environment> {
+  async createDefaultEnvironment(resourceId: string): Promise<Environment> {
     return this.createEnvironment({
       data: {
         resource: {
           connect: {
-            id: appId
+            id: resourceId
           }
         },
         address: cuid(),

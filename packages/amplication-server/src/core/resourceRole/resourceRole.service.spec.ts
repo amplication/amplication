@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ResourceRoleService } from './appRole.service';
+import { ResourceRoleService } from './resourceRole.service';
 import { PrismaService } from '@amplication/prisma-db';
 import { ResourceRole } from 'src/models';
 
@@ -43,7 +43,7 @@ describe('AppRoleService', () => {
         {
           provide: PrismaService,
           useClass: jest.fn(() => ({
-            appRole: {
+            resourceRole: {
               create: prismaAppRoleCreateMock,
               findUnique: prismaAppRoleFindOneMock,
               findMany: prismaAppRoleFindManyMock,
@@ -62,13 +62,13 @@ describe('AppRoleService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create an app role', async () => {
+  it('should create an resource role', async () => {
     const args = {
       data: {
         name: EXAMPLE_APP_ROLE_NAME,
         description: EXAMPLE_APP_ROLE_DESCRIPTION,
         displayName: EXAMPLE_APP_ROLE_DISPLAY_NAME,
-        app: { connect: { id: EXAMPLE_APP_ROLE_ID } }
+        resource: { connect: { id: EXAMPLE_APP_ROLE_ID } }
       }
     };
     expect(await service.createResourceRole(args)).toEqual(EXAMPLE_APP_ROLE);
@@ -76,28 +76,28 @@ describe('AppRoleService', () => {
     expect(prismaAppRoleCreateMock).toBeCalledWith(args);
   });
 
-  it('should find one app role', async () => {
+  it('should find one resource role', async () => {
     const args = { where: { id: EXAMPLE_APP_ROLE_ID } };
     expect(await service.getResourceRole(args)).toEqual(EXAMPLE_APP_ROLE);
     expect(prismaAppRoleFindOneMock).toBeCalledTimes(1);
     expect(prismaAppRoleFindOneMock).toBeCalledWith(args);
   });
 
-  it('should find many app roles', async () => {
+  it('should find many resource roles', async () => {
     const args = {};
     expect(await service.getResourceRoles(args)).toEqual([EXAMPLE_APP_ROLE]);
     expect(prismaAppRoleFindManyMock).toBeCalledTimes(1);
     expect(prismaAppRoleFindManyMock).toBeCalledWith(args);
   });
 
-  it('should delete an app role', async () => {
+  it('should delete an resource role', async () => {
     const args = { where: { id: EXAMPLE_APP_ROLE_ID } };
     expect(await service.deleteResourceRole(args)).toEqual(EXAMPLE_APP_ROLE);
     expect(prismaAppRoleDeleteMock).toBeCalledTimes(1);
     expect(prismaAppRoleDeleteMock).toBeCalledWith(args);
   });
 
-  it('should update an app role', async () => {
+  it('should update an resource role', async () => {
     const args = {
       data: { displayName: EXAMPLE_APP_ROLE_DISPLAY_NAME },
       where: { id: EXAMPLE_APP_ROLE_ID }

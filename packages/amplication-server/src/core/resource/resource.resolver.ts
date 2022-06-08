@@ -26,15 +26,15 @@ import { FindManyEntityArgs } from '../entity/dto';
 import { Environment } from '../environment/dto/Environment';
 import { EnvironmentService } from '../environment/environment.service';
 import {
-  AppValidationResult,
-  CreateAppWithEntitiesArgs,
+  ResourceValidationResult,
+  CreateResourceWithEntitiesArgs,
   CreateCommitArgs,
   CreateOneResourceArgs,
   DiscardPendingChangesArgs,
-  FindManyAppArgs,
+  FindManyResourceArgs,
   FindPendingChangesArgs,
   PendingChange,
-  UpdateOneAppArgs
+  UpdateOneResourceArgs
 } from './dto';
 
 @Resolver(() => Resource)
@@ -51,7 +51,7 @@ export class ResourceResolver {
   @Query(() => Resource, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
-  async app(@Args() args: FindOneArgs): Promise<Resource | null> {
+  async resource(@Args() args: FindOneArgs): Promise<Resource | null> {
     return this.resourceService.resource(args);
   }
 
@@ -64,7 +64,7 @@ export class ResourceResolver {
     InjectableResourceParameter.WorkspaceId,
     'where.workspace.id'
   )
-  async apps(@Args() args: FindManyAppArgs): Promise<Resource[]> {
+  async resources(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources(args);
   }
 
@@ -91,9 +91,9 @@ export class ResourceResolver {
   }
 
   @ResolveField(() => [Environment])
-  async environments(@Parent() app: Resource): Promise<Environment[]> {
+  async environments(@Parent() resource: Resource): Promise<Environment[]> {
     return this.environmentService.findMany({
-      where: { resource: { id: app.id } }
+      where: { resource: { id: resource.id } }
     });
   }
 
@@ -103,7 +103,7 @@ export class ResourceResolver {
     InjectableResourceParameter.WorkspaceId,
     'data.workspace.connect.id'
   )
-  async createApp(
+  async createResource(
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User
   ): Promise<Resource> {
@@ -114,10 +114,10 @@ export class ResourceResolver {
   @Roles('ORGANIZATION_ADMIN')
   @InjectContextValue(
     InjectableResourceParameter.WorkspaceId,
-    'data.app.workspace.connect.id'
+    'data.resource.workspace.connect.id'
   )
-  async createAppWithEntities(
-    @Args() args: CreateAppWithEntitiesArgs,
+  async createResourceWithEntities(
+    @Args() args: CreateResourceWithEntitiesArgs,
     @UserEntity() user: User
   ): Promise<Resource> {
     return this.resourceService.createResourceWithEntities(args.data, user);
@@ -128,8 +128,8 @@ export class ResourceResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
-  async deleteApp(@Args() args: FindOneArgs): Promise<Resource | null> {
-    return this.resourceService.deleteApp(args);
+  async deleteResource(@Args() args: FindOneArgs): Promise<Resource | null> {
+    return this.resourceService.deleteResource(args);
   }
 
   @Mutation(() => Resource, {
@@ -137,7 +137,9 @@ export class ResourceResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
-  async updateApp(@Args() args: UpdateOneAppArgs): Promise<Resource | null> {
+  async updateResource(
+    @Args() args: UpdateOneResourceArgs
+  ): Promise<Resource | null> {
     return this.resourceService.updateResource(args);
   }
 
@@ -147,7 +149,7 @@ export class ResourceResolver {
   })
   @AuthorizeContext(
     AuthorizableResourceParameter.ResourceId,
-    'data.app.connect.id'
+    'data.resource.connect.id'
   )
   @InjectContextValue(
     InjectableResourceParameter.UserId,
@@ -163,7 +165,7 @@ export class ResourceResolver {
   })
   @AuthorizeContext(
     AuthorizableResourceParameter.ResourceId,
-    'data.app.connect.id'
+    'data.resource.connect.id'
   )
   @InjectContextValue(
     InjectableResourceParameter.UserId,
@@ -178,7 +180,10 @@ export class ResourceResolver {
   @Query(() => [PendingChange], {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.app.id')
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ResourceId,
+    'where.resource.id'
+  )
   async pendingChanges(
     @Args() args: FindPendingChangesArgs,
     @UserEntity() user: User
@@ -186,13 +191,13 @@ export class ResourceResolver {
     return this.resourceService.getPendingChanges(args, user);
   }
 
-  @Query(() => AppValidationResult, {
+  @Query(() => ResourceValidationResult, {
     nullable: false
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
-  async appValidateBeforeCommit(
+  async resourceValidateBeforeCommit(
     @Args() args: FindOneArgs
-  ): Promise<AppValidationResult> {
+  ): Promise<ResourceValidationResult> {
     return this.resourceService.validateBeforeCommit(args);
   }
 

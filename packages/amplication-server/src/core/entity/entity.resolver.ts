@@ -65,7 +65,7 @@ export class EntityResolver {
   @Query(() => [Entity], {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.app.id')
+  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.resource.id')
   async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
     return this.entityService.entities(args);
   }
@@ -75,7 +75,7 @@ export class EntityResolver {
   })
   @AuthorizeContext(
     AuthorizableResourceParameter.ResourceId,
-    'data.app.connect.id'
+    'data.resource.connect.id'
   )
   async createOneEntity(
     @UserEntity() user: User,

@@ -1,14 +1,14 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 
-export enum AppValidationErrorTypes {
+export enum ResourceValidationErrorTypes {
   CannotMergeCodeToGitHubBreakingChanges = 'CannotMergeCodeToGitHubBreakingChanges',
-  CannotMergeCodeToGitHubInvalidAppId = 'CannotMergeCodeToGitHubInvalidAppId',
+  CannotMergeCodeToGitHubInvalidResourceId = 'CannotMergeCodeToGitHubInvalidResourceId',
   DataServiceGeneratorVersionMissing = 'DataServiceGeneratorVersionMissing',
   DataServiceGeneratorVersionInvalid = 'DataServiceGeneratorVersionInvalid'
 }
 
-registerEnumType(AppValidationErrorTypes, {
-  name: 'AppValidationErrorTypes',
+registerEnumType(ResourceValidationErrorTypes, {
+  name: 'ResourceValidationErrorTypes',
   description: undefined
 });
 
@@ -16,10 +16,10 @@ registerEnumType(AppValidationErrorTypes, {
   isAbstract: true,
   description: undefined
 })
-export class AppValidationResult {
+export class ResourceValidationResult {
   @Field(() => Boolean)
   isValid: boolean;
 
-  @Field(() => [AppValidationErrorTypes])
-  messages: AppValidationErrorTypes[];
+  @Field(() => [ResourceValidationErrorTypes])
+  messages: ResourceValidationErrorTypes[];
 }

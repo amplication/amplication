@@ -30,7 +30,7 @@ import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
-import { ResourceRoleService } from '../appRole/appRole.service';
+import { ResourceRoleService } from '../resourceRole/resourceRole.service';
 import { ResourceService } from '../resource/resource.service'; // eslint-disable-line import/no-cycle
 import { UserService } from '../user/user.service'; // eslint-disable-line import/no-cycle
 import { AppSettingsService } from '../appSettings/appSettings.service'; // eslint-disable-line import/no-cycle
@@ -639,7 +639,7 @@ export class BuildService {
             const response = await this.queueService.sendCreateGitPullRequest({
               gitOrganizationName: appRepository.gitOrganization.name,
               gitRepositoryName: appRepository.name,
-              amplicationAppId: resource.id,
+              amplicationResourceId: resource.id,
               gitProvider: EnumGitProvider.Github,
               installationId: appRepository.gitOrganization.installationId,
               newBuildId: build.id,

@@ -6,7 +6,7 @@ import { WorkspaceWhereInput } from 'src/core/workspace/dto';
   isAbstract: true,
   description: undefined
 })
-export class AppWhereInput {
+export class ResourceWhereInput {
   @Field(() => String, {
     nullable: true,
     description: undefined

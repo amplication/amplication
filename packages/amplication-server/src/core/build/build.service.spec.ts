@@ -24,7 +24,7 @@ import {
 import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import { EntityService } from '..';
-import { ResourceRoleService } from '../appRole/appRole.service';
+import { ResourceRoleService } from '../resourceRole/resourceRole.service';
 import { ResourceService } from '../resource/resource.service';
 import { ActionService } from '../action/action.service';
 import { LocalDiskService } from '../storage/local.disk.service';
@@ -78,7 +78,7 @@ const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 export const EXAMPLE_DATE = new Date('2020-01-01');
 
 const JOB_STARTED_LOG = 'Build job started';
@@ -99,7 +99,7 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   dbPassword: '1234',
   dbPort: 5432,
   dbUser: 'admin',
-  appId: EXAMPLE_APP_ID,
+  appId: EXAMPLE_RESOURCE_ID,
   authProvider: EnumAuthProviderType.Http
 };
 
@@ -148,7 +148,7 @@ const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   createdAt: EXAMPLE_DATE,
   userId: EXAMPLE_USER_ID,
-  resourceId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   version: '1.0.0',
   message: 'new build',
   actionId: EXAMPLE_ACTION.id,
@@ -208,7 +208,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   updatedAt: new Date(),
   name: EXAMPLE_ENVIRONMENT_NAME,
   address: EXAMPLE_ADDRESS,
-  resourceId: EXAMPLE_APP_ID
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_DEPLOYMENT: Deployment = {
@@ -240,19 +240,19 @@ const EXAMPLE_RUNNING_BUILD_RESULT: BuildResult = {
 
 const EXAMPLE_APP_ROLES = [];
 
-const EXAMPLE_APP: Resource = {
-  id: 'exampleAppId',
+const EXAMPLE_SERVICE_RESOURCE: Resource = {
+  id: 'exampleResourceId',
   createdAt: new Date(),
   updatedAt: new Date(),
-  name: 'exampleAppName',
-  description: 'example App Description',
+  name: 'exampleResourceName',
+  description: 'example Resources Description',
   color: '#20A4F3'
 };
 
-const EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT: Build = {
+const EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT: Build = {
   ...EXAMPLE_BUILD,
   commit: EXAMPLE_COMMIT,
-  resource: EXAMPLE_APP
+  resource: EXAMPLE_SERVICE_RESOURCE
 };
 
 const commitId = EXAMPLE_COMMIT_ID;
@@ -286,7 +286,7 @@ const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
 const EXAMPLE_MODULES = [];
 
 const prismaBuildCreateMock = jest.fn(
-  () => EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT
+  () => EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT
 );
 
 const prismaBuildFindOneMock = jest.fn();
@@ -329,9 +329,11 @@ const EXAMPLE_ENTITIES: Entity[] = [
 
 const entityServiceGetEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
 
-const appRoleServiceGetAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
+const resourceRoleServiceGetResourceRolesMock = jest.fn(
+  () => EXAMPLE_APP_ROLES
+);
 
-const appServiceGetAppMock = jest.fn(() => EXAMPLE_APP);
+const resourceServiceGetAppMock = jest.fn(() => EXAMPLE_SERVICE_RESOURCE);
 
 const EXAMPLE_ACTION_STEP: ActionStep = {
   id: 'EXAMPLE_ACTION_STEP_ID',
@@ -474,13 +476,13 @@ describe('BuildService', () => {
         {
           provide: ResourceRoleService,
           useValue: {
-            getAppRoles: appRoleServiceGetAppRolesMock
+            getAppRoles: resourceRoleServiceGetResourceRolesMock
           }
         },
         {
           provide: ResourceService,
           useValue: {
-            app: appServiceGetAppMock
+            resource: resourceServiceGetAppMock
           }
         },
         {
@@ -572,9 +574,9 @@ describe('BuildService', () => {
             id: EXAMPLE_USER_ID
           }
         },
-        app: {
+        resource: {
           connect: {
-            id: EXAMPLE_APP_ID
+            id: EXAMPLE_RESOURCE_ID
           }
         },
         message: EXAMPLE_BUILD.message,
@@ -589,11 +591,11 @@ describe('BuildService', () => {
     const version = commitId.slice(commitId.length - 8);
     const latestEntityVersions = [{ id: EXAMPLE_ENTITY_VERSION_ID }];
     expect(await service.create(args)).toEqual(
-      EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT
+      EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT
     );
     expect(entityServiceGetLatestVersionsMock).toBeCalledTimes(1);
     expect(entityServiceGetLatestVersionsMock).toBeCalledWith({
-      where: { app: { id: EXAMPLE_APP_ID } }
+      where: { resource: { id: EXAMPLE_RESOURCE_ID } }
     });
     expect(prismaBuildCreateMock).toBeCalledTimes(1);
     expect(prismaBuildCreateMock).toBeCalledWith({
@@ -621,7 +623,7 @@ describe('BuildService', () => {
       },
       include: {
         commit: true,
-        app: true
+        resource: true
       }
     });
     expect(loggerChildMock).toBeCalledTimes(1);
@@ -642,9 +644,9 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
-    expect(appServiceGetAppMock).toBeCalledTimes(1);
-    expect(appServiceGetAppMock).toBeCalledWith({
-      where: { id: EXAMPLE_APP_ID }
+    expect(resourceServiceGetAppMock).toBeCalledTimes(1);
+    expect(resourceServiceGetAppMock).toBeCalledWith({
+      where: { id: EXAMPLE_RESOURCE_ID }
     });
 
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
@@ -658,11 +660,11 @@ describe('BuildService', () => {
       },
       include: ENTITIES_INCLUDE
     });
-    expect(appRoleServiceGetAppRolesMock).toBeCalledTimes(1);
-    expect(appRoleServiceGetAppRolesMock).toBeCalledWith({
+    expect(resourceRoleServiceGetResourceRolesMock).toBeCalledTimes(1);
+    expect(resourceRoleServiceGetResourceRolesMock).toBeCalledWith({
       where: {
-        app: {
-          id: EXAMPLE_APP_ID
+        resource: {
+          id: EXAMPLE_RESOURCE_ID
         }
       }
     });
@@ -671,11 +673,11 @@ describe('BuildService', () => {
       orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
       EXAMPLE_APP_ROLES,
       {
-        name: EXAMPLE_APP.name,
-        description: EXAMPLE_APP.description,
+        name: EXAMPLE_SERVICE_RESOURCE.name,
+        description: EXAMPLE_SERVICE_RESOURCE.description,
         version: EXAMPLE_BUILD.version,
-        id: EXAMPLE_APP.id,
-        url: `${EXAMPLED_HOST}/${EXAMPLE_APP.id}`,
+        id: EXAMPLE_SERVICE_RESOURCE.id,
+        url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
         settings: EXAMPLE_APP_SETTINGS_VALUES
       },
       MOCK_LOGGER
@@ -814,8 +816,8 @@ describe('BuildService', () => {
   });
 
   /**
-   * fail to get generated app archive for non existing step
-   * fail to get generated app archive for uncompleted step
+   * fail to get generated resource archive for non existing step
+   * fail to get generated resource archive for uncompleted step
    */
 
   test('get deployments', async () => {

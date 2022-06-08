@@ -35,7 +35,7 @@ import { Subscription } from '../subscription/dto/Subscription';
 export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
-    private readonly appService: ResourceService
+    private readonly resourceService: ResourceService
   ) {}
 
   @Query(() => Workspace, {
@@ -58,8 +58,8 @@ export class WorkspaceResolver {
   }
 
   @ResolveField(() => [Resource])
-  async apps(@Parent() workspace: Workspace): Promise<Resource[]> {
-    return this.appService.resources({
+  async resources(@Parent() workspace: Workspace): Promise<Resource[]> {
+    return this.resourceService.resources({
       where: { workspace: { id: workspace.id } }
     });
   }

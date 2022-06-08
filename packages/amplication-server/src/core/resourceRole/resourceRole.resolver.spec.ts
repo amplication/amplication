@@ -10,30 +10,30 @@ import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-import { ResourceRoleService } from './appRole.service';
-import { ResourceRoleResolver } from './appRole.resolver';
+import { ResourceRoleService } from './resourceRole.service';
+import { ResourceRoleResolver } from './resourceRole.resolver';
 import { ResourceRole } from 'src/models';
 
-const EXAMPLE_APP_ROLE_ID = 'EXAMPLE_APP_ROLE_ID';
+const EXAMPLE_RESOURCE_ROLE_ID = 'EXAMPLE_APP_ROLE_ID';
 const EXAMPLE_NAME = 'EXAMPLE_NAME';
 const EXAMPLE_DISPLAY_NAME = 'EXAMPLE_DISPLAY_NAME';
 const EXAMPLE_DESCRIPTION = 'exampleDescription';
 
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 
 const EXAMPLE_VERSION = 1;
 
-const EXAMPLE_APP_ROLE: ResourceRole = {
-  id: EXAMPLE_APP_ROLE_ID,
+const EXAMPLE_RESOURCE_ROLE: ResourceRole = {
+  id: EXAMPLE_RESOURCE_ROLE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME
 };
 
-const GET_APP_ROLE_QUERY = gql`
+const GET_RESOURCE_ROLE_QUERY = gql`
   query($id: String!, $version: Float!) {
-    appRole(where: { id: $id }, version: $version) {
+    resourceRole(where: { id: $id }, version: $version) {
       id
       createdAt
       updatedAt
@@ -43,9 +43,9 @@ const GET_APP_ROLE_QUERY = gql`
   }
 `;
 
-const GET_APP_ROLES_QUERY = gql`
+const GET_RESOURCE_ROLES_QUERY = gql`
   query {
-    appRoles {
+    resourceRoles {
       id
       createdAt
       updatedAt
@@ -55,19 +55,19 @@ const GET_APP_ROLES_QUERY = gql`
   }
 `;
 
-const CREATE_APP_ROLE_MUTATION = gql`
+const CREATE_RESOURCE_ROLE_MUTATION = gql`
   mutation(
     $name: String!
     $description: String!
     $displayName: String!
-    $appId: String!
+    $resourceId: String!
   ) {
-    createAppRole(
+    createResourceRole(
       data: {
         name: $name
         description: $description
         displayName: $displayName
-        app: { connect: { id: $appId } }
+        resource: { connect: { id: $resourceId } }
       }
     ) {
       id
@@ -81,7 +81,7 @@ const CREATE_APP_ROLE_MUTATION = gql`
 
 const DELETE_APP_ROLE_MUTATION = gql`
   mutation($id: String!) {
-    deleteAppRole(where: { id: $id }) {
+    deleteResourceRole(where: { id: $id }) {
       id
       createdAt
       updatedAt
@@ -93,7 +93,10 @@ const DELETE_APP_ROLE_MUTATION = gql`
 
 const UPDATE_APP_ROLE_MUTATION = gql`
   mutation($id: String!, $displayName: String!) {
-    updateAppRole(where: { id: $id }, data: { displayName: $displayName }) {
+    updateResourceRole(
+      where: { id: $id }
+      data: { displayName: $displayName }
+    ) {
       id
       createdAt
       updatedAt
@@ -103,25 +106,25 @@ const UPDATE_APP_ROLE_MUTATION = gql`
   }
 `;
 
-const getAppRoleMock = jest.fn(() => {
-  return EXAMPLE_APP_ROLE;
+const getResourceRoleMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE_ROLE;
 });
-const getAppRolesMock = jest.fn(() => {
-  return [EXAMPLE_APP_ROLE];
+const getResourceRolesMock = jest.fn(() => {
+  return [EXAMPLE_RESOURCE_ROLE];
 });
-const createAppRoleMock = jest.fn(() => {
-  return EXAMPLE_APP_ROLE;
+const createResourceRoleMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE_ROLE;
 });
-const deleteAppRoleMock = jest.fn(() => {
-  return EXAMPLE_APP_ROLE;
+const deleteResourceRoleMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE_ROLE;
 });
-const updateAppRoleMock = jest.fn(() => {
-  return EXAMPLE_APP_ROLE;
+const updateResourceRoleMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE_ROLE;
 });
 
 const mockCanActivate = jest.fn(() => true);
 
-describe('AppRoleResolver', () => {
+describe('ResourceRoleResolver', () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
@@ -133,11 +136,11 @@ describe('AppRoleResolver', () => {
         {
           provide: ResourceRoleService,
           useClass: jest.fn(() => ({
-            getAppRole: getAppRoleMock,
-            getAppRoles: getAppRolesMock,
-            createAppRole: createAppRoleMock,
-            deleteAppRole: deleteAppRoleMock,
-            updateAppRole: updateAppRoleMock
+            getResourceRole: getResourceRoleMock,
+            getResourceRoles: getResourceRolesMock,
+            createResourceRole: createResourceRoleMock,
+            deleteResourceRole: deleteResourceRoleMock,
+            updateResourceRole: updateResourceRoleMock
           }))
         },
         {
@@ -170,108 +173,111 @@ describe('AppRoleResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it('should get one AppRole', async () => {
+  it('should get one ResourceRole', async () => {
     const res = await apolloClient.query({
-      query: GET_APP_ROLE_QUERY,
-      variables: { id: EXAMPLE_APP_ROLE_ID, version: EXAMPLE_VERSION }
+      query: GET_RESOURCE_ROLE_QUERY,
+      variables: { id: EXAMPLE_RESOURCE_ROLE_ID, version: EXAMPLE_VERSION }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      appRole: {
-        ...EXAMPLE_APP_ROLE,
-        createdAt: EXAMPLE_APP_ROLE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_APP_ROLE.updatedAt.toISOString()
+      resourceRole: {
+        ...EXAMPLE_RESOURCE_ROLE,
+        createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
+        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
       }
     });
-    expect(getAppRoleMock).toBeCalledTimes(1);
-    expect(getAppRoleMock).toBeCalledWith({
-      where: { id: EXAMPLE_APP_ROLE_ID },
+    expect(getResourceRoleMock).toBeCalledTimes(1);
+    expect(getResourceRoleMock).toBeCalledWith({
+      where: { id: EXAMPLE_RESOURCE_ROLE_ID },
       version: EXAMPLE_VERSION
     });
   });
 
-  it('should get Many AppRoles', async () => {
+  it('should get Many ResourceRoles', async () => {
     const res = await apolloClient.query({
-      query: GET_APP_ROLES_QUERY
+      query: GET_RESOURCE_ROLES_QUERY
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      appRoles: [
+      resourceRoles: [
         {
-          ...EXAMPLE_APP_ROLE,
-          createdAt: EXAMPLE_APP_ROLE.createdAt.toISOString(),
-          updatedAt: EXAMPLE_APP_ROLE.updatedAt.toISOString()
+          ...EXAMPLE_RESOURCE_ROLE,
+          createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
+          updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
         }
       ]
     });
-    expect(getAppRolesMock).toBeCalledTimes(1);
-    expect(getAppRolesMock).toBeCalledWith({});
+    expect(getResourceRolesMock).toBeCalledTimes(1);
+    expect(getResourceRolesMock).toBeCalledWith({});
   });
 
-  it('should create an AppRole', async () => {
+  it('should create an ResourceRole', async () => {
     const res = await apolloClient.query({
-      query: CREATE_APP_ROLE_MUTATION,
+      query: CREATE_RESOURCE_ROLE_MUTATION,
       variables: {
         name: EXAMPLE_NAME,
         description: EXAMPLE_DESCRIPTION,
         displayName: EXAMPLE_DISPLAY_NAME,
-        appId: EXAMPLE_APP_ID
+        resourceId: EXAMPLE_RESOURCE_ID
       }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      createAppRole: {
-        ...EXAMPLE_APP_ROLE,
-        createdAt: EXAMPLE_APP_ROLE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_APP_ROLE.updatedAt.toISOString()
+      createResourceRole: {
+        ...EXAMPLE_RESOURCE_ROLE,
+        createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
+        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
       }
     });
-    expect(createAppRoleMock).toBeCalledTimes(1);
-    expect(createAppRoleMock).toBeCalledWith({
+    expect(createResourceRoleMock).toBeCalledTimes(1);
+    expect(createResourceRoleMock).toBeCalledWith({
       data: {
         name: EXAMPLE_NAME,
         description: EXAMPLE_DESCRIPTION,
         displayName: EXAMPLE_DISPLAY_NAME,
-        app: { connect: { id: EXAMPLE_APP_ID } }
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } }
       }
     });
   });
 
-  it('should delete an AppRole', async () => {
+  it('should delete an ResourceRole', async () => {
     const res = await apolloClient.query({
       query: DELETE_APP_ROLE_MUTATION,
-      variables: { id: EXAMPLE_APP_ROLE_ID }
+      variables: { id: EXAMPLE_RESOURCE_ROLE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      deleteAppRole: {
-        ...EXAMPLE_APP_ROLE,
-        createdAt: EXAMPLE_APP_ROLE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_APP_ROLE.updatedAt.toISOString()
+      deleteResourceRole: {
+        ...EXAMPLE_RESOURCE_ROLE,
+        createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
+        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
       }
     });
-    expect(deleteAppRoleMock).toBeCalledTimes(1);
-    expect(deleteAppRoleMock).toBeCalledWith({
-      where: { id: EXAMPLE_APP_ROLE_ID }
+    expect(deleteResourceRoleMock).toBeCalledTimes(1);
+    expect(deleteResourceRoleMock).toBeCalledWith({
+      where: { id: EXAMPLE_RESOURCE_ROLE_ID }
     });
   });
 
-  it('should update an AppRole', async () => {
+  it('should update an ResourceRole', async () => {
     const res = await apolloClient.query({
       query: UPDATE_APP_ROLE_MUTATION,
-      variables: { id: EXAMPLE_APP_ROLE_ID, displayName: EXAMPLE_DISPLAY_NAME }
+      variables: {
+        id: EXAMPLE_RESOURCE_ROLE_ID,
+        displayName: EXAMPLE_DISPLAY_NAME
+      }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      updateAppRole: {
-        ...EXAMPLE_APP_ROLE,
-        createdAt: EXAMPLE_APP_ROLE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_APP_ROLE.updatedAt.toISOString()
+      updateResourceRole: {
+        ...EXAMPLE_RESOURCE_ROLE,
+        createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
+        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
       }
     });
-    expect(updateAppRoleMock).toBeCalledTimes(1);
-    expect(updateAppRoleMock).toBeCalledWith({
-      where: { id: EXAMPLE_APP_ROLE_ID },
+    expect(updateResourceRoleMock).toBeCalledTimes(1);
+    expect(updateResourceRoleMock).toBeCalledWith({
+      where: { id: EXAMPLE_RESOURCE_ROLE_ID },
       data: { displayName: EXAMPLE_DISPLAY_NAME }
     });
   });

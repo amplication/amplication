@@ -5,7 +5,7 @@ import { SortOrder } from 'src/enums/SortOrder';
   isAbstract: true,
   description: undefined
 })
-export class AppOrderByInput {
+export class ResourceOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined

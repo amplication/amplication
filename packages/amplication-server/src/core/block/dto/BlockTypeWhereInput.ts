@@ -53,6 +53,4 @@ export class BlockTypeWhereInput {
   // OR?: BlockWhereInput[] | null;
 
   // NOT?: BlockWhereInput[] | null;
-
-  //app?: WhereUniqueInput | null;
 }

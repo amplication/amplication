@@ -43,7 +43,7 @@ import { GitService } from '@amplication/git-service';
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
-const EXAMPLE_APP_DESCRIPTION = 'exampleAppName';
+const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceName';
 const INVALID_COLOR = 'INVALID_COLOR';
 
 const EXAMPLE_CUID = 'EXAMPLE_CUID';
@@ -51,18 +51,18 @@ const EXAMPLE_CUID = 'EXAMPLE_CUID';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
-const EXAMPLE_APP: Resource = {
+const EXAMPLE_RESOURCE: Resource = {
   ...DEFAULT_RESOURCE_DATA,
   id: EXAMPLE_RESOURCE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_RESOURCE_NAME,
-  description: EXAMPLE_APP_DESCRIPTION,
+  description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_USER_APP_ROLE = {
+const EXAMPLE_USER_RESOURCE_ROLE = {
   name: 'user',
   displayName: 'User'
 };
@@ -199,26 +199,26 @@ const EXAMPLE_BUILD: Build = {
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: 'exampleGitRepositoryId',
   name: 'repositoryTest',
-  resourceId: 'exampleAppId',
+  resourceId: 'exampleResourceId',
   gitOrganizationId: 'exampleGitOrganizationId',
   createdAt: new Date(),
   updatedAt: new Date()
 };
 
-const prismaAppCreateMock = jest.fn(() => {
-  return EXAMPLE_APP;
+const prismaResourceCreateMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
 });
-const prismaAppFindOneMock = jest.fn(() => {
-  return EXAMPLE_APP;
+const prismaResourceFindOneMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
 });
-const prismaAppFindManyMock = jest.fn(() => {
-  return [EXAMPLE_APP];
+const prismaResourceFindManyMock = jest.fn(() => {
+  return [EXAMPLE_RESOURCE];
 });
-const prismaAppDeleteMock = jest.fn(() => {
-  return EXAMPLE_APP;
+const prismaResourceDeleteMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
 });
-const prismaAppUpdateMock = jest.fn(() => {
-  return EXAMPLE_APP;
+const prismaResourceUpdateMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
 });
 const prismaEntityFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
@@ -273,7 +273,7 @@ jest.mock('cuid');
 // @ts-ignore
 cuid.mockImplementation(() => EXAMPLE_CUID);
 
-describe('AppService', () => {
+describe('ResourceService', () => {
   let service: ResourceService;
 
   beforeEach(async () => {
@@ -290,13 +290,13 @@ describe('AppService', () => {
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
-            app: {
-              create: prismaAppCreateMock,
-              findFirst: prismaAppFindOneMock,
-              findUnique: prismaAppFindOneMock,
-              findMany: prismaAppFindManyMock,
-              delete: prismaAppDeleteMock,
-              update: prismaAppUpdateMock
+            resource: {
+              create: prismaResourceCreateMock,
+              findFirst: prismaResourceFindOneMock,
+              findUnique: prismaResourceFindOneMock,
+              findMany: prismaResourceFindManyMock,
+              delete: prismaResourceDeleteMock,
+              update: prismaResourceUpdateMock
             },
             entity: {
               findMany: prismaEntityFindManyMock
@@ -352,27 +352,27 @@ describe('AppService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create an app', async () => {
-    const createAppArgs = {
+  it('should create an resource', async () => {
+    const createResourceArgs = {
       args: {
         data: {
           name: EXAMPLE_RESOURCE_NAME,
-          description: EXAMPLE_APP_DESCRIPTION,
+          description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: DEFAULT_RESOURCE_COLOR
         }
       },
       user: EXAMPLE_USER
     };
-    const prismaAppCreateAppArgs = {
+    const prismaResourceCreateResourceArgs = {
       data: {
-        ...createAppArgs.args.data,
+        ...createResourceArgs.args.data,
         workspace: {
           connect: {
-            id: createAppArgs.user.workspace?.id
+            id: createResourceArgs.user.workspace?.id
           }
         },
         roles: {
-          create: EXAMPLE_USER_APP_ROLE
+          create: EXAMPLE_USER_RESOURCE_ROLE
         },
         project: {
           create: {
@@ -385,7 +385,7 @@ describe('AppService', () => {
     const commitArgs = {
       data: {
         message: INITIAL_COMMIT_MESSAGE,
-        app: { connect: { id: EXAMPLE_RESOURCE_ID } },
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         user: { connect: { id: EXAMPLE_USER_ID } }
       }
     };
@@ -435,10 +435,10 @@ describe('AppService', () => {
       userId: EXAMPLE_USER_ID
     };
     expect(
-      await service.createResource(createAppArgs.args, createAppArgs.user)
-    ).toEqual(EXAMPLE_APP);
-    expect(prismaAppCreateMock).toBeCalledTimes(1);
-    expect(prismaAppCreateMock).toBeCalledWith(prismaAppCreateAppArgs);
+      await service.createResource(createResourceArgs.args, createResourceArgs.user)
+    ).toEqual(EXAMPLE_RESOURCE);
+    expect(prismaResourceCreateMock).toBeCalledTimes(1);
+    expect(prismaResourceCreateMock).toBeCalledWith(prismaResourceCreateResourceArgs);
     expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(1);
     expect(entityServiceCreateDefaultEntitiesMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID,
@@ -449,8 +449,8 @@ describe('AppService', () => {
     expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID
     );
-    expect(prismaAppFindManyMock).toBeCalledTimes(1);
-    expect(prismaAppFindManyMock).toHaveBeenCalledWith(findManyArgs);
+    expect(prismaResourceFindManyMock).toBeCalledTimes(1);
+    expect(prismaResourceFindManyMock).toHaveBeenCalledWith(findManyArgs);
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
     expect(prismaCommitCreateMock).toBeCalledWith(commitArgs);
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
@@ -477,24 +477,24 @@ describe('AppService', () => {
     );
   });
 
-  it('should fail to create app for invalid color', async () => {
-    const createAppArgs = {
+  it('should fail to create resource for invalid color', async () => {
+    const createResourceArgs = {
       args: {
         data: {
           name: EXAMPLE_RESOURCE_NAME,
-          description: EXAMPLE_APP_DESCRIPTION,
+          description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: INVALID_COLOR
         }
       },
       user: EXAMPLE_USER
     };
     await expect(
-      service.createResource(createAppArgs.args, createAppArgs.user)
+      service.createResource(createResourceArgs.args, createResourceArgs.user)
     ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
   });
 
-  it('should create a sample app', async () => {
-    const prismaAppCreateAppArgs = {
+  it('should create a sample resource', async () => {
+    const prismaResourceCreateResourceArgs = {
       data: {
         ...DEFAULT_RESOURCE_DATA,
         ...SAMPLE_RESOURCE_DATA,
@@ -504,7 +504,7 @@ describe('AppService', () => {
           }
         },
         roles: {
-          create: EXAMPLE_USER_APP_ROLE
+          create: EXAMPLE_USER_RESOURCE_ROLE
         },
         project: {
           create: {
@@ -517,14 +517,14 @@ describe('AppService', () => {
     const initialCommitArgs = {
       data: {
         message: INITIAL_COMMIT_MESSAGE,
-        app: { connect: { id: EXAMPLE_RESOURCE_ID } },
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         user: { connect: { id: EXAMPLE_USER_ID } }
       }
     };
     const createSampleEntitiesCommitArgs = {
       data: {
         message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-        app: { connect: { id: EXAMPLE_RESOURCE_ID } },
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         user: { connect: { id: EXAMPLE_USER_ID } }
       }
     };
@@ -574,10 +574,10 @@ describe('AppService', () => {
       userId: EXAMPLE_USER_ID
     };
     await expect(service.createSampleResource(EXAMPLE_USER)).resolves.toEqual(
-      EXAMPLE_APP
+      EXAMPLE_RESOURCE
     );
-    expect(prismaAppCreateMock).toBeCalledTimes(1);
-    expect(prismaAppCreateMock).toBeCalledWith(prismaAppCreateAppArgs);
+    expect(prismaResourceCreateMock).toBeCalledTimes(1);
+    expect(prismaResourceCreateMock).toBeCalledWith(prismaResourceCreateResourceArgs);
     expect(entityServiceFindFirstMock).toBeCalledTimes(1);
     expect(entityServiceFindFirstMock).toBeCalledWith({
       where: { name: USER_ENTITY_NAME, resourceId: EXAMPLE_RESOURCE_ID },
@@ -593,8 +593,8 @@ describe('AppService', () => {
       USER_ENTITY_MOCK.id,
       createSampleResourceEntities(USER_ENTITY_MOCK.id).userEntityFields
     );
-    expect(prismaAppFindManyMock).toBeCalledTimes(2);
-    expect(prismaAppFindManyMock.mock.calls).toEqual([
+    expect(prismaResourceFindManyMock).toBeCalledTimes(2);
+    expect(prismaResourceFindManyMock.mock.calls).toEqual([
       [findManyArgs],
       [findManyArgs]
     ]);
@@ -636,7 +636,7 @@ describe('AppService', () => {
     ]);
   });
 
-  it('should fail to create app with entities with a reserved name', async () => {
+  it('should fail to create resource with entities with a reserved name', async () => {
     await expect(
       service.createResourceWithEntities(
         {
@@ -659,8 +659,8 @@ describe('AppService', () => {
     ).rejects.toThrow(new ReservedEntityNameError(USER_ENTITY_NAME));
   });
 
-  it('should create app with entities', async () => {
-    const prismaAppCreateAppArgs = {
+  it('should create resource with entities', async () => {
+    const prismaResourceCreateResourceArgs = {
       data: {
         ...DEFAULT_RESOURCE_DATA,
         ...SAMPLE_RESOURCE_DATA,
@@ -670,7 +670,7 @@ describe('AppService', () => {
           }
         },
         roles: {
-          create: EXAMPLE_USER_APP_ROLE
+          create: EXAMPLE_USER_RESOURCE_ROLE
         },
         project: {
           create: {
@@ -683,7 +683,7 @@ describe('AppService', () => {
     const initialCommitArgs = {
       data: {
         message: INITIAL_COMMIT_MESSAGE,
-        app: { connect: { id: EXAMPLE_RESOURCE_ID } },
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         user: { connect: { id: EXAMPLE_USER_ID } }
       }
     };
@@ -691,7 +691,7 @@ describe('AppService', () => {
     const createSampleEntitiesCommitArgs = {
       data: {
         message: commitMessage,
-        app: { connect: { id: EXAMPLE_RESOURCE_ID } },
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         user: { connect: { id: EXAMPLE_USER_ID } }
       }
     };
@@ -739,7 +739,7 @@ describe('AppService', () => {
 
     const createOneEntityArgs = {
       data: {
-        app: {
+        resource: {
           connect: {
             id: EXAMPLE_RESOURCE_ID
           }
@@ -784,12 +784,12 @@ describe('AppService', () => {
 
         EXAMPLE_USER
       )
-    ).resolves.toEqual(EXAMPLE_APP);
-    expect(prismaAppCreateMock).toBeCalledTimes(1);
-    expect(prismaAppCreateMock).toBeCalledWith(prismaAppCreateAppArgs);
+    ).resolves.toEqual(EXAMPLE_RESOURCE);
+    expect(prismaResourceCreateMock).toBeCalledTimes(1);
+    expect(prismaResourceCreateMock).toBeCalledWith(prismaResourceCreateResourceArgs);
 
-    expect(prismaAppFindManyMock).toBeCalledTimes(3);
-    expect(prismaAppFindManyMock.mock.calls).toEqual([
+    expect(prismaResourceFindManyMock).toBeCalledTimes(3);
+    expect(prismaResourceFindManyMock.mock.calls).toEqual([
       [
         {
           where: {
@@ -858,59 +858,59 @@ describe('AppService', () => {
     ]);
   });
 
-  it('should find an app', async () => {
+  it('should find an resource', async () => {
     const args = {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID
       }
     };
-    expect(await service.resource(args)).toEqual(EXAMPLE_APP);
-    expect(prismaAppFindOneMock).toBeCalledTimes(1);
-    expect(prismaAppFindOneMock).toBeCalledWith(args);
+    expect(await service.resource(args)).toEqual(EXAMPLE_RESOURCE);
+    expect(prismaResourceFindOneMock).toBeCalledTimes(1);
+    expect(prismaResourceFindOneMock).toBeCalledWith(args);
   });
 
-  it('should find many apps', async () => {
+  it('should find many resources', async () => {
     const args = {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID
       }
     };
-    expect(await service.resources(args)).toEqual([EXAMPLE_APP]);
-    expect(prismaAppFindManyMock).toBeCalledTimes(1);
-    expect(prismaAppFindManyMock).toBeCalledWith(args);
+    expect(await service.resources(args)).toEqual([EXAMPLE_RESOURCE]);
+    expect(prismaResourceFindManyMock).toBeCalledTimes(1);
+    expect(prismaResourceFindManyMock).toBeCalledWith(args);
   });
 
-  it('should delete an app', async () => {
+  it('should delete an resource', async () => {
     const args = { where: { id: EXAMPLE_RESOURCE_ID } };
     const dateSpy = jest.spyOn(global, 'Date');
-    expect(await service.deleteApp(args)).toEqual(EXAMPLE_APP);
-    expect(prismaAppUpdateMock).toBeCalledTimes(1);
-    expect(prismaAppUpdateMock).toBeCalledWith({
+    expect(await service.deleteResource(args)).toEqual(EXAMPLE_RESOURCE);
+    expect(prismaResourceUpdateMock).toBeCalledTimes(1);
+    expect(prismaResourceUpdateMock).toBeCalledWith({
       ...args,
       data: {
         deletedAt: dateSpy.mock.instances[0],
-        name: prepareDeletedItemName(EXAMPLE_APP.name, EXAMPLE_APP.id)
+        name: prepareDeletedItemName(EXAMPLE_RESOURCE.name, EXAMPLE_RESOURCE.id)
       }
     });
   });
 
-  it('should update an app', async () => {
+  it('should update an resource', async () => {
     const args = {
       data: { name: EXAMPLE_RESOURCE_NAME },
       where: { id: EXAMPLE_RESOURCE_ID }
     };
-    expect(await service.updateResource(args)).toEqual(EXAMPLE_APP);
-    expect(prismaAppUpdateMock).toBeCalledTimes(1);
-    expect(prismaAppUpdateMock).toBeCalledWith(args);
+    expect(await service.updateResource(args)).toEqual(EXAMPLE_RESOURCE);
+    expect(prismaResourceUpdateMock).toBeCalledTimes(1);
+    expect(prismaResourceUpdateMock).toBeCalledWith(args);
   });
 
   it('should commit', async () => {
     const args = {
       data: {
         message: EXAMPLE_MESSAGE,
-        app: { connect: { id: EXAMPLE_RESOURCE_ID } },
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         user: { connect: { id: EXAMPLE_USER_ID } }
       }
     };
@@ -962,7 +962,7 @@ describe('AppService', () => {
     };
     const buildCreateArgs = {
       data: {
-        app: {
+        resource: {
           connect: {
             id: EXAMPLE_RESOURCE_ID
           }
@@ -981,8 +981,8 @@ describe('AppService', () => {
       }
     };
     expect(await service.commit(args, false)).toEqual(EXAMPLE_COMMIT);
-    expect(prismaAppFindManyMock).toBeCalledTimes(1);
-    expect(prismaAppFindManyMock).toBeCalledWith(findManyArgs);
+    expect(prismaResourceFindManyMock).toBeCalledTimes(1);
+    expect(prismaResourceFindManyMock).toBeCalledWith(findManyArgs);
 
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
     expect(prismaCommitCreateMock).toBeCalledWith(args);
@@ -1012,15 +1012,15 @@ describe('AppService', () => {
     expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs, false);
   });
 
-  describe('deleted apps', () => {
+  describe('deleted resources', () => {
     beforeEach(() => {
-      EXAMPLE_APP.deletedAt = new Date();
-      prismaAppFindOneMock.mockImplementationOnce(() => {
+      EXAMPLE_RESOURCE.deletedAt = new Date();
+      prismaResourceFindOneMock.mockImplementationOnce(() => {
         throw new Error(INVALID_RESOURCE_ID);
       });
     });
     afterEach(() => {
-      EXAMPLE_APP.deletedAt = null;
+      EXAMPLE_RESOURCE.deletedAt = null;
     });
 
     it('should fail to fetch a deleted resource', async () => {
@@ -1030,7 +1030,7 @@ describe('AppService', () => {
       );
     });
 
-    it('should fail to update a deleted app', async () => {
+    it('should fail to update a deleted resource', async () => {
       const args = {
         data: { name: EXAMPLE_RESOURCE_NAME },
         where: { id: EXAMPLE_RESOURCE_ID }

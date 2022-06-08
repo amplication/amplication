@@ -11,7 +11,7 @@ import { User } from 'src/models';
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
 const EXAMPLE_NAME = 'Example Connector REST API';
-const EXAMPLE_APP_ID = 'ExampleApp';
+const EXAMPLE_RESOURCE_ID = 'ExampleResource';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
@@ -112,7 +112,7 @@ describe('ConnectorRestApiService', () => {
             httpBasicAuthenticationSettings: null,
             resource: {
               connect: {
-                id: EXAMPLE_APP_ID
+                id: EXAMPLE_RESOURCE_ID
               }
             }
           }

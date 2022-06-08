@@ -11,7 +11,7 @@ import {
 } from './dto';
 import { ResourceRole } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { ResourceRoleService } from './appRole.service';
+import { ResourceRoleService } from './resourceRole.service';
 
 @Resolver(() => ResourceRole)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -60,7 +60,7 @@ export class ResourceRoleResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
+  @AuthorizeContext(AuthorizableResourceParameter.ResourceRoleId, 'where.id')
   async deleteAppRole(
     @Args() args: DeleteResourceRoleArgs
   ): Promise<ResourceRole | null> {
@@ -71,7 +71,7 @@ export class ResourceRoleResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
+  @AuthorizeContext(AuthorizableResourceParameter.ResourceRoleId, 'where.id')
   async updateAppRole(
     @Args() args: UpdateOneResourceRoleArgs
   ): Promise<ResourceRole | null> {

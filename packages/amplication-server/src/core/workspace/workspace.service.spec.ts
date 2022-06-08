@@ -95,7 +95,7 @@ const passwordServiceHashPasswordMock = jest.fn(() => {
   return EXAMPLE_NEW_PASSWORD;
 });
 
-const appCreateSampleAppMock = jest.fn();
+const resourceCreateSampleResourceMock = jest.fn();
 
 describe('WorkspaceService', () => {
   let service: WorkspaceService;
@@ -132,7 +132,7 @@ describe('WorkspaceService', () => {
         {
           provide: ResourceService,
           useClass: jest.fn().mockImplementation(() => ({
-            createSampleApp: appCreateSampleAppMock
+            createSampleResource: resourceCreateSampleResourceMock
           }))
         },
         {

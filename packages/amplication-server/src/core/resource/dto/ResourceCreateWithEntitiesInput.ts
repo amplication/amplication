@@ -5,7 +5,7 @@ import { EnumDataType } from 'src/enums/EnumDataType';
 @InputType({
   isAbstract: true
 })
-export class AppCreateWithEntitiesFieldInput {
+export class ResourceCreateWithEntitiesFieldInput {
   @Field(() => String, {
     nullable: false
   })
@@ -21,16 +21,16 @@ export class AppCreateWithEntitiesFieldInput {
 @InputType({
   isAbstract: true
 })
-export class AppCreateWithEntitiesEntityInput {
+export class ResourceCreateWithEntitiesEntityInput {
   @Field(() => String, {
     nullable: false
   })
   name!: string;
 
-  @Field(() => [AppCreateWithEntitiesFieldInput], {
+  @Field(() => [ResourceCreateWithEntitiesFieldInput], {
     nullable: false
   })
-  fields!: AppCreateWithEntitiesFieldInput[];
+  fields!: ResourceCreateWithEntitiesFieldInput[];
 
   @Field(() => [Int], {
     nullable: true
@@ -47,10 +47,10 @@ export class ResourceCreateWithEntitiesInput {
   })
   resource!: ResourceCreateInput;
 
-  @Field(() => [AppCreateWithEntitiesEntityInput], {
+  @Field(() => [ResourceCreateWithEntitiesEntityInput], {
     nullable: false
   })
-  entities!: AppCreateWithEntitiesEntityInput[];
+  entities!: ResourceCreateWithEntitiesEntityInput[];
 
   @Field(() => String, {
     nullable: false

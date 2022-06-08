@@ -10,7 +10,7 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { ConnectorRestApiModule } from './connectorRestApi/connectorRestApi.module';
 import { ConnectorRestApiCallModule } from './connectorRestApiCall/connectorRestApiCall.module';
 import { EntityPageModule } from './entityPage/entityPage.module';
-import { AppRoleModule } from './appRole/appRole.module';
+import { ResourceRoleModule } from './resourceRole/resourceRole.module';
 import { BuildModule } from './build/build.module';
 import { ActionModule } from './action/action.module';
 import { DeploymentModule } from './deployment/deployment.module';
@@ -35,7 +35,7 @@ import { GitProviderModule } from './git/git.provider.module';
     ConnectorRestApiModule,
     ConnectorRestApiCallModule,
     EntityPageModule,
-    AppRoleModule,
+    ResourceRoleModule,
     BuildModule,
     ActionModule,
     DeploymentModule,
@@ -59,7 +59,7 @@ import { GitProviderModule } from './git/git.provider.module';
     ConnectorRestApiModule,
     ConnectorRestApiCallModule,
     EntityPageModule,
-    AppRoleModule,
+    ResourceRoleModule,
     BuildModule,
     ActionModule,
     DeploymentModule,

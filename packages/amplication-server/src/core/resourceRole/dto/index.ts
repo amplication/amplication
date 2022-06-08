@@ -1,4 +1,4 @@
-export { CreateResourceRoleArgs } from './CreateAppRoleArgs';
+export { CreateResourceRoleArgs } from './CreateResourceRoleArgs';
 export { FindManyResourceRoleArgs } from './FindManyAppRoleArgs';
 export { UpdateOneResourceRoleArgs } from './UpdateOneResourceRoleArgs';
 
@@ -7,5 +7,5 @@ export { ResourceRoleFilter } from './ResourceRoleFilter';
 export { ResourceRoleOrderByInput } from './ResourceRoleOrderByInput';
 export { ResourceRoleWhereInput } from './ResourceRoleWhereInput';
 export { ResourceRoleUpdateInput } from './ResourceRoleUpdateInput';
-export { FindOneResourceRoleArgs as FindOneResourceRoleArgs } from './FindOneResourceRoleArgs';
-export { DeleteResourceRoleArgs as DeleteResourceRoleArgs } from './DeleteResourceRoleArgs';
+export { FindOneResourceRoleArgs } from './FindOneResourceRoleArgs';
+export { DeleteResourceRoleArgs } from './DeleteResourceRoleArgs';

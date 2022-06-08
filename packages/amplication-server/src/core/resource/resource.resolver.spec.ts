@@ -29,7 +29,7 @@ import {
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { UserService } from '../user/user.service';
 
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_NAME = 'exampleName';
 const EXAMPLE_DESCRIPTION = 'exampleDescription';
 const EXAMPLE_DISPLAY_NAME = 'exampleDisplayName';
@@ -48,7 +48,7 @@ const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 
-const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_BLOCK_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_VERSION_NUMBER = 1;
 
 const EXAMPLE_COMMIT: Commit = {
@@ -62,7 +62,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   id: EXAMPLE_ENVIRONMENT_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  resourceId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   name: EXAMPLE_NAME,
   address: EXAMPLE_ADDRESS
 };
@@ -70,7 +70,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   userId: EXAMPLE_USER_ID,
-  resourceId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
@@ -81,14 +81,14 @@ const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  appId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME
 };
 
-const EXAMPLE_APP: Resource = {
-  id: EXAMPLE_APP_ID,
+const EXAMPLE_RESOURCE: Resource = {
+  id: EXAMPLE_RESOURCE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
@@ -101,7 +101,7 @@ const EXAMPLE_APP: Resource = {
 const EXAMPLE_PENDING_CHANGE: PendingChange = {
   action: EnumPendingChangeAction.Create,
   resourceType: EnumPendingChangeResourceType.Entity,
-  resourceId: EXAMPLE_RESOURCE_ID,
+  resourceId: EXAMPLE_BLOCK_RESOURCE_ID,
   resource: EXAMPLE_ENTITY,
   versionNumber: EXAMPLE_VERSION_NUMBER
 };
@@ -113,9 +113,9 @@ const EXAMPLE_USER: User = {
   isOwner: true
 };
 
-const FIND_ONE_APP_QUERY = gql`
+const FIND_ONE_RESOURCE_QUERY = gql`
   query($id: String!) {
-    app(where: { id: $id }) {
+    resource(where: { id: $id }) {
       id
       createdAt
       updatedAt
@@ -125,7 +125,7 @@ const FIND_ONE_APP_QUERY = gql`
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         displayName
         pluralDisplayName
@@ -133,7 +133,7 @@ const FIND_ONE_APP_QUERY = gql`
       builds {
         id
         userId
-        appId
+        resourceId
         version
         actionId
         createdAt
@@ -143,7 +143,7 @@ const FIND_ONE_APP_QUERY = gql`
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         address
       }
@@ -152,13 +152,13 @@ const FIND_ONE_APP_QUERY = gql`
 `;
 
 const FIND_MANY_ENTITIES_QUERY = gql`
-  query($appId: String!, $entityId: String!) {
-    app(where: { id: $appId }) {
+  query($resourceId: String!, $entityId: String!) {
+    resource(where: { id: $resourceId }) {
       entities(where: { id: { equals: $entityId } }) {
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         displayName
         pluralDisplayName
@@ -168,12 +168,12 @@ const FIND_MANY_ENTITIES_QUERY = gql`
 `;
 
 const FIND_MANY_BUILDS_QUERY = gql`
-  query($appId: String!) {
-    app(where: { id: $appId }) {
+  query($resourceId: String!) {
+    resource(where: { id: $resourceId }) {
       builds {
         id
         userId
-        appId
+        resourceId
         version
         actionId
         createdAt
@@ -184,13 +184,13 @@ const FIND_MANY_BUILDS_QUERY = gql`
 `;
 
 const FIND_MANY_ENVIRONMENTS_QUERY = gql`
-  query($appId: String!) {
-    app(where: { id: $appId }) {
+  query($resourceId: String!) {
+    resource(where: { id: $resourceId }) {
       environments {
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         address
       }
@@ -198,9 +198,9 @@ const FIND_MANY_ENVIRONMENTS_QUERY = gql`
   }
 `;
 
-const CREATE_APP_MUTATION = gql`
+const CREATE_RESOURCE_MUTATION = gql`
   mutation($name: String!, $description: String!) {
-    createApp(data: { name: $name, description: $description }) {
+    createResource(data: { name: $name, description: $description }) {
       id
       createdAt
       updatedAt
@@ -210,7 +210,7 @@ const CREATE_APP_MUTATION = gql`
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         displayName
         pluralDisplayName
@@ -218,7 +218,7 @@ const CREATE_APP_MUTATION = gql`
       builds {
         id
         userId
-        appId
+        resourceId
         version
         actionId
         createdAt
@@ -228,16 +228,16 @@ const CREATE_APP_MUTATION = gql`
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         address
       }
     }
   }
 `;
-const DELETE_APP_MUTATION = gql`
+const DELETE_RESOURCE_MUTATION = gql`
   mutation($id: String!) {
-    deleteApp(where: { id: $id }) {
+    deleteResource(where: { id: $id }) {
       id
       createdAt
       updatedAt
@@ -247,7 +247,7 @@ const DELETE_APP_MUTATION = gql`
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         displayName
         pluralDisplayName
@@ -255,7 +255,7 @@ const DELETE_APP_MUTATION = gql`
       builds {
         id
         userId
-        appId
+        resourceId
         version
         actionId
         createdAt
@@ -265,16 +265,16 @@ const DELETE_APP_MUTATION = gql`
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         address
       }
     }
   }
 `;
-const UPDATE_APP_MUTATION = gql`
+const UPDATE_RESOURCE_MUTATION = gql`
   mutation($name: String!, $id: String!) {
-    updateApp(data: { name: $name }, where: { id: $id }) {
+    updateResource(data: { name: $name }, where: { id: $id }) {
       id
       createdAt
       updatedAt
@@ -284,7 +284,7 @@ const UPDATE_APP_MUTATION = gql`
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         displayName
         pluralDisplayName
@@ -292,7 +292,7 @@ const UPDATE_APP_MUTATION = gql`
       builds {
         id
         userId
-        appId
+        resourceId
         version
         actionId
         createdAt
@@ -302,7 +302,7 @@ const UPDATE_APP_MUTATION = gql`
         id
         createdAt
         updatedAt
-        appId
+        resourceId
         name
         address
       }
@@ -311,14 +311,16 @@ const UPDATE_APP_MUTATION = gql`
 `;
 
 const DISCARD_CHANGES_MUTATION = gql`
-  mutation($appId: String!) {
-    discardPendingChanges(data: { app: { connect: { id: $appId } } })
+  mutation($resourceId: String!) {
+    discardPendingChanges(data: { resource: { connect: { id: $resourceId } } })
   }
 `;
 
 const COMMIT_MUTATION = gql`
-  mutation($message: String!, $appId: String!) {
-    commit(data: { message: $message, app: { connect: { id: $appId } } }) {
+  mutation($message: String!, $resourceId: String!) {
+    commit(
+      data: { message: $message, resource: { connect: { id: $resourceId } } }
+    ) {
       id
       createdAt
       userId
@@ -328,8 +330,8 @@ const COMMIT_MUTATION = gql`
 `;
 
 const PENDING_CHANGE_QUERY = gql`
-  query($appId: String!) {
-    pendingChanges(where: { app: { id: $appId } }) {
+  query($resourceId: String!) {
+    pendingChanges(where: { resource: { id: $resourceId } }) {
       action
       resourceType
       resourceId
@@ -339,7 +341,7 @@ const PENDING_CHANGE_QUERY = gql`
           id
           createdAt
           updatedAt
-          appId
+          resourceId
           name
           displayName
           pluralDisplayName
@@ -349,17 +351,17 @@ const PENDING_CHANGE_QUERY = gql`
   }
 `;
 
-const appMock = jest.fn(() => {
-  return EXAMPLE_APP;
+const resourceMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
 });
-const createAppMock = jest.fn(() => {
-  return EXAMPLE_APP;
+const createResourceMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
 });
-const deleteAppMock = jest.fn(() => {
-  return EXAMPLE_APP;
+const deleteResourceMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
 });
-const updateAppMock = jest.fn(() => {
-  return EXAMPLE_APP;
+const updateResourceMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
 });
 const commitMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
@@ -383,7 +385,7 @@ const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
-describe('AppResolver', () => {
+describe('ResourceResolver', () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
@@ -395,10 +397,10 @@ describe('AppResolver', () => {
         {
           provide: ResourceService,
           useClass: jest.fn(() => ({
-            app: appMock,
-            createApp: createAppMock,
-            deleteApp: deleteAppMock,
-            updateApp: updateAppMock,
+            resource: resourceMock,
+            createResource: createResourceMock,
+            deleteResource: deleteResourceMock,
+            updateResource: updateResourceMock,
             commit: commitMock,
             discardPendingChanges: discardPendingChangesMock,
             getPendingChanges: getPendingChangesMock
@@ -457,18 +459,18 @@ describe('AppResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it('should find one app', async () => {
+  it('should find one resource', async () => {
     const res = await apolloClient.query({
-      query: FIND_ONE_APP_QUERY,
-      variables: { id: EXAMPLE_APP_ID }
+      query: FIND_ONE_RESOURCE_QUERY,
+      variables: { id: EXAMPLE_RESOURCE_ID }
     });
-    const args = { where: { id: EXAMPLE_APP_ID } };
+    const args = { where: { id: EXAMPLE_RESOURCE_ID } };
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      app: {
-        ...EXAMPLE_APP,
-        createdAt: EXAMPLE_APP.createdAt.toISOString(),
-        updatedAt: EXAMPLE_APP.updatedAt.toISOString(),
+      resource: {
+        ...EXAMPLE_RESOURCE,
+        createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
+        updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
         entities: [
           {
             ...EXAMPLE_ENTITY,
@@ -491,21 +493,27 @@ describe('AppResolver', () => {
         ]
       }
     });
-    expect(appMock).toBeCalledTimes(1);
-    expect(appMock).toBeCalledWith(args);
+    expect(resourceMock).toBeCalledTimes(1);
+    expect(resourceMock).toBeCalledWith(args);
   });
 
   it('should find many entities', async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_ENTITIES_QUERY,
-      variables: { appId: EXAMPLE_APP_ID, entityId: EXAMPLE_ENTITY_ID }
+      variables: {
+        resourceId: EXAMPLE_RESOURCE_ID,
+        entityId: EXAMPLE_ENTITY_ID
+      }
     });
     const args = {
-      where: { id: { equals: EXAMPLE_ENTITY_ID }, app: { id: EXAMPLE_APP_ID } }
+      where: {
+        id: { equals: EXAMPLE_ENTITY_ID },
+        resource: { id: EXAMPLE_RESOURCE_ID }
+      }
     };
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      app: {
+      resource: {
         entities: [
           {
             ...EXAMPLE_ENTITY,
@@ -522,14 +530,14 @@ describe('AppResolver', () => {
   it('should find many builds', async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_BUILDS_QUERY,
-      variables: { appId: EXAMPLE_APP_ID }
+      variables: { resourceId: EXAMPLE_RESOURCE_ID }
     });
     const args = {
-      where: { app: { id: EXAMPLE_APP_ID } }
+      where: { resource: { id: EXAMPLE_RESOURCE_ID } }
     };
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      app: {
+      resource: {
         builds: [
           {
             ...EXAMPLE_BUILD,
@@ -545,11 +553,11 @@ describe('AppResolver', () => {
   it('should find many environments', async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_ENVIRONMENTS_QUERY,
-      variables: { appId: EXAMPLE_APP_ID }
+      variables: { resourceId: EXAMPLE_RESOURCE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      app: {
+      resource: {
         environments: [
           {
             ...EXAMPLE_ENVIRONMENT,
@@ -561,13 +569,13 @@ describe('AppResolver', () => {
     });
     expect(findManyEnvironmentsMock).toBeCalledTimes(1);
     expect(findManyEnvironmentsMock).toBeCalledWith({
-      where: { app: { id: EXAMPLE_APP_ID } }
+      where: { resource: { id: EXAMPLE_RESOURCE_ID } }
     });
   });
 
-  it('should create an app', async () => {
+  it('should create an resource', async () => {
     const res = await apolloClient.query({
-      query: CREATE_APP_MUTATION,
+      query: CREATE_RESOURCE_MUTATION,
       variables: {
         name: EXAMPLE_NAME,
         description: EXAMPLE_DESCRIPTION
@@ -575,10 +583,10 @@ describe('AppResolver', () => {
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      createApp: {
-        ...EXAMPLE_APP,
-        createdAt: EXAMPLE_APP.createdAt.toISOString(),
-        updatedAt: EXAMPLE_APP.updatedAt.toISOString(),
+      createResource: {
+        ...EXAMPLE_RESOURCE,
+        createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
+        updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
         entities: [
           {
             ...EXAMPLE_ENTITY,
@@ -601,8 +609,8 @@ describe('AppResolver', () => {
         ]
       }
     });
-    expect(createAppMock).toBeCalledTimes(1);
-    expect(createAppMock).toBeCalledWith(
+    expect(createResourceMock).toBeCalledTimes(1);
+    expect(createResourceMock).toBeCalledWith(
       {
         data: {
           name: EXAMPLE_NAME,
@@ -613,19 +621,19 @@ describe('AppResolver', () => {
     );
   });
 
-  it('should delete an app', async () => {
+  it('should delete an resource', async () => {
     const res = await apolloClient.query({
-      query: DELETE_APP_MUTATION,
+      query: DELETE_RESOURCE_MUTATION,
       variables: {
-        id: EXAMPLE_APP_ID
+        id: EXAMPLE_RESOURCE_ID
       }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      deleteApp: {
-        ...EXAMPLE_APP,
-        createdAt: EXAMPLE_APP.createdAt.toISOString(),
-        updatedAt: EXAMPLE_APP.updatedAt.toISOString(),
+      deleteResource: {
+        ...EXAMPLE_RESOURCE,
+        createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
+        updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
         entities: [
           {
             ...EXAMPLE_ENTITY,
@@ -648,24 +656,26 @@ describe('AppResolver', () => {
         ]
       }
     });
-    expect(deleteAppMock).toBeCalledTimes(1);
-    expect(deleteAppMock).toBeCalledWith({ where: { id: EXAMPLE_APP_ID } });
+    expect(deleteResourceMock).toBeCalledTimes(1);
+    expect(deleteResourceMock).toBeCalledWith({
+      where: { id: EXAMPLE_RESOURCE_ID }
+    });
   });
 
-  it('should update an app', async () => {
+  it('should update an resource', async () => {
     const res = await apolloClient.query({
-      query: UPDATE_APP_MUTATION,
+      query: UPDATE_RESOURCE_MUTATION,
       variables: {
         name: EXAMPLE_NAME,
-        id: EXAMPLE_APP_ID
+        id: EXAMPLE_RESOURCE_ID
       }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      updateApp: {
-        ...EXAMPLE_APP,
-        createdAt: EXAMPLE_APP.createdAt.toISOString(),
-        updatedAt: EXAMPLE_APP.updatedAt.toISOString(),
+      updateResource: {
+        ...EXAMPLE_RESOURCE,
+        createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
+        updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
         entities: [
           {
             ...EXAMPLE_ENTITY,
@@ -688,17 +698,17 @@ describe('AppResolver', () => {
         ]
       }
     });
-    expect(updateAppMock).toBeCalledTimes(1);
-    expect(updateAppMock).toBeCalledWith({
+    expect(updateResourceMock).toBeCalledTimes(1);
+    expect(updateResourceMock).toBeCalledWith({
       data: { name: EXAMPLE_NAME },
-      where: { id: EXAMPLE_APP_ID }
+      where: { id: EXAMPLE_RESOURCE_ID }
     });
   });
 
   it('should commit', async () => {
     const res = await apolloClient.query({
       query: COMMIT_MUTATION,
-      variables: { message: EXAMPLE_MESSAGE, appId: EXAMPLE_APP_ID }
+      variables: { message: EXAMPLE_MESSAGE, resourceId: EXAMPLE_RESOURCE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -711,7 +721,7 @@ describe('AppResolver', () => {
     expect(commitMock).toBeCalledWith({
       data: {
         message: EXAMPLE_MESSAGE,
-        app: { connect: { id: EXAMPLE_APP_ID } }
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } }
       }
     });
   });
@@ -719,7 +729,7 @@ describe('AppResolver', () => {
   it('should discard pending changes', async () => {
     const res = await apolloClient.query({
       query: DISCARD_CHANGES_MUTATION,
-      variables: { appId: EXAMPLE_APP_ID }
+      variables: { resourceId: EXAMPLE_RESOURCE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -727,14 +737,14 @@ describe('AppResolver', () => {
     });
     expect(discardPendingChangesMock).toBeCalledTimes(1);
     expect(discardPendingChangesMock).toBeCalledWith({
-      data: { app: { connect: { id: EXAMPLE_APP_ID } } }
+      data: { resource: { connect: { id: EXAMPLE_RESOURCE_ID } } }
     });
   });
 
   it('should get a pending change', async () => {
     const res = await apolloClient.query({
       query: PENDING_CHANGE_QUERY,
-      variables: { appId: EXAMPLE_APP_ID }
+      variables: { resourceId: EXAMPLE_RESOURCE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -752,7 +762,7 @@ describe('AppResolver', () => {
     expect(getPendingChangesMock).toBeCalledTimes(1);
     expect(getPendingChangesMock).toBeCalledWith(
       {
-        where: { app: { id: EXAMPLE_APP_ID } }
+        where: { resource: { id: EXAMPLE_RESOURCE_ID } }
       },
       EXAMPLE_USER
     );

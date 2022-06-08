@@ -175,7 +175,7 @@ describe('BlockService', () => {
         data: {
           resource: {
             connect: {
-              id: EXAMPLE_BLOCK.appId
+              id: EXAMPLE_BLOCK.resourceId
             }
           },
           blockType: EnumBlockType[EXAMPLE_BLOCK.blockType],
@@ -195,7 +195,7 @@ describe('BlockService', () => {
         versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
         block: {
           create: {
-            app: {
+            resource: {
               connect: {
                 id: EXAMPLE_RESOURCE.id
               }
@@ -317,7 +317,7 @@ describe('BlockService', () => {
     const result = await service.update<BlockType>(
       {
         where: {
-          id: EXAMPLE_BLOCK.appId
+          id: EXAMPLE_BLOCK.resourceId
         },
         data: {
           displayName: EXAMPLE_BLOCK.displayName,
@@ -344,7 +344,7 @@ describe('BlockService', () => {
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
-          blockId: EXAMPLE_BLOCK.appId,
+          blockId: EXAMPLE_BLOCK.resourceId,
           versionNumber: INITIAL_VERSION_NUMBER
         }
       },

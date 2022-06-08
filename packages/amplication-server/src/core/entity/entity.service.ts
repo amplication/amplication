@@ -1742,7 +1742,9 @@ export class EntityService {
    * @returns entity with a name matching the given name in the given resource
    */
   private findEntityByNames(name: string, resourceId: string): Promise<Entity> {
-    return this.findFirst({ where: createEntityNamesWhereInput(name, resourceId) });
+    return this.findFirst({
+      where: createEntityNamesWhereInput(name, resourceId)
+    });
   }
 
   validateFieldMutationArgs(
@@ -2216,10 +2218,10 @@ function isUserEntity(entity: Entity): boolean {
 
 export function createEntityNamesWhereInput(
   name: string,
-  appId: string
+  resourceId: string
 ): Prisma.EntityWhereInput {
   return {
-    resourceId: appId,
+    resourceId: resourceId,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     OR: [
       {

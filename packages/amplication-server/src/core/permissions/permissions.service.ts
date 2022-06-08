@@ -181,7 +181,7 @@ export class PermissionsService {
       const matching = await this.prisma.build.count(checkByResourceParameters);
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.AppRoleId) {
+    if (resourceType === AuthorizableResourceParameter.ResourceRoleId) {
       const matching = await this.prisma.resourceRole.count(
         checkByResourceParameters
       );

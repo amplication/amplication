@@ -16,7 +16,8 @@ import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRep
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitService, EnumGitOrganizationType } from '@amplication/git-service';
 
-const GIT_REPOSITORY_EXIST = 'Git Repository already connected to an other Resource';
+const GIT_REPOSITORY_EXIST =
+  'Git Repository already connected to an other Resource';
 const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
 
 @Injectable()
@@ -59,7 +60,7 @@ export class GitProviderService {
       );
     }
 
-    return await this.connectAppGitRepository({ ...args });
+    return await this.connectResourceGitRepository({ ...args });
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<Resource> {
@@ -81,13 +82,13 @@ export class GitProviderService {
     });
   }
 
-  async connectAppGitRepository({
-    appId,
+  async connectResourceGitRepository({
+    resourceId,
     name,
     gitOrganizationId
   }: ConnectGitRepositoryInput): Promise<Resource> {
     const gitRepo = await this.prisma.gitRepository.findUnique({
-      where: { resourceId: appId }
+      where: { resourceId }
     });
 
     if (gitRepo) {
@@ -97,14 +98,14 @@ export class GitProviderService {
     await this.prisma.gitRepository.create({
       data: {
         name: name,
-        resource: { connect: { id: appId } },
+        resource: { connect: { id: resourceId } },
         gitOrganization: { connect: { id: gitOrganizationId } }
       }
     });
 
     return await this.prisma.resource.findUnique({
       where: {
-        id: appId
+        id: resourceId
       }
     });
   }

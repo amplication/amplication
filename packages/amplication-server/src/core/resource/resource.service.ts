@@ -1,4 +1,4 @@
-import { AppGenerationConfig } from '@amplication/data-service-generator';
+import { ResourceGenerationConfig } from '@amplication/data-service-generator';
 import { GitService } from '@amplication/git-service';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
@@ -20,16 +20,16 @@ import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import {
-  AppCreateWithEntitiesInput,
-  AppValidationErrorTypes,
-  AppValidationResult,
+  ResourceCreateWithEntitiesInput,
+  ResourceValidationErrorTypes,
+  ResourceValidationResult,
   CreateCommitArgs,
   CreateOneResourceArgs,
   DiscardPendingChangesArgs,
-  FindManyAppArgs,
+  FindManyResourceArgs,
   FindPendingChangesArgs,
   PendingChange,
-  UpdateOneAppArgs
+  UpdateOneResourceArgs
 } from './dto';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
@@ -183,7 +183,7 @@ export class ResourceService {
    * @param user the user to associate the created resource with
    */
   async createResourceWithEntities(
-    data: AppCreateWithEntitiesInput,
+    data: ResourceCreateWithEntitiesInput,
     user: User
   ): Promise<Resource> {
     if (
@@ -194,7 +194,7 @@ export class ResourceService {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
 
-    const existingApps = await this.prisma.resource.findMany({
+    const existingResources = await this.prisma.resource.findMany({
       where: {
         name: {
           mode: QueryMode.Insensitive,
@@ -208,14 +208,14 @@ export class ResourceService {
       }
     });
 
-    const appName = data.resource.name;
+    const resourceName = data.resource.name;
     let index = 1;
     while (
-      existingApps.find(resource => {
+      existingResources.find(resource => {
         return resource.name.toLowerCase() === data.resource.name.toLowerCase();
       })
     ) {
-      data.resource.name = `${appName}-${index}`;
+      data.resource.name = `${resourceName}-${index}`;
       index += 1;
     }
 
@@ -336,7 +336,7 @@ export class ResourceService {
     });
   }
 
-  async resources(args: FindManyAppArgs): Promise<Resource[]> {
+  async resources(args: FindManyResourceArgs): Promise<Resource[]> {
     return this.prisma.resource.findMany({
       ...args,
       where: {
@@ -346,7 +346,7 @@ export class ResourceService {
     });
   }
 
-  async deleteApp(args: FindOneArgs): Promise<Resource | null> {
+  async deleteResource(args: FindOneArgs): Promise<Resource | null> {
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: args.where.id
@@ -380,7 +380,7 @@ export class ResourceService {
     });
   }
 
-  async updateResource(args: UpdateOneAppArgs): Promise<Resource | null> {
+  async updateResource(args: UpdateOneResourceArgs): Promise<Resource | null> {
     const resource = await this.resource({
       where: {
         id: args.where.id
@@ -418,7 +418,7 @@ export class ResourceService {
     });
 
     if (isEmpty(resource)) {
-      throw new Error(`Invalid userId or appId`);
+      throw new Error(`Invalid userId or resourceId`);
     }
 
     const [changedEntities, changedBlocks] = await Promise.all([
@@ -434,11 +434,11 @@ export class ResourceService {
     skipPublish?: boolean
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
-    const appId = args.data.resource.connect.id;
+    const resourceId = args.data.resource.connect.id;
 
     const resource = await this.prisma.resource.findMany({
       where: {
-        id: appId,
+        id: resourceId,
         deletedAt: null,
         workspace: {
           users: {
@@ -451,12 +451,12 @@ export class ResourceService {
     });
 
     if (isEmpty(resource)) {
-      throw new Error(`Invalid userId or appId`);
+      throw new Error(`Invalid userId or resourceId`);
     }
 
     const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(appId, userId),
-      this.blockService.getChangedBlocks(appId, userId)
+      this.entityService.getChangedEntities(resourceId, userId),
+      this.blockService.getChangedBlocks(resourceId, userId)
     ]);
 
     /**@todo: consider discarding locked objects that have no actual changes */
@@ -525,7 +525,7 @@ export class ResourceService {
         data: {
           resource: {
             connect: {
-              id: appId
+              id: resourceId
             }
           },
           commit: {
@@ -568,7 +568,7 @@ export class ResourceService {
     });
 
     if (isEmpty(resource)) {
-      throw new Error(`Invalid userId or appId`);
+      throw new Error(`Invalid userId or resourceId`);
     }
 
     const [changedEntities, changedBlocks] = await Promise.all([
@@ -607,7 +607,9 @@ export class ResourceService {
    * @todo: Add mechanism to run validation on the server before commit and prevent commit with errors
    *
    */
-  async validateBeforeCommit(args: FindOneArgs): Promise<AppValidationResult> {
+  async validateBeforeCommit(
+    args: FindOneArgs
+  ): Promise<ResourceValidationResult> {
     const messages = [];
     let isValid = true;
 
@@ -617,7 +619,7 @@ export class ResourceService {
       }
     });
 
-    const appRepo = await this.prisma.gitRepository.findUnique({
+    const resourceRepo = await this.prisma.gitRepository.findUnique({
       where: {
         resourceId: resource.id
       }
@@ -627,21 +629,25 @@ export class ResourceService {
       throw new Error(INVALID_RESOURCE_ID);
     }
 
-    if (!appRepo) return { isValid, messages };
+    if (!resourceRepo) return { isValid, messages };
     if (!resource.githubLastSync) return { isValid, messages }; //if the repo was never synced before, skip the below validation as they are all related to GitHub sync
 
-    const config = await this.getAppGenerationConfigFromGitHub(args);
+    const config = await this.getResourceGenerationConfigFromGitHub(args);
 
     if (!config) {
       isValid = false;
-      messages.push(AppValidationErrorTypes.DataServiceGeneratorVersionMissing);
+      messages.push(
+        ResourceValidationErrorTypes.DataServiceGeneratorVersionMissing
+      );
       //since the config is empty, return immediately
       return { isValid, messages };
     }
 
     if (!config.dataServiceGeneratorVersion) {
       isValid = false;
-      messages.push(AppValidationErrorTypes.DataServiceGeneratorVersionMissing);
+      messages.push(
+        ResourceValidationErrorTypes.DataServiceGeneratorVersionMissing
+      );
     }
 
     if (
@@ -649,7 +655,9 @@ export class ResourceService {
       !semver.valid(config.dataServiceGeneratorVersion)
     ) {
       isValid = false;
-      messages.push(AppValidationErrorTypes.DataServiceGeneratorVersionInvalid);
+      messages.push(
+        ResourceValidationErrorTypes.DataServiceGeneratorVersionInvalid
+      );
     }
 
     if (
@@ -658,14 +666,14 @@ export class ResourceService {
     ) {
       isValid = false;
       messages.push(
-        AppValidationErrorTypes.CannotMergeCodeToGitHubBreakingChanges
+        ResourceValidationErrorTypes.CannotMergeCodeToGitHubBreakingChanges
       );
     }
 
     if (config?.appInfo?.id != resource.id) {
       isValid = false;
       messages.push(
-        AppValidationErrorTypes.CannotMergeCodeToGitHubInvalidAppId
+        ResourceValidationErrorTypes.CannotMergeCodeToGitHubInvalidResourceId
       );
     }
 
@@ -675,16 +683,16 @@ export class ResourceService {
     };
   }
 
-  async getAppGenerationConfigFromGitHub(
+  async getResourceGenerationConfigFromGitHub(
     args: FindOneArgs
-  ): Promise<AppGenerationConfig | null> {
+  ): Promise<ResourceGenerationConfig | null> {
     const resource = await this.resource({
       where: {
         id: args.where.id
       }
     });
 
-    const appRepository = await this.prisma.gitRepository.findFirst({
+    const resourceRepository = await this.prisma.gitRepository.findFirst({
       where: {
         resourceId: resource.id
       },
@@ -704,12 +712,12 @@ export class ResourceService {
 
     try {
       configFile = await this.gitService.getFile(
-        EnumGitProvider[appRepository.gitOrganization.provider],
-        appRepository.gitOrganization.name,
-        appRepository.name,
+        EnumGitProvider[resourceRepository.gitOrganization.provider],
+        resourceRepository.gitOrganization.name,
+        resourceRepository.name,
         RESOURCE_CONFIG_FILE_PATH,
         null,
-        appRepository.gitOrganization.installationId
+        resourceRepository.gitOrganization.installationId
       );
     } catch (error) {
       //in case the file was not found on GitHub, return null
@@ -728,10 +736,13 @@ export class ResourceService {
     return config;
   }
 
-  async reportSyncMessage(appId: string, message: string): Promise<Resource> {
+  async reportSyncMessage(
+    resourceId: string,
+    message: string
+  ): Promise<Resource> {
     const resource = await this.resource({
       where: {
-        id: appId
+        id: resourceId
       }
     });
 
@@ -742,7 +753,7 @@ export class ResourceService {
     //directly update with prisma since we don't want to expose these fields for regular updates
     return this.prisma.resource.update({
       where: {
-        id: appId
+        id: resourceId
       },
       data: {
         githubLastMessage: message,
@@ -762,9 +773,9 @@ export class ResourceService {
     });
   }
 
-  async workspace(appId: string): Promise<Workspace> {
+  async workspace(resourceId: string): Promise<Workspace> {
     return await this.prisma.resource
-      .findUnique({ where: { id: appId } })
+      .findUnique({ where: { id: resourceId } })
       .workspace();
   }
 }

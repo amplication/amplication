@@ -1,11 +1,11 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { AppUpdateInput } from './AppUpdateInput';
+import { ResourceUpdateInput } from './ResourceUpdateInput';
 import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()
-export class UpdateOneAppArgs {
-  @Field(() => AppUpdateInput, { nullable: false })
-  data!: AppUpdateInput;
+export class UpdateOneResourceArgs {
+  @Field(() => ResourceUpdateInput, { nullable: false })
+  data!: ResourceUpdateInput;
 
   @Field(() => WhereUniqueInput, { nullable: false })
   where!: WhereUniqueInput;

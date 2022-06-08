@@ -1,26 +1,25 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { AppWhereInput } from './AppWhereInput';
 
 @InputType({
   isAbstract: true,
   description: undefined
 })
-export class AppFilter {
-  @Field(() => AppWhereInput, {
+export class ResourceUpdateInput {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
-  every?: AppWhereInput | null;
+  name?: string | null;
 
-  @Field(() => AppWhereInput, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
-  some?: AppWhereInput | null;
+  description?: string | null;
 
-  @Field(() => AppWhereInput, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
-  none?: AppWhereInput | null;
+  color?: string | null;
 }

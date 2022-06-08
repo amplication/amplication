@@ -9,7 +9,7 @@ import { Resource } from 'src/models/Resource';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { AuthorizeAppWithGitResult } from '../resource/dto/AuthorizeAppWithGitResult';
+import { AuthorizeResourceWithGitResult } from '../resource/dto/AuthorizeResourceWithGitResult';
 import { ConnectGitRepositoryArgs } from './dto/args/ConnectGitRepositoryArgs';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
@@ -47,10 +47,10 @@ export class GitResolver {
     AuthorizableResourceParameter.GitOrganizationId,
     'data.gitOrganizationId'
   )
-  async connectAppGitRepository(
+  async connectResourceGitRepository(
     @Args() args: ConnectGitRepositoryArgs
   ): Promise<Resource> {
-    return await this.gitService.connectAppGitRepository(args.data);
+    return await this.gitService.connectResourceGitRepository(args.data);
   }
 
   @Mutation(() => GitOrganization)
@@ -86,14 +86,14 @@ export class GitResolver {
     return this.gitService.deleteGitOrganization(args);
   }
 
-  @Mutation(() => AuthorizeAppWithGitResult)
+  @Mutation(() => AuthorizeResourceWithGitResult)
   @InjectContextValue(
     InjectableResourceParameter.WorkspaceId,
     'data.workspaceId'
   )
-  async getGitAppInstallationUrl(
+  async getGitResourceInstallationUrl(
     @Args() args: GetGitInstallationUrlArgs
-  ): Promise<AuthorizeAppWithGitResult> {
+  ): Promise<AuthorizeResourceWithGitResult> {
     return {
       url: await this.gitService.getGitInstallationUrl(args)
     };

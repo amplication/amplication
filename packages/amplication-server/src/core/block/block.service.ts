@@ -91,12 +91,12 @@ export class BlockService {
 
   private async resolveParentBlock(
     blockId: string,
-    appId: string
+    resourceId: string
   ): Promise<Block> {
     const matchingBlocks = await this.prisma.block.findMany({
       where: {
         id: blockId,
-        appId
+      resourceId
       }
     });
     if (matchingBlocks.length === 0) {
