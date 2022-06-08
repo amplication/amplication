@@ -86,7 +86,7 @@ export class DiffService {
   }
 
   private async firstBuild(newBuildPath: string) {
-    const basePathLength=newBuildPath.length
+    const basePathLength = newBuildPath.length;
     const files = sync(`${newBuildPath}/**`).map(async (fullPath) => {
       const path = normalize(fullPath.slice(basePathLength));
       const code = await readFileSync(fullPath).toString('utf8');
