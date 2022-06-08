@@ -10,11 +10,8 @@ import { DataConflictError } from 'src/errors/DataConflictError';
 import { Prisma } from '@prisma/client';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { camelCase } from 'camel-case';
-import head from 'lodash.head';
-import last from 'lodash.last';
-import omit from 'lodash.omit';
 import difference from '@extra-set/difference';
-import { isEmpty, pick } from 'lodash';
+import { isEmpty, pick, last, head, omit } from 'lodash';
 import {
   Entity,
   EntityField,
