@@ -205,7 +205,7 @@ function ApplicationLayout({ match }: Props) {
           />
           <MenuItem
             title="App settings"
-            to={`/${application}/appSettings`}
+            to={`/${application}/appSettings/update`}
             icon="config_app"
           />
         </MainLayout.Menu>
