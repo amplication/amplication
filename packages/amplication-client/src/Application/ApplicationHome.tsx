@@ -17,7 +17,7 @@ import NewVersionTile from "./NewVersionTile";
 import OverviewTile from "./OverviewTile";
 import RolesTile from "./RolesTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
-import ViewRoadmapTile from "./ViewRoadmapTile";
+import ViewCodeViewTile from "./ViewCodeViewTile";
 
 type Props = {
   match: match<{ application: string }>;
@@ -77,7 +77,7 @@ function ApplicationHome({ match }: Props) {
                     <RolesTile applicationId={applicationId} />
                     <DocsTile />
                     <FeatureRequestTile />
-                    <ViewRoadmapTile />
+                    <ViewCodeViewTile applicationId={applicationId} />
                   </div>
                 )}
               />
