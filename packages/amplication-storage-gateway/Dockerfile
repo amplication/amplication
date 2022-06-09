@@ -33,7 +33,7 @@ RUN npm run clean -- --yes
 RUN npm run bootstrap -- -- --production --scope @amplication/storage-gateway --include-dependencies
 
 FROM base as service
-WORKDIR /app/packages/packages/amplication-storage-gateway
+WORKDIR /app/packages/amplication-storage-gateway
 # Copy all distributions and node_modules for amplication/server and its dependencies
 COPY --from=build /app/packages/amplication-storage-gateway/package.json /app/packages/amplication-storage-gateway/package.json
 COPY --from=build /app/packages/amplication-storage-gateway/node_modules /app/packages/amplication-storage-gateway/node_modules
