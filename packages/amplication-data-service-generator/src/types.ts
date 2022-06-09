@@ -20,6 +20,12 @@ export type WorkerParam = {
   appInfo: AppInfo;
 };
 
+export type CodeGenerationInput = {
+  entities: Entity[];
+  roles: Role[];
+  appInfo: AppInfo;
+};
+
 export type AppSettings = Omit<
   models.AppSettings,
   | "__typename"
