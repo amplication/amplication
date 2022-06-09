@@ -141,6 +141,8 @@ amplication-git-pull-request-service:
       GITHUB_APP_APP_ID: "176701"
 
 amplication-storage-gateway:
+  ingress:
+    hostname: server.amplication.com
   pvc:
     name: prod-efs-claim
   config:
