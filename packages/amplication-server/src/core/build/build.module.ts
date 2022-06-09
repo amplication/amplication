@@ -19,6 +19,9 @@ import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilder
 import { StorageOptionsModule } from '../storage/storage-options.module';
 import { BuildFilesSaver } from './utils';
 import { QueueModule } from '../queue/queue.module';
+import { InAppNotificationModule } from '../notifications/modules/inApp/inApp.module';
+import { IN_APP_NOTIFICATION_TOKEN } from '../notifications/contracts/inAppNotification.interface';
+import { InAppNotificationService } from '../notifications/modules/inApp/inAppNotification.service';
 
 @Module({
   imports: [
@@ -37,9 +40,18 @@ import { QueueModule } from '../queue/queue.module';
     DeploymentModule,
     forwardRef(() => AppModule),
     AppSettingsModule,
-    QueueModule
+    QueueModule,
+    InAppNotificationModule
   ],
-  providers: [BuildService, BuildResolver, BuildFilesSaver],
+  providers: [
+    BuildService, 
+    BuildResolver, 
+    BuildFilesSaver, 
+    { 
+      provide: IN_APP_NOTIFICATION_TOKEN, 
+      useClass: InAppNotificationService 
+    }
+  ],
   exports: [BuildService, BuildResolver],
   controllers: [BuildController]
 })

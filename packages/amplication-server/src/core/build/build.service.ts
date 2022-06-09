@@ -46,6 +46,11 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
 import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
+import { CODE_IS_READY } from '../notifications/constants/notificationNames';
+import {
+  IInAppNotification,
+  IN_APP_NOTIFICATION_TOKEN
+} from '../notifications/contracts/inAppNotification.interface';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -164,6 +169,8 @@ export class BuildService {
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
+    @Inject(IN_APP_NOTIFICATION_TOKEN)
+    private readonly inAppNotificationService: IInAppNotification,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -596,7 +603,15 @@ export class BuildService {
         disk.put(tarFilePath, tar)
       )
     ]);
-    return this.getFileURL(disk, tarFilePath);
+    const fileUrl = this.getFileURL(disk, tarFilePath);
+
+    await this.inAppNotificationService.pushNotification(
+      CODE_IS_READY,
+      build.userId,
+      { fileUrl }
+    );
+
+    return fileUrl;
   }
 
   private async saveToGitHub(build: Build, oldBuildId: string) {

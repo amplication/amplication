@@ -10,9 +10,7 @@ import { useQuery, gql } from "@apollo/client";
 import * as models from "../models";
 
 type TData = {
-  me: {
-    account: models.Account;
-  };
+  me: models.User;
 };
 
 const THEME_DARK = "dark";
@@ -21,7 +19,7 @@ const THEME_LIGHT = "light";
 export function Notifications() {
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext.theme === THEME_DARK;
-  const { data } = useQuery<TData>(GET_USER_ID);
+  const { data } = useQuery<TData>(AUTH_QUERY);
 
   const onNotificationClick = (notification: IMessage) => {
     navigator(notification.cta.data.url as string);
@@ -29,8 +27,10 @@ export function Notifications() {
 
   return data ? (
     <NovuProvider
-      subscriberId={data.me.account.id}
-      applicationIdentifier="{process.env.NOVU_APP_ID_FROM_ADMIN_PANEL}"
+      subscriberId={data.me.id}
+      applicationIdentifier={
+        process.env.REACT_APP_NOVU_APP_ID_FROM_ADMIN_PANEL!
+      }
     >
       <PopoverNotificationCenter
         colorScheme={isDarkMode ? THEME_DARK : THEME_LIGHT}
@@ -42,12 +42,10 @@ export function Notifications() {
   ) : null;
 }
 
-export const GET_USER_ID = gql`
-  query getUser {
+export const AUTH_QUERY = gql`
+  query auth {
     me {
-      account {
-        id
-      }
+      id
     }
   }
 `;
