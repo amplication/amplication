@@ -1,5 +1,6 @@
-{{ include "base.ingress" (list . "amplication-server.ingress") -}}
-{{- define "amplication-server.ingress" -}}
+{{- if .Values.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
 metadata:
   name: {{ .Values.name }}
   annotations:
