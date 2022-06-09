@@ -1,5 +1,5 @@
 name: amplication-git-push-webhook-service
-    
+
 replicaCount: 1
 autoscaling:
   enabled: false
@@ -23,7 +23,7 @@ minCPU: 1
 
 service:
   type: ClusterIP
-  port: 
+  port:
     target: 3000
   protocol: TCP
 

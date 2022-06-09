@@ -1,0 +1,5 @@
+{{- define "amplication-storage-gateway.ingress" -}}
+{{- end }}
+{{- if .Values.ingress.enabled }}
+{{ include "base.ingress" (list . "amplication-storage-gateway.ingress") -}}
+{{- end }}

@@ -13,7 +13,6 @@ cp-helm-charts:
       default.replication.factor: "1"
       min.insync.replicas: "1"
       auto.create.topics.enable: "true"
-      min.insync.replicas: "1"
       num.io.threads: "8"
       num.network.threads: "5"
       num.partitions: "5"
@@ -126,9 +125,8 @@ amplication-server:
       GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
       GITHUB_REDIRECT_URI: "https://server.staging.amplication-dev.com/github/callback"
-
+      CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-
 
 amplication-git-push-webhook-service:
   image:
@@ -146,7 +144,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
       PORT: "3000"
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
-
 
 amplication-git-pull-service:
   image:
@@ -173,9 +170,7 @@ amplication-git-pull-service:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull
       KAFKA_GROUP_ID: amplication-git-pull-service
-
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
-
 
 amplication-git-pull-request-service:
   image:
@@ -191,3 +186,14 @@ amplication-git-pull-request-service:
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
+
+amplication-storage-gateway:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
+    tag: "feature-add-services"
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: storage-queue-client
+      KAFKA_GROUP_ID: storage-server-group
+      CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0

@@ -89,7 +89,6 @@ amplication-git-push-webhook-service:
   ingress:
     enabled: true
     hostname: webhooks.amplication.com
-
   config:
     env:
       #KAFKA
@@ -134,6 +133,22 @@ amplication-git-pull-request-service:
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+
+      #EFS
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "176701"
+
+amplication-storage-gateway:
+  ingress:
+    hostname: server.amplication.com
+  pvc:
+    name: prod-efs-claim
+  config:
+    env:
+      #KAFKA
+      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
