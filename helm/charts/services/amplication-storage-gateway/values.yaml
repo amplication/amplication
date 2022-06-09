@@ -1,5 +1,4 @@
-name: amplication-git-pull-request-service
-
+name: amplication-storage-gateway
 
 replicaCount: 1
 autoscaling:
@@ -10,9 +9,13 @@ autoscaling:
   targetMemoryUtilizationPercentage: 80
 image:
   pullPolicy: Always
-  repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service-dev
+  repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
   tag: 0.0.1
   imagePullSecrets: []
+    
+volume:
+  name: amplication-data
+  path: /amplication-data
 
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
@@ -22,20 +25,18 @@ minMemory: "2Gi"
 maxCPU: 1
 minCPU: 1
 
-volume:
-  name: amplication-data
-  path: /amplication-data
-
 service:
   type: ClusterIP
   port:
-    target: 3000
+    target: 3002
   protocol: TCP
 
 ingress:
-  enabled: false
+  enabled: true
+  hostname: server.amplication.com
+  path: /storage
 
 pvc:
   storageRequest: 1Gi
-  storageName: efs-sc
   name: efs-claim
+  storageName: efs-sc

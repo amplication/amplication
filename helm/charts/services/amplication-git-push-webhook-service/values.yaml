@@ -29,7 +29,7 @@ service:
 
 ingress:
   enabled: true
-  hostname: webhook.amplication.com
+  hostname: https://webhook.amplication.com
 
 postgres:
   install: false
