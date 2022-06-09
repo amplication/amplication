@@ -16,12 +16,13 @@
     "test:watch": "jest --watch",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
     "generate-test-data-service": "ts-node scripts/generate-test-data-service.ts generated",
+    "generate-code": "ts-node scripts/generate-code.ts input-data.json code-generation-result",
     "update-test-data-service-snapshot": "jest -u src/tests/create-data-service.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
     "@amplication/data": "^0.13.0",
-    "@amplication/generation-core": "^0.12.7",
-    "@amplication/basic-auth-plugin": "^0.12.7",
+    "@amplication/generation-core": "^0.13.0",
+    "@amplication/basic-auth-plugin": "^0.13.0",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
     "amplication-basic-auth-plugin": "^0.0.4",

@@ -3,6 +3,7 @@ node_modules/
 coverage/
 # the generated folder is the one how created after running the generate-test-data-service script
 generated/ 
+code-generation-result/
 # *.d.ts
 *.map
 # ESLint
