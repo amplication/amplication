@@ -18,7 +18,7 @@ const AppGitStatusPanel = ({ app }: Props) => {
   const gitRepositoryFullName = `${app.gitRepository?.gitOrganization.name}/${app.gitRepository?.name}`;
   const repoUrl = `https://github.com/${gitRepositoryFullName}`;
 
-  const lastSync = app.githubLastSync;
+  const lastSync = new Date(app.githubLastSync);
 
   return (
     <div className={CLASS_NAME}>
