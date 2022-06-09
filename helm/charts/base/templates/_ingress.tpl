@@ -5,6 +5,7 @@ metadata:
   name: {{ .Values.name }}
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
   - host: {{ .Values.ingress.hostname }}  
@@ -13,11 +14,11 @@ spec:
       - backend:
           serviceName: {{ .Values.name }}
           servicePort: http
-        path: /
+        path: {{ .Values.ingress.path }}
       - backend:
           serviceName: {{ .Values.name }}
           servicePort: https
-        path: /
+        path: {{ .Values.ingress.path }}
   {{- if hasKey .Values.ingress "hostname_production" }}
   - host: {{ .Values.ingress.hostname_production }}  
     http:
@@ -25,11 +26,11 @@ spec:
       - backend:
           serviceName: {{ .Values.name }}
           servicePort: http
-        path: /
+        path: {{ .Values.ingress.path }}
       - backend:
           serviceName: {{ .Values.name }}
           servicePort: https
-        path: /
+        path: {{ .Values.ingress.path }}
   {{- end }}
 {{- end }}
 {{- define "base.ingress" -}}
