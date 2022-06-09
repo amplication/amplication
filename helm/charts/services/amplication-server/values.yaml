@@ -24,7 +24,7 @@ service:
   protocol: TCP
 ingress:
   enabled: true
-  hostname: server.amplication-dev.com
+  hostname: server.amplication.com
 
 secrets:
   GPC: ""

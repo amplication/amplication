@@ -1,5 +1,34 @@
-{{- define "amplication-git-push-webhook-service.ingress" -}}
-{{- end }}
-{{- if .Values.ingress.enabled }}
 {{ include "base.ingress" (list . "amplication-git-push-webhook-service.ingress") -}}
+{{- define "amplication-git-push-webhook-service.ingress" -}}
+metadata:
+  name: {{ .Values.name }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: {{ .Values.ingress.hostname }}  
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .Values.name }}
+          servicePort: http
+        path: /
+      - backend:
+          serviceName: {{ .Values.name }}
+          servicePort: https
+        path: /
+  {{- if hasKey .Values.ingress "hostname_production" }}
+  - host: {{ .Values.ingress.hostname_production }}  
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .Values.name }}
+          servicePort: http
+        path: /
+      - backend:
+          serviceName: {{ .Values.name }}
+          servicePort: https
+        path: /
+  {{- end }}
 {{- end }}
+

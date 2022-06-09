@@ -34,7 +34,7 @@ service:
 
 ingress:
   enabled: false
-
+  
 pvc:
   storageRequest: 1Gi
   storageName: efs-sc

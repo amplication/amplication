@@ -89,6 +89,7 @@ amplication-git-push-webhook-service:
   ingress:
     enabled: true
     hostname: webhooks.amplication.com
+
   config:
     env:
       #KAFKA
