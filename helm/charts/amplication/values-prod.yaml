@@ -155,3 +155,5 @@ amplication-storage-gateway:
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
+
+      REACT_APP_STORAGE_GATEWAY_URL: https://server.amplication.com
