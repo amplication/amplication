@@ -1,10 +1,9 @@
-import { Controller } from "@nestjs/common";
-import { MessagePattern, Payload } from "@nestjs/microservices";
-import { EnvironmentVariables } from "../../services/environmentVariables";
-import { GitPullEventService } from "./gitPullEvent.service";
+import { Controller } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { EnvironmentVariables } from '../../services/environmentVariables';
+import { GitPullEventService } from './gitPullEvent.service';
 
-const KAFKA_REPOSITORY_PUSH_QUEUE = "KAFKA_REPOSITORY_PUSH_QUEUE";
-
+const KAFKA_REPOSITORY_PUSH_QUEUE = 'KAFKA_REPOSITORY_PUSH_QUEUE';
 
 @Controller()
 export class GitPullEventController {

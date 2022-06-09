@@ -133,12 +133,30 @@ const Content = ({ children }: ContentProps) => {
 
 MainLayout.Content = Content;
 
+export enum EnumMainLayoutAsidePosition {
+  left = "left",
+  right = "right",
+}
+
 type AsideProps = {
   children?: React.ReactNode;
+  position?: EnumMainLayoutAsidePosition;
 };
 
-const Aside = ({ children }: AsideProps) => {
-  return <div className="main-layout__aside">{children}</div>;
+const Aside = ({
+  children,
+  position = EnumMainLayoutAsidePosition.right,
+}: AsideProps) => {
+  return (
+    <div
+      className={classNames(
+        "main-layout__aside",
+        `main-layout__aside--position-${position.toString()}`
+      )}
+    >
+      {children}
+    </div>
+  );
 };
 
 MainLayout.Aside = Aside;
