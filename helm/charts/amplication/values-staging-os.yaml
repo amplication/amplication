@@ -121,7 +121,7 @@ amplication-git-pull-request-service:
 
 amplication-storage-gateway:
   ingress:
-    hostname: server.staging-os.amplication.com
+    hostname: server.staging-os.amplication-dev.com
   pvc:
     name: staging-os-efs-claim
   config:
