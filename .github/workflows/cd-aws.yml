@@ -181,6 +181,9 @@ jobs:
 
           SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
           SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
+
+          SECRETS+=" -p amplication-storage-gateway.secrets.JWT_SECRET_KEY=$JWT_SECRET"
+
           set +e
           Get_app="$(argocd app list)"
           if [[ ! -z "$Get_app" ]]
