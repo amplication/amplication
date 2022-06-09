@@ -1,9 +1,8 @@
+import { Prisma, PrismaService } from '@amplication/prisma-db';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
-import { PrismaService } from 'nestjs-prisma';
-import { User, UserRole, Account } from 'src/models';
 import { Role } from 'src/enums/Role';
-import { Prisma } from '@prisma/client';
+import { Account, User, UserRole } from 'src/models';
+import { UserService } from './user.service';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_ROLE_ID = 'exampleRoleId';

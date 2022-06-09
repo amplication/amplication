@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
-import { PrismaService } from 'nestjs-prisma';
 import { JsonValue } from 'type-fest';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaService } from '@amplication/prisma-db';
 import {
   Action,
   ActionStep,
