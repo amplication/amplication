@@ -25,7 +25,7 @@ export class StorageService {
     appId: string,
     buildId: string
   ) {
-    return join(buildsFolder, "builds", appId, buildId);
+    return join(buildsFolder, appId, buildId);
   }
 
   getBuildFilesList(appId: string, buildId: string, relativePath: string = "") {
@@ -36,6 +36,7 @@ export class StorageService {
       appId,
       buildId
     )}/${relativePath || ""}`;
+
     console.log(`Current working directory is ${cwd}`);
 
     const files = sync(`*`, {
