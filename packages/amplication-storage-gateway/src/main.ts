@@ -35,6 +35,11 @@ async function main() {
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
+  // Cors
+  if (process.env.CORS_ENABLE === "1") {
+    app.enableCors();
+  }
+
   void app.listen(PORT);
 
   return app;
