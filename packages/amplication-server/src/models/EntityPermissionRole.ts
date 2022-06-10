@@ -35,10 +35,10 @@ export class EntityPermissionRole {
   @Field(() => String, {
     nullable: false
   })
-  appRoleId!: string;
+  resourceRoleId!: string;
 
   @Field(() => ResourceRole, {
     nullable: false
   })
-  appRole: ResourceRole;
+  resourceRole: ResourceRole;
 }

@@ -99,7 +99,7 @@ export type BulkEntityFieldData = Omit<
 
 export type BulkEntityData = Omit<
   Entity,
-  'id' | 'createdAt' | 'updatedAt' | 'resoucrId' | 'resource' | 'fields'
+  'id' | 'createdAt' | 'updatedAt' | 'resourceId' | 'resource' | 'fields'
 > & {
   id?: string;
   fields: BulkEntityFieldData[];
@@ -153,7 +153,7 @@ const NON_COMPARABLE_PROPERTIES = [
   'commitId',
   'permissionId',
   'entityVersionId',
-  'appRoleId'
+  'resourceRoleId'
 ];
 
 @Injectable()
@@ -314,8 +314,8 @@ export class EntityService {
     return newEntity;
   }
 
-  async createDefaultEntities(appId: string, user: User): Promise<void> {
-    return this.bulkCreateEntities(appId, user, DEFAULT_ENTITIES);
+  async createDefaultEntities(resourceId: string, user: User): Promise<void> {
+    return this.bulkCreateEntities(resourceId, user, DEFAULT_ENTITIES);
   }
 
   /**
@@ -1010,7 +1010,7 @@ export class EntityService {
           permissionRoles: {
             create: permission.permissionRoles.map(permissionRole => {
               return {
-                appRole: {
+                resourceRole: {
                   connect: {
                     id: permissionRole.resourceRoleId
                   }
@@ -1058,10 +1058,10 @@ export class EntityService {
                     connect: permissionField.permissionRoles.map(fieldRole => {
                       return {
                         // eslint-disable-next-line @typescript-eslint/naming-convention
-                        entityVersionId_action_appRoleId: {
+                        entityVersionId_action_resourceRoleId: {
                           action: fieldRole.action,
                           entityVersionId: targetVersionId,
-                          appRoleId: fieldRole.appRoleId
+                          resourceRoleId: fieldRole.resourceRoleId
                         }
                       };
                     })
@@ -1232,7 +1232,7 @@ export class EntityService {
         if (!isEmpty(args.data.addRoles)) {
           const createMany = args.data.addRoles.map(role => {
             return {
-              appRole: {
+              resourceRole: {
                 connect: {
                   id: role.id
                 }
@@ -1263,7 +1263,7 @@ export class EntityService {
           promises.push(
             this.prisma.entityPermissionRole.deleteMany({
               where: {
-                appRoleId: {
+                resourceRoleId: {
                   in: args.data.deleteRoles.map(role => role.id)
                 }
               }
@@ -1542,7 +1542,7 @@ export class EntityService {
           field: true,
           permissionRoles: {
             include: {
-              appRole: true
+              resourceRole: true
             }
           }
         }
@@ -1678,7 +1678,10 @@ export class EntityService {
 
     if (dataType === EnumDataType.Lookup || dataType === null) {
       // Find an entity with the field's display name
-      const relatedEntity = await this.findEntityByNames(name, entity.appId);
+      const relatedEntity = await this.findEntityByNames(
+        name,
+        entity.resourceId
+      );
       // If found attempt to create a lookup field
       if (relatedEntity) {
         // The created field would be multiple selection if its name is equal to

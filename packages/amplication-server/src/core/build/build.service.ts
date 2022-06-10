@@ -78,7 +78,7 @@ export const ENTITIES_INCLUDE = {
     include: {
       permissionRoles: {
         include: {
-          appRole: true
+          resourceRole: true
         }
       },
       permissionFields: {
@@ -86,7 +86,7 @@ export const ENTITIES_INCLUDE = {
           field: true,
           permissionRoles: {
             include: {
-              appRole: true
+              resourceRole: true
             }
           }
         }

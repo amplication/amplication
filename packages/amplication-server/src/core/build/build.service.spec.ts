@@ -311,7 +311,7 @@ const EXAMPLE_ENTITIES: Entity[] = [
     id: 'EXAMPLE_SECOND_ID',
     createdAt: new Date('2020-02-17 18:20:20'),
     updatedAt: new Date(),
-    appId: 'exampleAppId',
+    resourceId: 'exampleResourceId',
     name: EXAMPLE_SECOND_ENTITY_NAME,
     displayName: 'Second entity',
     pluralDisplayName: 'Second entity plural display name'
@@ -320,7 +320,7 @@ const EXAMPLE_ENTITIES: Entity[] = [
     id: 'EXAMPLE_FIRST_ID',
     createdAt: new Date('2020-02-10 18:20:20'), //created first
     updatedAt: new Date(),
-    appId: 'exampleAppId',
+    resourceId: 'exampleResourceId',
     name: EXAMPLE_FIRST_ENTITY_NAME,
     displayName: 'First entity',
     pluralDisplayName: 'First entity plural display name'
