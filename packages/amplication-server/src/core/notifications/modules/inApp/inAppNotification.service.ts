@@ -14,7 +14,7 @@ export class InAppNotificationService implements IInAppNotification {
     notificationName: string,
     userId: string,
     payload: { [key: string]: any }
-  ): Promise<void> {    
+  ): Promise<void> {
     const novu = new Novu(process.env.NOVU_API_KEY);
     try {
       await novu.trigger(notificationName, {
@@ -23,7 +23,7 @@ export class InAppNotificationService implements IInAppNotification {
         },
         payload
       });
-      this.logger.info(`payload ${{...payload}}`);
+      this.logger.info(`payload ${{ ...payload }}`);
     } catch (err) {
       this.logger.error(`Error form Novu ${err}`);
       throw new Error('Novu notification failed');

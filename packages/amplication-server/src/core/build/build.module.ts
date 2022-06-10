@@ -44,12 +44,12 @@ import { InAppNotificationService } from '../notifications/modules/inApp/inAppNo
     InAppNotificationModule
   ],
   providers: [
-    BuildService, 
-    BuildResolver, 
-    BuildFilesSaver, 
-    { 
-      provide: IN_APP_NOTIFICATION_TOKEN, 
-      useClass: InAppNotificationService 
+    BuildService,
+    BuildResolver,
+    BuildFilesSaver,
+    {
+      provide: IN_APP_NOTIFICATION_TOKEN,
+      useClass: InAppNotificationService
     }
   ],
   exports: [BuildService, BuildResolver],
