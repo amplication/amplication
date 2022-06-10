@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { IInAppNotification } from '../../contracts/inAppNotification.interface';
 import { Novu } from '@novu/node';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -23,10 +23,16 @@ export class InAppNotificationService implements IInAppNotification {
         },
         payload
       });
-      this.logger.info(`payload ${{ ...payload }}`);
+      this.logger.info(
+        `in-app notification: ${notificationName} was triggered with the payload: ${{
+          ...payload
+        }}`
+      );
     } catch (err) {
       this.logger.error(`Error form Novu ${err}`);
-      throw new Error('Novu notification failed');
+      throw new BadRequestException(
+        `'Novu notification failed with the error: ${err}`
+      );
     }
   }
 }
