@@ -102,7 +102,7 @@ describe('AppRoleService', () => {
       data: { displayName: EXAMPLE_APP_ROLE_DISPLAY_NAME },
       where: { id: EXAMPLE_APP_ROLE_ID }
     };
-    expect(await service.updateAppRole(args)).toEqual(EXAMPLE_APP_ROLE);
+    expect(await service.updateResourceRole(args)).toEqual(EXAMPLE_APP_ROLE);
     expect(prismaAppRoleUpdateMock).toBeCalledTimes(1);
     expect(prismaAppRoleUpdateMock).toBeCalledWith(args);
   });

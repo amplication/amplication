@@ -50,7 +50,7 @@ export class ResourceRoleResolver {
     AuthorizableResourceParameter.ResourceId,
     'data.resource.connect.id'
   )
-  async createAppRole(
+  async createResourceRole(
     @Args() args: CreateResourceRoleArgs
   ): Promise<ResourceRole> {
     return this.resourceRoleService.createResourceRole(args);
@@ -61,7 +61,7 @@ export class ResourceRoleResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceRoleId, 'where.id')
-  async deleteAppRole(
+  async deleteResourceRole(
     @Args() args: DeleteResourceRoleArgs
   ): Promise<ResourceRole | null> {
     return this.resourceRoleService.deleteResourceRole(args);
@@ -72,9 +72,9 @@ export class ResourceRoleResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceRoleId, 'where.id')
-  async updateAppRole(
+  async updateResourceRole(
     @Args() args: UpdateOneResourceRoleArgs
   ): Promise<ResourceRole | null> {
-    return this.resourceRoleService.updateAppRole(args);
+    return this.resourceRoleService.updateResourceRole(args);
   }
 }

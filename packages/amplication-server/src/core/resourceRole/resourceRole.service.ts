@@ -33,7 +33,7 @@ export class ResourceRoleService {
     return this.prisma.resourceRole.delete(args);
   }
 
-  async updateAppRole(
+  async updateResourceRole(
     args: UpdateOneResourceRoleArgs
   ): Promise<ResourceRole | null> {
     return this.prisma.resourceRole.update(args);

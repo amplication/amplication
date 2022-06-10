@@ -1066,9 +1066,9 @@ type Mutation {
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createBuild(data: BuildCreateInput!): Build!
-  createAppRole(data: ResourceRoleCreateInput!): ResourceRole!
-  deleteAppRole(where: WhereUniqueInput!): ResourceRole
-  updateAppRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
+  deleteResourceRole(where: WhereUniqueInput!): ResourceRole
+  updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   createDeployment(data: DeploymentCreateInput!): Deployment!
   updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   signup(data: SignupInput!): Auth!
