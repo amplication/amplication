@@ -55,6 +55,8 @@ import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
+import { InAppNotificationService } from '../notifications/modules/inApp/inAppNotification.service';
+import { IN_APP_NOTIFICATION_TOKEN } from '../notifications/contracts/inAppNotification.interface';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -547,6 +549,10 @@ describe('BuildService', () => {
           useValue: {
             emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
           }
+        },
+        {
+          provide: IN_APP_NOTIFICATION_TOKEN,
+          useClass: InAppNotificationService
         }
       ]
     }).compile();
