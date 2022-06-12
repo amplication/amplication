@@ -10,7 +10,7 @@ postgres:
 
 amplication-client:
   service:
-    hostname: app.shimi.amplication-dev.com
+    hostname: app-shimi.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
   config:
     env:
