@@ -116,3 +116,14 @@ amplication-git-pull-request-service:
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "208482"
+
+amplication-storage-gateway:
+  ingress:
+    hostname: server-shimi.amplication-dev.com
+  pvc:
+    name: shimi-efs-claim
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-shimi-cp-kafka-headless:9092"]'
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      GITHUB_APP_APP_ID: "208482"
