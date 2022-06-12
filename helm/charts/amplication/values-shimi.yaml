@@ -1,12 +1,12 @@
 cp-helm-charts:
-  enabled: false
+  enabled: true
   cp-kafka:
-    enabled: false
+    enabled: true
   cp-zookeeper:
-    enabled: false
+    enabled: true
 
 postgres:
-  install: false
+  install: true
 
 amplication-client:
   service:
