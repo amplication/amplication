@@ -55,8 +55,8 @@ import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
-import { InAppNotificationService } from '../notifications/modules/inApp/inAppNotification.service';
-import { IN_APP_NOTIFICATION_TOKEN } from '../notifications/contracts/inAppNotification.interface';
+import { IInAppNotification, IN_APP_NOTIFICATION_TOKEN } from '../notifications/contracts/inAppNotification.interface';
+import { mock } from 'jest-mock-extended';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -552,7 +552,7 @@ describe('BuildService', () => {
         },
         {
           provide: IN_APP_NOTIFICATION_TOKEN,
-          useClass: InAppNotificationService
+          useValue: mock<IInAppNotification>()
         }
       ]
     }).compile();
