@@ -21,19 +21,19 @@ COPY packages/amplication-storage-gateway packages/amplication-storage-gateway
 COPY packages/amplication-kafka packages/amplication-kafka
 
 # Installs all copied package node_modules ; Preparation for build
-RUN npm run bootstrap -- --scope @amplication/packages/amplication-storage-gateway --include-dependencies
+RUN npm run bootstrap -- --scope @amplication/storage-gateway --include-dependencies
 
 # Build all distributions needed for amplication/storage-gateway
-RUN npm run build -- --scope @amplication/packages/amplication-storage-gateway --include-dependencies
+RUN npm run build -- --scope @amplication/storage-gateway --include-dependencies
 
 # Removes packages/*/node_modules
 # https://github.com/lerna/lerna/issues/2196#issuecomment-994882795
 RUN npm run clean -- --yes
 # Rebuild production node_modules
-RUN npm run bootstrap -- -- --production --scope @amplication/packages/amplication-storage-gateway --include-dependencies
+RUN npm run bootstrap -- -- --production --scope @amplication/storage-gateway --include-dependencies
 
 FROM base as service
-WORKDIR /app/packages/packages/amplication-storage-gateway
+WORKDIR /app/packages/amplication-storage-gateway
 # Copy all distributions and node_modules for amplication/server and its dependencies
 COPY --from=build /app/packages/amplication-storage-gateway/package.json /app/packages/amplication-storage-gateway/package.json
 COPY --from=build /app/packages/amplication-storage-gateway/node_modules /app/packages/amplication-storage-gateway/node_modules

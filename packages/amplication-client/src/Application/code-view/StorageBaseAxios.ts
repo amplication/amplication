@@ -24,7 +24,7 @@ export class StorageBaseAxios {
       throw new Error("Jwt token is missing");
     }
     this.axios = axios.create({
-      baseURL: `${REACT_APP_STORAGE_GATEWAY_URL}/api/storage`,
+      baseURL: `${REACT_APP_STORAGE_GATEWAY_URL}/storage`,
       headers: { Authorization: `Bearer ${token}` },
     });
   }
