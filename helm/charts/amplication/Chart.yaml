@@ -33,6 +33,9 @@ dependencies:
 - name: amplication-storage-gateway
   version: "0.1.0"
   repository: "file://../services/amplication-storage-gateway"
+- name: infra
+  version: "0.1.0"
+  repository: "file://../infra"  
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives

@@ -1,0 +1,4 @@
+pvc:
+  name: efs-claim
+  storageRequest: 1Gi
+  storageName: efs-sc

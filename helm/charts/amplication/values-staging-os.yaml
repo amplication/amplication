@@ -129,3 +129,7 @@ amplication-storage-gateway:
       KAFKA_BROKERS: '["b-2.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplication-useast1-s.0ne4zw.c22.kafka.us-east-1.amazonaws.com:9092"]'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
+
+infra:
+  pvc:
+    name: staging-os-efs-claim

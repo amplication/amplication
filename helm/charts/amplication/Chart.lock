@@ -26,5 +26,8 @@ dependencies:
 - name: amplication-storage-gateway
   repository: file://../services/amplication-storage-gateway
   version: 0.1.0
-digest: sha256:3ef9163bc8b61090c5f39d364eb18de269d8f7d4a211d12763453c8367d3688f
-generated: "2022-06-08T15:39:27.570568+03:00"
+- name: infra
+  repository: file://../infra
+  version: 0.1.0
+digest: sha256:1ac728e0fae86c4f075906b787892276fa9884acd8aa4a2ff7beeecaaa8f594a
+generated: "2022-06-12T10:17:02.323561+03:00"

@@ -38,11 +38,6 @@ minMemory: "2Gi"
 maxCPU: 1
 minCPU: 1
 
-pvc:
-  storageLimit: 5Gi
-  storageRequest: 1Gi
-  storageName: efs-sc
-  name: efs-claim
 
 # Postgresql Server
 postgres:
