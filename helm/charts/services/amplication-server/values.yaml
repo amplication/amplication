@@ -25,6 +25,7 @@ service:
 ingress:
   enabled: true
   hostname: server.amplication.com
+  path: /
 
 secrets:
   GPC: ""
