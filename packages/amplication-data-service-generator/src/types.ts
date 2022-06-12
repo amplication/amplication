@@ -144,7 +144,3 @@ export type Module = {
   code: string;
 };
 
-export type AppGenerationConfig = {
-  dataServiceGeneratorVersion: string;
-  appInfo: AppInfo;
-};
