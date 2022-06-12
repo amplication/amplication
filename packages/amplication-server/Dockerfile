@@ -23,6 +23,8 @@ COPY packages/amplication-data packages/amplication-data
 COPY packages/amplication-data-service-generator packages/amplication-data-service-generator
 COPY packages/amplication-deployer packages/amplication-deployer
 COPY packages/amplication-git-service packages/amplication-git-service
+COPY packages/amplication-prisma-db packages/amplication-prisma-db
+COPY packages/amplication-kafka packages/amplication-kafka
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/server --include-dependencies
@@ -44,7 +46,6 @@ COPY --from=build /app/packages/amplication-server/package.json /app/packages/am
 COPY --from=build /app/packages/amplication-server/node_modules /app/packages/amplication-server/node_modules
 COPY --from=build /app/packages/amplication-server/dist /app/packages/amplication-server/dist
 
-COPY --from=build /app/packages/amplication-server/prisma /app/packages/amplication-server/prisma
 COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
 
 
@@ -67,6 +68,16 @@ COPY --from=build /app/packages/amplication-deployer/dist /app/packages/amplicat
 COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
 COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
 COPY --from=build /app/packages/amplication-git-service/dist /app/packages/amplication-git-service/dist
+
+
+COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
+COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules
+COPY --from=build /app/packages/amplication-prisma-db/lib /app/packages/amplication-prisma-db/lib
+COPY --from=build /app/packages/amplication-prisma-db/prisma /app/packages/amplication-prisma-db/prisma   
+
+COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
+COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
+COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]

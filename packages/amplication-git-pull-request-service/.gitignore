@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+.env.local
+.eslintcache
+builds/
