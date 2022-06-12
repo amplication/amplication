@@ -133,10 +133,9 @@ function GenerationSettingsForm({ match }: Props) {
               <Form>
                 <h3>APIs Admin UI Settings</h3>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-                  vulputate libero et velit interdum, ac aliquet odio mattis.
-                  Class aptent taciti sociosqu ad litora torquent per conubia
-                  nostra, per inceptos himenaeos.
+                  Amplication gives you the choice of which components to
+                  generate. Use the settings to include or exclude GraphQL API,
+                  REST API, and Admin UI.
                 </p>
                 <FormikAutoSave debounceMS={2000} />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
