@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@amplication/prisma-db';
 import { GqlAuthModule } from 'src/guards/gql-auth.module';
 import { EntityModule } from 'src/core/entity/entity.module';
 import { PermissionsModule } from 'src/core/permissions/permissions.module';
@@ -17,8 +17,8 @@ import { ActionModule } from '../action/action.module';
 import { DeploymentModule } from '../deployment/deployment.module';
 import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilderRoot.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
-import { GitModule } from '@amplication/git-service';
-// eslint-disable-next-line import/no-cycle
+import { BuildFilesSaver } from './utils';
+import { QueueModule } from '../queue/queue.module';
 
 @Module({
   imports: [
@@ -35,11 +35,11 @@ import { GitModule } from '@amplication/git-service';
     ContainerBuilderRootModule,
     StorageOptionsModule,
     DeploymentModule,
-    GitModule,
     forwardRef(() => AppModule),
-    AppSettingsModule
+    AppSettingsModule,
+    QueueModule
   ],
-  providers: [BuildService, BuildResolver],
+  providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],
   controllers: [BuildController]
 })

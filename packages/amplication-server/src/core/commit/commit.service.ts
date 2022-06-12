@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { FindOneCommitArgs } from './dto/FindOneCommitArgs';
 import { FindManyCommitArgs } from './dto/FindManyCommitArgs';
 import { Commit } from 'src/models';
