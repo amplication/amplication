@@ -9,4 +9,5 @@ secrets/
 lib/
 *.tgz
 values-secret*
+dist/
 packages/.server-id

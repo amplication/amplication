@@ -52,7 +52,7 @@ const MenuItemWithFixedPanel = ({
             direction={DIRECTION}
             noDelay
           >
-            <Button buttonStyle={EnumButtonStyle.Clear} onClick={handleClick}>
+            <Button buttonStyle={EnumButtonStyle.Text} onClick={handleClick}>
               <Icon icon={icon as string} size={ICON_SIZE} />
             </Button>
             {badgeValue && (
