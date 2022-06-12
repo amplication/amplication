@@ -47,8 +47,8 @@ pvc:
 # Postgresql Server
 postgres:
   install: false
-  postgresqlUsername: postgres
-  postgresPassword: postgres
+  auth:
+    postgresPassword: postgres
   db: amplication
   fullnameOverride: postgresql
   postgresql:
