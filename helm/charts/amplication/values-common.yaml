@@ -193,6 +193,8 @@ amplication-storage-gateway:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
     tag: "release-0-13-1"
+  ingress:
+    hostname: server.staging.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
