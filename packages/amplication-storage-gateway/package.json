@@ -16,7 +16,7 @@
     "docker:build": "docker build ."
   },
   "dependencies": {
-    "@amplication/kafka": "^0.12.2",
+    "@amplication/kafka": "^0.13.0",
     "@nestjs/common": "8.4.4",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "8.2.3",
@@ -28,7 +28,7 @@
     "@nestjs/serve-static": "2.2.2",
     "@nestjs/swagger": "5.1.5",
     "apollo-server-express": "3.5.0",
-    "bcrypt": "5.0.1",
+    "bcrypt": "5.0.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
     "glob": "8.0.1",
