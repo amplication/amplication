@@ -25,34 +25,35 @@ const EXAMPLE_APP_NAME = 'exampleAppName';
 const EXAMPLE_APP_DESCRIPTION = 'exampleAppDescription';
 
 const EXAMPLE_EMAIL = 'exampleEmail';
+const timeNow = new Date();
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: timeNow,
+  updatedAt: timeNow,
   isOwner: true
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
   id: EXAMPLE_WORKSPACE_ID,
   name: EXAMPLE_WORKSPACE_NAME,
-  createdAt: new Date(),
-  updatedAt: new Date()
+  createdAt: timeNow,
+  updatedAt: timeNow
 };
 
 const EXAMPLE_INVITATION: Invitation = {
   id: EXAMPLE_APP_ID,
   email: 'example@email.com',
-  createdAt: new Date(),
-  updatedAt: new Date()
+  createdAt: timeNow,
+  updatedAt: timeNow
 };
 
 const EXAMPLE_APP: App = {
   id: EXAMPLE_APP_ID,
   name: EXAMPLE_APP_NAME,
   description: EXAMPLE_APP_DESCRIPTION,
-  createdAt: new Date(),
-  updatedAt: new Date()
+  createdAt: timeNow,
+  updatedAt: timeNow
 };
 
 const GET_WORKSPACE_QUERY = gql`
@@ -176,13 +177,8 @@ describe('WorkspaceResolver', () => {
       variables: { id: EXAMPLE_WORKSPACE_ID }
     });
     expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      workspace: {
-        ...EXAMPLE_WORKSPACE,
-        createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString()
-      }
-    });
+    expect(res.data.workspace.id).toEqual(EXAMPLE_WORKSPACE.id);
+    expect(res.data.workspace.name).toEqual(EXAMPLE_WORKSPACE.name);
     expect(workspaceServiceGetWorkspaceMock).toBeCalledTimes(1);
     expect(workspaceServiceGetWorkspaceMock).toBeCalledWith({
       where: { id: EXAMPLE_WORKSPACE_ID }

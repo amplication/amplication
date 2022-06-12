@@ -12,13 +12,13 @@ type Props = {
 };
 
 const CLASS_NAME = "app-git-status-panel";
-const DATE_FORMAT = "P p";
+const DATE_FORMAT = "PP p";
 
 const AppGitStatusPanel = ({ app }: Props) => {
   const gitRepositoryFullName = `${app.gitRepository?.gitOrganization.name}/${app.gitRepository?.name}`;
   const repoUrl = `https://github.com/${gitRepositoryFullName}`;
 
-  const lastSync = app.githubLastSync;
+  const lastSync = new Date(app.githubLastSync);
 
   return (
     <div className={CLASS_NAME}>
@@ -56,7 +56,7 @@ const AppGitStatusPanel = ({ app }: Props) => {
                 aria-label={`Last sync: ${format(lastSync, DATE_FORMAT)}`}
               >
                 <span>Last sync </span>
-                {format(lastSync, "PP p")}
+                {format(lastSync, DATE_FORMAT)}
               </Tooltip>
             </div>
           )}

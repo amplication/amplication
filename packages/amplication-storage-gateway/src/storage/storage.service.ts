@@ -16,6 +16,7 @@ export class StorageService {
   constructor(configService: ConfigService) {
     const buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
     assert(buildsFolder);
+    console.log(`BASE_BUILDS_FOLDER ENV is ${buildsFolder}`);
     this.buildsFolder = buildsFolder;
   }
 
@@ -24,7 +25,7 @@ export class StorageService {
     appId: string,
     buildId: string
   ) {
-    return join(buildsFolder, "builds", appId, buildId);
+    return join(buildsFolder, appId, buildId);
   }
 
   getBuildFilesList(appId: string, buildId: string, relativePath: string = "") {
@@ -35,6 +36,9 @@ export class StorageService {
       appId,
       buildId
     )}/${relativePath || ""}`;
+
+    console.log(`Current working directory is ${cwd}`);
+
     const files = sync(`*`, {
       nodir: true,
       dot: true,

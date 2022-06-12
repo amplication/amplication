@@ -1,3 +1,0 @@
-{{ include "base.statefulset" (list . "amplication-server.statefulset") -}}
-{{- define "amplication-server.statefulset" -}}
-{{- end }}

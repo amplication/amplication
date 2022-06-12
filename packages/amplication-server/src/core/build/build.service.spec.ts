@@ -404,6 +404,10 @@ const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
 });
+const loggerInfoMock = jest.fn(error => {
+  // Write the error to console so it will be visible for who runs the test
+  console.log(error);
+});
 const loggerChildInfoMock = jest.fn();
 const loggerChildErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
@@ -541,6 +545,7 @@ describe('BuildService', () => {
           useValue: {
             error: loggerErrorMock,
             child: loggerChildMock,
+            info: loggerInfoMock,
             format: EXAMPLE_LOGGER_FORMAT
           }
         },
