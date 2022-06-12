@@ -47,12 +47,15 @@ pvc:
 # Postgresql Server
 postgres:
   install: false
-  auth:
-    postgresPassword: postgres
-  db: amplication
+  global:
+    postgresql:
+      auth:
+        postgresPassword: postgres
+        username: postgres
+        password: postgres
+        database: amplication
   fullnameOverride: postgresql
-  postgresql:
-    image: groundnuty/k8s-wait-for:v1.3
-    imagePullPolicy: Always
-    primary:
-      podLabels: { name: "postgres" }
+  image: groundnuty/k8s-wait-for:v1.3
+  imagePullPolicy: Always
+  primary:
+    podLabels: { name: "postgres" }
