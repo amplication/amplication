@@ -3,6 +3,7 @@ This project was generated with [Amplication](https://amplication.com)
 It consists of two packages:
 
 ### [Server](./server/README.md)
+
 ### [Admin UI](./admin-ui/README.md)
 
 # Run Your Application in the Development Environment
@@ -21,22 +22,20 @@ In this article you will go through the following steps:
 5. Install packages from npm for the Admin UI
 6. Run the Admin UI
 
-` Before you start make sure you have Node.js 14, npm, and Docker installed. `
-
-
+`Before you start make sure you have Node.js 14<, npm, and Docker installed and running.`
 
 ## Step 1 - Install packages from npm for the server
 
 Your application is using npm for package management. To install all the necessary package follow these steps:
 
 1. Open a command-line tool
-2. Move to the **Server** folder
+2. Move to the **server** folder
 
 ```
 cd server
 ```
 
-3. Execute npm install or npm i to download and install all the packages
+3. Execute npm install or npm i to download and install all the dependecies
 
 ```
 npm install
@@ -66,8 +65,7 @@ Now, execute the following command in the command-line tool to generate the sche
 npm run db:init
 ```
 
-` To view the full Prisma commands or any other script you can open the package.json file and look for the relevant command in the scripts section `  
-
+`To view the full Prisma commands or any other script you can open the package.json file and look for the relevant command in the scripts section`
 
 ## Step 4 - Run your server
 
@@ -93,13 +91,13 @@ Now that your server is ready, you can build and run the Admin UI - a React clie
 
 To install all the packages needed for the client, follow these steps:
 
-1. In the command-line tool, move to the Admin folder. In case you are still in the Server folder, execute this command
+1. In a different terminal tab, navigate to the `admin-ui` folder
 
 ```
-cd ../admin-ui
+cd admin-ui
 ```
 
-2. Execute `npm install` or `npm i` to download and install all the packages
+2. Execute `npm install` or `npm i` to download and install all the dependencies
 
 ```
 npm install
@@ -115,4 +113,6 @@ npm run start
 
 By default, your client is now available at http://localhost:3001
 
-` Make sure that the server is started and running in the background when initiating the admin UI. You can run npm run start for the admin UI in a separated shell from the one running the server. `
+`Make sure that the server is started and running in the background when initiating the admin UI. You can run npm run start for the admin UI in a separated shell from the one running the server.`
+
+You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started/dev-env).
