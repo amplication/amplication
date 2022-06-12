@@ -131,12 +131,15 @@ function GenerationSettingsForm({ match }: Props) {
           {(formik) => {
             return (
               <Form>
-                <h3>APIs Admin UI Settings</h3>
-                <p>
+                <div className={`${CLASS_NAME}__header`}>
+                  <h3>APIs Admin UI Settings</h3>
+                </div>
+                <p className={`${CLASS_NAME}__description`}>
                   Amplication gives you the choice of which components to
                   generate. Use the settings to include or exclude GraphQL API,
                   REST API, and Admin UI.
                 </p>
+                <hr />
                 <FormikAutoSave debounceMS={2000} />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
                   <h2>Server</h2>
@@ -146,6 +149,7 @@ function GenerationSettingsForm({ match }: Props) {
                     label="REST API & Swagger UI"
                   />
                 </Panel>
+                <hr />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
                   <h2>Admin UI</h2>
                   <ToggleField

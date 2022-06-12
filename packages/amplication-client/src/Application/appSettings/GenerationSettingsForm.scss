@@ -1,11 +1,31 @@
 @import "../../style/index.scss";
 
 .generation-settings-form {
-  padding: var(--double-spacing);
-
+  padding: var(--default-spacing-small);
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--large-spacing);
+    h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+  &__description {
+    font-size: 14px;
+  }
+  h2 {
+    font-size: 14px;
+  }
   .toggle-field {
-    margin-right: var(--default-spacing-small);
+    margin-right: var(--large-spacing);
+    span {
+      font-size: var(--title2-font-size);
+    }
+  }
+  hr {
+    border: none;
+    border-top: $border-black10;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
   }
 }
-
-
