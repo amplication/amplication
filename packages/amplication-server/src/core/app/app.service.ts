@@ -1,4 +1,3 @@
-import { AppGenerationConfig } from '@amplication/data-service-generator';
 import { GitService } from '@amplication/git-service';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';

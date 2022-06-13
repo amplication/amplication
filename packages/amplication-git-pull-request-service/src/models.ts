@@ -3,12 +3,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -219,19 +217,6 @@ export type AppUpdateInput = {
   color?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
-};
-
-export enum AppValidationErrorTypes {
-  CannotMergeCodeToGitHubBreakingChanges = 'CannotMergeCodeToGitHubBreakingChanges',
-  CannotMergeCodeToGitHubInvalidAppId = 'CannotMergeCodeToGitHubInvalidAppId',
-  DataServiceGeneratorVersionInvalid = 'DataServiceGeneratorVersionInvalid',
-  DataServiceGeneratorVersionMissing = 'DataServiceGeneratorVersionMissing',
-}
-
-export type AppValidationResult = {
-  __typename?: 'AppValidationResult';
-  isValid: Scalars['Boolean'];
-  messages: Array<AppValidationErrorTypes>;
 };
 
 export type AppWhereInput = {
@@ -535,11 +520,15 @@ export type ConnectorRestApiCreateInput = {
   authenticationType: EnumConnectorRestApiAuthenticationType;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
-  httpBasicAuthenticationSettings?: InputMaybe<HttpBasicAuthenticationSettingsInput>;
+  httpBasicAuthenticationSettings?: InputMaybe<
+    HttpBasicAuthenticationSettingsInput
+  >;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  privateKeyAuthenticationSettings?: InputMaybe<PrivateKeyAuthenticationSettingsInput>;
+  privateKeyAuthenticationSettings?: InputMaybe<
+    PrivateKeyAuthenticationSettingsInput
+  >;
 };
 
 export type ConnectorRestApiOrderByInput = {
@@ -1584,7 +1573,6 @@ export type Query = {
   appRoles: Array<AppRole>;
   apps: Array<App>;
   appSettings: AppSettings;
-  appValidateBeforeCommit: AppValidationResult;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -1641,10 +1629,6 @@ export type QueryAppsArgs = {
 };
 
 export type QueryAppSettingsArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryAppValidateBeforeCommitArgs = {
   where: WhereUniqueInput;
 };
 
