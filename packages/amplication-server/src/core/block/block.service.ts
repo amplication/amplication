@@ -96,7 +96,7 @@ export class BlockService {
     const matchingBlocks = await this.prisma.block.findMany({
       where: {
         id: blockId,
-      resourceId
+        resourceId
       }
     });
     if (matchingBlocks.length === 0) {

@@ -65,7 +65,10 @@ export class EntityResolver {
   @Query(() => [Entity], {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.resource.id')
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ResourceId,
+    'where.resource.id'
+  )
   async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
     return this.entityService.entities(args);
   }

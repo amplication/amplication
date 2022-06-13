@@ -435,10 +435,15 @@ describe('ResourceService', () => {
       userId: EXAMPLE_USER_ID
     };
     expect(
-      await service.createResource(createResourceArgs.args, createResourceArgs.user)
+      await service.createResource(
+        createResourceArgs.args,
+        createResourceArgs.user
+      )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(prismaResourceCreateMock).toBeCalledWith(prismaResourceCreateResourceArgs);
+    expect(prismaResourceCreateMock).toBeCalledWith(
+      prismaResourceCreateResourceArgs
+    );
     expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(1);
     expect(entityServiceCreateDefaultEntitiesMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID,
@@ -577,7 +582,9 @@ describe('ResourceService', () => {
       EXAMPLE_RESOURCE
     );
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(prismaResourceCreateMock).toBeCalledWith(prismaResourceCreateResourceArgs);
+    expect(prismaResourceCreateMock).toBeCalledWith(
+      prismaResourceCreateResourceArgs
+    );
     expect(entityServiceFindFirstMock).toBeCalledTimes(1);
     expect(entityServiceFindFirstMock).toBeCalledWith({
       where: { name: USER_ENTITY_NAME, resourceId: EXAMPLE_RESOURCE_ID },
@@ -786,7 +793,9 @@ describe('ResourceService', () => {
       )
     ).resolves.toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(prismaResourceCreateMock).toBeCalledWith(prismaResourceCreateResourceArgs);
+    expect(prismaResourceCreateMock).toBeCalledWith(
+      prismaResourceCreateResourceArgs
+    );
 
     expect(prismaResourceFindManyMock).toBeCalledTimes(3);
     expect(prismaResourceFindManyMock.mock.calls).toEqual([

@@ -1219,7 +1219,10 @@ describe('EntityService', () => {
       }
     ]);
     expect(
-      await service.getChangedEntities(EXAMPLE_ENTITY.resourceId, EXAMPLE_USER_ID)
+      await service.getChangedEntities(
+        EXAMPLE_ENTITY.resourceId,
+        EXAMPLE_USER_ID
+      )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_CREATE]);
   });
   it('pending changed entities "update"', async () => {
@@ -1233,7 +1236,10 @@ describe('EntityService', () => {
       }
     ]);
     expect(
-      await service.getChangedEntities(EXAMPLE_ENTITY.resourceId, EXAMPLE_USER_ID)
+      await service.getChangedEntities(
+        EXAMPLE_ENTITY.resourceId,
+        EXAMPLE_USER_ID
+      )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_UPDATE]);
   });
   it('pending changed entities "delete"', async () => {
@@ -1241,7 +1247,10 @@ describe('EntityService', () => {
       EXAMPLE_DELETED_ENTITY
     ]);
     expect(
-      await service.getChangedEntities(EXAMPLE_ENTITY.resourceId, EXAMPLE_USER_ID)
+      await service.getChangedEntities(
+        EXAMPLE_ENTITY.resourceId,
+        EXAMPLE_USER_ID
+      )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_DELETE]);
   });
   it('should have no pending changes when the current and last entity versions are the same', async () => {
