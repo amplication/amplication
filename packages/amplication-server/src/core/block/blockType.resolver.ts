@@ -49,7 +49,10 @@ export function BlockTypeResolver<
       nullable: false,
       description: undefined
     })
-    @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.resource.id')
+    @AuthorizeContext(
+      AuthorizableResourceParameter.ResourceId,
+      'where.resource.id'
+    )
     async findMany(
       @Args({ type: () => findManyArgsRef }) args: FindManyArgs
     ): Promise<T[]> {

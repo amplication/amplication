@@ -46,7 +46,10 @@ export class CommitResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.resource.id')
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ResourceId,
+    'where.resource.id'
+  )
   async commits(@Args() args: FindManyCommitArgs): Promise<Commit[]> {
     return this.commitService.findMany(args);
   }
