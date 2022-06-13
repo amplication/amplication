@@ -25,7 +25,15 @@ type TData = {
 };
 
 const FORM_SCHEMA = {
-  required: ["dbHost", "dbUser", "dbPassword", "dbPort"],
+  required: [
+    "dbHost",
+    "dbUser",
+    "dbPassword",
+    "dbPort",
+    "generateAdminUI",
+    "generateGraphQL",
+    "generateRestApi",
+  ],
   properties: {
     dbHost: {
       type: "string",
@@ -46,6 +54,15 @@ const FORM_SCHEMA = {
     },
     dbName: {
       type: "string",
+    },
+    generateAdminUI: {
+      type: "boolean",
+    },
+    generateGraphQL: {
+      type: "boolean",
+    },
+    generateRestApi: {
+      type: "boolean",
     },
   },
 };
