@@ -99,7 +99,7 @@ const docker: Task[] = [
 ];
 const dockerInit: Task[] = [
   {
-    command: "cd packages/amplication-server && npm run start:db",
+    command: "cd packages/amplication-prisma-db && npm run start:db",
     label: "db seeding",
   },
 ];
