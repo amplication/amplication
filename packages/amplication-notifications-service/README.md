@@ -1,1 +1,1 @@
-# Amplication git pull service
+# Amplication Notifications Service 🔔
