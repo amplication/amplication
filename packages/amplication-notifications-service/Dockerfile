@@ -16,26 +16,26 @@ RUN npm ci --production
 
 FROM base AS build
 WORKDIR /app
-# Copy amplication/git-pull-service and the its dependent packages
-COPY packages/amplication-git-pull-service packages/amplication-git-pull-service
+# Copy amplication/notifications-service and the its dependent packages
+COPY packages/amplication-notifications-service packages/amplication-notifications-service
 COPY packages/amplication-kafka packages/amplication-kafka
 
 # Installs all copied package node_modules ; Preparation for build
-RUN npm run bootstrap -- --scope=@amplication/git-pull-service --include-dependencies
-# Build all distributions needed for amplicaiton/git-pull-service
-RUN npm run build -- --scope @amplication/git-pull-service --include-dependencies
+RUN npm run bootstrap -- --scope=@amplication/notifications-service --include-dependencies
+# Build all distributions needed for amplicaiton/notifications-service
+RUN npm run build -- --scope @amplication/notifications-service --include-dependencies
 
 # Removes packages/*/node_modules
 # https://github.com/lerna/lerna/issues/2196#issuecomment-994882795
 RUN npm run clean -- --yes
 # Rebuild production node_modules
-RUN npm run bootstrap -- -- --production --scope @amplication/git-pull-service --include-dependencies
+RUN npm run bootstrap -- -- --production --scope @amplication/notifications-service --include-dependencies
 
-FROM base as git-pull-service
-WORKDIR /app/packages/amplication-git-pull-service
-COPY --from=build /app/packages/amplication-git-pull-service/package.json /app/packages/amplication-git-pull-service/package.json
-COPY --from=build /app/packages/amplication-git-pull-service/node_modules /app/packages/amplication-git-pull-service/node_modules
-COPY --from=build /app/packages/amplication-git-pull-service/dist /app/packages/amplication-git-pull-service/dist
+FROM base as notifications-service
+WORKDIR /app/packages/amplication-notifications-service
+COPY --from=build /app/packages/amplication-notifications-service/package.json /app/packages/amplication-notifications-service/package.json
+COPY --from=build /app/packages/amplication-notifications-service/node_modules /app/packages/amplication-notifications-service/node_modules
+COPY --from=build /app/packages/amplication-notifications-service/dist /app/packages/amplication-notifications-service/dist
 
 COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules

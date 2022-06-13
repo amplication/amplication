@@ -1,16 +1,5 @@
-version: '3'
+version: "3"
 services:
-  db:
-    image: postgres:12
-    restart: always
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_USER: ${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-
   kafka-ui:
     container_name: kafka-ui
     image: provectuslabs/kafka-ui:latest
@@ -50,7 +39,6 @@ services:
       JMX_PORT: 9997
       KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka -Dcom.sun.management.jmxremote.rmi.port=9997
 
-
   kafka-init-topics:
     image: confluentinc/cp-kafka:5.3.1
     volumes:
@@ -58,10 +46,10 @@ services:
     depends_on:
       - kafka
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
-               cub kafka-ready -b kafka:29092 1 30 && \
-               kafka-topics --create --topic second.users --partitions 3 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \
-               kafka-topics --create --topic second.messages --partitions 2 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \
-               kafka-topics --create --topic first.messages --partitions 2 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \
-               kafka-console-producer --broker-list kafka:29092 -topic second.users \"{}\"'"
+      cub kafka-ready -b kafka:29092 1 30 && \
+      kafka-topics --create --topic second.users --partitions 3 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \
+      kafka-topics --create --topic second.messages --partitions 2 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \
+      kafka-topics --create --topic first.messages --partitions 2 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \
+      kafka-console-producer --broker-list kafka:29092 -topic second.users \"{}\"'"
 volumes:
   postgres: ~
