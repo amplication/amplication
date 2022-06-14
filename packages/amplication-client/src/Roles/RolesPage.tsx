@@ -8,17 +8,17 @@ import Role from "./Role";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 const NAVIGATION_KEY = "ROLE";
 
 const RolesPage = ({ match }: Props) => {
-  const { application } = match.params;
+  const { resource } = match.params;
 
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, "Roles");
+  useNavigationTabs(resource, NAVIGATION_KEY, match.url, "Roles");
 
   const roleMatch = useRouteMatch<{ roleId: string }>(
-    "/:application/roles/:roleId"
+    "/:resource/roles/:roleId"
   );
 
   let roleId = null;
@@ -30,7 +30,7 @@ const RolesPage = ({ match }: Props) => {
     <PageContent
       className="roles"
       sideContent={
-        <RoleList applicationId={application} selectFirst={null === roleId} />
+        <RoleList resourceId={resource} selectFirst={null === roleId} />
       }
     >
       {!isEmpty(roleId) && <Role />}

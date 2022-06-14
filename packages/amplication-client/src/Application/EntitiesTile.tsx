@@ -16,7 +16,7 @@ import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./EntitiesTile.scss";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
 const CLASS_NAME = "entities-tile";
@@ -25,13 +25,13 @@ const EVENT_DATA: TrackEvent = {
   eventName: "entitiesTileClick",
 };
 
-function EntitiesTile({ applicationId }: Props) {
+function EntitiesTile({ resourceId }: Props) {
   const history = useHistory();
   const { data, loading } = useQuery<{
     entities: models.Entity[];
   }>(GET_ENTITIES, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
 
@@ -40,9 +40,9 @@ function EntitiesTile({ applicationId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${applicationId}/entities`);
+      history.push(`/${resourceId}/entities`);
     },
-    [history, trackEvent, applicationId]
+    [history, trackEvent, resourceId]
   );
 
   return (

@@ -93,7 +93,7 @@ export const EntityList = ({ match }: Props) => {
         onDismiss={handleNewEntityClick}
         title="New Entity"
       >
-        <NewEntity applicationId={application} />
+        <NewEntity resourceId={application} />
       </Dialog>
       <div className={`${CLASS_NAME}__header`}>
         <SearchField
@@ -119,7 +119,7 @@ export const EntityList = ({ match }: Props) => {
         <EntityListItem
           key={entity.id}
           entity={entity}
-          applicationId={application}
+          resourceId={application}
           onError={setError}
         />
       ))}

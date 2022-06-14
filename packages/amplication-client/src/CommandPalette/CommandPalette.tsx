@@ -11,7 +11,7 @@ import { CircleBadge, Icon } from "@amplication/design-system";
 import * as models from "../models";
 import "./CommandPalette.scss";
 
-export type AppDescriptor = Pick<models.App, "id" | "name" | "color">;
+export type AppDescriptor = Pick<models.Resource, "id" | "name" | "color">;
 export type EntityDescriptor = Pick<models.Entity, "id" | "displayName">;
 export type AppDescriptorWithEntityDescriptors = AppDescriptor & {
   entities: EntityDescriptor[];
@@ -101,9 +101,9 @@ type Props = {
 };
 
 const CommandPalette = ({ trigger }: Props) => {
-  const match = useRouteMatch<{ applicationId: string }>("/:applicationId/");
+  const match = useRouteMatch<{ resourceId: string }>("/:resourceId/");
 
-  const { applicationId } = match?.params || {};
+  const { resourceId } = match?.params || {};
 
   const history = useHistory();
   const [query, setQuery] = useState("");
@@ -114,8 +114,8 @@ const CommandPalette = ({ trigger }: Props) => {
     variables: { query },
   });
   const commands = useMemo(
-    () => (data ? getCommands(data, history, applicationId) : []),
-    [data, history, applicationId]
+    () => (data ? getCommands(data, history, resourceId) : []),
+    [data, history, resourceId]
   );
 
   return (

@@ -7,38 +7,40 @@ import * as models from "../models";
 import "./CommitValidation.scss";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 const CLASS_NAME = "commit-validation";
 
 type TData = {
-  appValidateBeforeCommit: models.AppValidationResult;
+  resourceValidateBeforeCommit: models.ResourceValidationResult;
 };
 
 const VALIDATION_MESSAGES_TO_TEXT: {
-  [key in models.AppValidationErrorTypes]: {
+  [key in models.ResourceValidationErrorTypes]: {
     message: string;
     url: string | null;
   };
 } = {
-  [models.AppValidationErrorTypes.CannotMergeCodeToGitHubBreakingChanges]: {
+  [models.ResourceValidationErrorTypes
+    .CannotMergeCodeToGitHubBreakingChanges]: {
     message:
       "The code in the linked GitHub repo was generated with a previous version of Amplication. The current version includes breaking changes that may cause conflicts when merged with code generated with previous versions.",
     url: "https://docs.amplication.com/docs/errors/merge-conflict",
   },
-  [models.AppValidationErrorTypes.DataServiceGeneratorVersionInvalid]: {
+  [models.ResourceValidationErrorTypes.DataServiceGeneratorVersionInvalid]: {
     message:
       "Invalid code generation version ID was found in the linked GitHub repo.",
     url:
       "https://docs.amplication.com/docs/errors/invalid-code-generation-version",
   },
-  [models.AppValidationErrorTypes.DataServiceGeneratorVersionMissing]: {
+  [models.ResourceValidationErrorTypes.DataServiceGeneratorVersionMissing]: {
     message:
       "Could not find code generation version ID in the linked GitHub repo.",
     url:
       "https://docs.amplication.com/docs/errors/missing-code-generation-version",
   },
-  [models.AppValidationErrorTypes.CannotMergeCodeToGitHubInvalidAppId]: {
+  [models.ResourceValidationErrorTypes
+    .CannotMergeCodeToGitHubInvalidResourceId]: {
     message:
       "The code in the linked GitHub repo was generated from a different app. It may cause conflicts when merged with code generated from the current app.",
     url: "https://docs.amplication.com/docs/errors/github-different-app-id",
@@ -46,25 +48,25 @@ const VALIDATION_MESSAGES_TO_TEXT: {
 };
 const POLL_INTERVAL = 30000;
 
-const CommitValidation = ({ applicationId }: Props) => {
+const CommitValidation = ({ resourceId }: Props) => {
   const { data, error, startPolling, stopPolling } = useQuery<TData>(
     APP_VALIDATE_BEFORE_COMMIT,
     {
       onCompleted: (data) => {
         //Start polling if status is invalid
-        if (!data.appValidateBeforeCommit.isValid) {
+        if (!data.resourceValidateBeforeCommit.isValid) {
           startPolling(POLL_INTERVAL);
         }
       },
       variables: {
-        appId: applicationId,
+        resourceId: resourceId,
       },
     }
   );
 
   //stop polling in case the status is value
   useEffect(() => {
-    if (data?.appValidateBeforeCommit.isValid) {
+    if (data?.resourceValidateBeforeCommit.isValid) {
       stopPolling();
     } else {
       startPolling(POLL_INTERVAL);
@@ -73,9 +75,9 @@ const CommitValidation = ({ applicationId }: Props) => {
 
   const errorMessage = formatError(error);
 
-  return !isEmpty(data?.appValidateBeforeCommit.messages) ? (
+  return !isEmpty(data?.resourceValidateBeforeCommit.messages) ? (
     <div className={CLASS_NAME}>
-      {data?.appValidateBeforeCommit.messages.map((message, index) => {
+      {data?.resourceValidateBeforeCommit.messages.map((message, index) => {
         const errorData = VALIDATION_MESSAGES_TO_TEXT[message];
 
         return (
@@ -105,8 +107,8 @@ const CommitValidation = ({ applicationId }: Props) => {
 export default CommitValidation;
 
 export const APP_VALIDATE_BEFORE_COMMIT = gql`
-  query appValidateBeforeCommit($appId: String!) {
-    appValidateBeforeCommit(where: { id: $appId }) {
+  query resourceValidateBeforeCommit($resourceId: String!) {
+    resourceValidateBeforeCommit(where: { id: $resourceId }) {
       isValid
       messages
     }

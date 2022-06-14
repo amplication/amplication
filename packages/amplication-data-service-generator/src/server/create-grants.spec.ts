@@ -37,10 +37,10 @@ const EXAMPLE_OTHER_APP_ROLE: Role = {
   name: "otherExampleAppRoleID",
 };
 const EXAMPLE_PERMISSION_ROLE: EntityPermissionRole = {
-  appRole: EXAMPLE_APP_ROLE,
+  resourceRole: EXAMPLE_APP_ROLE,
 };
 const EXAMPLE_PERMISSION_OTHER_ROLE: EntityPermissionRole = {
-  appRole: EXAMPLE_OTHER_APP_ROLE,
+  resourceRole: EXAMPLE_OTHER_APP_ROLE,
 };
 const EXAMPLE_ALL_ROLES_CREATE_PERMISSION: EntityPermission = {
   action: EnumEntityAction.Create,

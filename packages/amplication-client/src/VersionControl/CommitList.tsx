@@ -44,7 +44,7 @@ export const CommitList = ({ match }: Props) => {
     TData
   >(GET_COMMITS, {
     variables: {
-      appId: application,
+      resourceId: application,
       orderBy: {
         [CREATED_AT_FIELD]: models.SortOrder.Desc,
       },
@@ -83,7 +83,7 @@ export const CommitList = ({ match }: Props) => {
         <CommitListItem
           key={commit.id}
           commit={commit}
-          applicationId={application}
+          resourceId={application}
         />
       ))}
       <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -94,12 +94,12 @@ export const CommitList = ({ match }: Props) => {
 /**@todo: expand search on other field  */
 export const GET_COMMITS = gql`
   query commits(
-    $appId: String!
+    $resourceId: String!
     $orderBy: CommitOrderByInput
     $whereMessage: StringFilter
   ) {
     commits(
-      where: { app: { id: $appId }, message: $whereMessage }
+      where: { app: { id: $resourceId }, message: $whereMessage }
       orderBy: $orderBy
     ) {
       id
@@ -115,7 +115,7 @@ export const GET_COMMITS = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
-        appId
+        resourceId
         version
         message
         createdAt

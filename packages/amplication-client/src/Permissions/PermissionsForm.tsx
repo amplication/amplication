@@ -18,14 +18,14 @@ type TData = {
 
 type Props = {
   availableActions: permissionsTypes.PermissionAction[];
-  applicationId: string;
+  resourceId: string;
   entityId: string;
   objectDisplayName: string;
 };
 
 const PermissionsForm = ({
   availableActions,
-  applicationId,
+  resourceId,
   entityId,
   objectDisplayName,
 }: Props) => {
@@ -52,7 +52,7 @@ const PermissionsForm = ({
               key={action.action}
               entityId={entityId}
               permission={permissionsByAction[action.action]}
-              applicationId={applicationId}
+              resourceId={resourceId}
               permissionAction={action}
               entityDisplayName={objectDisplayName}
             />

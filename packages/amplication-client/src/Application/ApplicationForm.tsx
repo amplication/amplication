@@ -11,7 +11,7 @@ import { TextField, Snackbar, Icon } from "@amplication/design-system";
 import { COLORS } from "./constants";
 import { ColorSelectButton } from "../Components/ColorSelectButton";
 import { useTracking } from "../util/analytics";
-import { GET_APPLICATION } from "./ApplicationHome";
+import { GET_RESOURCE } from "./ApplicationHome";
 import "./ApplicationForm.scss";
 
 type Props = {
@@ -19,7 +19,7 @@ type Props = {
 };
 
 type TData = {
-  updateApp: models.App;
+  updateResource: models.Resource;
 };
 
 const FORM_SCHEMA = {
@@ -38,19 +38,21 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "application-form";
 
 function ApplicationForm({ match }: Props) {
-  const applicationId = match.params.application;
+  const resourceId = match.params.application;
 
   const { data, error } = useQuery<{
-    app: models.App;
-  }>(GET_APPLICATION, {
+    resource: models.Resource;
+  }>(GET_RESOURCE, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
 
   const { trackEvent } = useTracking();
 
-  const [updateApp, { error: updateError }] = useMutation<TData>(UPDATE_APP);
+  const [updateResource, { error: updateError }] = useMutation<TData>(
+    UPDATE_RESOURCE
+  );
 
   const handleSubmit = useCallback(
     (data) => {
@@ -58,52 +60,54 @@ function ApplicationForm({ match }: Props) {
       trackEvent({
         eventName: "updateAppInfo",
       });
-      updateApp({
+      updateResource({
         variables: {
           data: {
             name,
             description,
             color,
           },
-          appId: applicationId,
+          resourceId: resourceId,
         },
       }).catch(console.error);
     },
-    [updateApp, applicationId, trackEvent]
+    [updateResource, resourceId, trackEvent]
   );
 
   const handleColorChange = useCallback(
     (color: string) => {
       trackEvent({
-        eventName: "updateAppColor",
+        eventName: "updateResourceColor",
       });
-      updateApp({
+      updateResource({
         variables: {
           data: {
             color,
           },
-          appId: applicationId,
+          resourceId: resourceId,
         },
       }).catch(console.error);
     },
-    [updateApp, applicationId, trackEvent]
+    [updateResource, resourceId, trackEvent]
   );
 
   const errorMessage = formatError(error || updateError);
   return (
     <div className={CLASS_NAME}>
-      {data?.app && (
+      {data?.resource && (
         <>
           <Formik
-            initialValues={data.app}
-            validate={(values: models.App) => validate(values, FORM_SCHEMA)}
+            initialValues={data.resource}
+            validate={(values: models.Resource) =>
+              validate(values, FORM_SCHEMA)
+            }
             enableReinitialize
             onSubmit={handleSubmit}
           >
             {(formik) => {
               return (
                 <Form>
-                  <h3>App Settings</h3>
+                  <h3>Resource Settings</h3>
                   <FormikAutoSave debounceMS={1000} />
                   <TextField name="name" label="Name" />
                   <TextField
@@ -122,7 +126,7 @@ function ApplicationForm({ match }: Props) {
             <hr />
             <h3>
               <Icon icon="color" />
-              App Color
+              Resource Color
             </h3>
             {COLORS.map((color) => (
               <ColorSelectButton
@@ -134,16 +138,19 @@ function ApplicationForm({ match }: Props) {
           </div>
         </>
       )}
-      <Snackbar open={Boolean(error?.message || updateError?.message)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(error?.message || updateError?.message)}
+        message={errorMessage}
+      />
     </div>
   );
 }
 
 export default ApplicationForm;
 
-const UPDATE_APP = gql`
-  mutation updateApp($data: AppUpdateInput!, $appId: String!) {
-    updateApp(data: $data, where: { id: $appId }) {
+const UPDATE_RESOURCE = gql`
+  mutation updateResource($data: ResourceUpdateInput!, $resourceId: String!) {
+    updateResource(data: $data, where: { id: $resourceId }) {
       id
       createdAt
       updatedAt

@@ -16,7 +16,7 @@ type Props = {
 };
 
 type TData = {
-  updateAppSettings: models.AppSettings;
+  updateAppSettings: models.ResourceSettings;
 };
 
 const FORM_SCHEMA = {
@@ -48,13 +48,13 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "application-database-settings-form";
 
 function ApplicationDatabaseSettingsForms({ match }: Props) {
-  const applicationId = match.params.application;
+  const resourceId = match.params.application;
 
   const { data, error } = useQuery<{
-    appSettings: models.AppSettings;
+    appSettings: models.ResourceSettings;
   }>(GET_APP_SETTINGS, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
   const pendingChangesContext = useContext(PendingChangesContext);
@@ -71,7 +71,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
   );
 
   const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
+    (data: models.ResourceSettings) => {
       const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
       trackEvent({
         eventName: "updateAppSettings",
@@ -86,11 +86,11 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
             dbUser,
             authProvider,
           },
-          appId: applicationId,
+          resourceId: resourceId,
         },
       }).catch(console.error);
     },
-    [updateAppSettings, applicationId, trackEvent]
+    [updateAppSettings, resourceId, trackEvent]
   );
 
   const errorMessage = formatError(error || updateError);
@@ -99,7 +99,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
       {data?.appSettings && (
         <Formik
           initialValues={data.appSettings}
-          validate={(values: models.AppSettings) =>
+          validate={(values: models.ResourceSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize
@@ -147,8 +147,11 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
 export default ApplicationDatabaseSettingsForms;
 
 const UPDATE_APP_SETTINGS = gql`
-  mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
-    updateAppSettings(data: $data, where: { id: $appId }) {
+  mutation updateAppSettings(
+    $data: AppSettingsUpdateInput!
+    $resourceId: String!
+  ) {
+    updateAppSettings(data: $data, where: { id: $resourceId }) {
       id
       dbHost
       dbName

@@ -1,27 +1,22 @@
 import React from "react";
-import { Switch, match } from "react-router-dom";
+import { match, Switch } from "react-router-dom";
 import MainLayout from "../Layout/MainLayout";
-import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import * as models from "../models";
 import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
+import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import ApplicationList from "./ApplicationList";
 //import Subscription from "../Subscription/Subscription";
-import MemberList from "./MemberList";
-import InnerTabLink from "../Layout/InnerTabLink";
-import WorkspaceSelector from "./WorkspaceSelector";
-import WorkspaceForm from "./WorkspaceForm";
-import PageContent from "../Layout/PageContent";
-import CompleteInvitation from "../User/CompleteInvitation";
-import ProfilePage from "../Profile/ProfilePage";
-import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import { isMobileOnly } from "react-device-detect";
+import InnerTabLink from "../Layout/InnerTabLink";
 import MobileMessage from "../Layout/MobileMessage";
+import PageContent from "../Layout/PageContent";
+import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
+import ProfilePage from "../Profile/ProfilePage";
+import CompleteInvitation from "../User/CompleteInvitation";
+import MemberList from "./MemberList";
+import WorkspaceForm from "./WorkspaceForm";
 import "./WorkspaceLayout.scss";
-
-export type ApplicationData = {
-  app: models.App;
-};
+import WorkspaceSelector from "./WorkspaceSelector";
 
 export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
@@ -53,7 +48,7 @@ function WorkspaceLayout({ match }: Props) {
           <WorkspaceSelector />
           <div className={`${CLASS_NAME}__tabs`}>
             <InnerTabLink to={`/`} icon="grid">
-              Apps
+              Resources
             </InnerTabLink>
             <InnerTabLink to={`/workspace/settings`} icon="settings">
               Workspace Settings
@@ -86,7 +81,7 @@ function WorkspaceLayout({ match }: Props) {
             {/* <Switch>
               <RouteWithAnalytics exact path="/workspace/plans" component={Subscription} />
             </Switch> */}
-			<Switch>
+            <Switch>
               <RouteWithAnalytics exact path="/user/profile">
                 <ProfilePage />
               </RouteWithAnalytics>

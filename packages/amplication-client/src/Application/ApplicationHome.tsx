@@ -28,21 +28,21 @@ const CLASS_NAME = "application-home";
 const NAVIGATION_KEY = "APP_HOME";
 
 function ApplicationHome({ match }: Props) {
-  const applicationId = match.params.application;
+  const resourceId = match.params.application;
   const location = useLocation();
 
   const { data, error } = useQuery<{
-    app: models.App;
-  }>(GET_APPLICATION, {
+    resource: models.Resource;
+  }>(GET_RESOURCE, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
   useNavigationTabs(
-    applicationId,
+    resourceId,
     NAVIGATION_KEY,
     location.pathname,
-    data?.app.name
+    data?.resource.name
   );
 
   const errorMessage = formatError(error);
@@ -53,27 +53,27 @@ function ApplicationHome({ match }: Props) {
       sideContent={
         <div>
           <div>
-            <InnerTabLink to={`/${applicationId}/`} icon="home">
+            <InnerTabLink to={`/${resourceId}/`} icon="home">
               Overview
             </InnerTabLink>
           </div>
           <div>
-            <InnerTabLink to={`/${applicationId}/update`} icon="settings">
-              App Settings
+            <InnerTabLink to={`/${resourceId}/update`} icon="settings">
+              Resource Settings
             </InnerTabLink>
           </div>
           <div>
-            <InnerTabLink to={`/${applicationId}/db/update`} icon="settings">
+            <InnerTabLink to={`/${resourceId}/db/update`} icon="settings">
               DB Settings
             </InnerTabLink>
           </div>
           <div>
-            <InnerTabLink to={`/${applicationId}/auth/update`} icon="settings">
+            <InnerTabLink to={`/${resourceId}/auth/update`} icon="settings">
               Auth Settings
             </InnerTabLink>
           </div>
           <div>
-            <InnerTabLink to={`/${applicationId}/api-tokens`} icon="id">
+            <InnerTabLink to={`/${resourceId}/api-tokens`} icon="id">
               API Tokens
             </InnerTabLink>
           </div>
@@ -93,13 +93,13 @@ function ApplicationHome({ match }: Props) {
               <div
                 className={classNames(
                   `${CLASS_NAME}__header`,
-                  `theme-${data && COLOR_TO_NAME[data.app.color]}`
+                  `theme-${data && COLOR_TO_NAME[data.resource.color]}`
                 )}
               >
-                {data?.app.name}
+                {data?.resource.name}
                 <CircleBadge
-                  name={data?.app.name || ""}
-                  color={data?.app.color || "transparent"}
+                  name={data?.resource.name || ""}
+                  color={data?.resource.color || "transparent"}
                 />
               </div>
               <Switch>
@@ -108,10 +108,10 @@ function ApplicationHome({ match }: Props) {
                   path="/:application/"
                   component={() => (
                     <div className={`${CLASS_NAME}__tiles`}>
-                      <NewVersionTile applicationId={applicationId} />
-                      <EntitiesTile applicationId={applicationId} />
-                      <RolesTile applicationId={applicationId} />
-                      <SyncWithGithubTile applicationId={applicationId} />
+                      <NewVersionTile resourceId={resourceId} />
+                      <EntitiesTile resourceId={resourceId} />
+                      <RolesTile resourceId={resourceId} />
+                      <SyncWithGithubTile resourceId={resourceId} />
                     </div>
                   )}
                 />
@@ -139,9 +139,9 @@ function ApplicationHome({ match }: Props) {
 
 export default ApplicationHome;
 
-export const GET_APPLICATION = gql`
-  query getApplication($id: String!) {
-    app(where: { id: $id }) {
+export const GET_RESOURCE = gql`
+  query getResource($id: String!) {
+    resource(where: { id: $id }) {
       id
       createdAt
       updatedAt

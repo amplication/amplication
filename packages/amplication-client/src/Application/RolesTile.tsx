@@ -16,7 +16,7 @@ import { useTracking, Event as TrackEvent } from "../util/analytics";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
 const CLASS_NAME = "roles-tile";
@@ -25,14 +25,14 @@ const EVENT_DATA: TrackEvent = {
   eventName: "rolesTileClick",
 };
 
-function RolesTile({ applicationId }: Props) {
+function RolesTile({ resourceId }: Props) {
   const history = useHistory();
 
   const { data, loading } = useQuery<{
-    appRoles: models.AppRole[];
+    appRoles: models.ResourceRole[];
   }>(GET_ROLES, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
   const { trackEvent } = useTracking();
@@ -40,9 +40,9 @@ function RolesTile({ applicationId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${applicationId}/roles`);
+      history.push(`/${resourceId}/roles`);
     },
-    [history, trackEvent, applicationId]
+    [history, trackEvent, resourceId]
   );
 
   return (

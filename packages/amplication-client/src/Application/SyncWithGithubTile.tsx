@@ -12,7 +12,7 @@ import { Event as TrackEvent, useTracking } from "../util/analytics";
 import "./SyncWithGithubTile.scss";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
 const CLASS_NAME = "sync-with-github-tile";
@@ -35,11 +35,11 @@ type TData = {
   };
 };
 
-function SyncWithGithubTile({ applicationId }: Props) {
+function SyncWithGithubTile({ resourceId }: Props) {
   const history = useHistory();
   const { data, loading } = useQuery<TData>(GET_GIT_REPOSITORY_FROM_APP_ID, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
 
@@ -48,9 +48,9 @@ function SyncWithGithubTile({ applicationId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${applicationId}/github`);
+      history.push(`/${resourceId}/github`);
     },
-    [history, trackEvent, applicationId]
+    [history, trackEvent, resourceId]
   );
 
   return (

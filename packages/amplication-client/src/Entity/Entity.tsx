@@ -132,7 +132,7 @@ const Entity = ({ match }: Props) => {
           <RouteWithAnalytics path="/:application/entities/:entityId/permissions">
             <PermissionsForm
               entityId={entityId}
-              applicationId={application}
+              resourceId={application}
               availableActions={ENTITY_ACTIONS}
               objectDisplayName={data.entity.pluralDisplayName}
             />
@@ -146,7 +146,7 @@ const Entity = ({ match }: Props) => {
           <RouteWithAnalytics path="/:application/entities/:entityId">
             <EntityForm
               entity={data.entity}
-              applicationId={application}
+              resourceId={application}
               onSubmit={handleSubmit}
             />
           </RouteWithAnalytics>

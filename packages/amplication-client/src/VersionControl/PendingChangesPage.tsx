@@ -46,7 +46,7 @@ const PendingChangesPage = ({ match }: Props) => {
   );
   const { data, error } = useQuery<TData>(GET_PENDING_CHANGES, {
     variables: {
-      applicationId: application,
+      resourceId: application,
     },
   });
 
@@ -122,7 +122,7 @@ export const GET_COMMIT = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
-        appId
+        resourceId
         version
         message
         createdAt

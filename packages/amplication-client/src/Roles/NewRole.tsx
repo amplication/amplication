@@ -11,15 +11,15 @@ import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
 import "./NewRole.scss";
 
-const INITIAL_VALUES: Partial<models.AppRole> = {
+const INITIAL_VALUES: Partial<models.ResourceRole> = {
   name: "",
   displayName: "",
   description: "",
 };
 
 type Props = {
-  applicationId: string;
-  onRoleAdd?: (role: models.AppRole) => void;
+  resourceId: string;
+  onRoleAdd?: (role: models.ResourceRole) => void;
 };
 
 const FORM_SCHEMA = {
@@ -33,31 +33,31 @@ const FORM_SCHEMA = {
 };
 const CLASS_NAME = "new-role";
 
-const NewRole = ({ onRoleAdd, applicationId }: Props) => {
+const NewRole = ({ onRoleAdd, resourceId }: Props) => {
   const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
     update(cache, { data }) {
       if (!data) return;
 
-      const newAppRole = data.createAppRole;
+      const newResourceRole = data.createResourceRole;
 
       cache.modify({
         fields: {
-          appRoles(existingAppRoleRefs = [], { readField }) {
-            const newAppRoleRef = cache.writeFragment({
-              data: newAppRole,
+          resourceRoles(existingResourceRoleRefs = [], { readField }) {
+            const newResourceRoleRef = cache.writeFragment({
+              data: newResourceRole,
               fragment: NEW_ROLE_FRAGMENT,
             });
 
             if (
-              existingAppRoleRefs.some(
-                (appRoleRef: Reference) =>
-                  readField("id", appRoleRef) === newAppRole.id
+              existingResourceRoleRefs.some(
+                (resourceRoleRef: Reference) =>
+                  readField("id", resourceRoleRef) === newResourceRole.id
               )
             ) {
-              return existingAppRoleRefs;
+              return existingResourceRoleRefs;
             }
 
-            return [...existingAppRoleRefs, newAppRoleRef];
+            return [...existingResourceRoleRefs, newResourceRoleRef];
           },
         },
       });
@@ -75,20 +75,20 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
             ...data,
             name: camelCase(data.displayName),
 
-            app: { connect: { id: applicationId } },
+            resource: { connect: { id: resourceId } },
           },
         },
       })
         .then((result) => {
           if (onRoleAdd) {
-            onRoleAdd(result.data.createAppRole);
+            onRoleAdd(result.data.createResourceRole);
           }
           actions.resetForm();
           inputRef.current?.focus();
         })
         .catch(console.error);
     },
-    [createRole, applicationId, inputRef, onRoleAdd]
+    [createRole, resourceId, inputRef, onRoleAdd]
   );
 
   const errorMessage = formatError(error);
@@ -97,7 +97,7 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
     <div className={CLASS_NAME}>
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: Partial<models.AppRole>) =>
+        validate={(values: Partial<models.ResourceRole>) =>
           validate(values, FORM_SCHEMA)
         }
         validateOnBlur={false}
@@ -137,8 +137,8 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
 export default NewRole;
 
 const CREATE_ROLE = gql`
-  mutation createAppRole($data: AppRoleCreateInput!) {
-    createAppRole(data: $data) {
+  mutation createResourceRole($data: ResourceRoleCreateInput!) {
+    createResourceRole(data: $data) {
       id
       name
       displayName
@@ -148,7 +148,7 @@ const CREATE_ROLE = gql`
 `;
 
 const NEW_ROLE_FRAGMENT = gql`
-  fragment NewAppRole on AppRole {
+  fragment NewResourceRole on ResourceRole {
     id
     name
     displayName

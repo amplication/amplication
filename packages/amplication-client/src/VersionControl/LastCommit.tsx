@@ -21,12 +21,12 @@ type TData = {
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
 const CLASS_NAME = "last-commit";
 
-const LastCommit = ({ applicationId }: Props) => {
+const LastCommit = ({ resourceId }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
   const [error, setError] = useState<Error>();
 
@@ -34,7 +34,7 @@ const LastCommit = ({ applicationId }: Props) => {
     GET_LAST_COMMIT,
     {
       variables: {
-        applicationId,
+        resourceId,
       },
     }
   );
@@ -67,7 +67,7 @@ const LastCommit = ({ applicationId }: Props) => {
 
   const ClickableCommitId = (
     <ClickableId
-      to={`/${build?.appId}/commits/${lastCommit.id}`}
+      to={`/${build?.resourceId}/commits/${lastCommit.id}`}
       id={lastCommit.id}
       label="Last commit"
       eventData={{
@@ -118,7 +118,7 @@ const LastCommit = ({ applicationId }: Props) => {
         </>
       )}
 
-      <PendingChangesMenuItem applicationId={applicationId} />
+      <PendingChangesMenuItem resourceId={resourceId} />
     </div>
   );
 };
@@ -126,9 +126,9 @@ const LastCommit = ({ applicationId }: Props) => {
 export default LastCommit;
 
 export const GET_LAST_COMMIT = gql`
-  query lastCommit($applicationId: String!) {
+  query lastCommit($resourceId: String!) {
     commits(
-      where: { app: { id: $applicationId } }
+      where: { app: { id: $resourceId } }
       orderBy: { createdAt: Desc }
       take: 1
     ) {
@@ -164,7 +164,7 @@ export const GET_LAST_COMMIT = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
-        appId
+        resourceId
         version
         message
         createdAt

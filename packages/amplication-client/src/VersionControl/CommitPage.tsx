@@ -171,7 +171,7 @@ export const GET_COMMIT = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
-        appId
+        resourceId
         version
         message
         createdAt

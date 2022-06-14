@@ -188,7 +188,7 @@ const EntityField = () => {
             }
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
-            applicationId={application}
+            resourceId={application}
             entityDisplayName={entityDisplayName || ""}
           />
         </>

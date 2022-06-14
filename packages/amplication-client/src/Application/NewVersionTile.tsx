@@ -15,11 +15,11 @@ import { Event as TrackEvent, useTracking } from "../util/analytics";
 import "./NewVersionTile.scss";
 
 type TData = {
-  app: models.App;
+  app: models.Resource;
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
 const CLASS_NAME = "new-version-tile";
@@ -28,12 +28,12 @@ const EVENT_DATA: TrackEvent = {
   eventName: "newVersionTileClick-fixEntities",
 };
 
-function NewVersionTile({ applicationId }: Props) {
+function NewVersionTile({ resourceId }: Props) {
   const history = useHistory();
 
   const { data, loading } = useQuery<TData>(GET_LOOKUP_FIELDS, {
     variables: {
-      appId: applicationId,
+      resourceId: resourceId,
     },
   });
   const { trackEvent } = useTracking();
@@ -41,9 +41,9 @@ function NewVersionTile({ applicationId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${applicationId}/fix-related-entities`);
+      history.push(`/${resourceId}/fix-related-entities`);
     },
-    [history, trackEvent, applicationId]
+    [history, trackEvent, resourceId]
   );
 
   const requiredFixesCount = useMemo(() => {

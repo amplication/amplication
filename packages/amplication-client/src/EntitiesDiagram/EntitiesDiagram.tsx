@@ -11,7 +11,7 @@ import { EntitiesDiagramEntity } from "./EntitiesDiagramEntity";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Snackbar } from "@amplication/design-system";
 
-export type EntitiesDiagramFormData = models.AppCreateWithEntitiesInput;
+export type EntitiesDiagramFormData = models.ResourceCreateWithEntitiesInput;
 
 export type EntityPositionData = {
   top: number;
@@ -29,7 +29,7 @@ export type FieldIdentifier = {
   fieldIndex: number;
 };
 
-export const COMMON_FIELDS: models.AppCreateWithEntitiesFieldInput[] = [
+export const COMMON_FIELDS: models.ResourceCreateWithEntitiesFieldInput[] = [
   {
     name: "ID",
     dataType: models.EnumDataType.Id,

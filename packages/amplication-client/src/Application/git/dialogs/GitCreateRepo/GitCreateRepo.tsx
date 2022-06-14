@@ -55,7 +55,7 @@ export default function GitCreateRepo({
           gitOrganizationId,
           gitProvider,
           public: data.public,
-          appId: app.id,
+          resourceId: app.id,
         },
       }).catch((error) => {});
     },
@@ -116,7 +116,7 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
   mutation createGitRepository(
     $gitProvider: EnumGitProvider!
     $gitOrganizationId: String!
-    $appId: String!
+    $resourceId: String!
     $name: String!
     $public: Boolean!
   ) {
@@ -125,7 +125,7 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
         name: $name
         public: $public
         gitOrganizationId: $gitOrganizationId
-        appId: $appId
+        resourceId: $resourceId
         gitProvider: $gitProvider
         gitOrganizationType: Organization
       }

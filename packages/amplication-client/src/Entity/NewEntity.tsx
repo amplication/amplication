@@ -26,7 +26,7 @@ type DType = {
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
 const INITIAL_VALUES: CreateEntityType = {
@@ -51,7 +51,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const NewEntity = ({ applicationId }: Props) => {
+const NewEntity = ({ resourceId }: Props) => {
   const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
 
@@ -110,19 +110,19 @@ const NewEntity = ({ applicationId }: Props) => {
             displayName,
             name,
             pluralDisplayName,
-            app: { connect: { id: applicationId } },
+            app: { connect: { id: resourceId } },
           },
         },
       }).catch(console.error);
     },
-    [createEntity, applicationId]
+    [createEntity, resourceId]
   );
 
   useEffect(() => {
     if (data) {
-      history.push(`/${applicationId}/entities/${data.createOneEntity.id}`);
+      history.push(`/${resourceId}/entities/${data.createOneEntity.id}`);
     }
-  }, [history, data, applicationId]);
+  }, [history, data, resourceId]);
 
   const errorMessage = formatError(error);
 

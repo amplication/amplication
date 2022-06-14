@@ -39,7 +39,7 @@ export default function GitDialogsContainer({
         onDismiss={onSelectGitRepositoryDialogClose}
       >
         <GitRepos
-          applicationId={app.id}
+          resourceId={app.id}
           gitOrganizationId={gitOrganizationId}
           onGitRepositoryConnected={onSelectGitRepositoryDialogClose}
           gitProvider={gitProvider}

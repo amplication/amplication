@@ -41,7 +41,7 @@ type ImportField = {
 };
 
 type TData = {
-  createAppWithEntities: models.App;
+  createAppWithEntities: models.Resource;
 };
 
 enum Steps {
@@ -57,7 +57,7 @@ export function CreateAppFromExcel() {
   const [step, setStep] = useState<Steps>(Steps.startScreen);
   const [fileName, setFileName] = useState<string | null>(null);
   const { data: appsData } = useQuery<{
-    apps: Array<models.App>;
+    apps: Array<models.Resource>;
   }>(GET_APPLICATIONS);
   const [generalError, setGeneralError] = useState<Error | undefined>(
     undefined
@@ -120,7 +120,7 @@ export function CreateAppFromExcel() {
     {
       update(cache, { data }) {
         if (!data) return;
-        const queryData = cache.readQuery<{ apps: Array<models.App> }>({
+        const queryData = cache.readQuery<{ apps: Array<models.Resource> }>({
           query: GET_APPLICATIONS,
         });
         if (queryData === null) {
@@ -218,10 +218,10 @@ export function CreateAppFromExcel() {
 
   useEffect(() => {
     if (data) {
-      const appId = data.createAppWithEntities.id;
+      const resourceId = data.createAppWithEntities.id;
       //const buildId = data.createAppWithEntities.builds[0].id;
 
-      history.push(`/${appId}/entities`);
+      history.push(`/${resourceId}/entities`);
     }
   }, [history, data]);
 

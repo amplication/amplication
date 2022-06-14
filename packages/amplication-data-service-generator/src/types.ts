@@ -47,7 +47,7 @@ export type AppInfo = {
 };
 
 export type Role = Omit<
-  models.AppRole,
+  models.ResourceRole,
   "__typename" | "id" | "createdAt" | "updatedAt"
 >;
 
@@ -58,10 +58,10 @@ export type EntityPermissionRole = Omit<
   | "entityVersionId"
   | "action"
   | "entityPermission"
-  | "appRoleId"
-  | "appRole"
+  | "resourceRoleId"
+  | "resourceRole"
 > & {
-  appRole: Role;
+  resourceRole: Role;
 };
 
 export type EntityPermissionField = Omit<
@@ -125,8 +125,8 @@ export type Entity = Omit<
   | "__typename"
   | "createdAt"
   | "updatedAt"
-  | "app"
-  | "appId"
+  | "resource"
+  | "resourceId"
   | "entityVersions"
   | "fields"
   | "permissions"

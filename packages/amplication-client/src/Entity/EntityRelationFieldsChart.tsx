@@ -16,7 +16,7 @@ export type FormValues = {
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   entityId: string;
   field: models.EntityField;
   entityName: string;
@@ -29,7 +29,7 @@ type Props = {
 const CLASS_NAME = "entity-relation-fields-chart";
 
 export const EntityRelationFieldsChart = ({
-  applicationId,
+  resourceId,
   entityId,
   field,
   entityName,
@@ -59,15 +59,13 @@ export const EntityRelationFieldsChart = ({
           key={field.id}
         >
           <div className={`${CLASS_NAME}__entity`}>
-            <Link to={`/${applicationId}/entities/${entityId}`}>
+            <Link to={`/${resourceId}/entities/${entityId}`}>
               <Icon icon="entity_outline" />
               {entityName}
             </Link>
           </div>
           <div className={`${CLASS_NAME}__field`}>
-            <Link
-              to={`/${applicationId}/entities/${entityId}`}
-            >
+            <Link to={`/${resourceId}/entities/${entityId}`}>
               {field.displayName}
             </Link>
           </div>
@@ -92,7 +90,7 @@ export const EntityRelationFieldsChart = ({
           </div>
           <div className={`${CLASS_NAME}__entity`}>
             <Link
-              to={`/${applicationId}/entities/${field.properties.relatedEntityId}`}
+              to={`/${resourceId}/entities/${field.properties.relatedEntityId}`}
             >
               <Icon icon="entity_outline" />
               {relatedEntityName}
@@ -110,14 +108,14 @@ export const EntityRelationFieldsChart = ({
               ) : (
                 <Link
                   className={`${CLASS_NAME}__field__textbox`}
-                  to={`/${applicationId}/fix-related-entities`}
+                  to={`/${resourceId}/fix-related-entities`}
                 >
                   Fix it
                 </Link>
               )
             ) : (
               <Link
-                to={`/${applicationId}/entities/${field.properties.relatedEntityId}/fields/${relatedField?.id}`}
+                to={`/${resourceId}/entities/${field.properties.relatedEntityId}/fields/${relatedField?.id}`}
               >
                 {relatedField?.displayName}
               </Link>

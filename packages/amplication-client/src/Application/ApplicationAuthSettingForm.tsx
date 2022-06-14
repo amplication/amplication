@@ -15,7 +15,7 @@ type Props = {
   match: match<{ application: string }>;
 };
 type TData = {
-  updateAppSettings: models.AppSettings;
+  updateAppSettings: models.ResourceSettings;
 };
 
 const FORM_SCHEMA = {
@@ -31,13 +31,13 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "application-auth-settings-form";
 
 function ApplicationAuthSettingForm({ match }: Props) {
-  const applicationId = match.params.application;
+  const resourceId = match.params.application;
 
   const { data, error } = useQuery<{
-    appSettings: models.AppSettings;
+    appSettings: models.ResourceSettings;
   }>(GET_APP_SETTINGS, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
 
@@ -46,7 +46,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
   const { trackEvent } = useTracking();
 
   const [updateAppSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_APP_SETTINGS,
+    UPDATE_RESOURCE_SETTINGS,
     {
       onCompleted: (data) => {
         pendingChangesContext.addBlock(data.updateAppSettings.id);
@@ -55,7 +55,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
   );
 
   const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
+    (data: models.ResourceSettings) => {
       const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
       trackEvent({
         eventName: "updateAppSettings",
@@ -70,11 +70,11 @@ function ApplicationAuthSettingForm({ match }: Props) {
             dbUser,
             authProvider,
           },
-          appId: applicationId,
+          resourceId: resourceId,
         },
       }).catch(console.error);
     },
-    [updateAppSettings, applicationId, trackEvent]
+    [updateAppSettings, resourceId, trackEvent]
   );
 
   const errorMessage = formatError(error || updateError);
@@ -84,7 +84,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
       {data?.appSettings && (
         <Formik
           initialValues={data.appSettings}
-          validate={(values: models.AppSettings) =>
+          validate={(values: models.ResourceSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize
@@ -125,9 +125,12 @@ function ApplicationAuthSettingForm({ match }: Props) {
 
 export default ApplicationAuthSettingForm;
 
-const UPDATE_APP_SETTINGS = gql`
-  mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
-    updateAppSettings(data: $data, where: { id: $appId }) {
+const UPDATE_RESOURCE_SETTINGS = gql`
+  mutation updateResourceSettings(
+    $data: ResourceSettingsUpdateInput!
+    $resourceId: String!
+  ) {
+    updateResourceSettings(data: $data, where: { id: $resourceId }) {
       id
       dbHost
       dbName

@@ -3,7 +3,7 @@ import { Switch, Route, match } from "react-router-dom";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import { gql, useQuery } from "@apollo/client";
 
-import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
+import ApplicationHome, { GET_RESOURCE } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import { RelatedFieldsMigrationFix } from "../Entity/RelatedFieldsMigrationFix";
 import BuildPage from "../VersionControl/BuildPage";
@@ -30,7 +30,7 @@ import NavigationTabs from "../Layout/NavigationTabs";
 import SyncWithGithubPage from "./git/SyncWithGithubPage";
 
 export type ApplicationData = {
-  app: models.App;
+  app: models.Resource;
 };
 
 export type PendingChangeStatusData = {
@@ -58,11 +58,11 @@ function ApplicationLayout({ match }: Props) {
     PendingChangeStatusData
   >(GET_PENDING_CHANGES_STATUS, {
     variables: {
-      applicationId: application,
+      resourceId: application,
     },
   });
 
-  const { data: applicationData } = useQuery<ApplicationData>(GET_APPLICATION, {
+  const { data: applicationData } = useQuery<ApplicationData>(GET_RESOURCE, {
     variables: {
       id: match.params.application,
     },
@@ -162,7 +162,7 @@ function ApplicationLayout({ match }: Props) {
     <PendingChangesContext.Provider value={pendingChangesContextValue}>
       <MainLayout
         className={CLASS_NAME}
-        footer={<LastCommit applicationId={application} />}
+        footer={<LastCommit resourceId={application} />}
       >
         <MainLayout.Menu>
           <MenuItem
@@ -215,7 +215,7 @@ function ApplicationLayout({ match }: Props) {
               />
 
               <RouteWithAnalytics
-                path="/:application/roles"
+                path="/:resource/roles"
                 component={RolesPage}
               />
               <Route path="/:application/commits" component={Commits} />
@@ -242,14 +242,14 @@ function ApplicationLayout({ match }: Props) {
 }
 
 const enhance = track((props) => {
-  return { applicationId: props.match.params.application };
+  return { resourceId: props.match.params.application };
 });
 
 export default enhance(ApplicationLayout);
 
 export const GET_PENDING_CHANGES_STATUS = gql`
-  query pendingChangesStatus($applicationId: String!) {
-    pendingChanges(where: { app: { id: $applicationId } }) {
+  query pendingChangesStatus($resourceId: String!) {
+    pendingChanges(where: { app: { id: $resourceId } }) {
       resourceId
       resourceType
     }

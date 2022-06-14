@@ -17,8 +17,8 @@ function NavigationTabsProvider({ children }: Props) {
 
   const registerNavigationTabItem = useCallback(
     (addItem: NavigationTabItem) => {
-      if (addItem.applicationId !== currentApplication) {
-        setCurrentApplication(addItem.applicationId);
+      if (addItem.resourceId !== currentApplication) {
+        setCurrentApplication(addItem.resourceId);
         setNavigationTabItems([]);
       }
 

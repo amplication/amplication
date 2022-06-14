@@ -2,7 +2,7 @@ import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
-import { AuthorizeAppWithGitResult, EnumGitProvider } from "../../models";
+import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthAppWithGit.scss";
@@ -17,7 +17,7 @@ import {
 } from "./SyncWithGithubPage";
 
 type DType = {
-  getGitAppInstallationUrl: AuthorizeAppWithGitResult;
+  getGitAppInstallationUrl: AuthorizeResourceWithGitResult;
 };
 
 // eslint-disable-next-line

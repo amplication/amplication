@@ -16,13 +16,13 @@ const CLASS_NAME = "git-repos";
 
 type Props = {
   gitOrganizationId: string;
-  applicationId: string;
+  resourceId: string;
   onGitRepositoryConnected: () => void;
   gitProvider: EnumGitProvider;
 };
 
 function GitRepos({
-  applicationId,
+  resourceId,
   gitOrganizationId,
   onGitRepositoryConnected,
   gitProvider,
@@ -53,7 +53,7 @@ function GitRepos({
       connectGitRepository({
         variables: {
           gitOrganizationId,
-          appId: applicationId,
+          resourceId: resourceId,
           name: data.name,
         },
       }).catch(console.error);
@@ -63,7 +63,7 @@ function GitRepos({
       onGitRepositoryConnected();
     },
     [
-      applicationId,
+      resourceId,
       connectGitRepository,
       gitOrganizationId,
       onGitRepositoryConnected,
@@ -116,12 +116,12 @@ const CONNECT_GIT_REPOSITORY = gql`
   mutation connectAppGitRepository(
     $name: String!
     $gitOrganizationId: String!
-    $appId: String!
+    $resourceId: String!
   ) {
     connectAppGitRepository(
       data: {
         name: $name
-        appId: $appId
+        resourceId: $resourceId
         gitOrganizationId: $gitOrganizationId
       }
     ) {

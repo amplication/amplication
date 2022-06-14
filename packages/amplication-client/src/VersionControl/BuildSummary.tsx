@@ -12,7 +12,7 @@ import { downloadArchive } from "./BuildSteps";
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 import { HelpPopover } from "../Components/HelpPopover";
-import { GET_APPLICATION } from "../Application/ApplicationHome";
+import { GET_RESOURCE } from "../Application/ApplicationHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
@@ -55,10 +55,10 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
   );
 
   const { data: appData } = useQuery<{
-    app: models.App;
-  }>(GET_APPLICATION, {
+    app: models.Resource;
+  }>(GET_RESOURCE, {
     variables: {
-      id: build.appId,
+      id: build.resourceId,
     },
   });
 
@@ -161,7 +161,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             placement="top-start"
           >
             <Link
-              to={`/${build.appId}/github`}
+              to={`/${build.resourceId}/github`}
               className={`${CLASS_NAME}__open-github`}
             >
               <Button
@@ -224,7 +224,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         >
           {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
           stepDeploy?.status === models.EnumActionStepStatus.Running ? (
-            <Link to={`/${build.appId}/builds/${build.id}`}>
+            <Link to={`/${build.resourceId}/builds/${build.id}`}>
               <Button
                 buttonStyle={EnumButtonStyle.Secondary}
                 eventData={{
@@ -254,7 +254,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
           ) : (
             <div className={`${CLASS_NAME}__sandbox`}>
               {stepDeploy ? (
-                <Link to={`/${build.appId}/builds/${build.id}`}>
+                <Link to={`/${build.resourceId}/builds/${build.id}`}>
                   <Button
                     buttonStyle={EnumButtonStyle.Secondary}
                     eventData={{

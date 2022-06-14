@@ -47,7 +47,7 @@ function SyncWithGithubPage({ match }: Props) {
     GET_APP_GIT_REPOSITORY,
     {
       variables: {
-        appId: application,
+        resourceId: application,
       },
     }
   );
@@ -77,8 +77,8 @@ function SyncWithGithubPage({ match }: Props) {
 export default SyncWithGithubPage;
 
 const GET_APP_GIT_REPOSITORY = gql`
-  query getAppGitRepository($appId: String!) {
-    app(where: { id: $appId }) {
+  query getAppGitRepository($resourceId: String!) {
+    app(where: { id: $resourceId }) {
       id
       workspace {
         id

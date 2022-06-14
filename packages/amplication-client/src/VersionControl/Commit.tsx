@@ -21,7 +21,7 @@ const INITIAL_VALUES: TCommit = {
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   noChanges: boolean;
 };
 const CLASS_NAME = "commit";
@@ -30,7 +30,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const Commit = ({ applicationId, noChanges }: Props) => {
+const Commit = ({ resourceId, noChanges }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onError: () => {
@@ -46,13 +46,13 @@ const Commit = ({ applicationId, noChanges }: Props) => {
       {
         query: GET_PENDING_CHANGES,
         variables: {
-          applicationId,
+          resourceId,
         },
       },
       {
         query: GET_LAST_COMMIT,
         variables: {
-          applicationId,
+          resourceId,
         },
       },
     ],
@@ -64,21 +64,21 @@ const Commit = ({ applicationId, noChanges }: Props) => {
       commit({
         variables: {
           message: data.message,
-          applicationId,
+          resourceId,
         },
       }).catch(console.error);
       resetForm(INITIAL_VALUES);
       pendingChangesContext.setIsError(false);
       pendingChangesContext.reset();
     },
-    [applicationId, commit, pendingChangesContext]
+    [resourceId, commit, pendingChangesContext]
   );
 
   const errorMessage = formatError(error);
 
   return (
     <div className={CLASS_NAME}>
-      <CommitValidation applicationId={applicationId} />
+      <CommitValidation resourceId={resourceId} />
       <Formik
         initialValues={INITIAL_VALUES}
         onSubmit={handleSubmit}
@@ -128,10 +128,8 @@ const Commit = ({ applicationId, noChanges }: Props) => {
 export default Commit;
 
 const COMMIT_CHANGES = gql`
-  mutation commit($message: String!, $applicationId: String!) {
-    commit(
-      data: { message: $message, app: { connect: { id: $applicationId } } }
-    ) {
+  mutation commit($message: String!, $resourceId: String!) {
+    commit(data: { message: $message, app: { connect: { id: $resourceId } } }) {
       id
     }
   }

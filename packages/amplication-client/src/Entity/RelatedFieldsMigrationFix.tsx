@@ -21,7 +21,7 @@ import {
 import "./RelatedFieldsMigrationFix.scss";
 
 type TData = {
-  app: models.App;
+  app: models.Resource;
 };
 
 type Props = {
@@ -32,11 +32,11 @@ const CLASS_NAME = "related-fields-migration-fix";
 const NAVIGATION_KEY = "FIX_RELATED_ENTITIES";
 
 export const RelatedFieldsMigrationFix = ({ match }: Props) => {
-  const applicationId = match.params.application;
+  const resourceId = match.params.application;
   const pendingChangesContext = useContext(PendingChangesContext);
 
   useNavigationTabs(
-    applicationId,
+    resourceId,
     NAVIGATION_KEY,
     match.url,
     "Fix Entity Relations"
@@ -44,7 +44,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
 
   const { data, loading, error, refetch } = useQuery<TData>(GET_LOOKUP_FIELDS, {
     variables: {
-      appId: applicationId,
+      resourceId: resourceId,
     },
   });
 
@@ -122,7 +122,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
                   <EntityRelationFieldsChart
                     key={field.id}
                     fixInPlace
-                    applicationId={applicationId}
+                    resourceId={resourceId}
                     entityId={entity.id}
                     entityName={entity.displayName}
                     field={field}
@@ -149,8 +149,8 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
 };
 
 export const GET_LOOKUP_FIELDS = gql`
-  query getAppLookupFields($appId: String!) {
-    app(where: { id: $appId }) {
+  query getAppLookupFields($resourceId: String!) {
+    app(where: { id: $resourceId }) {
       id
       name
       entities(orderBy: { displayName: Asc }) {

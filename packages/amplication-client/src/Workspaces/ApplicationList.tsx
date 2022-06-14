@@ -18,11 +18,11 @@ import ApplicationListItem from "./ApplicationListItem";
 import "./ApplicationList.scss";
 
 type TData = {
-  apps: Array<models.App>;
+  apps: Array<models.Resource>;
 };
 
 type TDeleteData = {
-  deleteApp: models.App;
+  deleteApp: models.Resource;
 };
 
 const CLASS_NAME = "application-list";
@@ -60,7 +60,7 @@ function ApplicationList() {
       });
       deleteApp({
         variables: {
-          appId: app.id,
+          resourceId: app.id,
         },
       }).catch(setError);
     },
@@ -128,7 +128,7 @@ function ApplicationList() {
           return (
             <ApplicationListItem
               key={app.id}
-              app={app}
+              resource={app}
               onDelete={handleDelete}
             />
           );
@@ -184,8 +184,8 @@ export const GET_APPLICATIONS = gql`
 `;
 
 const DELETE_APP = gql`
-  mutation deleteApp($appId: String!) {
-    deleteApp(where: { id: $appId }) {
+  mutation deleteApp($resourceId: String!) {
+    deleteApp(where: { id: $resourceId }) {
       id
     }
   }

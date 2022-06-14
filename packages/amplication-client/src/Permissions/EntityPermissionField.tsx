@@ -29,7 +29,7 @@ export const EntityPermissionField = ({
 }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
-  const availableRoles = useMemo((): models.AppRole[] => {
+  const availableRoles = useMemo((): models.ResourceRole[] => {
     if (!permission.permissionRoles) {
       return [];
     }

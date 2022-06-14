@@ -21,7 +21,7 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "entity-permissions-action";
 type TData = {
-  appRoles: models.AppRole[];
+  appRoles: models.ResourceRole[];
 };
 
 const OPTIONS = [
@@ -35,7 +35,7 @@ type Props = {
   permission: models.EntityPermission;
   permissionAction: permissionTypes.PermissionAction;
   entityDisplayName: string;
-  applicationId: string;
+  resourceId: string;
 };
 
 export const EntityPermissionAction = ({
@@ -43,7 +43,7 @@ export const EntityPermissionAction = ({
   permission,
   permissionAction: { action: actionName, actionDisplayName, canSetFields },
   entityDisplayName,
-  applicationId,
+  resourceId,
 }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
@@ -120,7 +120,7 @@ export const EntityPermissionAction = ({
   /**@todo: handle loading state and errors */
   const { data } = useQuery<TData>(GET_ROLES, {
     variables: {
-      id: applicationId,
+      id: resourceId,
       orderBy: undefined,
       whereName: undefined,
     },

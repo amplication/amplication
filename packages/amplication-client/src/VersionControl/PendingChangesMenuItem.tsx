@@ -8,7 +8,7 @@ import { Tooltip } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
 const CLASS_NAME = "pending-changes-menu-item";
@@ -16,7 +16,7 @@ const CLASS_NAME = "pending-changes-menu-item";
 const DIRECTION = "nw";
 const ICON_SIZE = "medium";
 
-const PendingChangesMenuItem = ({ applicationId }: Props) => {
+const PendingChangesMenuItem = ({ resourceId }: Props) => {
   const [panelOpen, setPanelOpen] = useState<boolean>(true);
 
   const pendingChangesContext = useContext(PendingChangesContext);
@@ -55,7 +55,7 @@ const PendingChangesMenuItem = ({ applicationId }: Props) => {
       {panelOpen && (
         <AsidePanel.Source>
           <PendingChangesBar
-            applicationId={applicationId}
+            resourceId={resourceId}
             handleClick={handleClick}
           />
         </AsidePanel.Source>

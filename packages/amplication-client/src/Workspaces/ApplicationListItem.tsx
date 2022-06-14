@@ -18,8 +18,8 @@ import {
 } from "@amplication/design-system";
 
 type Props = {
-  app: models.App;
-  onDelete: (app: models.App) => void;
+  resource: models.Resource;
+  onDelete: (resource: models.Resource) => void;
 };
 
 const DATE_FORMAT = "P p";
@@ -27,8 +27,8 @@ const CLASS_NAME = "application-list-item";
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
-function ApplicationListItem({ app, onDelete }: Props) {
-  const { id, name, description, color } = app;
+function ApplicationListItem({ resource, onDelete }: Props) {
+  const { id, name, description, color } = resource;
   const { trackEvent } = useTracking();
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -48,8 +48,8 @@ function ApplicationListItem({ app, onDelete }: Props) {
 
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
-    onDelete(app);
-  }, [onDelete, app]);
+    onDelete(resource);
+  }, [onDelete, resource]);
 
   const handleClick = useCallback(() => {
     trackEvent({
@@ -57,17 +57,17 @@ function ApplicationListItem({ app, onDelete }: Props) {
     });
   }, [trackEvent]);
 
-  const lastBuildDate = app.builds[0]
-    ? new Date(app.builds[0].createdAt)
+  const lastBuildDate = resource.builds[0]
+    ? new Date(resource.builds[0].createdAt)
     : undefined;
   return (
     <>
       <ConfirmationDialog
         isOpen={confirmDelete}
-        title={`Delete ${app.name}`}
+        title={`Delete ${resource.name}`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message="This action cannot be undone. This will permanently delete the app and its content. Are you sure you want to continue? "
+        message="This action cannot be undone. This will permanently delete the resource and its content. Are you sure you want to continue? "
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
@@ -108,7 +108,7 @@ function ApplicationListItem({ app, onDelete }: Props) {
                 </Tooltip>
               </div>
             )}
-            <BuildStatusIcons build={app.builds[0]} />
+            <BuildStatusIcons build={resource.builds[0]} />
             <span className="spacer" />
           </div>
         </Panel>

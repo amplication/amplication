@@ -19,7 +19,7 @@ import { EntitiesDiagramField } from "./EntitiesDiagramField";
 import { EntitiesDiagramStaticField } from "./EntitiesDiagramStaticField";
 
 type Props = {
-  entity: models.AppCreateWithEntitiesEntityInput;
+  entity: models.ResourceCreateWithEntitiesEntityInput;
   entityIndex: number;
   editedFieldIdentifier: FieldIdentifier | null;
   editedEntity: number | null;
