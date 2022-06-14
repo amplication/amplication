@@ -103,7 +103,7 @@ const graphqlGeneration: Task[] = [
 ];
 
 const tasks: Task[][] = [
-  // clean,
+  clean,
   bootstrap,
   buildStep,
   dockerCompose,
