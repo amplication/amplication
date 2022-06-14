@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { sendServerLoadEvent } from './util/sendServerLoadEvent';
+import { createNestjsKafkaConfig } from '@amplication/kafka';
+import { MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
   /**
@@ -29,6 +31,9 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule, {});
+  app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
+
+  await app.startAllMicroservices();
 
   if (process.env.ENABLE_SHUTDOWN_HOOKS) {
     // Remove listeners created by Prisma

@@ -99,7 +99,7 @@ export const RelatedFieldDialog = ({
             <div className={`${CLASS_NAME}__buttons`}>
               <Button
                 type="button"
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 onClick={onDismiss}
               >
                 Dismiss
