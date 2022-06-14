@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createDataService creates app as expected 1`] = `
+exports[`createDataService creates resource as expected 1`] = `
 Object {
   ".env": "# The variables in this file are only used by docker-compose for local docker deployment
 POSTGRESQL_USER=testUsername
@@ -10413,7 +10413,7 @@ export const swaggerPath = \\"api\\";
 export const swaggerDocumentOptions = new DocumentBuilder()
   .setTitle(\\"Sample Application\\")
   .setDescription(
-    'Sample application for testing\\\\n\\\\n## Congratulations! Your application is ready.\\\\n  \\\\nPlease note that all endpoints are secured with HTTP Basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
+    'Sample application for testing\\\\n\\\\n## Congratulations! Your service resource is ready.\\\\n  \\\\nPlease note that all endpoints are secured with HTTP Basic authentication.\\\\nBy default, your service resource comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
   )
   .setVersion(\\"0.1.3\\")
   .addBasicAuth()
