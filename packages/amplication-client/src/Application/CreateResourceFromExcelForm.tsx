@@ -7,7 +7,7 @@ import { Form } from "../Components/Form";
 import EntitiesDiagram, {
   EntitiesDiagramFormData,
 } from "../EntitiesDiagram/EntitiesDiagram";
-import { CLASS_NAME } from "./CreateAppFromExcel";
+import { CLASS_NAME } from "./CreateResourceFromExcel";
 
 type Props = {
   initialValues: EntitiesDiagramFormData;
@@ -16,7 +16,7 @@ type Props = {
   onSubmit: (data: EntitiesDiagramFormData) => void;
   onClearForm: () => void;
 };
-export const CreateAppFromExcelForm = ({
+export const CreateResourceFromExcelForm = ({
   initialValues,
   fileName,
   loading,

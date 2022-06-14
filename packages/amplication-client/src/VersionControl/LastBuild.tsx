@@ -57,7 +57,7 @@ export default LastBuild;
 export const GET_LAST_BUILD = gql`
   query lastBuild($resourceId: String!) {
     builds(
-      where: { app: { id: $resourceId } }
+      where: { resource: { id: $resourceId } }
       orderBy: { createdAt: Desc }
       take: 1
     ) {

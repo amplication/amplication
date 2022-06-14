@@ -55,7 +55,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
   );
 
   const { data: appData } = useQuery<{
-    app: models.Resource;
+    resource: models.Resource;
   }>(GET_RESOURCE, {
     variables: {
       id: build.resourceId,
@@ -147,7 +147,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
               Open GitHub
             </Button>
           </a>
-        ) : !appData?.app.githubSyncEnabled ? ( //app is not connected to github
+        ) : !appData?.resource.githubSyncEnabled ? ( //app is not connected to github
           <HelpPopover
             onDismiss={handleDismissHelpGitHub}
             content={

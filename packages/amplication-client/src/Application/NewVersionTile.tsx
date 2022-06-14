@@ -15,7 +15,7 @@ import { Event as TrackEvent, useTracking } from "../util/analytics";
 import "./NewVersionTile.scss";
 
 type TData = {
-  app: models.Resource;
+  resource: models.Resource;
 };
 
 type Props = {
@@ -49,7 +49,7 @@ function NewVersionTile({ resourceId }: Props) {
   const requiredFixesCount = useMemo(() => {
     if (!data) return 0;
 
-    return data.app.entities.reduce((accumulator, entity) => {
+    return data.resource.entities.reduce((accumulator, entity) => {
       const sum =
         entity.fields?.filter((field) =>
           isEmpty(field.properties.relatedFieldId)

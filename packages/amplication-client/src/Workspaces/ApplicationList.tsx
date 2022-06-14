@@ -75,7 +75,7 @@ function ApplicationList() {
   );
 
   const { data, error: errorLoading, loading } = useQuery<TData>(
-    GET_APPLICATIONS,
+    GET_RESOURCES,
     {
       variables: {
         whereName:
@@ -146,9 +146,9 @@ function ApplicationList() {
 
 export default ApplicationList;
 
-export const GET_APPLICATIONS = gql`
-  query getApplications($whereName: StringFilter) {
-    apps(where: { name: $whereName }, orderBy: { createdAt: Desc }) {
+export const GET_RESOURCES = gql`
+  query getResources($whereName: StringFilter) {
+    resources(where: { name: $whereName }, orderBy: { createdAt: Desc }) {
       id
       name
       description

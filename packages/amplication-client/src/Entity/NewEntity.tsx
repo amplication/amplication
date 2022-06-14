@@ -110,7 +110,7 @@ const NewEntity = ({ resourceId }: Props) => {
             displayName,
             name,
             pluralDisplayName,
-            app: { connect: { id: resourceId } },
+            resource: { connect: { id: resourceId } },
           },
         },
       }).catch(console.error);

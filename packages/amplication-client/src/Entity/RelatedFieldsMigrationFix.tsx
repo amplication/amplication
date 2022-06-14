@@ -21,7 +21,7 @@ import {
 import "./RelatedFieldsMigrationFix.scss";
 
 type TData = {
-  app: models.Resource;
+  resource: models.Resource;
 };
 
 type Props = {
@@ -57,7 +57,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
         createData.createDefaultRelatedField.properties.relatedEntityId
       );
 
-      const entity = data?.app.entities.find((entity) =>
+      const entity = data?.resource.entities.find((entity) =>
         entity.fields?.some(
           (field) => field.id === createData.createDefaultRelatedField.id
         )
@@ -84,12 +84,12 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
   );
 
   const entityDictionary = useMemo(() => {
-    return keyBy(data?.app.entities, (entity) => entity.id);
+    return keyBy(data?.resource.entities, (entity) => entity.id);
   }, [data]);
 
   const fieldDictionary = useMemo(() => {
     const allFields =
-      data?.app.entities.flatMap((entity) => entity.fields || []) || [];
+      data?.resource.entities.flatMap((entity) => entity.fields || []) || [];
 
     const d = keyBy(allFields, (field) => field.permanentId);
     console.log(d);
@@ -113,7 +113,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
         </span>
       </div>
       {loading && <CircularProgress />}
-      {data?.app.entities?.map((entity) => (
+      {data?.resource.entities?.map((entity) => (
         <Panel className={`${CLASS_NAME}__entity`} key={entity.id}>
           <PanelHeader>{entity.displayName}</PanelHeader>
           <div className={`${CLASS_NAME}__entity__fields`}>
@@ -149,8 +149,8 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
 };
 
 export const GET_LOOKUP_FIELDS = gql`
-  query getAppLookupFields($resourceId: String!) {
-    app(where: { id: $resourceId }) {
+  query getResourceLookupFields($resourceId: String!) {
+    resource(where: { id: $resourceId }) {
       id
       name
       entities(orderBy: { displayName: Asc }) {

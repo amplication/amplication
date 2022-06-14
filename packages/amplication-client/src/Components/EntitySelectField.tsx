@@ -38,7 +38,7 @@ export default EntitySelectField;
 
 export const GET_ENTITIES = gql`
   query getEntities($resourceId: String!) {
-    entities(where: { app: { id: $resourceId } }) {
+    entities(where: { resource: { id: $resourceId } }) {
       id
       displayName
     }

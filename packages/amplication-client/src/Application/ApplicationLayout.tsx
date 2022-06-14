@@ -29,8 +29,8 @@ import Commits from "../VersionControl/Commits";
 import NavigationTabs from "../Layout/NavigationTabs";
 import SyncWithGithubPage from "./git/SyncWithGithubPage";
 
-export type ApplicationData = {
-  app: models.Resource;
+export type ResourceData = {
+  resource: models.Resource;
 };
 
 export type PendingChangeStatusData = {
@@ -62,7 +62,7 @@ function ApplicationLayout({ match }: Props) {
     },
   });
 
-  const { data: applicationData } = useQuery<ApplicationData>(GET_RESOURCE, {
+  const { data: applicationData } = useQuery<ResourceData>(GET_RESOURCE, {
     variables: {
       id: match.params.application,
     },
@@ -171,8 +171,8 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}`}
           >
             <CircleBadge
-              name={applicationData?.app.name || ""}
-              color={applicationData?.app.color}
+              name={applicationData?.resource.name || ""}
+              color={applicationData?.resource.color}
             />
           </MenuItem>
 
@@ -249,7 +249,7 @@ export default enhance(ApplicationLayout);
 
 export const GET_PENDING_CHANGES_STATUS = gql`
   query pendingChangesStatus($resourceId: String!) {
-    pendingChanges(where: { app: { id: $resourceId } }) {
+    pendingChanges(where: { resource: { id: $resourceId } }) {
       resourceId
       resourceType
     }

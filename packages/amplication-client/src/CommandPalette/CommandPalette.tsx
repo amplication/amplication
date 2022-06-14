@@ -17,7 +17,7 @@ export type AppDescriptorWithEntityDescriptors = AppDescriptor & {
   entities: EntityDescriptor[];
 };
 export type TData = {
-  apps: AppDescriptorWithEntityDescriptors[];
+  resources: AppDescriptorWithEntityDescriptors[];
 };
 
 export interface Command {
@@ -251,7 +251,7 @@ export function getCommands(
   history: History,
   currentAppId: string | undefined
 ): Command[] {
-  const appCommands = data.apps.flatMap((app) => {
+  const appCommands = data.resources.flatMap((app) => {
     const isCurrentApp = currentAppId === app.id;
     const appCommands = getAppCommands(app, history, isCurrentApp);
     const entityCommands = app.entities.flatMap((entity) =>
@@ -265,7 +265,7 @@ export function getCommands(
 
 const SEARCH = gql`
   query search {
-    apps {
+    resources {
       id
       name
       color

@@ -139,7 +139,7 @@ export const GET_ENTITIES = gql`
     $whereName: StringFilter
   ) {
     entities(
-      where: { app: { id: $id }, displayName: $whereName }
+      where: { resource: { id: $id }, displayName: $whereName }
       orderBy: $orderBy
     ) {
       id

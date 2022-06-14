@@ -22,7 +22,7 @@ const EVENT_DATA: TrackEvent = {
 };
 
 type TData = {
-  app: {
+  resource: {
     id: string;
     gitRepository: {
       id: string;
@@ -37,11 +37,14 @@ type TData = {
 
 function SyncWithGithubTile({ resourceId }: Props) {
   const history = useHistory();
-  const { data, loading } = useQuery<TData>(GET_GIT_REPOSITORY_FROM_APP_ID, {
-    variables: {
-      id: resourceId,
-    },
-  });
+  const { data, loading } = useQuery<TData>(
+    GET_GIT_REPOSITORY_FROM_RESOURCE_ID,
+    {
+      variables: {
+        id: resourceId,
+      },
+    }
+  );
 
   const { trackEvent } = useTracking();
 
@@ -72,14 +75,14 @@ function SyncWithGithubTile({ resourceId }: Props) {
             <span className={`${CLASS_NAME}__content__details__summary`}>
               <Icon icon="github" size="medium" />
 
-              {!data?.app.gitRepository ? (
+              {!data?.resource.gitRepository ? (
                 <>You are not connected to a GitHub repository</>
               ) : (
                 <>
                   You are connected to
                   <div className={`${CLASS_NAME}__repo-name`}>
-                    {data?.app.gitRepository.gitOrganization.name}/
-                    {data.app.gitRepository.name}
+                    {data?.resource.gitRepository.gitOrganization.name}/
+                    {data.resource.gitRepository.name}
                   </div>
                 </>
               )}
@@ -94,9 +97,9 @@ function SyncWithGithubTile({ resourceId }: Props) {
 
 export default SyncWithGithubTile;
 
-const GET_GIT_REPOSITORY_FROM_APP_ID = gql`
-  query getApplication($id: String!) {
-    app(where: { id: $id }) {
+const GET_GIT_REPOSITORY_FROM_RESOURCE_ID = gql`
+  query getResource($id: String!) {
+    resource(where: { id: $id }) {
       id
       gitRepository {
         id

@@ -99,7 +99,7 @@ export const GET_COMMITS = gql`
     $whereMessage: StringFilter
   ) {
     commits(
-      where: { app: { id: $resourceId }, message: $whereMessage }
+      where: { resource: { id: $resourceId }, message: $whereMessage }
       orderBy: $orderBy
     ) {
       id

@@ -19,9 +19,9 @@ import {
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
-import { GET_APPLICATIONS } from "../Workspaces/ApplicationList";
-import "./CreateAppFromExcel.scss";
-import { CreateAppFromExcelForm } from "./CreateAppFromExcelForm";
+import { GET_RESOURCES } from "../Workspaces/ApplicationList";
+import "./CreateResourceFromExcel.scss";
+import { CreateResourceFromExcelForm } from "./CreateResourceFromExcelForm";
 import { sampleAppWithEntities, sampleAppWithoutEntities } from "./constants";
 import ProgressBar from "../Components/ProgressBar";
 
@@ -41,7 +41,7 @@ type ImportField = {
 };
 
 type TData = {
-  createAppWithEntities: models.Resource;
+  createResourceWithEntities: models.Resource;
 };
 
 enum Steps {
@@ -52,13 +52,13 @@ enum Steps {
 export const CLASS_NAME = "create-app-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
-export function CreateAppFromExcel() {
+export function CreateResourceFromExcel() {
   const [importList, setImportList] = useState<ImportField[]>([]);
   const [step, setStep] = useState<Steps>(Steps.startScreen);
   const [fileName, setFileName] = useState<string | null>(null);
   const { data: appsData } = useQuery<{
     apps: Array<models.Resource>;
-  }>(GET_APPLICATIONS);
+  }>(GET_RESOURCES);
   const [generalError, setGeneralError] = useState<Error | undefined>(
     undefined
   );
@@ -115,26 +115,25 @@ export function CreateAppFromExcel() {
     return appsData && !isEmpty(appsData.apps);
   }, [appsData]);
 
-  const [createAppWithEntities, { loading, data, error }] = useMutation<TData>(
-    CREATE_APP_WITH_ENTITIES,
-    {
-      update(cache, { data }) {
-        if (!data) return;
-        const queryData = cache.readQuery<{ apps: Array<models.Resource> }>({
-          query: GET_APPLICATIONS,
-        });
-        if (queryData === null) {
-          return;
-        }
-        cache.writeQuery({
-          query: GET_APPLICATIONS,
-          data: {
-            apps: queryData.apps.concat([data.createAppWithEntities]),
-          },
-        });
-      },
-    }
-  );
+  const [createResourceWithEntities, { loading, data, error }] = useMutation<
+    TData
+  >(CREATE_APP_WITH_ENTITIES, {
+    update(cache, { data }) {
+      if (!data) return;
+      const queryData = cache.readQuery<{ apps: Array<models.Resource> }>({
+        query: GET_RESOURCES,
+      });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_RESOURCES,
+        data: {
+          resources: queryData.apps.concat([data.createResourceWithEntities]),
+        },
+      });
+    },
+  });
 
   const clearSelectedFile = useCallback(() => {
     setFileName(null);
@@ -144,7 +143,7 @@ export function CreateAppFromExcel() {
     const fileNameWithoutExtension = fileName?.replace(/\.[^/.]+$/, "");
 
     const data: EntitiesDiagramFormData = {
-      app: {
+      resource: {
         name: fileNameWithoutExtension || "",
         description: fileNameWithoutExtension || "",
       },
@@ -188,38 +187,37 @@ export function CreateAppFromExcel() {
       }
 
       trackEvent({
-        eventName: "createAppFromFile",
-        appName: data.app.name,
+        eventName: "createResourceFromFile",
+        appName: data.resource.name,
       });
-      createAppWithEntities({ variables: { data } }).catch(console.error);
+      createResourceWithEntities({ variables: { data } }).catch(console.error);
     },
-    [createAppWithEntities, trackEvent]
+    [createResourceWithEntities, trackEvent]
   );
 
   const errorMessage = formatError(error) || formatError(generalError);
 
   const handleStartFromSample = useCallback(() => {
     trackEvent({
-      eventName: "createAppFromSample",
+      eventName: "createResourceFromSample",
     });
-    createAppWithEntities({ variables: { data: sampleAppWithEntities } }).catch(
-      console.error
-    );
-  }, [createAppWithEntities, trackEvent]);
+    createResourceWithEntities({
+      variables: { data: sampleAppWithEntities },
+    }).catch(console.error);
+  }, [createResourceWithEntities, trackEvent]);
 
   const handleStartFromScratch = useCallback(() => {
     trackEvent({
-      eventName: "createAppFromScratch",
+      eventName: "createResourceFromScratch",
     });
-    createAppWithEntities({
+    createResourceWithEntities({
       variables: { data: sampleAppWithoutEntities },
     }).catch(console.error);
-  }, [createAppWithEntities, trackEvent]);
+  }, [createResourceWithEntities, trackEvent]);
 
   useEffect(() => {
     if (data) {
-      const resourceId = data.createAppWithEntities.id;
-      //const buildId = data.createAppWithEntities.builds[0].id;
+      const resourceId = data.createResourceWithEntities.id;
 
       history.push(`/${resourceId}/entities`);
     }
@@ -431,7 +429,7 @@ export function CreateAppFromExcel() {
             </CSSTransition>
           </SwitchTransition>
         ) : (
-          <CreateAppFromExcelForm
+          <CreateResourceFromExcelForm
             fileName={fileName}
             loading={loading}
             onClearForm={clearSelectedFile}
@@ -506,8 +504,8 @@ function getColumnSampleData(
 }
 
 const CREATE_APP_WITH_ENTITIES = gql`
-  mutation createAppWithEntities($data: AppCreateWithEntitiesInput!) {
-    createAppWithEntities(data: $data) {
+  mutation createResourceWithEntities($data: ResourceCreateWithEntitiesInput!) {
+    createResourceWithEntities(data: $data) {
       id
       name
       description

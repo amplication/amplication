@@ -129,7 +129,9 @@ export default Commit;
 
 const COMMIT_CHANGES = gql`
   mutation commit($message: String!, $resourceId: String!) {
-    commit(data: { message: $message, app: { connect: { id: $resourceId } } }) {
+    commit(
+      data: { message: $message, resource: { connect: { id: $resourceId } } }
+    ) {
       id
     }
   }

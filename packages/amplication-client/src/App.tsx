@@ -6,7 +6,7 @@ import ApplicationLayout from "./Application/ApplicationLayout";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
 import WorkspaceLayout from "./Workspaces/WorkspaceLayout";
-import { CreateAppFromExcel } from "./Application/CreateAppFromExcel";
+import { CreateResourceFromExcel } from "./Application/CreateResourceFromExcel";
 
 import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
@@ -65,7 +65,7 @@ function App() {
           <PrivateRoute
             exact
             path="/create-app"
-            component={CreateAppFromExcel}
+            component={CreateResourceFromExcel}
           />
           <PrivateRoute path="/:application" component={ApplicationLayout} />
         </Switch>
