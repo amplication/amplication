@@ -1,6 +1,6 @@
 # Postgresql Server
-postgresql:
-  install: false
+postgres:
+  install: true
   postgresqlPassword: postgres
   postgresqlPostgresPassword: postgres
   postgresqlDatabase: amplication
@@ -17,8 +17,6 @@ cp-helm-charts:
   cp-zookeeper:
     enabled: true
 
-postgres:
-  install: true
 
 amplication-client:
   service:
