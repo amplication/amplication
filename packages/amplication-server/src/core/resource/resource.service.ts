@@ -378,7 +378,7 @@ export class ResourceService {
       }
     });
 
-    return this.prisma.app.update({
+    return this.prisma.resource.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(resource.name, resource.id),
