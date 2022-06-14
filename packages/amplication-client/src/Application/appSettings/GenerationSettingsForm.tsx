@@ -131,9 +131,6 @@ function GenerationSettingsForm({ match }: Props) {
     [updateAppSettings, applicationId, trackEvent]
   );
 
-  const errorMessage = formatError(error || updateError);
-  const GraphQLEnable = data?.appSettings.generateGraphQL;
-
   return (
     <div className={CLASS_NAME}>
       {data?.appSettings && (
@@ -170,7 +167,7 @@ function GenerationSettingsForm({ match }: Props) {
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
                   <h2>Admin UI</h2>
                   <ToggleField
-                    disabled={!GraphQLEnable}
+                    disabled={!data?.appSettings.generateGraphQL}
                     name="generateAdminUI"
                     label="Admin UI"
                   />
@@ -180,7 +177,10 @@ function GenerationSettingsForm({ match }: Props) {
           }}
         </Formik>
       )}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(error)}
+        message={formatError(error || updateError)}
+      />
     </div>
   );
 }
