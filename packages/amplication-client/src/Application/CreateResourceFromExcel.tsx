@@ -22,7 +22,10 @@ import { formatError } from "../util/error";
 import { GET_RESOURCES } from "../Workspaces/ApplicationList";
 import "./CreateResourceFromExcel.scss";
 import { CreateResourceFromExcelForm } from "./CreateResourceFromExcelForm";
-import { sampleAppWithEntities, sampleAppWithoutEntities } from "./constants";
+import {
+  sampleServiceResourceWithEntities,
+  sampleServiceResourceWithoutEntities,
+} from "./constants";
 import ProgressBar from "../Components/ProgressBar";
 
 type ColumnKey = {
@@ -117,7 +120,7 @@ export function CreateResourceFromExcel() {
 
   const [createResourceWithEntities, { loading, data, error }] = useMutation<
     TData
-  >(CREATE_APP_WITH_ENTITIES, {
+  >(CREATE_RESOURCE_WITH_ENTITIES, {
     update(cache, { data }) {
       if (!data) return;
       const queryData = cache.readQuery<{ apps: Array<models.Resource> }>({
@@ -202,7 +205,7 @@ export function CreateResourceFromExcel() {
       eventName: "createResourceFromSample",
     });
     createResourceWithEntities({
-      variables: { data: sampleAppWithEntities },
+      variables: { data: sampleServiceResourceWithEntities },
     }).catch(console.error);
   }, [createResourceWithEntities, trackEvent]);
 
@@ -211,7 +214,7 @@ export function CreateResourceFromExcel() {
       eventName: "createResourceFromScratch",
     });
     createResourceWithEntities({
-      variables: { data: sampleAppWithoutEntities },
+      variables: { data: sampleServiceResourceWithoutEntities },
     }).catch(console.error);
   }, [createResourceWithEntities, trackEvent]);
 
@@ -344,7 +347,7 @@ export function CreateResourceFromExcel() {
         Start from
       </div>
       <div className={`${CLASS_NAME}__other-options__option_code_text`}>
-        &lt;Sample App&gt;
+        &lt;Sample Service&gt;
       </div>
     </div>
   );
@@ -503,7 +506,7 @@ function getColumnSampleData(
   return results;
 }
 
-const CREATE_APP_WITH_ENTITIES = gql`
+const CREATE_RESOURCE_WITH_ENTITIES = gql`
   mutation createResourceWithEntities($data: ResourceCreateWithEntitiesInput!) {
     createResourceWithEntities(data: $data) {
       id

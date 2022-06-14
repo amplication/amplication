@@ -45,9 +45,9 @@ export const COLOR_TO_NAME: {
   [BLUE]: "blue",
 };
 
-export const sampleAppWithoutEntities: models.ResourceCreateWithEntitiesInput = {
+export const sampleServiceResourceWithoutEntities: models.ResourceCreateWithEntitiesInput = {
   resource: {
-    name: "My app",
+    name: "My service",
     description: "",
     color: GREEN,
   },
@@ -55,10 +55,10 @@ export const sampleAppWithoutEntities: models.ResourceCreateWithEntitiesInput = 
   entities: [],
 };
 
-export const sampleAppWithEntities: models.ResourceCreateWithEntitiesInput = {
+export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitiesInput = {
   resource: {
-    name: "Sample app",
-    description: "Sample application for e-commerce",
+    name: "Sample service",
+    description: "Sample service for e-commerce",
     color: YELLOW,
   },
   commitMessage: "",

@@ -18,11 +18,11 @@ import ApplicationListItem from "./ApplicationListItem";
 import "./ApplicationList.scss";
 
 type TData = {
-  apps: Array<models.Resource>;
+  resources: Array<models.Resource>;
 };
 
 type TDeleteData = {
-  deleteApp: models.Resource;
+  deleteResource: models.Resource;
 };
 
 const CLASS_NAME = "application-list";
@@ -36,16 +36,17 @@ function ApplicationList() {
     setError(null);
   }, [setError]);
 
-  const [deleteApp] = useMutation<TDeleteData>(DELETE_APP, {
+  const [deleteResource] = useMutation<TDeleteData>(DELETE_RESOURCE, {
     update(cache, { data }) {
       if (!data) return;
-      const deletedAppId = data.deleteApp.id;
+      const deletedResourceId = data.deleteResource.id;
 
       cache.modify({
         fields: {
-          apps(existingAppRefs, { readField }) {
-            return existingAppRefs.filter(
-              (appRef: Reference) => deletedAppId !== readField("id", appRef)
+          resources(existingResourceRefs, { readField }) {
+            return existingResourceRefs.filter(
+              (resourceRef: Reference) =>
+                deletedResourceId !== readField("id", resourceRef)
             );
           },
         },
@@ -54,17 +55,17 @@ function ApplicationList() {
   });
 
   const handleDelete = useCallback(
-    (app) => {
+    (resource) => {
       trackEvent({
-        eventName: "deleteApp",
+        eventName: "deleteResource",
       });
-      deleteApp({
+      deleteResource({
         variables: {
-          resourceId: app.id,
+          resourceId: resource.id,
         },
       }).catch(setError);
     },
-    [deleteApp, setError, trackEvent]
+    [deleteResource, setError, trackEvent]
   );
 
   const handleSearchChange = useCallback(
@@ -88,9 +89,9 @@ function ApplicationList() {
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
-  const handleNewAppClick = useCallback(() => {
+  const handleNewResourceClick = useCallback(() => {
     trackEvent({
-      eventName: "createNewAppCardClick",
+      eventName: "createNewResourceCardClick",
     });
   }, [trackEvent]);
 
@@ -103,28 +104,30 @@ function ApplicationList() {
           onChange={handleSearchChange}
         />
 
-        <Link onClick={handleNewAppClick} to="/create-app">
+        <Link onClick={handleNewResourceClick} to="/create-resource">
           <Button
             className={`${CLASS_NAME}__add-button`}
             buttonStyle={EnumButtonStyle.Primary}
             icon="plus"
           >
-            New app
+            New resource
           </Button>
         </Link>
       </div>
-      <div className={`${CLASS_NAME}__title`}>{data?.apps.length} Apps</div>
+      <div className={`${CLASS_NAME}__title`}>
+        {data?.resources.length} Resources
+      </div>
       {loading && <CircularProgress />}
 
-      {isEmpty(data?.apps) && !loading ? (
+      {isEmpty(data?.resources) && !loading ? (
         <div className={`${CLASS_NAME}__empty-state`}>
           <SvgThemeImage image={EnumImages.AddApp} />
           <div className={`${CLASS_NAME}__empty-state__title`}>
-            There are no apps to show
+            There are no resources to show
           </div>
         </div>
       ) : (
-        data?.apps.map((app) => {
+        data?.resources.map((app) => {
           return (
             <ApplicationListItem
               key={app.id}
@@ -183,9 +186,9 @@ export const GET_RESOURCES = gql`
   }
 `;
 
-const DELETE_APP = gql`
-  mutation deleteApp($resourceId: String!) {
-    deleteApp(where: { id: $resourceId }) {
+const DELETE_RESOURCE = gql`
+  mutation deleteResource($resourceId: String!) {
+    deleteResource(where: { id: $resourceId }) {
       id
     }
   }

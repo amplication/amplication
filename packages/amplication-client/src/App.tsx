@@ -64,7 +64,7 @@ function App() {
           <PrivateRoute path="/user/profile" component={WorkspaceLayout} />
           <PrivateRoute
             exact
-            path="/create-app"
+            path="/create-resource"
             component={CreateResourceFromExcel}
           />
           <PrivateRoute path="/:application" component={ApplicationLayout} />
