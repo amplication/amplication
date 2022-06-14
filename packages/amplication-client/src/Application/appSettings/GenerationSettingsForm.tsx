@@ -15,6 +15,7 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { match } from "react-router-dom";
 import PendingChangesContext from "../../VersionControl/PendingChangesContext";
 import "./GenerationSettingsForm.scss";
+import cssNamingConverter from "../../util/cssNamingConverter";
 
 type Props = {
   match: match<{ application: string }>;
@@ -67,7 +68,7 @@ const FORM_SCHEMA = {
   },
 };
 
-const CLASS_NAME = "generation-settings-form";
+const CLASS_NAME = cssNamingConverter(GenerationSettingsForm.name);
 
 function GenerationSettingsForm({ match }: Props) {
   const applicationId = match.params.application;
