@@ -1,6 +1,11 @@
 import React from "react";
 import { Button, EnumButtonStyle } from "../../Components/Button";
-import { Icon, Label, Tooltip } from "@amplication/design-system";
+import {
+  EnumIconPosition,
+  Icon,
+  Label,
+  Tooltip,
+} from "@amplication/design-system";
 import { Link } from "react-router-dom";
 import * as models from "../../models";
 import { isEmpty } from "lodash";
@@ -29,7 +34,11 @@ const AppGitStatusPanel = ({ app }: Props) => {
             with the generated code
           </div>
           <Link title={"Connect to GitHub"} to={`/${app.id}/github`}>
-            <Button buttonStyle={EnumButtonStyle.Secondary} icon="github">
+            <Button
+              buttonStyle={EnumButtonStyle.Secondary}
+              icon="github"
+              iconPosition={EnumIconPosition.Left}
+            >
               Connect to GitHub
             </Button>
           </Link>
