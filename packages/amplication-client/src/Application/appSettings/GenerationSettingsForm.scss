@@ -7,11 +7,11 @@
     margin-bottom: var(--large-spacing);
     h3 {
       margin: 0;
-      font-size: 18px;
+      @include title-18();
     }
   }
   &__description {
-    font-size: 14px;
+    @include regular-14();
   }
   h2 {
     font-size: 14px;

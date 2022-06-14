@@ -322,3 +322,83 @@ $active-indicator-width: 4px;
   padding-left: 4px;
   padding-right: 4px;
 }
+
+@mixin font-base {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@mixin title-32 {
+  @include font-base();
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 48px;
+  color: #f5f6fa;
+}
+
+@mixin title-24 {
+  @include font-base();
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 36px;
+  color: #f5f6fa;
+}
+
+@mixin title-24-semi {
+  @include font-base();
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 36px;
+  color: #f5f6fa;
+}
+
+@mixin title-18 {
+  @include font-base();
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 27px;
+  color: #f5f6fa;
+}
+
+@mixin title-18-semi {
+  @include font-base();
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 27px;
+  color: #f5f6fa;
+}
+
+@mixin bold-14 {
+  @include font-base();
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: #f5f6fa;
+}
+
+@mixin regular-14 {
+  @include font-base();
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #f5f6fa;
+}
+
+@mixin bold-12 {
+  @include font-base();
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  color: #f5f6fa;
+}
+
+@mixin regular-12 {
+  @include font-base();
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #f5f6fa;
+}
