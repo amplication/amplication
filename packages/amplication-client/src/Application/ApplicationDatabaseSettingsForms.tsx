@@ -111,7 +111,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
                 <div className={`${CLASS_NAME}__header`}>
                   <h3>Database Settings</h3>
                 </div>
-                <p>
+                <p className={`${CLASS_NAME}__description`}>
                   All the below settings will appear in clear text in the
                   generated app. <br />
                   It should only be used for the development environment

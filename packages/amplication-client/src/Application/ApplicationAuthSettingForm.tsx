@@ -97,7 +97,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
                 <div className={`${CLASS_NAME}__header`}>
                   <h3>Authentication Providers</h3>
                 </div>
-                <p>
+                <p className={`${CLASS_NAME}__description`}>
                   Select the authentication method to be used in the generated
                   app.
                 </p>
