@@ -59,17 +59,28 @@ async function runFunction(task: Task): Promise<string> {
   });
 }
 
+const clean: Task[] = [
+  {
+    command: "npx lerna clean",
+    label: "lerna clean --yes",
+  },
+];
 const bootstrap: Task[] = [
   {
     command: "npm run bootstrap",
-    label: "Bootstrap",
+    label: "bootstrap",
   },
 ];
-const clientStep: Task[] = [
+const buildStep: Task[] = [
   {
-    command:
-      "npm run build -- --scope @amplication/client --include-dependencies",
-    label: "Client build",
+    command: "npm run build",
+    label: "build all packages",
+  },
+];
+const dockerCompose: Task[] = [
+  {
+    command: "docker-compose -f ./docker-compose.dev.yml up -d",
+    label: "running docker compose dev up",
   },
 ];
 const prismaGeneration: Task[] = [
@@ -78,11 +89,10 @@ const prismaGeneration: Task[] = [
     label: "prisma generation",
   },
 ];
-const serverBuild: Task[] = [
+const prismaMigration: Task[] = [
   {
-    command:
-      "npm run build -- --scope @amplication/server --include-dependencies",
-    label: "server build",
+    command: "npm run migrate:up",
+    label: "prisma generation",
   },
 ];
 const graphqlGeneration: Task[] = [
@@ -91,27 +101,15 @@ const graphqlGeneration: Task[] = [
     label: "generation graphql schema",
   },
 ];
-const docker: Task[] = [
-  {
-    command: "cd packages/amplication-server && npm run docker",
-    label: "running docker compose up",
-  },
-];
-const dockerInit: Task[] = [
-  {
-    command: "cd packages/amplication-prism-db && npm run start:db",
-    label: "db seeding",
-  },
-];
 
 const tasks: Task[][] = [
+  // clean,
   bootstrap,
-  clientStep,
+  buildStep,
+  dockerCompose,
   prismaGeneration,
-  serverBuild,
+  prismaMigration,
   graphqlGeneration,
-  docker,
-  dockerInit,
 ];
 
 if (require.main === module) {
