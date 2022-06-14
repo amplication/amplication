@@ -47,12 +47,9 @@ pvc:
 # Postgresql Server
 postgresql:
   install: false
-  global:
-    postgresql:
-      replicationPassword: postgres
-      postgresqlUsername: postgres
-      postgresqlPassword: postgres
-      postgresqlDatabase: amplication
+  postgresqlPassword: postgres
+  postgresqlPostgresPassword: postgres
+  postgresqlDatabase: amplication
   fullnameOverride: postgresql
   image: groundnuty/k8s-wait-for:v1.3
   imagePullPolicy: Always
