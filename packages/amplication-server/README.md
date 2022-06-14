@@ -50,7 +50,7 @@ You can also use a more manual step-by-step approach to set up Amplication serve
   ```
   npm run docker
   ```
-- Update application database (execute in server directory "packages/amplication-server")
+- Update application database (execute in server directory "packages/amplication-prisma-db")
 
   ```
   npm run start:db

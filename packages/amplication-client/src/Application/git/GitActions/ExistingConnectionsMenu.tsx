@@ -40,7 +40,7 @@ export default function ExistingConnectionsMenu({
           "Select new organization"
         )
       }
-      buttonStyle={EnumButtonStyle.Clear}
+      buttonStyle={EnumButtonStyle.Text}
       className={`${CLASS_NAME}__menu`}
       icon="chevron_down"
     >

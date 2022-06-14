@@ -14,6 +14,9 @@ import * as serviceWorker from "./serviceWorker";
 import { getToken, setToken } from "./authentication/authentication";
 import { setContext } from "@apollo/client/link/context";
 import { REACT_APP_DATA_SOURCE } from "./env";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
@@ -49,9 +52,11 @@ const apolloClient = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
+    <QueryClientProvider client={queryClient}>
       <Router>
         <App />
       </Router>
+      </QueryClientProvider>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById("root")
