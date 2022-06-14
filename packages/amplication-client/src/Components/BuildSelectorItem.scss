@@ -3,9 +3,9 @@
 .build-selector-item {
   @include flexFullRowWithSpacing;
   .circle-badge {
-    width: 15px;
-    min-width: 15px;
-    height: 15px;
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
     font-size: 10px;
   }
   .title {
@@ -13,6 +13,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 400;
+    font-size: 14px;
+    padding-left: 12px;
   }
 
   .title-list {
