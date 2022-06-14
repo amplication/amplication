@@ -18,12 +18,12 @@ const CodeViewBar = ({ app, onFileSelected }: Props) => {
         <h2>File Browser</h2>
       </div>
       <AppGitStatusPanel app={app} />
-
+      <hr />
       <CodeViewExplorer app={app} onFileSelected={onFileSelected} />
     </div>
   );
 };
 
-const CLASS_NAME = cssNamingConverter(CodeViewBar.name)
+const CLASS_NAME = cssNamingConverter(CodeViewBar.name);
 
 export default CodeViewBar;
