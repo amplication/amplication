@@ -292,6 +292,21 @@ jobs:
           sh .github/workflows/scripts/get_ecr_repository.sh
         env:
           SERVICE_NAME: ${{ matrix.service }}
+      - run: |
+          if [ -d "$GITHUB_WORKSPACE/packages/${{ matrix.service }}" ] 
+          then
+              echo "Directory packages/${{ matrix.service }} exists." 
+              SERVICE_FOLDER=$GITHUB_WORKSPACE/packages/${{ matrix.service }}
+          elif [ -d "$GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}" ] 
+          then
+              echo "Directory ee/packages/${{ matrix.service }} exists."
+              SERVICE_FOLDER=$GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}
+          else
+            echo "Unable to locate service folder: ${{ matrix.service }}"
+            exit 1
+          fi
+          echo "SERVICE_FOLDER=${SERVICE_FOLDER}" >> $GITHUB_ENV
+          name: Set services folder
       - name: Set hash
         env:
           hashes: ${{ needs.changes.outputs.hashes }}

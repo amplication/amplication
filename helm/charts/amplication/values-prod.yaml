@@ -18,10 +18,10 @@ amplication-client:
       REACT_APP_DATA_SOURCE: "https://server.amplication.com/graphql"
       REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.amplication.com/github"
       REACT_APP_PADDLE_VENDOR_ID: "131992"
-      REACT_APP_FEATURE_FLAGS: "{\"SHOW_DEPLOYER\":true}"
+      REACT_APP_FEATURE_FLAGS: '{"SHOW_DEPLOYER":true}'
 
 amplication-server:
-  resources: 
+  resources:
     limits:
       cpu: 3
       memory: 6Gi
@@ -46,7 +46,7 @@ amplication-server:
 
       #KAFKA
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'      
+      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
@@ -67,7 +67,7 @@ amplication-server:
 
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "cc622ae6020e92fa1442"
-      GITHUB_REDIRECT_URI: "https://server.amplication.com/github/callback" #TODO:UPDATE GH
+      GITHUB_REDIRECT_URI: "https://server.amplication.com/github/callback"
 
       #SENDGRID
       SENDGRID_FROM_ADDRESS: team@amplication.com
@@ -82,14 +82,13 @@ amplication-server:
 
       #SEGMENT
       SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
-      
 
 amplication-git-push-webhook-service:
   postgres:
     install: false
   ingress:
     enabled: true
-    hostname: webhook.amplication.com
+    hostname: webhooks.amplication.com
   config:
     env:
       #KAFKA
@@ -98,7 +97,7 @@ amplication-git-push-webhook-service:
       KAFKA_CLIENT_ID: git-push-webhook-service
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
-amplication-git-pull-service:  
+amplication-git-pull-service:
   pvc:
     name: prod-efs-claim
   postgres:
@@ -130,7 +129,7 @@ amplication-git-pull-request-service:
   config:
     env:
       #KAFKA
-      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'      
+      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
