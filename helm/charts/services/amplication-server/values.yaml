@@ -45,15 +45,14 @@ pvc:
   name: efs-claim
 
 # Postgresql Server
-postgres:
+postgresql:
   install: false
   global:
     postgresql:
-      auth:
-        postgresPassword: postgres
-        username: postgres
-        password: postgres
-        database: amplication
+      replicationPassword: postgres
+      postgresqlUsername: postgres
+      postgresqlPassword: postgres
+      postgresqlDatabase: amplication
   fullnameOverride: postgresql
   image: groundnuty/k8s-wait-for:v1.3
   imagePullPolicy: Always
