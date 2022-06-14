@@ -20,6 +20,14 @@ Amplication is using a mono-repo with multiple packages. To initialize all the p
 
 You can also use a more manual step-by-step approach to set up Amplication server - to do that, follow the instructions below.
 
+### Environment Variables:
+Environment | Description | Value |
+--- | --- | --- | 
+KAFKA_BROKERS | kafka client must be configured with at least one broker. The brokers on the list are considered seed brokers and are only used to bootstrap the client and load initial metadata  | `["localhost:9092"]` |
+KAFKA_CLIENT_ID | .  | `server-queue-client` |
+KAFKA_GROUP_ID | The consumer group name  | `'main-server-group` |
+
+
 #### Manual one-time set up
 
 - Install dependencies of the monorepo (execute in root directory):
