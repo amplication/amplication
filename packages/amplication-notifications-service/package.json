@@ -14,12 +14,14 @@
     "docker:build": "docker build ."
   },
   "dependencies": {
+    "@amplication/kafka": "0.12.2",
     "@nestjs/common": "8.4.3",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "8.2.3",
     "@nestjs/microservices": "8.4.3",
     "@nestjs/platform-express": "8.2.3",
     "@nestjs/serve-static": "2.2.2",
+    "@novu/node": "0.4.1",
     "bcrypt": "5.0.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
