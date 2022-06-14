@@ -65,6 +65,29 @@ export class AppSettingsService {
       return this.createDefaultAppSettings(args.where.id, user);
     }
 
+    if (isEmpty(appSettings.generateGraphQL)) {
+      await this.updateAppSettings(
+        {
+          data: {
+            generateAdminUI: true,
+            generateGraphQL: true,
+            generateRestApi: true,
+            generateRootFiles: true,
+            dbHost: appSettings.dbHost,
+            dbName: appSettings.dbName,
+            dbPassword: appSettings.dbPassword,
+            dbPort: appSettings.dbPort,
+            dbUser: appSettings.dbUser,
+            authProvider: appSettings.authProvider
+          },
+          where: {
+            id: args.where.id
+          }
+        },
+        user
+      );
+    }
+
     return {
       ...appSettings,
       authProvider: appSettings.authProvider || EnumAuthProviderType.Http
