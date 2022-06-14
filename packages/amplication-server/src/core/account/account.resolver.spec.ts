@@ -12,7 +12,7 @@ import { User, Account } from 'src/models';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { AccountResolver } from './account.resolver';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@amplication/prisma-db';
 import { AccountService } from './account.service';
 
 const EXAMPLE_USER_ID = 'exampleUserId';

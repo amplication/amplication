@@ -1,9 +1,7 @@
+import { Prisma, PrismaService } from '@amplication/prisma-db';
 import { ConflictException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
-import { User, UserRole, Account } from 'src/models';
+import { Account, User, UserRole } from 'src/models';
 import { UserRoleArgs } from './dto';
-
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserService {
