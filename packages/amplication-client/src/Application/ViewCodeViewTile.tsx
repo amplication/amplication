@@ -36,7 +36,7 @@ function ViewCodeViewTile({ applicationId }: Props) {
           type="button"
           onClick={handleClick}
         >
-          Watch code
+          View code
         </Button>
       }
     />

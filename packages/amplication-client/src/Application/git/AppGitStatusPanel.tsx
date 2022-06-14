@@ -29,7 +29,7 @@ const AppGitStatusPanel = ({ app }: Props) => {
             with the generated code
           </div>
           <Link title={"Connect to GitHub"} to={`/${app.id}/github`}>
-            <Button buttonStyle={EnumButtonStyle.Secondary} icon="github">
+            <Button buttonStyle={EnumButtonStyle.Secondary}>
               Connect to GitHub
             </Button>
           </Link>
@@ -62,8 +62,6 @@ const AppGitStatusPanel = ({ app }: Props) => {
           )}
         </div>
       )}
-
-      <hr />
     </div>
   );
 };

@@ -12,11 +12,8 @@ $item-text-spacing: 10px;
   background-color: var(--black2);
   margin: 0;
 
-  &:hover {
-    box-shadow: 0px 24px 25px -8px #090b1466;
-    transition: all 1s ease;
-    border: 1px solid var(--black30);
-  }
+  box-shadow: 0px 24px 25px -8px #090b1466;
+  border: 1px solid var(--black30);
 
   &__header {
     @include flexVerticalCenter;
