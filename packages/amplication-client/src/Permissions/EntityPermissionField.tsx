@@ -34,12 +34,12 @@ export const EntityPermissionField = ({
       return [];
     }
 
-    return permission.permissionRoles.map((role) => role.appRole);
+    return permission.permissionRoles.map((role) => role.resourceRole);
   }, [permission]);
 
   const selectedRoleIds = useMemo((): Set<string> => {
     return new Set(
-      permissionField.permissionRoles?.map((item) => item.appRole.id)
+      permissionField.permissionRoles?.map((item) => item.resourceRole.id)
     );
   }, [permissionField.permissionRoles]);
 
@@ -101,7 +101,7 @@ export const EntityPermissionField = ({
 
       const addPermissionRoles = Array.from(addedRoleIds, (id) => {
         const permissionRole = permission.permissionRoles?.find(
-          (item) => item.appRoleId === id
+          (item) => item.resourceRoleId === id
         );
         return {
           id: permissionRole?.id,
@@ -110,7 +110,7 @@ export const EntityPermissionField = ({
 
       const deletePermissionRoles = Array.from(removedRoleIds, (id) => {
         const permissionRole = permission.permissionRoles?.find(
-          (item) => item.appRoleId === id
+          (item) => item.resourceRoleId === id
         );
         return {
           id: permissionRole?.id,
@@ -183,7 +183,7 @@ const UPDATE_ROLES = gql`
       }
       permissionRoles {
         id
-        appRole {
+        resourceRole {
           id
           displayName
         }

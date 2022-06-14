@@ -29,7 +29,7 @@ function RolesTile({ resourceId }: Props) {
   const history = useHistory();
 
   const { data, loading } = useQuery<{
-    appRoles: models.ResourceRole[];
+    resourceRoles: models.ResourceRole[];
   }>(GET_ROLES, {
     variables: {
       id: resourceId,
@@ -63,8 +63,8 @@ function RolesTile({ resourceId }: Props) {
             <span className={`${CLASS_NAME}__content__details__summary`}>
               <Icon icon="lock" size="medium" />
 
-              {data?.appRoles.length}
-              {data?.appRoles.length > 1 ? " roles" : " role"}
+              {data?.resourceRoles.length}
+              {data?.resourceRoles.length > 1 ? " roles" : " role"}
             </span>
           )}
         </div>

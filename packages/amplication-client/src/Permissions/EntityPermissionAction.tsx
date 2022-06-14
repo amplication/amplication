@@ -21,7 +21,7 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "entity-permissions-action";
 type TData = {
-  appRoles: models.ResourceRole[];
+  resourceRoles: models.ResourceRole[];
 };
 
 const OPTIONS = [
@@ -48,7 +48,9 @@ export const EntityPermissionAction = ({
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const selectedRoleIds = useMemo((): Set<string> => {
-    return new Set(permission.permissionRoles?.map((role) => role.appRoleId));
+    return new Set(
+      permission.permissionRoles?.map((role) => role.resourceRoleId)
+    );
   }, [permission.permissionRoles]);
 
   /**@todo: handle  errors */
@@ -259,7 +261,7 @@ export const EntityPermissionAction = ({
       <ul className="panel-list">
         <li>
           <ActionRoleList
-            availableRoles={data?.appRoles || []}
+            availableRoles={data?.resourceRoles || []}
             selectedRoleIds={selectedRoleIds}
             debounceMS={1000}
             onChange={handleRoleSelectionChange}
@@ -314,8 +316,8 @@ const UPDATE_ROLES = gql`
       type
       permissionRoles {
         id
-        appRoleId
-        appRole {
+        resourceRoleId
+        resourceRole {
           id
           displayName
         }

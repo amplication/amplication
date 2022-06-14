@@ -74,8 +74,8 @@ export const GET_ENTITY_PERMISSIONS = gql`
         type
         permissionRoles {
           id
-          appRoleId
-          appRole {
+          resourceRoleId
+          resourceRole {
             id
             displayName
           }
@@ -90,7 +90,7 @@ export const GET_ENTITY_PERMISSIONS = gql`
           }
           permissionRoles {
             id
-            appRole {
+            resourceRole {
               id
               displayName
             }

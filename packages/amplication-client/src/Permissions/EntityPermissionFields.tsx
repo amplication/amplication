@@ -233,7 +233,7 @@ const ADD_FIELD = gql`
       }
       permissionRoles {
         id
-        appRole {
+        resourceRole {
           id
           displayName
         }
