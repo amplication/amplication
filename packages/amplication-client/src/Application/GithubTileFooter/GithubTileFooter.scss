@@ -1,0 +1,39 @@
+@import "../../style/index.scss";
+
+$dp-size: 20px;
+
+.github-tile-footer {
+  &__user-details {
+    @include flexVerticalCenter();
+    margin-bottom: var(--default-spacing);
+
+    &__info-icon {
+      color: var(--negative);
+      margin-right: var(--default-spacing-small);
+    }
+
+    &__dp {
+      width: $dp-size;
+      height: $dp-size;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &__name {
+      margin-left: var(--default-spacing-small);
+      color: var(--black80);
+    }
+  }
+
+  &__sync-details {
+    @include flexVerticalCenter();
+    &__text {
+      margin-left: var(--default-spacing-small);
+      color: var(--black100);
+    }
+  }
+}
