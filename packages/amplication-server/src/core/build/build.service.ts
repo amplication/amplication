@@ -600,7 +600,7 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  private async saveToGitHub(build: Build, oldBuildId: string) {
+  private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
     const app = build.app;
 
     const appRepository = await this.prisma.gitRepository.findUnique({
@@ -632,35 +632,35 @@ export class BuildService {
         async step => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
-            const response = await this.queueService.sendCreateGitPullRequest({
-              gitOrganizationName: appRepository.gitOrganization.name,
-              gitRepositoryName: appRepository.name,
-              amplicationAppId: app.id,
-              gitProvider: EnumGitProvider.Github,
-              installationId: appRepository.gitOrganization.installationId,
-              newBuildId: build.id,
-              oldBuildId,
-              commit: {
-                base: 'main',
-                head: `amplication-build-${build.id}`,
-                body: `Amplication build # ${build.id}.
+            const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
+              {
+                gitOrganizationName: appRepository.gitOrganization.name,
+                gitRepositoryName: appRepository.name,
+                amplicationAppId: app.id,
+                gitProvider: EnumGitProvider.Github,
+                installationId: appRepository.gitOrganization.installationId,
+                newBuildId: build.id,
+                oldBuildId,
+                commit: {
+                  base: 'main',
+                  head: `amplication-build-${build.id}`,
+                  body: `Amplication build # ${build.id}.
                 Commit message: ${commit.message}
                 
                 ${url}
                 `,
-                title: commitMessage
+                  title: commitMessage
+                }
               }
-            });
-
-            const { url: prUrl } = response;
-
-            assert(prUrl, 'Failed to get pull request url');
+            );
 
             await this.appService.reportSyncMessage(
               build.appId,
               'Sync Completed Successfully'
             );
-            await this.actionService.logInfo(step, prUrl, { githubUrl: prUrl });
+            await this.actionService.logInfo(step, pullRequestResponse.url, {
+              githubUrl: pullRequestResponse.url
+            });
             await this.actionService.logInfo(
               step,
               PUSH_TO_GITHUB_STEP_FINISH_LOG
