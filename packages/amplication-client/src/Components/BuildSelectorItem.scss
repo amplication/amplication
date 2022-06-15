@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+
+.build-selector-item {
+  @include flexFullRowWithSpacing;
+  .circle-badge {
+    width: 15px;
+    min-width: 15px;
+    height: 15px;
+    font-size: 10px;
+  }
+  .title {
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .title-list {
+    max-width: 180px;
+  }
+}

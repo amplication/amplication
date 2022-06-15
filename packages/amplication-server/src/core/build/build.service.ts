@@ -46,6 +46,7 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
 import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
+import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -230,7 +231,7 @@ export class BuildService {
     });
 
     logger.info(JOB_STARTED_LOG);
-    const tarballURL = await this.generate(build, user, oldBuild.id);
+    const tarballURL = await this.generate(build, user, oldBuild?.id);
     if (!skipPublish) {
       await this.buildDockerImage(build, tarballURL);
     }
@@ -741,5 +742,15 @@ export class BuildService {
       entities,
       entity => entity.createdAt
     ) as unknown) as DataServiceGenerator.Entity[];
+  }
+  async canUserAccess({
+    userId,
+    buildId
+  }: CanUserAccessArgs): Promise<boolean> {
+    const build = this.prisma.build.findFirst({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      where: { id: buildId, AND: { userId } }
+    });
+    return Boolean(build);
   }
 }

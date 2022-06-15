@@ -44,7 +44,7 @@ const MenuItem = ({
 
   const content = (
     <Button
-      buttonStyle={EnumButtonStyle.Clear}
+      buttonStyle={EnumButtonStyle.Text}
       as={to ? NavLink : Button}
       onClick={onClick}
       to={to}

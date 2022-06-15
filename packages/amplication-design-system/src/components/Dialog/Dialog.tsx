@@ -59,7 +59,7 @@ export const Dialog = ({
           <h3>{title}</h3>
           <Button
             icon="close"
-            buttonStyle={EnumButtonStyle.Clear}
+            buttonStyle={EnumButtonStyle.Text}
             onClick={onDismiss}
           />
         </div>

@@ -8,8 +8,9 @@ ALTER INDEX "App.workspaceId_name_unique" RENAME TO "Resource.workspaceId_name_u
 
 -- GitRepository work
 ALTER TABLE "GitRepository"
-RENAME "appId" TO "resource";
+RENAME "appId" TO "resourceId";
 ALTER TABLE "GitRepository" RENAME CONSTRAINT  "GitRepository_appId_fkey" TO "GitRepository_resourceId_fkey";
+ALTER INDEX "GitRepository_appId_key" RENAME TO "GitRepository_resourceId_key";
 
 -- Commit work
 ALTER TABLE "Commit"
