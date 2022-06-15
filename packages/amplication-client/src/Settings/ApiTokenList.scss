@@ -4,7 +4,7 @@
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
-    h2 {
+    h3 {
       margin: 0;
     }
   }
@@ -24,7 +24,7 @@
     background-color: var(--theme-turquoise-transparent);
     border: 1px solid var(--theme-turquoise);
   }
-  
+
   &__new-token-message {
     margin-bottom: var(--default-spacing);
   }

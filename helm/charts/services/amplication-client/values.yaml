@@ -20,7 +20,15 @@ service:
   protocol: TCP
   hostname: app.amplication-dev.com	
   certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
-  
+
+podAnnotations:
+  cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+
+maxMemory: "2Gi"
+minMemory: "2Gi"
+maxCPU: 1
+minCPU: 1
+
 config:
   env:
     REACT_APP_SERVER_URI: https://server.amplication-dev.com

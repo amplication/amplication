@@ -1,5 +1,5 @@
 name: amplication-git-push-webhook-service
-    
+
 replicaCount: 1
 autoscaling:
   enabled: false
@@ -13,15 +13,24 @@ image:
   tag: 0.0.1
   imagePullSecrets: []
 
+podAnnotations:
+  cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+
+maxMemory: "2Gi"
+minMemory: "2Gi"
+maxCPU: 1
+minCPU: 1
+
 service:
   type: ClusterIP
-  port: 
+  port:
     target: 3000
   protocol: TCP
 
 ingress:
   enabled: true
-  hostname: https://webhook.amplication.com
+  hostname: webhook.amplication.com
+  path: /
 
 postgres:
   install: false

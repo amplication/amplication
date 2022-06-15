@@ -1,7 +1,14 @@
 @import "../style/index.scss";
 
 .application-auth-settings-form {
-  padding: var(--double-spacing);
+  padding: var(--default-spacing-small);
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--large-spacing);
+    h3 {
+      margin: 0;
+    }
+  }
 
   hr {
     border: none;

@@ -29,7 +29,7 @@ export const ColorSelectButton = ({ color, onColorSelected }: Props) => {
       <designSystem.Button
         type="button"
         onClick={handleClick}
-        buttonStyle={designSystem.EnumButtonStyle.Clear}
+        buttonStyle={designSystem.EnumButtonStyle.Text}
         style={
           color && {
             backgroundColor: `${color.value}`,

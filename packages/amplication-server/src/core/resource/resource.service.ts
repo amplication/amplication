@@ -38,7 +38,6 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_RESOURCE_DATA
 } from './sampleResource';
-import cuid from 'cuid';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -94,7 +93,7 @@ export class ResourceService {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${args.data.name}`,
             workspaceId: user.workspace?.id
           }
         }
@@ -370,6 +369,16 @@ export class ResourceService {
         }
       });
     }
+
+    const project = await this.prisma.resource.findUnique(args).project();
+
+    await this.prisma.project.update({
+      where: { id: project.id },
+      data: {
+        name: prepareDeletedItemName(project.name, project.id),
+        deletedAt: new Date()
+      }
+    });
 
     return this.prisma.resource.update({
       where: args.where,
