@@ -148,7 +148,7 @@ if (require.main === module) {
         console.log("");
       }
       logger.info("Finish all the process for the setup, have fun hacking 👾");
-      logger.info("✋ To run a specific service, go to its README file and make sure you set all necessary environment variables");
+      logger.info("✋ To run a specific service, go to its README file and make sure you set all necessary environment variables❗️");
     } catch (error) {
       spinner.fail(error.message);
     }
