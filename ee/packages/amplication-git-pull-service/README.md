@@ -52,17 +52,27 @@ pushedAt: Date,
 installationId: string
 ```
 
+## Environment Variables:
+| Environment | Description | Value       |
+| ----------- | ----------- | ----------- |
+| DEBUG_MODE  | debug level         | 1           |
+| NODE_ENV    | environment mode    | development |
+| POSTGRESQL_URL | connection url to the database | postgresql://admin:admin@localhost:5432/\${SERVICE_DB_NAME} |
+| POSTGRESQL_USER | username for the local database | admin |
+| POSTGRESQL_PASSWORD | password for the local database | admin |
+| SERVICE_DB_NAME | database name | ampication-server |
+| COMPOSE_PROJECT_NAME | name of the docker image  | amplication-git-pull-service |
+| KAFKA_BROKERS | something | ["localhost:9092"] |
+| KAFKA_CONSUMER_GROUP | consumer group | git-pull-event |
+| KAFKA_CLIENT_ID | kafka client id | repository-pull |
+| KAFKA_REPOSITORY_PUSH_QUEUE | topic name | "git.external.push.event.0" |
+| STORAGE_PATH | something | [path-to-local-folder] for example /Users/myusername/temp |
+| MAX_SNAPSHOTS | a number represents the size of the storage | [place-your-max-snapshot-here] |
+| GIT_DEFAULT_ORIGIN_NAME | git remote name | origin |
+| GITHUB_APP_APP_ID | i don't know | [github-app-app-id] |
+| GITHUB_APP_PRIVATE_KEY | i don't know | [github-app-private-key] |
+
 ## Development:
-
-- Run Kafka in a docker image:
-
-```
-docker compose up -d
-```
-
----
-
-- In a separate terminal, run the microservice
 
 ```bash
 cd ee/packages/amplication-git-pull-service
