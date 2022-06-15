@@ -22,13 +22,13 @@ export class EntityPageService extends BlockTypeService<
     super();
   }
 
-  private async validateEntityInApp(
+  private async validateEntityInResource(
     entityId: string,
-    appId: string
+    resourceId: string
   ): Promise<void> {
-    if (!this.entityService.isEntityInSameApp(entityId, appId)) {
+    if (!this.entityService.isEntityInSameResource(entityId, resourceId)) {
       throw new NotFoundException(
-        `Can't find persistent entity with ID ${entityId} in ${appId}`
+        `Can't find persistent entity with ID ${entityId} in ${resourceId}`
       );
     }
   }
@@ -65,7 +65,10 @@ export class EntityPageService extends BlockTypeService<
 
   async create(args: CreateEntityPageArgs, user: User): Promise<EntityPage> {
     await Promise.all([
-      this.validateEntityInApp(args.data.entityId, args.data.app.connect.id),
+      this.validateEntityInResource(
+        args.data.entityId,
+        args.data.resource.connect.id
+      ),
       this.validatePageType(
         args.data.pageType,
         args.data.entityId,

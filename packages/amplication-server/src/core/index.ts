@@ -1,4 +1,4 @@
-export { AppService } from './app/app.service'; // eslint-disable-line import/no-cycle
+export { ResourceService } from './resource/resource.service'; // eslint-disable-line import/no-cycle
 export { WorkspaceService } from './workspace/workspace.service'; // eslint-disable-line import/no-cycle
 export { UserService } from './user/user.service';
 export { AuthService } from './auth/auth.service'; // eslint-disable-line import/no-cycle

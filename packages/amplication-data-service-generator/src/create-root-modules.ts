@@ -1,5 +1,5 @@
 import winston from "winston";
-import { Module, AppGenerationConfig, AppInfo } from "./types";
+import { Module, ResourceGenerationConfig, AppInfo } from "./types";
 import { version } from "./version";
 import { formatJson } from "./util/module";
 import { createDotEnvModule } from "./create-dotenv";
@@ -22,7 +22,7 @@ async function createAmplicationConfigurationFile(
 ): Promise<Module> {
   logger.info(`Creating Amplication configuration file ${version}...`);
 
-  const config: AppGenerationConfig = {
+  const config: ResourceGenerationConfig = {
     dataServiceGeneratorVersion: version,
     appInfo,
   };

@@ -16,7 +16,7 @@ export class BuildWhereInput {
   createdAt?: DateTimeFilter | null | undefined;
 
   @Field(() => WhereUniqueInput)
-  app?: WhereUniqueInput;
+  resource?: WhereUniqueInput;
 
   @Field(() => WhereUniqueInput, {
     nullable: true

@@ -17,7 +17,7 @@ import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
-import { AppRole, User } from 'src/models';
+import { ResourceRole, User } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
@@ -30,8 +30,8 @@ import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
-import { AppRoleService } from '../appRole/appRole.service';
-import { AppService } from '../app/app.service'; // eslint-disable-line import/no-cycle
+import { ResourceRoleService } from '../resourceRole/resourceRole.service';
+import { ResourceService } from '../resource/resource.service'; // eslint-disable-line import/no-cycle
 import { UserService } from '../user/user.service'; // eslint-disable-line import/no-cycle
 import { AppSettingsService } from '../appSettings/appSettings.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
@@ -79,7 +79,7 @@ export const ENTITIES_INCLUDE = {
     include: {
       permissionRoles: {
         include: {
-          appRole: true
+          resourceRole: true
         }
       },
       permissionFields: {
@@ -87,7 +87,7 @@ export const ENTITIES_INCLUDE = {
           field: true,
           permissionRoles: {
             include: {
-              appRole: true
+              resourceRole: true
             }
           }
         }
@@ -154,13 +154,13 @@ export class BuildService {
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
     private readonly entityService: EntityService,
-    private readonly appRoleService: AppRoleService,
+    private readonly resourceRoleService: ResourceRoleService,
     private readonly actionService: ActionService,
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
-    @Inject(forwardRef(() => AppService))
-    private readonly appService: AppService,
+    @Inject(forwardRef(() => ResourceService))
+    private readonly resourceService: ResourceService,
     private readonly appSettingsService: AppSettingsService,
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
@@ -173,11 +173,11 @@ export class BuildService {
   }
 
   /**
-   * create function creates a new build for given app in the DB
+   * create function creates a new build for given resource in the DB
    * @returns the build object that return after prisma.build.create
    */
   async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
-    const appId = args.data.app.connect.id;
+    const resourceId = args.data.resource.connect.id;
     const user = await this.userService.findUser({
       where: {
         id: args.data.createdBy.connect.id
@@ -190,7 +190,7 @@ export class BuildService {
     const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
-      where: { app: { id: appId } }
+      where: { resource: { id: resourceId } }
     });
 
     const build = await this.prisma.build.create({
@@ -215,13 +215,13 @@ export class BuildService {
       },
       include: {
         commit: true,
-        app: true
+        resource: true
       }
     });
 
     const oldBuild = await previousBuild(
       this.prisma,
-      appId,
+      resourceId,
       build.id,
       build.createdAt
     );
@@ -284,11 +284,11 @@ export class BuildService {
       include: ACTION_INCLUDE
     });
 
-    const groups = groupBy(builds, build => build.appId);
+    const groups = groupBy(builds, build => build.resourceId);
 
-    //In case we have multiple builds for the same app run them one after the other based on creation time
+    //In case we have multiple builds for the same resource run them one after the other based on creation time
     await Promise.all(
-      Object.entries(groups).map(async ([appId, groupBuilds]) => {
+      Object.entries(groups).map(async ([resourceId, groupBuilds]) => {
         for (const build of groupBuilds) {
           const stepBuildDocker = build.action.steps.find(
             step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
@@ -398,13 +398,15 @@ export class BuildService {
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       async step => {
-        //#region getting all the app data
+        //#region getting all the resource data
         const entities = await this.getOrderedEntities(build.id);
-        const roles = await this.getAppRoles(build);
-        const app = await this.appService.app({ where: { id: build.appId } });
+        const roles = await this.getResourceRoles(build);
+        const resource = await this.resourceService.resource({
+          where: { id: build.resourceId }
+        });
         const appSettings = await this.appSettingsService.getAppSettingsValues(
           {
-            where: { id: build.appId }
+            where: { id: build.resourceId }
           },
           user
         );
@@ -416,16 +418,16 @@ export class BuildService {
 
         const host = this.configService.get(HOST_VAR);
 
-        const url = `${host}/${build.appId}`;
+        const url = `${host}/${build.resourceId}`;
 
         const modules = await DataServiceGenerator.createDataService(
           entities,
           roles,
           {
-            name: app.name,
-            description: app.description,
+            name: resource.name,
+            description: resource.description,
             version: build.version,
-            id: build.appId,
+            id: build.resourceId,
             url,
             settings: appSettings
           },
@@ -441,7 +443,10 @@ export class BuildService {
         // the path to the tar.gz artifact
         const tarballURL = await this.save(build, modules);
 
-        await this.buildFilesSaver.saveFiles(join(app.id, build.id), modules);
+        await this.buildFilesSaver.saveFiles(
+          join(resource.id, build.id),
+          modules
+        );
 
         await this.saveToGitHub(build, oldBuildId);
 
@@ -470,8 +475,8 @@ export class BuildService {
           step,
           BUILD_DOCKER_IMAGE_STEP_START_LOG
         );
-        const tag = `${build.appId}:${build.id}`;
-        const latestTag = `${build.appId}:latest`;
+        const tag = `${build.resourceId}:${build.id}`;
+        const latestTag = `${build.resourceId}:latest`;
         const latestImageId = await this.containerBuilderService.createImageId(
           latestTag
         );
@@ -547,11 +552,11 @@ export class BuildService {
     });
   }
 
-  private async getAppRoles(build: Build): Promise<AppRole[]> {
-    return this.appRoleService.getAppRoles({
+  private async getResourceRoles(build: Build): Promise<ResourceRole[]> {
+    return this.resourceRoleService.getResourceRoles({
       where: {
-        app: {
-          id: build.appId
+        resource: {
+          id: build.resourceId
         }
       }
     });
@@ -601,11 +606,11 @@ export class BuildService {
   }
 
   private async saveToGitHub(build: Build, oldBuildId: string) {
-    const app = build.app;
+    const resource = build.resource;
 
     const appRepository = await this.prisma.gitRepository.findUnique({
       where: {
-        appId: app.id
+        resourceId: resource.id
       },
       include: {
         gitOrganization: true
@@ -622,7 +627,7 @@ export class BuildService {
 
     const host = this.configService.get(HOST_VAR);
 
-    const url = `${host}/${build.appId}/builds/${build.id}`;
+    const url = `${host}/${build.resourceId}/builds/${build.id}`;
 
     if (appRepository) {
       return this.actionService.run(
@@ -635,7 +640,7 @@ export class BuildService {
             const response = await this.queueService.sendCreateGitPullRequest({
               gitOrganizationName: appRepository.gitOrganization.name,
               gitRepositoryName: appRepository.name,
-              amplicationAppId: app.id,
+              amplicationResourceId: resource.id,
               gitProvider: EnumGitProvider.Github,
               installationId: appRepository.gitOrganization.installationId,
               newBuildId: build.id,
@@ -656,8 +661,8 @@ export class BuildService {
 
             assert(prUrl, 'Failed to get pull request url');
 
-            await this.appService.reportSyncMessage(
-              build.appId,
+            await this.resourceService.reportSyncMessage(
+              build.resourceId,
               'Sync Completed Successfully'
             );
             await this.actionService.logInfo(step, prUrl, { githubUrl: prUrl });
@@ -680,8 +685,8 @@ export class BuildService {
               step,
               EnumActionStepStatus.Failed
             );
-            await this.appService.reportSyncMessage(
-              build.appId,
+            await this.resourceService.reportSyncMessage(
+              build.resourceId,
               `Error: ${error}`
             );
           }

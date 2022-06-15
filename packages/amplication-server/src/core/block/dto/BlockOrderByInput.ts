@@ -24,8 +24,6 @@ export class BlockOrderByInput {
   })
   updatedAt?: SortOrder | null;
 
-  // appId?: SortOrder | null;
-
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined

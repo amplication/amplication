@@ -3,7 +3,7 @@ import { AppSettings, UpdateAppSettingsArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
+import { DEFAULT_RESOURCE_SETTINGS, AppSettingsValues } from './constants';
 import { isEmpty } from 'lodash';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
@@ -46,7 +46,7 @@ export class AppSettingsService {
     >(
       {
         where: {
-          app: {
+          resource: {
             id: args.where.id
           }
         }
@@ -92,12 +92,12 @@ export class AppSettingsService {
     return this.blockService.create<AppSettings>(
       {
         data: {
-          app: {
+          resource: {
             connect: {
               id: appId
             }
           },
-          ...DEFAULT_APP_SETTINGS,
+          ...DEFAULT_RESOURCE_SETTINGS,
           blockType: EnumBlockType.AppSettings
         }
       },

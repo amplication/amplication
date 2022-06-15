@@ -80,7 +80,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   updatedAt: new Date(),
   name: 'EXAMPLE_ENVIRONMENT_NAME',
   address: 'EXAMPLE_ADDRESS',
-  appId: EXAMPLE_APP_ID
+  resourceId: EXAMPLE_APP_ID
 };
 
 const EXAMPLE_DEPLOYMENT: Deployment = {
@@ -112,7 +112,7 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
     status: EnumDeploymentStatus.Completed,
     userId: 'EXAMPLE_BUILD_USER_ID',
     version: 'EXAMPLE_BUILD_VERSION',
-    appId: EXAMPLE_APP_ID,
+    resourceId: EXAMPLE_APP_ID,
     images: [EXAMPLE_IMAGE_ID],
     containerStatusQuery: null,
     containerStatusUpdatedAt: null,

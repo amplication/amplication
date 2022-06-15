@@ -1,3 +1,3 @@
 export interface ITokenExtractor {
-  getTokenFromDb: (appId: string) => Promise<string>;
+  getTokenFromDb: (resourceId: string) => Promise<string>;
 }
