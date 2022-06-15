@@ -64,7 +64,7 @@ installationId: string
 | COMPOSE_PROJECT_NAME | name of the docker image  | amplication-git-pull-service |
 | KAFKA_BROKERS | kafka client must be configured with at least one broker. The brokers on the list are considered seed brokers and are only used to bootstrap the client and load initial metadata  | ["localhost:9092"] |
 | KAFKA_CONSUMER_GROUP | consumer group | git-pull-event |
-| KAFKA_CLIENT_ID | A logical identifier of an application. Can be used by brokers to apply quotas or trace requests to a specific application. Example: booking-events-processor. | repository-pull |
+| KAFKA_CLIENT_ID | A logical identifier of an application. Can be used by brokers to apply quotas or trace requests to a specific application. Example: booking-events-processor | repository-pull |
 | KAFKA_REPOSITORY_PUSH_QUEUE | Kafka topics are the categories used to organize messages. Each topic has a name that is unique across the entire Kafka cluster | "git.external.push.event.0" |
 | STORAGE_PATH | max storage snapshot | [path-to-local-folder] for example /Users/myusername/temp |
 | MAX_SNAPSHOTS | a number represents the size of the storage | [place-your-max-snapshot-here] |
