@@ -17,7 +17,7 @@ const CodeViewBar = ({ app, onFileSelected }: Props) => {
       <div className={`${CLASS_NAME}__heading`}>
         <h2>File Browser</h2>
       </div>
-      <AppGitStatusPanel app={app} />
+      <AppGitStatusPanel app={app} showDisconnectedMessage />
       <hr />
       <CodeViewExplorer app={app} onFileSelected={onFileSelected} />
     </div>
