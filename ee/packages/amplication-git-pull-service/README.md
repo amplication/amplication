@@ -60,9 +60,9 @@ installationId: string
 | POSTGRESQL_URL | connection url to the database | postgresql://admin:admin@localhost:5432/\${SERVICE_DB_NAME} |
 | POSTGRESQL_USER | username for the local database | admin |
 | POSTGRESQL_PASSWORD | password for the local database | admin |
-| SERVICE_DB_NAME | database name | ampication-server |
+| SERVICE_DB_NAME | database name | amplication-git-pull-service |
 | COMPOSE_PROJECT_NAME | name of the docker image  | amplication-git-pull-service |
-| KAFKA_BROKERS | something | ["localhost:9092"] |
+| KAFKA_BROKERS | kafka client must be configured with at least one broker. The brokers on the list are considered seed brokers and are only used to bootstrap the client and load initial metadata  | ["localhost:9092"] |
 | KAFKA_CONSUMER_GROUP | consumer group | git-pull-event |
 | KAFKA_CLIENT_ID | kafka client id | repository-pull |
 | KAFKA_REPOSITORY_PUSH_QUEUE | topic name | "git.external.push.event.0" |
