@@ -68,6 +68,7 @@ installationId: string
 | KAFKA_REPOSITORY_PUSH_QUEUE | Kafka topics are the categories used to organize messages. Each topic has a name that is unique across the entire Kafka cluster | "git.external.push.event.0" |
 | STORAGE_PATH | something | [path-to-local-folder] for example /Users/myusername/temp |
 | MAX_SNAPSHOTS | a number represents the size of the storage | [place-your-max-snapshot-here] |
+| BASE_BUILDS_FOLDER | path to a folder where your builds will be saved | [path-to-local-folder] for example /Users/myusername/temp |
 | GIT_DEFAULT_ORIGIN_NAME | git remote name | origin |
 | GITHUB_APP_APP_ID| ID of the istalled gitgub app  |[github-app-app-id]|
 | GITHUB_APP_PRIVATE_KEY|  pivate key of the installed gitgub app  |[github-app-private-key] |
