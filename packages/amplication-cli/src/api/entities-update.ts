@@ -7,7 +7,7 @@ const UPDATE_ENTITY = gql`
     updateEntity(data: $data, where: $where) {
       id
       name
-      appId
+      resourceId
       displayName
       pluralDisplayName
       description

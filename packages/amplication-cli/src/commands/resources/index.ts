@@ -1,9 +1,9 @@
 import cli, { Table } from 'cli-ux';
 import { ConfiguredCommand } from '../../configured-command';
-import { getApps } from '../../api';
+import { getResources } from '../../api';
 import { format as formatFlag } from '../../flags/format-flag';
 
-export const APP_COLUMNS: Table.table.Columns<any> = {
+export const RESOURCE_COLUMNS: Table.table.Columns<any> = {
   id: {},
   name: {},
   description: {},
@@ -30,13 +30,13 @@ export const APP_COLUMNS: Table.table.Columns<any> = {
   updatedAt: {},
 };
 
-export default class AppsIndex extends ConfiguredCommand {
-  static description = 'list all apps';
+export default class ResourcesIndex extends ConfiguredCommand {
+  static description = 'list all resources';
 
   static examples = [
-    'amp apps',
-    'amp apps --format=table',
-    'amp apps --format=table --columns=id,name',
+    'amp resources',
+    'amp resources --format=table',
+    'amp resources --format=table --columns=id,name',
   ];
 
   static flags = {
@@ -45,12 +45,12 @@ export default class AppsIndex extends ConfiguredCommand {
   };
 
   async command() {
-    const { flags } = this.parse(AppsIndex);
+    const { flags } = this.parse(ResourcesIndex);
 
     console.log({ flags });
 
-    const data = await getApps(this.client);
+    const data = await getResources(this.client);
 
-    this.output(data, flags, APP_COLUMNS);
+    this.output(data, flags, RESOURCE_COLUMNS);
   }
 }

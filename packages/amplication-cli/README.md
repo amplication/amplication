@@ -1,4 +1,4 @@
-# @amplication/cli 
+# @amplication/cli
 
 Amplication CLI
 
@@ -23,7 +23,7 @@ $ npm install -g @amplication/cli
 $ amp COMMAND
 running command...
 $ amp (-v|--version|version)
-@amplication/cli/0.1.4 win32-x64 node-v12.16.1
+@amplication/cli/0.13.0 darwin-arm64 node-v16.14.0
 $ amp --help [COMMAND]
 USAGE
   $ amp COMMAND
@@ -57,12 +57,6 @@ $ amp config:set AMP_SERVER_URL http://localhost:3000
 
 <!-- commands -->
 
-- [`amp apps`](#amp-apps)
-- [`amp apps:commit`](#amp-appscommit)
-- [`amp apps:create NAME [DESCRIPTION]`](#amp-appscreate-name-description)
-- [`amp apps:current`](#amp-appscurrent)
-- [`amp apps:info`](#amp-appsinfo)
-- [`amp apps:update`](#amp-appsupdate)
 - [`amp auth TOKEN`](#amp-auth-token)
 - [`amp config`](#amp-config)
 - [`amp config:get PROPERTY`](#amp-configget-property)
@@ -76,168 +70,23 @@ $ amp config:set AMP_SERVER_URL http://localhost:3000
 - [`amp entities:info`](#amp-entitiesinfo)
 - [`amp entities:update`](#amp-entitiesupdate)
 - [`amp help [COMMAND]`](#amp-help-command)
-
-## `amp apps`
-
-list all apps
-
-```
-USAGE
-  $ amp apps
-
-OPTIONS
-  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
-  -x, --extended                      show extra columns
-  --columns=columns                   only show provided columns (comma-separated)
-  --csv                               output is csv format [alias: --output=csv]
-  --filter=filter                     filter property by partial string matching, ex: name=foo
-  --no-header                         hide table header from output
-  --no-truncate                       do not truncate output to fit screen
-  --output=csv|json|yaml              output in a more machine friendly format
-  --sort=sort                         property to sort by (prepend '-' for descending)
-
-EXAMPLES
-  amp apps
-  amp apps --format=table
-  amp apps --format=table --columns=id,name
-```
-
-## `amp apps:commit`
-
-commit the pending changes in the app
-
-```
-USAGE
-  $ amp apps:commit
-
-OPTIONS
-  -a, --app=app                       app to run command against
-  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
-  -x, --extended                      show extra columns
-  --columns=columns                   only show provided columns (comma-separated)
-  --csv                               output is csv format [alias: --output=csv]
-  --filter=filter                     filter property by partial string matching, ex: name=foo
-  --message=message                   (required) commit message
-  --no-header                         hide table header from output
-  --no-truncate                       do not truncate output to fit screen
-  --output=csv|json|yaml              output in a more machine friendly format
-  --sort=sort                         property to sort by (prepend '-' for descending)
-
-EXAMPLE
-  amp apps:commit --message "adding customer entity"
-```
-
-## `amp apps:create NAME [DESCRIPTION]`
-
-create a new app
-
-```
-USAGE
-  $ amp apps:create NAME [DESCRIPTION]
-
-ARGUMENTS
-  NAME         name of app to create
-  DESCRIPTION  description of app to create
-
-OPTIONS
-  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
-  -x, --extended                      show extra columns
-  --columns=columns                   only show provided columns (comma-separated)
-  --csv                               output is csv format [alias: --output=csv]
-  --filter=filter                     filter property by partial string matching, ex: name=foo
-  --no-header                         hide table header from output
-  --no-truncate                       do not truncate output to fit screen
-  --output=csv|json|yaml              output in a more machine friendly format
-  --set-current                       set the newly created app as the current app
-  --sort=sort                         property to sort by (prepend '-' for descending)
-
-EXAMPLE
-  amp apps:create "my cool app" "my app description" --set-current
-```
-
-## `amp apps:current`
-
-set the current app
-
-```
-USAGE
-  $ amp apps:current
-
-OPTIONS
-  -a, --app=app                       (required) ID of the app
-  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
-  -x, --extended                      show extra columns
-  --columns=columns                   only show provided columns (comma-separated)
-  --csv                               output is csv format [alias: --output=csv]
-  --filter=filter                     filter property by partial string matching, ex: name=foo
-  --no-header                         hide table header from output
-  --no-truncate                       do not truncate output to fit screen
-  --output=csv|json|yaml              output in a more machine friendly format
-  --sort=sort                         property to sort by (prepend '-' for descending)
-
-EXAMPLE
-  amp apps:current -a ckm1w4vy857869go3nsw4mk2ay
-```
-
-## `amp apps:info`
-
-show detailed information for an app
-
-```
-USAGE
-  $ amp apps:info
-
-OPTIONS
-  -a, --app=app                       app to run command against
-  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
-  -x, --extended                      show extra columns
-  --columns=columns                   only show provided columns (comma-separated)
-  --csv                               output is csv format [alias: --output=csv]
-  --filter=filter                     filter property by partial string matching, ex: name=foo
-  --no-header                         hide table header from output
-  --no-truncate                       do not truncate output to fit screen
-  --output=csv|json|yaml              output in a more machine friendly format
-  --sort=sort                         property to sort by (prepend '-' for descending)
-
-EXAMPLES
-  amp apps:info
-  amp apps:info -a ckm1w4vy857869go3nsw4mk2ay
-```
-
-## `amp apps:update`
-
-update an app
-
-```
-USAGE
-  $ amp apps:update
-
-OPTIONS
-  -a, --app=app                       app to run command against
-  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
-  -x, --extended                      show extra columns
-  --columns=columns                   only show provided columns (comma-separated)
-  --csv                               output is csv format [alias: --output=csv]
-  --description=description           description of the app
-  --filter=filter                     filter property by partial string matching, ex: name=foo
-  --name=name                         name of the app
-  --no-header                         hide table header from output
-  --no-truncate                       do not truncate output to fit screen
-  --output=csv|json|yaml              output in a more machine friendly format
-  --sort=sort                         property to sort by (prepend '-' for descending)
-
-EXAMPLES
-  amp apps:update --name="my new name"
-  amp apps:update -a ckm1w4vy857869go3nsw4mk2ay --name "my new name"
-  amp apps:update --name "my new name" --description "my new description"
-```
+- [`amp resources`](#amp-resources)
+- [`amp resources:commit`](#amp-resourcescommit)
+- [`amp resources:create NAME [DESCRIPTION]`](#amp-resourcescreate-name-description)
+- [`amp resources:current`](#amp-resourcescurrent)
+- [`amp resources:info`](#amp-resourcesinfo)
+- [`amp resources:update`](#amp-resourcesupdate)
 
 ## `amp auth TOKEN`
+
+authenticate using token generated on amplication server UI
 
 ```
 USAGE
   $ amp auth TOKEN
 ```
+
+_See code: [src/commands/auth.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/auth.ts)_
 
 ## `amp config`
 
@@ -251,6 +100,8 @@ EXAMPLE
   amp config
 ```
 
+_See code: [src/commands/config/index.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/config/index.ts)_
+
 ## `amp config:get PROPERTY`
 
 get a property value
@@ -263,10 +114,12 @@ ARGUMENTS
   PROPERTY  name of property
 
 EXAMPLES
-  amp config:get AMP_CURRENT_APP
+  amp config:get AMP_CURRENT_RESOURCE
   amp config:get AMP_SERVER_URL
   amp config:get AMP_OUTPUT_FORMAT
 ```
+
+_See code: [src/commands/config/get.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/config/get.ts)_
 
 ## `amp config:set PROPERTY VALUE`
 
@@ -281,10 +134,12 @@ ARGUMENTS
   VALUE     value of property
 
 EXAMPLES
-  amp config:set AMP_CURRENT_APP ckm1w4vy857869go3nsw4mk2ay
+  amp config:set AMP_CURRENT_RESOURCE ckm1w4vy857869go3nsw4mk2ay
   amp config:set AMP_SERVER_URL https://app.amplication.com
   amp config:set AMP_OUTPUT_FORMAT styledJSON
 ```
+
+_See code: [src/commands/config/set.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/config/set.ts)_
 
 ## `amp config:unset PROPERTY`
 
@@ -298,20 +153,22 @@ ARGUMENTS
   PROPERTY  name of property
 
 EXAMPLE
-  amp config:unset AMP_CURRENT_APP
+  amp config:unset AMP_CURRENT_RESOURCE
 ```
+
+_See code: [src/commands/config/unset.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/config/unset.ts)_
 
 ## `amp entities`
 
-list entities for an app
+list entities for an resource
 
 ```
 USAGE
   $ amp entities
 
 OPTIONS
-  -a, --app=app                       app to run command against
   -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -r, --resource=resource             resource to run command against
   -x, --extended                      show extra columns
   --columns=columns                   only show provided columns (comma-separated)
   --csv                               output is csv format [alias: --output=csv]
@@ -323,9 +180,11 @@ OPTIONS
 
 EXAMPLES
   amp entities
-  amp entities -a ckm1w4vy857869go3nsw4mk2ay
+  amp entities -r ckm1w4vy857869go3nsw4mk2ay
   amp entities --format=table
 ```
+
+_See code: [src/commands/entities/index.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/entities/index.ts)_
 
 ## `amp entities:create DISPLAYNAME`
 
@@ -339,8 +198,8 @@ ARGUMENTS
   DISPLAYNAME  display name of entity to create
 
 OPTIONS
-  -a, --app=app                          app to run command against
   -f, --format=JSON|styledJSON|table     [default: JSON] The format in which to render the output
+  -r, --resource=resource                resource to run command against
   -x, --extended                         show extra columns
   --columns=columns                      only show provided columns (comma-separated)
   --csv                                  output is csv format [alias: --output=csv]
@@ -356,9 +215,11 @@ OPTIONS
 
 EXAMPLES
   amp entities:create Customer --set-current
-  amp entities:create Customer -a ckm1w4vy857869go3nsw4mk2ay
+  amp entities:create Customer -r ckm1w4vy857869go3nsw4mk2ay
   amp entities:create Customer
 ```
+
+_See code: [src/commands/entities/create.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/entities/create.ts)_
 
 ## `amp entities:fields`
 
@@ -385,6 +246,8 @@ EXAMPLES
   amp entities:fields -e ckm1wl4ru58969go3n3mt2zkg2
   amp entities:fields --format=table
 ```
+
+_See code: [src/commands/entities/fields/index.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/entities/fields/index.ts)_
 
 ## `amp entities:fields:create DISPLAYNAME`
 
@@ -416,6 +279,8 @@ EXAMPLES
   amp entities:fields:create "Start Date"
 ```
 
+_See code: [src/commands/entities/fields/create.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/entities/fields/create.ts)_
+
 ## `amp entities:fields:update`
 
 update a field
@@ -425,8 +290,8 @@ USAGE
   $ amp entities:fields:update
 
 OPTIONS
-  -f, --field=field                   (required) ID of the field
   -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -i, --field=field                   (required) ID of the field
   -x, --extended                      show extra columns
   --columns=columns                   only show provided columns (comma-separated)
   --csv                               output is csv format [alias: --output=csv]
@@ -447,6 +312,8 @@ EXAMPLES
   amp entities:fields:update --required
   amp entities:fields:update --no-required
 ```
+
+_See code: [src/commands/entities/fields/update.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/entities/fields/update.ts)_
 
 ## `amp entities:info`
 
@@ -472,6 +339,8 @@ EXAMPLES
   amp entities:info
   amp entities:info -e ckm1wl4ru58969go3n3mt2zkg2
 ```
+
+_See code: [src/commands/entities/info.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/entities/info.ts)_
 
 ## `amp entities:update`
 
@@ -503,6 +372,8 @@ EXAMPLES
   description"
 ```
 
+_See code: [src/commands/entities/update.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/entities/update.ts)_
+
 ## `amp help [COMMAND]`
 
 display help for amp
@@ -519,5 +390,172 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
+
+## `amp resources`
+
+list all resources
+
+```
+USAGE
+  $ amp resources
+
+OPTIONS
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
+
+EXAMPLES
+  amp resources
+  amp resources --format=table
+  amp resources --format=table --columns=id,name
+```
+
+_See code: [src/commands/resources/index.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/resources/index.ts)_
+
+## `amp resources:commit`
+
+commit the pending changes in the resource
+
+```
+USAGE
+  $ amp resources:commit
+
+OPTIONS
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -r, --resource=resource             resource to run command against
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --message=message                   (required) commit message
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
+
+EXAMPLE
+  amp resources:commit --message "adding customer entity"
+```
+
+_See code: [src/commands/resources/commit.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/resources/commit.ts)_
+
+## `amp resources:create NAME [DESCRIPTION]`
+
+create a new resource
+
+```
+USAGE
+  $ amp resources:create NAME [DESCRIPTION]
+
+ARGUMENTS
+  NAME         name of resource to create
+  DESCRIPTION  description of resource to create
+
+OPTIONS
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --set-current                       set the newly created resource as the current resource
+  --sort=sort                         property to sort by (prepend '-' for descending)
+
+EXAMPLE
+  amp resources:create "my cool resource" "my resource description" --set-current
+```
+
+_See code: [src/commands/resources/create.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/resources/create.ts)_
+
+## `amp resources:current`
+
+set the current resource
+
+```
+USAGE
+  $ amp resources:current
+
+OPTIONS
+  -a, --resource=resource             (required) ID of the resource
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
+
+EXAMPLE
+  amp resources:current -r ckm1w4vy857869go3nsw4mk2ay
+```
+
+_See code: [src/commands/resources/current.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/resources/current.ts)_
+
+## `amp resources:info`
+
+show detailed information for an resource
+
+```
+USAGE
+  $ amp resources:info
+
+OPTIONS
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -r, --resource=resource             resource to run command against
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
+
+EXAMPLES
+  amp resources:info
+  amp resources:info -r ckm1w4vy857869go3nsw4mk2ay
+```
+
+_See code: [src/commands/resources/info.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/resources/info.ts)_
+
+## `amp resources:update`
+
+update an resource
+
+```
+USAGE
+  $ amp resources:update
+
+OPTIONS
+  -f, --format=JSON|styledJSON|table  [default: JSON] The format in which to render the output
+  -r, --resource=resource             resource to run command against
+  -x, --extended                      show extra columns
+  --columns=columns                   only show provided columns (comma-separated)
+  --csv                               output is csv format [alias: --output=csv]
+  --description=description           description of the resource
+  --filter=filter                     filter property by partial string matching, ex: name=foo
+  --name=name                         name of the resource
+  --no-header                         hide table header from output
+  --no-truncate                       do not truncate output to fit screen
+  --output=csv|json|yaml              output in a more machine friendly format
+  --sort=sort                         property to sort by (prepend '-' for descending)
+
+EXAMPLES
+  amp resources:update --name="my new name"
+  amp resources:update -r ckm1w4vy857869go3nsw4mk2ay --name "my new name"
+  amp resources:update --name "my new name" --description "my new description"
+```
+
+_See code: [src/commands/resources/update.ts](https://github.com/amplication/amplication/blob/v0.13.0/src/commands/resources/update.ts)_
 
 <!-- commandsstop -->
