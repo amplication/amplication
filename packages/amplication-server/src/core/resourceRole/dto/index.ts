@@ -1,7 +1,6 @@
 export { CreateResourceRoleArgs } from './CreateResourceRoleArgs';
-export { FindManyResourceRoleArgs } from './FindManyAppRoleArgs';
+export { FindManyResourceRoleArgs } from './FindManyResourceRoleArgs';
 export { UpdateOneResourceRoleArgs } from './UpdateOneResourceRoleArgs';
-
 export { ResourceRoleCreateInput } from './ResourceRoleCreateInput';
 export { ResourceRoleFilter } from './ResourceRoleFilter';
 export { ResourceRoleOrderByInput } from './ResourceRoleOrderByInput';
