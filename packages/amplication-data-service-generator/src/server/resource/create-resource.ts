@@ -49,49 +49,57 @@ async function createResourceModules(
 
   const [serviceModule] = serviceModules;
 
-  const controllerModules = await createControllerModules(
-    appInfo,
-    resource,
-    entityName,
-    entityType,
-    serviceModule.path,
-    entity,
-    dtos
-  );
+  const controllerModules =
+    (appInfo.generationSettings.generateRestApi &&
+      (await createControllerModules(
+        appInfo,
+        resource,
+        entityName,
+        entityType,
+        serviceModule.path,
+        entity,
+        dtos
+      ))) ||
+    [];
 
   const [controllerModule, controllerBaseModule] = controllerModules;
 
-  const resolverModules = await createResolverModules(
-    entityName,
-    entityType,
-    serviceModule.path,
-    entity,
-    dtos
-  );
+  const resolverModules =
+    (appInfo.generationSettings.generateGraphQL &&
+      (await createResolverModules(
+        entityName,
+        entityType,
+        serviceModule.path,
+        entity,
+        dtos
+      ))) ||
+    [];
   const [resolverModule] = resolverModules;
 
   const resourceModules = await createModules(
     entityName,
     entityType,
     serviceModule.path,
-    controllerModule.path,
-    resolverModule.path
+    controllerModule?.path,
+    resolverModule?.path
   );
 
-  const testModule = await createControllerSpecModule(
-    resource,
-    entity,
-    entityType,
-    serviceModule.path,
-    controllerModule.path,
-    controllerBaseModule.path
-  );
+  const testModule =
+    controllerModule &&
+    (await createControllerSpecModule(
+      resource,
+      entity,
+      entityType,
+      serviceModule.path,
+      controllerModule.path,
+      controllerBaseModule.path
+    ));
 
   return [
     ...serviceModules,
     ...controllerModules,
     ...resolverModules,
     ...resourceModules,
-    testModule,
+    ...(testModule ? [testModule] : []),
   ];
 }

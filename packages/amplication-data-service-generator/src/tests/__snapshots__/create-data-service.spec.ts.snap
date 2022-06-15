@@ -2530,6 +2530,59 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
+  "docker-compose.yml": "version: \\"3\\"
+services:
+  server:
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    ports:
+      - \\"\${SERVER_PORT}:3000\\"
+    environment:
+      POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
+      BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
+      JWT_SECRET_KEY: \\"\${JWT_SECRET_KEY}\\"
+      JWT_EXPIRATION: \\"\${JWT_EXPIRATION}\\"
+    depends_on:
+      - migrate
+  migrate:
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    command: npm run db:init
+    working_dir: /app/server
+    environment:
+      POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
+      BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: \${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          \\"CMD\\",
+          \\"pg_isready\\",
+          \\"-q\\",
+          \\"-d\\",
+          \\"\${POSTGRESQL_DB_NAME}\\",
+          \\"-U\\",
+          \\"\${POSTGRESQL_USER}\\",
+        ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+volumes:
+  postgres: ~
+",
   "server/.env": "POSTGRESQL_USER=testUsername
 POSTGRESQL_PASSWORD=1234
 POSTGRESQL_PORT=5433
@@ -2538,6 +2591,20 @@ BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${appId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d",
+  "server/docker-compose.db.yml": "version: \\"3\\"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \\"\${POSTGRESQL_PORT}:5432\\"
+    environment:
+      POSTGRES_USER: \${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
+",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
@@ -5394,6 +5461,11 @@ export class CustomerControllerBase {
   }
 
   @Public()
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
   @common.Get(\\"/:id/orders\\")
   @ApiNestedQuery(OrderFindManyArgs)
   async findManyOrders(
@@ -5704,6 +5776,11 @@ export class CustomerResolverBase {
 
   @Public()
   @graphql.ResolveField(() => [Order])
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
   async orders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
@@ -7947,6 +8024,11 @@ export class OrderControllerBase {
   ) {}
 
   @Public()
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -7977,6 +8059,11 @@ export class OrderControllerBase {
   }
 
   @Public()
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
@@ -8003,6 +8090,11 @@ export class OrderControllerBase {
   }
 
   @Public()
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8036,6 +8128,11 @@ export class OrderControllerBase {
   }
 
   @Public()
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8080,6 +8177,11 @@ export class OrderControllerBase {
   }
 
   @Public()
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8185,6 +8287,11 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
   async _ordersMeta(
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -8200,12 +8307,22 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Query(() => [Order])
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
     return this.service.findMany(args);
   }
 
   @Public()
   @graphql.Query(() => Order, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
@@ -8218,6 +8335,11 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Mutation(() => Order)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
     return await this.service.create({
       ...args,
@@ -8233,6 +8355,11 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Mutation(() => Order)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
   async updateOrder(
     @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
@@ -8259,6 +8386,11 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Mutation(() => Order)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
   async deleteOrder(
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {

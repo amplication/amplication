@@ -23,7 +23,11 @@ export class AppSettingsService {
       dbPassword,
       dbPort,
       dbUser,
-      authProvider
+      authProvider,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+      generateRootFiles
     } = await this.getAppSettingsBlock(args, user);
 
     return {
@@ -33,7 +37,11 @@ export class AppSettingsService {
       dbPort,
       dbUser,
       appId: args.where.id,
-      authProvider
+      authProvider,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+      generateRootFiles
     };
   }
 
@@ -57,6 +65,29 @@ export class AppSettingsService {
       return this.createDefaultAppSettings(args.where.id, user);
     }
 
+    if (appSettings.generateAdminUI === null) {
+      return this.updateAppSettings(
+        {
+          data: {
+            generateAdminUI: true,
+            generateGraphQL: true,
+            generateRestApi: true,
+            generateRootFiles: true,
+            dbHost: appSettings.dbHost,
+            dbName: appSettings.dbName,
+            dbPassword: appSettings.dbPassword,
+            dbPort: appSettings.dbPort,
+            dbUser: appSettings.dbUser,
+            authProvider: appSettings.authProvider
+          },
+          where: {
+            id: args.where.id
+          }
+        },
+        user
+      );
+    }
+
     return {
       ...appSettings,
       authProvider: appSettings.authProvider || EnumAuthProviderType.Http
@@ -73,6 +104,9 @@ export class AppSettingsService {
       },
       user
     );
+    if (!args.data.generateGraphQL) {
+      args.data.generateAdminUI = false;
+    }
 
     return this.blockService.update<AppSettings>(
       {

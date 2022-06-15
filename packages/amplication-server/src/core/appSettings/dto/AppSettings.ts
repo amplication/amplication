@@ -1,7 +1,6 @@
 import { Field, ObjectType, Int } from '@nestjs/graphql';
 import { IBlock } from 'src/models';
 import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
-
 @ObjectType({
   implements: IBlock,
   isAbstract: true,
@@ -37,4 +36,24 @@ export class AppSettings extends IBlock {
     nullable: false
   })
   authProvider!: EnumAuthProviderType;
+
+  @Field(() => Boolean, {
+    nullable: false
+  })
+  generateAdminUI: boolean;
+
+  @Field(() => Boolean, {
+    nullable: false
+  })
+  generateGraphQL: boolean;
+
+  @Field(() => Boolean, {
+    nullable: false
+  })
+  generateRestApi: boolean;
+
+  @Field(() => Boolean, {
+    nullable: false
+  })
+  generateRootFiles: boolean;
 }

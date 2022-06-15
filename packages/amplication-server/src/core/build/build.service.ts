@@ -427,7 +427,12 @@ export class BuildService {
             version: build.version,
             id: build.appId,
             url,
-            settings: appSettings
+            settings: appSettings,
+            generationSettings: {
+              generateAdminUI: appSettings.generateAdminUI,
+              generateGraphQL: appSettings.generateGraphQL,
+              generateRestApi: appSettings.generateRestApi
+            }
           },
           dataServiceGeneratorLogger
         );

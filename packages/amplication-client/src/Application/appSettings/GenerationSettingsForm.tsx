@@ -1,15 +1,21 @@
-import { TextField, Snackbar } from "@amplication/design-system";
+import {
+  Snackbar,
+  Panel,
+  EnumPanelStyle,
+  ToggleField,
+} from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback, useContext } from "react";
-import * as models from "../models";
-import { useTracking } from "../util/analytics";
-import { formatError } from "../util/error";
-import FormikAutoSave from "../util/formikAutoSave";
-import { validate } from "../util/formikValidateJsonSchema";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import * as models from "../../models";
+import { useTracking } from "../../util/analytics";
+import { formatError } from "../../util/error";
+import FormikAutoSave from "../../util/formikAutoSave";
+import { validate } from "../../util/formikValidateJsonSchema";
 import { match } from "react-router-dom";
-import "./ApplicationDatabaseSettingsForms.scss";
+import PendingChangesContext from "../../VersionControl/PendingChangesContext";
+import "./GenerationSettingsForm.scss";
+import cssNamingConverter from "../../util/cssNamingConverter";
 
 type Props = {
   match: match<{ application: string }>;
@@ -20,7 +26,15 @@ type TData = {
 };
 
 const FORM_SCHEMA = {
-  required: ["dbHost", "dbUser", "dbPassword", "dbPort"],
+  required: [
+    "dbHost",
+    "dbUser",
+    "dbPassword",
+    "dbPort",
+    "generateAdminUI",
+    "generateGraphQL",
+    "generateRestApi",
+  ],
   properties: {
     dbHost: {
       type: "string",
@@ -42,12 +56,21 @@ const FORM_SCHEMA = {
     dbName: {
       type: "string",
     },
+    generateAdminUI: {
+      type: "boolean",
+    },
+    generateGraphQL: {
+      type: "boolean",
+    },
+    generateRestApi: {
+      type: "boolean",
+    },
   },
 };
 
-const CLASS_NAME = "application-database-settings-form";
+const CLASS_NAME = cssNamingConverter(GenerationSettingsForm.name);
 
-function ApplicationDatabaseSettingsForms({ match }: Props) {
+function GenerationSettingsForm({ match }: Props) {
   const applicationId = match.params.application;
 
   const { data, error } = useQuery<{
@@ -57,6 +80,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
       id: applicationId,
     },
   });
+
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const { trackEvent } = useTracking();
@@ -72,7 +96,18 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
 
   const handleSubmit = useCallback(
     (data: models.AppSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
+      const {
+        dbHost,
+        dbName,
+        dbPassword,
+        dbPort,
+        dbUser,
+        authProvider,
+        generateAdminUI,
+        generateGraphQL,
+        generateRestApi,
+        generateRootFiles,
+      } = data;
       trackEvent({
         eventName: "updateAppSettings",
       });
@@ -85,6 +120,10 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
             dbPort,
             dbUser,
             authProvider,
+            generateAdminUI,
+            generateGraphQL,
+            generateRestApi,
+            generateRootFiles,
           },
           appId: applicationId,
         },
@@ -93,7 +132,6 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
     [updateAppSettings, applicationId, trackEvent]
   );
 
-  const errorMessage = formatError(error || updateError);
   return (
     <div className={CLASS_NAME}>
       {data?.appSettings && (
@@ -109,59 +147,46 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
             return (
               <Form>
                 <div className={`${CLASS_NAME}__header`}>
-                  <h3>Database Settings</h3>
+                  <h3>APIs Admin UI Settings</h3>
                 </div>
                 <p className={`${CLASS_NAME}__description`}>
-                  All the below settings will appear in clear text in the
-                  generated app. <br />
-                  It should only be used for the development environment
-                  variables and should not include sensitive data.
+                  Amplication gives you the choice of which components to
+                  generate. Use the settings to include or exclude GraphQL API,
+                  REST API, and Admin UI.
                 </p>
+                <hr />
                 <FormikAutoSave debounceMS={2000} />
-                <div className={`${CLASS_NAME}__formWrapper`}>
-                  <TextField
-                    className={`${CLASS_NAME}__formWrapper_field`}
-                    name="dbHost"
-                    autoComplete="off"
-                    label="Host"
+                <Panel panelStyle={EnumPanelStyle.Transparent}>
+                  <h2>Server</h2>
+                  <ToggleField name="generateGraphQL" label="GraphQL API" />
+                  <ToggleField
+                    name="generateRestApi"
+                    label="REST API & Swagger UI"
                   />
-                  <TextField
-                    className={`${CLASS_NAME}__formWrapper_field`}
-                    name="dbName"
-                    autoComplete="off"
-                    label="Database Name"
+                </Panel>
+                <hr />
+                <Panel panelStyle={EnumPanelStyle.Transparent}>
+                  <h2>Admin UI</h2>
+                  <ToggleField
+                    disabled={!data?.appSettings.generateGraphQL}
+                    name="generateAdminUI"
+                    label="Admin UI"
                   />
-                  <TextField
-                    className={`${CLASS_NAME}__formWrapper_field`}
-                    name="dbPort"
-                    type="number"
-                    autoComplete="off"
-                    label="Port"
-                  />
-                  <TextField
-                    className={`${CLASS_NAME}__formWrapper_field`}
-                    name="dbUser"
-                    autoComplete="off"
-                    label="User"
-                  />
-                  <TextField
-                    className={`${CLASS_NAME}__formWrapper_field`}
-                    name="dbPassword"
-                    autoComplete="off"
-                    label="Password"
-                  />
-                </div>
+                </Panel>
               </Form>
             );
           }}
         </Formik>
       )}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(error)}
+        message={formatError(error || updateError)}
+      />
     </div>
   );
 }
 
-export default ApplicationDatabaseSettingsForms;
+export default GenerationSettingsForm;
 
 const UPDATE_APP_SETTINGS = gql`
   mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
@@ -173,6 +198,10 @@ const UPDATE_APP_SETTINGS = gql`
       dbPassword
       dbPort
       authProvider
+      generateAdminUI
+      generateGraphQL
+      generateRestApi
+      generateRootFiles
     }
   }
 `;
@@ -187,6 +216,10 @@ const GET_APP_SETTINGS = gql`
       dbPassword
       dbPort
       authProvider
+      generateAdminUI
+      generateGraphQL
+      generateRestApi
+      generateRootFiles
     }
   }
 `;

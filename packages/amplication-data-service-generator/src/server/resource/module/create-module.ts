@@ -11,6 +11,8 @@ import {
   removeTSClassDeclares,
   removeESLintComments,
 } from "../../../util/ast";
+import { removeIdentifierFromModuleDecorator } from "../../../util/nestjs-code-generation";
+
 import { SRC_DIRECTORY } from "../../constants";
 import { createControllerId } from "../controller/create-controller";
 import { createServiceId } from "../service/create-service";
@@ -23,8 +25,8 @@ export async function createModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entityControllerModule: string,
-  entityResolverModule: string
+  entityControllerModule: string | undefined,
+  entityResolverModule: string | undefined
 ): Promise<Module[]> {
   const moduleBaseId = createBaseModuleId(entityType);
 
@@ -45,8 +47,8 @@ async function createModule(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entityControllerModule: string,
-  entityResolverModule: string,
+  entityControllerModule: string | undefined,
+  entityResolverModule: string | undefined,
   moduleBaseId: namedTypes.Identifier
 ): Promise<Module> {
   const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.module.ts`;
@@ -65,6 +67,7 @@ async function createModule(
     MODULE: moduleId,
     MODULE_BASE: moduleBaseId,
   });
+
   const moduleBaseImport = importNames(
     [moduleBaseId],
     relativeImportPath(modulePath, moduleBasePath)
@@ -75,22 +78,36 @@ async function createModule(
     relativeImportPath(modulePath, entityServiceModule)
   );
 
-  const controllerImport = importNames(
-    [controllerId],
-    relativeImportPath(modulePath, entityControllerModule)
-  );
+  const controllerImport = entityControllerModule
+    ? importNames(
+        [controllerId],
+        relativeImportPath(modulePath, entityControllerModule)
+      )
+    : undefined;
 
-  const resolverImport = importNames(
-    [resolverId],
-    relativeImportPath(modulePath, entityResolverModule)
-  );
+  //if we are not generating the controller, remove the controller property
+  if (!entityControllerModule) {
+    removeIdentifierFromModuleDecorator(file, controllerId);
+  }
 
-  addImports(file, [
-    moduleBaseImport,
-    serviceImport,
-    controllerImport,
-    resolverImport,
-  ]);
+  const resolverImport = entityResolverModule
+    ? importNames(
+        [resolverId],
+        relativeImportPath(modulePath, entityResolverModule)
+      )
+    : undefined;
+
+  //if we are not generating the resolver, remove it from the providers list
+  if (!entityResolverModule) {
+    removeIdentifierFromModuleDecorator(file, resolverId);
+  }
+
+  addImports(
+    file,
+    [moduleBaseImport, serviceImport, controllerImport, resolverImport].filter(
+      (x) => x //remove nulls and undefined
+    ) as namedTypes.ImportDeclaration[]
+  );
 
   removeTSIgnoreComments(file);
   removeESLintComments(file);

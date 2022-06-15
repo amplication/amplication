@@ -35,4 +35,24 @@ export class AppSettingsUpdateInput extends BlockUpdateInput {
     nullable: false
   })
   authProvider: EnumAuthProviderType;
+
+  @Field(() => Boolean, {
+    nullable: true
+  })
+  generateAdminUI: boolean;
+
+  @Field(() => Boolean, {
+    nullable: true
+  })
+  generateGraphQL: boolean;
+
+  @Field(() => Boolean, {
+    nullable: true
+  })
+  generateRestApi: boolean;
+
+  @Field(() => Boolean, {
+    nullable: true
+  })
+  generateRootFiles: boolean;
 }

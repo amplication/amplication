@@ -1,6 +1,7 @@
-@import "../style/index.scss";
+@import "../../style/index.scss";
 
-.application-form {
+.generation-settings-form {
+  padding: var(--default-spacing-small);
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
@@ -9,12 +10,18 @@
       @include title-18();
     }
   }
-  h1 {
-    margin-top: var(--double-spacing);
-    margin-bottom: var(--double-spacing);
+  &__description {
+    @include regular-14();
   }
-  padding: var(--default-spacing-small);
-
+  h2 {
+    font-size: 14px;
+  }
+  .toggle-field {
+    margin-right: var(--large-spacing);
+    span {
+      font-size: var(--title2-font-size);
+    }
+  }
   hr {
     border: none;
     border-top: $border-black10;

@@ -2,7 +2,7 @@ import assert from "assert";
 import { EnumEntityAction, EnumEntityPermissionType } from "../models";
 import { namedTypes } from "ast-types";
 import { Entity } from "../types";
-import { removeDecoratorByName, getClassMethodById } from "./ast";
+import { getClassMethodById } from "./ast"; //removeDecoratorByName
 import { createPublicDecorator } from "./create-public-decorator";
 import { removeIdentifierFromUseInterceptorDecorator } from "./nestjs-code-generation";
 
@@ -50,7 +50,7 @@ export function setEndpointPermissions(
       );
     }
 
-    removeDecoratorByName(classMethod, USE_ROLES_DECORATOR_NAME);
+    //removeDecoratorByName(classMethod, USE_ROLES_DECORATOR_NAME);
 
     const publicDecorator = createPublicDecorator();
     classMethod.decorators?.unshift(publicDecorator);

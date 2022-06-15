@@ -37,6 +37,13 @@ export type AppSettings = Omit<
   | "lockedAt"
 >;
 
+export type GenerationSettings = {
+  generateAdminUI?: boolean;
+  generateGraphQL?: boolean;
+  generateRestApi?: boolean;
+  generateRootFiles?: boolean;
+};
+
 export type AppInfo = {
   name: string;
   description: string;
@@ -44,6 +51,7 @@ export type AppInfo = {
   id: string;
   url: string;
   settings: AppSettings;
+  generationSettings: GenerationSettings;
 };
 
 export type Role = Omit<

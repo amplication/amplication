@@ -3,7 +3,13 @@ import entities from "./entities";
 import roles from "./roles";
 import appInfo from "./appInfo";
 
-const MODULE_EXTENSIONS_TO_SNAPSHOT = [".ts", ".tsx", ".prisma", ".env"];
+const MODULE_EXTENSIONS_TO_SNAPSHOT = [
+  ".ts",
+  ".tsx",
+  ".prisma",
+  ".env",
+  ".yml",
+];
 
 jest.setTimeout(100000);
 
