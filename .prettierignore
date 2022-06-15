@@ -1,2 +1,4 @@
 node_modules/
 package-lock.json
+script/setup.ts
+*.md
