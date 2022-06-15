@@ -4,12 +4,12 @@ import { FileDetails } from "./CodeViewPage";
 import AppGitStatusPanel from "../git/AppGitStatusPanel";
 import CodeViewExplorer from "./CodeViewExplorer";
 import "./CodeViewBar.scss";
-import cssNamingConverter from "../../util/cssNamingConverter";
 
 type Props = {
   app: App;
   onFileSelected: (selectedFile: FileDetails | null) => void;
 };
+const CLASS_NAME = "code-view-bar";
 
 const CodeViewBar = ({ app, onFileSelected }: Props) => {
   return (
@@ -23,7 +23,5 @@ const CodeViewBar = ({ app, onFileSelected }: Props) => {
     </div>
   );
 };
-
-const CLASS_NAME = cssNamingConverter(CodeViewBar.name);
 
 export default CodeViewBar;
