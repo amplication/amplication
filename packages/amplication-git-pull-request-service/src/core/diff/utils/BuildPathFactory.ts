@@ -15,10 +15,10 @@ export class BuildPathFactory {
     assert(envFilePath);
     this.buildsFolder = normalize(envFilePath);
   }
-  private appPath(amplicationAppId: string) {
-    return join(this.buildsFolder, amplicationAppId);
+  private resourcePath(resourceId: string) {
+    return join(this.buildsFolder, resourceId);
   }
-  public get(appId: string, buildId: string) {
-    return join(this.appPath(appId), buildId);
+  public get(resourceId: string, buildId: string) {
+    return join(this.resourcePath(resourceId), buildId);
   }
 }
