@@ -25,9 +25,11 @@ import {
   DiscardPendingChangesArgs,
   FindManyResourceArgs,
   FindPendingChangesArgs,
-  PendingChange, ResourceCreateWithEntitiesInput,
+  PendingChange,
+  ResourceCreateWithEntitiesInput,
   ResourceValidationErrorTypes,
-  ResourceValidationResult, UpdateOneResourceArgs
+  ResourceValidationResult,
+  UpdateOneResourceArgs
 } from './dto';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
