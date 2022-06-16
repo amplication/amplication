@@ -24,8 +24,8 @@ export class NotificationsController {
     const notification: NotificationPattern = {
       userId: value.userId,
       notificationName: value.template,
-      payload: value.payload
-    }
+      payload: value.payload,
+    };
     return this.notificationService.pushNotification(notification);
   }
 }
