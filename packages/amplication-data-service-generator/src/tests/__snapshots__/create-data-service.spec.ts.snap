@@ -2535,7 +2535,7 @@ POSTGRESQL_PASSWORD=1234
 POSTGRESQL_PORT=5433
 POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
 BCRYPT_SALT=10
-COMPOSE_PROJECT_NAME=amp_\${appId}
+COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d",
   "server/prisma/schema.prisma": "datasource postgres {
