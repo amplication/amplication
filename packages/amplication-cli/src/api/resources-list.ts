@@ -2,9 +2,9 @@ import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client/core';
 
 import * as models from '../models';
 
-const GET_APPS = gql`
-  query apps {
-    apps {
+const GET_RESOURCES = gql`
+  query resources {
+    resources {
       id
       name
       description
@@ -21,12 +21,12 @@ const GET_APPS = gql`
   }
 `;
 
-export async function getApps(
+export async function getResources(
   client: ApolloClient<NormalizedCacheObject>
-): Promise<models.App[]> {
-  const { data } = await client.query<{ apps: models.App[] }>({
-    query: GET_APPS,
+): Promise<models.Resource[]> {
+  const { data } = await client.query<{ resources: models.Resource[] }>({
+    query: GET_RESOURCES,
   });
 
-  return data.apps;
+  return data.resources;
 }
