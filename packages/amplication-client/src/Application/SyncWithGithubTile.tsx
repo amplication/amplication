@@ -1,16 +1,11 @@
-import { gql, useQuery } from "@apollo/client";
-import React, { useCallback } from "react";
-import { useHistory } from "react-router-dom";
-import { Event as TrackEvent, useTracking } from "../util/analytics";
-import GithubTileFooter from "./GithubTileFooter";
+import { useQuery } from "@apollo/client";
+import React from "react";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
-
+import AppGitStatusPanel from "../Application/git/AppGitStatusPanel";
+import { GET_APP_GIT_REPOSITORY } from "./git/SyncWithGithubPage";
+import { App } from "../models";
 type Props = {
   applicationId: string;
-};
-
-const EVENT_DATA: TrackEvent = {
-  eventName: "syncWithGitHubTileClick",
 };
 
 export type GitRepository = {
@@ -23,30 +18,12 @@ export type GitRepository = {
   githubLastSync: string;
 };
 
-type TData = {
-  app: {
-    id: string;
-    gitRepository: GitRepository;
-  };
-};
-
 function SyncWithGithubTile({ applicationId }: Props) {
-  const history = useHistory();
-  const { data, loading } = useQuery<TData>(GET_GIT_REPOSITORY_FROM_APP_ID, {
+  const { data } = useQuery<{ app: App }>(GET_APP_GIT_REPOSITORY, {
     variables: {
-      id: applicationId,
+      appId: applicationId,
     },
   });
-
-  const { trackEvent } = useTracking();
-
-  const handleClick = useCallback(
-    (event) => {
-      trackEvent(EVENT_DATA);
-      history.push(`/${applicationId}/github`);
-    },
-    [history, trackEvent, applicationId]
-  );
 
   return (
     <OverviewSecondaryTile
@@ -54,31 +31,12 @@ function SyncWithGithubTile({ applicationId }: Props) {
       title="Sync with GitHub"
       message="Push the Amplication-generated app to your GitHub repo. Track changes, track our code. You are in full control of your app."
       footer={
-        <GithubTileFooter
-          gitRepository={data?.app?.gitRepository}
-          loading={loading}
-        />
+        data?.app && (
+          <AppGitStatusPanel app={data?.app} showDisconnectedMessage={false} />
+        )
       }
-      onClick={handleClick}
     />
   );
 }
 
 export default SyncWithGithubTile;
-
-const GET_GIT_REPOSITORY_FROM_APP_ID = gql`
-  query getApplication($id: String!) {
-    app(where: { id: $id }) {
-      id
-      gitRepository {
-        id
-        name
-        gitOrganization {
-          id
-          name
-        }
-        githubLastSync
-      }
-    }
-  }
-`;
