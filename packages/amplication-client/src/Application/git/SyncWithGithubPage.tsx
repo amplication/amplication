@@ -76,10 +76,13 @@ function SyncWithGithubPage({ match }: Props) {
 
 export default SyncWithGithubPage;
 
-const GET_APP_GIT_REPOSITORY = gql`
+export const GET_APP_GIT_REPOSITORY = gql`
   query getAppGitRepository($appId: String!) {
     app(where: { id: $appId }) {
       id
+      name
+      color
+      githubLastSync
       workspace {
         id
         gitOrganizations {

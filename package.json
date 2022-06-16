@@ -8,7 +8,7 @@
     "format": "lerna run --parallel format",
     "lint": "lerna run --parallel --ignore server-template --ignore admin-template lint",
     "bootstrap": "lerna bootstrap",
-    "clean": "lerna clean",
+    "clean": "lerna clean --yes",
     "prisma:generate": "lerna run --scope @amplication/prisma-db prisma:generate",
     "migrate:save": "lerna run --scope @amplication/prisma-db migrate:save",
     "migrate:up": "lerna run --scope @amplication/prisma-db migrate:up",
@@ -20,11 +20,13 @@
     "build-storybook": "lerna run build-storybook",
     "generate-test-data-service": "lerna run --scope @amplication/data-service-generator generate-test-data-service",
     "generate-code": "lerna run --scope @amplication/data-service-generator generate-code",
-    "setup:dev": "ts-node ./script/setup.ts"
+    "setup:dev": "ts-node ./script/setup.ts",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d"
   },
   "dependencies": {
     "lerna": "4.0.0",
     "ora": "5.4.0",
+    "react-query": "^3.39.1",
     "semver": "7.3.5",
     "winston": "3.3.4"
   },

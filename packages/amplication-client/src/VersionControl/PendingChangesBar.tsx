@@ -15,7 +15,7 @@ const PendingChangesBar = ({ applicationId, handleClick }: Props) => {
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__heading`}>
         <Button
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           icon="close"
           iconSize="xsmall"
           onClick={handleClick}
