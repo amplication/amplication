@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { SecretsManagerServiceBase } from "./base/secretsManager.service.base";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { SecretsManagerServiceBase } from './base/secretsManager.service.base';
 
 @Injectable()
 export class SecretsManagerService extends SecretsManagerServiceBase {

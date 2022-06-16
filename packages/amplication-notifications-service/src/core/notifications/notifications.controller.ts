@@ -1,14 +1,14 @@
-import { Controller, Inject } from "@nestjs/common";
-import { MessagePattern, Payload } from "@nestjs/microservices";
+import { Controller, Inject } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
   INotification,
   NOTIFICATION_TOKEN,
-} from "src/contracts/interfaces/notification.interface";
-import { NotificationPattern } from "src/contracts/notificationPattern";
-import { KafkaMessagePayload } from "src/contracts/kafkaMessagePayload";
-import { EnvironmentVariables } from "src/services/environmentVariables";
+} from 'src/contracts/interfaces/notification.interface';
+import { NotificationPattern } from 'src/contracts/notificationPattern';
+import { KafkaMessagePayload } from 'src/contracts/kafkaMessagePayload';
+import { EnvironmentVariables } from 'src/services/environmentVariables';
 
-const KAFKA_TOPIC_NAME_KEY = "KAFKA_TOPIC";
+const KAFKA_TOPIC_NAME_KEY = 'KAFKA_TOPIC';
 
 @Controller()
 export class NotificationsController {

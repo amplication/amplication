@@ -3,14 +3,14 @@ import {
   Inject,
   Injectable,
   Logger,
-} from "@nestjs/common";
-import { INotification } from "src/contracts/interfaces/notification.interface";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import { Novu } from "@novu/node";
-import { ConfigService } from "@nestjs/config";
-import { NotificationPattern } from "src/contracts/notificationPattern";
+} from '@nestjs/common';
+import { INotification } from 'src/contracts/interfaces/notification.interface';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Novu } from '@novu/node';
+import { ConfigService } from '@nestjs/config';
+import { NotificationPattern } from 'src/contracts/notificationPattern';
 
-const NOVU_API_KEY_ENV = "NOVU_API_KEY";
+const NOVU_API_KEY_ENV = 'NOVU_API_KEY';
 
 @Injectable()
 export class NotificationService implements INotification {
@@ -19,7 +19,7 @@ export class NotificationService implements INotification {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
     private configService: ConfigService
   ) {
-    this.novuApiKey = this.configService.get<string>(NOVU_API_KEY_ENV) || "";
+    this.novuApiKey = this.configService.get<string>(NOVU_API_KEY_ENV) || '';
   }
 
   async pushNotification(notificationData: NotificationPattern): Promise<void> {
