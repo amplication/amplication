@@ -52,7 +52,7 @@ const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_BUILD_ID = 'ExampleBuild';
 const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
 const EXAMPLE_ACTION_ID = 'ExampleActionId';
-const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
+const EXAMPLE_RESOURCE_ID = 'EXAMPLE_APP_ID';
 
 const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
 
@@ -64,7 +64,7 @@ const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   images: ['EXAMPLE_BUILD_IMAGE_ID'],
   createdAt: new Date(),
-  appId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   userId: EXAMPLE_USER_ID,
   version: 'EXAMPLE_VERSION',
   message: 'EXAMPLE_BUILD_MESSAGE',
@@ -80,7 +80,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   updatedAt: new Date(),
   name: 'EXAMPLE_ENVIRONMENT_NAME',
   address: 'EXAMPLE_ADDRESS',
-  resourceId: EXAMPLE_APP_ID
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_DEPLOYMENT: Deployment = {
@@ -112,7 +112,7 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
     status: EnumDeploymentStatus.Completed,
     userId: 'EXAMPLE_BUILD_USER_ID',
     version: 'EXAMPLE_BUILD_VERSION',
-    resourceId: EXAMPLE_APP_ID,
+    resourceId: EXAMPLE_RESOURCE_ID,
     images: [EXAMPLE_IMAGE_ID],
     containerStatusQuery: null,
     containerStatusUpdatedAt: null,
@@ -389,7 +389,7 @@ describe('DeploymentService', () => {
     expect(deployerServiceDeployMock).toBeCalledWith(
       gcpDeployConfiguration,
       {
-        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_APP_ID,
+        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_RESOURCE_ID,
         [TERRAFORM_IMAGE_ID_VARIABLE]: EXAMPLE_IMAGE_ID,
         [GCP_TERRAFORM_PROJECT_VARIABLE]: EXAMPLE_GCP_APPS_PROJECT_ID,
         [GCP_TERRAFORM_REGION_VARIABLE]: EXAMPLE_GCP_APPS_REGION,
@@ -401,7 +401,7 @@ describe('DeploymentService', () => {
       },
       {
         bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
-        prefix: EXAMPLE_APP_ID
+        prefix: EXAMPLE_RESOURCE_ID
       },
       DeployerProvider.GCP
     );
@@ -444,7 +444,7 @@ describe('DeploymentService', () => {
     );
     expect(environmentServiceGetDefaultEnvironmentMock).toBeCalledTimes(1);
     expect(environmentServiceGetDefaultEnvironmentMock).toBeCalledWith(
-      EXAMPLE_APP_ID
+      EXAMPLE_RESOURCE_ID
     );
     expect(prismaDeploymentCreateMock).toBeCalledTimes(1);
     expect(prismaDeploymentCreateMock).toBeCalledWith(createArgs);
@@ -615,7 +615,7 @@ describe('DeploymentService', () => {
     expect(deployerServiceDeployMock).toBeCalledWith(
       gcpDeployConfiguration,
       {
-        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_APP_ID,
+        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_RESOURCE_ID,
         [TERRAFORM_IMAGE_ID_VARIABLE]: EXAMPLE_IMAGE_ID,
         [GCP_TERRAFORM_PROJECT_VARIABLE]: EXAMPLE_GCP_APPS_PROJECT_ID,
         [GCP_TERRAFORM_REGION_VARIABLE]: EXAMPLE_GCP_APPS_REGION,
@@ -627,7 +627,7 @@ describe('DeploymentService', () => {
       },
       {
         bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
-        prefix: EXAMPLE_APP_ID
+        prefix: EXAMPLE_RESOURCE_ID
       },
       DeployerProvider.GCP
     );
@@ -683,7 +683,7 @@ describe('DeploymentService', () => {
     expect(deployerServiceDeployMock).toBeCalledWith(
       gcpDeployConfiguration,
       {
-        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_APP_ID,
+        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_RESOURCE_ID,
         [TERRAFORM_IMAGE_ID_VARIABLE]: EXAMPLE_IMAGE_ID,
         [GCP_TERRAFORM_PROJECT_VARIABLE]: EXAMPLE_GCP_APPS_PROJECT_ID,
         [GCP_TERRAFORM_REGION_VARIABLE]: EXAMPLE_GCP_APPS_REGION,
@@ -695,7 +695,7 @@ describe('DeploymentService', () => {
       },
       {
         bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
-        prefix: EXAMPLE_APP_ID
+        prefix: EXAMPLE_RESOURCE_ID
       },
       DeployerProvider.GCP
     );
@@ -755,7 +755,7 @@ describe('DeploymentService', () => {
     expect(deployerServiceDeployMock).toBeCalledWith(
       gcpDeployConfiguration,
       {
-        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_APP_ID,
+        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_RESOURCE_ID,
         [TERRAFORM_IMAGE_ID_VARIABLE]: EXAMPLE_IMAGE_ID,
         [GCP_TERRAFORM_PROJECT_VARIABLE]: EXAMPLE_GCP_APPS_PROJECT_ID,
         [GCP_TERRAFORM_REGION_VARIABLE]: EXAMPLE_GCP_APPS_REGION,
@@ -767,7 +767,7 @@ describe('DeploymentService', () => {
       },
       {
         bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
-        prefix: EXAMPLE_APP_ID
+        prefix: EXAMPLE_RESOURCE_ID
       },
       DeployerProvider.GCP
     );

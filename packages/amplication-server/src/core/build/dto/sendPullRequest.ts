@@ -3,7 +3,7 @@ import { EnumGitProvider } from 'src/core/git/dto/enums/EnumGitProvider';
 import { GitCommit } from './GitCommit';
 export class SendPullRequestArgs {
   @IsString()
-  amplicationResourceId!: string;
+  resourceId!: string;
   @IsString()
   oldBuildId!: string;
   @IsString()

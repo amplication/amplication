@@ -391,7 +391,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${EXAMPLE_APP_NAME}`,
+            name: `project-${EXAMPLE_RESOURCE_NAME}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -528,7 +528,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${SAMPLE_APP_DATA.name}`,
+            name: `project-${SAMPLE_RESOURCE_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -696,7 +696,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${SAMPLE_APP_DATA.name}`,
+            name: `project-${SAMPLE_RESOURCE_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }

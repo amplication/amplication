@@ -32,7 +32,7 @@ export class AppSettingsService {
       dbPassword,
       dbPort,
       dbUser,
-      appId: args.where.id,
+      resourceId: args.where.id,
       authProvider
     };
   }
@@ -86,7 +86,7 @@ export class AppSettingsService {
   }
 
   async createDefaultAppSettings(
-    appId: string,
+    resourceId: string,
     user: User
   ): Promise<AppSettings> {
     return this.blockService.create<AppSettings>(
@@ -94,7 +94,7 @@ export class AppSettingsService {
         data: {
           resource: {
             connect: {
-              id: appId
+              id: resourceId
             }
           },
           ...DEFAULT_RESOURCE_SETTINGS,
