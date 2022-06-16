@@ -608,7 +608,7 @@ export class BuildService {
   private async saveToGitHub(build: Build, oldBuildId: string) {
     const resource = build.resource;
 
-    const appRepository = await this.prisma.gitRepository.findUnique({
+    const resourceRepository = await this.prisma.gitRepository.findUnique({
       where: {
         resourceId: resource.id
       },
@@ -629,7 +629,7 @@ export class BuildService {
 
     const url = `${host}/${build.resourceId}/builds/${build.id}`;
 
-    if (appRepository) {
+    if (resourceRepository) {
       return this.actionService.run(
         build.actionId,
         PUSH_TO_GITHUB_STEP_NAME,
@@ -638,11 +638,11 @@ export class BuildService {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
             const response = await this.queueService.sendCreateGitPullRequest({
-              gitOrganizationName: appRepository.gitOrganization.name,
-              gitRepositoryName: appRepository.name,
+              gitOrganizationName: resourceRepository.gitOrganization.name,
+              gitRepositoryName: resourceRepository.name,
               amplicationResourceId: resource.id,
               gitProvider: EnumGitProvider.Github,
-              installationId: appRepository.gitOrganization.installationId,
+              installationId: resourceRepository.gitOrganization.installationId,
               newBuildId: build.id,
               oldBuildId,
               commit: {

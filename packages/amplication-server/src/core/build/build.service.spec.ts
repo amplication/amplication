@@ -99,7 +99,7 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   dbPassword: '1234',
   dbPort: 5432,
   dbUser: 'admin',
-  appId: EXAMPLE_RESOURCE_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   authProvider: EnumAuthProviderType.Http
 };
 
@@ -333,7 +333,7 @@ const resourceRoleServiceGetResourceRolesMock = jest.fn(
   () => EXAMPLE_APP_ROLES
 );
 
-const resourceServiceGetAppMock = jest.fn(() => EXAMPLE_SERVICE_RESOURCE);
+const resourceServiceGetResourceMock = jest.fn(() => EXAMPLE_SERVICE_RESOURCE);
 
 const EXAMPLE_ACTION_STEP: ActionStep = {
   id: 'EXAMPLE_ACTION_STEP_ID',
@@ -476,13 +476,13 @@ describe('BuildService', () => {
         {
           provide: ResourceRoleService,
           useValue: {
-            getAppRoles: resourceRoleServiceGetResourceRolesMock
+            getResourceRoles: resourceRoleServiceGetResourceRolesMock
           }
         },
         {
           provide: ResourceService,
           useValue: {
-            resource: resourceServiceGetAppMock
+            resource: resourceServiceGetResourceMock
           }
         },
         {
@@ -644,8 +644,8 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
-    expect(resourceServiceGetAppMock).toBeCalledTimes(1);
-    expect(resourceServiceGetAppMock).toBeCalledWith({
+    expect(resourceServiceGetResourceMock).toBeCalledTimes(1);
+    expect(resourceServiceGetResourceMock).toBeCalledWith({
       where: { id: EXAMPLE_RESOURCE_ID }
     });
 
