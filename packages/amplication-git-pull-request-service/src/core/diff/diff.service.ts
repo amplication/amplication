@@ -28,7 +28,7 @@ export class DiffService {
       newAmplicationBuildId
     );
     this.logger.info('List of the paths', {
-   resourceId,
+      resourceId,
       previousAmplicationBuildId,
       newAmplicationBuildId,
     });

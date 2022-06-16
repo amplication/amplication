@@ -28,19 +28,19 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [],
   permissions: [],
 };
-const EXAMPLE_APP_ROLE: Role = {
-  displayName: "Example App Role Identifier",
-  name: "exampleAppRoleId",
+const EXAMPLE_RESOURCE_ROLE: Role = {
+  displayName: "Example Resource Role Identifier",
+  name: "exampleResourceRoleId",
 };
-const EXAMPLE_OTHER_APP_ROLE: Role = {
-  displayName: "Other Example App Role Identifier",
-  name: "otherExampleAppRoleID",
+const EXAMPLE_OTHER_RESOURCE_ROLE: Role = {
+  displayName: "Other Example Resource Role Identifier",
+  name: "otherExampleResourceRoleID",
 };
 const EXAMPLE_PERMISSION_ROLE: EntityPermissionRole = {
-  appRole: EXAMPLE_APP_ROLE,
+  resourceRole: EXAMPLE_RESOURCE_ROLE,
 };
 const EXAMPLE_PERMISSION_OTHER_ROLE: EntityPermissionRole = {
-  appRole: EXAMPLE_OTHER_APP_ROLE,
+  resourceRole: EXAMPLE_OTHER_RESOURCE_ROLE,
 };
 const EXAMPLE_ALL_ROLES_CREATE_PERMISSION: EntityPermission = {
   action: EnumEntityAction.Create,
@@ -87,7 +87,7 @@ const EXAMPLE_ROLE_CREATE_GRANT: Grant = {
   action: CREATE_ANY,
   attributes: ALL_ATTRIBUTES_ALLOWED,
   resource: EXAMPLE_ENTITY.name,
-  role: EXAMPLE_APP_ROLE.name,
+  role: EXAMPLE_RESOURCE_ROLE.name,
 };
 const EXAMPLE_ROLE_CREATE_GRANT_WITH_EXCLUDED_FIELD: Grant = {
   action: CREATE_ANY,
@@ -96,15 +96,15 @@ const EXAMPLE_ROLE_CREATE_GRANT_WITH_EXCLUDED_FIELD: Grant = {
     createNegativeAttributeMatcher(EXAMPLE_FIELD.name),
   ]),
   resource: EXAMPLE_ENTITY.name,
-  role: EXAMPLE_APP_ROLE.name,
+  role: EXAMPLE_RESOURCE_ROLE.name,
 };
 const EXAMPLE_OTHER_ROLE_CREATE_GRANT: Grant = {
   action: CREATE_ANY,
   attributes: ALL_ATTRIBUTES_ALLOWED,
   resource: EXAMPLE_ENTITY.name,
-  role: EXAMPLE_OTHER_APP_ROLE.name,
+  role: EXAMPLE_OTHER_RESOURCE_ROLE.name,
 };
-const EXAMPLE_ROLES = [EXAMPLE_APP_ROLE, EXAMPLE_OTHER_APP_ROLE];
+const EXAMPLE_ROLES = [EXAMPLE_RESOURCE_ROLE, EXAMPLE_OTHER_RESOURCE_ROLE];
 
 describe("createGrants", () => {
   const cases: TestCase = [

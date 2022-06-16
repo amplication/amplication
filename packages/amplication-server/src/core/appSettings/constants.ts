@@ -5,7 +5,7 @@ import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 export type AppSettingsValues = Omit<
   AppSettingsValuesExtended,
   'blockType' | 'description' | 'displayName'
-> & { appId: string };
+> & { resourceId: string };
 
 export type AppSettingsValuesExtended = Omit<
   AppSettings,
@@ -18,7 +18,7 @@ export type AppSettingsValuesExtended = Omit<
   | 'outputParameters'
   | 'lockedByUserId'
   | 'lockedAt'
-  | 'appId'
+  | 'resourceId'
 >;
 
 export const DEFAULT_RESOURCE_SETTINGS: AppSettingsValuesExtended = {
