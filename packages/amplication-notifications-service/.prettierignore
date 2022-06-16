@@ -2,3 +2,4 @@ node_modules/
 dist/
 package-lock.json
 coverage/
+*.md
