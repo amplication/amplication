@@ -1,0 +1,3 @@
+export const KAFKA_GROUP_ID = "KAFKA_GROUP_ID";
+export const KAFKA_BROKERS = "KAFKA_BROKERS";
+export const KAFKA_CLIENT_ID = "KAFKA_CLIENT_ID";

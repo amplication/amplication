@@ -23,6 +23,7 @@ After that you have to build dependencies of the client:
 
 ```
 npm run build -- --scope @amplication/client --include-dependencies
+
 ```
 
 ## Available Scripts
