@@ -1,0 +1,14 @@
+@import "../style/index.scss";
+
+.build-selector {
+
+  .select-menu{
+    margin-left: 0;
+  }
+  .amp-button{
+    width: 100%;
+  }
+  .amp-button--secondary {
+    justify-content: left;
+  }
+}

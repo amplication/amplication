@@ -11,6 +11,7 @@ import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 
 import "./BuildSteps.scss";
+import { REACT_APP_SERVER_URI } from "../env";
 
 const CLASS_NAME = "build-steps";
 
@@ -113,7 +114,7 @@ const BuildSteps = ({ build, onError }: Props) => {
         <BuildStepsStatus status={stepGenerateCode.status} />
         <span className="spacer" />
         <Button
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           icon="download1"
           disabled={
             stepGenerateCode.status !== models.EnumActionStepStatus.Success
@@ -137,7 +138,7 @@ const BuildSteps = ({ build, onError }: Props) => {
           {githubUrl && (
             <a href={githubUrl} target="github">
               <Button
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 icon="external_link"
                 disabled={
                   stepGenerateCode.status !==
@@ -164,7 +165,7 @@ const BuildSteps = ({ build, onError }: Props) => {
         {/*@todo: add missing endpoint to download container and remove className */}
         <Button
           className="hidden"
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           icon="download1"
           disabled={data.build.status !== models.EnumBuildStatus.Completed}
           onClick={handleDownloadClick}
@@ -187,7 +188,7 @@ const BuildSteps = ({ build, onError }: Props) => {
           stepDeploy.status === models.EnumActionStepStatus.Success && (
             <a href={deployment.environment.address} target="app">
               <Button
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 icon="link_2"
                 eventData={{
                   eventName: "openPreviewApp",
@@ -204,7 +205,7 @@ const BuildSteps = ({ build, onError }: Props) => {
 export default BuildSteps;
 
 export async function downloadArchive(uri: string): Promise<void> {
-  const res = await fetch(uri);
+  const res = await fetch(REACT_APP_SERVER_URI + uri);
   const url = new URL(res.url);
   switch (res.status) {
     case 200: {

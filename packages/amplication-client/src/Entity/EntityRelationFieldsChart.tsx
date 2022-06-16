@@ -126,7 +126,7 @@ export const EntityRelationFieldsChart = ({
           {fixInPlace && (
             <Button
               className={`${CLASS_NAME}__fix`}
-              buttonStyle={EnumButtonStyle.Secondary}
+              buttonStyle={EnumButtonStyle.Clear}
               type="submit"
               eventData={{
                 eventName: "fixRelatedEntity",

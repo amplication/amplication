@@ -10,13 +10,13 @@ import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
 import PendingChangesPage from "../VersionControl/PendingChangesPage";
-import { AsidePanel } from "../util/teleporter";
+import { AsidePanel, FilesPanel } from "../util/teleporter";
 
 import "./ApplicationLayout.scss";
 import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
-import MainLayout from "../Layout/MainLayout";
+import MainLayout, { EnumMainLayoutAsidePosition } from "../Layout/MainLayout";
 import { CircleBadge } from "@amplication/design-system";
 import LastCommit from "../VersionControl/LastCommit";
 
@@ -28,6 +28,8 @@ import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import Commits from "../VersionControl/Commits";
 import NavigationTabs from "../Layout/NavigationTabs";
 import SyncWithGithubPage from "./git/SyncWithGithubPage";
+import CodeViewPage from "./code-view/CodeViewPage";
+import AppSettingsPage from "./appSettings/AppSettingsPage";
 
 export type ApplicationData = {
   app: models.App;
@@ -196,7 +198,20 @@ function ApplicationLayout({ match }: Props) {
             to={`/${application}/github`}
             icon="github"
           />
+          <MenuItem
+            title="Code View"
+            to={`/${application}/code-view`}
+            icon="code1"
+          />
+          <MenuItem
+            title="Settings"
+            to={`/${application}/appSettings/update`}
+            icon="settings"
+          />
         </MainLayout.Menu>
+        <MainLayout.Aside position={EnumMainLayoutAsidePosition.left}>
+          <FilesPanel.Target className="main-layout__aside__expandable" />
+        </MainLayout.Aside>
         <MainLayout.Content>
           <div className={`${CLASS_NAME}__app-container`}>
             <NavigationTabs defaultTabUrl={`/${application}/`} />
@@ -226,6 +241,14 @@ function ApplicationLayout({ match }: Props) {
               <RouteWithAnalytics
                 path="/:application/github"
                 component={SyncWithGithubPage}
+              />
+              <RouteWithAnalytics
+                path="/:application/code-view"
+                component={CodeViewPage}
+              />
+              <Route
+                path="/:application/appSettings"
+                component={AppSettingsPage}
               />
               <Route path="/:application/" component={ApplicationHome} />
             </Switch>
