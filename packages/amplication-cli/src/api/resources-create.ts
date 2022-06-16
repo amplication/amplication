@@ -2,9 +2,9 @@ import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client/core';
 
 import * as models from '../models';
 
-const CREATE_APP = gql`
-  mutation createApp($data: AppCreateInput!) {
-    createApp(data: $data) {
+const CREATE_RESOURCE = gql`
+  mutation createResource($data: ResourceCreateInput!) {
+    createResource(data: $data) {
       id
       name
       description
@@ -20,13 +20,13 @@ const CREATE_APP = gql`
     }
   }
 `;
-export async function createApp(
+export async function createResource(
   client: ApolloClient<NormalizedCacheObject>,
   name: string,
   description: string
-): Promise<models.App> {
-  const { data } = await client.mutate<{ createApp: models.App }>({
-    mutation: CREATE_APP,
+): Promise<models.Resource> {
+  const { data } = await client.mutate<{ createResource: models.Resource }>({
+    mutation: CREATE_RESOURCE,
     variables: {
       data: {
         name,
@@ -39,5 +39,5 @@ export async function createApp(
     throw new Error('no data');
   }
 
-  return data.createApp;
+  return data.createResource;
 }

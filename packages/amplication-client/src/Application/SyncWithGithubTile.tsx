@@ -30,7 +30,11 @@ function SyncWithGithubTile({ resourceId }: Props) {
       icon="github"
       title="Sync with GitHub"
       message="Push the Amplication-generated app to your GitHub repo. Track changes, track our code. You are in full control of your app."
-      footer={data?.app && <AppGitStatusPanel app={data?.app} />}
+      footer={
+        data?.app && (
+          <AppGitStatusPanel app={data?.app} showDisconnectedMessage={false} />
+        )
+      }
     />
   );
 }

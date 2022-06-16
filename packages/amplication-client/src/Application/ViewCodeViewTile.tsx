@@ -29,7 +29,7 @@ function ViewCodeViewTile({ resourceId }: Props) {
     <OverviewSecondaryTile
       icon="code"
       title="Code View"
-      message="Amplication generates the code automatically, but if you want to check out what’s under the hood, view the generated code from the Amplication console."
+      message="Amplication generates the code automatically. You can use the 'Code View' page to view and explore the generated code."
       footer={
         <Button
           buttonStyle={EnumButtonStyle.Secondary}

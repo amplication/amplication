@@ -3,7 +3,7 @@ import { flags } from '@oclif/command';
 import { ConfiguredCommand } from '../../configured-command';
 import { commitChanges } from '../../api';
 import { format } from '../../flags/format-flag';
-import { app } from '../../flags/app-flag';
+import { resource } from '../../flags/resource-flag';
 import * as models from '../../models';
 
 export const COMMIT_COLUMNS: Table.table.Columns<models.Commit> = {
@@ -18,15 +18,15 @@ export const COMMIT_COLUMNS: Table.table.Columns<models.Commit> = {
   updatedAt: {},
 };
 
-export default class AppsCommit extends ConfiguredCommand {
-  static description = 'commit the pending changes in the app';
+export default class ResourcesCommit extends ConfiguredCommand {
+  static description = 'commit the pending changes in the resource';
 
-  static examples = ['amp apps:commit --message "adding customer entity"'];
+  static examples = ['amp resources:commit --message "adding customer entity"'];
 
   static flags = {
     ...cli.table.flags(),
     format: format(),
-    app: app(),
+    resource: resource(),
 
     message: flags.string({
       required: true,
@@ -35,16 +35,16 @@ export default class AppsCommit extends ConfiguredCommand {
   };
 
   async command() {
-    const { flags } = this.parse(AppsCommit);
+    const { flags } = this.parse(ResourcesCommit);
 
-    const appId = flags.app;
-    if (!appId) {
-      this.error(`Missing required flag: -a, --app`);
+    const resourceId = flags.resource;
+    if (!resourceId) {
+      this.error(`Missing required flag: -r, --resource`);
     } else {
       const message = flags.message;
 
       cli.action.start(`Committing changes`);
-      const data = await commitChanges(this.client, appId, message);
+      const data = await commitChanges(this.client, resourceId, message);
 
       cli.action.stop();
       this.output(data, flags, COMMIT_COLUMNS);

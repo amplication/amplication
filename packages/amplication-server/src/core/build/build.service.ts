@@ -6,7 +6,6 @@ import { StorageService } from '@codebrew/nestjs-storage';
 import { subSeconds } from 'date-fns';
 import { Prisma, PrismaService } from '@amplication/prisma-db';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import assert from 'assert';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { groupBy, omit, orderBy } from 'lodash';
@@ -605,7 +604,7 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  private async saveToGitHub(build: Build, oldBuildId: string) {
+  private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
     const resource = build.resource;
 
     const resourceRepository = await this.prisma.gitRepository.findUnique({
@@ -637,35 +636,36 @@ export class BuildService {
         async step => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
-            const response = await this.queueService.sendCreateGitPullRequest({
-              gitOrganizationName: resourceRepository.gitOrganization.name,
-              gitRepositoryName: resourceRepository.name,
-              resourceId: resource.id,
-              gitProvider: EnumGitProvider.Github,
-              installationId: resourceRepository.gitOrganization.installationId,
-              newBuildId: build.id,
-              oldBuildId,
-              commit: {
-                base: 'main',
-                head: `amplication-build-${build.id}`,
-                body: `Amplication build # ${build.id}.
+            const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
+              {
+                gitOrganizationName: resourceRepository.gitOrganization.name,
+                gitRepositoryName: resourceRepository.name,
+                resourceId: resource.id,
+                gitProvider: EnumGitProvider.Github,
+                installationId:
+                  resourceRepository.gitOrganization.installationId,
+                newBuildId: build.id,
+                oldBuildId,
+                commit: {
+                  base: 'main',
+                  head: `amplication-build-${build.id}`,
+                  body: `Amplication build # ${build.id}.
                 Commit message: ${commit.message}
                 
                 ${url}
                 `,
-                title: commitMessage
+                  title: commitMessage
+                }
               }
-            });
-
-            const { url: prUrl } = response;
-
-            assert(prUrl, 'Failed to get pull request url');
+            );
 
             await this.resourceService.reportSyncMessage(
               build.resourceId,
               'Sync Completed Successfully'
             );
-            await this.actionService.logInfo(step, prUrl, { githubUrl: prUrl });
+            await this.actionService.logInfo(step, pullRequestResponse.url, {
+              githubUrl: pullRequestResponse.url
+            });
             await this.actionService.logInfo(
               step,
               PUSH_TO_GITHUB_STEP_FINISH_LOG

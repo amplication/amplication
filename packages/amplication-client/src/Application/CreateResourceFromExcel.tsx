@@ -222,7 +222,7 @@ export function CreateResourceFromExcel() {
     if (data) {
       const resourceId = data.createResourceWithEntities.id;
 
-      history.push(`/${resourceId}/entities`);
+      history.push(`/${resourceId}`);
     }
   }, [history, data]);
 
