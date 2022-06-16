@@ -3,7 +3,7 @@ import { Switch, Route, match } from "react-router-dom";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import { gql, useQuery } from "@apollo/client";
 
-import ApplicationHome, { GET_RESOURCE } from "./ApplicationHome";
+import ResourceHome, { GET_RESOURCE } from "./ResourceHome";
 import Entities from "../Entity/Entities";
 import { RelatedFieldsMigrationFix } from "../Entity/RelatedFieldsMigrationFix";
 import BuildPage from "../VersionControl/BuildPage";
@@ -218,14 +218,14 @@ function ApplicationLayout({ match }: Props) {
 
             <Switch>
               <RouteWithAnalytics
-                path="/:application/pending-changes"
+                path="/:reasource/pending-changes"
                 component={PendingChangesPage}
               />
 
-              <Route path="/:application/entities/" component={Entities} />
+              <Route path="/:resource/entities/" component={Entities} />
 
               <RouteWithAnalytics
-                path="/:application/builds/:buildId"
+                path="/:resource/builds/:buildId"
                 component={BuildPage}
               />
 
@@ -233,9 +233,9 @@ function ApplicationLayout({ match }: Props) {
                 path="/:resource/roles"
                 component={RolesPage}
               />
-              <Route path="/:application/commits" component={Commits} />
+              <Route path="/:resource/commits" component={Commits} />
               <RouteWithAnalytics
-                path="/:application/fix-related-entities"
+                path="/:resource/fix-related-entities"
                 component={RelatedFieldsMigrationFix}
               />
               <RouteWithAnalytics
@@ -250,7 +250,7 @@ function ApplicationLayout({ match }: Props) {
                 path="/:application/appSettings"
                 component={AppSettingsPage}
               />
-              <Route path="/:application/" component={ApplicationHome} />
+              <Route path="/:application/" component={ResourceHome} />
             </Switch>
           </div>
         </MainLayout.Content>

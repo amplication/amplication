@@ -6,7 +6,7 @@ import PageContent from "../../Layout/PageContent";
 import useNavigationTabs from "../../Layout/UseNavigationTabs";
 import { EnumGitOrganizationType } from "../../models";
 import { formatError } from "../../util/error";
-import AuthAppWithGit from "./AuthAppWithGit";
+import AuthResourceWithGit from "./AuthResourceWithGit";
 import "./SyncWithGithubPage.scss";
 
 const CLASS_NAME = "sync-with-github-page";
@@ -30,7 +30,7 @@ export type GitRepositoryWithGitOrganization = {
   name: string;
   gitOrganization: GitOrganizationFromGitRepository;
 };
-export type AppWithGitRepository = {
+export type ResourceWithGitRepository = {
   id: string;
   workspace: WorkspaceFromAppWithGitOrganizations;
   gitRepository: null | GitRepositoryWithGitOrganization;
@@ -43,14 +43,13 @@ const NAVIGATION_KEY = "GITHUB";
 function SyncWithGithubPage({ match }: Props) {
   const { application } = match.params;
 
-  const { data, error, refetch } = useQuery<{ app: AppWithGitRepository }>(
-    GET_APP_GIT_REPOSITORY,
-    {
-      variables: {
-        resourceId: application,
-      },
-    }
-  );
+  const { data, error, refetch } = useQuery<{
+    resource: ResourceWithGitRepository;
+  }>(GET_RESOURCE_GIT_REPOSITORY, {
+    variables: {
+      resourceId: application,
+    },
+  });
   useNavigationTabs(application, NAVIGATION_KEY, match.url, `GitHub`);
   const errorMessage = formatError(error);
 
@@ -66,7 +65,9 @@ function SyncWithGithubPage({ match }: Props) {
           your application and create a Pull Request in your GitHub repository
           every time you commit your changes.
         </div>
-        {data?.app && <AuthAppWithGit app={data.app} onDone={refetch} />}
+        {data?.resource && (
+          <AuthResourceWithGit resource={data.resource} onDone={refetch} />
+        )}
 
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>
@@ -76,9 +77,9 @@ function SyncWithGithubPage({ match }: Props) {
 
 export default SyncWithGithubPage;
 
-export const GET_APP_GIT_REPOSITORY = gql`
-  query getAppGitRepository($appId: String!) {
-    app(where: { id: $appId }) {
+export const GET_RESOURCE_GIT_REPOSITORY = gql`
+  query getResourceGitRepository($resourceId: String!) {
+    resource(where: { id: $resourceId }) {
       id
       name
       color

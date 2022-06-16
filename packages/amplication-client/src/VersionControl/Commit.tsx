@@ -11,7 +11,10 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import CommitValidation from "./CommitValidation";
 import "./Commit.scss";
-import { CREATED_AT_FIELD, GET_BUILDS_COMMIT } from "../Application/code-view/CodeViewExplorer";
+import {
+  CREATED_AT_FIELD,
+  GET_BUILDS_COMMIT,
+} from "../Application/code-view/CodeViewExplorer";
 import { SortOrder } from "../models";
 
 type TCommit = {
@@ -60,12 +63,12 @@ const Commit = ({ resourceId, noChanges }: Props) => {
       {
         query: GET_BUILDS_COMMIT,
         variables: {
-          appId: applicationId,
+          resourceId,
           orderBy: {
             [CREATED_AT_FIELD]: SortOrder.Desc,
           },
-        }
-      }
+        },
+      },
     ],
   });
 

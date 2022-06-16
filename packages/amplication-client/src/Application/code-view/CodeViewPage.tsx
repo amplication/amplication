@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { match } from "react-router-dom";
 import { App } from "../../models";
-import { GET_APP_GIT_REPOSITORY } from "../git/SyncWithGithubPage";
+import { GET_RESOURCE_GIT_REPOSITORY } from "../git/SyncWithGithubPage";
 import CodeViewBar from "./CodeViewBar";
 import CodeViewEditor from "./CodeViewEditor";
 import useNavigationTabs from "../../Layout/UseNavigationTabs";
@@ -33,7 +33,7 @@ function CodeViewPage({ match }: Props) {
   const [fileDetails, setFileDetails] = useState<FileDetails | null>(null);
   useNavigationTabs(applicationId, NAVIGATION_KEY, match.url, "Code View");
 
-  const { data } = useQuery<{ app: App }>(GET_APP_GIT_REPOSITORY, {
+  const { data } = useQuery<{ app: App }>(GET_RESOURCE_GIT_REPOSITORY, {
     variables: {
       appId: applicationId,
     },

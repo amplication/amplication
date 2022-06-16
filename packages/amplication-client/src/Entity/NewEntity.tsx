@@ -19,7 +19,7 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./NewEntity.scss";
 
-type CreateEntityType = Omit<models.EntityCreateInput, "app">;
+type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
 type DType = {
   createOneEntity: models.Entity;

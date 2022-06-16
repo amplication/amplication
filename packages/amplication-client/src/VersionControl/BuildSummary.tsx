@@ -12,7 +12,7 @@ import { downloadArchive } from "./BuildSteps";
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 import { HelpPopover } from "../Components/HelpPopover";
-import { GET_RESOURCE } from "../Application/ApplicationHome";
+import { GET_RESOURCE } from "../Application/ResourceHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
@@ -27,9 +27,9 @@ export const EMPTY_STEP: models.ActionStep = {
   message: "",
 };
 
-export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const GENERATE_STEP_NAME = "GENERATE_RESOURCE";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
-export const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
 export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
@@ -54,7 +54,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
     "false"
   );
 
-  const { data: appData } = useQuery<{
+  const { data: resourceData } = useQuery<{
     resource: models.Resource;
   }>(GET_RESOURCE, {
     variables: {
@@ -147,7 +147,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
               Open GitHub
             </Button>
           </a>
-        ) : !appData?.resource.githubSyncEnabled ? ( //app is not connected to github
+        ) : !resourceData?.resource.githubSyncEnabled ? ( //resource is not connected to github
           <HelpPopover
             onDismiss={handleDismissHelpGitHub}
             content={
@@ -177,7 +177,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             </Link>
           </HelpPopover>
         ) : (
-          //app was connected after this build was created
+          //resource was connected after this build was created
           <div className={`${CLASS_NAME}__message`}>
             <Icon size="small" icon="info_circle" />
             <span>
@@ -240,12 +240,12 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             <div />
           ) : deployment &&
             stepDeploy?.status === models.EnumActionStepStatus.Success ? (
-            <a href={deployment.environment.address} target="app">
+            <a href={deployment.environment.address} target="resource">
               <Button
                 buttonStyle={EnumButtonStyle.Clear}
                 icon="link_2"
                 eventData={{
-                  eventName: "openPreviewApp",
+                  eventName: "openPreviewResource",
                   versionNumber: data.build.version,
                 }}
               >

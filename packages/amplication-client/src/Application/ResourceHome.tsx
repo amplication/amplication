@@ -8,7 +8,7 @@ import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import "./ApplicationHome.scss";
+import "./ResourceHome.scss";
 import { COLOR_TO_NAME } from "./constants";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
@@ -23,10 +23,10 @@ type Props = {
   match: match<{ application: string }>;
 };
 
-const CLASS_NAME = "application-home";
+const CLASS_NAME = "resource-home";
 const NAVIGATION_KEY = "APP_HOME";
 
-function ApplicationHome({ match }: Props) {
+function ResourceHome({ match }: Props) {
   const resourceId = match.params.application;
   const location = useLocation();
 
@@ -90,7 +90,7 @@ function ApplicationHome({ match }: Props) {
   );
 }
 
-export default ApplicationHome;
+export default ResourceHome;
 
 export const GET_RESOURCE = gql`
   query getResource($id: String!) {

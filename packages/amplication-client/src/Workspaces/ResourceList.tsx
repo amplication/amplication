@@ -15,7 +15,7 @@ import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import * as models from "../models";
 import ApplicationListItem from "./ApplicationListItem";
-import "./ApplicationList.scss";
+import "./ResourceList.scss";
 
 type TData = {
   resources: Array<models.Resource>;
@@ -27,7 +27,7 @@ type TDeleteData = {
 
 const CLASS_NAME = "application-list";
 
-function ApplicationList() {
+function ResourceList() {
   const { trackEvent } = useTracking();
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error | null>(null);
@@ -147,7 +147,7 @@ function ApplicationList() {
   );
 }
 
-export default ApplicationList;
+export default ResourceList;
 
 export const GET_RESOURCES = gql`
   query getResources($whereName: StringFilter) {

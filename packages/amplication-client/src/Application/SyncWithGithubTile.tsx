@@ -2,8 +2,8 @@ import { useQuery } from "@apollo/client";
 import React from "react";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import AppGitStatusPanel from "../Application/git/AppGitStatusPanel";
-import { GET_APP_GIT_REPOSITORY } from "./git/SyncWithGithubPage";
-import { App } from "../models";
+import { GET_RESOURCE_GIT_REPOSITORY } from "./git/SyncWithGithubPage";
+import { Resource } from "../models";
 type Props = {
   resourceId: string;
 };
@@ -19,11 +19,14 @@ export type GitRepository = {
 };
 
 function SyncWithGithubTile({ resourceId }: Props) {
-  const { data } = useQuery<{ app: App }>(GET_APP_GIT_REPOSITORY, {
-    variables: {
-      appId: resourceId,
-    },
-  });
+  const { data } = useQuery<{ resource: Resource }>(
+    GET_RESOURCE_GIT_REPOSITORY,
+    {
+      variables: {
+        resourceId,
+      },
+    }
+  );
 
   return (
     <OverviewSecondaryTile
@@ -31,8 +34,11 @@ function SyncWithGithubTile({ resourceId }: Props) {
       title="Sync with GitHub"
       message="Push the Amplication-generated app to your GitHub repo. Track changes, track our code. You are in full control of your app."
       footer={
-        data?.app && (
-          <AppGitStatusPanel app={data?.app} showDisconnectedMessage={false} />
+        data?.resource && (
+          <AppGitStatusPanel
+            app={data?.resource}
+            showDisconnectedMessage={false}
+          />
         )
       }
     />

@@ -24,7 +24,7 @@ type TData = {
 };
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 const NAME_FIELD = "displayName";
@@ -34,10 +34,10 @@ const NAVIGATION_KEY = "ENTITY_LIST";
 const POLL_INTERVAL = 2000;
 
 export const EntityList = ({ match }: Props) => {
-  const { application } = match.params;
+  const { resource } = match.params;
   const [error, setError] = useState<Error>();
 
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, "Entities");
+  useNavigationTabs(resource, NAVIGATION_KEY, match.url, "Entities");
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
@@ -55,7 +55,7 @@ export const EntityList = ({ match }: Props) => {
     startPolling,
   } = useQuery<TData>(GET_ENTITIES, {
     variables: {
-      id: application,
+      id: resource,
       orderBy: {
         [NAME_FIELD]: models.SortOrder.Asc,
       },
@@ -93,7 +93,7 @@ export const EntityList = ({ match }: Props) => {
         onDismiss={handleNewEntityClick}
         title="New Entity"
       >
-        <NewEntity resourceId={application} />
+        <NewEntity resourceId={resource} />
       </Dialog>
       <div className={`${CLASS_NAME}__header`}>
         <SearchField
@@ -119,7 +119,7 @@ export const EntityList = ({ match }: Props) => {
         <EntityListItem
           key={entity.id}
           entity={entity}
-          resourceId={application}
+          resourceId={resource}
           onError={setError}
         />
       ))}

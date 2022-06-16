@@ -42,7 +42,7 @@ const VALIDATION_MESSAGES_TO_TEXT: {
   [models.ResourceValidationErrorTypes
     .CannotMergeCodeToGitHubInvalidResourceId]: {
     message:
-      "The code in the linked GitHub repo was generated from a different app. It may cause conflicts when merged with code generated from the current app.",
+      "The code in the linked GitHub repo was generated from a different resource. It may cause conflicts when merged with code generated from the current resource.",
     url: "https://docs.amplication.com/docs/errors/github-different-app-id",
   },
 };

@@ -25,14 +25,14 @@ type TData = {
 };
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 const CLASS_NAME = "related-fields-migration-fix";
 const NAVIGATION_KEY = "FIX_RELATED_ENTITIES";
 
 export const RelatedFieldsMigrationFix = ({ match }: Props) => {
-  const resourceId = match.params.application;
+  const resourceId = match.params.resource;
   const pendingChangesContext = useContext(PendingChangesContext);
 
   useNavigationTabs(

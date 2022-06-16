@@ -8,24 +8,24 @@ import useNavigationTabs from "../Layout/UseNavigationTabs";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 const NAVIGATION_KEY = "ENTITIES";
 
 function Entities({ match }: Props) {
-  const { application } = match.params;
+  const { resource } = match.params;
 
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, "Commits");
+  useNavigationTabs(resource, NAVIGATION_KEY, match.url, "Commits");
 
   return (
     <Switch>
       <RouteWithAnalytics
         exact
-        path="/:application/commits/"
+        path="/:resource/commits/"
         component={CommitList}
       />
       <RouteWithAnalytics
-        path="/:application/commits/:commitId"
+        path="/:resource/commits/:commitId"
         component={CommitPage}
       />
     </Switch>

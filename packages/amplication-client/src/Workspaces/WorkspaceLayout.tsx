@@ -4,7 +4,7 @@ import MainLayout from "../Layout/MainLayout";
 import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
-import ApplicationList from "./ApplicationList";
+import ResourceList from "./ResourceList";
 //import Subscription from "../Subscription/Subscription";
 import { isMobileOnly } from "react-device-detect";
 import InnerTabLink from "../Layout/InnerTabLink";
@@ -64,7 +64,7 @@ function WorkspaceLayout({ match }: Props) {
       </MainLayout.Menu>
       <MainLayout.Content>
         <CompleteInvitation />
-        <div className={`${CLASS_NAME}__app-container`}>
+        <div className={`${CLASS_NAME}__resource-container`}>
           <PageContent className={CLASS_NAME}>
             <Switch>
               <RouteWithAnalytics exact path="/workspace/settings">
@@ -88,7 +88,7 @@ function WorkspaceLayout({ match }: Props) {
             </Switch>
             <Switch>
               <RouteWithAnalytics exact path="/">
-                <ApplicationList />
+                <ResourceList />
               </RouteWithAnalytics>
             </Switch>
           </PageContent>

@@ -5,14 +5,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
-import "./AuthAppWithGit.scss";
+import "./AuthResourceWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
 import {
-  AppWithGitRepository,
+  ResourceWithGitRepository,
   GitOrganizationFromGitRepository,
 } from "./SyncWithGithubPage";
 
@@ -25,14 +25,14 @@ let triggerOnDone = () => {};
 let triggerAuthFailed = () => {};
 
 type Props = {
-  app: AppWithGitRepository;
+  resource: ResourceWithGitRepository;
   onDone: () => void;
 };
 
 export const CLASS_NAME = "auth-app-with-github";
 
-function AuthAppWithGit({ app, onDone }: Props) {
-  const { workspace, gitRepository } = app;
+function AuthResourceWithGit({ resource, onDone }: Props) {
+  const { workspace, gitRepository } = resource;
   const { gitOrganizations } = workspace;
   const [
     gitOrganization,
@@ -65,7 +65,7 @@ function AuthAppWithGit({ app, onDone }: Props) {
   }, []);
   const handleAuthWithGitClick = useCallback(() => {
     trackEvent({
-      eventName: "startAuthAppWithGitHub",
+      eventName: "startAuthResourceWithGitHub",
     });
     authWithGit({
       variables: {
@@ -85,7 +85,7 @@ function AuthAppWithGit({ app, onDone }: Props) {
     <>
       {gitOrganization && (
         <GitDialogsContainer
-          app={app}
+          resource={resource}
           gitOrganizationId={gitOrganization.id}
           isSelectRepositoryOpen={selectRepoOpen}
           isPopupFailed={popupFailed}
@@ -136,7 +136,7 @@ function AuthAppWithGit({ app, onDone }: Props) {
   );
 }
 
-export default AuthAppWithGit;
+export default AuthResourceWithGit;
 
 const START_AUTH_APP_WITH_GITHUB = gql`
   mutation getGitAppInstallationUrl($gitProvider: EnumGitProvider!) {

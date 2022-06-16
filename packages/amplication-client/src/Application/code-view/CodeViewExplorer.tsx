@@ -33,7 +33,7 @@ const CodeViewExplorer: React.FC<Props> = ({ app, onFileSelected }) => {
   const handleSelectedBuild = (build: Build) => {
     setSelectedBuild(build);
     onFileSelected(null);
-  }
+  };
 
   const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
     variables: {
@@ -47,11 +47,13 @@ const CodeViewExplorer: React.FC<Props> = ({ app, onFileSelected }) => {
     },
   });
 
-  return !data ? (<div />) : (
+  return !data ? (
+    <div />
+  ) : (
     <div className={CLASS_NAME}>
       <div>
         <BuildSelector
-          app={app}
+          resource={app}
           builds={data.builds}
           selectedBuild={selectedBuild}
           onSelectBuild={handleSelectedBuild}

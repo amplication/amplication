@@ -41,7 +41,7 @@ const BuildHeader = ({ build, deployments, isError }: Props) => {
       ) : null}
       <span className="spacer" />
       {deployment && isDeployed && (
-        <a href={deployment.environment.address} target="app">
+        <a href={deployment.environment.address} target="resource">
           <Icon icon="link_2" />
         </a>
       )}

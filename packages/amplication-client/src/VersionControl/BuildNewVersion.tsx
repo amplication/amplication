@@ -167,7 +167,7 @@ const BuildNewVersion = ({
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 eventData={{
-                  eventName: "buildApp",
+                  eventName: "buildResource",
                 }}
               >
                 Build New Version

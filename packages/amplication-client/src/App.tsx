@@ -14,7 +14,7 @@ import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import { init as initPaddle } from "./util/paddle";
 import RouteWithAnalytics from "./Layout/RouteWithAnalytics";
-import AuthAppWithGitCallback from "./Application/git/AuthAppWithGitCallback";
+import AuthResourceWithGitCallback from "./Application/git/AuthResourceWithGitCallback";
 
 const context = {
   source: "amplication-client",
@@ -57,7 +57,7 @@ function App() {
           <PrivateRoute
             exact
             path="/github-auth-app/callback"
-            component={AuthAppWithGitCallback}
+            component={AuthResourceWithGitCallback}
           />
           <PrivateRoute exact path="/" component={WorkspaceLayout} />
           <PrivateRoute path="/workspace" component={WorkspaceLayout} />

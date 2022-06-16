@@ -7,7 +7,7 @@ import {
 } from "@amplication/design-system";
 import React from "react";
 import { EnumGitOrganizationType } from "../../../../models";
-import "../../AuthAppWithGit.scss";
+import "../../AuthResourceWithGit.scss";
 import {
   GitOrganizationFromGitRepository,
   GitRepositoryWithGitOrganization,

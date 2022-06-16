@@ -10,13 +10,13 @@ import React, { useCallback } from "react";
 import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
-import { AppWithGitRepository } from "../../SyncWithGithubPage";
+import { ResourceWithGitRepository } from "../../SyncWithGithubPage";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 
 type Props = {
   gitProvider: EnumGitProvider;
-  app: AppWithGitRepository;
+  resource: ResourceWithGitRepository;
   gitOrganizationId: string;
   onCompleted: Function;
   gitOrganizationName: string;
@@ -25,7 +25,7 @@ type Props = {
 const CLASS_NAME = "git-create-repo";
 
 export default function GitCreateRepo({
-  app,
+  resource,
   gitOrganizationId,
   gitProvider,
   onCompleted,
@@ -55,11 +55,11 @@ export default function GitCreateRepo({
           gitOrganizationId,
           gitProvider,
           public: data.public,
-          resourceId: app.id,
+          resourceId: resource.id,
         },
       }).catch((error) => {});
     },
-    [app.id, gitOrganizationId, gitProvider, triggerCreation]
+    [resource.id, gitOrganizationId, gitProvider, triggerCreation]
   );
 
   return (

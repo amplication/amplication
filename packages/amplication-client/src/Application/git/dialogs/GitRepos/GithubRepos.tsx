@@ -53,7 +53,7 @@ function GitRepos({
       connectGitRepository({
         variables: {
           gitOrganizationId,
-          resourceId: resourceId,
+          resourceId,
           name: data.name,
         },
       }).catch(console.error);
@@ -79,9 +79,7 @@ function GitRepos({
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
-        <h4>
-          Select a {gitProvider} repository to sync your application with.
-        </h4>
+        <h4>Select a {gitProvider} repository to sync your resource with.</h4>
         {loadingRepos || networkStatus === NetworkStatus.refetch ? (
           <CircularProgress />
         ) : (
@@ -113,12 +111,12 @@ function GitRepos({
 export default GitRepos;
 
 const CONNECT_GIT_REPOSITORY = gql`
-  mutation connectAppGitRepository(
+  mutation connectResourceGitRepository(
     $name: String!
     $gitOrganizationId: String!
     $resourceId: String!
   ) {
-    connectAppGitRepository(
+    connectResourceGitRepository(
       data: {
         name: $name
         resourceId: $resourceId

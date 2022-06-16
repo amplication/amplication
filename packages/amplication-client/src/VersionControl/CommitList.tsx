@@ -20,7 +20,7 @@ type TData = {
 };
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 const CREATED_AT_FIELD = "createdAt";
@@ -29,7 +29,7 @@ const POLL_INTERVAL = 10000;
 const CLASS_NAME = "commit-list";
 
 export const CommitList = ({ match }: Props) => {
-  const { application } = match.params;
+  const { resource } = match.params;
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
@@ -44,7 +44,7 @@ export const CommitList = ({ match }: Props) => {
     TData
   >(GET_COMMITS, {
     variables: {
-      resourceId: application,
+      resourceId: resource,
       orderBy: {
         [CREATED_AT_FIELD]: models.SortOrder.Desc,
       },
@@ -80,11 +80,7 @@ export const CommitList = ({ match }: Props) => {
       </div>
       {loading && <CircularProgress />}
       {data?.commits.map((commit) => (
-        <CommitListItem
-          key={commit.id}
-          commit={commit}
-          resourceId={application}
-        />
+        <CommitListItem key={commit.id} commit={commit} resourceId={resource} />
       ))}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>

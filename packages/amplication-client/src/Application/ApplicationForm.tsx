@@ -11,7 +11,7 @@ import { TextField, Snackbar, Icon } from "@amplication/design-system";
 import { COLORS } from "./constants";
 import { ColorSelectButton } from "../Components/ColorSelectButton";
 import { useTracking } from "../util/analytics";
-import { GET_RESOURCE } from "./ApplicationHome";
+import { GET_RESOURCE } from "./ResourceHome";
 import "./ApplicationForm.scss";
 
 type Props = {

@@ -20,7 +20,7 @@ import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import "./Entity.scss";
 
 type Props = {
-  match: match<{ application: string; entityId: string; fieldId: string }>;
+  match: match<{ resource: string; entityId: string; fieldId: string }>;
 };
 
 type TData = {
@@ -33,7 +33,7 @@ type UpdateData = {
 const NAVIGATION_KEY = "ENTITY";
 
 const Entity = ({ match }: Props) => {
-  const { entityId, application } = match.params;
+  const { entityId, resource } = match.params;
   const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
   const location = useLocation();
@@ -45,7 +45,7 @@ const Entity = ({ match }: Props) => {
   });
 
   useNavigationTabs(
-    application,
+    resource,
     `${NAVIGATION_KEY}_${entityId}`,
     location.pathname,
     data?.entity.displayName
@@ -99,19 +99,19 @@ const Entity = ({ match }: Props) => {
         data && (
           <>
             <InnerTabLink
-              to={`/${application}/entities/${data.entity.id}`}
+              to={`/${resource}/entities/${data.entity.id}`}
               icon="settings"
             >
               General Settings
             </InnerTabLink>
             <InnerTabLink
-              to={`/${application}/entities/${data.entity.id}/permissions`}
+              to={`/${resource}/entities/${data.entity.id}/permissions`}
               icon="lock"
             >
               Permissions
             </InnerTabLink>
             <InnerTabLink
-              to={`/${application}/entities/${data.entity.id}/fields`}
+              to={`/${resource}/entities/${data.entity.id}/fields`}
               icon="option_set"
             >
               Fields
@@ -132,7 +132,7 @@ const Entity = ({ match }: Props) => {
           <RouteWithAnalytics path="/:application/entities/:entityId/permissions">
             <PermissionsForm
               entityId={entityId}
-              resourceId={application}
+              resourceId={resource}
               availableActions={ENTITY_ACTIONS}
               objectDisplayName={data.entity.pluralDisplayName}
             />
@@ -146,7 +146,7 @@ const Entity = ({ match }: Props) => {
           <RouteWithAnalytics path="/:application/entities/:entityId">
             <EntityForm
               entity={data.entity}
-              resourceId={application}
+              resourceId={resource}
               onSubmit={handleSubmit}
             />
           </RouteWithAnalytics>

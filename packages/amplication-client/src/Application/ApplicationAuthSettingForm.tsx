@@ -15,7 +15,7 @@ type Props = {
   match: match<{ application: string }>;
 };
 type TData = {
-  updateAppSettings: models.ResourceSettings;
+  updateAppSettings: models.AppSettings;
 };
 
 const FORM_SCHEMA = {
@@ -34,7 +34,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
   const resourceId = match.params.application;
 
   const { data, error } = useQuery<{
-    appSettings: models.ResourceSettings;
+    appSettings: models.AppSettings;
   }>(GET_APP_SETTINGS, {
     variables: {
       id: resourceId,
@@ -55,7 +55,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
   );
 
   const handleSubmit = useCallback(
-    (data: models.ResourceSettings) => {
+    (data: models.AppSettings) => {
       const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
       trackEvent({
         eventName: "updateAppSettings",

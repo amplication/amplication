@@ -19,7 +19,7 @@ import {
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
-import { GET_RESOURCES } from "../Workspaces/ApplicationList";
+import { GET_RESOURCES } from "../Workspaces/ResourceList";
 import "./CreateResourceFromExcel.scss";
 import { CreateResourceFromExcelForm } from "./CreateResourceFromExcelForm";
 import {

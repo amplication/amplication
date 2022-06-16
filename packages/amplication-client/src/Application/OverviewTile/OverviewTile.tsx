@@ -2,7 +2,7 @@ import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import "./OverviewTile.scss";
 import { useQuery } from "@apollo/client";
-import { GET_APP_SETTINGS } from "../ApplicationAuthSettingForm";
+import { GET_APP_SETTINGS as GET_RESOURCE_SETTINGS } from "../ApplicationAuthSettingForm";
 import { AppSettings, EnumAuthProviderType } from "../../models";
 
 type Props = {
@@ -19,7 +19,7 @@ const CLASS_NAME = "overview-tile";
 const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
   const { data } = useQuery<{
     appSettings: AppSettings;
-  }>(GET_APP_SETTINGS, {
+  }>(GET_RESOURCE_SETTINGS, {
     variables: {
       id: resourceId,
     },
