@@ -27,7 +27,7 @@ export const HelpPopover = ({
       </div>
 
       <div className={`${CLASS_NAME}__dismiss`}>
-        <Button buttonStyle={EnumButtonStyle.Clear} onClick={handleDismiss}>
+        <Button buttonStyle={EnumButtonStyle.Text} onClick={handleDismiss}>
           Ok, Thanks
         </Button>
       </div>
