@@ -61,3 +61,8 @@ deployer_default = "gcp"
 apps_region = "us-east1"
 apps_terraform_state_bucket = "amplication-apps-state-bucket"
 apps_domain = "staging.amplication.app"
+
+# webhooks & kafka 
+kafka_broker_ip = "localhost:9092,localhost:9090"  
+webhooks_secret_key = "your webhooks secret key"      
+kafka_repository_push_queue = "repositoryPush_created"

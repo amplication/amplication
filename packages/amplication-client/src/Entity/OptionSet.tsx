@@ -67,7 +67,7 @@ const OptionSetOptions = ({
           name={name}
         />
       ))}
-      <Button onClick={push} buttonStyle={EnumButtonStyle.Clear}>
+      <Button onClick={push} buttonStyle={EnumButtonStyle.Text}>
         <Icon icon="plus" />
         Add option
       </Button>
@@ -141,7 +141,7 @@ const OptionSetOption = ({
 
       <div className="option-set__option__action">
         <Button
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           icon="trash_2"
           onClick={handleRemoveOption}
         />

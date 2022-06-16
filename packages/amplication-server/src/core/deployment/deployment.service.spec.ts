@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { PrismaService } from 'nestjs-prisma';
-import { Build } from '@prisma/client';
+import { PrismaService, Build } from '@amplication/prisma-db';
 import { DeployerService } from '@amplication/deployer/dist/nestjs';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { ActionService } from '../action/action.service';

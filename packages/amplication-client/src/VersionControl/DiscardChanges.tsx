@@ -83,7 +83,7 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
       </div>
       <div className={`${CLASS_NAME}__buttons`}>
         <div className="spacer" />
-        <Button buttonStyle={EnumButtonStyle.Clear} onClick={onCancel}>
+        <Button buttonStyle={EnumButtonStyle.Text} onClick={onCancel}>
           Cancel
         </Button>
 

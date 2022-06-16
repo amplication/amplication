@@ -72,8 +72,16 @@ $circle-badge-border: 2px;
   }
 
   &__tiles {
-    > * {
-      margin: var(--large-spacing) 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--large-spacing);
+
+    .overview-tile {
+      grid-column: 1/-1;
+    }
+
+    @media only screen and (min-width: $breakpoint-xl-desktop) {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 }

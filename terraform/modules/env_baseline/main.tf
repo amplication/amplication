@@ -355,7 +355,18 @@ resource "google_cloud_run_service" "default" {
           value = 1
         }
 
-
+         env {
+          name = "KAFKA_BROKER_IP_ENV_KEY"
+          value = var.kafka_broker_ip
+        }
+         env {
+          name = "WEBHOOKS_SECRET_KEY"
+          value = var.webhooks_secret_key
+        }
+        env {
+          name = "KAFKA_REPOSITORY_PUSH_QUEUE"
+          value = var.kafka_repository_push_queue
+        }
 
         resources {
           limits = {
