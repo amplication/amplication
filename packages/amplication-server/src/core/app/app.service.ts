@@ -1,9 +1,8 @@
 import { AppGenerationConfig } from '@amplication/data-service-generator';
 import { GitService } from '@amplication/git-service';
 import { Injectable } from '@nestjs/common';
-import { GitRepository } from '@prisma/client';
 import { isEmpty } from 'lodash';
-import { PrismaService } from 'nestjs-prisma';
+import { GitRepository, PrismaService } from '@amplication/prisma-db';
 import { pascalCase } from 'pascal-case';
 import pluralize from 'pluralize';
 import * as semver from 'semver';
@@ -88,6 +87,12 @@ export class AppService {
         },
         roles: {
           create: USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${args.data.name}`,
+            workspaceId: user.workspace?.id
+          }
         }
       }
     });
@@ -361,6 +366,16 @@ export class AppService {
         }
       });
     }
+
+    const project = await this.prisma.app.findUnique(args).project();
+
+    await this.prisma.project.update({
+      where: { id: project.id },
+      data: {
+        name: prepareDeletedItemName(project.name, project.id),
+        deletedAt: new Date()
+      }
+    });
 
     return this.prisma.app.update({
       where: args.where,

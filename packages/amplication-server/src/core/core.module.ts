@@ -44,9 +44,10 @@ import { GitProviderModule } from './git/git.provider.module';
     SystemModule,
     AppSettingsModule,
     GitModule,
+    GitProviderModule,
+    CommitModule,
     MailModule,
-    SubscriptionModule,
-    GitProviderModule
+    SubscriptionModule
   ],
   exports: [
     AccountModule,
@@ -66,10 +67,12 @@ import { GitProviderModule } from './git/git.provider.module';
     EnvironmentModule,
     CommitModule,
     AppSettingsModule,
+    GitProviderModule,
+    GitModule,
+    CommitModule,
     GitModule,
     MailModule,
-    SubscriptionModule,
-    GitProviderModule
+    SubscriptionModule
   ]
 })
 export class CoreModule {}

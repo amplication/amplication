@@ -87,7 +87,7 @@ function GitRepos({
         ) : (
           <Tooltip aria-label="Refresh repositories" direction="w" noDelay wrap>
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               onClick={(e) => {
                 handleRefresh();
               }}

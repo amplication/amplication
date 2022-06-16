@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
-import { PrismaModule } from 'nestjs-prisma';
+import { forwardRef, Module } from '@nestjs/common';
+import { PrismaModule } from '@amplication/prisma-db';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { UserModule } from '../user/user.module';
 import { BuildModule } from '../build/build.module'; // eslint-disable-line import/no-cycle
@@ -13,7 +13,7 @@ import { CommitService } from './commit.service';
     PrismaModule,
     UserModule,
     PermissionsModule,
-    BuildModule,
+    forwardRef(() => BuildModule),
     EntityModule,
     BlockModule
   ],

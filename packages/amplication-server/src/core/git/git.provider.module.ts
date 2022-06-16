@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule, PrismaService } from '@amplication/prisma-db';
 import { AppModule } from '../app/app.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { GitResolver } from './git.resolver';
@@ -17,6 +17,7 @@ import { GitProviderService } from './git.provider.service';
     GitResolver,
     GitService,
     GithubService,
+    PrismaService,
     GitServiceFactory
   ]
 })
