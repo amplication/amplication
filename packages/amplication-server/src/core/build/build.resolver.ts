@@ -18,13 +18,14 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
-import { User } from 'src/models';
+import { Commit, User } from 'src/models';
 import { UserService } from '../user/user.service';
 import { Action } from '../action/dto/Action';
 import { Deployment } from '../deployment/dto/Deployment';
 import { ActionService } from '../action/action.service';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
+import { CommitService } from '../commit/commit.service';
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -33,7 +34,8 @@ export class BuildResolver {
   constructor(
     private readonly service: BuildService,
     private readonly userService: UserService,
-    private readonly actionService: ActionService
+    private readonly actionService: ActionService,
+    private readonly commitService: CommitService
   ) {}
 
   @Query(() => [Build])
@@ -56,6 +58,11 @@ export class BuildResolver {
   @ResolveField()
   async action(@Parent() build: Build): Promise<Action> {
     return this.actionService.findOne({ where: { id: build.actionId } });
+  }
+
+  @ResolveField()
+  async commit(@Parent() build: Build): Promise<Commit> {
+    return this.commitService.findOne({ where: { id: build.commitId } });
   }
 
   @ResolveField()

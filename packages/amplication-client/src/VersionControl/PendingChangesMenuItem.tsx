@@ -39,7 +39,7 @@ const PendingChangesMenuItem = ({ applicationId }: Props) => {
       <div>
         <Tooltip aria-label={"Pending Changes"} direction={DIRECTION} noDelay>
           <Button
-            buttonStyle={EnumButtonStyle.Clear}
+            buttonStyle={EnumButtonStyle.Text}
             onClick={handleClick}
             icon="pending_changes_outline"
             iconSize={ICON_SIZE}
