@@ -193,6 +193,7 @@ amplication-storage-gateway:
     tag: "feature-add-services"
   config:
     env:
+      CORS_ENABLE: "1"
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: storage-queue-client
       KAFKA_GROUP_ID: storage-server-group
