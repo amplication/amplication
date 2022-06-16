@@ -224,19 +224,20 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         >
           {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
           stepDeploy?.status === models.EnumActionStepStatus.Running ? (
-            <Link to={`/${build.appId}/builds/${build.id}`}>
-              <Button
-                buttonStyle={EnumButtonStyle.Clear}
-                eventData={{
-                  eventName: "BuildSandboxViewDetailsClick",
-                }}
-              >
-                <BuildStepsStatus
-                  status={models.EnumActionStepStatus.Running}
-                />
-                Preparing sandbox environment...
-              </Button>
-            </Link>
+            // <Link to={`/${build.appId}/builds/${build.id}`}>
+            //   <Button
+            //     buttonStyle={EnumButtonStyle.Clear}
+            //     eventData={{
+            //       eventName: "BuildSandboxViewDetailsClick",
+            //     }}
+            //   >
+            //     <BuildStepsStatus
+            //       status={models.EnumActionStepStatus.Running}
+            //     />
+            //     Preparing sandbox environment...
+            //   </Button>
+            // </Link>
+            <div />
           ) : deployment &&
             stepDeploy?.status === models.EnumActionStepStatus.Success ? (
             <a href={deployment.environment.address} target="app">
