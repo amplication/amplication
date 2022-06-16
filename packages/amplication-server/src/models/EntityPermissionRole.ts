@@ -4,7 +4,7 @@ import { ResourceRole } from './ResourceRole'; // eslint-disable-line import/no-
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 
 /**
- * Connecting {@codelink EntityPermission} to {@codelink AppRole}.
+ * Connecting {@codelink EntityPermission} to {@codelink ResourceRole}.
  * Defines an ID so fields EntityPermissionRole can link to it.
  */
 @ObjectType({

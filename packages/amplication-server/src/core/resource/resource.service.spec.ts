@@ -8,7 +8,7 @@ import {
   INVALID_RESOURCE_ID
 } from './resource.service';
 
-import { PrismaService, GitRepository } from '@amplication/prisma-db';
+import { PrismaService, GitRepository, Project } from '@amplication/prisma-db';
 import { EntityService } from '../entity/entity.service';
 import {
   EnvironmentService,
@@ -51,6 +51,13 @@ const EXAMPLE_CUID = 'EXAMPLE_CUID';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
+const EXAMPLE_PROJECT: Project = {
+  id: EXAMPLE_RESOURCE_ID,
+  name: EXAMPLE_RESOURCE_NAME,
+  deletedAt: null,
+  workspaceId: 'exampleWorkspaceId'
+};
+
 const EXAMPLE_RESOURCE: Resource = {
   ...DEFAULT_RESOURCE_DATA,
   id: EXAMPLE_RESOURCE_ID,
@@ -59,6 +66,11 @@ const EXAMPLE_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null
+};
+
+const RESOURCE_WITH_PROJECT = {
+  ...EXAMPLE_RESOURCE,
+  project: () => EXAMPLE_PROJECT
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -209,10 +221,10 @@ const prismaResourceCreateMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
 const prismaResourceFindOneMock = jest.fn(() => {
-  return EXAMPLE_RESOURCE;
+  return RESOURCE_WITH_PROJECT;
 });
 const prismaResourceFindManyMock = jest.fn(() => {
-  return [EXAMPLE_RESOURCE];
+  return [RESOURCE_WITH_PROJECT];
 });
 const prismaResourceDeleteMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
@@ -307,6 +319,9 @@ describe('ResourceService', () => {
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
               delete: prismaGitRepositoryCreateMock
+            },
+            project: {
+              update: jest.fn()
             }
           }))
         },
@@ -376,7 +391,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${EXAMPLE_RESOURCE_NAME}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -513,7 +528,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${SAMPLE_RESOURCE_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -681,7 +696,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${SAMPLE_RESOURCE_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -874,7 +889,7 @@ describe('ResourceService', () => {
         id: EXAMPLE_RESOURCE_ID
       }
     };
-    expect(await service.resource(args)).toEqual(EXAMPLE_RESOURCE);
+    expect(await service.resource(args)).toEqual(RESOURCE_WITH_PROJECT);
     expect(prismaResourceFindOneMock).toBeCalledTimes(1);
     expect(prismaResourceFindOneMock).toBeCalledWith(args);
   });
@@ -886,7 +901,7 @@ describe('ResourceService', () => {
         id: EXAMPLE_RESOURCE_ID
       }
     };
-    expect(await service.resources(args)).toEqual([EXAMPLE_RESOURCE]);
+    expect(await service.resources(args)).toEqual([RESOURCE_WITH_PROJECT]);
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);
     expect(prismaResourceFindManyMock).toBeCalledWith(args);
   });

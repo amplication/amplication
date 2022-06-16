@@ -2,6 +2,10 @@ ARG ALPINE_VERSION=alpine3.14
 ARG NODE_VERSION=16.13.1
 
 FROM node:$NODE_VERSION-$ALPINE_VERSION AS base
+
+RUN apk --no-cache add git
+RUN git config --global --add safe.directory '*'
+
 ARG NPM_VERSION=8.1.2
 ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
@@ -37,6 +41,7 @@ WORKDIR /app/ee/packages/amplication-git-pull-service
 COPY --from=build /app/ee/packages/amplication-git-pull-service/package.json /app/ee/packages/amplication-git-pull-service/package.json
 COPY --from=build /app/ee/packages/amplication-git-pull-service/node_modules /app/ee/packages/amplication-git-pull-service/node_modules
 COPY --from=build /app/ee/packages/amplication-git-pull-service/dist /app/ee/packages/amplication-git-pull-service/dist
+COPY --from=build /app/ee/packages/amplication-git-pull-service/prisma /app/ee/packages/amplication-git-pull-service/prisma
 
 COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules

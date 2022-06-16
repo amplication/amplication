@@ -309,14 +309,14 @@ export default function EntitiesDiagram() {
       <div className={`${CLASS_NAME}__toolbar`}>
         <Button
           className={`${CLASS_NAME}__toolbar__button`}
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           type="button"
           onClick={zoomIn}
           icon="zoom_in"
         />
         <Button
           className={`${CLASS_NAME}__toolbar__button`}
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           type="button"
           onClick={zoomOut}
           icon="zoom_out"
@@ -324,7 +324,7 @@ export default function EntitiesDiagram() {
 
         <Button
           className={`${CLASS_NAME}__toolbar__button`}
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           type="button"
           onClick={zoomReset}
           icon="maximize_2"

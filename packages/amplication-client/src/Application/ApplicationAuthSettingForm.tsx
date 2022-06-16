@@ -94,8 +94,9 @@ function ApplicationAuthSettingForm({ match }: Props) {
             return (
               <Form>
                 <FormikAutoSave debounceMS={2000} />
-                <h3>Authentication Providers</h3>
-
+                <div className={`${CLASS_NAME}__header`}>
+                  <h3>Authentication Providers</h3>
+                </div>
                 <p>
                   Select the authentication method to be used in the generated
                   app.
@@ -142,7 +143,7 @@ const UPDATE_RESOURCE_SETTINGS = gql`
   }
 `;
 
-const GET_APP_SETTINGS = gql`
+export const GET_APP_SETTINGS = gql`
   query appSettings($id: String!) {
     appSettings(where: { id: $id }) {
       id

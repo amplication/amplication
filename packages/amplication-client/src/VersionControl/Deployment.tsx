@@ -29,7 +29,7 @@ const Deployment = ({ deployment, resourceId }: Props) => {
           to={`/${resourceId}/builds/${deployment.buildId}/deployments/${deployment.id}`}
         >
           <Button
-            buttonStyle={EnumButtonStyle.Clear}
+            buttonStyle={EnumButtonStyle.Text}
             icon="option_set"
             eventData={{
               eventName: "viewDeployLog",

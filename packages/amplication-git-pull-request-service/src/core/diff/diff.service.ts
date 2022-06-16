@@ -4,7 +4,7 @@ import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { join } from 'path';
+import { join, normalize } from 'path';
 import { Logger } from 'winston';
 import { BuildPathFactory } from './utils/BuildPathFactory';
 
@@ -15,20 +15,20 @@ export class DiffService {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
   async listOfChangedFiles(
-    amplicationAppId: string,
+    resourceId: string,
     previousAmplicationBuildId: string,
     newAmplicationBuildId: string
   ): Promise<{ path: string; code: string }[]> {
     const oldBuildPath = this.buildsPathFactory.get(
-      amplicationAppId,
+      resourceId,
       previousAmplicationBuildId
     );
     const newBuildPath = this.buildsPathFactory.get(
-      amplicationAppId,
+      resourceId,
       newAmplicationBuildId
     );
     this.logger.info('List of the paths', {
-      appId: amplicationAppId,
+      resourceId,
       previousAmplicationBuildId,
       newAmplicationBuildId,
     });
@@ -37,6 +37,9 @@ export class DiffService {
       newBuildPath,
       'Cant get the same build id'
     );
+
+    //This line added as a hotfix to https://github.com/amplication/amplication/issues/2878
+    return this.firstBuild(newBuildPath);
 
     // return all the new files if an old build folder dont exist
     if (existsSync(oldBuildPath) === false) {
@@ -83,13 +86,17 @@ export class DiffService {
   }
 
   private async firstBuild(newBuildPath: string) {
-    const files = sync(`${newBuildPath}/**`).map(async (file) => {
-      const code = await readFileSync(file).toString('utf8');
-      return {
-        path: file,
-        code,
-      };
-    });
+    const basePathLength = newBuildPath.length;
+    const files = sync(`${newBuildPath}/**`, { dot: true }).map(
+      async (fullPath) => {
+        const path = normalize(fullPath.slice(basePathLength));
+        const code = await readFileSync(fullPath).toString('utf8');
+        return {
+          path,
+          code,
+        };
+      }
+    );
     return await Promise.all(files);
   }
 

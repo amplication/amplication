@@ -5,7 +5,7 @@ export async function customSeed() {
   const username = "admin";
 
   //replace this sample code to populate your database
-  //with data that is required for your application to start
+  //with data that is required for your service to start
   await client.user.update({
     where: { username: username },
     data: {

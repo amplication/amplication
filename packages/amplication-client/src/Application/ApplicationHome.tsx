@@ -3,22 +3,21 @@ import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import React from "react";
 import { match, Route, Switch, useLocation } from "react-router-dom";
-import InnerTabLink from "../Layout/InnerTabLink";
 import PageContent from "../Layout/PageContent";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import * as models from "../models";
-import { ApiTokenList } from "../Settings/ApiTokenList";
 import { formatError } from "../util/error";
-import ApplicationAuthSettingForm from "./ApplicationAuthSettingForm";
-import ApplicationDatabaseSettingsForms from "./ApplicationDatabaseSettingsForms";
-import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import { COLOR_TO_NAME } from "./constants";
+import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
+import FeatureRequestTile from "./FeatureRequestTile";
 import NewVersionTile from "./NewVersionTile";
+import OverviewTile from "./OverviewTile";
 import RolesTile from "./RolesTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
+import ViewCodeViewTile from "./ViewCodeViewTile";
 
 type Props = {
   match: match<{ application: string }>;
@@ -48,44 +47,8 @@ function ApplicationHome({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent
-      className={CLASS_NAME}
-      sideContent={
-        <div>
-          <div>
-            <InnerTabLink to={`/${resourceId}/`} icon="home">
-              Overview
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink to={`/${resourceId}/update`} icon="settings">
-              Resource Settings
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink to={`/${resourceId}/db/update`} icon="settings">
-              DB Settings
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink to={`/${resourceId}/auth/update`} icon="settings">
-              Auth Settings
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink to={`/${resourceId}/api-tokens`} icon="id">
-              API Tokens
-            </InnerTabLink>
-          </div>
-        </div>
-      }
-    >
+    <PageContent className={CLASS_NAME} sideContent="">
       <Switch>
-        <RouteWithAnalytics
-          path="/:application/api-tokens"
-          component={ApiTokenList}
-        />
-
         <Route
           path="/:application/"
           render={() => (
@@ -102,32 +65,22 @@ function ApplicationHome({ match }: Props) {
                   color={data?.resource.color || "transparent"}
                 />
               </div>
-              <Switch>
-                <RouteWithAnalytics
-                  exact
-                  path="/:application/"
-                  component={() => (
-                    <div className={`${CLASS_NAME}__tiles`}>
-                      <NewVersionTile resourceId={resourceId} />
-                      <EntitiesTile resourceId={resourceId} />
-                      <RolesTile resourceId={resourceId} />
-                      <SyncWithGithubTile resourceId={resourceId} />
-                    </div>
-                  )}
-                />
-                <RouteWithAnalytics
-                  path="/:application/update"
-                  component={ApplicationForm}
-                />
-                <RouteWithAnalytics
-                  path="/:application/db/update"
-                  component={ApplicationDatabaseSettingsForms}
-                />
-                <RouteWithAnalytics
-                  path="/:application/auth/update"
-                  component={ApplicationAuthSettingForm}
-                />
-              </Switch>
+              <RouteWithAnalytics
+                exact
+                path="/:application/"
+                component={() => (
+                  <div className={`${CLASS_NAME}__tiles`}>
+                    <NewVersionTile resourceId={resourceId} />
+                    <OverviewTile resourceId={resourceId} />
+                    <SyncWithGithubTile resourceId={resourceId} />
+                    <ViewCodeViewTile resourceId={resourceId} />
+                    <EntitiesTile resourceId={resourceId} />
+                    <RolesTile resourceId={resourceId} />
+                    <DocsTile />
+                    <FeatureRequestTile />
+                  </div>
+                )}
+              />
             </>
           )}
         />

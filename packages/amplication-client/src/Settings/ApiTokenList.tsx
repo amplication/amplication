@@ -67,7 +67,7 @@ export const ApiTokenList = React.memo(() => {
         <NewApiToken onCompleted={handleNewTokenCompleted} />
       </Dialog>
       <div className={`${CLASS_NAME}__header`}>
-        <h2>API Tokens</h2>
+        <h3>API Tokens</h3>
         <Button
           className={`${CLASS_NAME}__add-button`}
           buttonStyle={EnumButtonStyle.Primary}
@@ -98,7 +98,7 @@ export const ApiTokenList = React.memo(() => {
           <Button
             className={`${CLASS_NAME}__add-button`}
             buttonStyle={
-              !tokenCopied ? EnumButtonStyle.Primary : EnumButtonStyle.Clear
+              !tokenCopied ? EnumButtonStyle.Primary : EnumButtonStyle.Text
             }
             onClick={handleCopyToken}
             icon={!tokenCopied ? "copy" : "check"}

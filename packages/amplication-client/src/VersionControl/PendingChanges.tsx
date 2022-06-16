@@ -73,7 +73,7 @@ const PendingChanges = ({ resourceId }: Props) => {
         <Tooltip aria-label={"Compare Changes"} direction="sw">
           <Link to={`/${resourceId}/pending-changes`}>
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               disabled={loading || noChanges}
               icon="compare"
             />
@@ -81,7 +81,7 @@ const PendingChanges = ({ resourceId }: Props) => {
         </Tooltip>
         <Tooltip aria-label={"Discard Pending Changes"} direction="sw">
           <Button
-            buttonStyle={EnumButtonStyle.Clear}
+            buttonStyle={EnumButtonStyle.Text}
             onClick={handleToggleDiscardDialog}
             disabled={loading || noChanges}
             icon="trash_2"

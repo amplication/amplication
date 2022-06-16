@@ -55,6 +55,21 @@
   color: var(--black80);
 }
 
+@mixin body3 {
+  font-size: 12px;
+  line-height: 18px;
+  font-style: normal;
+  font-weight: normal;
+  color: var(--black80);
+}
+
+@mixin body4 {
+  font-size: 14px;
+  line-height: 22px;
+  font-style: normal;
+  font-weight: 500;
+}
+
 @mixin errorMessage {
   color: var(--negative);
   font-size: 10px;
@@ -107,6 +122,11 @@ $bullet-size: 6px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+}
+
+@mixin flexVerticalCenter {
+  display: flex;
   align-items: center;
 }
 

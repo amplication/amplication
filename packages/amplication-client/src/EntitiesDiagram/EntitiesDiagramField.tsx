@@ -70,7 +70,7 @@ export const EntitiesDiagramField = React.memo(
               <span className="spacer" />
               <Button
                 className={`${CLASS_NAME}__fields__field__edit`}
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 type="button"
                 onClick={handleClick}
                 icon="edit_2"

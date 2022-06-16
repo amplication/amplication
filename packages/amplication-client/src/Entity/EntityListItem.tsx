@@ -125,7 +125,7 @@ export const EntityListItem = ({
           <span className="spacer" />
           {!deleteLoading && entity.name !== USER_ENTITY && (
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               icon="trash_2"
               onClick={handleDelete}
             />

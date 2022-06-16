@@ -108,7 +108,7 @@ export const EntitiesDiagramEntity = React.memo(
                     {entityIndex > 0 && (
                       <Button
                         className={`${CLASS_NAME}__entities__entity__delete`}
-                        buttonStyle={EnumButtonStyle.Clear}
+                        buttonStyle={EnumButtonStyle.Text}
                         type="button"
                         onClick={handleDeleteEntity}
                         icon="trash_2"
@@ -116,7 +116,7 @@ export const EntitiesDiagramEntity = React.memo(
                     )}
                     <Button
                       className={`${CLASS_NAME}__entities__entity__edit`}
-                      buttonStyle={EnumButtonStyle.Clear}
+                      buttonStyle={EnumButtonStyle.Text}
                       type="button"
                       onClick={handleEditEntity}
                       icon="edit_2"

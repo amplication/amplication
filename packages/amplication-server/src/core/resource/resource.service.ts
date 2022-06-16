@@ -1,8 +1,8 @@
 import { ResourceGenerationConfig } from '@amplication/data-service-generator';
 import { GitService } from '@amplication/git-service';
+import { GitRepository, PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
-import { GitRepository, PrismaService } from '@amplication/prisma-db';
 import { pascalCase } from 'pascal-case';
 import pluralize from 'pluralize';
 import * as semver from 'semver';
@@ -10,7 +10,7 @@ import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
 import { AmplicationError } from 'src/errors/AmplicationError';
-import { Resource, Commit, User, Workspace } from 'src/models';
+import { Commit, Resource, User, Workspace } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { BlockService } from '../block/block.service';
@@ -20,15 +20,15 @@ import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import {
-  ResourceCreateWithEntitiesInput,
-  ResourceValidationErrorTypes,
-  ResourceValidationResult,
   CreateCommitArgs,
   CreateOneResourceArgs,
   DiscardPendingChangesArgs,
   FindManyResourceArgs,
   FindPendingChangesArgs,
   PendingChange,
+  ResourceCreateWithEntitiesInput,
+  ResourceValidationErrorTypes,
+  ResourceValidationResult,
   UpdateOneResourceArgs
 } from './dto';
 import { InvalidColorError } from './InvalidColorError';
@@ -38,7 +38,6 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_RESOURCE_DATA
 } from './sampleResource';
-import cuid from 'cuid';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -94,7 +93,7 @@ export class ResourceService {
         },
         project: {
           create: {
-            name: `project-${cuid()}`,
+            name: `project-${args.data.name}`,
             workspaceId: user.workspace?.id
           }
         }
@@ -370,6 +369,16 @@ export class ResourceService {
         }
       });
     }
+
+    const project = await this.prisma.resource.findUnique(args).project();
+
+    await this.prisma.project.update({
+      where: { id: project.id },
+      data: {
+        name: prepareDeletedItemName(project.name, project.id),
+        deletedAt: new Date()
+      }
+    });
 
     return this.prisma.resource.update({
       where: args.where,
