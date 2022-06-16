@@ -45,7 +45,7 @@ const BuildSelector = ({
           className={`${CLASS_NAME}__menu`}
           icon="chevron_down"
         >
-          <SelectMenuModal>
+          <SelectMenuModal css={undefined}>
             <SelectMenuList style={{ width: "264px" }}>
               <>
                 {builds.map((build) => (
