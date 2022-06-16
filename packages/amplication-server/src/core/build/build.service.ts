@@ -640,7 +640,7 @@ export class BuildService {
             const response = await this.queueService.sendCreateGitPullRequest({
               gitOrganizationName: resourceRepository.gitOrganization.name,
               gitRepositoryName: resourceRepository.name,
-              amplicationResourceId: resource.id,
+              resourceId: resource.id,
               gitProvider: EnumGitProvider.Github,
               installationId: resourceRepository.gitOrganization.installationId,
               newBuildId: build.id,
