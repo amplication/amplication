@@ -7,6 +7,6 @@ import { NotificationService } from "./notifications.service";
   imports: [],
   controllers: [NotificationsController],
   providers: [{ provide: NOTIFICATION_TOKEN, useClass: NotificationService }],
-  exports: [NotificationService],
+  exports: [{ provide: NOTIFICATION_TOKEN, useClass: NotificationService }],
 })
 export class NotificationsModule {}

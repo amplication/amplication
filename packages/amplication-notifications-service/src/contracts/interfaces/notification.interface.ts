@@ -1,7 +1,7 @@
-import { KafkaMessagePayload } from "../kafkaMessagePayload";
+import { NotificationPattern } from "../notificationPattern";
 
-export const NOTIFICATION_TOKEN = "IN_APP_NOTIFICATION_TOKEN";
+export const NOTIFICATION_TOKEN = "NOTIFICATION_TOKEN";
 
 export interface INotification {
-  pushNotification: (notificationData: KafkaMessagePayload) => Promise<void>;
+  pushNotification: (notificationData: NotificationPattern) => Promise<void>;
 }

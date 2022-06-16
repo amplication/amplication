@@ -5,10 +5,10 @@ import {
   Logger,
 } from "@nestjs/common";
 import { INotification } from "src/contracts/interfaces/notification.interface";
-import { KafkaMessagePayload } from "src/contracts/kafkaMessagePayload";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Novu } from "@novu/node";
 import { ConfigService } from "@nestjs/config";
+import { NotificationPattern } from "src/contracts/notificationPattern";
 
 const NOVU_API_KEY_ENV = "NOVU_API_KEY";
 
@@ -22,22 +22,20 @@ export class NotificationService implements INotification {
     this.novuApiKey = this.configService.get<string>(NOVU_API_KEY_ENV) || "";
   }
 
-  async pushNotification(notificationData: KafkaMessagePayload): Promise<void> {
-    const { userId, payload, template } = notificationData;
+  async pushNotification(notificationData: NotificationPattern): Promise<void> {
+    console.log({notificationData});
+    const { userId, payload, notificationName } = notificationData;
+    console.log(this.novuApiKey);
+    
     const novu = new Novu(this.novuApiKey);
-
+    
     try {
-      await novu.trigger(template, {
+      await novu.trigger(notificationName, {
         to: {
           subscriberId: userId,
         },
         payload,
       });
-      this.logger.log(
-        `in-app notification: ${template} was triggered with the payload: ${{
-          ...payload,
-        }}`
-      );
     } catch (err) {
       this.logger.error(`Error form Novu ${err}`);
       throw new BadRequestException(

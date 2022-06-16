@@ -4,6 +4,7 @@ import {
   INotification,
   NOTIFICATION_TOKEN,
 } from "src/contracts/interfaces/notification.interface";
+import { NotificationPattern } from "src/contracts/notificationPattern";
 import { KafkaMessagePayload } from "src/contracts/kafkaMessagePayload";
 import { EnvironmentVariables } from "src/services/environmentVariables";
 
@@ -19,7 +20,12 @@ export class NotificationsController {
   async onNotificationReceived(
     @Payload() message: { value: KafkaMessagePayload }
   ) {
-    console.log(message.value);
-    return this.notificationService.pushNotification(message.value);
+    const { value } = message;
+    const notification: NotificationPattern = {
+      userId: value.userId,
+      notificationName: value.template,
+      payload: value.payload
+    }
+    return this.notificationService.pushNotification(notification);
   }
 }
