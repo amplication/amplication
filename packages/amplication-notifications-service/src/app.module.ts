@@ -17,7 +17,7 @@ import { NotificationsModule } from "./core/notifications/notifications.module";
       envFilePath: [".env.local", ".env"],
     }),
     RootWinstonModule,
-    NotificationsModule
+    NotificationsModule,
   ],
   providers: [],
 })

@@ -23,12 +23,11 @@ export class NotificationService implements INotification {
   }
 
   async pushNotification(notificationData: NotificationPattern): Promise<void> {
-    console.log({notificationData});
     const { userId, payload, notificationName } = notificationData;
     console.log(this.novuApiKey);
-    
+
     const novu = new Novu(this.novuApiKey);
-    
+
     try {
       await novu.trigger(notificationName, {
         to: {
