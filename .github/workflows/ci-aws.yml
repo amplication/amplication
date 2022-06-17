@@ -116,7 +116,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Get the output time
-        run: echo "The step output ${{ matrix.service-hash-data }}"
+        run: echo "The step output ${{ toJson(matrix.service-hash-data) }}"
 
 
 #  tests:
