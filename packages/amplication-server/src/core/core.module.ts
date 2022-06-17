@@ -22,6 +22,8 @@ import { AppSettingsModule } from './appSettings/appSettings.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
+import { HealthModule } from './health/health.module';
+
 @Module({
   imports: [
     AccountModule,
@@ -47,7 +49,8 @@ import { GitProviderModule } from './git/git.provider.module';
     GitProviderModule,
     CommitModule,
     MailModule,
-    SubscriptionModule
+    SubscriptionModule,
+    HealthModule
   ],
   exports: [
     AccountModule,
