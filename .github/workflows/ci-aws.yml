@@ -133,12 +133,13 @@ jobs:
 
       - name: Check if repo exist
         env:
-          REPOSITORY_NAME: ${{ matrix.service-hash-data.folder }}"
-        run: echo $REPOSITORY_NAME
-#        run: aws ecr describe-repositories --repository-names $REPOSITORY_NAME || aws ecr create-repository --repository-name $REPOSITORY_NAME
+          REPOSITORY_NAME: ${{ matrix.service-hash-data.folder }}
+        run: aws ecr describe-repositories --repository-names $REPOSITORY_NAME || aws ecr create-repository --repository-name $REPOSITORY_NAME
 
       - name: set branch-name
         run: echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
+
+      - run: echo "$BRANCH_NAME"
 
 #      - name: Check if tag already exist
 #        id: tag-exist
