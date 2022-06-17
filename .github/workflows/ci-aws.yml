@@ -172,7 +172,7 @@ jobs:
 
       - name: Retag
         env:
-          HASH_TAG_EXIST: "${{ steps.tag-exist.outputs.hash-tag-exist }}"
+          HASH_TAG_EXIST: ${{ steps.tag-exist.outputs.hash-tag-exist }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           TAG_LIST_SHORT: "${{ env.BRANCH_NAME }}"
           TAG_LIST_FULL: "${{ env.BRANCH_NAME }},${{ github.run_id }}"
