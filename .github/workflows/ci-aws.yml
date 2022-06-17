@@ -113,6 +113,7 @@ jobs:
         service-hash-data: ${{ fromJson(needs.changes.outputs.hashes) }}
     env:
       REPOSITORY_NAME: ${{ matrix.service-hash-data.folder }}
+      IMAGE_HASH: ${{ matrix.service-hash-data.folder }}
     steps:
 
       - name: Get the output time
@@ -137,25 +138,52 @@ jobs:
         run: aws ecr describe-repositories --repository-names $REPOSITORY_NAME || aws ecr create-repository --repository-name $REPOSITORY_NAME
 
       - name: set branch-name
-        run: echo "$BRANCH_NAME"
-#        run: echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
+        run: echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
 
-#      - name: Check if tag already exist
+      - name: Check if image hash tag is already exist in ECR image repository
+        id: hash-tag-exist
+        run: |
+          set +e
+          cmd="$(aws ecr describe-images --repository-name=$REPOSITORY_NAME --image-ids=imageTag=$IMAGE_HASH)"
+          if [[ ! -z "$cmd" ]]
+          then
+            echo "tag already exist"
+            echo "::set-output name=tag_exist::true"
+          else
+             echo "tag doesn't exist"
+             echo "::set-output name=tag_exist::false"
+           fi
+
+      - name: Check in existing image has branch name tag
+        id: branch-tag-exist
+        run: |
+            set +e
+            cmd="$(aws ecr describe-images --repository-name=$REPOSITORY_NAME --image-ids=imageTag=$IMAGE_HASH,imageTag=$BRANCH_NAME)"
+            if [[ ! -z "$cmd" ]]
+            then
+              echo "tag already exist"
+              echo "::set-output name=tag_exist::true"
+            else
+               echo "tag doesn't exist"
+               echo "::set-output name=tag_exist::false"
+             fi
+
+#      - name: Check if image hash tag is already exist in ECR image repository
 #        id: tag-exist
 #        run: |
 #          set +e
-#          cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$GITHUB_HASH)"
+#          cmd="$(aws ecr describe-images --repository-name=$REPOSITORY_NAME --image-ids=imageTag=$IMAGE_HASH)"
 #          if [[ ! -z "$cmd" ]]
 #          then
 #            echo "tag already exist"
 #            echo "::set-output name=tag_exist::true"
-#            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$BRANCH_NAME)"
+#            cmd="$(aws ecr describe-images --repository-name=$REPOSITORY_NAME --image-ids=imageTag=$BRANCH_NAME)"
 #            if [[ ! -z "$cmd" ]]
 #            then
 #              echo "tag already exist (branch)"
 #            else
 #              echo "tag doesn't exist (branch)"
-#              export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+#              export MANIFEST=$(aws ecr batch-get-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
 #              sh .github/workflows/scripts/ecr_retag.sh
 #            fi
 #          else
