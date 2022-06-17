@@ -86,8 +86,10 @@ jobs:
 #          GITHUB_HASH=$(cat $GITHUB_WORKSPACE/hashes.json)
 #          echo "::set-output name=hashes::$GITHUB_HASH"
       - name: get services hash
+        id: service-hashes
         uses: ./.github/actions/get-services-hash
-
+      - name: Get the output time
+        run: echo "The step output ${{ steps.service-hashes.outputs.service_hashes }}"
 #      - name: Discord notification
 #        if: failure()
 #        uses: Ilshidur/action-discord@0.3.2

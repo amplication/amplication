@@ -36,7 +36,7 @@ try {
     console.log(`The action results payload`, serviceHashes);
 
 
-    core.setOutput("serviceHashes", serviceHashes);
+    core.setOutput("service_hashes", serviceHashes);
 } catch (error){
     core.setFailed(error);
 }
