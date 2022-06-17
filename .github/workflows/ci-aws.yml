@@ -28,6 +28,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: build action
+        working-directory: .github/actions/get-services-hash
+        run: npm run build
 #      - name: get changed files (not pr)
 #        if: github.event_name != 'pull_request'
 #        id: changed-files-not-pr
