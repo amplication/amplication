@@ -143,7 +143,7 @@ jobs:
         run: echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
 
       - name: Check if image hash tag is already exist in ECR image repository
-        id: hash-tag-exist
+        id:
         run: |
           set +e
           cmd="$(aws ecr describe-images --repository-name=$REPOSITORY_NAME --image-ids=imageTag=$IMAGE_HASH)"
@@ -157,7 +157,7 @@ jobs:
            fi
 
       - name: Build, tag, and push image to Amazon ECR
-        if: ${{ steps.tag-exist.outputs.hash-tag-exist == 'false' }}
+        if: ${{ steps.hash-tag-exist.outputs.tag_exist == 'false' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           TAG_LIST: "${{ github.run_id }},${{ github.sha }},${{ env.BRANCH_NAME }}"
@@ -172,7 +172,7 @@ jobs:
 
       - name: Retag
         env:
-          HASH_TAG_EXIST: ${{ steps.tag-exist.outputs.hash-tag-exist }}
+          HASH_TAG_EXIST: ${{ steps.hash-tag-exist.outputs.tag_exist }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           TAG_LIST_SHORT: "${{ env.BRANCH_NAME }}"
           TAG_LIST_FULL: "${{ env.BRANCH_NAME }},${{ github.run_id }}"
