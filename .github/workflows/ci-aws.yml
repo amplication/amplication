@@ -180,8 +180,10 @@ jobs:
         run: |
           if [ "$HASH_TAG_EXIST" ]
           then
+            echo "true $HASH_TAG_EXIST"
             export TAG_LIST=$TAG_LIST_SHORT
           else
+            echo "false $HASH_TAG_EXIST"
             export TAG_LIST=TAG_LIST_FULL
           fi
           echo $TAG_LIST
