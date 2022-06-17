@@ -115,6 +115,7 @@ jobs:
       REPOSITORY_NAME: ${{ matrix.service-hash-data.folder }}
       IMAGE_HASH: ${{ matrix.service-hash-data.hash }}
       PACKAGE_NAME: ${{ matrix.service-hash-data.pkg }}
+      SERVICE_FOLDER:  ${{ matrix.service-hash-data.name }}
     steps:
 
       - name: Get the output time
@@ -155,19 +156,74 @@ jobs:
              echo "::set-output name=tag_exist::false"
            fi
 
-      - name: Check in existing image has branch name tag
-        id: branch-tag-exist
+      - name: Build, tag, and push image to Amazon ECR
+        if: ${{ steps.tag-exist.outputs.hash-tag-exist == 'false' }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAG_LIST: "${{ github.run_id }},${{ github.sha }},${{ env.BRANCH_NAME }}"
         run: |
-            set +e
-            cmd="$(aws ecr describe-images --repository-name=$REPOSITORY_NAME --image-ids=imageTag=$IMAGE_HASH,imageTag=$BRANCH_NAME)"
-            if [[ ! -z "$cmd" ]]
-            then
-              echo "tag already exist"
-              echo "::set-output name=tag_exist::true"
-            else
-               echo "tag doesn't exist"
-               echo "::set-output name=tag_exist::false"
-             fi
+          echo "Will work from: $SERVICE_FOLDER"
+          Docker_image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_HASH
+          echo "Docker_image: $Docker_image"
+          command="docker build -f $SERVICE_FOLDER/Dockerfile . -t $Docker_image"
+          echo "$command"
+#          $command
+#          docker push $Docker_image
+
+      - name: Retag
+        env:
+          HASH_TAG_EXIST: "steps.tag-exist.outputs.hash-tag-exist"
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAG_LIST_SHORT: "${{ env.BRANCH_NAME }}"
+          TAG_LIST_FULL: "${{ env.BRANCH_NAME }},${{ github.run_id }}"
+          ECR_REPOSITORY: "${{ env.REPOSITORY_NAME }}"
+        run: |
+          if [ "$HASH_TAG_EXIST" ]
+          then
+            export TAG_LIST=$TAG_LIST_SHORT
+          else
+            export TAG_LIST=TAG_LIST_FULL
+          fi
+          echo $TAG_LIST
+          export MANIFEST=$(aws ecr batch-get-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          echo "MANIFEST: $MANIFEST"
+#          sh .github/workflows/scripts/ecr_retag.sh
+
+      - name: Discord notification
+        if: failure()
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
+          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
+
+
+
+#
+#      - name: Retag images
+#        if: ${{ steps.tag-exist.outputs.hash-tag-exist == 'true' }}
+#        env:
+#          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#          TAG_LIST_SHORT: "${{ env.IMAGE_HASH }},${{ env.BRANCH_NAME }}"
+#          TAG_LIST_FULL: "${{ env.IMAGE_HASH }},${{ env.BRANCH_NAME }},${{ github.run_id }}"
+#        run: |
+#          echo "Dockerfile path: $SERVICE_FOLDER/Dockerfile"
+#          echo "IMAGE_HASH: $IMAGE_HASH"
+#          echo "ECR_REPOSITORY: $REPOSITORY_NAME"
+#          export MANIFEST=$(aws ecr batch-get-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+#          if [ "$MANIFEST" = "null" ]
+#          then
+#            Docker_image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_HASH
+#            docker build -f $SERVICE_FOLDER/Dockerfile . -t $Docker_image
+#            docker push $Docker_image
+#            export MANIFEST=$(aws ecr batch-get-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+#            export TAG_LIST=$TAG_LIST_FULL
+#            echo "FIXED MANIFEST: $MANIFEST"
+#          else
+#            export TAG_LIST=$TAG_LIST_SHORT
+#          fi
+#          echo "TAG_LIST: $TAG_LIST"
+#          sh .github/workflows/scripts/ecr_retag.sh
+
 
 #      - name: Check if image hash tag is already exist in ECR image repository
 #        id: tag-exist
