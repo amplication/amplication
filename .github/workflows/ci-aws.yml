@@ -19,8 +19,9 @@ on:
 jobs:       
   changes:
     runs-on: ubuntu-18.04
-#    outputs:
-#      services: ${{ steps.build_list.outputs.service_build_list }}
+    outputs:
+      services: ${{ steps.build_list.outputs.service_build_list }}
+      hashes: ${{ steps.service-hashes.outputs.service_hashes }}
 #      hashes: ${{ steps.build_list.outputs.hashes }}
 #      service_retag_list: ${{ steps.build_list.outputs.service_retag_list }}
 #      packages: ${{ steps.build_list.outputs.package_build_list }}
@@ -102,7 +103,20 @@ jobs:
 
 
 
-
+  tests:
+    runs-on: ubuntu-20.04
+    needs: [changes]
+    if: ${{ needs.changes.outputs.hashes != '[]' && needs.changes.outputs.hashes != '' }}
+    timeout-minutes: 45
+    strategy:
+      matrix:
+        service-hash-data: ${{ fromJson(needs.changes.outputs.hashes) }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Get the output time
+        run: echo "The step output ${{ matrix.service-hash-data }}"
 
 
 #  tests:
