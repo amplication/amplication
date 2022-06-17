@@ -25,9 +25,9 @@ jobs:
 #      service_retag_list: ${{ steps.build_list.outputs.service_retag_list }}
 #      packages: ${{ steps.build_list.outputs.package_build_list }}
     steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 #      - name: get changed files (not pr)
 #        if: github.event_name != 'pull_request'
 #        id: changed-files-not-pr
