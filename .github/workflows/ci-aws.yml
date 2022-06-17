@@ -184,7 +184,7 @@ jobs:
             export TAG_LIST=$TAG_LIST_SHORT
           else
             echo "false $HASH_TAG_EXIST"
-            export TAG_LIST=TAG_LIST_FULL
+            export TAG_LIST=$TAG_LIST_FULL
           fi
           echo $TAG_LIST
           export MANIFEST=$(aws ecr batch-get-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
