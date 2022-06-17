@@ -113,7 +113,8 @@ jobs:
         service-hash-data: ${{ fromJson(needs.changes.outputs.hashes) }}
     env:
       REPOSITORY_NAME: ${{ matrix.service-hash-data.folder }}
-      IMAGE_HASH: ${{ matrix.service-hash-data.folder }}
+      IMAGE_HASH: ${{ matrix.service-hash-data.hash }}
+      PACKAGE_NAME: ${{ matrix.service-hash-data.pkg }}
     steps:
 
       - name: Get the output time
