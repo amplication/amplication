@@ -117,7 +117,7 @@ jobs:
         run: echo "The step output ${{ toJson(matrix.service-hash-data) }}"
 
       - name: Get the output time
-        run: echo "The step output ${{ toJson(matrix.service-hash-data).folder }}"
+        run: echo "The step output ${{ matrix.service-hash-data.folder }}"
 
 
       - name: Configure AWS credentials
@@ -133,7 +133,7 @@ jobs:
 
       - name: Check if repo exist
         env:
-          REPOSITORY_NAME: ${{ toJson(matrix.service-hash-data).folder }}"
+          REPOSITORY_NAME: ${{ matrix.service-hash-data.folder }}"
         run: echo $REPOSITORY_NAME
 #        run: aws ecr describe-repositories --repository-names $REPOSITORY_NAME || aws ecr create-repository --repository-name $REPOSITORY_NAME
 
