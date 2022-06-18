@@ -14,7 +14,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import * as models from "../models";
-import ApplicationListItem from "./ResourceListItem";
+import ResourceListItem from "./ResourceListItem";
 import "./ResourceList.scss";
 
 type TData = {
@@ -129,7 +129,7 @@ function ResourceList() {
       ) : (
         data?.resources.map((resource) => {
           return (
-            <ApplicationListItem
+            <ResourceListItem
               key={resource.id}
               resource={resource}
               onDelete={handleDelete}

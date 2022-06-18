@@ -27,7 +27,7 @@ const CLASS_NAME = "resource-list-item";
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
-function ApplicationListItem({ resource, onDelete }: Props) {
+function ResourceListItem({ resource, onDelete }: Props) {
   const { id, name, description, color } = resource;
   const { trackEvent } = useTracking();
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
@@ -117,4 +117,4 @@ function ApplicationListItem({ resource, onDelete }: Props) {
   );
 }
 
-export default ApplicationListItem;
+export default ResourceListItem;

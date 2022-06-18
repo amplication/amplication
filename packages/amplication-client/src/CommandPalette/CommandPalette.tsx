@@ -155,7 +155,7 @@ function CommandPaletteItem(suggestion: Command) {
       {showResourceData && (
         <>
           <CircleBadge name={resourceName || ""} color={resourceColor} />
-          <span className="command-palette__app-name">{resourceName}</span>
+          <span className="command-palette__resource-name">{resourceName}</span>
         </>
       )}
       <Icon icon={type} />
