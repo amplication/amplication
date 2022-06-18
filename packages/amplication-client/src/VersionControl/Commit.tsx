@@ -14,7 +14,7 @@ import "./Commit.scss";
 import {
   CREATED_AT_FIELD,
   GET_BUILDS_COMMIT,
-} from "../Application/code-view/CodeViewExplorer";
+} from "../Resource/code-view/CodeViewExplorer";
 import { SortOrder } from "../models";
 
 type TCommit = {

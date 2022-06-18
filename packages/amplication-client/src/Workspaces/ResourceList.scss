@@ -1,12 +1,12 @@
 @import "../style/index.scss";
 $empty-state-image-size: 120px;
 
-.application-list {
+.resource-list {
   & {
     height: 100%;
     display: flex;
     flex-direction: column;
-    }
+  }
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
@@ -21,11 +21,11 @@ $empty-state-image-size: 120px;
   }
 
   &__empty-state {
-    .svg-theme-image{
+    .svg-theme-image {
       width: 250px;
-      height: 250px;  
+      height: 250px;
     }
-    margin-bottom:50px;
+    margin-bottom: 50px;
     display: flex;
     height: 100%;
     flex-direction: column;

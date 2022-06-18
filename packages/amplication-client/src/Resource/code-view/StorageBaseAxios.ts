@@ -38,14 +38,14 @@ export class StorageBaseAxios {
   }
 
   async fileContent(
-    appId: string,
+    resourceId: string,
     buildId: string,
     path: string
   ): Promise<string> {
     assert(this.axios);
 
     const data = (
-      await this.axios.get(`${appId}/${buildId}/content?path=${path}`, {
+      await this.axios.get(`${resourceId}/${buildId}/content?path=${path}`, {
         // overwrite the parsing of json object by axios to prevent returning a object instead of string
         transformResponse: (res) => {
           return res;
@@ -59,7 +59,7 @@ export class StorageBaseAxios {
   }
 
   async folderList(
-    appId: string,
+    resourceId: string,
     buildId: string,
     path: string
   ): Promise<StorageResponseType> {
@@ -67,7 +67,7 @@ export class StorageBaseAxios {
 
     const data = (
       await this.axios.get<StorageResponseType>(
-        `${appId}/${buildId}/list?path=${path}`
+        `${resourceId}/${buildId}/list?path=${path}`
       )
     ).data;
     return data;

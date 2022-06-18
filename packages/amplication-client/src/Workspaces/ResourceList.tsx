@@ -14,7 +14,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import * as models from "../models";
-import ApplicationListItem from "./ApplicationListItem";
+import ApplicationListItem from "./ResourceListItem";
 import "./ResourceList.scss";
 
 type TData = {
@@ -25,7 +25,7 @@ type TDeleteData = {
   deleteResource: models.Resource;
 };
 
-const CLASS_NAME = "application-list";
+const CLASS_NAME = "resource-list";
 
 function ResourceList() {
   const { trackEvent } = useTracking();
@@ -121,17 +121,17 @@ function ResourceList() {
 
       {isEmpty(data?.resources) && !loading ? (
         <div className={`${CLASS_NAME}__empty-state`}>
-          <SvgThemeImage image={EnumImages.AddApp} />
+          <SvgThemeImage image={EnumImages.AddResource} />
           <div className={`${CLASS_NAME}__empty-state__title`}>
             There are no resources to show
           </div>
         </div>
       ) : (
-        data?.resources.map((app) => {
+        data?.resources.map((resource) => {
           return (
             <ApplicationListItem
-              key={app.id}
-              resource={app}
+              key={resource.id}
+              resource={resource}
               onDelete={handleDelete}
             />
           );

@@ -6,7 +6,7 @@ import * as models from "../models";
 import { format } from "date-fns";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
-import "./ApplicationListItem.scss";
+import "./ResourceListItem.scss";
 import { BuildStatusIcons } from "../VersionControl/BuildStatusIcons";
 import {
   ConfirmationDialog,
@@ -23,7 +23,7 @@ type Props = {
 };
 
 const DATE_FORMAT = "P p";
-const CLASS_NAME = "application-list-item";
+const CLASS_NAME = "resource-list-item";
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
@@ -53,7 +53,7 @@ function ApplicationListItem({ resource, onDelete }: Props) {
 
   const handleClick = useCallback(() => {
     trackEvent({
-      eventName: "applicationCardClick",
+      eventName: "resourceCardClick",
     });
   }, [trackEvent]);
 

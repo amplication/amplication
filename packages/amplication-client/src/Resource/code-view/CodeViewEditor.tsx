@@ -3,7 +3,7 @@ import React, { useLayoutEffect, useMemo, useState } from "react";
 import { StorageBaseAxios } from "./StorageBaseAxios";
 
 type Props = {
-  appId: string;
+  resourceId: string;
   buildId: string;
   filePath: string;
   fileName: string;
@@ -23,7 +23,7 @@ function setEditorTheme(monaco: any) {
   });
 }
 
-const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
+const CodeViewEditor = ({ resourceId, buildId, filePath, fileName }: Props) => {
   const [content, setContent] = useState<string>("");
 
   const fileExtension = useMemo(() => {
@@ -33,19 +33,23 @@ const CodeViewEditor = ({ appId, buildId, filePath, fileName }: Props) => {
     (async () => {
       if (!filePath) return;
 
-      const data = fileExtension && UNSUPPORTED_EXTENSIONS.includes(fileExtension.toLocaleLowerCase())
-        ? UNSUPPORTED_EXTENSION_MESSAGE
-        : await StorageBaseAxios.instance.fileContent(
-          appId,
-          buildId,
-          filePath
-        );
+      const data =
+        fileExtension &&
+        UNSUPPORTED_EXTENSIONS.includes(fileExtension.toLocaleLowerCase())
+          ? UNSUPPORTED_EXTENSION_MESSAGE
+          : await StorageBaseAxios.instance.fileContent(
+              resourceId,
+              buildId,
+              filePath
+            );
 
       setContent(data);
     })();
-  }, [appId, buildId, filePath, fileExtension]);
+  }, [resourceId, buildId, filePath, fileExtension]);
 
-  return !filePath ? (<div />) : (
+  return !filePath ? (
+    <div />
+  ) : (
     <MonacoEditor
       beforeMount={setEditorTheme}
       height="100%"

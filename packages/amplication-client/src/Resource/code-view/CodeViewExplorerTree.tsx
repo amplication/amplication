@@ -37,7 +37,7 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
     ["storage-folderList", selectedBuild.id, selectedFolder?.path],
     async () => {
       return await StorageBaseAxios.instance.folderList(
-        selectedBuild.appId,
+        selectedBuild.resourceId,
         selectedBuild.id,
         selectedFolder?.path
       );
@@ -81,9 +81,9 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
           }
           setExpandedFolders(expandedNodes);
           setSelectedFolder(file);
-        }
-      }
-      fileTypeMap[file.type]()
+        },
+      };
+      fileTypeMap[file.type]();
     },
     [selectedBuild, onFileSelected, expandedFolders]
   );

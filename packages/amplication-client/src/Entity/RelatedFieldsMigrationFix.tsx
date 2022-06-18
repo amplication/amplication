@@ -105,8 +105,8 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
       <div className={`${CLASS_NAME}__message`}>
         Version 0.3.2 includes big improvements in how we manage related
         entities. The changes require your attention. <br />
-        Following is a list of all the entities in your app, please provide the
-        missing names for each of your existing relation fields.
+        Following is a list of all the entities in your resource, please provide
+        the missing names for each of your existing relation fields.
         <span className={`${CLASS_NAME}__highlight`}>
           {" "}
           It will only take you a minute!

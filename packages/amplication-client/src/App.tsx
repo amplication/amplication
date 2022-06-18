@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import { Switch } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 
-import ApplicationLayout from "./Application/ApplicationLayout";
+import ApplicationLayout from "./Resource/ApplicationLayout";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
 import WorkspaceLayout from "./Workspaces/WorkspaceLayout";
-import { CreateResourceFromExcel } from "./Application/CreateResourceFromExcel";
+import { CreateResourceFromExcel } from "./Resource/CreateResourceFromExcel";
 
 import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
@@ -14,7 +14,7 @@ import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import { init as initPaddle } from "./util/paddle";
 import RouteWithAnalytics from "./Layout/RouteWithAnalytics";
-import AuthResourceWithGitCallback from "./Application/git/AuthResourceWithGitCallback";
+import AuthResourceWithGitCallback from "./Resource/git/AuthResourceWithGitCallback";
 
 const context = {
   source: "amplication-client",

@@ -12,7 +12,7 @@ import { downloadArchive } from "./BuildSteps";
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 import { HelpPopover } from "../Components/HelpPopover";
-import { GET_RESOURCE } from "../Application/ResourceHome";
+import { GET_RESOURCE } from "../Resource/ResourceHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
@@ -153,7 +153,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             content={
               <div>
                 Enable sync with GitHub to automatically push the generated code
-                of your application and create a Pull Request in your GitHub
+                of your resource and create a Pull Request in your GitHub
                 repository every time you commit your changes.
               </div>
             }
@@ -216,7 +216,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             <div>
               All your committed changes are continuously deployed to a sandbox
               environment on the Amplication cloud so you can easily access your
-              application for testing and development purposes.
+              resource for testing and development purposes.
             </div>
           }
           open={showSandboxHelp === "false" ? false : true}
@@ -224,7 +224,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         >
           {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
           stepDeploy?.status === models.EnumActionStepStatus.Running ? (
-            // <Link to={`/${build.appId}/builds/${build.id}`}>
+            // <Link to={`/${build.resourceId}/builds/${build.id}`}>
             //   <Button
             //     buttonStyle={EnumButtonStyle.Clear}
             //     eventData={{

@@ -129,7 +129,7 @@ const Entity = ({ match }: Props) => {
         <span>can't find</span> /**@todo: Show formatted error message */
       ) : (
         <Switch>
-          <RouteWithAnalytics path="/:application/entities/:entityId/permissions">
+          <RouteWithAnalytics path="/:resource/entities/:entityId/permissions">
             <PermissionsForm
               entityId={entityId}
               resourceId={resource}
@@ -137,13 +137,13 @@ const Entity = ({ match }: Props) => {
               objectDisplayName={data.entity.pluralDisplayName}
             />
           </RouteWithAnalytics>
-          <RouteWithAnalytics path="/:application/entities/:entityId/fields/:fieldId">
+          <RouteWithAnalytics path="/:resource/entities/:entityId/fields/:fieldId">
             <EntityField />
           </RouteWithAnalytics>
-          <RouteWithAnalytics path="/:application/entities/:entityId/fields/">
+          <RouteWithAnalytics path="/:resource/entities/:entityId/fields/">
             <EntityFieldList entityId={data.entity.id} />
           </RouteWithAnalytics>
-          <RouteWithAnalytics path="/:application/entities/:entityId">
+          <RouteWithAnalytics path="/:resource/entities/:entityId">
             <EntityForm
               entity={data.entity}
               resourceId={resource}

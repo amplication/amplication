@@ -59,7 +59,7 @@ const Deployment = ({ deployment, resourceId }: Props) => {
               Your resource is ready.
             </div>
             <div className={`${CLASS_NAME}__details__notice`}>
-              <a href={deployment.environment.address} target="app">
+              <a href={deployment.environment.address} target="resource">
                 {deployment.environment.address}
               </a>
             </div>

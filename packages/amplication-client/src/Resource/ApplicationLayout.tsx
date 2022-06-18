@@ -243,11 +243,11 @@ function ApplicationLayout({ match }: Props) {
                 component={SyncWithGithubPage}
               />
               <RouteWithAnalytics
-                path="/:application/code-view"
+                path="/:resource/code-view"
                 component={CodeViewPage}
               />
               <Route
-                path="/:application/appSettings"
+                path="/:resource/appSettings"
                 component={AppSettingsPage}
               />
               <Route path="/:application/" component={ResourceHome} />

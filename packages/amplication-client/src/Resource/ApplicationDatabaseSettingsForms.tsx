@@ -12,11 +12,11 @@ import { match } from "react-router-dom";
 import "./ApplicationDatabaseSettingsForms.scss";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 type TData = {
-  updateAppSettings: models.ResourceSettings;
+  updateAppSettings: models.AppSettings;
 };
 
 const FORM_SCHEMA = {
@@ -48,10 +48,10 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "application-database-settings-form";
 
 function ApplicationDatabaseSettingsForms({ match }: Props) {
-  const resourceId = match.params.application;
+  const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
-    appSettings: models.ResourceSettings;
+    appSettings: models.AppSettings;
   }>(GET_APP_SETTINGS, {
     variables: {
       id: resourceId,
@@ -71,7 +71,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
   );
 
   const handleSubmit = useCallback(
-    (data: models.ResourceSettings) => {
+    (data: models.AppSettings) => {
       const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
       trackEvent({
         eventName: "updateAppSettings",
@@ -99,7 +99,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
       {data?.appSettings && (
         <Formik
           initialValues={data.appSettings}
-          validate={(values: models.ResourceSettings) =>
+          validate={(values: models.AppSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize

@@ -1,25 +1,25 @@
 import React from "react";
-import { App } from "../../models";
+import { Resource } from "../../models";
 import { FileDetails } from "./CodeViewPage";
 import AppGitStatusPanel from "../git/AppGitStatusPanel";
 import CodeViewExplorer from "./CodeViewExplorer";
 import "./CodeViewBar.scss";
 
 type Props = {
-  app: App;
+  resource: Resource;
   onFileSelected: (selectedFile: FileDetails | null) => void;
 };
 const CLASS_NAME = "code-view-bar";
 
-const CodeViewBar = ({ app, onFileSelected }: Props) => {
+const CodeViewBar = ({ resource, onFileSelected }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__heading`}>
         <h2>File Browser</h2>
       </div>
-      <AppGitStatusPanel app={app} showDisconnectedMessage />
+      <AppGitStatusPanel resource={resource} showDisconnectedMessage />
       <hr />
-      <CodeViewExplorer app={app} onFileSelected={onFileSelected} />
+      <CodeViewExplorer resource={resource} onFileSelected={onFileSelected} />
     </div>
   );
 };

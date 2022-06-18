@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import React from "react";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
-import AppGitStatusPanel from "../Application/git/AppGitStatusPanel";
+import AppGitStatusPanel from "./git/AppGitStatusPanel";
 import { GET_RESOURCE_GIT_REPOSITORY } from "./git/SyncWithGithubPage";
 import { Resource } from "../models";
 type Props = {
@@ -36,7 +36,7 @@ function SyncWithGithubTile({ resourceId }: Props) {
       footer={
         data?.resource && (
           <AppGitStatusPanel
-            app={data?.resource}
+            resource={data?.resource}
             showDisconnectedMessage={false}
           />
         )

@@ -10,15 +10,15 @@ import ApplicationDatabaseSettingsForms from "../ApplicationDatabaseSettingsForm
 import ApplicationForm from "../ApplicationForm";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 const NAVIGATION_KEY = "APP_SETTINGS";
 
 function AppSettingsPage({ match }: Props) {
-  const { application } = match.params;
+  const { resource } = match.params;
 
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, `App settings`);
+  useNavigationTabs(resource, NAVIGATION_KEY, match.url, `App settings`);
 
   return (
     <PageContent
@@ -26,7 +26,7 @@ function AppSettingsPage({ match }: Props) {
         <div>
           <div>
             <InnerTabLink
-              to={`/${application}/appSettings/update`}
+              to={`/${resource}/appSettings/update`}
               icon="settings"
             >
               General
@@ -34,7 +34,7 @@ function AppSettingsPage({ match }: Props) {
           </div>
           <div>
             <InnerTabLink
-              to={`/${application}/appSettings/db/update`}
+              to={`/${resource}/appSettings/db/update`}
               icon="settings"
             >
               Database
@@ -42,17 +42,14 @@ function AppSettingsPage({ match }: Props) {
           </div>
           <div>
             <InnerTabLink
-              to={`/${application}/appSettings/auth/update`}
+              to={`/${resource}/appSettings/auth/update`}
               icon="settings"
             >
               Authentication
             </InnerTabLink>
           </div>
           <div>
-            <InnerTabLink
-              to={`/${application}/appSettings/api-tokens`}
-              icon="id"
-            >
+            <InnerTabLink to={`/${resource}/appSettings/api-tokens`} icon="id">
               API Tokens
             </InnerTabLink>
           </div>
@@ -73,7 +70,7 @@ function AppSettingsPage({ match }: Props) {
           component={ApplicationDatabaseSettingsForms}
         />
         <RouteWithAnalytics
-          path="/:application/appSettings/auth/update"
+          path="/:resource/appSettings/auth/update"
           component={ApplicationAuthSettingForm}
         />
       </Switch>

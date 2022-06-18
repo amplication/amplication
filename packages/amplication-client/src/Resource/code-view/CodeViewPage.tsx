@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { match } from "react-router-dom";
-import { App } from "../../models";
+import { Resource } from "../../models";
 import { GET_RESOURCE_GIT_REPOSITORY } from "../git/SyncWithGithubPage";
 import CodeViewBar from "./CodeViewBar";
 import CodeViewEditor from "./CodeViewEditor";
@@ -13,7 +13,7 @@ import "./CodeViewPage.scss";
 const CLASS_NAME = "code-view-page";
 const NAVIGATION_KEY = "CODE_VIEW";
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 export type CommitListItem = {
@@ -29,29 +29,32 @@ export type FileDetails = {
 };
 
 function CodeViewPage({ match }: Props) {
-  const applicationId = match.params.application;
+  const resourceId = match.params.resource;
   const [fileDetails, setFileDetails] = useState<FileDetails | null>(null);
-  useNavigationTabs(applicationId, NAVIGATION_KEY, match.url, "Code View");
+  useNavigationTabs(resourceId, NAVIGATION_KEY, match.url, "Code View");
 
-  const { data } = useQuery<{ app: App }>(GET_RESOURCE_GIT_REPOSITORY, {
-    variables: {
-      appId: applicationId,
-    },
-  });
+  const { data } = useQuery<{ resource: Resource }>(
+    GET_RESOURCE_GIT_REPOSITORY,
+    {
+      variables: {
+        resourceId,
+      },
+    }
+  );
   if (!data) {
     return <div />;
   }
   return (
     <PageContent
       sideContent={
-        <CodeViewBar app={data.app} onFileSelected={setFileDetails} />
+        <CodeViewBar resource={data.resource} onFileSelected={setFileDetails} />
       }
     >
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__code-container`}>
           {fileDetails?.isFile && (
             <CodeViewEditor
-              appId={applicationId}
+              resourceId={resourceId}
               buildId={fileDetails.buildId}
               filePath={fileDetails.filePath}
               fileName={fileDetails.fileName}
