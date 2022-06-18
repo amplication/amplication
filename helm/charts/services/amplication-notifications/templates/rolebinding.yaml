@@ -1,0 +1,3 @@
+{{ include "base.rolebinding" (list . "amplication-notifications.rolebinding") -}}
+{{- define "amplication-notifications-service.rolebinding" -}}
+{{- end }}
