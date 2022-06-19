@@ -24,10 +24,8 @@ minCPU: 1
 service:
   type: ClusterIP
   port:
-    target: 3002
+    target: 3333
   protocol: TCP
 
 ingress:
-  enabled: true
-  hostname: server.amplication.com
-  path: /
+  enabled: false
