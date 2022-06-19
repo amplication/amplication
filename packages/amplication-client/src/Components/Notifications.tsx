@@ -1,14 +1,13 @@
-/// Notifications.tsx
 import React, { useCallback, useContext } from "react";
 import {
   NovuProvider,
   PopoverNotificationCenter,
-  NotificationBell,
   IMessage,
 } from "@novu/notification-center";
 import ThemeContext from "../Layout/ThemeContext";
 import { useQuery, gql } from "@apollo/client";
 import * as models from "../models";
+import { Bell } from "./Bell";
 
 type TData = {
   me: models.User;
@@ -33,7 +32,7 @@ export function Notifications() {
         colorScheme={isDarkMode ? THEME_DARK : THEME_LIGHT}
         onNotificationClick={onNotificationClick}
       >
-        {({ unseenCount }) => <NotificationBell unseenCount={unseenCount} />}
+        {({ unseenCount }) => <Bell unseenCount={unseenCount} />}
       </PopoverNotificationCenter>
     </NovuProvider>
   );

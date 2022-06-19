@@ -89,9 +89,7 @@ const Menu = ({ children }: MenuProps) => {
             {children}
           </div>
           <div className="bottom-menu-container">
-          <MenuItem title="notification">
-              <Notifications />
-            </MenuItem>
+            <Notifications />
             <DarkModeToggle />
             <Popover
               className="main-layout__menu__popover"
@@ -109,7 +107,8 @@ const Menu = ({ children }: MenuProps) => {
               title="Profile"
               icon="plus"
               hideTooltip
-              onClick={handleProfileClick}>
+              onClick={handleProfileClick}
+            >
               <UserBadge />
             </MenuItem>
             <MenuItem
