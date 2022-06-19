@@ -64,7 +64,7 @@ function ApplicationLayout({ match }: Props) {
     },
   });
 
-  const { data: applicationData } = useQuery<ResourceData>(GET_RESOURCE, {
+  const { data: resourceData } = useQuery<ResourceData>(GET_RESOURCE, {
     variables: {
       id: match.params.resource,
     },
@@ -173,8 +173,8 @@ function ApplicationLayout({ match }: Props) {
             to={`/${resource}`}
           >
             <CircleBadge
-              name={applicationData?.resource.name || ""}
-              color={applicationData?.resource.color}
+              name={resourceData?.resource.name || ""}
+              color={resourceData?.resource.color}
             />
           </MenuItem>
 
