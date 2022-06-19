@@ -1,13 +1,13 @@
 {
     "name": "@amplication/basic-auth-plugin",
-    "version": "0.13.0",
+    "version": "0.13.1",
     "license": "",
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc && cp -r ./src/static ./dist"
     },
     "dependencies": {
-        "@amplication/generation-core": "^0.13.0",
+        "@amplication/generation-core": "^0.13.1",
         "@babel/parser": "^7.17.10",
         "@babel/types": "^7.17.10",
         "ast-types": "0.14.2",

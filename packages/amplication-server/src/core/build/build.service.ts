@@ -46,6 +46,8 @@ import { QueueService } from '../queue/queue.service';
 import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
+import { CodeGenStorageService } from '../codeGenStorage/codeGenStorage.service';
+import { CodeGenerationInput } from '@amplication/data-service-generator';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -164,6 +166,7 @@ export class BuildService {
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
+    private readonly codeGenStorage: CodeGenStorageService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -430,6 +433,21 @@ export class BuildService {
           },
           dataServiceGeneratorLogger
         );
+
+        const codeGenInput: CodeGenerationInput = {
+          entities,
+          roles,
+          appInfo: {
+            name: app.name,
+            description: app.description,
+            version: build.version,
+            id: build.appId,
+            url,
+            settings: appSettings
+          }
+        };
+
+        await this.codeGenStorage.saveCodeGenInput(codeGenInput);
 
         await Promise.all(logPromises);
 
