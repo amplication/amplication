@@ -4,9 +4,7 @@ import {
   ConflictException
 } from '@nestjs/common';
 import { JsonObject } from 'type-fest';
-import head from 'lodash.head';
-import last from 'lodash.last';
-import { pick } from 'lodash';
+import { pick, head, last } from 'lodash';
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
