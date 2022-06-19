@@ -18,7 +18,7 @@ describe('HealthController', () => {
   it(`GET /_health/live should return empty response`, () => {
     return request(app.getHttpServer())
       .get('/_health/live')
-      .expect(204)
+      .expect(204);
   });
 
   afterAll(async () => {
