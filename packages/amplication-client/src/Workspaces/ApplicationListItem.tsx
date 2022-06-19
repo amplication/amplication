@@ -85,7 +85,7 @@ function ApplicationListItem({ app, onDelete }: Props) {
 
             <span className="spacer" />
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               icon="trash_2"
               onClick={handleDelete}
             />

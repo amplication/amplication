@@ -40,7 +40,7 @@ function WorkspaceSelectorList({
           ))}
           <div className={`${CLASS_NAME}__new`}>
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               disabled={loading}
               type="button"
               icon="plus"

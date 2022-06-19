@@ -99,7 +99,7 @@ function WorkspaceSelector() {
               {data?.currentWorkspace.name}
             </span>
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               disabled={loading}
               type="button"
               icon="code"
