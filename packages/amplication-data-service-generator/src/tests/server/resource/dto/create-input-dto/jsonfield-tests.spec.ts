@@ -1,4 +1,4 @@
-import cloneDeep from "lodash.clonedeep";
+import { cloneDeep } from "lodash";
 import { createCreateInput } from "../../../../../server/resource/dto/create-create-input";
 import { Entity, EntityField } from "../../../../../types";
 import defaultEntity from "../constants/default-entity";
