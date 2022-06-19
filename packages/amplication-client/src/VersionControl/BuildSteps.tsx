@@ -23,9 +23,9 @@ export const EMPTY_STEP: models.ActionStep = {
   message: "",
 };
 
-export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const GENERATE_STEP_NAME = "GENERATE_RESOURCE";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
-export const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
 export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
@@ -180,18 +180,18 @@ const BuildSteps = ({ build, onError }: Props) => {
         panelStyle={EnumPanelStyle.Bordered}
       >
         <Icon icon="publish" />
-        <span>Publish App to Sandbox</span>
+        <span>Publish Resource to Sandbox</span>
         <BuildStepsStatus status={stepDeploy.status} />
         <span className="spacer" />
 
         {deployment &&
           stepDeploy.status === models.EnumActionStepStatus.Success && (
-            <a href={deployment.environment.address} target="app">
+            <a href={deployment.environment.address} target="resource">
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="link_2"
                 eventData={{
-                  eventName: "openPreviewApp",
+                  eventName: "openPreviewResource",
                   versionNumber: data.build.version,
                 }}
               />

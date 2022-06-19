@@ -21,7 +21,7 @@ import { truncateId } from "../util/truncatedId";
 import "./CommitPage.scss";
 
 type Props = {
-  match: match<{ application: string; commitId: string }>;
+  match: match<{ resource: string; commitId: string }>;
 };
 const CLASS_NAME = "commit-page";
 const NAVIGATION_KEY = "COMMITS";
@@ -35,7 +35,7 @@ const OPTIONS = [
 ];
 
 const CommitPage = ({ match }: Props) => {
-  const { application, commitId } = match.params;
+  const { resource, commitId } = match.params;
   const [splitView, setSplitView] = useState<boolean>(false);
 
   const handleChangeType = useCallback(
@@ -50,7 +50,7 @@ const CommitPage = ({ match }: Props) => {
   }, [commitId]);
 
   useNavigationTabs(
-    application,
+    resource,
     `${NAVIGATION_KEY}_${commitId}`,
     match.url,
     `Commit ${truncatedId}`
@@ -89,7 +89,7 @@ const CommitPage = ({ match }: Props) => {
               {build && (
                 <ClickableId
                   label="Build"
-                  to={`/${application}/builds/${build.id}`}
+                  to={`/${resource}/builds/${build.id}`}
                   id={build.id}
                   eventData={{
                     eventName: "buildHeaderIdClick",
@@ -171,7 +171,7 @@ export const GET_COMMIT = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
-        appId
+        resourceId
         version
         message
         createdAt

@@ -27,7 +27,7 @@ const BuildHeader = ({ build, deployments, isError }: Props) => {
   return (
     <div className={`${CLASS_NAME} ${isDeployed && deployedClassName} `}>
       <ClickableId
-        to={`/${build.appId}/builds/${build.id}`}
+        to={`/${build.resourceId}/builds/${build.id}`}
         id={build.id}
         label="Build ID"
         eventData={{
@@ -35,13 +35,13 @@ const BuildHeader = ({ build, deployments, isError }: Props) => {
         }}
       />
       {isError ? (
-        <Link to={`/${build.appId}/builds/${build.id}`}>
+        <Link to={`/${build.resourceId}/builds/${build.id}`}>
           <h3 className="error-message">Build Failed Check Logs</h3>
         </Link>
       ) : null}
       <span className="spacer" />
       {deployment && isDeployed && (
-        <a href={deployment.environment.address} target="app">
+        <a href={deployment.environment.address} target="resource">
           <Icon icon="link_2" />
         </a>
       )}

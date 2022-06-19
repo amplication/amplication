@@ -16,17 +16,17 @@ const CLASS_NAME = "deployment";
 
 type Props = {
   deployment: models.Deployment;
-  applicationId: string;
+  resourceId: string;
 };
 
-const Deployment = ({ deployment, applicationId }: Props) => {
+const Deployment = ({ deployment, resourceId }: Props) => {
   return (
     <li className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__title`}>
         <span>Deployment details</span>
 
         <Link
-          to={`/${applicationId}/builds/${deployment.buildId}/deployments/${deployment.id}`}
+          to={`/${resourceId}/builds/${deployment.buildId}/deployments/${deployment.id}`}
         >
           <Button
             buttonStyle={EnumButtonStyle.Text}
@@ -44,7 +44,7 @@ const Deployment = ({ deployment, applicationId }: Props) => {
           <>
             <Icon icon="publish" size="medium" />
             <div className={`${CLASS_NAME}__details__status`}>
-              Your app is being deployed.
+              Your resource is being deployed.
             </div>
             <div className={`${CLASS_NAME}__details__notice`}>
               This action may take a few minutes.
@@ -56,10 +56,10 @@ const Deployment = ({ deployment, applicationId }: Props) => {
           <>
             <Icon icon="publish" size="medium" />
             <div className={`${CLASS_NAME}__details__status`}>
-              Your app is ready.
+              Your resource is ready.
             </div>
             <div className={`${CLASS_NAME}__details__notice`}>
-              <a href={deployment.environment.address} target="app">
+              <a href={deployment.environment.address} target="resource">
                 {deployment.environment.address}
               </a>
             </div>
