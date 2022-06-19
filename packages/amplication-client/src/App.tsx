@@ -67,7 +67,7 @@ function App() {
             path="/create-resource"
             component={CreateResourceFromExcel}
           />
-          <PrivateRoute path="/:application" component={ApplicationLayout} />
+          <PrivateRoute path="/:resource" component={ApplicationLayout} />
         </Switch>
       </NavigationTabsProvider>
     </ThemeProvider>
