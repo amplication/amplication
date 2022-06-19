@@ -15,6 +15,7 @@ import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
 import DarkModeToggle from "./DarkModeToggle";
 import "./MainLayout.scss";
+import { Notifications } from "../Components/Notifications";
 
 type Props = {
   children: React.ReactNode;
@@ -88,6 +89,9 @@ const Menu = ({ children }: MenuProps) => {
             {children}
           </div>
           <div className="bottom-menu-container">
+          <MenuItem title="notification">
+              <Notifications />
+            </MenuItem>
             <DarkModeToggle />
             <Popover
               className="main-layout__menu__popover"
