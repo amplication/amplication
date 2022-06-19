@@ -1,4 +1,4 @@
-import { DocumentBuilder, SwaggerCustomOptions } from "@nestjs/swagger";
+import { DocumentBuilder } from "@nestjs/swagger";
 
 declare const TITLE: string;
 declare const DESCRIPTION: string;
@@ -13,7 +13,7 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .AUTH_FUNCTION()
   .build();
 
-export const swaggerSetupOptions: SwaggerCustomOptions = {
+export const swaggerSetupOptions = {
   swaggerOptions: {
     persistAuthorization: true,
   },
