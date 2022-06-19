@@ -43,14 +43,14 @@ const CLASS_NAME = "application-layout";
 
 type Props = {
   match: match<{
-    application: string;
+    resource: string;
     appModule: string;
     className?: string;
   }>;
 };
 
 function ApplicationLayout({ match }: Props) {
-  const { application } = match.params;
+  const { resource } = match.params;
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
@@ -60,13 +60,13 @@ function ApplicationLayout({ match }: Props) {
     PendingChangeStatusData
   >(GET_PENDING_CHANGES_STATUS, {
     variables: {
-      resourceId: application,
+      resourceId: resource,
     },
   });
 
   const { data: applicationData } = useQuery<ResourceData>(GET_RESOURCE, {
     variables: {
-      id: match.params.application,
+      id: match.params.resource,
     },
   });
 
@@ -164,13 +164,13 @@ function ApplicationLayout({ match }: Props) {
     <PendingChangesContext.Provider value={pendingChangesContextValue}>
       <MainLayout
         className={CLASS_NAME}
-        footer={<LastCommit resourceId={application} />}
+        footer={<LastCommit resourceId={resource} />}
       >
         <MainLayout.Menu>
           <MenuItem
             className={`${CLASS_NAME}__app-icon`}
             title="Dashboard"
-            to={`/${application}`}
+            to={`/${resource}`}
           >
             <CircleBadge
               name={applicationData?.resource.name || ""}
@@ -180,32 +180,32 @@ function ApplicationLayout({ match }: Props) {
 
           <MenuItem
             title="Entities"
-            to={`/${application}/entities`}
+            to={`/${resource}/entities`}
             icon="entity_outline"
           />
           <MenuItem
             title="Roles"
-            to={`/${application}/roles`}
+            to={`/${resource}/roles`}
             icon="roles_outline"
           />
           <MenuItem
             title="Commits"
-            to={`/${application}/commits`}
+            to={`/${resource}/commits`}
             icon="history_commit_outline"
           />
           <MenuItem
             title="Connect to GitHub"
-            to={`/${application}/github`}
+            to={`/${resource}/github`}
             icon="github"
           />
           <MenuItem
             title="Code View"
-            to={`/${application}/code-view`}
+            to={`/${resource}/code-view`}
             icon="code1"
           />
           <MenuItem
             title="Settings"
-            to={`/${application}/appSettings/update`}
+            to={`/${resource}/appSettings/update`}
             icon="settings"
           />
         </MainLayout.Menu>
@@ -214,11 +214,11 @@ function ApplicationLayout({ match }: Props) {
         </MainLayout.Aside>
         <MainLayout.Content>
           <div className={`${CLASS_NAME}__app-container`}>
-            <NavigationTabs defaultTabUrl={`/${application}/`} />
+            <NavigationTabs defaultTabUrl={`/${resource}/`} />
 
             <Switch>
               <RouteWithAnalytics
-                path="/:reasource/pending-changes"
+                path="/:resource/pending-changes"
                 component={PendingChangesPage}
               />
 
@@ -239,7 +239,7 @@ function ApplicationLayout({ match }: Props) {
                 component={RelatedFieldsMigrationFix}
               />
               <RouteWithAnalytics
-                path="/:application/github"
+                path="/:resource/github"
                 component={SyncWithGithubPage}
               />
               <RouteWithAnalytics
@@ -250,7 +250,7 @@ function ApplicationLayout({ match }: Props) {
                 path="/:resource/appSettings"
                 component={AppSettingsPage}
               />
-              <Route path="/:application/" component={ResourceHome} />
+              <Route path="/:resource/" component={ResourceHome} />
             </Switch>
           </div>
         </MainLayout.Content>
@@ -265,7 +265,7 @@ function ApplicationLayout({ match }: Props) {
 }
 
 const enhance = track((props) => {
-  return { resourceId: props.match.params.application };
+  return { resourceId: props.match.params.resource };
 });
 
 export default enhance(ApplicationLayout);

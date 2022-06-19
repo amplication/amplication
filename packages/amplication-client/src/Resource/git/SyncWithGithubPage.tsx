@@ -16,7 +16,7 @@ export type GitOrganizationFromGitRepository = {
   name: string;
   type: EnumGitOrganizationType;
 };
-export type WorkspaceFromAppWithGitOrganizations = {
+export type WorkspaceFromResourceWithGitOrganizations = {
   id: string;
   name: string;
   gitOrganizations: {
@@ -32,25 +32,25 @@ export type GitRepositoryWithGitOrganization = {
 };
 export type ResourceWithGitRepository = {
   id: string;
-  workspace: WorkspaceFromAppWithGitOrganizations;
+  workspace: WorkspaceFromResourceWithGitOrganizations;
   gitRepository: null | GitRepositoryWithGitOrganization;
 };
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 const NAVIGATION_KEY = "GITHUB";
 function SyncWithGithubPage({ match }: Props) {
-  const { application } = match.params;
+  const { resource } = match.params;
 
   const { data, error, refetch } = useQuery<{
     resource: ResourceWithGitRepository;
   }>(GET_RESOURCE_GIT_REPOSITORY, {
     variables: {
-      resourceId: application,
+      resourceId: resource,
     },
   });
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, `GitHub`);
+  useNavigationTabs(resource, NAVIGATION_KEY, match.url, `GitHub`);
   const errorMessage = formatError(error);
 
   return (
@@ -62,7 +62,7 @@ function SyncWithGithubPage({ match }: Props) {
         </div>
         <div className={`${CLASS_NAME}__message`}>
           Enable sync with GitHub to automatically push the generated code of
-          your application and create a Pull Request in your GitHub repository
+          your resource and create a Pull Request in your GitHub repository
           every time you commit your changes.
         </div>
         {data?.resource && (

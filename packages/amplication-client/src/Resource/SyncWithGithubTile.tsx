@@ -32,7 +32,7 @@ function SyncWithGithubTile({ resourceId }: Props) {
     <OverviewSecondaryTile
       icon="github"
       title="Sync with GitHub"
-      message="Push the Amplication-generated app to your GitHub repo. Track changes, track our code. You are in full control of your app."
+      message="Push the Amplication-generated resource to your GitHub repo. Track changes, track our code. You are in full control of your resource."
       footer={
         data?.resource && (
           <AppGitStatusPanel

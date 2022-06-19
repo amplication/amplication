@@ -74,7 +74,7 @@ export default function GitCreateRepo({
         <Form>
           <div className={`${CLASS_NAME}__header`}>
             <h4>
-              Create a new {gitProvider} repository to sync your application
+              Create a new {gitProvider} repository to sync your resource
               with
             </h4>
             <br />

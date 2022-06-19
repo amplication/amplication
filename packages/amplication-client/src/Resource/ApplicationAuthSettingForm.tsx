@@ -85,7 +85,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
       {data?.appSettings && (
         <Formik
           initialValues={data.appSettings}
-          validate={(values: models.ResourceSettings) =>
+          validate={(values: models.AppSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize
@@ -100,7 +100,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
                 </div>
                 <p>
                   Select the authentication method to be used in the generated
-                  app.
+                  resource.
                 </p>
 
                 <div className={`${CLASS_NAME}__space`}>

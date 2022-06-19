@@ -31,11 +31,11 @@ export const CreateResourceFromExcelForm = ({
       render={({ values, handleSubmit }) => (
         <Form className={`${CLASS_NAME}__layout__body`}>
           <div className={`${CLASS_NAME}__layout__body__side`}>
-            <h2>App Details</h2>
+            <h2>Resource Details</h2>
             <h3>{fileName}</h3>
             <DisplayNameField
-              name="app.name"
-              label="Give your app a descriptive name"
+              name="resource.name"
+              label="Give your resource a descriptive name"
               required
             />
             <Panel className={`${CLASS_NAME}__notice`}>
@@ -50,7 +50,7 @@ export const CreateResourceFromExcelForm = ({
                 </li>
 
                 <li>
-                  Once your app is ready, you can simply download the generated
+                  Once your resource is ready, you can simply download the generated
                   code or push it directly to a GitHub repository.
                 </li>
               </ul>
@@ -61,7 +61,7 @@ export const CreateResourceFromExcelForm = ({
               onClick={handleSubmit}
               type="button"
             >
-              Create App
+              Create Resource
             </Button>
           </div>
 

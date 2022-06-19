@@ -113,7 +113,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
                 </div>
                 <p>
                   All the below settings will appear in clear text in the
-                  generated app. <br />
+                  generated resource. <br />
                   It should only be used for the development environment
                   variables and should not include sensitive data.
                 </p>

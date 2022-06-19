@@ -20,14 +20,14 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 const CLASS_NAME = "resource-home";
 const NAVIGATION_KEY = "APP_HOME";
 
 function ResourceHome({ match }: Props) {
-  const resourceId = match.params.application;
+  const resourceId = match.params.resource;
   const location = useLocation();
 
   const { data, error } = useQuery<{
@@ -50,7 +50,7 @@ function ResourceHome({ match }: Props) {
     <PageContent className={CLASS_NAME} sideContent="">
       <Switch>
         <Route
-          path="/:application/"
+          path="/:resource/"
           render={() => (
             <>
               <div
@@ -67,7 +67,7 @@ function ResourceHome({ match }: Props) {
               </div>
               <RouteWithAnalytics
                 exact
-                path="/:application/"
+                path="/:resource/"
                 component={() => (
                   <div className={`${CLASS_NAME}__tiles`}>
                     <NewVersionTile resourceId={resourceId} />

@@ -58,7 +58,7 @@ function ApplicationForm({ match }: Props) {
     (data) => {
       const { name, description, color } = data;
       trackEvent({
-        eventName: "updateAppInfo",
+        eventName: "updateResourceInfo",
       });
       updateResource({
         variables: {
