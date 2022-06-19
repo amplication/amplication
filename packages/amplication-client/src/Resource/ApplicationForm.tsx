@@ -15,7 +15,7 @@ import { GET_RESOURCE } from "./ResourceHome";
 import "./ApplicationForm.scss";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 type TData = {
@@ -38,7 +38,7 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "application-form";
 
 function ApplicationForm({ match }: Props) {
-  const resourceId = match.params.application;
+  const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
     resource: models.Resource;

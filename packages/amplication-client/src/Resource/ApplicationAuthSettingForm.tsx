@@ -10,6 +10,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./ApplicationAuthSettingForm.scss";
+import { GET_APP_SETTINGS } from "./constants";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -132,20 +133,6 @@ const UPDATE_RESOURCE_SETTINGS = gql`
     $resourceId: String!
   ) {
     updateResourceSettings(data: $data, where: { id: $resourceId }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
-
-export const GET_APP_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
       id
       dbHost
       dbName

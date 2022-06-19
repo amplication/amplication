@@ -1,3 +1,4 @@
+import { gql } from "@apollo/client";
 import * as models from "../models";
 
 const YELLOW = "#F5B82E";
@@ -147,3 +148,17 @@ export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitie
     },
   ],
 };
+
+export const GET_APP_SETTINGS = gql`
+  query appSettings($id: String!) {
+    appSettings(where: { id: $id }) {
+      id
+      dbHost
+      dbName
+      dbUser
+      dbPassword
+      dbPort
+      authProvider
+    }
+  }
+`;

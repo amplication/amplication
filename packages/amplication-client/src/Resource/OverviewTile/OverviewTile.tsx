@@ -2,7 +2,7 @@ import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import "./OverviewTile.scss";
 import { useQuery } from "@apollo/client";
-import { GET_APP_SETTINGS as GET_RESOURCE_SETTINGS } from "../ApplicationAuthSettingForm";
+import { GET_APP_SETTINGS as GET_RESOURCE_SETTINGS } from "../constants";
 import { AppSettings, EnumAuthProviderType } from "../../models";
 
 type Props = {

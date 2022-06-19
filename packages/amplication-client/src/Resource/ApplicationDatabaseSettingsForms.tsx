@@ -10,6 +10,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { match } from "react-router-dom";
 import "./ApplicationDatabaseSettingsForms.scss";
+import { GET_APP_SETTINGS } from "./constants";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -49,7 +50,6 @@ const CLASS_NAME = "application-database-settings-form";
 
 function ApplicationDatabaseSettingsForms({ match }: Props) {
   const resourceId = match.params.resource;
-
   const { data, error } = useQuery<{
     appSettings: models.AppSettings;
   }>(GET_APP_SETTINGS, {
@@ -169,20 +169,6 @@ const UPDATE_APP_SETTINGS = gql`
     $resourceId: String!
   ) {
     updateAppSettings(data: $data, where: { id: $resourceId }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
-
-const GET_APP_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
       id
       dbHost
       dbName

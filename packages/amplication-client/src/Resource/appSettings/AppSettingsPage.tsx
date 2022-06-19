@@ -58,15 +58,15 @@ function AppSettingsPage({ match }: Props) {
     >
       <Switch>
         <RouteWithAnalytics
-          path="/:application/appSettings/api-tokens"
+          path="/:resource/appSettings/api-tokens"
           component={ApiTokenList}
         />
         <RouteWithAnalytics
-          path="/:application/appSettings/update"
+          path="/:resource/appSettings/update"
           component={ApplicationForm}
         />
         <RouteWithAnalytics
-          path="/:application/appSettings/db/update"
+          path="/:resource/appSettings/db/update"
           component={ApplicationDatabaseSettingsForms}
         />
         <RouteWithAnalytics
