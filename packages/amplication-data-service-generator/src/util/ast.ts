@@ -3,9 +3,7 @@ import { ParserOptions } from "@babel/parser";
 import { ASTNode, namedTypes, builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
-import groupBy from "lodash.groupby";
-import mapValues from "lodash.mapvalues";
-import uniqBy from "lodash.uniqby";
+import { groupBy, mapValues, uniqBy } from "lodash";
 import * as parser from "./parser";
 import * as partialParser from "./partial-parser";
 

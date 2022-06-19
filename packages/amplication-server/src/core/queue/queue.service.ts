@@ -1,12 +1,12 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientKafka } from '@nestjs/microservices';
-import { plainToClass } from 'class-transformer';
 import { GENERATE_PULL_REQUEST_TOPIC } from 'src/constants';
 import assert from 'assert';
 import { SendPullRequestResponse } from '../build/dto/sendPullRequestResponse';
 import { SendPullRequestArgs } from '../build/dto/sendPullRequest';
 import { ResultMessage } from './dto/ResultMessage';
+import { StatusEnum } from './dto/StatusEnum';
 
 export const QUEUE_SERVICE_NAME = 'QUEUE_SERVICE';
 
@@ -33,19 +33,23 @@ export class QueueService implements OnModuleInit {
 
   sendCreateGitPullRequest(
     data: SendPullRequestArgs
-  ): Promise<SendPullRequestResponse | null> {
-    return new Promise(res => {
+  ): Promise<SendPullRequestResponse> {
+    return new Promise((resolve, reject) => {
       this.kafkaService
         .send(this.generatePullRequestTopic, data)
         .subscribe((response: ResultMessage<SendPullRequestResponse>) => {
-          try {
-            const validClass = plainToClass(
-              SendPullRequestResponse,
-              response.value
+          if (response.status === StatusEnum.GeneralFail) {
+            reject(
+              new Error(
+                `Failed creating pull request, reason: ${response.error}`
+              )
             );
-            res(validClass);
-          } catch (error) {
-            res(null);
+          } else if (response.value) {
+            resolve(response.value);
+          } else {
+            reject(
+              new Error(`Failed creating pull request from unknown reason`)
+            );
           }
         });
     });
