@@ -7,7 +7,7 @@ import useNavigationTabs from "../../Layout/UseNavigationTabs";
 import { ApiTokenList } from "../../Settings/ApiTokenList";
 import ApplicationAuthSettingForm from "../ApplicationAuthSettingForm";
 import ApplicationDatabaseSettingsForms from "../ApplicationDatabaseSettingsForms";
-import ApplicationForm from "../ApplicationForm";
+import ResourceForm from "../ResourceForm";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -63,7 +63,7 @@ function AppSettingsPage({ match }: Props) {
         />
         <RouteWithAnalytics
           path="/:resource/appSettings/update"
-          component={ApplicationForm}
+          component={ResourceForm}
         />
         <RouteWithAnalytics
           path="/:resource/appSettings/db/update"

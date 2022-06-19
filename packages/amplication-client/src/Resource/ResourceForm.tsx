@@ -12,7 +12,7 @@ import { COLORS } from "./constants";
 import { ColorSelectButton } from "../Components/ColorSelectButton";
 import { useTracking } from "../util/analytics";
 import { GET_RESOURCE } from "./ResourceHome";
-import "./ApplicationForm.scss";
+import "./ResourceForm.scss";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -35,9 +35,9 @@ const FORM_SCHEMA = {
   },
 };
 
-const CLASS_NAME = "application-form";
+const CLASS_NAME = "resource-form";
 
-function ApplicationForm({ match }: Props) {
+function ResourceForm({ match }: Props) {
   const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
@@ -148,7 +148,7 @@ function ApplicationForm({ match }: Props) {
   );
 }
 
-export default ApplicationForm;
+export default ResourceForm;
 
 const UPDATE_RESOURCE = gql`
   mutation updateResource($data: ResourceUpdateInput!, $resourceId: String!) {

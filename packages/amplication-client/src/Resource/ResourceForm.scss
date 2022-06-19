@@ -1,6 +1,6 @@
 @import "../style/index.scss";
 
-.application-form {
+.resource-form {
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
