@@ -120,7 +120,7 @@ const prismaMigration: Task[] = [
 ];
 
 const tasks: Task[][] = [
-  clean,
+  // clean,
   bootstrap,
   buildStep,
   dockerCompose,

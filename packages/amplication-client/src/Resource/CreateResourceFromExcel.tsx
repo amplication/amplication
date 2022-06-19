@@ -52,15 +52,15 @@ enum Steps {
   startWithExcel,
 }
 
-export const CLASS_NAME = "create-app-from-excel";
+export const CLASS_NAME = "create-resource-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
 export function CreateResourceFromExcel() {
   const [importList, setImportList] = useState<ImportField[]>([]);
   const [step, setStep] = useState<Steps>(Steps.startScreen);
   const [fileName, setFileName] = useState<string | null>(null);
-  const { data: appsData } = useQuery<{
-    apps: Array<models.Resource>;
+  const { data: resourcesData } = useQuery<{
+    resources: Array<models.Resource>;
   }>(GET_RESOURCES);
   const [generalError, setGeneralError] = useState<Error | undefined>(
     undefined
@@ -97,7 +97,7 @@ export function CreateResourceFromExcel() {
         const columns = generateColumnKeys(ws["!ref"]);
         trackEvent({
           eventName: "uploadFileToImportSchema",
-          appName: fileName,
+          resourceName: fileName,
         });
         buildImportList(rest as WorksheetData, headers as string[], columns);
       };
@@ -114,16 +114,16 @@ export function CreateResourceFromExcel() {
     onDrop,
   });
 
-  const appsExist = useMemo(() => {
-    return appsData && !isEmpty(appsData.apps);
-  }, [appsData]);
+  const resourcesExist = useMemo(() => {
+    return resourcesData && !isEmpty(resourcesData.resources);
+  }, [resourcesData]);
 
   const [createResourceWithEntities, { loading, data, error }] = useMutation<
     TData
   >(CREATE_RESOURCE_WITH_ENTITIES, {
     update(cache, { data }) {
       if (!data) return;
-      const queryData = cache.readQuery<{ apps: Array<models.Resource> }>({
+      const queryData = cache.readQuery<{ resources: Array<models.Resource> }>({
         query: GET_RESOURCES,
       });
       if (queryData === null) {
@@ -132,7 +132,9 @@ export function CreateResourceFromExcel() {
       cache.writeQuery({
         query: GET_RESOURCES,
         data: {
-          resources: queryData.apps.concat([data.createResourceWithEntities]),
+          resources: queryData.resources.concat([
+            data.createResourceWithEntities,
+          ]),
         },
       });
     },
@@ -191,7 +193,7 @@ export function CreateResourceFromExcel() {
 
       trackEvent({
         eventName: "createResourceFromFile",
-        appName: data.resource.name,
+        resourceName: data.resource.name,
       });
       createResourceWithEntities({ variables: { data } }).catch(console.error);
     },
@@ -304,7 +306,7 @@ export function CreateResourceFromExcel() {
       <SvgThemeImage image={EnumImages.ImportExcel} />
       <div className={`${CLASS_NAME}__message`}>
         Just upload an Excel or CSV file to import its schema and then generate
-        your node.js application source code.
+        your node.js resource source code.
       </div>
     </div>
   );
@@ -317,7 +319,7 @@ export function CreateResourceFromExcel() {
         </h1>
         <div className={`${CLASS_NAME}__message`}>
           Just upload an Excel or CSV file to import its schema and then
-          generate your node.js application source code.
+          generate your node.js resource source code.
         </div>
       </div>
       {dropExcel()}
@@ -338,7 +340,7 @@ export function CreateResourceFromExcel() {
     </div>
   );
 
-  const startFromSampleApp = () => (
+  const startFromSampleService = () => (
     <div
       onClick={handleStartFromSample}
       className={`${CLASS_NAME}__other-options__sample_option`}
@@ -364,7 +366,7 @@ export function CreateResourceFromExcel() {
         </div>
       );
     }
-    if (appsExist) {
+    if (resourcesExist) {
       return (
         <Link to="/" className={`${CLASS_NAME}__back`}>
           <Icon icon="arrow_left" />
@@ -380,7 +382,7 @@ export function CreateResourceFromExcel() {
         {loading ? (
           <div className={`${CLASS_NAME}__processing`}>
             <div className={`${CLASS_NAME}__processing__title`}>
-              All set! We’re currently generating your app.
+              All set! We’re currently generating your service.
             </div>
             <div className={`${CLASS_NAME}__processing__message`}>
               It should only take a few seconds to finish. Don't go away!
@@ -412,12 +414,12 @@ export function CreateResourceFromExcel() {
                         Welcome to Amplication
                       </h1>
                       <h2 className={`${CLASS_NAME}__start_text`}>
-                        Let's start building your app
+                        Let's start building your resource
                       </h2>
 
                       <div className={`${CLASS_NAME}__other-options`}>
                         {startFromScratch()}
-                        {startFromSampleApp()}
+                        {startFromSampleService()}
                       </div>
                       <div className={`${CLASS_NAME}__divider`}>
                         <span>or</span>
