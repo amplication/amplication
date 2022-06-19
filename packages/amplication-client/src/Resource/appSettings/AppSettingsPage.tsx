@@ -18,7 +18,7 @@ const NAVIGATION_KEY = "APP_SETTINGS";
 function AppSettingsPage({ match }: Props) {
   const { resource } = match.params;
 
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, `App settings`);
+  useNavigationTabs(resource, NAVIGATION_KEY, match.url, `Resource settings`);
 
   return (
     <PageContent
