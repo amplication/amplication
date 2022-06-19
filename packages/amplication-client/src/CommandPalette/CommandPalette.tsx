@@ -147,7 +147,7 @@ function CommandPaletteItem(suggestion: Command) {
     resourceName,
     name,
     highlight,
-    showResourceData: showResourceData,
+    showResourceData,
     type,
   } = suggestion;
   return (
