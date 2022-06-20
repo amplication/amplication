@@ -103,10 +103,7 @@ export class AppService {
 
     await this.environmentService.createDefaultEnvironment(app.id);
 
-    await this.appSettingsService.createDefaultAppSettings(
-      app.id,
-      user
-    );
+    await this.appSettingsService.createDefaultAppSettings(app.id, user);
 
     try {
       await this.commit(

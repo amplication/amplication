@@ -29,8 +29,8 @@ const FORM_SCHEMA = {
           type: "boolean",
         },
         serverPath: {
-          type: "string"
-        }
+          type: "string",
+        },
       },
       required: ["generateGraphQL", "generateRestApi"],
     },
@@ -40,8 +40,8 @@ const FORM_SCHEMA = {
           type: "boolean",
         },
         adminUIPath: {
-          type: "string"
-        }
+          type: "string",
+        },
       },
       required: ["generateAdminUI"],
     },
@@ -56,4 +56,4 @@ const FORM_SCHEMA = {
   ],
 };
 
-export default FORM_SCHEMA
+export default FORM_SCHEMA;

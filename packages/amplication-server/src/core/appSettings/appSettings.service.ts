@@ -113,7 +113,7 @@ export class AppSettingsService {
         data: {
           ...args.data,
           ...(!args.data.serverSettings.generateGraphQL
-            ? { adminUISettings: { adminUIPath: '', generateAdminUI: false  } }
+            ? { adminUISettings: { adminUIPath: '', generateAdminUI: false } }
             : {})
         }
       },
