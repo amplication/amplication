@@ -5,5 +5,4 @@ outputs:
     description: 'list of services hashes'
 runs:
   using: 'node16'
-  pre: 'setup.js'
-  main: 'lib/main.js'
+  main: 'scripts/run-action.js'
