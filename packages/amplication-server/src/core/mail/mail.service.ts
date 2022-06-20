@@ -13,6 +13,8 @@ const SENDGRID_DEPLOY_SUCCESS_TEMPLATE_ID_VAR =
 const SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR = 'SENDGRID_INVITATION_TEMPLATE_ID';
 
 export const HOST_VAR = 'HOST';
+// set deployment notification to false until Novu notification implementation
+const IS_EMAIL_DEPLOYMENT_NOTIFICATION = 'false';
 
 @Injectable()
 export class MailService {
@@ -49,27 +51,31 @@ export class MailService {
   }
 
   async sendDeploymentNotification(args: SendDeploymentArgs): Promise<void> {
-    const from = this.configService.get(SENDGRID_FROM_ADDRESS_VAR);
+    if (IS_EMAIL_DEPLOYMENT_NOTIFICATION) {
+      const from = this.configService.get(SENDGRID_FROM_ADDRESS_VAR);
 
-    let templateId;
-    if (args.success) {
-      templateId = this.configService.get(
-        SENDGRID_DEPLOY_SUCCESS_TEMPLATE_ID_VAR
-      );
-    } else {
-      templateId = this.configService.get(SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR);
-    }
-
-    console.log({ args });
-
-    const msg = {
-      to: args.to,
-      from,
-      templateId,
-      dynamicTemplateData: {
-        url: args.url
+      let templateId;
+      if (args.success) {
+        templateId = this.configService.get(
+          SENDGRID_DEPLOY_SUCCESS_TEMPLATE_ID_VAR
+        );
+      } else {
+        templateId = this.configService.get(
+          SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR
+        );
       }
-    };
-    await this.client.send(msg);
+
+      console.log({ args });
+
+      const msg = {
+        to: args.to,
+        from,
+        templateId,
+        dynamicTemplateData: {
+          url: args.url
+        }
+      };
+      await this.client.send(msg);
+    }
   }
 }
