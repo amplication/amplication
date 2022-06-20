@@ -9,6 +9,7 @@ import ApplicationAuthSettingForm from "../ApplicationAuthSettingForm";
 import ApplicationDatabaseSettingsForms from "../ApplicationDatabaseSettingsForms";
 import ApplicationForm from "../ApplicationForm";
 import GenerationSettingsForm from "./GenerationSettingsForm";
+import DirectoriesSettingsForm from "./DirectoriesSettingsForm";
 
 type Props = {
   match: match<{ application: string }>;
@@ -39,6 +40,14 @@ function AppSettingsPage({ match }: Props) {
               icon="settings"
             >
               APIs & Admin UI
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink
+              to={`/${application}/appSettings/directories/update`}
+              icon="settings"
+            >
+             Base Directories
             </InnerTabLink>
           </div>
           <div>
@@ -88,6 +97,10 @@ function AppSettingsPage({ match }: Props) {
         <RouteWithAnalytics
           path="/:application/appSettings/generationSettings/update"
           component={GenerationSettingsForm}
+        />
+        <RouteWithAnalytics
+          path="/:application/appSettings/directories/update"
+          component={DirectoriesSettingsForm}
         />
       </Switch>
       {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}

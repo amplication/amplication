@@ -13,12 +13,6 @@ const EXAMPLE_APP_INFO: AppInfo = {
   description: EXAMPLE_DESCRIPTION,
   id: "EXAMPLE_ID",
   url: "EXAMPLE_URL",
-  generationSettings: {
-    generateAdminUI: true,
-    generateGraphQL: true,
-    generateRestApi: true,
-    generateRootFiles: true,
-  },
   settings: {
     dbHost: "localhost",
     dbName: "",
@@ -26,9 +20,15 @@ const EXAMPLE_APP_INFO: AppInfo = {
     dbPassword: "admin",
     dbUser: "admin",
     authProvider: EnumAuthProviderType.Http,
-    generateAdminUI: false,
-    generateGraphQL: false,
-    generateRestApi: false,
+    serverSettings: {
+      generateGraphQL: false,
+      generateRestApi: false,
+      serverPath: ""
+    },
+    adminUISettings: {
+      generateAdminUI: false,
+      adminPath: ""
+    },
     generateRootFiles: false,
   },
 };

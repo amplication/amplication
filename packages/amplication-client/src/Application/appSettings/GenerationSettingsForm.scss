@@ -13,13 +13,21 @@
   &__description {
     @include regular-14();
   }
+  &__formWrapper_field {
+    width: 280px;
+  }
   h2 {
     font-size: 14px;
   }
+  &__toggle_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
   .toggle-field {
-    margin-right: var(--large-spacing);
+    margin-right: 26px;
     span {
-      font-size: var(--title2-font-size);
+      @include regular-12();
     }
   }
   hr {

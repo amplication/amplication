@@ -55,7 +55,6 @@ import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
-import { GenerationSettings } from '@amplication/data-service-generator';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -102,16 +101,16 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   dbUser: 'admin',
   appId: EXAMPLE_APP_ID,
   authProvider: EnumAuthProviderType.Http,
-  generateAdminUI: true,
-  generateGraphQL: true,
-  generateRestApi: true,
+  serverSettings: {
+    generateGraphQL: true,
+    generateRestApi: true,
+    serverPath: ''
+  },
+  adminUISettings: {
+    generateAdminUI: true,
+    adminUIPath: ''
+  },
   generateRootFiles: true
-};
-
-const EXAMPLE_APP_GENERATION_SETTINGS_VALUES: GenerationSettings = {
-  generateAdminUI: true,
-  generateGraphQL: true,
-  generateRestApi: true
 };
 
 const EXAMPLE_COMMIT: Commit = {
@@ -687,8 +686,7 @@ describe('BuildService', () => {
         version: EXAMPLE_BUILD.version,
         id: EXAMPLE_APP.id,
         url: `${EXAMPLED_HOST}/${EXAMPLE_APP.id}`,
-        settings: EXAMPLE_APP_SETTINGS_VALUES,
-        generationSettings: EXAMPLE_APP_GENERATION_SETTINGS_VALUES
+        settings: EXAMPLE_APP_SETTINGS_VALUES
       },
       MOCK_LOGGER
     );

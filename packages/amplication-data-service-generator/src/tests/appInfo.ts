@@ -14,16 +14,16 @@ const appInfo: AppInfo = {
     dbPassword: "1234",
     dbUser: "testUsername",
     authProvider: EnumAuthProviderType.Http,
-    generateAdminUI: false,
-    generateGraphQL: false,
-    generateRestApi: false,
+    serverSettings: {
+      generateGraphQL: false,
+      generateRestApi: false,
+      serverPath: "",
+    },
+    adminUISettings: {
+      generateAdminUI: false,
+      adminPath: "",
+    },
     generateRootFiles: false,
-  },
-  generationSettings: {
-    generateAdminUI: true,
-    generateGraphQL: true,
-    generateRestApi: true,
-    generateRootFiles: true,
   },
 };
 

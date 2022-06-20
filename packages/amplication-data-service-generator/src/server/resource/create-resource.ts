@@ -50,7 +50,7 @@ async function createResourceModules(
   const [serviceModule] = serviceModules;
 
   const controllerModules =
-    (appInfo.generationSettings.generateRestApi &&
+    (appInfo.settings.serverSettings.generateRestApi &&
       (await createControllerModules(
         appInfo,
         resource,
@@ -65,7 +65,7 @@ async function createResourceModules(
   const [controllerModule, controllerBaseModule] = controllerModules;
 
   const resolverModules =
-    (appInfo.generationSettings.generateGraphQL &&
+    (appInfo.settings.serverSettings.generateGraphQL &&
       (await createResolverModules(
         entityName,
         entityType,

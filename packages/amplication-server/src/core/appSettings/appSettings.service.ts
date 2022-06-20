@@ -4,9 +4,9 @@ import { FindOneArgs } from 'src/dto';
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
-import { isEmpty } from 'lodash';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+// import { compare } from 'bcrypt';
 
 @Injectable()
 export class AppSettingsService {
@@ -24,9 +24,8 @@ export class AppSettingsService {
       dbPort,
       dbUser,
       authProvider,
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi,
+      serverSettings,
+      adminUISettings,
       generateRootFiles
     } = await this.getAppSettingsBlock(args, user);
 
@@ -38,9 +37,8 @@ export class AppSettingsService {
       dbUser,
       appId: args.where.id,
       authProvider,
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi,
+      serverSettings,
+      adminUISettings,
       generateRootFiles
     };
   }
@@ -61,36 +59,38 @@ export class AppSettingsService {
       },
       EnumBlockType.AppSettings
     );
-    if (isEmpty(appSettings)) {
-      return this.createDefaultAppSettings(args.where.id, user);
-    }
-
-    if (appSettings.generateAdminUI === null) {
-      return this.updateAppSettings(
-        {
-          data: {
-            generateAdminUI: true,
-            generateGraphQL: true,
-            generateRestApi: true,
-            generateRootFiles: true,
-            dbHost: appSettings.dbHost,
-            dbName: appSettings.dbName,
-            dbPassword: appSettings.dbPassword,
-            dbPort: appSettings.dbPort,
-            dbUser: appSettings.dbUser,
-            authProvider: appSettings.authProvider
-          },
-          where: {
-            id: args.where.id
-          }
-        },
-        user
-      );
-    }
 
     return {
       ...appSettings,
-      authProvider: appSettings.authProvider || EnumAuthProviderType.Http
+      authProvider: appSettings.authProvider || EnumAuthProviderType.Jwt,
+      ...(!appSettings || !appSettings.adminUISettings.generateAdminUI
+        ? this.updateAppSettings(
+            {
+              data: {
+                serverSettings: {
+                  generateGraphQL: true,
+                  generateRestApi: true,
+                  serverPath: ''
+                },
+                adminUISettings: {
+                  generateAdminUI: true,
+                  adminUIPath: ''
+                },
+                generateRootFiles: true,
+                dbHost: appSettings.dbHost,
+                dbName: appSettings.dbName,
+                dbPassword: appSettings.dbPassword,
+                dbPort: appSettings.dbPort,
+                dbUser: appSettings.dbUser,
+                authProvider: appSettings.authProvider
+              },
+              where: {
+                id: args.where.id
+              }
+            },
+            user
+          )
+        : {})
     };
   }
 
@@ -104,16 +104,18 @@ export class AppSettingsService {
       },
       user
     );
-    if (!args.data.generateGraphQL) {
-      args.data.generateAdminUI = false;
-    }
 
     return this.blockService.update<AppSettings>(
       {
         where: {
           id: appSettingsBlock.id
         },
-        data: args.data
+        data: {
+          ...args.data,
+          ...(!args.data.serverSettings.generateGraphQL
+            ? { adminUISettings: { adminUIPath: '', generateAdminUI: false  } }
+            : {})
+        }
       },
       user
     );

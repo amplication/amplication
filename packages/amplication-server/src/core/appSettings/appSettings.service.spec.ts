@@ -45,9 +45,15 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   dbPort: 5432,
   dbUser: 'admin',
   authProvider: EnumAuthProviderType.Http,
-  generateAdminUI: true,
-  generateGraphQL: true,
-  generateRestApi: true,
+  serverSettings: {
+    generateGraphQL: true,
+    generateRestApi: true,
+    serverPath: ''
+  },
+  adminUISettings: {
+    generateAdminUI: true,
+    adminUIPath: ''
+  },
   generateRootFiles: true
 };
 

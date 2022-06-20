@@ -31,8 +31,14 @@ export const DEFAULT_APP_SETTINGS: AppSettingsValuesExtended = {
   dbPassword: 'admin',
   dbPort: 5432,
   authProvider: EnumAuthProviderType.Jwt,
-  generateAdminUI: true,
-  generateGraphQL: true,
-  generateRestApi: true,
+  serverSettings: {
+    generateGraphQL: true,
+    generateRestApi: true,
+    serverPath: ''
+  },
+  adminUISettings: {
+    generateAdminUI: true,
+    adminUIPath: ''
+  },
   generateRootFiles: true
 };

@@ -1,6 +1,6 @@
 export function replacePlaceholdersInCode(
   code: string,
-  mapping: { [key: string]: string | number | boolean }
+  mapping: { [key: string]: string | number | boolean | {[key: string]: any} }
 ): string {
   const regexStr = Object.keys(mapping)
     .map((key) => `\\$\{${key}}`)

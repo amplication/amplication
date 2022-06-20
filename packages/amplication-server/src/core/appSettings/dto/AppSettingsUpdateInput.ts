@@ -1,6 +1,8 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
+import { AdminUISettingsUpdateInput } from './AdminUISettingsUpdateInput';
 import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
+import { ServerSettingsUpdateInput } from './ServerSettingsUpdateInput';
 
 @InputType({
   isAbstract: true
@@ -36,23 +38,18 @@ export class AppSettingsUpdateInput extends BlockUpdateInput {
   })
   authProvider: EnumAuthProviderType;
 
-  @Field(() => Boolean, {
-    nullable: true
+  @Field(() => AdminUISettingsUpdateInput, {
+    nullable: false
   })
-  generateAdminUI: boolean;
+  adminUISettings!: AdminUISettingsUpdateInput;
+
+  @Field(() => ServerSettingsUpdateInput, {
+    nullable: false
+  })
+  serverSettings!: ServerSettingsUpdateInput;
 
   @Field(() => Boolean, {
     nullable: true
   })
-  generateGraphQL: boolean;
-
-  @Field(() => Boolean, {
-    nullable: true
-  })
-  generateRestApi: boolean;
-
-  @Field(() => Boolean, {
-    nullable: true
-  })
-  generateRootFiles: boolean;
+  generateRootFiles?: boolean;
 }

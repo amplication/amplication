@@ -1,6 +1,8 @@
 import {
   Snackbar,
-  ToggleField,
+  Panel,
+  EnumPanelStyle,
+  TextField,
 } from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
@@ -24,8 +26,6 @@ type TData = {
   updateAppSettings: models.AppSettings;
 };
 
-
-
 const CLASS_NAME = cssNamingConverter(GenerationSettingsForm.name);
 
 function GenerationSettingsForm({ match }: Props) {
@@ -48,9 +48,11 @@ function GenerationSettingsForm({ match }: Props) {
     {
       onCompleted: (data) => {
         pendingChangesContext.addBlock(data.updateAppSettings.id);
-      },
+      }
     }
   );
+
+    
 
   const handleSubmit = useCallback(
     (data: models.AppSettings) => {
@@ -79,12 +81,12 @@ function GenerationSettingsForm({ match }: Props) {
             authProvider,
             adminUISettings: {
               generateAdminUI,
-              adminUIPath
+              adminUIPath: adminUIPath || ""
             },
             serverSettings: {
               generateRestApi,
               generateGraphQL,
-              serverPath
+              serverPath: serverPath || ""
             },
           },
           appId: applicationId,
@@ -109,7 +111,7 @@ function GenerationSettingsForm({ match }: Props) {
             return (
               <Form>
                 <div className={`${CLASS_NAME}__header`}>
-                  <h3>APIs Admin UI Settings</h3>
+                  <h3>Base directories</h3>
                 </div>
                 <p className={`${CLASS_NAME}__description`}>
                   Amplication gives you the choice of which components to
@@ -117,22 +119,33 @@ function GenerationSettingsForm({ match }: Props) {
                   REST API, and Admin UI.
                 </p>
                 <hr />
-                <FormikAutoSave debounceMS={200} />
-                <div className={`${CLASS_NAME}__toggle_wrapper`}>
-                  <ToggleField
-                    name="serverSettings[generateGraphQL]"
-                    label="GraphQL API"
+                <FormikAutoSave debounceMS={1000} />
+                <Panel panelStyle={EnumPanelStyle.Transparent}>
+                  <h2>Server</h2>
+                  <TextField
+                    className={`${CLASS_NAME}__formWrapper_field`}
+                    name="serverSettings[serverPath]"
+                    placeholder="./packages/[SERVICE-NAME]"
+                    label="Server base URL"
+                    value={data?.appSettings.serverSettings.serverPath || ""}
+                    helpText={data?.appSettings.serverSettings.serverPath}
+                    labelType="normal"
                   />
-                  <ToggleField
-                    name="serverSettings[generateRestApi]"
-                    label="REST API & Swagger UI"
-                  />
-                  <ToggleField
+                </Panel>
+                <hr />
+                <Panel panelStyle={EnumPanelStyle.Transparent}>
+                  <h2>Admin UI</h2>
+                  <TextField
+                    className={`${CLASS_NAME}__formWrapper_field`}
+                    name="adminUISettings[adminUIPath]"
+                    placeholder="./packages/[SERVICE-NAME]"
+                    label="Admin UI base URL"
                     disabled={!data?.appSettings.serverSettings.generateGraphQL}
-                    name="adminUISettings[generateAdminUI]"
-                    label="Admin UI"
+                    value={data?.appSettings.adminUISettings.adminUIPath || ""}
+                    helpText={data?.appSettings.adminUISettings.adminUIPath}
+                    labelType="normal"
                   />
-                </div>
+                </Panel>
               </Form>
             );
           }}
