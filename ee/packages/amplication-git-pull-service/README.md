@@ -52,17 +52,28 @@ pushedAt: Date,
 installationId: string
 ```
 
+## Environment Variables:
+| Environment | Description | Value       |
+| ----------- | ----------- | ----------- |
+| DEBUG_MODE  | debug level         | 1           |
+| NODE_ENV    | environment mode    | development |
+| POSTGRESQL_URL | connection url to the database | postgresql://admin:admin@localhost:5432/\${SERVICE_DB_NAME} |
+| POSTGRESQL_USER | username for the local database | admin |
+| POSTGRESQL_PASSWORD | password for the local database | admin |
+| SERVICE_DB_NAME | database name | amplication-git-pull-service |
+| COMPOSE_PROJECT_NAME | name of the docker image  | amplication-git-pull-service |
+| KAFKA_BROKERS | kafka client must be configured with at least one broker. The brokers on the list are considered seed brokers and are only used to bootstrap the client and load initial metadata  | ["localhost:9092"] |
+| KAFKA_CONSUMER_GROUP | consumer group | git-pull-event |
+| KAFKA_CLIENT_ID | A logical identifier of an application. Can be used by brokers to apply quotas or trace requests to a specific application. Example: booking-events-processor | repository-pull |
+| KAFKA_REPOSITORY_PUSH_QUEUE | Kafka topics are the categories used to organize messages. Each topic has a name that is unique across the entire Kafka cluster | "git.external.push.event.0" |
+| STORAGE_PATH | max storage snapshot | [path-to-local-folder] for example /Users/myusername/temp |
+| MAX_SNAPSHOTS | a number represents the size of the storage | [place-your-max-snapshot-here] |
+| BASE_BUILDS_FOLDER | path to a folder where your builds will be saved | [path-to-local-folder] for example /Users/myusername/temp |
+| GIT_DEFAULT_ORIGIN_NAME | git remote name | origin |
+| GITHUB_APP_APP_ID| ID of the istalled github app  |[github-app-app-id]|
+| GITHUB_APP_PRIVATE_KEY|  pivate key of the installed github app  |[github-app-private-key] |
+
 ## Development:
-
-- Run Kafka in a docker image:
-
-```
-docker compose up -d
-```
-
----
-
-- In a separate terminal, run the microservice
 
 ```bash
 cd ee/packages/amplication-git-pull-service

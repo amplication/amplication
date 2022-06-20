@@ -221,7 +221,7 @@ export function CreateAppFromExcel() {
       const appId = data.createAppWithEntities.id;
       //const buildId = data.createAppWithEntities.builds[0].id;
 
-      history.push(`/${appId}/entities`);
+      history.push(`/${appId}`);
     }
   }, [history, data]);
 

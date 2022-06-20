@@ -204,7 +204,7 @@ function ApplicationLayout({ match }: Props) {
             icon="code1"
           />
           <MenuItem
-            title="App settings"
+            title="Settings"
             to={`/${application}/appSettings/update`}
             icon="settings"
           />
