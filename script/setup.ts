@@ -8,6 +8,23 @@ const { combine, colorize, simple } = format;
 const spinner = ora();
 spinner.color = "green";
 
+const logo = `  
+            ...   :..              
+        .~?Y5P!  .PP5Y7^.          
+      ~YPPPPPP!  .5PPPPP5?:        
+    :YPPPPPPPP!  .5PPPPPPPP?.      
+   ~PPPPPPPPPP!  .5PPPPPPPPPY.     
+  :PPPPPPPPPPP!  .5PPPPPPPPPPJ     
+  ?PPPPPPPPPPP!  .5PPPPPPPPPPP:    
+  JPPPPPPPPPPP!  .5PPPPPPPPPPP^    
+  !PPPPPPPPPPP!  .5PPPPPPPPPPP:    
+  .YPPPPPPPPPP!  .5PPPPPPPPPPP:    
+   .YPPPPPPPPP!  .5PPPPPPPPPPP:    
+     !5PPPPPPP!  .5PPPPPPPPPPP:    
+      .~YPPPPP!  .PPPPPPPPPPPP:    
+         .^!?Y~  .YYYYYYYYYYY5:    
+ `;
+
 class Task {
   constructor(public command: string, public label: string) {}
 }
@@ -47,7 +64,7 @@ function preValidate() {
 }
 
 async function runFunction(task: Task): Promise<string> {
-  spinner.start(`Executing ${task.label}` + "\n");
+  spinner.start(`${task.label}` + "\n");
   return new Promise((resolve, reject) => {
     exec(task.command, (error, stdout, stderr) => {
       error && reject(error);
@@ -59,59 +76,57 @@ async function runFunction(task: Task): Promise<string> {
   });
 }
 
+const clean: Task[] = [
+  {
+    command: "npm run clean",
+    label: "clean up 🧼",
+  },
+];
 const bootstrap: Task[] = [
   {
     command: "npm run bootstrap",
-    label: "Bootstrap",
+    label: "bootstrapping 🚀",
   },
 ];
-const clientStep: Task[] = [
+const buildStep: Task[] = [
   {
-    command:
-      "npm run build -- --scope @amplication/client --include-dependencies",
-    label: "Client build",
+    command: "npm run build",
+    label: "build packages 📦",
+  },
+];
+const dockerCompose: Task[] = [
+  {
+    command: "npm run docker:dev",
+    label: "docker compose 🐳",
   },
 ];
 const prismaGeneration: Task[] = [
   {
     command: "npm run prisma:generate",
-    label: "prisma generation",
-  },
-];
-const serverBuild: Task[] = [
-  {
-    command:
-      "npm run build -- --scope @amplication/server --include-dependencies",
-    label: "server build",
+    label: "generate prisma 🧬",
   },
 ];
 const graphqlGeneration: Task[] = [
   {
     command: "npm run generate",
-    label: "generation graphql schema",
+    label: "generate graphql schema 🧬",
   },
 ];
-const docker: Task[] = [
+const prismaMigration: Task[] = [
   {
-    command: "cd packages/amplication-server && npm run docker",
-    label: "running docker compose up",
-  },
-];
-const dockerInit: Task[] = [
-  {
-    command: "cd packages/amplication-server && npm run start:db",
-    label: "db seeding",
+    command: "npm run migrate:up",
+    label: "prisma migration 🏗 ",
   },
 ];
 
 const tasks: Task[][] = [
+  clean,
   bootstrap,
-  clientStep,
+  buildStep,
+  dockerCompose,
   prismaGeneration,
-  serverBuild,
   graphqlGeneration,
-  docker,
-  dockerInit,
+  prismaMigration,
 ];
 
 if (require.main === module) {
@@ -119,9 +134,7 @@ if (require.main === module) {
     try {
       preValidate();
       logger.info(`Welcome to Amplication installer!`);
-      logger.info(
-        "This script will help you easily set up a running amplication server"
-      );
+      console.log(logo);
       console.log("");
 
       for (let i = 0; i < tasks.length; i++) {
@@ -134,7 +147,9 @@ if (require.main === module) {
         await Promise.all(tasksPromises);
         console.log("");
       }
-      logger.info("Finish all the process for the setup, have fun hacking");
+      logger.info("Finish all the process for the setup, have fun hacking 👾");
+      logger.info("✋ To run a specific service, go to its README file and make sure you set all necessary environment variables❗️");
+      logger.info("Link to our docs: 'https://docs.amplication.com/docs/' 📜");
     } catch (error) {
       spinner.fail(error.message);
     }

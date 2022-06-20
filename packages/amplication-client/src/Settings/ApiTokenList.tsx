@@ -47,7 +47,7 @@ export const ApiTokenList = React.memo(() => {
     }
     await navigator.clipboard.writeText(token);
     setTokenCopied(true);
-  }
+  };
 
   const { data, loading, error: errorLoading } = useQuery<TData>(
     GET_API_TOKENS
@@ -67,7 +67,7 @@ export const ApiTokenList = React.memo(() => {
         <NewApiToken onCompleted={handleNewTokenCompleted} />
       </Dialog>
       <div className={`${CLASS_NAME}__header`}>
-        <h2>API Tokens</h2>
+        <h3>API Tokens</h3>
         <Button
           className={`${CLASS_NAME}__add-button`}
           buttonStyle={EnumButtonStyle.Primary}
@@ -91,12 +91,15 @@ export const ApiTokenList = React.memo(() => {
           panelStyle={EnumPanelStyle.Bordered}
         >
           <div className={`${CLASS_NAME}__new-token-message`}>
-            Make sure to copy your new API token now. You won't be able to see it
-            again.<br />
+            Make sure to copy your new API token now. You won't be able to see
+            it again.
+            <br />
           </div>
           <Button
             className={`${CLASS_NAME}__add-button`}
-            buttonStyle={!tokenCopied ? EnumButtonStyle.Primary : EnumButtonStyle.Clear}
+            buttonStyle={
+              !tokenCopied ? EnumButtonStyle.Primary : EnumButtonStyle.Text
+            }
             onClick={handleCopyToken}
             icon={!tokenCopied ? "copy" : "check"}
             disabled={tokenCopied}

@@ -161,18 +161,18 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             placement="top-start"
           >
             <Link
-              to={`/${build.appId}/github`}
-              className={`${CLASS_NAME}__open-github`}
+              to={`/${build.appId}/code-view`}
+              className={`${CLASS_NAME}__view-code`}
             >
               <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                icon="github"
+                buttonStyle={EnumButtonStyle.Secondary}
+                icon="code"
                 disabled={generating}
                 eventData={{
-                  eventName: "buildConnectToGithub",
+                  eventName: "FooterViewCode",
                 }}
               >
-                Push Code to GitHub
+                View Code
               </Button>
             </Link>
           </HelpPopover>
@@ -188,7 +188,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         )}
         <Tooltip aria-label={"Download Code"} direction="nw">
           <Button
-            buttonStyle={EnumButtonStyle.Clear}
+            buttonStyle={EnumButtonStyle.Text}
             disabled={
               stepGenerateCode.status !== models.EnumActionStepStatus.Success ||
               generating
@@ -224,24 +224,25 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         >
           {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
           stepDeploy?.status === models.EnumActionStepStatus.Running ? (
-            <Link to={`/${build.appId}/builds/${build.id}`}>
-              <Button
-                buttonStyle={EnumButtonStyle.Secondary}
-                eventData={{
-                  eventName: "BuildSandboxViewDetailsClick",
-                }}
-              >
-                <BuildStepsStatus
-                  status={models.EnumActionStepStatus.Running}
-                />
-                Preparing sandbox environment...
-              </Button>
-            </Link>
+            // <Link to={`/${build.appId}/builds/${build.id}`}>
+            //   <Button
+            //     buttonStyle={EnumButtonStyle.Clear}
+            //     eventData={{
+            //       eventName: "BuildSandboxViewDetailsClick",
+            //     }}
+            //   >
+            //     <BuildStepsStatus
+            //       status={models.EnumActionStepStatus.Running}
+            //     />
+            //     Preparing sandbox environment...
+            //   </Button>
+            // </Link>
+            <div />
           ) : deployment &&
             stepDeploy?.status === models.EnumActionStepStatus.Success ? (
             <a href={deployment.environment.address} target="app">
               <Button
-                buttonStyle={EnumButtonStyle.Secondary}
+                buttonStyle={EnumButtonStyle.Clear}
                 icon="link_2"
                 eventData={{
                   eventName: "openPreviewApp",
@@ -256,7 +257,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
               {stepDeploy ? (
                 <Link to={`/${build.appId}/builds/${build.id}`}>
                   <Button
-                    buttonStyle={EnumButtonStyle.Secondary}
+                    buttonStyle={EnumButtonStyle.Clear}
                     eventData={{
                       eventName: "buildFailedViewDetails",
                     }}

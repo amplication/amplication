@@ -6,7 +6,6 @@ import { StorageService } from '@codebrew/nestjs-storage';
 import { subSeconds } from 'date-fns';
 import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { Prisma, PrismaService } from '@amplication/prisma-db';
-import assert from 'assert';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { groupBy, omit, orderBy } from 'lodash';
@@ -46,6 +45,7 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
 import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
+import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 
 export const HOST_VAR = 'HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -230,7 +230,7 @@ export class BuildService {
     });
 
     logger.info(JOB_STARTED_LOG);
-    const tarballURL = await this.generate(build, user, oldBuild.id);
+    const tarballURL = await this.generate(build, user, oldBuild?.id);
     if (!skipPublish) {
       await this.buildDockerImage(build, tarballURL);
     }
@@ -599,7 +599,7 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  private async saveToGitHub(build: Build, oldBuildId: string) {
+  private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
     const app = build.app;
 
     const appRepository = await this.prisma.gitRepository.findUnique({
@@ -631,35 +631,35 @@ export class BuildService {
         async step => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
-            const response = await this.queueService.sendCreateGitPullRequest({
-              gitOrganizationName: appRepository.gitOrganization.name,
-              gitRepositoryName: appRepository.name,
-              amplicationAppId: app.id,
-              gitProvider: EnumGitProvider.Github,
-              installationId: appRepository.gitOrganization.installationId,
-              newBuildId: build.id,
-              oldBuildId,
-              commit: {
-                base: 'main',
-                head: `amplication-build-${build.id}`,
-                body: `Amplication build # ${build.id}.
+            const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
+              {
+                gitOrganizationName: appRepository.gitOrganization.name,
+                gitRepositoryName: appRepository.name,
+                amplicationAppId: app.id,
+                gitProvider: EnumGitProvider.Github,
+                installationId: appRepository.gitOrganization.installationId,
+                newBuildId: build.id,
+                oldBuildId,
+                commit: {
+                  base: 'main',
+                  head: `amplication-build-${build.id}`,
+                  body: `Amplication build # ${build.id}.
                 Commit message: ${commit.message}
                 
                 ${url}
                 `,
-                title: commitMessage
+                  title: commitMessage
+                }
               }
-            });
-
-            const { url: prUrl } = response;
-
-            assert(prUrl, 'Failed to get pull request url');
+            );
 
             await this.appService.reportSyncMessage(
               build.appId,
               'Sync Completed Successfully'
             );
-            await this.actionService.logInfo(step, prUrl, { githubUrl: prUrl });
+            await this.actionService.logInfo(step, pullRequestResponse.url, {
+              githubUrl: pullRequestResponse.url
+            });
             await this.actionService.logInfo(
               step,
               PUSH_TO_GITHUB_STEP_FINISH_LOG
@@ -736,5 +736,15 @@ export class BuildService {
       entities,
       entity => entity.createdAt
     ) as unknown) as DataServiceGenerator.Entity[];
+  }
+  async canUserAccess({
+    userId,
+    buildId
+  }: CanUserAccessArgs): Promise<boolean> {
+    const build = this.prisma.build.findFirst({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      where: { id: buildId, AND: { userId } }
+    });
+    return Boolean(build);
   }
 }

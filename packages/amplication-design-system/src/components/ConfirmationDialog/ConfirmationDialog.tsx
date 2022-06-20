@@ -41,7 +41,7 @@ export const ConfirmationDialog = ({
       <div className={`${CLASS_NAME}__buttons`}>
         <div className="spacer" />
         <Button
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           icon={dismissButton.icon}
           onClick={onDismiss}
         >

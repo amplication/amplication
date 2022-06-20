@@ -1,6 +1,6 @@
 {
   "name": "@amplication/git-service",
-  "version": "0.12.9",
+  "version": "0.13.1",
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf dist",
