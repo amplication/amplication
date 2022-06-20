@@ -1,3 +1,0 @@
-{{ include "base.service" (list . "amplication-notifications-service.service") -}}
-{{- define "amplication-notifications-service.service" -}}
-{{- end }}

@@ -166,4 +166,3 @@ amplication-notifications-service:
       KAFKA_CLIENT_ID: notifications-queue-client
       KAFKA_GROUP_ID: amplication-notifications-service-group
       KAFKA_TOPIC: notification.internal.in-app-push.event.0
-      PORT: 3333
