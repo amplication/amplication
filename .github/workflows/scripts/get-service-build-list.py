@@ -19,7 +19,6 @@ packages_folder = os.getenv(
 ee_packages_folder = os.getenv(
     'EE_PACKAGES_FOLDER', os.path.join(root_folder, 'ee/packages'))
 changed_folders = []
-changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_files = os.getenv('CHANGED_FILES_PR') or os.getenv(
     'CHANGED_FILES_NOT_PR')
 
