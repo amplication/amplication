@@ -2,7 +2,7 @@ import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
 import { types } from "@amplication/data";
-import countBy from "lodash.countby";
+import { countBy } from "lodash";
 import {
   Entity,
   EntityField,
