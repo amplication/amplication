@@ -162,12 +162,12 @@ jobs:
           TAG_LIST_FULL: "${{ env.BRANCH_NAME }},${{ github.run_id }}"
           ECR_REPOSITORY: "${{ env.REPOSITORY_NAME }}"
         run: |
-          if [ "$HASH_TAG_EXIST" = true ]
+          if [[ "$HASH_TAG_EXIST" == 'true' ]]
           then
-            echo "true $HASH_TAG_EXIST"
+            echo "tag already exist"
             export TAG_LIST=$TAG_LIST_SHORT
           else
-            echo "false $HASH_TAG_EXIST"
+            echo "tag doesn't exist"
             export TAG_LIST=$TAG_LIST_FULL
           fi
           echo $TAG_LIST
