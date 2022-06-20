@@ -156,3 +156,14 @@ amplication-storage-gateway:
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
+
+amplication-notifications-service:
+  postgres:
+    install: false
+  config:
+    env:
+      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_CLIENT_ID: notifications-queue-client
+      KAFKA_GROUP_ID: amplication-notifications-service-group
+      KAFKA_TOPIC: notification.internal.in-app-push.event.0
+      PORT: 3333

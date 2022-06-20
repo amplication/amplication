@@ -33,6 +33,7 @@ jobs:
       JWT_SECRET: ${{ steps.create-secret-names.outputs.JWT_SECRET }}
       SERVICE_JWT_SECRET: ${{ steps.create-secret-names.outputs.SERVICE_JWT_SECRET }}
       WEBHOOKS_SECRET_KEY: ${{ steps.create-secret-names.outputs.WEBHOOKS_SECRET_KEY }}
+      NOVU_API_KEY: ${{ steps.create-secret-names.outputs.NOVU_API_KEY }}
     steps:
       - name: create secret names
         id: create-secret-names
@@ -52,6 +53,7 @@ jobs:
           echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}_JWT_SECRET"
           echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}_SERVICE_JWT_SECRET"
           echo "::set-output name=WEBHOOKS_SECRET_KEY::AWS_${TARGET_ENV_SECRET}_WEBHOOKS_SECRET_KEY"
+          echo "::set-output name=NOVU_API_KEY::AWS_${TARGET_ENV_SECRET}_NOVU_API_KEY"
 
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
@@ -72,6 +74,7 @@ jobs:
       JWT_SECRET: ${{ needs.prepare.outputs.JWT_SECRET }}
       SERVICE_JWT_SECRET: ${{ needs.prepare.outputs.SERVICE_JWT_SECRET }}
       WEBHOOKS_SECRET_KEY: ${{ needs.prepare.outputs.WEBHOOKS_SECRET_KEY }}
+      NOVU_API_KEY: ${{ needs.prepare.outputs.NOVU_API_KEY }}
     steps:
       - uses: actions/checkout@v2
       - name: configure AWS credentials
@@ -185,6 +188,8 @@ jobs:
 
           SECRETS+=" -p amplication-storage-gateway.secrets.JWT_SECRET_KEY=$JWT_SECRET"
 
+          SECRETS+=" -p amplication-notifications-service.secrets.NOVU_API_KEY=$NOVU_API_KEY"
+
           set +e
           Get_app="$(argocd app list)"
           if [[ ! -z "$Get_app" ]]
@@ -211,3 +216,4 @@ jobs:
           JWT_SECRET: ${{ secrets[env.JWT_SECRET] }}
           SERVICE_JWT_SECRET: ${{ secrets[env.SERVICE_JWT_SECRET] }}
           WEBHOOKS_SECRET_KEY: ${{ secrets[env.WEBHOOKS_SECRET_KEY] }}
+          NOVU_API_KEY: ${{ secrets[env.NOVU_API_KEY] }}

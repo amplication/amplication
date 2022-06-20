@@ -1,0 +1,3 @@
+{{ include "base.configmap" (list . "amplication-notifications-service.configmap") -}}
+{{- define "amplication-notifications-service.configmap" -}}
+{{- end }}

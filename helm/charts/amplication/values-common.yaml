@@ -199,3 +199,17 @@ amplication-storage-gateway:
       KAFKA_CLIENT_ID: storage-queue-client
       KAFKA_GROUP_ID: storage-server-group
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
+
+amplication-notifications-service:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-notifications-service
+    tag: "release-0-13-0"
+  postgres:
+    install: false
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: notifications-queue-client
+      KAFKA_GROUP_ID: amplication-notifications-service-group
+      KAFKA_TOPIC: notification.internal.in-app-push.event.0
+      PORT: 3333
