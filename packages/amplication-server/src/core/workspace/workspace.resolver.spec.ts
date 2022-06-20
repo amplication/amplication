@@ -25,35 +25,35 @@ const EXAMPLE_APP_NAME = 'exampleAppName';
 const EXAMPLE_APP_DESCRIPTION = 'exampleAppDescription';
 
 const EXAMPLE_EMAIL = 'exampleEmail';
-const timeNow = new Date();
+// const timeNow = new Date();
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
-  createdAt: timeNow,
-  updatedAt: timeNow,
+  createdAt: new Date(),
+  updatedAt: new Date(),
   isOwner: true
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
   id: EXAMPLE_WORKSPACE_ID,
   name: EXAMPLE_WORKSPACE_NAME,
-  createdAt: timeNow,
-  updatedAt: timeNow
+  createdAt: new Date(),
+  updatedAt: new Date()
 };
 
 const EXAMPLE_INVITATION: Invitation = {
   id: EXAMPLE_APP_ID,
   email: 'example@email.com',
-  createdAt: timeNow,
-  updatedAt: timeNow
+  createdAt: new Date(),
+  updatedAt: new Date()
 };
 
 const EXAMPLE_APP: App = {
   id: EXAMPLE_APP_ID,
   name: EXAMPLE_APP_NAME,
   description: EXAMPLE_APP_DESCRIPTION,
-  createdAt: timeNow,
-  updatedAt: timeNow
+  createdAt: new Date(),
+  updatedAt: new Date()
 };
 
 const GET_WORKSPACE_QUERY = gql`
@@ -180,8 +180,8 @@ describe('WorkspaceResolver', () => {
     expect(res.data).toEqual({
       workspace: {
         ...EXAMPLE_WORKSPACE,
-        createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString()
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date)
       }
     });
     expect(workspaceServiceGetWorkspaceMock).toBeCalledTimes(1);
@@ -201,8 +201,8 @@ describe('WorkspaceResolver', () => {
         apps: [
           {
             ...EXAMPLE_APP,
-            createdAt: EXAMPLE_APP.createdAt.toISOString(),
-            updatedAt: EXAMPLE_APP.updatedAt.toISOString()
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date)
           }
         ]
       }
@@ -222,8 +222,8 @@ describe('WorkspaceResolver', () => {
     expect(res.data).toEqual({
       deleteWorkspace: {
         ...EXAMPLE_WORKSPACE,
-        createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString()
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date)
       }
     });
     expect(workspaceServiceDeleteWorkspaceMock).toBeCalledTimes(1);
@@ -241,8 +241,8 @@ describe('WorkspaceResolver', () => {
     expect(res.data).toEqual({
       updateWorkspace: {
         ...EXAMPLE_WORKSPACE,
-        createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString()
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date)
       }
     });
     expect(workspaceServiceUpdateWorkspaceMock).toBeCalledTimes(1);
@@ -261,8 +261,8 @@ describe('WorkspaceResolver', () => {
     expect(res.data).toEqual({
       inviteUser: {
         ...EXAMPLE_INVITATION,
-        createdAt: EXAMPLE_USER.createdAt.toISOString(),
-        updatedAt: EXAMPLE_USER.updatedAt.toISOString()
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date)
       }
     });
     expect(workspaceServiceInviteUserMock).toBeCalledTimes(1);
