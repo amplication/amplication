@@ -20,6 +20,7 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
 import { BuildFilesSaver } from './utils';
 import { QueueModule } from '../queue/queue.module';
 import { CommitModule } from '../commit/commit.module';
+import { CodeGenStorageModule } from '../codeGenStorage/codeGenStorage.module';
 
 @Module({
   imports: [
@@ -39,7 +40,8 @@ import { CommitModule } from '../commit/commit.module';
     forwardRef(() => AppModule),
     AppSettingsModule,
     QueueModule,
-    forwardRef(() => CommitModule)
+    forwardRef(() => CommitModule),
+    CodeGenStorageModule,
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

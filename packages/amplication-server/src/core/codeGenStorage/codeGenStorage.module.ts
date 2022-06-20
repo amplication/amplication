@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { CodeGenStorageService } from './codeGenStorage.service';
 
 @Module({
-  imports: [],
+  imports: [ConfigModule],
   providers: [CodeGenStorageService],
   exports: [CodeGenStorageService]
 })
-export class CodeGenModule { }
+export class CodeGenStorageModule { }
