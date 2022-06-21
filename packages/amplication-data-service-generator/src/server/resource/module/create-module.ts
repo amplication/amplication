@@ -12,8 +12,6 @@ import {
   removeESLintComments,
 } from "../../../util/ast";
 import { removeIdentifierFromModuleDecorator } from "../../../util/nestjs-code-generation";
-
-import { SRC_DIRECTORY } from "../../constants";
 import { createControllerId } from "../controller/create-controller";
 import { createServiceId } from "../service/create-service";
 import { createResolverId } from "../resolver/create-resolver";
@@ -26,7 +24,8 @@ export async function createModules(
   entityType: string,
   entityServiceModule: string,
   entityControllerModule: string | undefined,
-  entityResolverModule: string | undefined
+  entityResolverModule: string | undefined,
+  srcDirectory: string
 ): Promise<Module[]> {
   const moduleBaseId = createBaseModuleId(entityType);
 
@@ -37,9 +36,10 @@ export async function createModules(
       entityServiceModule,
       entityControllerModule,
       entityResolverModule,
-      moduleBaseId
+      moduleBaseId,
+      srcDirectory
     ),
-    await createBaseModule(entityName, moduleBaseId),
+    await createBaseModule(entityName, moduleBaseId, srcDirectory),
   ];
 }
 
@@ -49,10 +49,11 @@ async function createModule(
   entityServiceModule: string,
   entityControllerModule: string | undefined,
   entityResolverModule: string | undefined,
-  moduleBaseId: namedTypes.Identifier
+  moduleBaseId: namedTypes.Identifier,
+  srcDirectory: string
 ): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.module.ts`;
-  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.module.base.ts`;
+  const modulePath = `${srcDirectory}/${entityName}/${entityName}.module.ts`;
+  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleTemplatePath);
   const controllerId = createControllerId(entityType);
   const serviceId = createServiceId(entityType);
@@ -121,9 +122,10 @@ async function createModule(
 
 async function createBaseModule(
   entityName: string,
-  moduleBaseId: namedTypes.Identifier
+  moduleBaseId: namedTypes.Identifier,
+  srcDirectory: string
 ): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.module.base.ts`;
+  const modulePath = `${srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleBaseTemplatePath);
 
   interpolate(file, {

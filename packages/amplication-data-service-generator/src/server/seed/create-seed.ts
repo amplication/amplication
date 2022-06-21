@@ -58,7 +58,8 @@ export const DEFAULT_AUTH_PROPERTIES = [
 export async function createSeedModule(
   userEntity: Entity,
   dtos: DTOs,
-  scriptsDirectory: string
+  scriptsDirectory: string,
+  srcDirectory: string
 ): Promise<Module> {
   const MODULE_PATH = `${scriptsDirectory}/seed.ts`;
   const file = await readFile(seedTemplatePath);
@@ -73,7 +74,7 @@ export async function createSeedModule(
 
   removeTSVariableDeclares(file);
 
-  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoNameToPath = getDTONameToPath(dtos, srcDirectory);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(MODULE_PATH, dtoNameToPath)

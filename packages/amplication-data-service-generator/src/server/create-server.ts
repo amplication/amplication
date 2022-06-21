@@ -61,7 +61,7 @@ export async function createServerModules(
   );
 
   logger.info("Creating resources...");
-  const dtoModules = createDTOModules(dtos);
+  const dtoModules = createDTOModules(dtos, directoryManager.SRC);
   const resourcesModules = await createResourcesModules(
     appInfo,
     entities,
@@ -87,7 +87,8 @@ export async function createServerModules(
   const seedModule = await createSeedModule(
     userEntity,
     dtos,
-    directoryManager.SCRIPTS
+    directoryManager.SCRIPTS,
+    directoryManager.SRC
   );
 
   const createdModules = [

@@ -1814,7 +1814,7 @@ export type ServerSettings = {
 export type ServerSettingsUpdateInput = {
   generateGraphQL?: InputMaybe<Scalars["Boolean"]>;
   generateRestApi?: InputMaybe<Scalars["Boolean"]>;
-  serverPath: Scalars["String"];
+  serverPath?: InputMaybe<Scalars["String"]>;
 };
 
 export type SignupInput = {

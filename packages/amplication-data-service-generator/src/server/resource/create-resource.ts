@@ -61,7 +61,8 @@ async function createResourceModules(
         entityType,
         serviceModule.path,
         entity,
-        dtos
+        dtos,
+        srcDirectory
       ))) ||
     [];
 
@@ -74,7 +75,8 @@ async function createResourceModules(
         entityType,
         serviceModule.path,
         entity,
-        dtos
+        dtos,
+        srcDirectory
       ))) ||
     [];
   const [resolverModule] = resolverModules;
@@ -84,7 +86,8 @@ async function createResourceModules(
     entityType,
     serviceModule.path,
     controllerModule?.path,
-    resolverModule?.path
+    resolverModule?.path,
+    srcDirectory
   );
 
   const testModule =

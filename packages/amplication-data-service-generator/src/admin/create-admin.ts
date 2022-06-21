@@ -51,7 +51,7 @@ export async function createAdminModules(
   logger: winston.Logger
 ): Promise<Module[]> {
   const directoryManager = dynamicPathCreator(
-    get(appInfo, "settings.serverSettings.serverPath", "")
+    get(appInfo, "settings.adminUISettings.adminUIPath", "")
   );
   logger.info(`Admin path: ${directoryManager.BASE}`);
   logger.info("Creating admin...");
@@ -138,7 +138,7 @@ export async function createAdminModules(
     ...entityTitleComponentsModules,
     ...entityComponentsModules,
   ];
-  const dotEnvModule = await createDotEnvModule(appInfo);
+  const dotEnvModule = await createDotEnvModule(appInfo, directoryManager.BASE);
 
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({

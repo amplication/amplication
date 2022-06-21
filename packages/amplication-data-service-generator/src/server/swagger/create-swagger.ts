@@ -8,9 +8,6 @@ import {
   removeTSVariableDeclares,
 } from "../../util/ast";
 import { readFile } from "../../util/module";
-// import { SRC_DIRECTORY } from "../constants";
-
-// const MODULE_PATH = `${SRC_DIRECTORY}/swagger.ts`;
 
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
