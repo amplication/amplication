@@ -1,10 +1,21 @@
 import { Controller } from '@nestjs/common';
-import { HealthControllerBase } from './base/health.controller.base';
 import { HealthService } from './health.service';
+import { Get, HttpStatus, Res } from '@nestjs/common';
+import { Response } from 'express';
 
 @Controller('_health')
-export class HealthController extends HealthControllerBase {
-  constructor(protected readonly healthService: HealthService) {
-    super(healthService);
+export class HealthController {
+  constructor(protected readonly healthService: HealthService) {}
+  @Get('live')
+  healthLive(@Res() response: Response): Response<void> {
+    return response.status(HttpStatus.NO_CONTENT).send();
+  }
+  @Get('ready')
+  async healthReady(@Res() response: Response): Promise<Response<void>> {
+    const dbConnection = await this.healthService.isDbReady();
+    if (!dbConnection) {
+      return response.status(HttpStatus.NOT_FOUND).send();
+    }
+    return response.status(HttpStatus.NO_CONTENT).send();
   }
 }

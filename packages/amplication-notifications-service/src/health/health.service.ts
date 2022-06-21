@@ -1,5 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { HealthServiceBase } from './base/health.service.base';
 
 @Injectable()
-export class HealthService extends HealthServiceBase {}
+export class HealthService {
+  async isDbReady(): Promise<boolean> {
+    try {
+      // @todo: add logic to test kafka queue
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+}

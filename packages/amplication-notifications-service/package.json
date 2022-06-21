@@ -22,9 +22,6 @@
     "@nestjs/platform-express": "8.2.3",
     "@nestjs/serve-static": "2.2.2",
     "@novu/node": "0.4.1",
-    "bcrypt": "5.0.1",
-    "class-transformer": "0.5.1",
-    "class-validator": "0.13.2",
     "kafkajs": "1.16.0",
     "nest-access-control": "2.0.3",
     "nest-morgan": "1.0.1",
@@ -40,7 +37,6 @@
   "devDependencies": {
     "@nestjs/cli": "8.1.5",
     "@nestjs/testing": "8.2.3",
-    "@types/bcrypt": "5.0.0",
     "@types/express": "4.17.9",
     "@types/jest": "26.0.19",
     "@types/normalize-path": "3.0.0",
