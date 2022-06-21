@@ -17,7 +17,6 @@ import {
   USER_PASSWORD_FIELD,
   USER_ROLES_FIELD,
 } from "../user-entity";
-import { SCRIPTS_DIRECTORY } from "../constants";
 import { DTOs, getDTONameToPath } from "../resource/create-dtos";
 import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
@@ -55,12 +54,13 @@ export const DEFAULT_AUTH_PROPERTIES = [
     builders.arrayExpression([builders.stringLiteral(ADMIN_ROLE)])
   ),
 ];
-const MODULE_PATH = `${SCRIPTS_DIRECTORY}/seed.ts`;
 
 export async function createSeedModule(
   userEntity: Entity,
-  dtos: DTOs
+  dtos: DTOs,
+  scriptsDirectory: string
 ): Promise<Module> {
+  const MODULE_PATH = `${scriptsDirectory}/seed.ts`;
   const file = await readFile(seedTemplatePath);
   const customProperties = createUserObjectCustomProperties(userEntity);
 

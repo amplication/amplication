@@ -3,12 +3,11 @@ import { pascalCase } from "pascal-case";
 import { print } from "recast";
 import { createDTOFile } from "../server/resource/dto/create-dto-module";
 import { Role, Module } from "../types";
-import { SRC_DIRECTORY } from "./constants";
 
 export const ENUM_ROLES_ID = builders.identifier("EnumRoles");
-export const MODULE_PATH = `${SRC_DIRECTORY}/user/${ENUM_ROLES_ID.name}.ts`;
 
-export function createEnumRolesModule(roles: Role[]): Module {
+export function createEnumRolesModule(roles: Role[], srcDirectory: string): Module {
+  const MODULE_PATH = `${srcDirectory}/user/${ENUM_ROLES_ID.name}.ts`;
   const enumDeclaration = createRolesEnumDeclaration(roles);
   const file = createDTOFile(enumDeclaration, MODULE_PATH, {});
   return {

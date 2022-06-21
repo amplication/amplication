@@ -1,5 +1,6 @@
 import * as path from "path";
 import winston from "winston";
+import get from "lodash.get";
 import { paramCase } from "param-case";
 import { Entity, Role, AppInfo, Module } from "../types";
 import { readStaticModules } from "../read-static-modules";
@@ -13,10 +14,23 @@ import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
-import { BASE_DIRECTORY, SRC_DIRECTORY } from "./constants";
+import { BASE_DIRECTORY } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
+
+const validatePath = (serverPath: string) => serverPath.trim() || null;
+
+const dynamicPathCreator = (serverPath: string) => {
+  const baseDirectory = validatePath(serverPath) || BASE_DIRECTORY;
+  const srcDirectory = `${baseDirectory}/src`;
+  return {
+    BASE: baseDirectory,
+    SRC: srcDirectory,
+    SCRIPTS: `${baseDirectory}/scripts`,
+    AUTH: `${baseDirectory}/auth`,
+  };
+};
 
 export async function createServerModules(
   entities: Entity[],
@@ -26,16 +40,25 @@ export async function createServerModules(
   userEntity: Entity,
   logger: winston.Logger
 ): Promise<Module[]> {
+  const directoryManager = dynamicPathCreator(
+    get(appInfo, "settings.serverSettings.serverPath", "")
+  );
+
+  logger.info(`Server path: ${directoryManager.BASE}`);
   logger.info("Creating server...");
   logger.info("Copying static modules...");
   const rawStaticModules = await readStaticModules(
     STATIC_DIRECTORY,
-    BASE_DIRECTORY
+    directoryManager.BASE
   );
-  const staticModules = updatePackageJSONs(rawStaticModules, BASE_DIRECTORY, {
-    name: `@${paramCase(appInfo.name)}/server`,
-    version: appInfo.version,
-  });
+  const staticModules = updatePackageJSONs(
+    rawStaticModules,
+    directoryManager.BASE,
+    {
+      name: `@${paramCase(appInfo.name)}/server`,
+      version: appInfo.version,
+    }
+  );
 
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos);
@@ -43,20 +66,29 @@ export async function createServerModules(
     appInfo,
     entities,
     dtos,
-    logger
+    logger,
+    directoryManager.SRC
   );
 
   logger.info("Creating Auth module...");
-  const authModules = await createAuthModules(SRC_DIRECTORY, appInfo);
+  const authModules = await createAuthModules(directoryManager.SRC, appInfo);
 
   logger.info("Creating application module...");
-  const appModule = await createAppModule(resourcesModules, staticModules);
+  const appModule = await createAppModule(
+    resourcesModules,
+    staticModules,
+    directoryManager.SRC
+  );
 
   logger.info("Creating swagger...");
-  const swaggerModule = await createSwagger(appInfo);
+  const swaggerModule = await createSwagger(appInfo, directoryManager.SRC);
 
   logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(userEntity, dtos);
+  const seedModule = await createSeedModule(
+    userEntity,
+    dtos,
+    directoryManager.SCRIPTS
+  );
 
   const createdModules = [
     ...resourcesModules,
@@ -74,11 +106,18 @@ export async function createServerModules(
   }));
 
   logger.info("Creating Prisma schema...");
-  const prismaSchemaModule = await createPrismaSchemaModule(entities);
+  const prismaSchemaModule = await createPrismaSchemaModule(
+    entities,
+    directoryManager.BASE
+  );
 
   logger.info("Creating access control grants...");
-  const grantsModule = createGrantsModule(entities, roles);
-  const dotEnvModule = await createDotEnvModule(appInfo);
+  const grantsModule = createGrantsModule(
+    entities,
+    roles,
+    directoryManager.SRC
+  );
+  const dotEnvModule = await createDotEnvModule(appInfo, directoryManager.BASE);
 
   return [
     ...staticModules,

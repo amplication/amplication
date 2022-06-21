@@ -13,10 +13,8 @@ import {
   importDeclaration,
   callExpression,
 } from "../../util/ast";
-import { SRC_DIRECTORY } from "../constants";
 
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
-const MODULE_PATH = `${SRC_DIRECTORY}/app.module.ts`;
 const MODULE_PATTERN = /\.module\.ts$/;
 const MORGAN_MODULE_ID = builders.identifier("MorganModule");
 const CONFIG_MODULE_ID = builders.identifier("ConfigModule");
@@ -29,8 +27,10 @@ const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
 export async function createAppModule(
   resourceModules: Module[],
-  staticModules: Module[]
+  staticModules: Module[],
+  srcDirectory: string
 ): Promise<Module> {
+  const MODULE_PATH = `${srcDirectory}/app.module.ts`
   const nestModules = [
     ...resourceModules.filter((module) => module.path.match(MODULE_PATTERN)),
     ...staticModules.filter((module) => module.path.match(MODULE_PATTERN)),

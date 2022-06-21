@@ -15,11 +15,12 @@ export async function createResourcesModules(
   appInfo: AppInfo,
   entities: Entity[],
   dtos: DTOs,
-  logger: winston.Logger
+  logger: winston.Logger,
+  srcDirectory: string
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
     entities.map((entity) =>
-      createResourceModules(appInfo, entity, dtos, logger)
+      createResourceModules(appInfo, entity, dtos, logger, srcDirectory)
     )
   );
   const resourcesModules = flatten(resourceModuleLists);
@@ -30,7 +31,8 @@ async function createResourceModules(
   appInfo: AppInfo,
   entity: Entity,
   dtos: DTOs,
-  logger: winston.Logger
+  logger: winston.Logger,
+  srcDirectory: string
 ): Promise<Module[]> {
   const entityType = entity.name;
 
@@ -44,7 +46,8 @@ async function createResourceModules(
     entityName,
     entityType,
     entity,
-    dtos
+    dtos,
+    srcDirectory
   );
 
   const [serviceModule] = serviceModules;
