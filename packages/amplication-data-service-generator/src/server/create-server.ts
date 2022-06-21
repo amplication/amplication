@@ -1,6 +1,6 @@
 import * as path from "path";
 import winston from "winston";
-import get from "lodash.get";
+import { get } from "lodash";
 import { paramCase } from "param-case";
 import { Entity, Role, AppInfo, Module } from "../types";
 import { readStaticModules } from "../read-static-modules";

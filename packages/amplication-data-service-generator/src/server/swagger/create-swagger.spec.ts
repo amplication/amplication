@@ -27,7 +27,7 @@ const EXAMPLE_APP_INFO: AppInfo = {
     },
     adminUISettings: {
       generateAdminUI: false,
-      adminPath: ""
+      adminUIPath: ""
     },
     generateRootFiles: false,
   },
