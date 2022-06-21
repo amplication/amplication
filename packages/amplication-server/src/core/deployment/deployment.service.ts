@@ -305,11 +305,11 @@ export class DeploymentService {
     step: ActionStep,
     result: DeployResult
   ): Promise<Deployment> {
-    // const { email } = await this.prisma.user
-    //   .findUnique({
-    //     where: { id: deployment.userId }
-    //   })
-    //   .account();
+    const { email } = await this.prisma.user
+      .findUnique({
+        where: { id: deployment.userId }
+      })
+      .account();
 
     switch (result.status) {
       case EnumDeployStatus.Completed:
@@ -323,21 +323,21 @@ export class DeploymentService {
           await this.actionService.complete(step, EnumActionStepStatus.Success);
 
           if (isEmpty(result.url)) {
-            // await this.mailService.sendDeploymentNotification({
-            //   to: email,
-            //   url: result.url,
-            //   success: false
-            // });
+            await this.mailService.sendDeploymentNotification({
+              to: email,
+              url: result.url,
+              success: false
+            });
             throw new Error(
               `Deployment ${deployment.id} completed without a deployment URL`
             );
           }
 
-          // await this.mailService.sendDeploymentNotification({
-          //   to: email,
-          //   url: result.url,
-          //   success: true
-          // });
+          await this.mailService.sendDeploymentNotification({
+            to: email,
+            url: result.url,
+            success: true
+          });
 
           await this.prisma.environment.update({
             where: {
@@ -368,11 +368,11 @@ export class DeploymentService {
       case EnumDeployStatus.Failed:
         await this.actionService.logInfo(step, DEPLOY_STEP_FAILED_LOG);
         await this.actionService.complete(step, EnumActionStepStatus.Failed);
-        // await this.mailService.sendDeploymentNotification({
-        //   to: email,
-        //   url: result.url,
-        //   success: false
-        // });
+        await this.mailService.sendDeploymentNotification({
+          to: email,
+          url: result.url,
+          success: false
+        });
         return this.updateStatus(deployment.id, EnumDeploymentStatus.Failed);
       default:
         await this.actionService.logInfo(step, DEPLOY_STEP_RUNNING_LOG);
