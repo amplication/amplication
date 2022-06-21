@@ -89,7 +89,9 @@ const Menu = ({ children }: MenuProps) => {
             {children}
           </div>
           <div className="bottom-menu-container">
-            <Notifications />
+            <MenuItem title="Notifications">
+              <Notifications />
+            </MenuItem>
             <DarkModeToggle />
             <Popover
               className="main-layout__menu__popover"

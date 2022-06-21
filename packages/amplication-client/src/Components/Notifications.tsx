@@ -2,12 +2,13 @@ import React, { useCallback, useContext } from "react";
 import {
   NovuProvider,
   PopoverNotificationCenter,
+  NotificationBell,
   IMessage,
 } from "@novu/notification-center";
 import ThemeContext from "../Layout/ThemeContext";
 import { useQuery, gql } from "@apollo/client";
 import * as models from "../models";
-import { Bell } from "./Bell";
+import { REACT_APP_NOVU_APP_ID_FROM_ADMIN_PANEL } from "../env";
 
 type TData = {
   me: models.User;
@@ -20,7 +21,7 @@ export function Notifications() {
   const themeContext = useContext(ThemeContext);
   const isDarkMode = themeContext.theme === THEME_DARK;
   const { data } = useQuery<TData>(AUTH_QUERY);
-  const novuAppId = process.env.REACT_APP_NOVU_APP_ID_FROM_ADMIN_PANEL || "";
+  const novuAppId = REACT_APP_NOVU_APP_ID_FROM_ADMIN_PANEL || "";
 
   const onNotificationClick = useCallback((notification: IMessage) => {
     navigator(notification.cta.data.url as string);
@@ -32,7 +33,7 @@ export function Notifications() {
         colorScheme={isDarkMode ? THEME_DARK : THEME_LIGHT}
         onNotificationClick={onNotificationClick}
       >
-        {({ unseenCount }) => <Bell unseenCount={unseenCount} />}
+        {({ unseenCount }) => <NotificationBell unseenCount={unseenCount} />}
       </PopoverNotificationCenter>
     </NovuProvider>
   );
