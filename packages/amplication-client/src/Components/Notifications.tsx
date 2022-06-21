@@ -9,6 +9,7 @@ import ThemeContext from "../Layout/ThemeContext";
 import { useQuery, gql } from "@apollo/client";
 import * as models from "../models";
 import { REACT_APP_NOVU_APP_ID_FROM_ADMIN_PANEL } from "../env";
+import "./Notifications.scss";
 
 type TData = {
   me: models.User;
