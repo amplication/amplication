@@ -21,6 +21,7 @@
     "@nestjs/microservices": "8.4.3",
     "@nestjs/platform-express": "8.2.3",
     "@nestjs/serve-static": "2.2.2",
+    "@nestjs/terminus": "8.0.8",
     "@novu/node": "0.4.1",
     "kafkajs": "1.16.0",
     "nest-access-control": "2.0.3",

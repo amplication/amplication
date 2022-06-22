@@ -1,13 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import {
+  HealthCheckService,
+  MicroserviceHealthIndicator,
+} from '@nestjs/terminus';
+import { Transport } from '@nestjs/microservices';
 
 @Injectable()
 export class HealthService {
-  async isDbReady(): Promise<boolean> {
-    try {
-      // @todo: add logic to test kafka queue
-      return true;
-    } catch (error) {
-      return false;
-    }
+  constructor(
+    private health: HealthCheckService,
+    private microservice: MicroserviceHealthIndicator
+  ) {}
+
+  async isHealthy(): Promise<void> {
+    this.health.check([
+      async () =>
+        this.microservice.pingCheck('kafka', {
+          transport: Transport.KAFKA,
+          options: { host: 'localhost', port: 9092 },
+        }),
+    ]);
   }
 }
