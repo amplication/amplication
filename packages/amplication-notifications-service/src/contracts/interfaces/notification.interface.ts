@@ -3,5 +3,7 @@ import { NotificationMessagePattern } from './notificationMessagePattern.interfa
 export const NOTIFICATION_TOKEN = 'NOTIFICATION_TOKEN';
 
 export interface Notification {
-  pushNotification: (notificationData: NotificationMessagePattern) => Promise<void>;
+  pushNotification: (
+    notificationData: NotificationMessagePattern
+  ) => Promise<void>;
 }

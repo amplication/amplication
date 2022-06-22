@@ -14,7 +14,9 @@ export class NotificationService implements Notification {
     this.novuApiKey = this.configService.get<string>(NOVU_API_KEY_ENV) || '';
   }
 
-  async pushNotification(notificationData: NotificationMessagePattern): Promise<void> {
+  async pushNotification(
+    notificationData: NotificationMessagePattern
+  ): Promise<void> {
     const { userId, payload, template } = notificationData;
 
     const novu = new Novu(this.novuApiKey);
