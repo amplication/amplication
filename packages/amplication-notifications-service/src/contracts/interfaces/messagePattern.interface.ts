@@ -1,6 +1,5 @@
-
 export interface IMessagePattern {
   userId: string;
-  payload: { [key: string]: string },
+  payload: { [key: string]: string };
   template: string;
 }
