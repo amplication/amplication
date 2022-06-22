@@ -371,6 +371,14 @@ $active-indicator-width: 4px;
   color: #f5f6fa;
 }
 
+@mixin title-14 {
+  @include font-base();
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 27px;
+  color: #f5f6fa;
+}
+
 @mixin bold-14 {
   @include font-base();
   font-weight: 500;

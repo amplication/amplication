@@ -148,7 +148,7 @@ function GenerationSettingsForm({ match }: Props) {
 
 export default GenerationSettingsForm;
 
-const UPDATE_APP_SETTINGS = gql`
+export const UPDATE_APP_SETTINGS = gql`
   mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
     updateAppSettings(data: $data, where: { id: $appId }) {
       id
@@ -171,7 +171,7 @@ const UPDATE_APP_SETTINGS = gql`
   }
 `;
 
-const GET_APP_SETTINGS = gql`
+export const GET_APP_SETTINGS = gql`
   query appSettings($id: String!) {
     appSettings(where: { id: $id }) {
       id

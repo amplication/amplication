@@ -17,6 +17,7 @@ import PendingChangesContext from "../../VersionControl/PendingChangesContext";
 import "./GenerationSettingsForm.scss";
 import cssNamingConverter from "../../util/cssNamingConverter";
 import FORM_SCHEMA from "./formSchema";
+import { GET_APP_SETTINGS, UPDATE_APP_SETTINGS } from "./GenerationSettingsForm";
 
 type Props = {
   match: match<{ application: string }>;
@@ -160,49 +161,3 @@ function GenerationSettingsForm({ match }: Props) {
 }
 
 export default GenerationSettingsForm;
-
-const UPDATE_APP_SETTINGS = gql`
-  mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
-    updateAppSettings(data: $data, where: { id: $appId }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-      serverSettings {
-        generateGraphQL
-        generateRestApi
-        serverPath
-      }
-      adminUISettings {
-        generateAdminUI
-        adminUIPath
-      }
-    }
-  }
-`;
-
-const GET_APP_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-      serverSettings {
-        generateGraphQL
-        generateRestApi
-        serverPath
-      }
-      adminUISettings {
-        generateAdminUI
-        adminUIPath
-      }
-    }
-  }
-`;

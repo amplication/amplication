@@ -13,11 +13,9 @@
   &__description {
     @include regular-14();
   }
-  &__formWrapper_field {
-    width: 280px;
-  }
+
   h2 {
-    font-size: 14px;
+    @include title-14();
   }
   &__toggle_wrapper {
     display: flex;
@@ -25,7 +23,7 @@
     align-items: flex-start;
   }
   .toggle-field {
-    margin-right: 26px;
+    margin-right: var(--double-spacing);
     span {
       @include regular-12();
     }
