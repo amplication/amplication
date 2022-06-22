@@ -1,7 +1,7 @@
-import { IMessagePattern } from './messagePattern.interface';
+import { NotificationMessagePattern } from './notificationMessagePattern.interface';
 
 export const NOTIFICATION_TOKEN = 'NOTIFICATION_TOKEN';
 
-export interface INotification {
-  pushNotification: (notificationData: IMessagePattern) => Promise<void>;
+export interface Notification {
+  pushNotification: (notificationData: NotificationMessagePattern) => Promise<void>;
 }

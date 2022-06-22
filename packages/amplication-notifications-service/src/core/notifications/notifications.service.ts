@@ -1,20 +1,20 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { INotification } from 'src/contracts/interfaces/notification.interface';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Notification } from 'src/contracts/interfaces/notification.interface';
 import { Novu } from '@novu/node';
 import { ConfigService } from '@nestjs/config';
-import { IMessagePattern } from 'src/contracts/interfaces/messagePattern.interface';
+import { NotificationMessagePattern } from 'src/contracts/interfaces/notificationMessagePattern.interface';
 
 const NOVU_API_KEY_ENV = 'NOVU_API_KEY';
 
 @Injectable()
-export class NotificationService implements INotification {
+export class NotificationService implements Notification {
   novuApiKey: string;
 
   constructor(private configService: ConfigService) {
     this.novuApiKey = this.configService.get<string>(NOVU_API_KEY_ENV) || '';
   }
 
-  async pushNotification(notificationData: IMessagePattern): Promise<void> {
+  async pushNotification(notificationData: NotificationMessagePattern): Promise<void> {
     const { userId, payload, template } = notificationData;
 
     const novu = new Novu(this.novuApiKey);
