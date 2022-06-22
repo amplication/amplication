@@ -6,7 +6,5 @@ export async function createRootModules(
   appInfo: AppInfo,
   logger: winston.Logger
 ): Promise<Module[]> {
-  return [
-    await createDotEnvModule(appInfo),
-  ];
+  return [await createDotEnvModule(appInfo)];
 }
