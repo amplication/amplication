@@ -192,7 +192,6 @@ const EXAMPLE_BUILD: Build = {
   version: '1.0.0',
   message: 'new build',
   actionId: 'ExampleActionId',
-  images: [],
   commitId: EXAMPLE_COMMIT_ID
 };
 

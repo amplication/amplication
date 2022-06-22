@@ -4,9 +4,7 @@ import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line
 import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { EnumBuildStatus } from './EnumBuildStatus';
 import { App, Commit } from 'src/models'; // eslint-disable-line import/no-cycle
-import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
-import { Deployment } from '../../deployment/dto/Deployment'; // eslint-disable-line import/no-cycle
-import { JsonValue } from 'type-fest';
+import { Action } from '../../action/dto'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -68,15 +66,6 @@ export class Build {
     nullable: true
   })
   action?: Action;
-
-  @Field(() => [Deployment], {
-    nullable: true
-  })
-  deployments?: Deployment[];
-
-  containerStatusQuery?: JsonValue;
-  containerStatusUpdatedAt?: Date;
-  images?: string[];
 
   @Field(() => Commit)
   commit?: Commit;
