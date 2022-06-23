@@ -16,12 +16,61 @@ on:
       - "renovate.json"
       - ".all-contributorsrc"
 
-jobs:       
+jobs:  
   changes:
     runs-on: ubuntu-18.04
     outputs:
+      packages: ${{ steps.build_list.outputs.package_build_list }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: get changed files (not pr)
+        if: github.event_name != 'pull_request'
+        id: changed-files-not-pr
+        run: |
+          changed_files=$(git diff --name-only `git merge-base origin/master HEAD`)
+          while IFS= read -r changed_file ; do 
+            echo "changed_file: $changed_file"
+            if [[ "$changed_file" == *"packages/"* || "$changed_file" == *"ee/packages/"* ]]; then
+              all_changed_files=$all_changed_files",$changed_file"
+            fi
+          done <<< "$changed_files"
+          all_changed_files="${all_changed_files:1}"
+          echo "all_changed_files: $all_changed_files"
+          echo "::set-output name=all_changed_files::$all_changed_files"
+      - name: get changed files (pr)
+        id: changed-files-pr
+        if: github.event_name == 'pull_request'
+        uses: tj-actions/changed-files@v22.1
+        with:
+          separator: ","
+          files_ignore: |
+            .github/**
+          files: |
+            packages/**
+            ee/packages/**
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8 #install the python needed
+      - name: create package list
+        id: build_list
+        env:
+          CHANGED_FILES_PR: ${{ steps.changed-files-pr.outputs.all_changed_files }}
+          CHANGED_FILES_NOT_PR: ${{ steps.changed-files-not-pr.outputs.all_changed_files }}
+        run: |
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          pip install checksumdir
+          python .github/workflows/scripts/get-service-build-list.py
+          package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json | jq -r .)
+          echo "package_build_list: $package_build_list"
+          echo "::set-output name=package_build_list::$package_build_list"
+
+  hashes:
+    runs-on: ubuntu-18.04
+    outputs:
       hashes: ${{ steps.service-hashes.outputs.service_hashes }}
-#      packages: ${{ steps.build_list.outputs.package_build_list }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -38,30 +87,33 @@ jobs:
         uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!"}]'
-
-
+          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
+  
   docker-build:
     runs-on: ubuntu-20.04
-    needs: [changes]
-    if: ${{ needs.changes.outputs.hashes != '[]' && needs.changes.outputs.hashes != '' }}
+    needs: [hashes,changes]
+    if: ${{ needs.hashes.outputs.hashes != '[]' && needs.hashes.outputs.hashes != '' }}
     timeout-minutes: 45
     strategy:
       matrix:
-        service-hash-data: ${{ fromJson(needs.changes.outputs.hashes) }}
+        service-hash-data: ${{ fromJson(needs.hashes.outputs.hashes) }}
     env:
       REPOSITORY_NAME: ${{ matrix.service-hash-data.folder }}
       IMAGE_HASH: ${{ matrix.service-hash-data.hash }}
       PACKAGE_NAME: ${{ matrix.service-hash-data.pkg }}
       SERVICE_FOLDER:  ${{ matrix.service-hash-data.name }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Get the output time
         run: echo "The step output ${{ toJson(matrix.service-hash-data) }}"
 
       - name: Get the output time
         run: echo "The step output ${{ matrix.service-hash-data.folder }}"
-
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -105,8 +157,8 @@ jobs:
           echo "Docker_image: $Docker_image"
           command="docker build -f $SERVICE_FOLDER/Dockerfile . -t $Docker_image"
           echo "$command"
-#                $command
-#                docker push $Docker_image
+          $command
+          docker push $Docker_image
 
       - name: Retag
         env:
@@ -116,28 +168,26 @@ jobs:
           TAG_LIST_FULL: "${{ env.BRANCH_NAME }},${{ github.run_id }}"
           ECR_REPOSITORY: "${{ env.REPOSITORY_NAME }}"
         run: |
-          if [ "$HASH_TAG_EXIST" = true ]
+          if [[ "$HASH_TAG_EXIST" == 'true' ]]
           then
-            echo "true $HASH_TAG_EXIST"
+            echo "tag already exist"
             export TAG_LIST=$TAG_LIST_SHORT
           else
-            echo "false $HASH_TAG_EXIST"
+            echo "tag doesn't exist"
             export TAG_LIST=$TAG_LIST_FULL
           fi
           echo $TAG_LIST
           export MANIFEST=$(aws ecr batch-get-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           echo "MANIFEST: $MANIFEST"
-      #          sh .github/workflows/scripts/ecr_retag.sh
+          sh .github/workflows/scripts/ecr_retag.sh
 
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
-
-
-
+          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
+  
   tests:
     runs-on: ubuntu-20.04
     needs: [changes]
@@ -198,4 +248,4 @@ jobs:
         uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"},{"name":"Install","value":"${{ steps.install.outcome }}","inline":true},{"name":"Build","value":"${{ steps.build.outcome }}","inline":true},{"name":"Test","value":"${{ steps.test.outcome }}","inline":true},{"name":"Format","value":"${{ steps.format.outcome }}","inline":true},{"name":"Lint","value":"${{ steps.lint.outcome }}","inline":true}]}]'
+          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{matrix.package}}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"},{"name":"Install","value":"${{ steps.install.outcome }}","inline":true},{"name":"Build","value":"${{ steps.build.outcome }}","inline":true},{"name":"Test","value":"${{ steps.test.outcome }}","inline":true},{"name":"Format","value":"${{ steps.format.outcome }}","inline":true},{"name":"Lint","value":"${{ steps.lint.outcome }}","inline":true}]}]'
