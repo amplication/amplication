@@ -103,11 +103,17 @@ jobs:
       PACKAGE_NAME: ${{ matrix.service-hash-data.pkg }}
       SERVICE_FOLDER:  ${{ matrix.service-hash-data.name }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Get the output time
         run: echo "The step output ${{ toJson(matrix.service-hash-data) }}"
 
       - name: Get the output time
         run: echo "The step output ${{ matrix.service-hash-data.folder }}"
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
