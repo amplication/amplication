@@ -151,8 +151,8 @@ jobs:
           echo "Docker_image: $Docker_image"
           command="docker build -f $SERVICE_FOLDER/Dockerfile . -t $Docker_image"
           echo "$command"
-#                $command
-#                docker push $Docker_image
+          $command
+          docker push $Docker_image
 
       - name: Retag
         env:
@@ -173,7 +173,7 @@ jobs:
           echo $TAG_LIST
           export MANIFEST=$(aws ecr batch-get-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           echo "MANIFEST: $MANIFEST"
-      #          sh .github/workflows/scripts/ecr_retag.sh
+          sh .github/workflows/scripts/ecr_retag.sh
 
       - name: Discord notification
         if: failure()
