@@ -3,6 +3,7 @@
  * When a workspace is created it is provided with one.
  */
 
+import { EnumResourceType } from '@amplication/prisma-db';
 import cuid from 'cuid';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import {
@@ -10,10 +11,12 @@ import {
   INITIAL_ENTITY_FIELDS
 } from '../entity/constants';
 import { BulkEntityData, BulkEntityFieldData } from '../entity/entity.service';
+import { ResourceCreateInput } from './dto';
 
-export const SAMPLE_RESOURCE_DATA = {
-  description: 'Sample Resource for task management',
-  name: 'My sample resource'
+export const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
+  description: 'Sample Service for task management',
+  name: 'My sample service',
+  type: EnumResourceType.Service
 };
 
 export const CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE = 'Create sample entities';

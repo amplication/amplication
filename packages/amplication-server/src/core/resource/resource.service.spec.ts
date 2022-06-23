@@ -8,7 +8,12 @@ import {
   INVALID_RESOURCE_ID
 } from './resource.service';
 
-import { PrismaService, GitRepository, Project } from '@amplication/prisma-db';
+import {
+  PrismaService,
+  GitRepository,
+  Project,
+  EnumResourceType
+} from '@amplication/prisma-db';
 import { EntityService } from '../entity/entity.service';
 import {
   EnvironmentService,
@@ -26,7 +31,7 @@ import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
 import {
   createSampleResourceEntities,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  SAMPLE_RESOURCE_DATA
+  SAMPLE_SERVICE_DATA
 } from './sampleResource';
 import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from '../entity/constants';
 import { InvalidColorError } from './InvalidColorError';
@@ -498,18 +503,19 @@ describe('ResourceService', () => {
   });
 
   it('should fail to create resource for invalid color', async () => {
-    const createResourceArgs = {
+    const createServiceArgs = {
       args: {
         data: {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
-          color: INVALID_COLOR
+          color: INVALID_COLOR,
+          type: EnumResourceType.Service
         }
       },
       user: EXAMPLE_USER
     };
     await expect(
-      service.createResource(createResourceArgs.args, createResourceArgs.user)
+      service.createResource(createServiceArgs.args, createServiceArgs.user)
     ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
   });
 
@@ -517,7 +523,7 @@ describe('ResourceService', () => {
     const prismaResourceCreateResourceArgs = {
       data: {
         ...DEFAULT_RESOURCE_DATA,
-        ...SAMPLE_RESOURCE_DATA,
+        ...SAMPLE_SERVICE_DATA,
         workspace: {
           connect: {
             id: EXAMPLE_USER.workspace?.id
@@ -528,7 +534,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${SAMPLE_RESOURCE_DATA.name}`,
+            name: `project-${SAMPLE_SERVICE_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -662,7 +668,7 @@ describe('ResourceService', () => {
     await expect(
       service.createResourceWithEntities(
         {
-          resource: SAMPLE_RESOURCE_DATA,
+          resource: SAMPLE_SERVICE_DATA,
           commitMessage: 'commitMessage',
           entities: [
             {
@@ -685,7 +691,7 @@ describe('ResourceService', () => {
     const prismaResourceCreateResourceArgs = {
       data: {
         ...DEFAULT_RESOURCE_DATA,
-        ...SAMPLE_RESOURCE_DATA,
+        ...SAMPLE_SERVICE_DATA,
         workspace: {
           connect: {
             id: EXAMPLE_USER.workspace?.id
@@ -696,7 +702,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${SAMPLE_RESOURCE_DATA.name}`,
+            name: `project-${SAMPLE_SERVICE_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -790,7 +796,7 @@ describe('ResourceService', () => {
     await expect(
       service.createResourceWithEntities(
         {
-          resource: SAMPLE_RESOURCE_DATA,
+          resource: SAMPLE_SERVICE_DATA,
           commitMessage: commitMessage,
           entities: [
             {
@@ -820,7 +826,7 @@ describe('ResourceService', () => {
             deletedAt: null,
             name: {
               mode: QueryMode.Insensitive,
-              startsWith: SAMPLE_RESOURCE_DATA.name
+              startsWith: SAMPLE_SERVICE_DATA.name
             },
             workspaceId: EXAMPLE_WORKSPACE_ID
           },

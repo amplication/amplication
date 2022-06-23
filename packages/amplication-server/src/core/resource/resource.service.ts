@@ -1,6 +1,10 @@
 import { ResourceGenerationConfig } from '@amplication/data-service-generator';
 import { GitService } from '@amplication/git-service';
-import { GitRepository, PrismaService } from '@amplication/prisma-db';
+import {
+  EnumResourceType,
+  GitRepository,
+  PrismaService
+} from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
@@ -36,7 +40,7 @@ import { ReservedEntityNameError } from './ReservedEntityNameError';
 import {
   createSampleResourceEntities,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  SAMPLE_RESOURCE_DATA
+  SAMPLE_SERVICE_DATA
 } from './sampleResource';
 
 const USER_RESOURCE_ROLE = {
@@ -135,7 +139,7 @@ export class ResourceService {
   async createSampleResource(user: User): Promise<Resource> {
     const resource = await this.createResource(
       {
-        data: SAMPLE_RESOURCE_DATA
+        data: SAMPLE_SERVICE_DATA
       },
       user
     );
