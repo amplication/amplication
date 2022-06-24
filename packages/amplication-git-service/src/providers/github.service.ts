@@ -46,14 +46,16 @@ export class GithubService implements IGitClient {
   createUserRepository(
     installationId: string,
     owner: string,
-    name: string
+    name: string,
+    isPublic: boolean
   ): Promise<RemoteGitRepository> {
     throw new Error(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
   }
   async createOrganizationRepository(
     installationId: string,
     owner: string,
-    name: string
+    name: string,
+    isPublic: boolean
   ): Promise<RemoteGitRepository> {
     const octokit = await this.getInstallationOctokit(installationId);
 
@@ -69,7 +71,8 @@ export class GithubService implements IGitClient {
       name: name,
       org: owner,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      auto_init: true
+      auto_init: true,
+      private: !isPublic
     });
 
     return {
