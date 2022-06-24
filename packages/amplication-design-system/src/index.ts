@@ -136,7 +136,6 @@ export {
 } from "./components/RadioButton/RadioButtonField";
 
 export { Label, Props as LabelProps } from "./components/Label/Label";
-
 export {
   CircularProgress,
   Props as CircularProgressProps,
@@ -149,3 +148,10 @@ export { SkeletonWrapper } from "./components/SkeletonWrapper/SkeletonWrapper";
 
 // exports from installed design packages
 export { CSSTransition, SwitchTransition } from "react-transition-group";
+
+export {
+  TreeView,
+  TreeItem,
+  TreeViewProps,
+  TreeItemProps,
+} from "./components/TreeView/TreeView";

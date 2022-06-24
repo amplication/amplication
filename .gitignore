@@ -5,6 +5,8 @@ lerna-debug.log
 terraform/envs/*/.terraform.lock.hcl
 .DS_Store
 .idea/
+lib/
 *.tgz
 values-secret*
+dist/
 packages/.server-id

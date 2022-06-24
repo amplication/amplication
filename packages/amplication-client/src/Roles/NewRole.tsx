@@ -118,7 +118,7 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
               className={`${CLASS_NAME}__add-field__text`}
             />
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               icon="plus"
               className={classNames(`${CLASS_NAME}__add-field__button`, {
                 [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
