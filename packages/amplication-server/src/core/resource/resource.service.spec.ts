@@ -1,53 +1,49 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
-  ResourceService,
-  INITIAL_COMMIT_MESSAGE,
   DEFAULT_RESOURCE_COLOR,
   DEFAULT_RESOURCE_DATA,
-  INVALID_RESOURCE_ID
+  INITIAL_COMMIT_MESSAGE,
+  INVALID_RESOURCE_ID,
+  ResourceService
 } from './resource.service';
 
+import { GitService } from '@amplication/git-service';
 import {
-  PrismaService,
+  EnumResourceType,
   GitRepository,
-  Project,
-  EnumResourceType
+  PrismaService,
+  Project
 } from '@amplication/prisma-db';
-import { EntityService } from '../entity/entity.service';
-import {
-  EnvironmentService,
-  DEFAULT_ENVIRONMENT_NAME
-} from '../environment/environment.service';
-import { Environment } from '../environment/dto/Environment';
+import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { QueryMode } from 'src/enums/QueryMode';
+import { BlockVersion, Commit, EntityVersion } from 'src/models';
+import { Block } from 'src/models/Block';
+import { Entity } from 'src/models/Entity';
+import { EntityField } from 'src/models/EntityField';
 import { Resource } from 'src/models/Resource';
 import { User } from 'src/models/User';
-import { Entity } from 'src/models/Entity';
-import { Block } from 'src/models/Block';
-import { EntityField } from 'src/models/EntityField';
-import { PendingChange } from './dto/PendingChange';
-import { EntityVersion, Commit, BlockVersion } from 'src/models';
+import { prepareDeletedItemName } from '../../util/softDelete';
+import { BlockService } from '../block/block.service';
+import { BuildService } from '../build/build.service';
+import { Build } from '../build/dto/Build';
+import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from '../entity/constants';
+import { EntityService } from '../entity/entity.service';
+import { Environment } from '../environment/dto/Environment';
 import {
-  CreateOneResourceArgs,
-  EnumPendingChangeAction,
-  EnumPendingChangeResourceType
-} from './dto';
+  DEFAULT_ENVIRONMENT_NAME,
+  EnvironmentService
+} from '../environment/environment.service';
+import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
+import { PendingChange } from './dto/PendingChange';
+import { InvalidColorError } from './InvalidColorError';
+import { ReservedEntityNameError } from './ReservedEntityNameError';
 import {
   createSampleResourceEntities,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_SERVICE_DATA
 } from './sampleResource';
-import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from '../entity/constants';
-import { InvalidColorError } from './InvalidColorError';
-import { BuildService } from '../build/build.service';
-import { Build } from '../build/dto/Build';
-import { BlockService } from '../block/block.service';
-import { EnumDataType } from 'src/enums/EnumDataType';
-import { ReservedEntityNameError } from './ReservedEntityNameError';
-import { QueryMode } from 'src/enums/QueryMode';
-import { prepareDeletedItemName } from '../../util/softDelete';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { GitService } from '@amplication/git-service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
