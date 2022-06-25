@@ -1,5 +1,9 @@
 import { EnumResourceType } from '@amplication/prisma-db';
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, registerEnumType } from '@nestjs/graphql';
+
+registerEnumType(EnumResourceType, {
+  name: 'EnumResourceType'
+});
 
 @InputType({
   isAbstract: true
