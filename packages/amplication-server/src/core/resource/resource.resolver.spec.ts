@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '@amplication/prisma-db';
+import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { BuildService } from '../build/build.service';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
@@ -578,7 +578,8 @@ describe('ResourceResolver', () => {
       query: CREATE_RESOURCE_MUTATION,
       variables: {
         name: EXAMPLE_NAME,
-        description: EXAMPLE_DESCRIPTION
+        description: EXAMPLE_DESCRIPTION,
+        type: EnumResourceType.Service
       }
     });
     expect(res.errors).toBeUndefined();

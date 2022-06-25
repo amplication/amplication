@@ -27,7 +27,11 @@ import { Block } from 'src/models/Block';
 import { EntityField } from 'src/models/EntityField';
 import { PendingChange } from './dto/PendingChange';
 import { EntityVersion, Commit, BlockVersion } from 'src/models';
-import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
+import {
+  CreateOneResourceArgs,
+  EnumPendingChangeAction,
+  EnumPendingChangeResourceType
+} from './dto';
 import {
   createSampleResourceEntities,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
@@ -378,7 +382,8 @@ describe('ResourceService', () => {
         data: {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
-          color: DEFAULT_RESOURCE_COLOR
+          color: DEFAULT_RESOURCE_COLOR,
+          type: EnumResourceType.Service
         }
       },
       user: EXAMPLE_USER
