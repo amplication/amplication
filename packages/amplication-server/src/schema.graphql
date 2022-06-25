@@ -1113,6 +1113,11 @@ input ResourceCreateInput {
   name: String!
   description: String!
   color: String
+  type: EnumResourceType!
+}
+
+enum EnumResourceType {
+  Service
 }
 
 input ResourceCreateWithEntitiesInput {
