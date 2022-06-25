@@ -1,10 +1,6 @@
 import { ResourceGenerationConfig } from '@amplication/data-service-generator';
 import { GitService } from '@amplication/git-service';
-import {
-  EnumResourceType,
-  GitRepository,
-  PrismaService
-} from '@amplication/prisma-db';
+import { GitRepository, PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
