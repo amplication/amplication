@@ -23,14 +23,19 @@ const CREATE_RESOURCE = gql`
 export async function createResource(
   client: ApolloClient<NormalizedCacheObject>,
   name: string,
-  description: string
+  description: string,
+  type: models.EnumResourceType
 ): Promise<models.Resource> {
-  const { data } = await client.mutate<{ createResource: models.Resource }>({
+  const { data } = await client.mutate<
+    { createResource: models.Resource },
+    models.MutationCreateResourceArgs
+  >({
     mutation: CREATE_RESOURCE,
     variables: {
       data: {
         name,
         description,
+        type,
       },
     },
   });

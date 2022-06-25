@@ -6,6 +6,7 @@ import { createResource } from '../../api';
 import { format } from '../../flags/format-flag';
 import { RESOURCE_COLUMNS } from './index';
 import { AMP_CURRENT_RESOURCE } from '../../properties';
+import { EnumResourceType } from '../../models';
 
 export default class ResourcesCreate extends ConfiguredCommand {
   static description = 'create a new resource';
@@ -44,7 +45,12 @@ export default class ResourcesCreate extends ConfiguredCommand {
 
     cli.action.start(`Creating new resource ${chalk.green.bold(name)} `);
 
-    const data = await createResource(this.client, name, description || '');
+    const data = await createResource(
+      this.client,
+      name,
+      description || '',
+      EnumResourceType.Service //TODO change to get input from the user
+    );
 
     if (flags['set-current'] === true) {
       this.setConfig(AMP_CURRENT_RESOURCE, data.id);
