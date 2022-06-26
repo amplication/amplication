@@ -1,11 +1,13 @@
 @import "../style/index.scss";
 
 .build-selector {
-
-  .select-menu{
+  .select-menu {
     margin-left: 0;
+    .select-menu__modal > div {
+      width: 264px;
+    }
   }
-  .amp-button{
+  .amp-button {
     width: 100%;
   }
   .amp-button--secondary {

@@ -1,0 +1,8 @@
+name: 'Create services hash'
+description: 'Create services hash code hash signatures for change in code detection'
+outputs:
+  service_hashes:
+    description: 'list of services hashes'
+runs:
+  using: 'node16'
+  main: 'scripts/run-action.js'

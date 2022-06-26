@@ -14,12 +14,6 @@ $ribbon-height: 12px;
   position: relative;
   overflow: hidden;
 
-  &:hover {
-    box-shadow: 0px 24px 25px -8px #090b1466;
-    transition: all 1s ease;
-    border: 1px solid var(--black30);
-  }
-
   &__header {
     @include flexVerticalCenter;
     margin-bottom: var(--default-spacing);

@@ -1,0 +1,46 @@
+{
+  "name": "@amplication/action",
+  "description": "Amplication Action",
+  "version": "0.13.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amplication/amplication.git"
+  },
+  "homepage": "https://amplication.com",
+  "bin": {
+    "amp": "bin/run"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib"
+  ],
+  "jest": {
+    "preset": "ts-jest",
+    "testPathIgnorePatterns": [
+      "dist/"
+    ]
+  },
+  "keywords": [],
+  "license": "Apache-2.0",
+  "main": "lib/main.js",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepare": "npm run build"
+  },
+  "types": "lib/index.d.ts",
+  "dependencies": {
+    "@actions/core": "1.9.0"
+  },
+  "devDependencies": {
+    "eslint": "8.17.0",
+    "prettier": "2.7.1",
+    "ts-node": "10.8.1",
+    "tslib": "^2.4.0",
+    "typescript": "4.7.3"
+  }
+}

@@ -73,11 +73,11 @@ function ApplicationHome({ match }: Props) {
                     <NewVersionTile applicationId={applicationId} />
                     <OverviewTile applicationId={applicationId} />
                     <SyncWithGithubTile applicationId={applicationId} />
+                    <ViewCodeViewTile applicationId={applicationId} />
                     <EntitiesTile applicationId={applicationId} />
                     <RolesTile applicationId={applicationId} />
                     <DocsTile />
                     <FeatureRequestTile />
-                    <ViewCodeViewTile applicationId={applicationId} />
                   </div>
                 )}
               />
