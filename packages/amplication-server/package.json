@@ -24,10 +24,8 @@
     "migrate:up": "cd ../amplication-prisma-db && npm run migrate:up"
   },
   "dependencies": {
-    "@amplication/container-builder": "^0.13.1",
     "@amplication/data": "^0.13.1",
     "@amplication/data-service-generator": "^0.13.1",
-    "@amplication/deployer": "^0.13.1",
     "@amplication/git-service": "^0.13.1",
     "@amplication/kafka": "^0.13.1",
     "@amplication/prisma-db": "^0.13.1",
