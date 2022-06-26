@@ -15,27 +15,27 @@ postgres:
 
 amplication-client:
   service:
-    hostname: app-shimi.dev.amplication-dev.com
+    hostname: app-shimi.amplication-dev.com
   config:
     env:
-      REACT_APP_SERVER_URI: "https://server-shimi.dev.amplication-dev.com"
-      REACT_APP_DATA_SOURCE: "https://server-shimi.dev.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-shimi.dev.amplication-dev.com/github"
-      REACT_APP_STORAGE_GATEWAY_URL: https://server-shimi.dev.amplication-dev.com
+      REACT_APP_SERVER_URI: "https://server-shimi.amplication-dev.com"
+      REACT_APP_DATA_SOURCE: "https://server-shimi.amplication-dev.com/graphql"
+      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-shimi.amplication-dev.com/github"
+      REACT_APP_STORAGE_GATEWAY_URL: https://server-shimi.amplication-dev.com
 
 amplication-server:
   postgres:
     install: false
   ingress:
     enabled: true
-    hostname: server-shimi.dev.amplication-dev.com
+    hostname: server-shimi.amplication-dev.com
   pvc:
     name: shimi-efs-claim
   config:
     env:
 
-      HOST: "https://server-shimi.dev.amplication-dev.com"
-      CLIENT_HOST: "https://app-shimi.dev.amplication-dev.com"
+      HOST: "https://server-shimi.amplication-dev.com"
+      CLIENT_HOST: "https://app-shimi.amplication-dev.com"
 
       #KAFKA
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
@@ -71,14 +71,14 @@ amplication-server:
 
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "d70e0863aea6de91da69"
-      GITHUB_REDIRECT_URI: "https://server-shimi.dev.amplication-dev.com/github/callback"
+      GITHUB_REDIRECT_URI: "https://server-shimi.amplication-dev.com/github/callback"
 
 amplication-git-push-webhook-service:
   postgres:
     install: false
   ingress:
     enabled: true
-    hostname: webhook-shimi.dev.amplication-dev.com
+    hostname: webhook-shimi.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["amplication-shimi-cp-kafka-headless:9092"]'
@@ -124,7 +124,7 @@ amplication-git-pull-request-service:
 
 amplication-storage-gateway:
   ingress:
-    hostname: server-shimi.dev.amplication-dev.com
+    hostname: server-shimi.amplication-dev.com
   pvc:
     name: shimi-efs-claim
   config:
