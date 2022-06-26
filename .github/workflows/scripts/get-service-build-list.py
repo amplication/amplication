@@ -12,10 +12,6 @@ services_output_file = os.getenv('SERVICES_OUPTUT_PATH', os.path.join(
     root_folder, 'service_build_list.json'))
 packages_output_file = os.getenv('PACKAGES_OUPTUT_PATH', os.path.join(
     root_folder, 'package_build_list.json'))
-hashes_output_file = os.getenv(
-    'HASHES_OUPTUT_PATH', os.path.join(root_folder, 'hashes.json'))
-services_retag_output_file = os.getenv(
-    'SERVICES_RETAG_OUPTUT_PATH', os.path.join(root_folder, 'service_retag_list.json'))
 helm_services_folder = os.getenv(
     'HELM_SERVICES_FOLDER', os.path.join(root_folder, 'helm/charts/services'))
 packages_folder = os.getenv(
@@ -23,13 +19,11 @@ packages_folder = os.getenv(
 ee_packages_folder = os.getenv(
     'EE_PACKAGES_FOLDER', os.path.join(root_folder, 'ee/packages'))
 changed_folders = []
-changed_folders=["amplication-cli", "amplication-client", "amplication-container-builder", "amplication-data", "amplication-data-service-generator", "amplication-deployer", "amplication-design-system", "amplication-scheduler", "amplication-server"]
 changed_files = os.getenv('CHANGED_FILES_PR') or os.getenv(
     'CHANGED_FILES_NOT_PR')
 
 package_build_list = []
 service_build_list = []
-service_retag_list = []
 dependecies_dict = dict()
 
 print(f"root_folder: {root_folder}")
@@ -84,24 +78,6 @@ def get_package_name(raw_package) -> str:
     return fixed_package
 
 
-def get_hashes(folders_list) -> dict():
-    hashes = dict()
-    for folders_to_hash in folders_list.keys():
-        hash_ = ''
-        for folder_to_hash in folders_list[folders_to_hash]:
-            path = os.path.join(get_packages_folder(
-                folder_to_hash), folder_to_hash)
-            print(f'hashing path: {path}')
-            hash_ += dirhash(path, 'md5')
-        os.mkdir('temp_hash')
-        with open('temp_hash/hash', 'w') as f:
-            f.write(hash_)
-        hashes[folders_to_hash] = dirhash('temp_hash', 'md5')
-        shutil.rmtree("temp_hash")
-
-    return hashes
-
-
 def get_dependent_packages(service_name):
     all_packages = os.listdir(packages_folder) + os.listdir(ee_packages_folder)
     dependent_services = []
@@ -111,7 +87,6 @@ def get_dependent_packages(service_name):
             fixed_package = package.replace('-', '/')
             if f'@{fixed_package}' in package_build_list:
                 dependecies_dict[service_name].append(package)
-
 
 changed_folders = get_changed_folders()
 all_services = os.listdir(helm_services_folder)
@@ -123,45 +98,12 @@ for changed_folder in changed_folders:
         dependet_services(changed_folder, service_build_list)
     if get_package_name(changed_folder) not in package_build_list:
         package_build_list.append(get_package_name(changed_folder))
-for service_name in all_services:
-    if service_name not in service_build_list:
-        service_retag_list.append(service_name)
 
 for service in all_services:
     dependecies_dict[service] = [service]
     get_dependent_packages(service)
 
-hashes = get_hashes(dependecies_dict)
-# get_hashes(final_services_list)
-# for folders_to_hash in service_build_list.keys():
-#     hash_=""
-#     filenames=[]
-#     for folder_to_hash in service_build_list[folders_to_hash]:
-#         path=os.path.join(packages_folder,folder_to_hash,'**/*')
-#         filenames.append(glob.glob(path))
-#     for filename in filenames:
-#         with open(filename[0], 'rb') as inputfile:
-#             data = inputfile.read()
-#             hash_+=hashlib.md5(data).hexdigest()
-#     hashes[folders_to_hash]=str(int(hashlib.sha256(hash_.encode('utf-8')).hexdigest(), 16))
-
-
-print(f"Will create the hashes file: {hashes}")
-hashes_b64 = base64.b64encode(json.dumps(hashes).encode('ascii'))
-f = open(hashes_output_file, "w")
-f.write(str(hashes_b64).replace("b\'", "").replace("\'", ""))
-f.close()
-
-
-print(f"Will build the follwoing services: {service_build_list}")
-with open(services_output_file, 'w') as outfile:
-    service_build_list_fixed = json.dumps(service_build_list)
-    json.dump(service_build_list_fixed, outfile)
 print(f"Will build the follwoing pcakges: {package_build_list}")
 with open(packages_output_file, 'w', encoding='utf-8') as outfile:
     package_build_list_fixed = json.dumps(package_build_list)
     json.dump(package_build_list_fixed, outfile, ensure_ascii=False, indent=4)
-print(f"Will retag the follwoing pcakges: {service_retag_list}")
-with open(services_retag_output_file, 'w', encoding='utf-8') as outfile:
-    services_retag_list_fixed = json.dumps(service_retag_list)
-    json.dump(services_retag_list_fixed, outfile, ensure_ascii=False, indent=4)
