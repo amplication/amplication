@@ -7,6 +7,8 @@ import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
+export const isStringBool = (val: any) => typeof val === 'boolean' || typeof val === 'string';
+
 @Injectable()
 export class AppSettingsService {
   @Inject()
@@ -60,33 +62,33 @@ export class AppSettingsService {
     return {
       ...appSettings,
       authProvider: appSettings.authProvider || EnumAuthProviderType.Jwt,
-      ...(!appSettings || !appSettings.adminUISettings.generateAdminUI
-        ? this.updateAppSettings(
-            {
-              data: {
-                serverSettings: {
-                  generateGraphQL: true,
-                  generateRestApi: true,
-                  serverPath: ''
-                },
-                adminUISettings: {
-                  generateAdminUI: true,
-                  adminUIPath: ''
-                },
-                dbHost: appSettings.dbHost,
-                dbName: appSettings.dbName,
-                dbPassword: appSettings.dbPassword,
-                dbPort: appSettings.dbPort,
-                dbUser: appSettings.dbUser,
-                authProvider: appSettings.authProvider
-              },
-              where: {
-                id: args.where.id
-              }
-            },
-            user
-          )
-        : {})
+      // ...(!appSettings || !appSettings.hasOwnProperty('')
+      //   ? this.updateAppSettings(
+      //       {
+      //         data: {
+      //           serverSettings: {
+      //             generateGraphQL: true,
+      //             generateRestApi: true,
+      //             serverPath: ''
+      //           },
+      //           adminUISettings: {
+      //             generateAdminUI: true,
+      //             adminUIPath: ''
+      //           },
+      //           dbHost: appSettings.dbHost,
+      //           dbName: appSettings.dbName,
+      //           dbPassword: appSettings.dbPassword,
+      //           dbPort: appSettings.dbPort,
+      //           dbUser: appSettings.dbUser,
+      //           authProvider: appSettings.authProvider
+      //         },
+      //         where: {
+      //           id: args.where.id
+      //         }
+      //       },
+      //       user
+      //     )
+      //   : {})
     };
   }
 
@@ -107,9 +109,33 @@ export class AppSettingsService {
           id: appSettingsBlock.id
         },
         data: {
+          ...appSettingsBlock,
           ...args.data,
+          adminUISettings: {
+            adminUIPath:
+              isStringBool(args.data?.adminUISettings?.adminUIPath) ? args.data?.adminUISettings?.adminUIPath : appSettingsBlock.adminUISettings.adminUIPath,
+            generateAdminUI:
+              isStringBool(args.data?.adminUISettings?.generateAdminUI) ? args.data?.adminUISettings?.generateAdminUI : appSettingsBlock.adminUISettings.generateAdminUI
+          },
+          ...{
+            serverSettings: {
+              generateGraphQL:
+                isStringBool(args.data?.serverSettings?.generateGraphQL) ? args.data?.serverSettings?.generateGraphQL : appSettingsBlock.serverSettings.generateGraphQL,
+              generateRestApi:
+                isStringBool(args.data?.serverSettings?.generateRestApi) ? args.data?.serverSettings?.generateRestApi : appSettingsBlock.serverSettings.generateRestApi,
+              serverPath:
+                isStringBool(args.data?.serverSettings?.serverPath) ? args.data?.serverSettings?.serverPath :  appSettingsBlock.serverSettings.serverPath
+            }
+          },
           ...(!args.data.serverSettings.generateGraphQL
-            ? { adminUISettings: { adminUIPath: '', generateAdminUI: false } }
+            ? {
+                adminUISettings: {
+                  adminUIPath:
+                    isStringBool(args.data?.adminUISettings?.adminUIPath) ? args.data?.adminUISettings?.adminUIPath :
+                    appSettingsBlock.adminUISettings.adminUIPath,
+                  generateAdminUI: false
+                }
+              }
             : {})
         }
       },

@@ -10,6 +10,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { match } from "react-router-dom";
 import "./ApplicationDatabaseSettingsForms.scss";
+import { GET_APP_SETTINGS } from "./appSettings/GenerationSettingsForm";
 
 type Props = {
   match: match<{ application: string }>;
@@ -166,20 +167,6 @@ export default ApplicationDatabaseSettingsForms;
 const UPDATE_APP_SETTINGS = gql`
   mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
     updateAppSettings(data: $data, where: { id: $appId }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
-
-const GET_APP_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
       id
       dbHost
       dbName

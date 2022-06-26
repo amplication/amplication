@@ -1,6 +1,5 @@
 import * as path from "path";
 import winston from "winston";
-import { get } from "lodash";
 import { paramCase } from "param-case";
 import { Entity, Role, AppInfo, Module } from "../types";
 import { readStaticModules } from "../read-static-modules";
@@ -40,9 +39,7 @@ export async function createServerModules(
   userEntity: Entity,
   logger: winston.Logger
 ): Promise<Module[]> {
-  const directoryManager = dynamicPathCreator(
-    get(appInfo, "settings.serverSettings.serverPath", "")
-  );
+  const directoryManager = dynamicPathCreator(appInfo?.settings?.serverSettings?.serverPath || "");
 
   logger.info(`Server path: ${directoryManager.BASE}`);
   logger.info("Creating server...");
