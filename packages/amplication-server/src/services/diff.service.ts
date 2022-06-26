@@ -1,5 +1,4 @@
-import isEqualWith from 'lodash.isequalwith';
-import { IsEqualCustomizer } from 'lodash';
+import { isEqualWith, IsEqualCustomizer } from 'lodash';
 
 export class DiffService {
   /**

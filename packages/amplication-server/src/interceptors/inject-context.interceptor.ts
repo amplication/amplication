@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   NestInterceptor
 } from '@nestjs/common';
-import set from 'lodash.set';
+import { set } from 'lodash';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { User } from 'src/models';
 import { Reflector } from '@nestjs/core';

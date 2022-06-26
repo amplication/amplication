@@ -25,7 +25,6 @@ const EXAMPLE_APP_NAME = 'exampleAppName';
 const EXAMPLE_APP_DESCRIPTION = 'exampleAppDescription';
 
 const EXAMPLE_EMAIL = 'exampleEmail';
-// const timeNow = new Date();
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -177,13 +176,8 @@ describe('WorkspaceResolver', () => {
       variables: { id: EXAMPLE_WORKSPACE_ID }
     });
     expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      workspace: {
-        ...EXAMPLE_WORKSPACE,
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date)
-      }
-    });
+    expect(res.data.workspace.id).toEqual(EXAMPLE_WORKSPACE.id);
+    expect(res.data.workspace.name).toEqual(EXAMPLE_WORKSPACE.name);
     expect(workspaceServiceGetWorkspaceMock).toBeCalledTimes(1);
     expect(workspaceServiceGetWorkspaceMock).toBeCalledWith({
       where: { id: EXAMPLE_WORKSPACE_ID }

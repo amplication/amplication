@@ -22,6 +22,7 @@ import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto';
+import { MailService } from '../mail/mail.service';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
 export const DEPLOY_STEP_NAME = 'DEPLOY_APP';
@@ -116,6 +117,7 @@ export class DeploymentService {
     private readonly deployerService: DeployerService,
     private readonly actionService: ActionService,
     private readonly environmentService: EnvironmentService,
+    private readonly mailService: MailService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -303,6 +305,12 @@ export class DeploymentService {
     step: ActionStep,
     result: DeployResult
   ): Promise<Deployment> {
+    const { email } = await this.prisma.user
+      .findUnique({
+        where: { id: deployment.userId }
+      })
+      .account();
+
     switch (result.status) {
       case EnumDeployStatus.Completed:
         if (step.name === DESTROY_STEP_NAME) {
@@ -315,10 +323,22 @@ export class DeploymentService {
           await this.actionService.complete(step, EnumActionStepStatus.Success);
 
           if (isEmpty(result.url)) {
+            await this.mailService.sendDeploymentNotification({
+              to: email,
+              url: result.url,
+              success: false
+            });
             throw new Error(
               `Deployment ${deployment.id} completed without a deployment URL`
             );
           }
+
+          await this.mailService.sendDeploymentNotification({
+            to: email,
+            url: result.url,
+            success: true
+          });
+
           await this.prisma.environment.update({
             where: {
               id: deployment.environmentId
@@ -348,6 +368,11 @@ export class DeploymentService {
       case EnumDeployStatus.Failed:
         await this.actionService.logInfo(step, DEPLOY_STEP_FAILED_LOG);
         await this.actionService.complete(step, EnumActionStepStatus.Failed);
+        await this.mailService.sendDeploymentNotification({
+          to: email,
+          url: result.url,
+          success: false
+        });
         return this.updateStatus(deployment.id, EnumDeploymentStatus.Failed);
       default:
         await this.actionService.logInfo(step, DEPLOY_STEP_RUNNING_LOG);
