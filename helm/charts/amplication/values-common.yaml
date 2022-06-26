@@ -85,7 +85,7 @@ amplication-server:
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
       GITHUB_SCOPE: "user:email"
-      GOOGLE_APPLICATION_CREDENTIALS: "/var/gcp-secret"
+      GOOGLE_APPLICATION_CREDENTIALS: "/var/secrets/gcp-secret"
       PORT: "3000"
       NODE_ENV: "production"
       GRAPHQL_DEBUG: "0"
