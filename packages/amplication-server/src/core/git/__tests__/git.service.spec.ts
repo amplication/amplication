@@ -5,7 +5,7 @@ import {
   GitServiceFactory
 } from '@amplication/git-service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '@amplication/prisma-db';
+import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { Resource } from 'src/models/Resource';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 import { RemoteGitRepositoriesWhereUniqueInput } from '../dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
@@ -41,6 +41,7 @@ const DEFAULT_RESOURCE_DATA = {
 const EXAMPLE_SERVICE_RESOURCE: Resource = {
   ...DEFAULT_RESOURCE_DATA,
   id: 'EXAMPLE_RESOURCE_ID',
+  type:EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: 'EXAMPLE_RESOURCE_NAME',

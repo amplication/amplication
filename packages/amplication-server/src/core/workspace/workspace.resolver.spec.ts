@@ -15,6 +15,7 @@ import { WorkspaceResolver } from './workspace.resolver';
 import { Resource, Workspace, User } from 'src/models';
 import { Invitation } from './dto/Invitation';
 import { ResourceService } from '../resource/resource.service';
+import { EnumResourceType } from '@amplication/prisma-db';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
@@ -50,6 +51,7 @@ const EXAMPLE_INVITATION: Invitation = {
 
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
+  type: EnumResourceType.Service,
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   createdAt: timeNow,
@@ -73,6 +75,7 @@ const GET_RESOURCES_QUERY = gql`
       resources {
         id
         name
+        type
         description
         createdAt
         updatedAt

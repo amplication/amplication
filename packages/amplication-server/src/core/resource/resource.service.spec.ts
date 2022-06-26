@@ -66,6 +66,7 @@ const EXAMPLE_PROJECT: Project = {
 const EXAMPLE_RESOURCE: Resource = {
   ...DEFAULT_RESOURCE_DATA,
   id: EXAMPLE_RESOURCE_ID,
+  type: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_RESOURCE_NAME,
