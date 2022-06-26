@@ -91,7 +91,7 @@ jobs:
   
   docker-build:
     runs-on: ubuntu-20.04
-    needs: [hashes,changes]
+    needs: [hashes]
     if: ${{ needs.hashes.outputs.hashes != '[]' && needs.hashes.outputs.hashes != '' }}
     timeout-minutes: 45
     strategy:
