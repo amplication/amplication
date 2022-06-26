@@ -62,7 +62,7 @@ spec:
       volumes:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.pvc.name }}
+            claimName: {{ .Values.global.pvc.name }}
         - name: {{ .Values.volume.name }}-secret
           secret:
             secretName: gcp-secret
