@@ -126,6 +126,6 @@ amplication-storage-gateway:
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
 
-# infra:
-#   pvc:
-#     name: staging-os-efs-claim
+infra:
+  pvc:
+    name: staging-os-efs-claim

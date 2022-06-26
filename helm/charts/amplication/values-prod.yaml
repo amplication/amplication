@@ -153,6 +153,6 @@ amplication-storage-gateway:
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
 
-# infra:
-#   pvc:
-#     name: prod-efs-claim
+infra:
+  pvc:
+    name: prod-efs-claim

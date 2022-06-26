@@ -198,6 +198,6 @@ amplication-storage-gateway:
       KAFKA_GROUP_ID: storage-server-group
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
 
-# infra:
-#   pvc:
-#     name: common-efs-claim
+infra:
+  pvc:
+    name: common-efs-claim
