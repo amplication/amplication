@@ -87,6 +87,12 @@ export class AppService {
         },
         roles: {
           create: USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${args.data.name}`,
+            workspaceId: user.workspace?.id
+          }
         }
       }
     });
@@ -360,6 +366,16 @@ export class AppService {
         }
       });
     }
+
+    const project = await this.prisma.app.findUnique(args).project();
+
+    await this.prisma.project.update({
+      where: { id: project.id },
+      data: {
+        name: prepareDeletedItemName(project.name, project.id),
+        deletedAt: new Date()
+      }
+    });
 
     return this.prisma.app.update({
       where: args.where,
