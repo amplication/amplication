@@ -1,3 +1,7 @@
+global:
+  pvc:
+    name: common-efs-claim
+
 cp-helm-charts:
   enabled: true
   cp-kafka:
@@ -78,8 +82,6 @@ amplication-server:
   ingress:
     enabled: true
     hostname: server.staging.amplication-dev.com
-  pvc:
-    name: common-efs-claim
   config:
     env:
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
@@ -151,8 +153,6 @@ amplication-git-pull-service:
     tag: "release-0-13-1"
   postgres:
     install: false
-  pvc:
-    name: common-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -176,8 +176,6 @@ amplication-git-pull-request-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
     tag: "release-0-13-1"
-  pvc:
-    name: common-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
@@ -188,8 +186,6 @@ amplication-git-pull-request-service:
       GITHUB_APP_APP_ID: "195638"
 
 amplication-storage-gateway:
-  pvc:
-    name: common-efs-claim
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
     tag: "release-0-13-1"
@@ -202,6 +198,6 @@ amplication-storage-gateway:
       KAFKA_GROUP_ID: storage-server-group
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
 
-infra:
-  pvc:
-    name: common-efs-claim
+# infra:
+#   pvc:
+#     name: common-efs-claim
