@@ -53,8 +53,7 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   adminUISettings: {
     generateAdminUI: true,
     adminUIPath: ''
-  },
-  generateRootFiles: true
+  }
 };
 
 const createMock = jest.fn(() => {

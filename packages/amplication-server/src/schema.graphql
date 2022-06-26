@@ -759,7 +759,6 @@ type AppSettings implements IBlock {
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettings!
   serverSettings: ServerSettings!
-  generateRootFiles: Boolean!
 }
 
 interface IBlock {
@@ -1252,7 +1251,6 @@ input AppSettingsUpdateInput {
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettingsUpdateInput!
   serverSettings: ServerSettingsUpdateInput!
-  generateRootFiles: Boolean
 }
 
 input AdminUISettingsUpdateInput {

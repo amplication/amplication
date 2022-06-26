@@ -49,9 +49,4 @@ export class AppSettings extends IBlock {
     nullable: false
   })
   serverSettings: ServerSettings & JsonValue;
-
-  @Field(() => Boolean, {
-    nullable: false
-  })
-  generateRootFiles: boolean;
 }

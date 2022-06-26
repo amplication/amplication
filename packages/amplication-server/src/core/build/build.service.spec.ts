@@ -109,8 +109,7 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   adminUISettings: {
     generateAdminUI: true,
     adminUIPath: ''
-  },
-  generateRootFiles: true
+  }
 };
 
 const EXAMPLE_COMMIT: Commit = {

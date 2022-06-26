@@ -23,7 +23,6 @@ const appInfo: AppInfo = {
       generateAdminUI: true,
       adminUIPath: "",
     },
-    generateRootFiles: false,
   },
 };
 

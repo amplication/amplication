@@ -204,7 +204,6 @@ export type AppSettings = IBlock & {
   dbUser: Scalars['String'];
   description: Scalars['String'];
   displayName: Scalars['String'];
-  generateRootFiles: Scalars['Boolean'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']>;
@@ -226,7 +225,6 @@ export type AppSettingsUpdateInput = {
   dbUser: Scalars['String'];
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
-  generateRootFiles?: InputMaybe<Scalars['Boolean']>;
   serverSettings: ServerSettingsUpdateInput;
 };
 

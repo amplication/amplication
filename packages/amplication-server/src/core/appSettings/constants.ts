@@ -39,6 +39,5 @@ export const DEFAULT_APP_SETTINGS: AppSettingsValuesExtended = {
   adminUISettings: {
     generateAdminUI: true,
     adminUIPath: ''
-  },
-  generateRootFiles: true
+  }
 };

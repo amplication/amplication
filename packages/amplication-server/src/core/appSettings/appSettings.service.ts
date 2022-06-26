@@ -6,7 +6,6 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
-// import { compare } from 'bcrypt';
 
 @Injectable()
 export class AppSettingsService {
@@ -26,7 +25,6 @@ export class AppSettingsService {
       authProvider,
       serverSettings,
       adminUISettings,
-      generateRootFiles
     } = await this.getAppSettingsBlock(args, user);
 
     return {
@@ -39,7 +37,6 @@ export class AppSettingsService {
       authProvider,
       serverSettings,
       adminUISettings,
-      generateRootFiles
     };
   }
 
@@ -76,7 +73,6 @@ export class AppSettingsService {
                   generateAdminUI: true,
                   adminUIPath: ''
                 },
-                generateRootFiles: true,
                 dbHost: appSettings.dbHost,
                 dbName: appSettings.dbName,
                 dbPassword: appSettings.dbPassword,

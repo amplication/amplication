@@ -47,9 +47,4 @@ export class AppSettingsUpdateInput extends BlockUpdateInput {
     nullable: false
   })
   serverSettings!: ServerSettingsUpdateInput;
-
-  @Field(() => Boolean, {
-    nullable: true
-  })
-  generateRootFiles?: boolean;
 }
