@@ -129,9 +129,7 @@ const EXAMPLE_COMPLETED_BUILD: Build = {
   action: {
     id: 'ExampleSuccessfulBuildAction',
     createdAt: new Date(),
-    steps: [
-      EXAMPLE_COMPLETED_GENERATE_STEP,
-    ]
+    steps: [EXAMPLE_COMPLETED_GENERATE_STEP]
   }
 };
 const EXAMPLE_RUNNING_BUILD: Build = {
@@ -215,7 +213,6 @@ const prismaBuildFindOneMock = jest.fn();
 const prismaBuildFindManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
 });
-
 
 const entityServiceGetLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
@@ -339,7 +336,7 @@ describe('BuildService', () => {
             build: {
               create: prismaBuildCreateMock,
               findMany: prismaBuildFindManyMock,
-              findUnique: prismaBuildFindOneMock,
+              findUnique: prismaBuildFindOneMock
             },
             gitRepository: {
               findUnique: prismaGitRepositoryReturnNull
