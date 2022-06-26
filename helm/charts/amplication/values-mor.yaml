@@ -3,7 +3,6 @@ amplication-client:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
   service:
     hostname: app-custom.amplication-dev.com
-    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/5c7e86d0-5a8f-41d0-a0b5-db6a13dea090
   config:
     env:
       REACT_APP_DATA_SOURCE: "https://server-custom.amplication-dev.com/graphql"
