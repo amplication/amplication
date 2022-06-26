@@ -29,8 +29,6 @@ type Query {
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
   action(where: WhereUniqueInput!): Action!
-  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]!
-  deployment(where: WhereUniqueInput!): Deployment!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   appSettings(where: WhereUniqueInput!): AppSettings!
@@ -202,7 +200,6 @@ type Build {
   message: String!
   actionId: String!
   action: Action
-  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
   commit: Commit!
   commitId: String!
 }
@@ -257,47 +254,14 @@ enum EnumActionLogLevel {
   Debug
 }
 
-type Deployment {
-  id: String!
-  createdAt: DateTime!
-  createdBy: User!
-  userId: String!
-  build: Build!
-  buildId: String!
-  environment: Environment!
-  environmentId: String!
-  status: EnumDeploymentStatus!
-  message: String!
-  actionId: String!
-  action: Action
-}
-
-type Environment {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  app: App!
-  appId: String!
-  name: String!
-  description: String
-  address: String!
-}
-
-enum EnumDeploymentStatus {
-  Waiting
-  Completed
-  Failed
-  Removed
-}
-
-input DeploymentWhereInput {
+input BuildWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
-  build: WhereUniqueInput!
-  environment: WhereUniqueInput!
-  status: EnumDeploymentStatusFilter
+  app: WhereUniqueInput!
   createdBy: WhereUniqueInput
+  version: StringFilter
   message: StringFilter
+  commit: WhereUniqueInput
 }
 
 input StringFilter {
@@ -335,36 +299,6 @@ input WhereUniqueInput {
   id: String!
 }
 
-input EnumDeploymentStatusFilter {
-  equals: EnumDeploymentStatus
-  not: EnumDeploymentStatus
-  in: [EnumDeploymentStatus!]
-  notIn: [EnumDeploymentStatus!]
-}
-
-input DeploymentOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  userId: SortOrder
-  status: SortOrder
-  message: SortOrder
-}
-
-enum SortOrder {
-  Asc
-  Desc
-}
-
-input BuildWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  app: WhereUniqueInput!
-  createdBy: WhereUniqueInput
-  version: StringFilter
-  message: StringFilter
-  commit: WhereUniqueInput
-}
-
 input BuildOrderByInput {
   id: SortOrder
   createdAt: SortOrder
@@ -372,6 +306,11 @@ input BuildOrderByInput {
   status: SortOrder
   version: SortOrder
   message: SortOrder
+}
+
+enum SortOrder {
+  Asc
+  Desc
 }
 
 type PendingChange {
@@ -649,6 +588,17 @@ input EntityOrderByInput {
   displayName: SortOrder
   pluralDisplayName: SortOrder
   description: SortOrder
+}
+
+type Environment {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  app: App!
+  appId: String!
+  name: String!
+  description: String
+  address: String!
 }
 
 type Subscription {
@@ -1069,7 +1019,6 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  createDeployment(data: DeploymentCreateInput!): Deployment!
   updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
@@ -1244,12 +1193,6 @@ input AppRoleUpdateInput {
   name: String
   description: String
   displayName: String!
-}
-
-input DeploymentCreateInput {
-  build: WhereParentIdInput!
-  environment: WhereParentIdInput!
-  message: String
 }
 
 input AppSettingsUpdateInput {
