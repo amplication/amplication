@@ -2,5 +2,8 @@ dependencies:
 - name: base
   repository: file://../../base
   version: 0.1.0
-digest: sha256:16882ef4aee1770a6e362f64f33e9fd89673da288ba677450fa021cba1619a08
-generated: "2022-05-10T11:19:44.082832+03:00"
+- name: infra
+  repository: file://../../infra
+  version: 0.1.0
+digest: sha256:12c4dc3bc714ed02927cc067bda5348f70e26fb3c4816f0ce0ef17cb0dc36e19
+generated: "2022-06-26T14:02:23.818468+03:00"
