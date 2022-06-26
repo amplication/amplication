@@ -114,6 +114,7 @@ jobs:
           echo "$secret_arn"
           echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > $SECRETS_FILE_PATH
           echo "$SECRETS_FILE_PATH"
+          cat $SECRETS_FILE_PATH
           python .github/workflows/scripts/argocd-secrets-creator.py
           cd secrets
           ls
