@@ -51,3 +51,10 @@ postgres:
     imagePullPolicy: Always
     primary:
       podLabels: { name: "postgres" }
+
+infra:
+  enabled: false
+
+global:
+  pvc:
+    name: efs-claim

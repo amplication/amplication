@@ -34,3 +34,10 @@ service:
 
 ingress:
   enabled: false
+
+infra:
+  enabled: false
+
+global:
+  pvc:
+    name: efs-claim

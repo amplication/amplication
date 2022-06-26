@@ -8,5 +8,5 @@ dependencies:
 - name: infra
   repository: file://../../infra
   version: 0.1.0
-digest: sha256:0ad9d81fb1367dd22166f55f99f995f84e4ea52d5863cde1795818169e2533cf
-generated: "2022-06-26T14:03:06.719217+03:00"
+digest: sha256:1415e6adcf51d6590e61954c06845f2e178e2544b318409af53e189bbca2bfed
+generated: "2022-06-26T14:39:18.020709+03:00"

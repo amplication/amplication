@@ -14,7 +14,8 @@ dependencies:
   repository: "file://../../base"
 - name: infra
   version: "0.1.0"
-  repository: "file://../../infra" 
+  repository: "file://../../infra"
+  condition: infra.enabled 
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
