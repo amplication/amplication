@@ -10,7 +10,6 @@ const CLASS_NAME = "build-header";
 
 type Props = {
   build: models.Build;
-  // deployments?: models.Deployment[] | null;
   isError: boolean;
 };
 
