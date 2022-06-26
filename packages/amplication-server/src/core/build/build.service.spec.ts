@@ -2,7 +2,11 @@ import { Readable } from 'stream';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
-import { PrismaService, Prisma, EnumResourceType } from '@amplication/prisma-db';
+import {
+  PrismaService,
+  Prisma,
+  EnumResourceType
+} from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { orderBy } from 'lodash';
@@ -242,7 +246,7 @@ const EXAMPLE_APP_ROLES = [];
 
 const EXAMPLE_SERVICE_RESOURCE: Resource = {
   id: 'exampleResourceId',
-  type:EnumResourceType.Service,
+  type: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: 'exampleResourceName',
