@@ -12,7 +12,7 @@ const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".yml",
 ];
 
-const appInfo: AppInfo = {
+export const appInfo: AppInfo = {
   name: "Sample Application",
   description: "Sample application for testing",
   version: "0.1.3",
