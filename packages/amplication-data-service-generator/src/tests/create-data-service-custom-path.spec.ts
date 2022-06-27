@@ -28,11 +28,11 @@ const appInfo: AppInfo = {
     serverSettings: {
       generateGraphQL: true,
       generateRestApi: true,
-      serverPath: "",
+      serverPath: "test",
     },
     adminUISettings: {
       generateAdminUI: true,
-      adminUIPath: "",
+      adminUIPath: "test-ui",
     },
   },
 }

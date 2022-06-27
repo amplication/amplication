@@ -26,7 +26,7 @@ const appInfo: AppInfo = {
     dbUser: "testUsername",
     authProvider: EnumAuthProviderType.Http,
     serverSettings: {
-      generateGraphQL: true,
+      generateGraphQL: false,
       generateRestApi: true,
       serverPath: "",
     },
