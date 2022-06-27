@@ -4,7 +4,7 @@ import {
   EnumPanelStyle,
   TextField,
 } from "@amplication/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback, useContext } from "react";
 import * as models from "../../models";
