@@ -23,7 +23,7 @@
     align-items: flex-start;
   }
   .toggle-field {
-    margin-right: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
     span {
       @include regular-12();
     }
