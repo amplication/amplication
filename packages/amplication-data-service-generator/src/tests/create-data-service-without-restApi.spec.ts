@@ -5,7 +5,7 @@ import { AppInfo } from "../types";
 import {
   appInfo,
   MODULE_EXTENSIONS_TO_SNAPSHOT,
-} from "./create-data-service.spec";
+} from "./appInfo";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
