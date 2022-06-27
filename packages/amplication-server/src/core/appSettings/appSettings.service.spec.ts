@@ -3,14 +3,14 @@ import { BlockService } from 'src/core/block/block.service';
 import { AppSettingsService } from './appSettings.service';
 import { AppSettings } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { DEFAULT_APP_SETTINGS } from './constants';
+import { DEFAULT_RESOURCE_SETTINGS } from './constants';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
-const EXAMPLE_NAME = 'Example App Settings';
-const EXAMPLE_APP_ID = 'ExampleApp';
+const EXAMPLE_NAME = 'Example Resource Settings';
+const EXAMPLE_RESOURCE_ID = 'ExampleResource';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
@@ -48,7 +48,7 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
 };
 
 const createMock = jest.fn(() => {
-  return { ...EXAMPLE_APP_SETTINGS, ...DEFAULT_APP_SETTINGS };
+  return { ...EXAMPLE_APP_SETTINGS, ...DEFAULT_RESOURCE_SETTINGS };
 });
 const findOneMock = jest.fn(() => EXAMPLE_APP_SETTINGS);
 const findManyByBlockTypeMock = jest.fn(() => [EXAMPLE_APP_SETTINGS]);
@@ -89,7 +89,7 @@ describe('AppSettingsService', () => {
     expect(
       await service.getAppSettingsBlock(
         {
-          where: { id: EXAMPLE_APP_ID }
+          where: { id: EXAMPLE_RESOURCE_ID }
         },
         EXAMPLE_USER
       )
@@ -99,10 +99,10 @@ describe('AppSettingsService', () => {
 
   it('should create default', async () => {
     expect(
-      await service.createDefaultAppSettings(EXAMPLE_APP_ID, EXAMPLE_USER)
+      await service.createDefaultAppSettings(EXAMPLE_RESOURCE_ID, EXAMPLE_USER)
     ).toEqual({
       ...EXAMPLE_APP_SETTINGS,
-      ...DEFAULT_APP_SETTINGS
+      ...DEFAULT_RESOURCE_SETTINGS
     });
     expect(createMock).toBeCalledTimes(1);
   });
@@ -115,7 +115,7 @@ describe('AppSettingsService', () => {
             ...EXAMPLE_APP_SETTINGS
           },
           where: {
-            id: EXAMPLE_APP_ID
+            id: EXAMPLE_RESOURCE_ID
           }
         },
         EXAMPLE_USER

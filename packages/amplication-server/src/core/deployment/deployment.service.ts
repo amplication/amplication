@@ -126,7 +126,7 @@ export class DeploymentService {
 
   async autoDeployToSandbox(build: Build): Promise<Deployment> {
     const sandboxEnvironment = await this.environmentService.getDefaultEnvironment(
-      build.appId
+      build.resourceId
     );
 
     const deployment = (await this.prisma.deployment.create({
@@ -275,7 +275,7 @@ export class DeploymentService {
       DEPLOY_STEP_MESSAGE,
       async step => {
         const { build, environment } = deployment;
-        const { appId } = build;
+        const { resourceId } = build;
         const [imageId] = build.images;
         const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
         switch (deployerDefault) {
@@ -284,7 +284,7 @@ export class DeploymentService {
           }
           case DeployerProvider.GCP: {
             const result = await this.deployToGCP(
-              appId,
+              resourceId,
               imageId,
               environment.address
             );
@@ -402,7 +402,7 @@ export class DeploymentService {
   }
 
   async deployToGCP(
-    appId: string,
+    resourceId: string,
     imageId: string,
     subdomain: string
   ): Promise<DeployResult> {
@@ -419,10 +419,10 @@ export class DeploymentService {
 
     const backendConfiguration = {
       bucket: terraformStateBucket,
-      prefix: appId
+      prefix: resourceId
     };
     const variables = {
-      [TERRAFORM_APP_ID_VARIABLE]: appId,
+      [TERRAFORM_APP_ID_VARIABLE]: resourceId,
       [TERRAFORM_IMAGE_ID_VARIABLE]: imageId,
       [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
       [GCP_TERRAFORM_REGION_VARIABLE]: region,
@@ -488,7 +488,7 @@ export class DeploymentService {
       DESTROY_STEP_MESSAGE,
       async step => {
         const { build, environment } = deployment;
-        const { appId } = build;
+        const { resourceId } = build;
         const [imageId] = build.images;
         const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
         switch (deployerDefault) {
@@ -502,7 +502,7 @@ export class DeploymentService {
             );
 
             const result = await this.destroyOnGCP(
-              appId,
+              resourceId,
               imageId,
               environment.address
             );
@@ -519,7 +519,7 @@ export class DeploymentService {
   }
 
   async destroyOnGCP(
-    appId: string,
+    resourceId: string,
     imageId: string,
     subdomain: string
   ): Promise<DeployResult> {
@@ -536,10 +536,10 @@ export class DeploymentService {
 
     const backendConfiguration = {
       bucket: terraformStateBucket,
-      prefix: appId
+      prefix: resourceId
     };
     const variables = {
-      [TERRAFORM_APP_ID_VARIABLE]: appId,
+      [TERRAFORM_APP_ID_VARIABLE]: resourceId,
       [TERRAFORM_IMAGE_ID_VARIABLE]: imageId,
       [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
       [GCP_TERRAFORM_REGION_VARIABLE]: region,

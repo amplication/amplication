@@ -10,9 +10,9 @@ const UNEXPECTED_RESOURCE_ID = 'unexpectedResourceId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
 
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 
-const EXAMPLE_APP_ROLE_ID = 'exampleAppRoleId';
+const EXAMPLE_RESOURCE_ROLE_ID = 'exampleResourceRoleId';
 
 const EXAMPLE_WORKSPACE: Workspace = {
   id: EXAMPLE_WORKSPACE_ID,
@@ -33,11 +33,11 @@ const EXAMPLE_USER: User = {
   isOwner: true
 };
 
-const prismaAppCountMock = jest.fn(() => {
+const prismaResourceCountMock = jest.fn(() => {
   return EXAMPLE_COUNT;
 });
 
-const prismaAppRoleCountMock = jest.fn(() => {
+const prismaResourceRoleCountMock = jest.fn(() => {
   return EXAMPLE_COUNT;
 });
 
@@ -52,11 +52,11 @@ describe('PermissionsService', () => {
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
-            app: {
-              count: prismaAppCountMock
+            resource: {
+              count: prismaResourceCountMock
             },
-            appRole: {
-              count: prismaAppRoleCountMock
+            resourceRole: {
+              count: prismaResourceRoleCountMock
             }
           }))
         }
@@ -85,11 +85,11 @@ describe('PermissionsService', () => {
     ).toEqual(true);
   });
 
-  it('should return true when resourceType is an authorized app id', async () => {
+  it('should return true when resourceType is an authorized resource id', async () => {
     const args = {
       user: EXAMPLE_USER,
-      resourceType: AuthorizableResourceParameter.AppId,
-      resourceId: EXAMPLE_APP_ID
+      resourceType: AuthorizableResourceParameter.ResourceId,
+      resourceId: EXAMPLE_RESOURCE_ID
     };
     const countArgs = {
       where: {
@@ -107,20 +107,20 @@ describe('PermissionsService', () => {
         args.resourceId
       )
     ).toEqual(true);
-    expect(prismaAppCountMock).toBeCalledTimes(1);
-    expect(prismaAppCountMock).toBeCalledWith(countArgs);
+    expect(prismaResourceCountMock).toBeCalledTimes(1);
+    expect(prismaResourceCountMock).toBeCalledWith(countArgs);
   });
 
   it('should return true if resourceType is an authorized instance of AuthorizableResourceParameter', async () => {
     const args = {
       user: EXAMPLE_USER,
-      resourceType: AuthorizableResourceParameter.AppRoleId,
-      resourceId: EXAMPLE_APP_ROLE_ID
+      resourceType: AuthorizableResourceParameter.ResourceRoleId,
+      resourceId: EXAMPLE_RESOURCE_ROLE_ID
     };
     const countArgs = {
       where: {
         id: args.resourceId,
-        app: {
+        resource: {
           deletedAt: null,
           workspace: {
             id: EXAMPLE_WORKSPACE_ID
@@ -135,8 +135,8 @@ describe('PermissionsService', () => {
         args.resourceId
       )
     ).toEqual(true);
-    expect(prismaAppRoleCountMock).toBeCalledTimes(1);
-    expect(prismaAppRoleCountMock).toBeCalledWith(countArgs);
+    expect(prismaResourceRoleCountMock).toBeCalledTimes(1);
+    expect(prismaResourceRoleCountMock).toBeCalledWith(countArgs);
   });
 
   it('should throw an error', async () => {

@@ -23,7 +23,7 @@ import { CommitService } from '../commit/commit.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_VERSION = 'exampleVersion';
 const EXAMPLE_ACTION_ID = 'exampleActionId';
@@ -62,7 +62,7 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
 
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
-  appId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   userId: EXAMPLE_USER_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
@@ -74,7 +74,7 @@ const FIND_MANY_BUILDS_QUERY = gql`
   query {
     builds {
       id
-      appId
+      resourceId
       userId
       version
       actionId
@@ -88,7 +88,7 @@ const FIND_ONE_BUILD_QUERY = gql`
   query($id: String!) {
     build(where: { id: $id }) {
       id
-      appId
+      resourceId
       userId
       version
       actionId
@@ -155,16 +155,16 @@ const GET_DEPLOYMENTS_QUERY = gql`
 `;
 
 const CREATE_BUILD_MUTATION = gql`
-  mutation($appId: String!, $commitId: String!, $message: String!) {
+  mutation($resourceId: String!, $commitId: String!, $message: String!) {
     createBuild(
       data: {
-        app: { connect: { id: $appId } }
+        resource: { connect: { id: $resourceId } }
         commit: { connect: { id: $commitId } }
         message: $message
       }
     ) {
       id
-      appId
+      resourceId
       userId
       version
       actionId
@@ -379,7 +379,7 @@ describe('BuildResolver', () => {
   it('should create a build', async () => {
     const args = {
       data: {
-        app: { connect: { id: EXAMPLE_APP_ID } },
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         commit: { connect: { id: EXAMPLE_COMMIT_ID } },
         message: EXAMPLE_MESSAGE
       }
@@ -387,7 +387,7 @@ describe('BuildResolver', () => {
     const res = await apolloClient.mutate({
       mutation: CREATE_BUILD_MUTATION,
       variables: {
-        appId: EXAMPLE_APP_ID,
+        resourceId: EXAMPLE_RESOURCE_ID,
         commitId: EXAMPLE_COMMIT_ID,
         message: EXAMPLE_MESSAGE
       }

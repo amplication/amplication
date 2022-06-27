@@ -6,8 +6,8 @@ import { GqlAuthModule } from 'src/guards/gql-auth.module';
 import { EntityModule } from 'src/core/entity/entity.module';
 import { PermissionsModule } from 'src/core/permissions/permissions.module';
 import { UserModule } from 'src/core/user/user.module';
-import { AppRoleModule } from 'src/core/appRole/appRole.module';
-import { AppModule } from 'src/core/app/app.module'; // eslint-disable-line import/no-cycle
+import { ResourceRoleModule } from 'src/core/resourceRole/resourceRole.module';
+import { ResourceModule } from 'src/core/resource/resource.module'; // eslint-disable-line import/no-cycle
 import { AppSettingsModule } from 'src/core/appSettings/appSettings.module'; // eslint-disable-line import/no-cycle
 import { BuildService } from './build.service';
 import { BuildResolver } from './build.resolver';
@@ -31,12 +31,12 @@ import { CommitModule } from '../commit/commit.module';
     PermissionsModule,
     UserModule,
     RootStorageModule,
-    AppRoleModule,
+    ResourceRoleModule,
     ActionModule,
     ContainerBuilderRootModule,
     StorageOptionsModule,
     DeploymentModule,
-    forwardRef(() => AppModule),
+    forwardRef(() => ResourceModule),
     AppSettingsModule,
     QueueModule,
     forwardRef(() => CommitModule)

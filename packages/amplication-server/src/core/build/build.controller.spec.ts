@@ -39,14 +39,14 @@ describe('BuildController', () => {
     await app.init();
   });
 
-  test('get generated app archive', async () => {
+  test('get generated resource archive', async () => {
     await request(app.getHttpServer())
       .get(`/generated-apps/${EXAMPLE_BUILD_ID}.zip`)
       .expect(HttpStatus.OK)
       .expect(EXAMPLE_BUILD_CONTENT_CHUNK);
   });
 
-  test('fail to get generated app archive for non existing build', async () => {
+  test('fail to get generated resource archive for non existing build', async () => {
     const error = new BuildResultNotFound(EXAMPLE_BUILD_ID);
     downloadMock.mockImplementation(() => {
       throw error;

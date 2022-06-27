@@ -24,5 +24,5 @@ export class EnvironmentCreateInput {
     nullable: false,
     description: undefined
   })
-  app!: WhereParentIdInput;
+  resource!: WhereParentIdInput;
 }

@@ -18,7 +18,7 @@ export class CreateGitRepositoryInput {
   @Field(() => String, {
     nullable: false
   })
-  appId!: string;
+  resourceId!: string;
 
   @Field(() => String, {
     nullable: false

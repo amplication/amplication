@@ -13,7 +13,7 @@ const logger = {
   format: Symbol('EXAMPLE_LOGGER_FORMAT')
 };
 
-const APP_ID_MOCK = 'appId';
+const RESOURCE_ID_MOCK = 'resourceId';
 const BUILD_ID_MOCK = 'buildId';
 describe('Testing the BuildFilesSaver service', () => {
   const outputFileSpy = jest.spyOn(fsExtra, 'outputFile');
@@ -21,7 +21,7 @@ describe('Testing the BuildFilesSaver service', () => {
   let buildFilesSaver: BuildFilesSaver;
   const configService = mock<ConfigService>();
 
-  const relativePath = join(APP_ID_MOCK, BUILD_ID_MOCK);
+  const relativePath = join(RESOURCE_ID_MOCK, BUILD_ID_MOCK);
   beforeEach(() => {
     configService.get.mockClear();
     configService.get.mockReturnValue(tmpdir());
@@ -29,7 +29,7 @@ describe('Testing the BuildFilesSaver service', () => {
     //@ts-ignore
     buildFilesSaver = new BuildFilesSaver(configService, logger);
   });
-  it('should save an app files to a build folder', async () => {
+  it('should save an resource files to a build folder', async () => {
     await buildFilesSaver.saveFiles(relativePath, [
       {
         code: 'code',

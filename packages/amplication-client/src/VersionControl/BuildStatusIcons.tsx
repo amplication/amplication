@@ -71,7 +71,7 @@ export const BuildStatusIcons = ({ build }: BuildStatusIconsProps) => {
       <Tooltip
         direction={TOOLTIP_DIRECTION}
         wrap
-        aria-label="Publish App to Sandbox"
+        aria-label="Publish Resource to Sandbox"
         className={`${CLASS_NAME}__status`}
       >
         <BuildStepsStatus status={stepDeploy?.status} />

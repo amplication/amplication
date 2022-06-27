@@ -12,7 +12,7 @@ import { downloadArchive } from "./BuildSteps";
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 import { HelpPopover } from "../Components/HelpPopover";
-import { GET_APPLICATION } from "../Application/ApplicationHome";
+import { GET_RESOURCE } from "../Resource/ResourceHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
@@ -27,9 +27,9 @@ export const EMPTY_STEP: models.ActionStep = {
   message: "",
 };
 
-export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const GENERATE_STEP_NAME = "GENERATE_RESOURCE";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
-export const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
 export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
@@ -54,11 +54,11 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
     "false"
   );
 
-  const { data: appData } = useQuery<{
-    app: models.App;
-  }>(GET_APPLICATION, {
+  const { data: resourceData } = useQuery<{
+    resource: models.Resource;
+  }>(GET_RESOURCE, {
     variables: {
-      id: build.appId,
+      id: build.resourceId,
     },
   });
 
@@ -147,13 +147,13 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
               Open GitHub
             </Button>
           </a>
-        ) : !appData?.app.githubSyncEnabled ? ( //app is not connected to github
+        ) : !resourceData?.resource.githubSyncEnabled ? ( //resource is not connected to github
           <HelpPopover
             onDismiss={handleDismissHelpGitHub}
             content={
               <div>
                 Enable sync with GitHub to automatically push the generated code
-                of your application and create a Pull Request in your GitHub
+                of your resource and create a Pull Request in your GitHub
                 repository every time you commit your changes.
               </div>
             }
@@ -161,7 +161,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             placement="top-start"
           >
             <Link
-              to={`/${build.appId}/code-view`}
+              to={`/${build.resourceId}/code-view`}
               className={`${CLASS_NAME}__view-code`}
             >
               <Button
@@ -177,7 +177,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             </Link>
           </HelpPopover>
         ) : (
-          //app was connected after this build was created
+          //resource was connected after this build was created
           <div className={`${CLASS_NAME}__message`}>
             <Icon size="small" icon="info_circle" />
             <span>
@@ -216,7 +216,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             <div>
               All your committed changes are continuously deployed to a sandbox
               environment on the Amplication cloud so you can easily access your
-              application for testing and development purposes.
+              resource for testing and development purposes.
             </div>
           }
           open={showSandboxHelp === "false" ? false : true}
@@ -224,7 +224,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         >
           {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
           stepDeploy?.status === models.EnumActionStepStatus.Running ? (
-            // <Link to={`/${build.appId}/builds/${build.id}`}>
+            // <Link to={`/${build.resourceId}/builds/${build.id}`}>
             //   <Button
             //     buttonStyle={EnumButtonStyle.Clear}
             //     eventData={{
@@ -240,12 +240,12 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             <div />
           ) : deployment &&
             stepDeploy?.status === models.EnumActionStepStatus.Success ? (
-            <a href={deployment.environment.address} target="app">
+            <a href={deployment.environment.address} target="resource">
               <Button
                 buttonStyle={EnumButtonStyle.Clear}
                 icon="link_2"
                 eventData={{
-                  eventName: "openPreviewApp",
+                  eventName: "openPreviewResource",
                   versionNumber: data.build.version,
                 }}
               >
@@ -255,7 +255,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
           ) : (
             <div className={`${CLASS_NAME}__sandbox`}>
               {stepDeploy ? (
-                <Link to={`/${build.appId}/builds/${build.id}`}>
+                <Link to={`/${build.resourceId}/builds/${build.id}`}>
                   <Button
                     buttonStyle={EnumButtonStyle.Clear}
                     eventData={{

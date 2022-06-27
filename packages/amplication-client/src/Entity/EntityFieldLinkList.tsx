@@ -30,7 +30,7 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
   const history = useHistory();
   const handleFieldAdd = useCallback(
     (field: models.EntityField) => {
-      const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
+      const fieldUrl = `/${data?.entity.resourceId}/entities/${entityId}/fields/${field.id}`;
       history.push(fieldUrl);
     },
     [data, history, entityId]
@@ -44,7 +44,7 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
         <div key={field.id}>
           <InnerTabLink
             icon={DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon}
-            to={`/${data?.entity.appId}/entities/${data?.entity.id}/fields/${field.id}`}
+            to={`/${data?.entity.resourceId}/entities/${data?.entity.id}/fields/${field.id}`}
           >
             <span>{field.displayName}</span>
           </InnerTabLink>
@@ -67,7 +67,7 @@ export const GET_FIELDS = gql`
   ) {
     entity(where: { id: $id }) {
       id
-      appId
+      resourceId
       fields(where: { displayName: $whereName }, orderBy: $orderBy) {
         id
         displayName

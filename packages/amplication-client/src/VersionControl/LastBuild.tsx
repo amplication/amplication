@@ -11,17 +11,17 @@ type TData = {
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
-const LastBuild = ({ applicationId }: Props) => {
+const LastBuild = ({ resourceId }: Props) => {
   const [error, setError] = useState<Error>();
 
   const { data, loading, error: errorLoading } = useQuery<TData>(
     GET_LAST_BUILD,
     {
       variables: {
-        appId: applicationId,
+        resourceId: resourceId,
       },
     }
   );
@@ -55,15 +55,15 @@ const LastBuild = ({ applicationId }: Props) => {
 export default LastBuild;
 
 export const GET_LAST_BUILD = gql`
-  query lastBuild($appId: String!) {
+  query lastBuild($resourceId: String!) {
     builds(
-      where: { app: { id: $appId } }
+      where: { resource: { id: $resourceId } }
       orderBy: { createdAt: Desc }
       take: 1
     ) {
       id
       createdAt
-      appId
+      resourceId
       version
       message
       createdAt
