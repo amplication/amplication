@@ -128,6 +128,11 @@ amplication-server:
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
 
+      #SENDGRID
+      SENDGRID_FROM_ADDRESS: team@amplication.com
+      SENDGRID_API_KEY_SECRET_NAME: projects/948093699220/secrets/sendgrid_api_key_secret/versions/1
+      SENDGRID_INVITATION_TEMPLATE_ID: d-aaae46e4127c4d2399d242610e6c496a
+
 amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
