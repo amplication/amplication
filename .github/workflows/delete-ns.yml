@@ -1,21 +1,21 @@
 name: delete-ns
 on:
   workflow_dispatch:
-  inputs:
-    namespace:
-      type: string
-      description: Which namespace you wnat to delete
-      default: shimi
-      required: true
-    cluster-env:
-        type: choice
-        description: To which cluster environment
-        default: staging-os
+    inputs:
+      namespace:
+        type: string
+        description: Which namespace you wnat to delete
+        default: shimi
         required: true
-        options:
-          - staging-os
-          - staging
-          - prod
+      cluster-env:
+          type: choice
+          description: To which cluster environment
+          default: staging-os
+          required: true
+          options:
+            - staging-os
+            - staging
+            - prod
 
 jobs:
   check-ns-name:
