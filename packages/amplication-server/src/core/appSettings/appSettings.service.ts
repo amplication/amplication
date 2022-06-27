@@ -12,7 +12,7 @@ export const isStringBool = (val: any) => typeof val === 'boolean' || typeof val
 @Injectable()
 export class AppSettingsService {
   @Inject()
-  private readonly blockService: BlockService;
+private readonly blockService: BlockService;
 
   async getAppSettingsValues(
     args: FindOneArgs,
@@ -62,33 +62,27 @@ export class AppSettingsService {
     return {
       ...appSettings,
       authProvider: appSettings.authProvider || EnumAuthProviderType.Jwt,
-      // ...(!appSettings || !appSettings.hasOwnProperty('')
-      //   ? this.updateAppSettings(
-      //       {
-      //         data: {
-      //           serverSettings: {
-      //             generateGraphQL: true,
-      //             generateRestApi: true,
-      //             serverPath: ''
-      //           },
-      //           adminUISettings: {
-      //             generateAdminUI: true,
-      //             adminUIPath: ''
-      //           },
-      //           dbHost: appSettings.dbHost,
-      //           dbName: appSettings.dbName,
-      //           dbPassword: appSettings.dbPassword,
-      //           dbPort: appSettings.dbPort,
-      //           dbUser: appSettings.dbUser,
-      //           authProvider: appSettings.authProvider
-      //         },
-      //         where: {
-      //           id: args.where.id
-      //         }
-      //       },
-      //       user
-      //     )
-      //   : {})
+      ...(!appSettings.hasOwnProperty("serverSettings") || !appSettings.hasOwnProperty("adminUISettings")
+        ? this.updateAppSettings(
+          {
+            data: {
+              ...appSettings,
+              serverSettings: {
+                generateGraphQL: true,
+                generateRestApi: true,
+                serverPath: ''
+              },
+              adminUISettings: {
+                generateAdminUI: true,
+                adminUIPath: ''
+              },
+            },
+            where: {
+              id: args.where.id
+            }
+          },
+          user
+        ) : {})
     };
   }
 
