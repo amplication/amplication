@@ -14,7 +14,7 @@ import { GET_APPLICATION } from "../Application/ApplicationHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
-import { Icon, Tooltip } from "@amplication/design-system";
+import { CircularProgress, Icon, Tooltip } from "@amplication/design-system";
 
 const CLASS_NAME = "build-summary";
 
@@ -165,6 +165,13 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
           />
         </Tooltip>
       </div>
+
+      {generating && (
+        <div className={`${CLASS_NAME}__generating`}>
+          <CircularProgress />
+          Generating new build...
+        </div>
+      )}
     </div>
   );
 };

@@ -12,6 +12,7 @@ import useBuildWatchStatus from "./useBuildWatchStatus";
 import BuildSteps from "./BuildSteps";
 
 import "./Build.scss";
+import BuildHeader from "./BuildHeader";
 
 const CLASS_NAME = "build";
 
@@ -31,6 +32,7 @@ const Build = ({ build, onError, open }: Props) => {
       <PanelHeader>Build details</PanelHeader>
       <div className={`${CLASS_NAME}__message`}>{data.build.message}</div>
       <UserAndTime account={account} time={build.createdAt} />
+      <BuildHeader build={data.build} isError={open} />
       <BuildSteps build={data.build} onError={onError} />
     </Panel>
   );
