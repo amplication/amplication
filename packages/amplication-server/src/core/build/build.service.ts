@@ -442,10 +442,6 @@ export class BuildService {
         `${commit.message} (Amplication build ${truncateBuildId})`) ||
       `Amplication build ${truncateBuildId}`;
 
-    const host = this.configService.get(HOST_VAR);
-
-    const url = `${host}/${build.appId}/builds/${build.id}`;
-
     if (appRepository) {
       return this.actionService.run(
         build.actionId,
@@ -466,11 +462,7 @@ export class BuildService {
                 commit: {
                   base: 'main',
                   head: `amplication-build-${build.id}`,
-                  body: `Amplication build # ${build.id}.
-                Commit message: ${commit.message}
-                
-                ${url}
-                `,
+                  body: `Amplication build # ${build.id}`,
                   title: commitMessage
                 }
               }
