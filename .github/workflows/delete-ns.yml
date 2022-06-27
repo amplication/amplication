@@ -1,0 +1,98 @@
+name: delete-ns
+on:
+  workflow_dispatch:
+  inputs:
+    namespace:
+      type: string
+      description: Which namespace you wnat to delete
+      default: shimi
+      required: true
+    cluster-env:
+        type: choice
+        description: To which cluster environment
+        default: staging-os
+        required: true
+        options:
+          - staging-os
+          - staging
+          - prod
+
+jobs:
+  check-ns-name:
+    runs-on: ubuntu-18.04
+    outputs:
+      namespace_valid: ${{ steps.check-ns.outputs.namespace_valid }}
+    steps:
+      - name: check namespace
+        id: check-ns
+        env: 
+          NAMESPACE: ${{ github.event.inputs.namespace }}
+        run: |
+          NAMESPACE=$NAMESPACE
+          echo "namespce: $NAMESPACE"
+          if [[ "$NAMESPACE" == "staging" || "$NAMESPACE" == "staging-os" || "$NAMESPACE" == "prod" ]]; then
+            echo "This is not a dynamic namespace."
+            echo "::set-output name=namespace_valid::false"
+          else
+            echo "::set-output name=namespace_valid::true"
+          fi
+  delete-ns:
+    runs-on: ubuntu-18.04
+    needs: [check-ns-name]
+    if: ${{ needs.check-ns-name.outputs.namespace_valid == "true" }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: set cluster name
+        id: set-cluster-name
+        run: |
+          CLUSTER_NAME="useast1-$CLUSTER-ENV"
+          echo "Will run to $CLUSTER_NAME eks cluster"
+          echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
+        env:
+          CLUSTER-ENV: ${{ github.event.inputs.cluster-env }}
+      - name: connect to cluster
+        id: connect-cluster
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+        env:
+          AWS_REGION: us-east-1
+      - name: check if namespace exist
+        id: ns-exist
+        env: 
+          NAMESPACE: ${{ github.event.inputs.namespace }}
+        run: |
+          cmd=$(kubectl get ns $NAMESPACE)
+          set +e
+          if [[ if -z "$cmd" ]]
+          then
+            echo "namespace doesn't exist"
+            echo "::set-output name=namespace_exist::false"
+          else
+            echo "namespace exists"
+            echo "::set-output name=namespace_exist::true"
+          fi
+      - name: delete ns
+        if: ${{ steps.ns-exist.outputs.namespace_exist == "true" }}
+        env:
+          NAMESPACE: ${{ github.event.inputs.namespace }}
+        run: |
+          kubectl delete all --all -n $NAMESPACE
+          kubectl delete ns $NAMESPACE
+          kubectl proxy &
+          kubectl get namespace $NAMESPACE -o json |jq '.spec = {"finalizers":[]}' >temp.json
+          curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json 127.0.0.1:8001/api/v1/namespaces/$NAMESPACE/finalize
+          kubectl get ns
+
+
+
+
+
+
+
+
