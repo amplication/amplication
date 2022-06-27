@@ -5,11 +5,20 @@ import manifest from "./manifest.json";
 
 const indexHTMLPath = path.join(__dirname, "index.template.html");
 
-export async function createPublicFiles(appInfo: AppInfo, publicPath: string): Promise<Module[]> {
-  return [createManifestModule(appInfo, publicPath), await createIndexHTMLModule(appInfo, publicPath)];
+export async function createPublicFiles(
+  appInfo: AppInfo,
+  publicPath: string
+): Promise<Module[]> {
+  return [
+    createManifestModule(appInfo, publicPath),
+    await createIndexHTMLModule(appInfo, publicPath),
+  ];
 }
 
-export async function createIndexHTMLModule(appInfo: AppInfo, publicPath: string): Promise<Module> {
+export async function createIndexHTMLModule(
+  appInfo: AppInfo,
+  publicPath: string
+): Promise<Module> {
   const html = await readCode(indexHTMLPath);
   return {
     path: `${publicPath}/index.html`,
@@ -19,7 +28,10 @@ export async function createIndexHTMLModule(appInfo: AppInfo, publicPath: string
   };
 }
 
-export function createManifestModule(appInfo: AppInfo, publicPath: string): Module {
+export function createManifestModule(
+  appInfo: AppInfo,
+  publicPath: string
+): Module {
   return {
     path: `${publicPath}/manifest.json`,
     code: JSON.stringify(

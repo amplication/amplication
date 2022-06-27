@@ -10,7 +10,10 @@ const templatePath = require.resolve("./create-dotenv.template.env");
  * The function replaces any placeholder in a ${name} format based on the key in the appInfo.settings
  * @returns grants JSON module
  */
-export async function createDotEnvModule(appInfo: AppInfo, baseDirectory: string): Promise<Module> {
+export async function createDotEnvModule(
+  appInfo: AppInfo,
+  baseDirectory: string
+): Promise<Module> {
   const MODULE_PATH = `${baseDirectory}/.env`;
   const code = await readCode(templatePath);
 

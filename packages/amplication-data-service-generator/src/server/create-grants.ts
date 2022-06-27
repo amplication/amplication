@@ -46,8 +46,12 @@ export const READ_OWN: Action = "read:own";
  * @param roles all the existing roles
  * @returns grants JSON module
  */
-export function createGrantsModule(entities: Entity[], roles: Role[], srcDirectory: string): Module {
-  const MODULE_PATH = `${srcDirectory}/grants.json`
+export function createGrantsModule(
+  entities: Entity[],
+  roles: Role[],
+  srcDirectory: string
+): Module {
+  const MODULE_PATH = `${srcDirectory}/grants.json`;
   return {
     path: MODULE_PATH,
     code: JSON.stringify(createGrants(entities, roles), null, 2),

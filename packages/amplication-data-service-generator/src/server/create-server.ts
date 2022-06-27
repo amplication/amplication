@@ -39,7 +39,9 @@ export async function createServerModules(
   userEntity: Entity,
   logger: winston.Logger
 ): Promise<Module[]> {
-  const directoryManager = dynamicPathCreator(appInfo?.settings?.serverSettings?.serverPath || "");
+  const directoryManager = dynamicPathCreator(
+    appInfo?.settings?.serverSettings?.serverPath || ""
+  );
 
   logger.info(`Server path: ${directoryManager.BASE}`);
   logger.info("Creating server...");

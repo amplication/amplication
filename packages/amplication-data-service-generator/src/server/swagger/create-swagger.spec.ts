@@ -23,11 +23,11 @@ const EXAMPLE_APP_INFO: AppInfo = {
     serverSettings: {
       generateGraphQL: false,
       generateRestApi: false,
-      serverPath: ""
+      serverPath: "",
     },
     adminUISettings: {
       generateAdminUI: false,
-      adminUIPath: ""
+      adminUIPath: "",
     },
   },
 };

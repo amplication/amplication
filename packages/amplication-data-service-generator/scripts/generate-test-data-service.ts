@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import entities from "../src/tests/entities";
 import roles from "../src/tests/roles";
-import { appInfo } from "../src/tests/create-data-service.spec"
+import { appInfo } from "../src/tests/create-data-service.spec";
 import { AppInfo, Module } from "../src/types";
 import { createDataService } from "../src/create-data-service";
 

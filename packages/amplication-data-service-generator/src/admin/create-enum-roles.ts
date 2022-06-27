@@ -6,7 +6,10 @@ import { Role, Module } from "../types";
 
 export const ENUM_ROLES_ID = builders.identifier("EnumRoles");
 
-export function createEnumRolesModule(roles: Role[], srcDirectory: string): Module {
+export function createEnumRolesModule(
+  roles: Role[],
+  srcDirectory: string
+): Module {
   const MODULE_PATH = `${srcDirectory}/user/${ENUM_ROLES_ID.name}.ts`;
   const enumDeclaration = createRolesEnumDeclaration(roles);
   const file = createDTOFile(enumDeclaration, MODULE_PATH, {});

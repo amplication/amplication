@@ -60,7 +60,10 @@ export function createDTOModules(dtos: DTOs, srcDirectory: string): Module[] {
   );
 }
 
-export function getDTONameToPath(dtos: DTOs, srcDirectory: string): Record<string, string> {
+export function getDTONameToPath(
+  dtos: DTOs,
+  srcDirectory: string
+): Record<string, string> {
   return Object.fromEntries(
     Object.entries(dtos).flatMap(([entityName, entityDTOs]) =>
       Object.values(entityDTOs).map((dto) => [

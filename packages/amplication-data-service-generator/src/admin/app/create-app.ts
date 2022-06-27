@@ -19,7 +19,7 @@ export async function createAppModule(
   appInfo: AppInfo,
   entityToPath: Record<string, string>,
   entitiesComponents: Record<string, EntityComponents>,
-  directoryManager: {[key: string]: string}
+  directoryManager: { [key: string]: string }
 ): Promise<Module> {
   const PATH = `${directoryManager.SRC}/App.tsx`;
   const { settings } = appInfo;

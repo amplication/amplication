@@ -35,7 +35,7 @@ export const appInfo: AppInfo = {
       adminUIPath: "",
     },
   },
-}
+};
 
 jest.setTimeout(100000);
 

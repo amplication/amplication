@@ -165,7 +165,10 @@ async function createServiceModule(
     addImports(file, [
       importNames(
         [PASSWORD_SERVICE_ID],
-        relativeImportPath(modulePath, `${srcDirectory}/auth/password.service.ts`)
+        relativeImportPath(
+          modulePath,
+          `${srcDirectory}/auth/password.service.ts`
+        )
       ),
     ]);
   }
@@ -280,7 +283,10 @@ async function createServiceBaseModule(
     addImports(file, [
       importNames(
         [PASSWORD_SERVICE_ID],
-        relativeImportPath(moduleBasePath, `${srcDirectory}/auth/password.service.ts`)
+        relativeImportPath(
+          moduleBasePath,
+          `${srcDirectory}/auth/password.service.ts`
+        )
       ),
     ]);
 

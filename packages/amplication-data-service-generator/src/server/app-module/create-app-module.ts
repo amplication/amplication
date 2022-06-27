@@ -30,7 +30,7 @@ export async function createAppModule(
   staticModules: Module[],
   srcDirectory: string
 ): Promise<Module> {
-  const MODULE_PATH = `${srcDirectory}/app.module.ts`
+  const MODULE_PATH = `${srcDirectory}/app.module.ts`;
   const nestModules = [
     ...resourceModules.filter((module) => module.path.match(MODULE_PATTERN)),
     ...staticModules.filter((module) => module.path.match(MODULE_PATTERN)),

@@ -101,7 +101,9 @@ describe("createDTOFile", () => {
 describe("createDTOModulePath", () => {
   test("creates path", () => {
     const dtoName = createCreateInputID(EXAMPLE_ENTITY_NAME).name;
-    expect(createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dtoName, SRC_DIRECTORY)).toEqual(
+    expect(
+      createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dtoName, SRC_DIRECTORY)
+    ).toEqual(
       `${SRC_DIRECTORY}/${EXAMPLE_ENTITY_NAME_DIRECTORY}/base/${dtoName}.ts`
     );
   });

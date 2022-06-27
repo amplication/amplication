@@ -13,7 +13,10 @@ const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
-export async function createSwagger(appInfo: AppInfo, srcDirectory: string): Promise<Module> {
+export async function createSwagger(
+  appInfo: AppInfo,
+  srcDirectory: string
+): Promise<Module> {
   const MODULE_PATH = `${srcDirectory}/swagger.ts`;
   const { settings } = appInfo;
   const { authProvider } = settings;

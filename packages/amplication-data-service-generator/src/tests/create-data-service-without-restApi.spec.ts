@@ -2,7 +2,10 @@ import { createDataService } from "../create-data-service";
 import entities from "./entities";
 import roles from "./roles";
 import { AppInfo } from "../types";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./create-data-service.spec";
+import {
+  appInfo,
+  MODULE_EXTENSIONS_TO_SNAPSHOT,
+} from "./create-data-service.spec";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -12,9 +15,9 @@ const newAppInfo: AppInfo = {
       generateGraphQL: true,
       generateRestApi: false,
       serverPath: "",
-    }
-  }
-}
+    },
+  },
+};
 
 jest.setTimeout(100000);
 
