@@ -4,7 +4,7 @@ import roles from "./roles";
 import { AppInfo } from "../types";
 import { EnumAuthProviderType } from "../models";
 
-const MODULE_EXTENSIONS_TO_SNAPSHOT = [
+export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".ts",
   ".tsx",
   ".prisma",
