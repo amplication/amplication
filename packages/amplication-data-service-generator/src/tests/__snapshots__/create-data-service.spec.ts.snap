@@ -5461,11 +5461,6 @@ export class CustomerControllerBase {
   }
 
   @Public()
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get(\\"/:id/orders\\")
   @ApiNestedQuery(OrderFindManyArgs)
   async findManyOrders(
@@ -5776,11 +5771,6 @@ export class CustomerResolverBase {
 
   @Public()
   @graphql.ResolveField(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async orders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
@@ -8024,11 +8014,6 @@ export class OrderControllerBase {
   ) {}
 
   @Public()
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -8059,11 +8044,6 @@ export class OrderControllerBase {
   }
 
   @Public()
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse()
@@ -8090,11 +8070,6 @@ export class OrderControllerBase {
   }
 
   @Public()
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8128,11 +8103,6 @@ export class OrderControllerBase {
   }
 
   @Public()
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8177,11 +8147,6 @@ export class OrderControllerBase {
   }
 
   @Public()
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8287,11 +8252,6 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _ordersMeta(
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -8307,22 +8267,12 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Query(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
     return this.service.findMany(args);
   }
 
   @Public()
   @graphql.Query(() => Order, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
@@ -8335,11 +8285,6 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
     return await this.service.create({
       ...args,
@@ -8355,11 +8300,6 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   async updateOrder(
     @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
@@ -8386,11 +8326,6 @@ export class OrderResolverBase {
 
   @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteOrder(
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
