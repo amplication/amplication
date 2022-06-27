@@ -13,7 +13,6 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { match } from "react-router-dom";
 import PendingChangesContext from "../../VersionControl/PendingChangesContext";
 import "./GenerationSettingsForm.scss";
-import cssNamingConverter from "../../util/cssNamingConverter";
 import FORM_SCHEMA from "./formSchema";
 
 type Props = {
@@ -26,7 +25,7 @@ type TData = {
 
 
 
-const CLASS_NAME = cssNamingConverter(GenerationSettingsForm.name);
+const CLASS_NAME = "generation-settings-form";
 
 function GenerationSettingsForm({ match }: Props) {
   const applicationId = match.params.application;
