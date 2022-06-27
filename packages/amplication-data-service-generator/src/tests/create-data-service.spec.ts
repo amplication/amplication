@@ -3,7 +3,6 @@ import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import roles from "./roles";
 
-
 jest.setTimeout(100000);
 
 describe("createDataService", () => {
