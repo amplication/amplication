@@ -37,6 +37,7 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_APP_DATA
 } from './sampleApp';
+import { AppSettingsService } from '../appSettings/appSettings.service';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -61,6 +62,7 @@ export class AppService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
+    private appSettingsService: AppSettingsService,
     private readonly gitService: GitService
   ) {}
 
@@ -97,6 +99,8 @@ export class AppService {
     await this.entityService.createDefaultEntities(app.id, user);
 
     await this.environmentService.createDefaultEnvironment(app.id);
+
+    await this.appSettingsService.createDefaultAppSettings(app.id, user);
 
     try {
       await this.commit(

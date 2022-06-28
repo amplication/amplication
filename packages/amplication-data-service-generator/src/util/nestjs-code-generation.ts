@@ -2,11 +2,11 @@
  * Utilities for generating Nest.js source code
  */
 
-import { builders, namedTypes, ASTNode } from "ast-types";
-import { findConstructor } from "./ast";
+import { ASTNode, builders, namedTypes } from "ast-types";
+import { findConstructor, findFirstDecoratorByName } from "./ast";
 import * as recast from "recast";
 import { USE_INTERCEPTORS_DECORATOR_NAME } from "./set-endpoint-permission";
-
+const MODULE_DECORATOR_NAME = "Module";
 /**
  * Adds a Nest.js injectable dependency to given classDeclaration
  * @param classDeclaration the injectable class to add dependency to
@@ -37,6 +37,38 @@ export function addInjectableDependency(
       }),
     })
   );
+}
+
+/**
+ * Removes an identifier from the Module decorator declaration.
+ * The function first look for the @Module decorator in the given file
+ * Then it looks for the given identifier inside an ArrayExpression and removes it
+ * After the removal of the identifier, if the Array is empty, the entire ObjectProperty is removed
+ * @param file the file with the AST to remove the identifier from
+ */
+export function removeIdentifierFromModuleDecorator(
+  file: ASTNode,
+  identifier: namedTypes.Identifier
+): void {
+  const moduleDecorator = findFirstDecoratorByName(file, MODULE_DECORATOR_NAME);
+
+  recast.visit(moduleDecorator, {
+    visitIdentifier(path) {
+      //find the identifier inside and ArrayExpression
+      if (
+        path.value.name === identifier.name &&
+        path.parent.value.type === "ArrayExpression"
+      ) {
+        const parentPath = path.parent;
+        path.prune();
+        //If the parent array is left empty, remove the entire ObjectProperty that contained the array
+        if (parentPath.value.elements.length === 0) {
+          parentPath.parent.prune();
+        }
+      }
+      this.traverse(path);
+    },
+  });
 }
 
 export function removeIdentifierFromUseInterceptorDecorator(
