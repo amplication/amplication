@@ -1,6 +1,5 @@
 import { builders } from "ast-types";
 import { print } from "recast";
-import { AUTH_PATH } from "../../constants";
 import { EnumAuthProviderType } from "../../../models";
 import { Module } from "../../../types";
 import {
@@ -18,15 +17,16 @@ type AuthGuardMetaData = {
 };
 
 export async function createDefaultGuard(
-  authProvider: EnumAuthProviderType
+  authProvider: EnumAuthProviderType,
+  authPath: string
 ): Promise<Module> {
   const defaultAuthGuardPath = require.resolve(
     "./defaultAuth.guard.template.ts"
   );
-  const modulePath = `${AUTH_PATH}/defaultAuth.guard.ts`;
+  const modulePath = `${authPath}/defaultAuth.guard.ts`;
 
   const templateGuardFile = await readFile(defaultAuthGuardPath);
-  const { path, className } = getMetaDataForAuthGuard(authProvider);
+  const { path, className } = getMetaDataForAuthGuard(authProvider, authPath);
   const baseGuardIdentifier = builders.identifier(className);
   interpolate(templateGuardFile, {
     GUARD: baseGuardIdentifier,
@@ -40,19 +40,20 @@ export async function createDefaultGuard(
   return { path: modulePath, code: print(templateGuardFile).code };
 }
 function getMetaDataForAuthGuard(
-  setAuthGuard: EnumAuthProviderType
+  setAuthGuard: EnumAuthProviderType,
+  authPath: string
 ): AuthGuardMetaData {
   const data: AuthGuardMetaData = { fileName: "", path: "", className: "" };
   switch (setAuthGuard) {
     case EnumAuthProviderType.Http:
       data.fileName = "basicAuth";
       data.className = "BasicAuthGuard";
-      data.path = `${AUTH_PATH}/basic/${data.fileName}.guard.ts`;
+      data.path = `${authPath}/basic/${data.fileName}.guard.ts`;
       break;
     case EnumAuthProviderType.Jwt:
       data.fileName = "jwtAuth";
       data.className = "JwtAuthGuard";
-      data.path = `${AUTH_PATH}/jwt/${data.fileName}.guard.ts`;
+      data.path = `${authPath}/jwt/${data.fileName}.guard.ts`;
       break;
     default:
       throw new Error(

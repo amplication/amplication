@@ -100,7 +100,16 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   dbPort: 5432,
   dbUser: 'admin',
   appId: EXAMPLE_APP_ID,
-  authProvider: EnumAuthProviderType.Http
+  authProvider: EnumAuthProviderType.Http,
+  serverSettings: {
+    generateGraphQL: true,
+    generateRestApi: true,
+    serverPath: ''
+  },
+  adminUISettings: {
+    generateAdminUI: true,
+    adminUIPath: ''
+  }
 };
 
 const EXAMPLE_COMMIT: Commit = {

@@ -1,9 +1,8 @@
 import { Module, Role } from "../types";
-import { SRC_DIRECTORY } from "./constants";
 
-export function createRolesModule(roles: Role[]): Module {
+export function createRolesModule(roles: Role[], srcDirectory: string): Module {
   return {
-    path: `${SRC_DIRECTORY}/user/roles.ts`,
+    path: `${srcDirectory}/user/roles.ts`,
     code: `export const ROLES = ${JSON.stringify(
       roles.map((role) => ({ name: role.name, displayName: role.displayName })),
       null,

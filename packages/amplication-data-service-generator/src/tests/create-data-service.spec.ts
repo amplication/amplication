@@ -1,9 +1,7 @@
 import { createDataService } from "../create-data-service";
+import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import roles from "./roles";
-import appInfo from "./appInfo";
-
-const MODULE_EXTENSIONS_TO_SNAPSHOT = [".ts", ".tsx", ".prisma", ".env"];
 
 jest.setTimeout(100000);
 
