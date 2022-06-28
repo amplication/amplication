@@ -1,5 +1,8 @@
+ARG ALPINE_VERSION=alpine3.14
+ARG NODE_VERSION=16.13.1
 # Use node as the base image
-FROM node:16.13.1
+
+FROM node:$NODE_VERSION-$ALPINE_VERSION AS base
 
 # Define how verbose should npm install be
 ARG NPM_LOG_LEVEL=silent
@@ -14,19 +17,19 @@ ENV NPM_CONFIG_FUND=false
 RUN npm i -g npm@8.1.2
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /app/admin-ui
 
 # Copy files specifying dependencies
-COPY package.json package-lock.json ./admin-ui/
+COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN cd admin-ui; npm ci --loglevel=$NPM_LOG_LEVEL;
+RUN npm ci --loglevel=$NPM_LOG_LEVEL;
 
 # Copy all the files
-COPY . /app/admin-ui
+COPY . .
 
 # Build code
-RUN set -e; (cd admin-ui; npm run build)
+RUN npm run build
 
 # Expose the port the client listens to
 EXPOSE 3001

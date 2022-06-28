@@ -1,5 +1,8 @@
+ARG ALPINE_VERSION=alpine3.14
+ARG NODE_VERSION=16.13.1
+
 # Use node as the base image
-FROM node:16.13.1
+FROM node:$NODE_VERSION-$ALPINE_VERSION AS base
 
 # Define how verbose should npm install be
 ARG NPM_LOG_LEVEL=silent
@@ -14,29 +17,28 @@ ENV NPM_CONFIG_FUND=false
 RUN npm i -g npm@8.1.2
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /app/server
 
 # Copy files specifying dependencies
-COPY package.json package-lock.json /app/server/
+COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN cd server; npm ci --loglevel=$NPM_LOG_LEVEL;
+RUN npm ci --loglevel=$NPM_LOG_LEVEL;
 
 # Copy Prisma schema
-COPY prisma/schema.prisma /app/server/prisma/
+COPY prisma/schema.prisma ./prisma/
 
 # Generate Prisma client
-RUN cd server; npm run prisma:generate;
+RUN npm run prisma:generate;
 
 # Copy all the files
- COPY . /app/server
+ COPY . .
 
 # Build code
-RUN set -e; (cd server; npm run build)
+RUN npm run build
 
 # Expose the port the server listens to
 EXPOSE 3000
 
-
 # Run server
-CMD [ "node", "server/dist/main"]
+CMD [ "node", "dist/main"]
