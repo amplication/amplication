@@ -1,4 +1,3 @@
-import { GitService } from '@amplication/git-service';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { GitRepository, PrismaService } from '@amplication/prisma-db';
@@ -32,7 +31,6 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_APP_DATA
 } from './sampleApp';
-import { AppSettingsService } from '../appSettings/appSettings.service';
 
 const USER_APP_ROLE = {
   name: 'user',
