@@ -56,7 +56,7 @@ export class AppService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
-    private appSettingsService: AppSettingsService,
+    private appSettingsService: AppSettingsService
   ) {}
 
   /**
