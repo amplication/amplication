@@ -6,7 +6,7 @@ import pluralize from 'pluralize';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
-import { Commit, User, Workspace } from 'src/models';
+import { Commit, User, Workspace, App } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { BlockService } from '../block/block.service';
