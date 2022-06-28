@@ -180,16 +180,6 @@ export class AppResolver {
     return this.appService.getPendingChanges(args, user);
   }
 
-  @Query(() => AppValidationResult, {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
-  async appValidateBeforeCommit(
-    @Args() args: FindOneArgs
-  ): Promise<AppValidationResult> {
-    return this.appService.validateBeforeCommit(args);
-  }
-
   @ResolveField(() => GitRepository, { nullable: true })
   async gitRepository(@Parent() app: App): Promise<GitRepository | null> {
     return await this.appService.gitRepository(app.id);

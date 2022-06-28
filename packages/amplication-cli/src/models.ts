@@ -234,19 +234,6 @@ export type AppUpdateInput = {
   name?: InputMaybe<Scalars['String']>;
 };
 
-export enum AppValidationErrorTypes {
-  CannotMergeCodeToGitHubBreakingChanges = 'CannotMergeCodeToGitHubBreakingChanges',
-  CannotMergeCodeToGitHubInvalidAppId = 'CannotMergeCodeToGitHubInvalidAppId',
-  DataServiceGeneratorVersionInvalid = 'DataServiceGeneratorVersionInvalid',
-  DataServiceGeneratorVersionMissing = 'DataServiceGeneratorVersionMissing',
-}
-
-export type AppValidationResult = {
-  __typename?: 'AppValidationResult';
-  isValid: Scalars['Boolean'];
-  messages: Array<AppValidationErrorTypes>;
-};
-
 export type AppWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
@@ -1601,7 +1588,6 @@ export type Query = {
   appRoles: Array<AppRole>;
   apps: Array<App>;
   appSettings: AppSettings;
-  appValidateBeforeCommit: AppValidationResult;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -1658,10 +1644,6 @@ export type QueryAppsArgs = {
 };
 
 export type QueryAppSettingsArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryAppValidateBeforeCommitArgs = {
   where: WhereUniqueInput;
 };
 

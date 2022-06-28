@@ -26,7 +26,6 @@ type Query {
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
-  appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   appSettings(where: WhereUniqueInput!): AppSettings!
@@ -724,18 +723,6 @@ input AppOrderByInput {
 
 input PendingChangesFindInput {
   app: WhereUniqueInput!
-}
-
-type AppValidationResult {
-  isValid: Boolean!
-  messages: [AppValidationErrorTypes!]!
-}
-
-enum AppValidationErrorTypes {
-  CannotMergeCodeToGitHubBreakingChanges
-  CannotMergeCodeToGitHubInvalidAppId
-  DataServiceGeneratorVersionMissing
-  DataServiceGeneratorVersionInvalid
 }
 
 type AppSettings implements IBlock {

@@ -1,4 +1,3 @@
-import { AppGenerationConfig } from '@amplication/data-service-generator';
 import { GitService } from '@amplication/git-service';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
@@ -54,8 +53,6 @@ export const DEFAULT_APP_DATA = {
 };
 
 export const INVALID_APP_ID = 'Invalid appId';
-
-const APP_CONFIG_FILE_PATH = 'ampconfig.json';
 
 @Injectable()
 export class AppService {
@@ -609,133 +606,6 @@ export class AppService {
     //await this.prisma.$transaction(allPromises);
 
     return true;
-  }
-
-  /**
-   * Runs validations on the app and returns a list of warnings.
-   * When the validation fails, a commit can still be executed and it is up to the user/client to decide how to handle the warnings.
-   * @todo: Add mechanism to run validation on the server before commit and prevent commit with errors
-   *
-   */
-  async validateBeforeCommit(args: FindOneArgs): Promise<AppValidationResult> {
-    const messages = [];
-    let isValid = true;
-
-    const app = await this.prisma.app.findUnique({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    const appRepo = await this.prisma.gitRepository.findUnique({
-      where: {
-        appId: app.id
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    if (!appRepo) return { isValid, messages };
-    if (!app.githubLastSync) return { isValid, messages }; //if the repo was never synced before, skip the below validation as they are all related to GitHub sync
-
-    const config = await this.getAppGenerationConfigFromGitHub(args);
-
-    if (!config) {
-      isValid = false;
-      messages.push(AppValidationErrorTypes.DataServiceGeneratorVersionMissing);
-      //since the config is empty, return immediately
-      return { isValid, messages };
-    }
-
-    if (!config.dataServiceGeneratorVersion) {
-      isValid = false;
-      messages.push(AppValidationErrorTypes.DataServiceGeneratorVersionMissing);
-    }
-
-    if (
-      config.dataServiceGeneratorVersion &&
-      !semver.valid(config.dataServiceGeneratorVersion)
-    ) {
-      isValid = false;
-      messages.push(AppValidationErrorTypes.DataServiceGeneratorVersionInvalid);
-    }
-
-    if (
-      semver.valid(config.dataServiceGeneratorVersion) &&
-      semver.lt(config.dataServiceGeneratorVersion, '0.4.0')
-    ) {
-      isValid = false;
-      messages.push(
-        AppValidationErrorTypes.CannotMergeCodeToGitHubBreakingChanges
-      );
-    }
-
-    if (config?.appInfo?.id != app.id) {
-      isValid = false;
-      messages.push(
-        AppValidationErrorTypes.CannotMergeCodeToGitHubInvalidAppId
-      );
-    }
-
-    return {
-      isValid,
-      messages
-    };
-  }
-
-  async getAppGenerationConfigFromGitHub(
-    args: FindOneArgs
-  ): Promise<AppGenerationConfig | null> {
-    const app = await this.app({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    const appRepository = await this.prisma.gitRepository.findFirst({
-      where: {
-        appId: app.id
-      },
-      include: {
-        gitOrganization: true
-      }
-    });
-
-    if (isEmpty(app)) {
-      throw new Error(INVALID_APP_ID);
-    }
-
-    if (isEmpty(app.gitRepository)) {
-      throw new Error(`This app is not authorized with any GitHub repo`);
-    }
-    let configFile;
-
-    try {
-      configFile = await this.gitService.getFile(
-        EnumGitProvider[appRepository.gitOrganization.provider],
-        appRepository.gitOrganization.name,
-        appRepository.name,
-        APP_CONFIG_FILE_PATH,
-        null,
-        appRepository.gitOrganization.installationId
-      );
-    } catch (error) {
-      //in case the file was not found on GitHub, return null
-      return null;
-    }
-
-    let config;
-    try {
-      config = JSON.parse(configFile.content);
-    } catch (error) {
-      throw new AmplicationError(
-        `Unexpected config file format in the linked GitHub repo. The file must be a valid JSON object`
-      );
-    }
-
-    return config;
   }
 
   async reportSyncMessage(appId: string, message: string): Promise<App> {
