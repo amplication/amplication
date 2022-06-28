@@ -123,7 +123,7 @@ const EXAMPLE_BLOCK: Block = {
   updatedAt: new Date(),
   resourceId: EXAMPLE_RESOURCE_ID,
   displayName: EXAMPLE_BLOCK_DISPLAY_NAME,
-  blockType: EnumBlockType.AppSettings,
+  blockType: EnumBlockType.ServiceSettings,
   parentBlock: null,
   versionNumber: CURRENT_VERSION_NUMBER,
   description: 'example block description'

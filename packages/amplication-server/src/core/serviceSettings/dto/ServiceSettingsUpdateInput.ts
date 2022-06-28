@@ -5,7 +5,7 @@ import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
 @InputType({
   isAbstract: true
 })
-export class AppSettingsUpdateInput extends BlockUpdateInput {
+export class ServiceSettingsUpdateInput extends BlockUpdateInput {
   @Field(() => String, {
     nullable: false
   })

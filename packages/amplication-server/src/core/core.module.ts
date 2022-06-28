@@ -18,7 +18,7 @@ import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
 import { SystemModule } from './system/system.module';
 import { MailModule } from './mail/mail.module';
-import { AppSettingsModule } from './appSettings/appSettings.module';
+import { ServiceSettingsModule } from './serviceSettings/serviceSettings.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
@@ -42,7 +42,7 @@ import { GitProviderModule } from './git/git.provider.module';
     EnvironmentModule,
     CommitModule,
     SystemModule,
-    AppSettingsModule,
+    ServiceSettingsModule,
     GitModule,
     GitProviderModule,
     CommitModule,
@@ -66,7 +66,7 @@ import { GitProviderModule } from './git/git.provider.module';
     DeploymentModule,
     EnvironmentModule,
     CommitModule,
-    AppSettingsModule,
+    ServiceSettingsModule,
     GitProviderModule,
     GitModule,
     CommitModule,

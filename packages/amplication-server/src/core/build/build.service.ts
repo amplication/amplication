@@ -32,7 +32,7 @@ import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { ResourceRoleService } from '../resourceRole/resourceRole.service';
 import { ResourceService } from '../resource/resource.service'; // eslint-disable-line import/no-cycle
 import { UserService } from '../user/user.service'; // eslint-disable-line import/no-cycle
-import { AppSettingsService } from '../appSettings/appSettings.service'; // eslint-disable-line import/no-cycle
+import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
 import { ActionStep } from '../action/dto';
 import { createZipFileFromModules } from './zip';
@@ -160,7 +160,7 @@ export class BuildService {
     private readonly deploymentService: DeploymentService,
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
-    private readonly appSettingsService: AppSettingsService,
+    private readonly serviceSettingsService: ServiceSettingsService,
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
@@ -403,7 +403,7 @@ export class BuildService {
         const resource = await this.resourceService.resource({
           where: { id: build.resourceId }
         });
-        const appSettings = await this.appSettingsService.getAppSettingsValues(
+        const serviceSettings = await this.serviceSettingsService.getServiceSettingsValues(
           {
             where: { id: build.resourceId }
           },
@@ -428,7 +428,7 @@ export class BuildService {
             version: build.version,
             id: build.resourceId,
             url,
-            settings: appSettings
+            settings: serviceSettings
           },
           dataServiceGeneratorLogger
         );

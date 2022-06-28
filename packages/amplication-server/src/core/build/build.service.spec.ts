@@ -53,10 +53,10 @@ import {
 import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
-import { AppSettingsService } from '../appSettings/appSettings.service';
+import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 
-import { AppSettingsValues } from '../appSettings/constants';
-import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { ServiceSettingsValues } from '../serviceSettings/constants';
+import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
 
@@ -97,7 +97,7 @@ const EXAMPLE_ADDRESS = 'exampleAddress';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 
-const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
+const EXAMPLE_APP_SETTINGS_VALUES: ServiceSettingsValues = {
   dbHost: 'localhost',
   dbName: 'myDb',
   dbPassword: '1234',
@@ -424,7 +424,7 @@ const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 
 const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
-const getAppSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
+const getServiceSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
 
 describe('BuildService', () => {
   let service: BuildService;
@@ -527,9 +527,9 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: AppSettingsService,
+          provide: ServiceSettingsService,
           useValue: {
-            getAppSettingsValues: getAppSettingsValuesMock
+            getServiceSettingsValues: getServiceSettingsValuesMock
           }
         },
         {

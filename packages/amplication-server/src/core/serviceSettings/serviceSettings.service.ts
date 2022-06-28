@@ -1,22 +1,22 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { AppSettings, UpdateAppSettingsArgs } from './dto';
+import { ServiceSettings, UpdateServiceSettingsArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { DEFAULT_RESOURCE_SETTINGS, AppSettingsValues } from './constants';
+import { DEFAULT_SERVICE_SETTINGS, ServiceSettingsValues } from './constants';
 import { isEmpty } from 'lodash';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
 @Injectable()
-export class AppSettingsService {
+export class ServiceSettingsService {
   @Inject()
   private readonly blockService: BlockService;
 
-  async getAppSettingsValues(
+  async getServiceSettingsValues(
     args: FindOneArgs,
     user: User
-  ): Promise<AppSettingsValues> {
+  ): Promise<ServiceSettingsValues> {
     const {
       dbHost,
       dbName,
@@ -24,7 +24,7 @@ export class AppSettingsService {
       dbPort,
       dbUser,
       authProvider
-    } = await this.getAppSettingsBlock(args, user);
+    } = await this.getServiceSettingsBlock(args, user);
 
     return {
       dbHost,
@@ -37,12 +37,12 @@ export class AppSettingsService {
     };
   }
 
-  async getAppSettingsBlock(
+  async getServiceSettingsBlock(
     args: FindOneArgs,
     user: User
-  ): Promise<AppSettings> {
-    const [appSettings] = await this.blockService.findManyByBlockType<
-      AppSettings
+  ): Promise<ServiceSettings> {
+    const [serviceSettings] = await this.blockService.findManyByBlockType<
+      ServiceSettings
     >(
       {
         where: {
@@ -51,33 +51,33 @@ export class AppSettingsService {
           }
         }
       },
-      EnumBlockType.AppSettings
+      EnumBlockType.ServiceSettings
     );
-    if (isEmpty(appSettings)) {
-      return this.createDefaultAppSettings(args.where.id, user);
+    if (isEmpty(serviceSettings)) {
+      return this.createDefaultServiceSettings(args.where.id, user);
     }
 
     return {
-      ...appSettings,
-      authProvider: appSettings.authProvider || EnumAuthProviderType.Http
+      ...serviceSettings,
+      authProvider: serviceSettings.authProvider || EnumAuthProviderType.Http
     };
   }
 
-  async updateAppSettings(
-    args: UpdateAppSettingsArgs,
+  async updateServiceSettings(
+    args: UpdateServiceSettingsArgs,
     user: User
-  ): Promise<AppSettings> {
-    const appSettingsBlock = await this.getAppSettingsBlock(
+  ): Promise<ServiceSettings> {
+    const serviceSettingsBlock = await this.getServiceSettingsBlock(
       {
         where: { id: args.where.id }
       },
       user
     );
 
-    return this.blockService.update<AppSettings>(
+    return this.blockService.update<ServiceSettings>(
       {
         where: {
-          id: appSettingsBlock.id
+          id: serviceSettingsBlock.id
         },
         data: args.data
       },
@@ -85,11 +85,11 @@ export class AppSettingsService {
     );
   }
 
-  async createDefaultAppSettings(
+  async createDefaultServiceSettings(
     resourceId: string,
     user: User
-  ): Promise<AppSettings> {
-    return this.blockService.create<AppSettings>(
+  ): Promise<ServiceSettings> {
+    return this.blockService.create<ServiceSettings>(
       {
         data: {
           resource: {
@@ -97,8 +97,8 @@ export class AppSettingsService {
               id: resourceId
             }
           },
-          ...DEFAULT_RESOURCE_SETTINGS,
-          blockType: EnumBlockType.AppSettings
+          ...DEFAULT_SERVICE_SETTINGS,
+          blockType: EnumBlockType.ServiceSettings
         }
       },
       user
