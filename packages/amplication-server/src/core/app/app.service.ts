@@ -1,15 +1,12 @@
-import { GitService } from '@amplication/git-service';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { GitRepository, PrismaService } from '@amplication/prisma-db';
 import { pascalCase } from 'pascal-case';
 import pluralize from 'pluralize';
-import * as semver from 'semver';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
-import { AmplicationError } from 'src/errors/AmplicationError';
-import { App, Commit, User, Workspace } from 'src/models';
+import { Commit, User, Workspace, App } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { BlockService } from '../block/block.service';
@@ -17,11 +14,8 @@ import { BuildService } from '../build/build.service'; // eslint-disable-line im
 import { USER_ENTITY_NAME } from '../entity/constants';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
-import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import {
   AppCreateWithEntitiesInput,
-  AppValidationErrorTypes,
-  AppValidationResult,
   CreateCommitArgs,
   CreateOneAppArgs,
   DiscardPendingChangesArgs,
@@ -62,8 +56,7 @@ export class AppService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
-    private appSettingsService: AppSettingsService,
-    private readonly gitService: GitService
+    private appSettingsService: AppSettingsService
   ) {}
 
   /**
