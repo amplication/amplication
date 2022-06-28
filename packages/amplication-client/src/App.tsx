@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Switch } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 
-import ApplicationLayout from "./Resource/ApplicationLayout";
+import ResourceLayout from "./Resource/ResourceLayout";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
 import WorkspaceLayout from "./Workspaces/WorkspaceLayout";
@@ -67,7 +67,7 @@ function App() {
             path="/create-resource"
             component={CreateResourceFromExcel}
           />
-          <PrivateRoute path="/:resource" component={ApplicationLayout} />
+          <PrivateRoute path="/:resource" component={ResourceLayout} />
         </Switch>
       </NavigationTabsProvider>
     </ThemeProvider>

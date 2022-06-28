@@ -12,7 +12,7 @@ import RolesPage from "../Roles/RolesPage";
 import PendingChangesPage from "../VersionControl/PendingChangesPage";
 import { AsidePanel, FilesPanel } from "../util/teleporter";
 
-import "./ApplicationLayout.scss";
+import "./ResourceLayout.scss";
 import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
@@ -29,7 +29,7 @@ import Commits from "../VersionControl/Commits";
 import NavigationTabs from "../Layout/NavigationTabs";
 import SyncWithGithubPage from "./git/SyncWithGithubPage";
 import CodeViewPage from "./code-view/CodeViewPage";
-import AppSettingsPage from "./appSettings/AppSettingsPage";
+import ServiceSettingsPage from "./serviceSettings/ServiceSettingsPage";
 
 export type ResourceData = {
   resource: models.Resource;
@@ -39,7 +39,7 @@ export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-const CLASS_NAME = "application-layout";
+const CLASS_NAME = "resource-layout";
 
 type Props = {
   match: match<{
@@ -49,7 +49,7 @@ type Props = {
   }>;
 };
 
-function ApplicationLayout({ match }: Props) {
+function ResourceLayout({ match }: Props) {
   const { resource } = match.params;
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
@@ -205,7 +205,7 @@ function ApplicationLayout({ match }: Props) {
           />
           <MenuItem
             title="Settings"
-            to={`/${resource}/appSettings/update`}
+            to={`/${resource}/serviceSettings/update`}
             icon="settings"
           />
         </MainLayout.Menu>
@@ -247,8 +247,8 @@ function ApplicationLayout({ match }: Props) {
                 component={CodeViewPage}
               />
               <Route
-                path="/:resource/appSettings"
-                component={AppSettingsPage}
+                path="/:resource/serviceSettings"
+                component={ServiceSettingsPage}
               />
               <Route path="/:resource/" component={ResourceHome} />
             </Switch>
@@ -268,7 +268,7 @@ const enhance = track((props) => {
   return { resourceId: props.match.params.resource };
 });
 
-export default enhance(ApplicationLayout);
+export default enhance(ResourceLayout);
 
 export const GET_PENDING_CHANGES_STATUS = gql`
   query pendingChangesStatus($resourceId: String!) {
