@@ -31,6 +31,7 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_APP_DATA
 } from './sampleApp';
+import { AppSettingsService } from '../appSettings/appSettings.service';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -54,7 +55,8 @@ export class AppService {
     private entityService: EntityService,
     private blockService: BlockService,
     private environmentService: EnvironmentService,
-    private buildService: BuildService
+    private buildService: BuildService,
+    private appSettingsService: AppSettingsService,
   ) {}
 
   /**
