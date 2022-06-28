@@ -52,7 +52,7 @@ export async function createDataServiceImpl(
 
   const modules = (
     await Promise.all([
-      readStaticModules(STATIC_DIRECTORY, BASE_DIRECTORY),
+      readStaticModules(STATIC_DIRECTORY, BASE_DIRECTORY) || [],
       createServerModules(
         normalizedEntities,
         roles,
@@ -61,8 +61,10 @@ export async function createDataServiceImpl(
         userEntity,
         logger
       ),
-      createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
-      createRootModules(appInfo, logger),
+      (appInfo.settings.adminUISettings.generateAdminUI &&
+        createAdminModules(normalizedEntities, roles, appInfo, dtos, logger)) ||
+        [],
+      createRootModules(appInfo, logger) || [],
     ])
   ).flat();
 

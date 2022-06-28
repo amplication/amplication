@@ -26,7 +26,6 @@ import { FindManyEntityArgs } from '../entity/dto';
 import { Environment } from '../environment/dto/Environment';
 import { EnvironmentService } from '../environment/environment.service';
 import {
-  AppValidationResult,
   CreateAppWithEntitiesArgs,
   CreateCommitArgs,
   CreateOneAppArgs,
@@ -178,16 +177,6 @@ export class AppResolver {
     @UserEntity() user: User
   ): Promise<PendingChange[]> {
     return this.appService.getPendingChanges(args, user);
-  }
-
-  @Query(() => AppValidationResult, {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
-  async appValidateBeforeCommit(
-    @Args() args: FindOneArgs
-  ): Promise<AppValidationResult> {
-    return this.appService.validateBeforeCommit(args);
   }
 
   @ResolveField(() => GitRepository, { nullable: true })

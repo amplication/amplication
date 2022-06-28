@@ -61,6 +61,17 @@ export type ActionStep = {
   status: EnumActionStepStatus;
 };
 
+export type AdminUiSettings = {
+  __typename?: 'AdminUISettings';
+  adminUIPath: Scalars['String'];
+  generateAdminUI: Scalars['Boolean'];
+};
+
+export type AdminUiSettingsUpdateInput = {
+  adminUIPath?: InputMaybe<Scalars['String']>;
+  generateAdminUI?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type ApiToken = {
   __typename?: 'ApiToken';
   createdAt: Scalars['DateTime'];
@@ -184,6 +195,7 @@ export type AppRoleWhereInput = {
 
 export type AppSettings = IBlock & {
   __typename?: 'AppSettings';
+  adminUISettings: AdminUiSettings;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
@@ -200,11 +212,13 @@ export type AppSettings = IBlock & {
   lockedByUserId?: Maybe<Scalars['String']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  serverSettings: ServerSettings;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };
 
 export type AppSettingsUpdateInput = {
+  adminUISettings: AdminUiSettingsUpdateInput;
   authProvider: EnumAuthProviderType;
   dbHost: Scalars['String'];
   dbName: Scalars['String'];
@@ -213,25 +227,13 @@ export type AppSettingsUpdateInput = {
   dbUser: Scalars['String'];
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
+  serverSettings: ServerSettingsUpdateInput;
 };
 
 export type AppUpdateInput = {
   color?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
-};
-
-export enum AppValidationErrorTypes {
-  CannotMergeCodeToGitHubBreakingChanges = 'CannotMergeCodeToGitHubBreakingChanges',
-  CannotMergeCodeToGitHubInvalidAppId = 'CannotMergeCodeToGitHubInvalidAppId',
-  DataServiceGeneratorVersionInvalid = 'DataServiceGeneratorVersionInvalid',
-  DataServiceGeneratorVersionMissing = 'DataServiceGeneratorVersionMissing',
-}
-
-export type AppValidationResult = {
-  __typename?: 'AppValidationResult';
-  isValid: Scalars['Boolean'];
-  messages: Array<AppValidationErrorTypes>;
 };
 
 export type AppWhereInput = {
@@ -1517,7 +1519,6 @@ export type Query = {
   appRoles: Array<AppRole>;
   apps: Array<App>;
   appSettings: AppSettings;
-  appValidateBeforeCommit: AppValidationResult;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -1572,10 +1573,6 @@ export type QueryAppsArgs = {
 };
 
 export type QueryAppSettingsArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryAppValidateBeforeCommitArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1704,6 +1701,19 @@ export enum Role {
   ProjectAdmin = 'ProjectAdmin',
   User = 'User',
 }
+
+export type ServerSettings = {
+  __typename?: 'ServerSettings';
+  generateGraphQL: Scalars['Boolean'];
+  generateRestApi: Scalars['Boolean'];
+  serverPath: Scalars['String'];
+};
+
+export type ServerSettingsUpdateInput = {
+  generateGraphQL?: InputMaybe<Scalars['Boolean']>;
+  generateRestApi?: InputMaybe<Scalars['Boolean']>;
+  serverPath?: InputMaybe<Scalars['String']>;
+};
 
 export type SignupInput = {
   email: Scalars['String'];
