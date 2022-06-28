@@ -37,8 +37,6 @@ RUN set -e; (cd server; npm run build)
 # Expose the port the server listens to
 EXPOSE 3000
 
-# Make server to serve admin built files
-ENV SERVE_STATIC_ROOT_PATH=admin-ui/build
 
 # Run server
 CMD [ "node", "server/dist/main"]
