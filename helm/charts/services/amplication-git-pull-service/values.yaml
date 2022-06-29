@@ -43,7 +43,7 @@ pvc:
 postgres:
   install: false
   postgresqlUsername: postgrespull
-  postgresPassword: YWRtaW4K
+  postgresPassword: postgrespull
   db: pull
   fullnameOverride: postgresql
   postgresql:

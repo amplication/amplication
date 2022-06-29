@@ -7,6 +7,11 @@ type Auth {
   token: String!
 }
 
+type AdminUISettings {
+  generateAdminUI: Boolean!
+  adminUIPath: String!
+}
+
 type AuthorizeAppWithGitResult {
   """"""
   url: String!
@@ -21,9 +26,11 @@ type Query {
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
-  appValidateBeforeCommit(where: WhereUniqueInput!): AppValidationResult!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  appSettings(where: WhereUniqueInput!): AppSettings!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
+  block(where: WhereUniqueInput!): Block!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
@@ -33,9 +40,6 @@ type Query {
   deployment(where: WhereUniqueInput!): Deployment!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
-  appSettings(where: WhereUniqueInput!): AppSettings!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
-  block(where: WhereUniqueInput!): Block!
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
@@ -721,55 +725,6 @@ input PendingChangesFindInput {
   app: WhereUniqueInput!
 }
 
-type AppValidationResult {
-  isValid: Boolean!
-  messages: [AppValidationErrorTypes!]!
-}
-
-enum AppValidationErrorTypes {
-  CannotMergeCodeToGitHubBreakingChanges
-  CannotMergeCodeToGitHubInvalidAppId
-  DataServiceGeneratorVersionMissing
-  DataServiceGeneratorVersionInvalid
-}
-
-input AppRoleWhereInput {
-  id: String
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  displayName: StringFilter
-  description: StringFilter
-  app: WhereUniqueInput
-}
-
-input AppRoleOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
-input CommitWhereUniqueInput {
-  id: String
-}
-
-input CommitWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  app: WhereUniqueInput!
-  user: WhereUniqueInput
-  message: StringFilter
-}
-
-input CommitOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  message: SortOrder
-}
-
 type AppSettings implements IBlock {
   id: String!
   createdAt: DateTime!
@@ -789,6 +744,8 @@ type AppSettings implements IBlock {
   dbPassword: String!
   dbPort: Int!
   authProvider: EnumAuthProviderType!
+  adminUISettings: AdminUISettings!
+  serverSettings: ServerSettings!
 }
 
 interface IBlock {
@@ -826,6 +783,12 @@ enum EnumAuthProviderType {
   Jwt
 }
 
+type ServerSettings {
+  generateGraphQL: Boolean!
+  generateRestApi: Boolean!
+  serverPath: String!
+}
+
 input BlockWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
@@ -851,6 +814,43 @@ input BlockOrderByInput {
   blockType: SortOrder
   displayName: SortOrder
   description: SortOrder
+}
+
+input AppRoleWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  description: StringFilter
+  app: WhereUniqueInput
+}
+
+input AppRoleOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+input CommitWhereUniqueInput {
+  id: String
+}
+
+input CommitWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  app: WhereUniqueInput!
+  user: WhereUniqueInput
+  message: StringFilter
+}
+
+input CommitOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  message: SortOrder
 }
 
 type ApiToken {
@@ -1065,12 +1065,12 @@ type Mutation {
   deleteEntityField(where: WhereUniqueInput!): EntityField!
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   createBuild(data: BuildCreateInput!): Build!
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createDeployment(data: DeploymentCreateInput!): Deployment!
-  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1227,6 +1227,30 @@ input EntityFieldUpdateInput {
   position: Int
 }
 
+input AppSettingsUpdateInput {
+  displayName: String
+  description: String
+  dbHost: String!
+  dbName: String!
+  dbUser: String!
+  dbPassword: String!
+  dbPort: Int!
+  authProvider: EnumAuthProviderType!
+  adminUISettings: AdminUISettingsUpdateInput!
+  serverSettings: ServerSettingsUpdateInput!
+}
+
+input AdminUISettingsUpdateInput {
+  generateAdminUI: Boolean
+  adminUIPath: String
+}
+
+input ServerSettingsUpdateInput {
+  generateGraphQL: Boolean
+  generateRestApi: Boolean
+  serverPath: String
+}
+
 input BuildCreateInput {
   app: WhereParentIdInput!
   message: String!
@@ -1250,17 +1274,6 @@ input DeploymentCreateInput {
   build: WhereParentIdInput!
   environment: WhereParentIdInput!
   message: String
-}
-
-input AppSettingsUpdateInput {
-  displayName: String
-  description: String
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
-  authProvider: EnumAuthProviderType!
 }
 
 input SignupInput {

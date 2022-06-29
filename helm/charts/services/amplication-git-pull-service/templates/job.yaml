@@ -3,7 +3,6 @@ kind: Job
 metadata:
   name: "{{ .Values.name }}-migrate"
 spec:
-  ttlSecondsAfterFinished: 5
   template:
     metadata:
       name: "{{ .Values.name }}-migrate"
