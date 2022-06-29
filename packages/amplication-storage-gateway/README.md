@@ -11,4 +11,4 @@
 | CHECK_USER_ACCESS_TOPIC | Kafka topics are the categories used to organize messages. Each topic has a name that is unique across the entire Kafka cluster | "auth.user.access" |
 | KAFKA_CLIENT_ID | A logical identifier of an application. Can be used by brokers to apply quotas or trace requests to a specific application. Example: booking-events-processor | "storage-queue-client |
 | KAFKA_GROUP_ID |  prevent collisions between Nest microservice client and server components | "storage-server-group |
-| BASE_BUILDS_FOLDER | path to a folder where your builds will be saved | [path-to-local-folder] for example /Users/myusername/temp |
+| BASE_BUILDS_FOLDER | path to a folder where your builds will be saved | .temp for example /Users/myusername/temp |

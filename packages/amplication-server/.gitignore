@@ -11,3 +11,5 @@ artifacts/
 .env.local
 .eslintcache
 .server-id
+
+.temp/

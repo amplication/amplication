@@ -6,6 +6,7 @@
     "test",
     "dist",
     "**/*spec.ts",
-    "migration-scripts"
+    "migration-scripts",
+    ".temp"
   ]
 }

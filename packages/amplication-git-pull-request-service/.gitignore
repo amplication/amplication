@@ -5,3 +5,4 @@ coverage/
 .env.local
 .eslintcache
 builds/
+.temp/

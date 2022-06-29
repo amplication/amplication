@@ -3,7 +3,7 @@
 ## Environment Variables
 | Environment | Description | Value       |
 | ----------- | ----------- | ----------- |
-| BASE_BUILDS_FOLDER | path to a folder where your builds will be saved | 
+| BASE_BUILDS_FOLDER | path to a folder where your builds will be saved | .temp
 | GITHUB_APP_APP_ID| ID of the installed github app  |[github-app-app-id]|
 | GITHUB_APP_CLIENT_SECRET|  secret of your github app  |[use-secret-manager] |
 | GITHUB_APP_PRIVATE_KEY|  private key of the installed github app  |[github-app-private-key] |

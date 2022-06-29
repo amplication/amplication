@@ -40,7 +40,7 @@ You can also use a more manual step-by-step approach to set up Amplication serve
 | SERVICE_JWT_SECRET |  JWT secret | /QN%^4uefRUR%]Ar |
 | DEFAULT_DISK | default storage disk | local |
 | LOCAL_DISK_ROOT | local storage disk root | ./artifacts |
-| BASE_BUILDS_FOLDER | path to a folder where your builds will be saved | [path-to-local-folder] for example /Users/myusername/temp |
+| BASE_BUILDS_FOLDER | path to a folder where your builds will be saved | .temp for example /Users/myusername/temp |
 | CONTAINER_BUILDER_DEFAULT | where to build containers by default | docker |
 | KAFKA_BROKERS | kafka client must be configured with at least one broker. The brokers on the list are considered seed brokers and are only used to bootstrap the client and load initial metadata  | `["localhost:9092"]` |
 | KAFKA_CLIENT_ID | A logical identifier of an application. Can be used by brokers to apply quotas or trace requests to a specific application. Example: booking-events-processor | `server-queue-client` |
