@@ -2,16 +2,21 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
-  ".env": "# The variables in this file are only used by docker-compose for local docker deployment
-POSTGRESQL_USER=testUsername
-POSTGRESQL_PASSWORD=1234
-POSTGRESQL_PORT=5433
-SERVER_PORT=3000
-BCRYPT_SALT=10
-JWT_SECRET_KEY=Change_ME!!!
-JWT_EXPIRATION=2d",
   "admin-ui/.env": "PORT=3001
-SKIP_PREFLIGHT_CHECK=true",
+SKIP_PREFLIGHT_CHECK=true
+REACT_APP_SERVER_URL =http://localhost:3000",
+  "admin-ui/docker-compose.yml": "version: \\"3\\"
+services:
+  app:
+    container_name: admin-ui
+    image: admin-ui
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    ports:
+      - \\"\${PORT}:3001\\"
+",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
 import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
@@ -930,13 +935,14 @@ export type UserWhereInput = {
   id: string;
 };
 ",
-  "admin-ui/src/auth-provider/ra-auth-http.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
+  "admin-ui/src/auth-provider/ra-auth-http.ts": "import { gql } from \\"@apollo/client/core\\";
 import { AuthProvider } from \\"react-admin\\";
 import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
 } from \\"../constants\\";
 import { Credentials, LoginMutateResult } from \\"../types\\";
+import { apolloClient } from \\"../data-provider/graphqlDataProvider\\";
 
 const LOGIN = gql\`
   mutation login($username: String!, $password: String!) {
@@ -949,11 +955,6 @@ const LOGIN = gql\`
 
 export const httpAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
-    const apolloClient = new ApolloClient({
-      uri: \\"/graphql\\",
-      cache: new InMemoryCache(),
-    });
-
     const userData = await apolloClient.mutate<LoginMutateResult>({
       mutation: LOGIN,
       variables: {
@@ -1013,13 +1014,14 @@ function createBasicAuthorizationHeader(
   return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
 }
 ",
-  "admin-ui/src/auth-provider/ra-auth-jwt.ts": "import { ApolloClient, InMemoryCache, gql } from \\"@apollo/client/core\\";
+  "admin-ui/src/auth-provider/ra-auth-jwt.ts": "import { gql } from \\"@apollo/client/core\\";
 import { AuthProvider } from \\"react-admin\\";
 import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
 } from \\"../constants\\";
 import { Credentials, LoginMutateResult } from \\"../types\\";
+import { apolloClient } from \\"../data-provider/graphqlDataProvider\\";
 
 const LOGIN = gql\`
   mutation login($username: String!, $password: String!) {
@@ -1032,11 +1034,6 @@ const LOGIN = gql\`
 
 export const jwtAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
-    const apolloClient = new ApolloClient({
-      uri: \\"/graphql\\",
-      cache: new InMemoryCache(),
-    });
-
     const userData = await apolloClient.mutate<LoginMutateResult>({
       mutation: LOGIN,
       variables: {
@@ -1476,7 +1473,7 @@ import { setContext } from \\"@apollo/client/link/context\\";
 import { CREDENTIALS_LOCAL_STORAGE_ITEM } from \\"../constants\\";
 
 const httpLink = createHttpLink({
-  uri: \\"/graphql\\",
+  uri: \`\${process.env.REACT_APP_SERVER_URL}/graphql\`,
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -1489,7 +1486,7 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const apolloClient = new ApolloClient({
+export const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
   link: authLink.concat(httpLink),
 });
@@ -2530,7 +2527,30 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
-  "docker-compose.yml": "version: \\"3\\"
+  "server/.env": "POSTGRESQL_USER=testUsername
+POSTGRESQL_PASSWORD=1234
+POSTGRESQL_PORT=5433
+POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
+BCRYPT_SALT=10
+COMPOSE_PROJECT_NAME=amp_\${appId}
+JWT_SECRET_KEY=Change_ME!!!
+JWT_EXPIRATION=2d
+SERVER_PORT = 3000",
+  "server/docker-compose.db.yml": "version: \\"3\\"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \\"\${POSTGRESQL_PORT}:5432\\"
+    environment:
+      POSTGRES_USER: \${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
+",
+  "server/docker-compose.yml": "version: \\"3\\"
 services:
   server:
     build:
@@ -2540,7 +2560,7 @@ services:
     ports:
       - \\"\${SERVER_PORT}:3000\\"
     environment:
-      POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
+      POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5433\\"
       BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
       JWT_SECRET_KEY: \\"\${JWT_SECRET_KEY}\\"
       JWT_EXPIRATION: \\"\${JWT_EXPIRATION}\\"
@@ -2556,6 +2576,7 @@ services:
     environment:
       POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
       BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
+      ports: 5432:5432
     depends_on:
       db:
         condition: service_healthy
@@ -2580,28 +2601,6 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
-volumes:
-  postgres: ~
-",
-  "server/.env": "POSTGRESQL_USER=testUsername
-POSTGRESQL_PASSWORD=1234
-POSTGRESQL_PORT=5433
-POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
-BCRYPT_SALT=10
-COMPOSE_PROJECT_NAME=amp_\${appId}
-JWT_SECRET_KEY=Change_ME!!!
-JWT_EXPIRATION=2d",
-  "server/docker-compose.db.yml": "version: \\"3\\"
-services:
-  db:
-    image: postgres:12
-    ports:
-      - \\"\${POSTGRESQL_PORT}:5432\\"
-    environment:
-      POSTGRES_USER: \${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
-    volumes:
-      - postgres:/var/lib/postgresql/data
 volumes:
   postgres: ~
 ",
