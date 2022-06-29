@@ -24,8 +24,7 @@ services:
     environment:
       POSTGRESQL_URL: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432"
       BCRYPT_SALT: "${BCRYPT_SALT}"
-      ports:
-        5432:5432
+      ports: 5432:5432
     depends_on:
       db:
         condition: service_healthy
